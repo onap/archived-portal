@@ -1,0 +1,40 @@
+<!--
+  ================================================================================
+  eCOMP Portal
+  ================================================================================
+  Copyright (C) 2017 AT&T Intellectual Property
+  ================================================================================
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  ================================================================================
+  -->
+<div id="ecomp-right-sidebar-container" class="ecomp-sidebar-container" ng-class="isOpen ? 'open-sidebar': 'close-sidebar'">
+    <div id="online-userbar" class="ecomp-sidebar-main" style="right: 0px; width:75px; padding:0px;" >
+        <div class="online-user-container" id="online-user-container" style="margin-top:45px; overflow-y:auto; overflow-x:hidden">
+        	<div class="ecomp-right-sidebar-title">Online Users</div>
+            <div ng-repeat="user in userList">
+                <div class="child-row" style="height:85px;" ui-sref-active="att-accordion-active">
+					<div>
+						<a href="javascript:void(0)" ng-click="openInNewTab(user.linkQ)" ><img class="activeUserIcon" ng-src="assets/images/photo.png"  alt="User Link" ></a>
+						<div style="font-family: Arial; font-size:10px; text-align: center;" >{{user.userId}}</div>
+					</div>
+				</div>
+			</div>
+        </div>
+    </div>    
+</div>
+<div class="ecomp-right-sidebar-toggle"  ng-class="isOpen ? 'open-sidebar-toggle': 'close-sidebar-toggle'">
+	<a href="javascript:void(0)"  ng-click="toggleSidebar()" style="transform: rotate(-90deg); position:relative; z-index:5" att-button btn-type="primary" size="small" 	att-accessibility-click="13,32">
+		<span class="ion-chevron-down" ng-show="isOpen"></span>
+		<span class="ion-chevron-up" ng-hide="isOpen"><span style="font-family: arial">Users</span></span>
+	</a>
+</div>

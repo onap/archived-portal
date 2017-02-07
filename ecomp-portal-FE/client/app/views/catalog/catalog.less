@@ -1,0 +1,439 @@
+/*-
+ * ================================================================================
+ * eCOMP Portal
+ * ================================================================================
+ * Copyright (C) 2017 AT&T Intellectual Property
+ * ================================================================================
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * ================================================================================
+ */
+.w-ecomp-app-catalog {
+  //.bg_u;//white for 1702
+  .bg_w;  // gray for 1610
+  position: @page-main-position;
+  top: @page-main-top;
+  left: @page-main-left;
+  right: @page-main-right;
+  bottom: @page-main-bottom;
+  padding-top: @padding-top;
+  overflow-y: @page-main-overflow-y;
+  padding-left: @padding-left-side;
+
+  .gridster-item-container .gridster-item-body {
+    overflow-y:auto;
+    overflow-x:hidden;
+  }
+
+  .app-catalog-container {
+    .content_justify;
+    position: relative;
+    padding: 0 0 32px 0;
+    width: 100%;
+
+    .app-catalog-title {
+      .a24r;
+      margin: auto;
+      .content_justify;
+    }
+    .app-catalog-list {
+      min-height: 90vh;
+      //display: flex;
+      justify-content: center;
+      flex-flow: row wrap;
+      width: 1170px;
+
+      margin: auto;
+      margin-bottom: 63px;
+
+      .app-gridster-header {
+        background-color: @u;
+        font-size:12px;
+        overflow:hidden
+      }
+
+      .app-gridster-footer {
+        background-color: @u;
+      }
+
+    }
+  }
+}
+
+.build-number {
+  .o12i;
+}
+
+@keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.slide.ng-hide-add, 
+.slide.ng-hide-remove,
+.slide.ng-enter,
+.slide.ng-leave {
+  transition: all 0.5s ease;
+}
+.slide.ng-hide,
+.slide.ng-enter {
+  transform: translate(-100%, 0);
+}
+.slide.ng-enter-active {
+  transform: translate(0, 0);
+}
+.slide.ng-leave {
+  transform: translate(0, 0);
+}
+.slide.ng-leave-active {
+  transform: translate(+100%, 0);
+}
+.appCatalogue-boarder{
+	// border: 2px solid #ccc!important;    
+	// border-radius: 16px!important; 
+	  height: 800px;
+    overflow: auto;
+}
+.app-visibility.false {
+	opacity: 0.5;  
+} 
+
+.dock ul{
+display: inline-block;
+
+width: auto;
+margin: 0px;
+padding: 0px;
+list-style: none;
+
+}
+.dock ul li {
+width: auto;
+height: auto;
+display: inline-block;
+bottom: 0;
+vertical-align: bottom;
+margin-top: -43px;
+}
+.dock ul li a {
+display: block;
+height: 150px;
+width: 150px;
+position: relative;
+-webkit-transition-property: width, height,margin-top;
+-webkit-transition-duration: 0.5s;
+-o-transition-property: width, height,margin-top;
+-o-transition-duration: 0.5s;
+-moz-transition-property: width, height,margin-top;
+-moz-transition-duration: 0.5s;
+}
+.dock ul li a:hover {
+width: 200px;
+height: 200px;
+margin-top: -50px;
+}
+.dock ul li a img {
+width: 100%;
+position: absolute;
+bottom: 0;
+left: 0;
+border: none;
+padding: 0px 0px 0px 30px;
+}
+.dock_left{
+width: 31px;
+-webkit-transform: rotate(33deg);
+-moz-transform: rotate(33deg);
+-o-transform: rotate(33deg);
+position: relative;
+background: #EEE;
+overflow: hidden;
+float: left;
+height: 100px;
+z-index: 2;
+margin: -18px;
+}
+.dock_right{
+width: 36px;
+-webkit-transform: rotate(-33deg);
+-moz-transform: rotate(-33deg);
+-o-transform: rotate(-33deg);
+position: relative;
+background: #EEE;
+overflow: hidden;
+float: left;
+height: 100px;
+z-index: 2;
+margin: -18px;
+}
+
+
+
+
+/*Time for the CSS*/
+* {margin: 0; padding: 0;}
+body {background: #ccc;}
+
+.slider{
+	width: 640px; /*Same as width of the large image*/
+	position: relative;
+	/*Instead of height we will use padding*/
+	padding-top: 320px; /*That helps bring the labels down*/
+	
+	margin: 50px auto;
+	
+	/*Lets add a shadow*/
+	box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.75);
+}
+
+
+/*Last thing remaining is to add transitions*/
+.slider>img{
+	position: absolute;
+	left: 0; top: 0;
+	transition: all 0.5s;
+}
+
+.slider input[name='slide_switch'] {
+	display: none;
+}
+
+.slider label {
+	/*Lets add some spacing for the thumbnails*/
+	margin: 18px 0 0 18px;
+	border: 3px solid #999;
+	
+	float: left;
+	cursor: pointer;
+	transition: all 0.5s;
+	
+	/*Default style = low opacity*/
+	opacity: 0.6;
+}
+
+.slider label img{
+	display: block;
+}
+
+/*Time to add the click effects*/
+.slider input[name='slide_switch']:checked+label {
+	border-color: #666;
+	opacity: 1;
+}
+/*Clicking any thumbnail now should change its opacity(style)*/
+/*Time to work on the main images*/
+.slider input[name='slide_switch'] ~ img {
+	opacity: 0;
+	transform: scale(1.1);
+}
+/*That hides all main images at a 110% size
+On click the images will be displayed at normal size to complete the effect
+*/
+.slider input[name='slide_switch']:checked+label+img {
+	opacity: 1;
+	transform: scale(1);
+}
+/*Clicking on any thumbnail now should activate the image related to it*/
+
+.caption {
+	background: rgba(0, 0, 0, 0.5);
+	position: absolute;
+  bottom: 0;	
+	width: 640px
+}
+
+.caption a {
+	display: block;
+	color: #fff;
+	text-decoration: none;
+  font: normal 16px 'Lato', Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+	padding: 15px;
+}
+
+
+/*widgets*/
+.singleBtnBorder {
+    border-radius: 6px 6px 6px 6px;  
+}
+    
+.icon-anchor {
+    color: #888;
+}
+   
+.widgetHeaderBtn:hover, .widgetHeaderBtn:focus {
+    background: rgba(0, 0, 0, 0);
+    color: #3a7999;
+    box-shadow: inset 0 0 0 2px #3a7999;
+}
+
+.box-one {
+  -webkit-transition:all linear 0.4s;
+  transition:all linear 0.4s;
+  height:100px; width:200px; background:white;    border: 2px solid #ccc!important;
+    border-radius: 16px!important;
+}
+.box-one.ng-hide {
+display: block!important;
+  opacity:0;
+}
+
+.gridsterContent{
+	height:120px;
+}
+.gridsterAppContent{
+	height:120px;
+	
+}
+
+ .gridsterImage{
+ 	height:84px; 
+ 	width:168px;
+ }
+ .grider-content-ecomp{
+ 	transition: transform 0.5s ease-out;
+ }
+  .grider-content-ecomp:hover{
+    transform: scale(1.1);
+}
+
+/*application empty div*/
+.app-error-block {
+    padding-top: 10px;
+}
+
+.text-center { text-align: center; }
+
+.text-right { text-align: right; }
+
+.text-justify { text-align: justify; }
+
+/*widget header*/
+.optionsMenu{
+	    position: absolute;
+    list-style: none;
+    top: 25px;
+    right: 10px;
+    border: 1px solid #067ab4;
+    display: none;
+    z-index: 2;
+    border-radius: 6px 0px 6px 6px;
+    background: #fff;
+    width: 130px;
+}
+
+.optionsMenuLink {
+    position: relative;
+    padding-left: 8px;
+    padding-right: 2px;
+    font-size: 12px;
+    line-height: 30px;
+    color: #444444;
+}
+.optionsMenu > li:hover a {
+    color: #ffffff !important;
+}
+.optionsMenu > li {
+    width: 100%;
+    text-align: left;
+}
+.optionsMenu > li:hover {
+    background-color: #0faaf7;
+    border-color: none !important;
+    cursor: pointer;
+}
+
+.simulateCatGridHeader{
+	position: relative;
+    height: 70px !important;
+    border: 1px solid #d3d3d3;
+    border-bottom: 0;
+    background-color: #E5E5E5;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    z-index: 1;
+}
+
+.simulateCatGridHeaderTitle{
+	line-height: 20px;
+	margin-top: 10px;
+	 margin-left: 26px;
+    font-family: arial;
+    font-size: 18px; 
+    color: #444444;
+    float: left;
+}
+
+.simulateCatGridHeaderRadio{
+	line-height: 20px;
+	margin-top: 10px;
+	margin-left: 10px;
+    font-family: arial;
+    font-size: 12px; 
+    color: #444444;
+    float: left;
+}
+
+.simulateCatGridHeaderDetails{
+	line-height: 20px;
+    margin-left: 10px;
+    font-family: arial;
+    font-size: 12px; 
+    color: #444444;
+    float: left;
+}
+
+.simulateGridHeaderHandle{
+	cursor: move;
+    margin: 12px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    border: 0;
+    vertical-align: middle;
+    -ms-interpolation-mode: bicubic;
+    display: block;
+}
+
+.att-checkbox--on .att-checkbox__indicator, .att-radio--on .att-radio__indicator {
+    opacity: 1;
+}
+
+.animate-enter, 
+.animate-leave
+{ 
+    -webkit-transition: 400ms cubic-bezier(0.250, 0.250, 0.750, 0.750) all;
+    -moz-transition: 400ms cubic-bezier(0.250, 0.250, 0.750, 0.750) all;
+    -ms-transition: 400ms cubic-bezier(0.250, 0.250, 0.750, 0.750) all;
+    -o-transition: 400ms cubic-bezier(0.250, 0.250, 0.750, 0.750) all;
+    transition: 400ms cubic-bezier(0.250, 0.250, 0.750, 0.750) all;
+    position: relative;
+    display: block;
+} 
+
+.animate-enter.animate-enter-active, 
+.animate-leave {
+    opacity: 1;
+    top: 0;
+    height: 30px;
+}
+
+.animate-leave.animate-leave-active,
+.animate-enter {
+    opacity: 0;
+    top: -50px;
+    height: 0px;
+}

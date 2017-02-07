@@ -1,0 +1,73 @@
+<!--
+  ================================================================================
+  eCOMP Portal
+  ================================================================================
+  Copyright (C) 2017 AT&T Intellectual Property
+  ================================================================================
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  ================================================================================
+  -->
+<div class="w-ecomp-main">
+    <div class="w-ecomp-main-container">
+        <div class="portal-admins-page-main"  id="contentId">
+            <div id="title" class="w-ecomp-main-view-title">Portal Admins</div>
+            <div class="portal-admins-table">
+                <div class="table-control">
+                    <input id="input-table-search" class="table-search" type="text"
+                           placeholder="Search in entire table"
+                           ng-model="portalAdmin.searchString"/>
+                    <div id="add-portal-admin-button" class="add-button portal-add-button" ng-click="portalAdmin.openAddNewPortalAdminModal()">Add Portal Admin</div>
+                </div>
+                <span class="ecomp-spinner" ng-show="portalAdmin.isLoadingTable"></span>
+                <div class="c-ecomp-att-abs-table default" ng-hide="portalAdmin.isLoadingTable">
+                    <table att-table
+                           table-data="portalAdmin.portalAdminsTableData"
+                           search-string="portalAdmin.searchString"
+                           view-per-page="portalAdmin.viewPerPageIgnored"
+                           current-page="portalAdmin.currentPageIgnored"
+                           total-page="portalAdmin.totalPageIgnored">
+                        <thead att-table-row type="header">
+                        <tr>
+                            <th id="th-first-name" att-table-header key="firstName" default-sort="a">{{portalAdmin.portalAdminsTableHeaders[0]}}</th>
+                            <th id="th-last-name" att-table-header key="lastName" sortable="true">{{portalAdmin.portalAdminsTableHeaders[1]}}</th>
+                            <th id="th-userId" att-table-header key="userId" sortable="true">{{portalAdmin.portalAdminsTableHeaders[2]}}</th>
+                            <th id="portal-admin-th-header-delete" att-table-header  sortable="{{false}}">{{portalAdmin.portalAdminsTableHeaders[3]}}</th>
+                        </tr>
+                        </thead>
+                        <tbody att-table-row type="body"
+                               class="table-body"
+                               row-repeat="rowData in portalAdmin.portalAdminsTableData | filter: portalAdmin.portalsRowFilter">
+                        <tr>
+                            <td att-table-body>
+                                <div id="div-{{rowData.userId}}-{{rowData.firstName}}" ng-bind="rowData.firstName"></div>
+                            </td>
+                            <td att-table-body>
+                                <div id="div-{{rowData.userId}}-{{rowData.lastName}}" ng-bind="rowData.lastName"></div>
+                            </td>
+                            <td att-table-body>
+                                <div id="div-{{rowData.userId}}" style="float: left;" ng-bind="rowData.loginId"></div>
+                                <div>
+                                    <span style="float: left; margin-left:15px" class="ion-person" ng-click="portalAdmin.openEditUserModal(rowData.loginId);$event.stopPropagation()"></span>
+                                </div>
+                            </td>
+                            <td att-table-body>
+                                <div id="portal-admin-delete-{{$index}}" class="ion-trash-b" ng-click="portalAdmin.removePortalAdmin(rowData)"></div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

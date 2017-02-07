@@ -1,0 +1,178 @@
+/*-
+ * ================================================================================
+ * eCOMP Portal
+ * ================================================================================
+ * Copyright (C) 2017 AT&T Intellectual Property
+ * ================================================================================
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * ================================================================================
+ */
+ /**
+ * Created by nnaffar on 1/28/16.
+ */
+@sidebar-width: 200px;
+@transition-duration: 0.25s;
+@overlayer-opacity: 0.65;
+
+
+.close-button {
+  //width: @sidebar-width;
+  .a24r;
+  //.bg_u;
+  font-size: 3em;
+  line-height: 18px;
+  position: absolute;
+  cursor: pointer;
+  vertical-align: middle;
+  top: @second-level-top;
+  left: 0;
+  -webkit-font-smoothing: antialiased;
+  height: 53px;
+  z-index: 101;
+  //box-shadow: 0 4px 5px rgba(0, 0, 0, .2);
+
+}
+.ecomp-right-sidebar-container{
+  position: absolute;
+  display: block;
+  left: 0;
+  z-index: 100;
+  transition: left @transition-duration;
+  margin-top: -15px;
+
+  .ecomp-sidebar-main {
+    //background-color: ;
+    position: absolute;
+    margin-top: 65px;
+    width: @sidebar-width;
+    height: 100vh;
+    .bg_u;//white for 1610
+    //.bg_w;  // gray for 1702
+    box-shadow: 0 4px 5px rgba(0, 0, 0, .2);
+
+    padding-right: 10px;
+    padding-left: 10px;
+
+    .accordion-container{
+      margin-top: 45px;
+    }
+    .att-accordion-font{
+      font-size: .875rem;
+      color: #666;
+      display: inline-block;
+      font-family: arial;
+
+    }
+
+    .att-accordion-active{
+      color: #199DDF !important;
+    }
+
+    .sub-item{
+      .att-accordion-font;
+      cursor: pointer;
+      height: 37px;
+      line-height: 37px;
+      padding-left: 20px;
+      padding-bottom: 10px;
+      vertical-align: middle;
+      width: 100%;
+    }
+    .sub-item:hover{
+      .att-accordion-active;
+    }
+
+    .parent-item{
+      .att-accordion-font;
+      border-bottom: 1px solid #bbb;
+      cursor: pointer;
+      height: 37px;
+      line-height: 37px;
+      padding-bottom: 10px;
+      vertical-align: middle;
+      width: 100%;
+    }
+    .parent-item:hover{
+      .att-accordion-active;
+    }
+
+  }
+}
+
+.open-sidebar {
+  right: 0;
+  transition: right .25s ease-in-out;
+   -moz-transition: right .25s ease-in-out;
+   -webkit-transition: right .25s ease-in-out;
+}
+
+.close-sidebar {
+  right: -@sidebar-width;
+  transition: right .25s ease-in-out;
+   -moz-transition: right .25s ease-in-out;
+   -webkit-transition: right .25s ease-in-out;
+}
+
+.content-overlayed {
+  position: fixed;
+  top: 110px;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: none repeat scroll 0 0 rgb(242, 242, 242);
+  z-index: 9999;
+}
+.fade-animation{
+  opacity: @overlayer-opacity;
+  transition: opacity @transition-duration ease-in-out;
+}
+.fade-animation.ng-hide {
+  opacity:0;
+  transition: opacity @transition-duration ease-in-out;
+}
+
+.activeUserIcon { 
+	transition: all .2s ease-in-out; 
+	display: block; 
+	margin-left: auto; margin-right: auto; height:55px; width:55px; border-radius: 50%;
+	
+}
+.activeUserIcon:hover { transform: scale(1.5); }
+
+.ecomp-right-sidebar-toggle{
+	position: absolute; 
+	top: 400px; 
+	right: 35px;
+}
+
+.open-sidebar-toggle {
+ // right: 0;
+  transition: right .25s ease-in-out;
+   -moz-transition: right .25s ease-in-out;
+   -webkit-transition: right .25s ease-in-out;
+}
+
+.close-sidebar-toggle {
+  right: -36px;
+  transition: right .25s ease-in-out;
+   -moz-transition: right .25s ease-in-out;
+   -webkit-transition: right .25s ease-in-out;
+}
+
+.ecomp-right-sidebar-title{
+	font-family: arial;
+	font-size: 14px;
+	color: #ef6f00;
+	margin-bottom:20px;
+	text-align: center;
+}

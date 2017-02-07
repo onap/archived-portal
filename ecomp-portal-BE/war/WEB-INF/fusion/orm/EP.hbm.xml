@@ -1,0 +1,558 @@
+<?xml version="1.0"?>
+<!--
+  ================================================================================
+  eCOMP Portal
+  ================================================================================
+  Copyright (C) 2017 AT&T Intellectual Property
+  ================================================================================
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  ================================================================================
+  -->
+
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="org.openecomp.portalapp.portal.domain">
+
+	<!-- Widget class mapping details -->
+    <class name="Widget" table="FN_WIDGET">
+        <id name="id" column="WIDGET_ID">
+            <generator class="native">
+ 				<param name="sequence">seq_fn_widget</param>
+			</generator>
+        </id>
+		<property name="width" type="integer">
+			<column name="WDG_WIDTH" not-null="true" default="0"></column>
+		</property>
+		<property name="height" type="integer">
+			<column name="WDG_HEIGHT" not-null="true" default="0"></column>
+		</property>
+ 		<property name="url" type="string">
+			<column name="WDG_URL" not-null="true" default="?"></column>
+		</property>
+  		<property name="name" type="string">
+			<column name="WDG_NAME" not-null="true" default="?"></column>
+		</property>
+		
+		<property name="appId" type="long">
+			<column name="APP_ID" not-null="true"></column>
+		</property>
+		
+    </class> 
+
+	
+	<!-- User class mapping details -->
+	<class name="EPUser" table="FN_USER">
+		<id name="id" column="user_id">
+			<generator class="native">
+				<param name="sequence">seq_fn_user</param>
+			</generator>
+		</id>
+
+		<property name="orgId" column="org_id" />
+		<property name="managerId" column="manager_id" />
+		<property name="firstName" column="first_name" />
+		<property name="middleInitial" column="middle_name" />
+		<property name="lastName" column="last_name" />
+		<property name="phone" column="phone" />
+		<property name="fax" column="fax" />
+		<property name="cellular" column="cellular" />
+		<property name="email" column="email" />
+		<property name="addressId" column="address_id" />
+		<property name="alertMethodCd" column="alert_method_cd" />
+
+		<property name="address1" column="address_line_1" />
+		<property name="address2" column="address_line_2" />
+		<property name="city" column="city" />
+		<property name="state" column="state_cd" />
+		<property name="zipCode" column="zip_code" />
+		<property name="country" column="country_cd" />
+
+		<property name="hrid" column="hrid" />
+		<property name="orgUserId" column="org_user_id" />
+		<property name="orgCode" column="org_code" />
+		<property name="loginId" column="login_id" />
+		<property name="loginPwd" column="login_pwd" />
+		<property name="lastLoginDate" column="last_login_date" type="timestamp" />
+
+		<property name="locationClli" column="location_clli" />
+		<property name="orgManagerUserId" column="org_manager_userid" />
+		<property name="company" column="company" />
+		<property name="department" column="department" />
+		<property name="departmentName" column="department_name" />
+		<property name="businessUnit" column="business_unit" />
+		<property name="businessUnitName" column="business_unit_name" />
+		<property name="jobTitle" column="job_title" />
+		<property name="siloStatus" column="silo_status" />
+		<property name="financialLocCode" column="fin_loc_code" />
+
+		<property name="active" column="active_yn" type="yes_no" />
+		<property name="internal" column="is_internal_yn" type="yes_no" />
+
+		<property name="created" type="timestamp" column="created_date" />
+		<property name="modified" type="timestamp" column="modified_date" />
+
+		<property name="createdId" column="created_id" />
+		<property name="modifiedId" column="modified_id" />
+		<property name="timeZoneId" column="timezone" />
+
+        <set name="EPUserApps" table="FN_USER_ROLE" lazy="false" sort="natural" inverse="true">
+            <key column="user_id"/>
+            <one-to-many class="org.openecomp.portalapp.portal.domain.EPUserApp" />
+        </set>
+
+	</class>
+
+	<!-- UserApp class mapping details -->
+	<class name="EPUserApp" table="fn_user_role">
+		<composite-id>
+			<key-property name="userId" type="long">
+				<column name="user_id" precision="11" scale="0" />
+			</key-property>
+			<key-many-to-one name="app" class="org.openecomp.portalapp.portal.domain.EPApp" column="app_id" />
+			<key-many-to-one name="role" class="org.openecomp.portalapp.portal.domain.EPRole" column="role_id" />
+		</composite-id>
+		<property name="priority" type="java.lang.Short">
+			<column name="priority" precision="4" scale="0" />
+		</property>
+		</class>
+
+	<!-- User App class mapping details -->
+	<class name="EPApp" table="fn_app">
+		<id name="id" column="app_id">
+			<generator class="native">
+				<param name="sequence">seq_fn_app</param>
+			</generator>
+		</id>
+		<property name="name" type="string">
+			<column name="app_name" not-null="true" default="?"></column>
+		</property>
+		<property name="imageUrl" column="app_image_url" />
+		<property name="description" column="app_description" />
+		<property name="notes" column="app_notes" />
+		<property name="url" column="app_url" />
+		<property name="alternateUrl" column="app_alternate_url" />
+		<property name="appRestEndpoint" column="app_rest_endpoint" />
+		<property name="mlAppName" type="string">
+			<column name="ml_app_name" not-null="true" default="?"></column>
+		</property>
+		<property name="mlAppAdminId" type="string">
+			<column name="ml_app_admin_id" not-null="true" default="?"></column>
+		</property>
+		<property name="motsId" column="mots_id" />
+		<property name="appPassword" type="string">
+			<column name="app_password" not-null="true" default="?"></column>
+		</property>
+		<property name="thumbnail" column="thumbnail"/>
+		<property name="username" type="string">
+			<column name="app_username" not-null="true" default="?"></column>
+		</property>
+		<property name="open" type="yes_no">
+			<column name="open" not-null="true" default="Y"></column>
+		</property>
+		<property name="enabled" type="yes_no">
+			<column name="enabled" not-null="true" default="N"></column>
+		</property> 
+		<property name="uebTopicName" type="string">
+			<column name="ueb_topic_name"></column>
+		</property>
+		<property name="uebKey" type="string">
+			<column name="ueb_key"></column>
+		</property>
+		<property name="uebSecret" type="string">
+			<column name="ueb_secret"></column>
+		</property>
+		<property name="appType" type="integer">
+			<column name="app_type"></column>
+		</property>
+		
+		<one-to-one name="contactUs" class="AppContactUs"  cascade="save-update"></one-to-one>
+		
+	</class>
+	
+	
+	<!-- User Role class mapping details -->
+	<class name="EPRole" table="FN_ROLE">
+		<id name="id" column="role_id">
+			<generator class="native">
+				<param name="sequence">seq_fn_role</param>
+			</generator>
+		</id>
+
+		<property name="name" column="role_name" />
+		<property name="priority" column="priority" />
+		<property name="active" column="active_yn" type="yes_no" />
+		<!-- 2 lines below may be removed! -->
+        <property name="appId"     column="APP_ID" />
+        <property name="appRoleId" column="APP_ROLE_ID" />
+        <!-- 2 lines above may be removed -->
+
+        <set name="roleFunctions" table="FN_ROLE_FUNCTION" lazy="false" sort="natural">
+			<key column="role_id" />
+            <many-to-many column="function_cd" class="org.openecomp.portalsdk.core.domain.RoleFunction"/>
+		</set>
+
+        <set name="childRoles" table="FN_ROLE_COMPOSITE" lazy="false" sort="natural">
+			<key column="parent_role_id" />
+			<many-to-many column="child_role_id" class="org.openecomp.portalapp.portal.domain.EPRole" />
+		</set>
+
+        <set name="parentRoles" table="FN_ROLE_COMPOSITE" lazy="false" sort="natural">
+			<key column="child_role_id" />
+			<many-to-many column="parent_role_id" class="org.openecomp.portalapp.portal.domain.EPRole" />
+		</set>
+
+	</class>
+	
+	<!-- User App class mapping details -->
+	<class name="AppContactUs" table="fn_app_contact_us">
+		<id name="id" column="app_id">
+			<generator class="foreign">
+				<param name="property">app</param>
+			</generator>
+		</id>
+		<property name="url" column="url" />
+		<property name="description" column="description" />
+		<property name="contactName" column="contact_name" />
+		<property name="contactEmail" column="contact_email" />
+		<property name="activeYN" column="active_yn" />
+		
+		<one-to-one name="app" class="EPApp"  constrained="true" ></one-to-one>
+		
+	</class>
+	
+	<!-- Personalization of user app selections -->
+	<class name="PersUserAppSelection" table="fn_pers_user_app_sel">
+		<id name="id" column="id">
+			<generator class="native">
+				<param name="property">seq_fn_pers_user_app_sel</param>
+			</generator>
+		</id>
+		<property name="userId" column="user_id" />
+		<property name="appId" column="app_id" />
+		<property name="statusCode" column="status_cd" />
+	</class>
+	
+	<!-- requires values for named parameters :searchQuery and :userId -->
+	<sql-query name="searchPortal">
+		<return alias="searchResult" class="org.openecomp.portalapp.portal.ecomp.model.SearchResultItem"/>
+		<![CDATA[
+			select @rn /*'*/:=/*'*/ @rn+1 AS rowId, CATEGORY, NAME, UUID, TARGET from
+			( (
+				select distinct 'User' CATEGORY, concat(concat(first_name, ' '), last_name) NAME, user_id UUID, email TARGET
+				from fn_user where
+				upper( :searchQuery ) != ''
+				and (upper(first_name) like upper(CONCAT('%', :searchQuery, '%'))
+				or upper(last_name) like upper(CONCAT('%', :searchQuery, '%'))
+				or upper(org_user_id) like upper(CONCAT('%', :searchQuery, '%')))
+				and  upper(active_yn) = 'Y'
+				)
+				union
+				(
+				select distinct 'Application' CATEGORY, b1.app_name NAME,
+				if (b1.app_type = 2,'false','true') UUID,
+				if (a1.app_id is null, if (b1.app_type = 2, b1.APP_URL, ''), a1.APP_URL) TARGET
+				from
+				(
+				select c.*
+				from fn_user_role a, fn_user b, fn_app c
+				where a.USER_ID = b.user_id
+				and upper(b.org_user_id) = upper(  :userId )
+				and a.app_id = c.app_id
+				and upper(c.APP_NAME) like upper(CONCAT('%', :searchQuery, '%'))
+				and upper(c.ENABLED) = 'Y'
+				) a1 right outer join
+				(select * from fn_app where
+				upper(APP_NAME) like upper(CONCAT('%', :searchQuery, '%'))
+				and upper(ENABLED) = 'Y') b1
+				on a1.APP_ID = b1.app_id
+				)
+				union
+				(
+				select distinct 'Menu' CATEGORY, b1.TEXT NAME,
+				if (b1.app_type = 2,'false','true') UUID,
+				if (a1.menu_id is null , if (b1.app_type = 2, b1.URL, '') , a1.URL ) TARGET
+				from
+				(select distinct  d.*, e.app_type from fn_user a,
+				fn_user_role b, fn_menu_functional_roles c, fn_menu_functional d, fn_app e
+				where a.USER_ID = b.user_id
+				and b.role_id = c.role_id
+				and c.menu_id = d.menu_id
+				and upper(a.org_user_id) = upper( :userId )
+				and c.APP_ID = e.app_id
+				and upper(d.TEXT) like upper(CONCAT('%', :searchQuery, '%'))
+				and upper(d.active_yn) = 'Y'
+				and upper(e.enabled) = 'Y'
+				) a1 right outer join
+				(
+				select distinct a.*, c.app_type from fn_menu_functional a, fn_menu_functional_roles b, fn_app c
+				where active_yn = 'Y'
+				and upper(TEXT) like upper(CONCAT('%', :searchQuery, '%'))
+				and a.menu_id = b.menu_id
+				and b.app_id = c.app_id
+				and c.enabled = 'Y'
+				) b1
+				on a1.menu_id = b1.menu_id
+				) ) t,
+			(SELECT @rn /*'*/:=/*'*/ 0) t2
+			;
+		]]>
+	</sql-query>
+	
+	<!-- Gets one row for each function-application-role combination. -->
+	<sql-query name="getAppAccessFunctionRole">
+		<return alias="appAccessFunctionRole" class="org.openecomp.portalapp.portal.domain.GetAccessResult"/>
+		<!-- This query requires no parameters. -->
+		<![CDATA[
+			SELECT 
+				A.TEXT ECOMP_FUNCTION, D.APP_NAME, D.MOTS_ID APP_MOTS_ID, C.ROLE_NAME
+			FROM 
+				fn_menu_functional A, fn_menu_functional_roles B, FN_ROLE C, FN_APP D
+			WHERE 
+				A.MENU_ID = B.MENU_ID AND B.ROLE_ID = C.ROLE_ID AND B.APP_ID = D.APP_ID
+			;
+		]]>
+	</sql-query>
+	
+	<!-- Gets all applications, possibly with contact information -->
+	 <sql-query name="getAppsAndContacts">
+		<return alias="appContactUs" class="org.openecomp.portalapp.portal.ecomp.model.AppContactUsItem"/>
+		<!-- This query requires no parameters. -->
+		<![CDATA[
+			select 
+				a.app_id as appId, a.app_name as appName,
+				c.contact_name as contactName, 
+				c.contact_email as contactEmail, c.url, c.description, 
+				c.active_yn as activeYN
+			from 
+				fn_app a
+			left join 
+				fn_app_contact_us c
+				on a.app_id = c.app_id
+			where 
+				a.enabled = 'Y' and a.app_name is not null and a.app_name != ''
+			;
+		]]>
+	</sql-query> 
+	<!-- Gets all rows from the app-contact-us table, extended with app information -->
+	 <sql-query name="getAppContactUsItems">
+		<return alias="appContactUs" class="org.openecomp.portalapp.portal.ecomp.model.AppContactUsItem"/>
+		<!-- This query requires no parameters. -->
+		<![CDATA[
+			select 
+				c.app_id as appId, c.contact_name as contactName, 
+				c.contact_email as contactEmail, c.url, c.description, 
+				c.active_yn as activeYN, a.app_name as appName
+			from 
+				fn_app_contact_us c
+			left join 
+				fn_app a
+				on a.app_id = c.app_id
+			where 
+				a.enabled = 'Y' and a.app_name is not null and a.app_name != ''
+			;
+		]]>
+	</sql-query>
+	<sql-query name="getAppCategoryFunctions">
+		<return alias="appCategoryFunctions" class="org.openecomp.portalapp.portal.ecomp.model.AppCategoryFunctionsItem"/>
+		<!-- This query requires no parameters. -->
+		<![CDATA[
+			SELECT @rn /*'*/:=/*'*/ @rn+1 AS rowId,
+				r.category as category, r.app_id as appId, r.app_name as application, 
+				group_concat(function_text separator ', ') as functions
+			FROM ( 
+				SELECT 
+				app_id, function_text, app_name,
+				IF (a.parent_menu_id IS NULL, fn.parent_menu, a.text) category 
+				FROM ( 
+					SELECT 
+					j.text function_text, j.menu_id function_id, j.app_id app_id, j.app_name app_name, 
+					k.text parent_menu, k.parent_menu_id parent_menu_id 
+					FROM ( 
+						SELECT distinct 
+						x.Text, x.PARENT_MENU_ID, x.menu_id, y.app_id, z.app_name 
+						FROM 
+						fn_menu_functional x, fn_menu_functional_roles y, fn_app z 
+						WHERE 
+						x.MENU_ID = y.menu_id AND x.ACTIVE_YN = 'Y' AND y.app_id = z.app_id 
+						) j,
+					fn_menu_functional k 
+					WHERE j.parent_menu_id = k.menu_id 
+					) fn, 
+				fn_menu_functional a 
+				WHERE fn.parent_menu_id = a.menu_id 
+			) r, 
+			(SELECT @rn /*'*/:=/*'*/ 0) t2 
+			group by r.category, r.app_id, r.app_name 
+			order by category, app_name 
+			;
+		]]>
+	</sql-query>
+	
+	
+    <sql-query name="getGuestLastLogin">
+		<return-scalar  column="audit_date" type="java.util.Date"/>		
+		<![CDATA[
+			select audit_date from fn_audit_log where affected_record_id =:attuid order by audit_date desc limit 2;
+		]]>
+	</sql-query>
+	
+	<!-- Gets personalized list of enabled and accessible apps for regular user -->
+	<sql-query name="getPersUserApps">
+		<return alias="persUserApps" class="EPApp"/>
+		<!-- This query requires one parameter: userId (number) -->
+		<![CDATA[
+		    select
+				distinct  -- multiple roles yield multiple rows
+			    a.APP_ID			, a.APP_NAME 		, a.APP_IMAGE_URL  		, a.APP_DESCRIPTION , 
+	    		a.APP_NOTES 		, a.APP_URL 		, a.APP_ALTERNATE_URL 	, a.APP_REST_ENDPOINT ,
+				a.ML_APP_NAME 		, a.ML_APP_ADMIN_ID , a.MOTS_ID 			, a.APP_PASSWORD ,
+    			a.THUMBNAIL 		, a.APP_USERNAME	, a.OPEN 				, a.ENABLED , 
+				a.UEB_TOPIC_NAME 	, a.UEB_KEY 		, a.UEB_SECRET 			, a.APP_TYPE     
+		    from FN_APP a
+		    -- Portal assigns role 999 to app administrator		    
+			left outer join	FN_USER_ROLE         r ON a.APP_ID = r.APP_ID and r.USER_ID = :userId and r.ROLE_ID != 999
+			left outer join FN_PERS_USER_APP_SEL p ON a.APP_ID = p.APP_ID and p.USER_ID = :userId
+			where a.ENABLED = 'Y'
+		    and (
+				(a.OPEN = 'Y' and p.STATUS_CD = 'S')
+		        or
+				(a.OPEN = 'N' and r.USER_ID is not null and (p.STATUS_CD is null or p.STATUS_CD != 'H'))
+			)
+			order by app_name
+		    ;
+		]]>
+	</sql-query>
+	
+	<!-- Gets personalized list of enabled and accessible apps for Portal (super) admin -->
+	<sql-query name="getPersAdminApps">
+		<return alias="persAdminApps" class="EPApp"/>
+		<!-- This query requires one parameter: userId (number) -->
+		<![CDATA[
+		    select
+				distinct  -- multiple roles yield multiple rows
+			    a.APP_ID			, a.APP_NAME 		, a.APP_IMAGE_URL  		, a.APP_DESCRIPTION , 
+	    		a.APP_NOTES 		, a.APP_URL 		, a.APP_ALTERNATE_URL 	, a.APP_REST_ENDPOINT ,
+				a.ML_APP_NAME 		, a.ML_APP_ADMIN_ID , a.MOTS_ID 			, a.APP_PASSWORD ,
+    			a.THUMBNAIL 		, a.APP_USERNAME	, a.OPEN 				, a.ENABLED , 
+				a.UEB_TOPIC_NAME 	, a.UEB_KEY 		, a.UEB_SECRET 			, a.APP_TYPE     
+		    from FN_APP a
+		    -- Portal assigns role 999 to app administrator		    
+			left outer join	FN_USER_ROLE         r ON a.APP_ID = r.APP_ID and r.USER_ID = :userId and r.ROLE_ID != 999
+			left outer join FN_PERS_USER_APP_SEL p ON a.APP_ID = p.APP_ID and p.USER_ID = :userId
+			where a.ENABLED = 'Y'
+		    and (
+				(a.OPEN = 'Y' and p.STATUS_CD = 'S')
+		        or
+				(a.OPEN = 'N' and r.ROLE_ID is not null and (p.STATUS_CD is null or p.STATUS_CD != 'H'))
+				or
+				(a.OPEN = 'N' and r.ROLE_ID is null and p.STATUS_CD = 'S')
+			)
+			order by app_name
+		    ;
+		]]>
+	</sql-query>
+	
+	<!-- Gets regular user's list of enabled apps including accessible and select statuses -->
+	<sql-query name="getUserAppCatalog">
+		<return alias="userAppCatalog" class="org.openecomp.portalapp.portal.ecomp.model.AppCatalogItem"/>
+		<!-- This query requires one parameter: userId (number) -->
+		<![CDATA[
+			select 
+				distinct  -- multiple roles yield multiple rows
+			    a.APP_ID as id, a.APP_NAME as name, a.APP_IMAGE_URL as imageUrl,
+			    a.APP_DESCRIPTION as description, a.APP_NOTES as notes,
+			    a.APP_URL as url, a.APP_ALTERNATE_URL as alternateUrl,
+				IF(a.app_type = '2', TRUE, FALSE) as restricted,
+			    IF(a.open = 'Y', TRUE, FALSE) as open,
+                -- ACCESS(-ible) means user has a defined role OR the application is open 
+				case
+					-- regular app and user has a role
+					when a.OPEN = 'N' and r.ROLE_ID is not null then TRUE
+                    -- open app
+                    when a.OPEN = 'Y' then TRUE
+                    else FALSE
+                end as 'access' ,
+                -- SELECT(-ed) indicates user personalization
+                case
+					-- regular app, user has a role, no personalization
+					when a.OPEN = 'N' and r.ROLE_ID is not null and p.STATUS_CD is null then TRUE
+                    -- open app and has personalization
+                    when a.OPEN = 'Y' and p.STATUS_CD is not null then TRUE
+                    else FALSE
+                end as 'select' ,
+                -- PENDING indicates user checked a box
+                case
+                	when a.OPEN = 'N' and p.STATUS_CD = 'P' then TRUE
+                	else FALSE
+                end as 'pending'
+		    from FN_APP a
+		    -- Portal assigns role 999 to app administrator
+            left outer join FN_USER_ROLE         r ON a.APP_ID = r.APP_ID and r.USER_ID = :userId and r.ROLE_ID != 999
+			left outer join FN_PERS_USER_APP_SEL p ON a.APP_ID = p.APP_ID and p.USER_ID = :userId
+			where a.ENABLED = 'Y'
+			-- Show accessible apps first, then the rest; sort by name within each set.
+            order by access desc, app_name asc
+		    ;
+		]]>
+	</sql-query>
+	
+	<!-- Gets list of enabled apps including accessible and select statuses -->
+	<sql-query name="getAdminAppCatalog">
+		<return alias="adminAppCatalog" class="org.openecomp.portalapp.portal.ecomp.model.AppCatalogItem"/>
+		<!-- This query requires one parameter: userId (number) -->
+		<![CDATA[
+			select 
+				distinct  -- multiple roles yield multiple rows
+			    a.APP_ID as id, a.APP_NAME as name, a.APP_IMAGE_URL as imageUrl,
+			    a.APP_DESCRIPTION as description, a.APP_NOTES as notes,
+			    a.APP_URL as url, a.APP_ALTERNATE_URL as alternateUrl,
+				IF(a.app_type = '2', TRUE, FALSE) as restricted,
+			    IF(a.open = 'Y', TRUE, FALSE) as open,
+                -- ACCESS(-ible) means user has a defined role OR the application is open 
+				case
+					-- regular app and user has a role
+					when a.OPEN = 'N' and r.ROLE_ID is not null then TRUE
+                    -- open app
+                    when a.OPEN = 'Y' then TRUE
+                    else FALSE
+                end as 'access' ,
+                -- SELECT(-ed) indicates user personalization
+                case
+					-- regular app, user has a role, no personalization
+					when a.OPEN = 'N' and r.ROLE_ID is not null and p.STATUS_CD is null then TRUE
+					-- regular app, user has no role, admin forced a personalization
+					when a.OPEN = 'N' and r.ROLE_ID is null and p.STATUS_CD = 'S' then TRUE
+                    -- open app and has personalization
+                    when a.OPEN = 'Y' and p.STATUS_CD is not null then TRUE
+                    else FALSE
+                end as 'select' ,
+                -- PENDING indicates user checked a box
+                case
+                	when a.OPEN = 'N' and p.STATUS_CD = 'P' then TRUE
+                	else FALSE
+                end as 'pending'
+		    from FN_APP a
+		    -- Portal assigns role 999 to app administrator
+            left outer join FN_USER_ROLE         r ON a.APP_ID = r.APP_ID and r.USER_ID = :userId and r.ROLE_ID != 999
+			left outer join FN_PERS_USER_APP_SEL p ON a.APP_ID = p.APP_ID and p.USER_ID = :userId
+			where a.ENABLED = 'Y'
+			-- Show accessible apps first, then the rest; sort by name within each set.
+            order by access desc, app_name asc
+		    ;
+		]]>
+	</sql-query>
+
+
+</hibernate-mapping>

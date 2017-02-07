@@ -1,0 +1,66 @@
+<!--
+  ================================================================================
+  eCOMP Portal
+  ================================================================================
+  Copyright (C) 2017 AT&T Intellectual Property
+  ================================================================================
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  ================================================================================
+  -->
+<div class="new-admin-modal">
+    <div class="search-users" ng-show="newAdmin.dialogState===1">
+        <search-users search-title="New Admin"
+                      selected-user="newAdmin.selectedUser"></search-users>
+        <div class="dialog-control">
+            <div id="search-users-button-next" class="next-button" ng-click="newAdmin.selectedUser && newAdmin.getAdminAppsRoles()"
+                 ng-class="{disabled: !newAdmin.selectedUser}">Next
+            </div>
+            <div id="search-users-button-cancel" class="cancel-button" ng-click="closeThisDialog()">Cancel</div>
+        </div>
+    </div>
+    <div id="div-admin-app-roles" class="admin-app-roles" ng-show="newAdmin.dialogState===2">
+        <div class="title" id="title"
+             ng-bind="newAdmin.selectedUser.firstName + ' ' + newAdmin.selectedUser.lastName + ' (' + newAdmin.selectedUser.orgUserId + ')'"></div>
+        <div class="app-roles-main">
+            <div id="div-app-roles-main-title" class="app-roles-main-title">
+                <span class="left">Administrates:</span>
+            </div>
+            <div class="dropdown-container">
+                <div class ="right_arrow_down"></div>
+                <div class="select-input custom-select-wrap">
+                    <select class="new-administrated-app" id="dropdown-select-app"
+                            ui-select2 ng-model="newAdmin.selectedNewApp"
+                            data-placeholder="Select application"
+                            ng-options="app as app.appName for app in (filteredApps = (newAdmin.adminAppsRoles | filter:{isAdmin:'false'})) track by app.id "
+                            ng-disabled="!filteredApps.length">
+                        <option id="option-select-app" value="" disabled style="display: none;">Select application</option>
+                    </select>
+                </div>
+            </div>
+            <div class="admin-roles-list">
+                <div ng-repeat="app in (newAdmin.adminAppsRoles | orderBy:newAdmin.orderFilter) track by app.id" ng-show="app.isAdmin">
+                    <div id="select-app-{{app.appName.split(' ').join('-')}}" class="administrated-application" ng-bind="app.appName | elipsis: 57"></div>
+                    <i id="i-delete-application" class="ion-trash-b" ng-click="newAdmin.unadminApp(app)"></i>
+                </div>
+            </div>
+            <div class="dialog-control">
+                <span class="ecomp-save-spinner" ng-show="newAdmin.isSaving"></span>
+                <div id="button-back" ng-show="newAdmin.isShowBack" class="back-button" ng-click="newAdmin.navigateBack()">Back</div>
+                <div id="div-updateAdminAppsRoles" class="next-button" ng-click="newAdmin.updateAdminAppsRoles()"
+                     ng-class="{disabled: false}">Save
+                </div>
+                <div id="div-cancel-button" class="cancel-button" ng-click="closeThisDialog()">Cancel</div>
+            </div>
+        </div>
+    </div>
+</div>

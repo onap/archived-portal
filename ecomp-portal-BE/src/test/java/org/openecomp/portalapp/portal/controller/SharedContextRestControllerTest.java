@@ -1,0 +1,107 @@
+package org.openecomp.portalapp.portal.controller;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.junit.Assert;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+/**
+ * Tests the endpoints exposed by the Shared Context REST controller in Portal
+ * Core.
+ * 
+ * @author clott
+ */
+public class SharedContextRestControllerTest {
+
+	private final Log logger = LogFactory.getLog(getClass());
+
+	private final SharedContextTestProperties properties;
+
+	private final String ckey = "ckey";
+	private final String cvalue = "cvalue";
+	
+	// Supposed to be a Portal session ID
+	private final String cxid = UUID.randomUUID().toString();
+
+	private final String key = "key123";
+	private final String value1 = "first value";
+	private final String value2 = "second value";
+
+	public SharedContextRestControllerTest() throws IOException {
+		properties = new SharedContextTestProperties();
+	}
+
+	@SuppressWarnings("unchecked")
+	//@Test
+	public void test() throws Exception {
+		String response = null, val = null;
+		ObjectMapper mapper = new ObjectMapper();
+		Map<String, Object> responseMap, jsonMap;
+
+		logger.info("Get on empty context");
+		response = SharedContextRestClient.getJson(properties, "get", cxid, key);
+		// Should not exist - just generated the UUID
+		Map<String, Object> responseMap1 = mapper.readValue(response, Map.class);
+		response = (String) responseMap1.get("response");
+		Assert.assertNull(response);
+
+		logger.info("Set a new context");
+		response = setContext(cxid, key, value1);
+		Assert.assertNotNull(response);
+		responseMap = mapper.readValue(response, Map.class);
+		String responseValue = (String) responseMap.get("response");
+		Assert.assertNotNull(responseValue);
+		Assert.assertEquals("added", responseValue);
+
+		logger.info("Get existing context");
+		response = SharedContextRestClient.getJson(properties, "get", cxid, key);
+		responseMap = mapper.readValue(response, Map.class);
+		jsonMap = (Map<String,Object>) responseMap.get("response");
+		Assert.assertNotNull(jsonMap);
+		val = (String) jsonMap.get(cvalue);
+		Assert.assertEquals(val, value1);
+
+		logger.info("Overwrite exiting context");
+		response = setContext(cxid, key, value2);
+		Assert.assertNotNull(response);
+		responseMap = mapper.readValue(response, Map.class);
+		response = (String) responseMap.get("response");
+		Assert.assertNotNull(responseValue);
+		// Assert.assertEquals("replaced", responseValue);
+
+		logger.info("Get existing context to verify overwrite");
+		response = SharedContextRestClient.getJson(properties, "get", cxid, key);
+		responseMap = mapper.readValue(response, Map.class);
+		jsonMap = (Map<String,Object>) responseMap.get("response");
+		Assert.assertNotNull(jsonMap);
+		val = (String) jsonMap.get(cvalue);
+		Assert.assertEquals(val, value2);
+
+		logger.info("Delete one context");
+		response = SharedContextRestClient.getJson(properties, "remove", cxid, key);
+		responseMap = mapper.readValue(response, Map.class);
+		response = (String) responseMap.get("response");
+		Assert.assertEquals(response, "removed");
+
+		logger.info("Clear the context");
+		response = SharedContextRestClient.getJson(properties, "clear", cxid, null);
+		Assert.assertEquals("", response);
+	}
+
+	private String setContext(String context, String id, String value) throws Exception {
+		ObjectMapper mapper = new ObjectMapper();
+		HashMap<String,String> stringMap = new HashMap<String,String>();
+		stringMap.put("context_id", cxid);
+		stringMap.put(ckey, key);
+		stringMap.put(cvalue, value2);
+		String json = mapper.writeValueAsString(stringMap);
+		String response = SharedContextRestClient.postJson(properties, "set", json);
+		return response;
+	}
+}

@@ -1,0 +1,88 @@
+/*-
+ * ================================================================================
+ * eCOMP Portal
+ * ================================================================================
+ * Copyright (C) 2017 AT&T Intellectual Property
+ * ================================================================================
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * ================================================================================
+ */
+ .ngdialog.ngdialog-theme-default.ng-scope {
+.ngdialog-content {
+        background-color: @u;
+        padding: 0;
+        box-shadow: 0px 0px 6px 0px rgba(0, 0, 0, 0.5);
+        border-radius: 4px;
+        top: -100px;
+    .title {
+            margin: 0 16px;
+            height: 48px;
+            line-height: 48px;
+        }
+
+    .ngdialog-close {
+            top: 6px;
+            right: 6px;
+        }
+    .app-roles-main {
+            margin: 20px 16px 0;
+        }
+    }
+}
+
+.ngdialog.ngdialog-theme-default .ngdialog-content {
+    width: 532px;
+    padding: 16px;
+}
+
+.ngdialog.ngdialog-theme-default.confirm-box .ngdialog-content{
+  @height: 160px;
+  @width: 400px;
+
+  width: @width;
+  height: @height;
+  padding: 20px;
+  position: absolute;
+  top: 300px;
+  left: ~"calc(50% - @{width}/2)";
+}
+
+
+.dialog-control {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  .next-button {
+    display: inline-block;
+    .btn-blue;
+    width: 90px;
+    margin-right: 10px;
+  }
+  .cancel-button {
+    display: inline-block;
+    .btn-blue;
+    width: 90px;
+  }
+  .save-button {
+    display: inline-block;
+    .btn-blue;
+    width: 90px;
+  }
+  .back-button {
+    display: inline-block;
+    .btn-blue;
+    width: 90px;
+    margin-right: 10px;
+  }
+
+}

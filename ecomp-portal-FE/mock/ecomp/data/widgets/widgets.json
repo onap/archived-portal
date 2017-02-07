@@ -1,0 +1,39 @@
+[
+  {
+    "id": 2,
+    "name": "ASDC",
+    "appId": 23,
+    "appName": "ASDC",
+    "url": "http://yeoman.io/generators/",
+    "width": 360,
+    "height" : 300
+  },
+  {
+    "id": 3,
+    "name": "Self Service Portal",
+    "appId": 24,
+    "appName": "Self Sere Portal",
+    "url": "http://yeoman.io/generators/",
+    "width": 360,
+    "height" : 300
+  },
+  {
+    "id": 4,
+    "name": "Formation",
+    "appId": 25,
+    "appName": "Formation",
+    "url": "http://yeoman.io/generators/",
+    "width": 360,
+    "height" : 300
+  }, 
+  {
+    "id": 5,
+    "name": "Portal Name",
+    "appId": 26,
+    "appName": "Portal name",
+    "url": "http://yeoman.io/generators/",
+    "width": 360,
+    "height" : 300
+  }
+
+  ]

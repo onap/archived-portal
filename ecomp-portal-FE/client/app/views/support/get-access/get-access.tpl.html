@@ -1,0 +1,88 @@
+<!--
+  ================================================================================
+  eCOMP Portal
+  ================================================================================
+  Copyright (C) 2017 AT&T Intellectual Property
+  ================================================================================
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  ================================================================================
+  -->
+<div class="w-ecomp-get-access-home">
+    <div class="get-access-home-container">
+        <div class="admins-page-main" id="contentId">
+            <div id="title" class="get-access-home-title">Get Access</div>
+            <div class="get-access-general-div">
+				<span>
+				Request access for following functions by sending email to the Application's Admin. For Admin contact details, please <a href='contactUs'>click here</a>.
+				</span>
+			</div>
+            <div class="get-access-table">
+                <div class="table-control">
+				<input id="input-table-search" 
+					class="table-search" 
+					type="text" 
+					placeholder="Search" 
+					ng-model="access.searchString"/>
+                <span class="ecomp-spinner" ng-show="access.isLoadingTable"></span>
+				<div style="height: auto;" class="c-ecomp-att-abs-table default" ng-hide="access.isLoadingTable">
+	               	<!-- expects data to arrive sorted by first column: ecomp_function -->
+                    <table att-table id="table-main"
+                           table-data="access.appTable"
+                           search-string="access.searchString"
+                           view-per-page="access.viewPerPageIgnored"
+                           current-page="access.currentPageIgnored"
+                           total-page="access.totalPageIgnored">
+                        <thead att-table-row type="header">
+                        <tr>
+                            <th id="th-access-0" att-table-header key="ecomp_function" sortable="false">{{access.getAccessTableHeaders[0]}}</th>
+                            <th id="th-access-1" att-table-header key="app_name" sortable="false">{{access.getAccessTableHeaders[1]}}</th>
+                            <th id="th-access-2" att-table-header key="role_name" sortable="false">{{access.getAccessTableHeaders[2]}}</th>
+                        </tr>
+                        </thead>
+                        <!-- Use track-by="UNIQUE KEY HERE" or leave out if no unique keys in data -->
+                        <tbody att-table-row type="body"
+                        	class="table-body" 
+                        	track-by="$index"
+                        	row-repeat="rowData in access.appTable">
+	                        <tr id="tr-rowData" ng-click="">
+	                            <td att-table-body>
+	                                <div id="access-page-function"
+	                                	ng-show="$index == 0 || access.appTable[$index-1].ecomp_function != rowData.ecomp_function"
+	                                	ng-bind="rowData.ecomp_function">
+	                                </div>
+	                            </td>
+	                            <td att-table-body>
+	                                <div id="access-page-appName"  
+	                                	ng-show="$index == 0 || access.appTable[$index-1].app_name != rowData.app_name"
+	                                	ng-bind="rowData.app_name"></div>
+	                            </td>
+	                            <td att-table-body>
+	                                <div id="access-page-roleName"  ng-bind="rowData.role_name"></div>
+	                            </td>
+	                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<style>
+.tablesorter-default{
+     cursor: default; 
+}
+.admins-page-main .admins-table .table-body {
+     cursor: default;
+}
+</style>

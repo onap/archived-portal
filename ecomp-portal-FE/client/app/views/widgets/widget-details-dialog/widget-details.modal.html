@@ -1,0 +1,132 @@
+<!--
+  ================================================================================
+  eCOMP Portal
+  ================================================================================
+  Copyright (C) 2017 AT&T Intellectual Property
+  ================================================================================
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  ================================================================================
+  -->
+<div class="widget-details-modal">
+    <div id="'widgets-details-title" class="title">Widget Details</div>
+    <div class="widget-properties-main" scroll-top="widgetDetails.scrollApi">
+        <form id="widgets-details-form" name="widgetForm" novalidate autocomplete="off">
+            <script type="text/javascript">
+                document.getElementById("appForm").reset();
+            </script>
+            <div class="item required">
+                <div class="item-label">Application Name</div>
+                <div class="custom-select-wrap">
+                    <select id="widgets-details-select-app"
+                            class="select-field"
+                            ng-model="widgetDetails.selectedApp"
+                            ng-change="widgetDetails.updateSelectedApp();"
+                            ng-options="app.name for app in widgetDetails.availableApps track by app.id"
+                            ng-disabled="!widgetDetails.availableApps || !widgetDetails.availableApps.length"
+                            name="app"
+                            required>
+                        <option id="widgets-details-select-app-disabled" value="" disabled style="display: none;">Select application</option>
+                    </select>
+                </div>
+                <div class="error-container" ng-show="widgetForm.app.$dirty">
+                    <div ng-messages="widgetForm.app.$error" class="error-container">
+                        <small id="widgets-details-select-app-error-required" class="err-message" ng-message="required">Application is required</small>
+                    </div>
+                </div>
+            </div>
+            <div class="item required">
+                <div class="item-label">Widget Name</div>
+                <input id="widgets-details-input-name"
+                       class="input-field"
+                       type="text"
+                       ng-model="widgetDetails.widget.name"
+                       name="name"
+                       maxlength="100"
+                       ng-pattern="/^[a-zA-Z0-9_\s\&]*$/"
+                       required/>
+                <div class="error-container" ng-show="widgetDetails.conflictMessages.name">
+                    <small id="widgets-details-input-name-conflict" class="err-message" ng-bind="widgetDetails.conflictMessages.name"></small>
+                </div>
+                <div class="error-container" ng-show="widgetForm.name.$dirty || widgetDetails.isEditMode">
+                    <div ng-messages="widgetForm.name.$error" class="error-container">
+                        <small id="widgets-details-input-name-required" class="err-message" ng-message="required">Widget Name is required</small>
+                        <small id="widgets-details-input-name-pattern" class="err-message" ng-message="pattern">Widget Name must be letters, numbers, or underscore</small>
+                    </div>
+                </div>
+            </div>
+            <div class="item required">
+                <div class="left-item">
+                    <div class="item-label">Width</div>
+                    <input id="widgets-details-input-width"
+                           class="input-field"
+                           type="number"
+                           ng-model="widgetDetails.widget.width"
+                           name="width"
+                           min="300"
+                           required
+                           disabled/>
+                    <div class="error-container" ng-show="widgetForm.width.$dirty || widgetDetails.isEditMode">
+                        <div ng-messages="widgetForm.width.$error" class="error-container">
+                            <small id="widgets-details-input-width-required" class="err-message" ng-message="required">Widget width is required</small>
+                            <small id="widgets-details-input-min-width" class="err-message" ng-message="min">Minimum width is 300</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="right-item required">
+                    <div class="item-label">Height</div>
+                    <input id="widgets-details-input-height"
+                           class="input-field"
+                           type="number"
+                           ng-model="widgetDetails.widget.height"
+                           name="height"
+                           min="200"
+                           required
+                           disabled/>
+                    <div class="error-container" ng-show="widgetForm.height.$dirty || widgetDetails.isEditMode">
+                        <div ng-messages="widgetForm.height.$error" class="error-container">
+                            <small id="widgets-details-input-height-required" class="err-message" ng-message="required">Widget height is required</small>
+                            <small id="widgets-details-input-height-minimum" class="err-message" ng-message="min">Minimum height is 200</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="item required">
+                <div class="item-label">URL</div>
+                <input id="widgets-details-input-URL"
+                       class="input-field"
+                       type="url"
+                       ng-model="widgetDetails.widget.url"
+                       name="url"
+                       maxlength="256"
+                       ng-pattern="widgetDetails.ECOMP_URL_REGEX"
+                       required/>
+                <div class="error-container" ng-show="widgetDetails.conflictMessages.url">
+                    <small id="widgets-details-input-URL-conflict" class="err-message" ng-bind="widgetDetails.conflictMessages.url"></small>
+                </div>
+                <div class="error-container" ng-show="widgetForm.url.$dirty || widgetDetails.isEditMode">
+                    <div ng-messages="widgetForm.url.$error" class="error-container">
+                        <small id="widgets-details-input-URL-required" class="err-message" ng-message="required">Widget URL is required</small>
+                        <small id="widgets-details-input-URL-pattern" class="err-message" ng-message="pattern">Incorrect URL pattern</small>
+                    </div>
+                </div>
+
+            </div>
+        </form>
+    </div>
+    <div class="dialog-control">
+        <span class="ecomp-save-spinner" ng-show="widgetDetails.isSaving"></span>
+        <div id="widgets-details-next-button" class="next-button"
+             ng-class="{disabled: widgetForm.$invalid}" ng-click="widgetDetails.saveChanges()">Save</div>
+        <div id="widgets-details-cancel-button" class="cancel-button" ng-click="closeThisDialog()">Cancel</div>
+    </div>
+</div>

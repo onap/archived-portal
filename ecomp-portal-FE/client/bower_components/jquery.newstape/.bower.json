@@ -1,0 +1,34 @@
+{
+  "name": "jquery.newstape",
+  "version": "1.0.0",
+  "license": "MIT",
+  "main": [
+    "dist/jquery.newstape.min.js"
+  ],
+  "description": "Simple Touch-enabled News Ticker Plugin",
+  "authors": [
+    "Nxeed <nxeed@ya.ru>"
+  ],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": ">=1.7",
+    "jquery-mousewheel": ">=3.1.13",
+    "jquery.event.drag-new": "*"
+  },
+  "homepage": "https://github.com/nxeed/JQuery-Newstape",
+  "_release": "1.0.0",
+  "_resolution": {
+    "type": "version",
+    "tag": "v1.0.0",
+    "commit": "c67331c7cbb309da87d08ebb30a92244cda14776"
+  },
+  "_source": "https://github.com/nxeed/JQuery-Newstape.git",
+  "_target": "1.0.0",
+  "_originalSource": "jquery.newstape"
+}

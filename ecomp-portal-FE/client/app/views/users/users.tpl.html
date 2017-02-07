@@ -1,0 +1,105 @@
+<!--
+  ================================================================================
+  eCOMP Portal
+  ================================================================================
+  Copyright (C) 2017 AT&T Intellectual Property
+  ================================================================================
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  ================================================================================
+  -->
+<div class="w-ecomp-main">
+    <div class="w-ecomp-main-container">
+        <div class="users-page-main"  id="contentId">
+            <div id="users-page-title" class="w-ecomp-main-view-title">Users</div>
+            <div class="users-table">
+            
+            
+                <div class="table-control">
+                    <div class="c-ecomp-att-abs-select default">
+                        <div class="form-field" id="form-field"
+                             att-select="users.adminApps"
+                             ng-model="users.selectedApp"
+                             ng-disabled="users.isAppSelectDisabled"
+                             ng-class="{disabled: users.isAppSelectDisabled}"></div>
+                    </div>
+                    <input class="table-search" type="text" id="input-search"
+                           placeholder="Search in entire table"
+                           ng-model="users.searchString"/>
+
+                    <div id="users-page-button-add" class="add-button" ng-click="users.openAddNewUserModal()">Add User</div>
+                </div>
+                <div ng-hide="users.isLoadingTable">
+                    <div class="error-text"
+                         id="div-error-app-down"
+                         ng-show="appsIsDown===true">
+                        <h1 class="error-help-bold">Attention:</h1>
+                        <p>&nbsp;</p>
+                        <p class="error-help">Select "Add User" in order to add User and Roles to the '{{users.selectedApp.name}}' Application.</p>
+                    </div>
+                </div>
+                <span class="ecomp-spinner" ng-show="users.isLoadingTable"></span>
+                <div class="c-ecomp-att-abs-table default" ng-hide="users.isLoadingTable">
+                    <table att-table id="table-main"
+                           table-data="users.accountUsers"
+                           search-string="users.searchString"
+                           view-per-page="users.viewPerPageIgnored"
+                           current-page="users.currentPageIgnored"
+                           total-page="users.totalPageIgnored">
+                        <thead att-table-row type="header">
+                        <tr>
+                            <th id="th-users-0" att-table-header key="firstName" default-sort="a">{{users.usersTableHeaders[0]}}</th>
+                            <th id="th-users-1" att-table-header key="lastName" sortable="true">{{users.usersTableHeaders[1]}}</th>
+                            <th id="th-users-2" att-table-header key="userId" sortable="true">{{users.usersTableHeaders[2]}}</th>
+                            <th id="th-users-3" att-table-header key="roles" sortable="false">{{users.usersTableHeaders[3]}}</th>
+                        </tr>
+                        </thead>
+                        <tbody att-table-row type="body"
+                               class="table-body"
+                               track-by="$index"
+                               row-repeat="rowData in users.accountUsers">
+                        <tr id="tr-rowData" ng-click="users.openAddNewUserModal(rowData)">
+                            <td class="td-first" att-table-body>
+                                <div id="users-page-td-firstName-{{rowData.userId}}" ng-bind="rowData.firstName"></div>
+                            </td>
+                            <td att-table-body>
+                                <div id="users-page-td-lastName-{{rowData.userId}}"  ng-bind="rowData.lastName"></div>
+                            </td>
+                            <td att-table-body>
+                                <div id="users-page-td-userId-{{rowData.userId}}" style="float: left;" ng-bind="rowData.orgUserId"></div>
+                                <div>
+                                    <span style="float: left; margin-left:15px" class="ion-person" ng-click="users.openEditUserModal(rowData.orgUserId);$event.stopPropagation()"></span>
+                                </div>
+                            </td>
+                            <td>
+                                <div id="users-page-td-role-name-{{rowData.userId}}"  ng-repeat="role in rowData.roles" ng-bind="role.name"></div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+            <div class="error-text"
+                 id="div-error-403"
+                 ng-show="adminAppsIsNull==true">
+                <h1>Attention:</h1>
+                <p>&nbsp;</p>
+                <p class="error-help">It appears that you have not been added as an admin yet to an application.</p>
+                <p>&nbsp;</p>
+                <p class="error-help">Click on the Admins link to the left and check and see if you are listed as an admin for an application.
+                    If not, you can add yourself to the appropriate application.</p>
+            </div>
+        </div>
+    </div>
+
+</div>

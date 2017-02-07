@@ -1,0 +1,25 @@
+{
+  "userId": "nn605g",
+  "appsRoles": [
+    {
+      "appName": "SSP",
+      "id": 1,
+      "isAdmin": true
+    },
+    {
+      "appName": "ECOMP",
+      "id": 2,
+      "isAdmin": false
+    },
+    {
+      "appName": "other POrtal",
+      "id": 14,
+      "isAdmin": false
+    },
+    {
+      "appName": "Formation",
+      "id": 111,
+      "isAdmin": true
+    }
+  ]
+}

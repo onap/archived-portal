@@ -1,0 +1,346 @@
+<!--
+  ================================================================================
+  eCOMP Portal
+  ================================================================================
+  Copyright (C) 2017 AT&T Intellectual Property
+  ================================================================================
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  ================================================================================
+  -->
+<div class="w-ecomp-applications-home" id="contentId">
+	<div class="applications-home-container">
+		<div align="center" id="errorInfo"
+			style="display: none; font-size: 12px; margin-left: 5px">
+			<span style="color: red">You don't have a user account in that
+				application. Please ask the system administrator. </span>
+		</div>
+		<div class="portals-list" style="margin-bottom: 0px;">
+			<div>
+				<div class="simulateGridHeader">
+					<span class="simulateGridHeaderTitle">Applications</span>
+				</div>
+				<div class="dashboard-boarder">
+					<div class="gridster-container override_background">
+
+						<div att-gridster att-gridster-options="dashboard.gridsterOpts">
+
+						<div ng-if="appsView.length==1">
+							<i class="ion-information-circled full-linear-ion-information-circled"
+								style="margin-left: 50%; font-size: 90px; color: black"></i> <br>
+							<div class="activity-error-msg1">
+								<span>Click on the tile at the left to personalize your applications.</span>
+							</div>
+						</div>
+						
+						<div class="style_prevu_kit" att-gridster-item='item'
+							ng-repeat="item in appsView"
+							id="app-{{item.headerText.split(' ').join('-')}}">
+							<!-- A regular application tile -->
+							<div class="grider-content-ecomp" ng-if="item.addRemoveApps == null">
+								<div id="grips-{{item.headerText.split(' ').join('-')}}"
+									ng-hide="users.isLoadingTable && !users.getUserAppsIsDone"
+									att-gridster-item-header
+									grips-img-path="assets/images/grips.png"
+									header-text="{{item.headerText | elipsis: 33}}"
+									class="app-gridster-header"></div>
+								<div id="app-image-{{item.headerText.split(' ').join('-')}}" 
+									att-gridster-item-body
+									ng-style="{'cursor':'pointer',
+									'background-image': 'url('+(item.imageLink)+')',
+									'order': item.order, 
+									'background-color':'white',
+									'background-repeat': 'no-repeat',
+									'background-size': '170px 130px'}"
+									ng-click="dashboard.goToPortal(item)"
+									ng-hide="users.isLoadingTable && !users.getUserAppsIsDone"
+									class="gridsterContent"></div>
+							</div>
+							<!-- Format the special tile differently -->
+							<div class="grider-content-ecomp" style="width: 170px"  ng-if="item.addRemoveApps">
+								<div id="grips-add-remove-applications-tile" att-gridster-item-header
+									grips-img-path="assets/images/grips.png"
+									header-text='Select applications..'
+									ng-click="dashboard.goToCatalog()"
+									ng-style="{'cursor':'pointer'}" 
+									class="app-gridster-header">
+								</div>
+								<div id="app-image-empty" att-gridster-item-body
+									ng-style="{'cursor':'pointer',
+									'text-align':'center',
+									'order': item.order, 
+									'background-color':'white',
+									'background-repeat': 'no-repeat',
+									'background-size': '170px 130px',
+									'width': '170px', 
+									'height': '120px',
+									'opacity': '1'}"
+									ng-click="dashboard.goToCatalog()" class="gridsterContent">
+									<label style="font-size:12px">Click here to personalize <br> this applications page</label>	
+									<i class="ion-plus-circled" style="font-size:70px;color: #067ab4"></i>
+								</div>
+							</div>
+						</div>
+							
+						</div>
+
+					</div>
+
+				</div>
+			</div>
+
+			<br>
+			<br>
+
+			<div class="information-section">
+				<div id="news-gridster-container"
+					class="gridster-container override_background">
+					<div att-gridster att-gridster-options="dashboard.gridsterOpts">
+
+						<div class="style_prevu_kit">
+							<!-- News -->
+							<div att-gridster-item='newsGridsterItem'>
+								<div att-gridster-item-header
+									grips-img-path="assets/images/grips.png"
+									header-text="{{newsGridsterItem.headerText | elipsis: 33}}"
+									header-icon="full-linear-icon-webwindow"
+									sub-header-text="{{newsGridsterItem.subHeaderText  | elipsis: 56}}"
+									class="information-sections-gridster-header"
+									style="font-size: 18px">
+
+									<div ng-if="isAdminPortalAdmin == true"
+										style="font-size: 20px;">
+
+										<a id="widgetHeaderBtns"
+											class="widgetHeaderBtn widgetHeaderBtnPosition singleBtnBorder"
+											ng-mousedown="showNewsOption=!showNewsOption"
+											ng-mouseleave="showNewsOption=false"
+											ng-class="singleBtnBorder" role="button" alt="Settings"
+											title="Settings" att-accessibility-click="13,32" tabindex="0">
+											<span class="ion-more" style="color:#888"></span>
+										</a>
+										<ul class="optionsMenu"
+											style="max-width: 130px; height: 32px; display: block"
+											ng-show="showNewsOption" ng-mouseenter="showNewsOption=true" 
+											ng-mouseleave="showNewsOption=false">
+											<!-- ngIf: widget.duplicateAllowed -->
+											<li ng-click="editWidgetModalPopup(newsData, 'NEWS');"
+												ddh-accessibility-click="13,32"><a
+												class="optionsMenuLink" href="javascript:void(0)">Edit</a></li>
+											<!-- end ngIf: widget.duplicateAllowed -->
+
+										</ul>
+									</div>
+
+								</div>
+								<div id="newsContainer" att-gridster-item-body
+									class="information-section-gridsterContent">
+									<div class="news">
+										<ul id="newsContent" ng-show="newsData.length!=0">
+											<li ng-repeat="news in newsData"><a href="{{news.href}}"
+												target="_blank" ng-bind="news.title"></a></li>
+										</ul>
+										<div ng-hide="newsData.length!=0">
+											<div class="activity-error-container"
+												style="background: rgb(255, 255, 255); overflow: auto !important; width: 100%;">
+												<div class="activity-error-block">
+													<i class="ion-information-circled full-linear-ion-information-circled"
+														style="margin-left: 125px; font-size: 90px"></i> <br>
+													<div class="activity-error-msg1">There's currently no
+														news available.</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<!-- Events -->
+							<div att-gridster-item='eventsGridsterItem'>
+								<div att-gridster-item-header
+									grips-img-path="assets/images/grips.png"
+									header-text="{{eventsGridsterItem.headerText | elipsis: 33}}"
+									header-icon="full-linear-icon-calendar"
+									sub-header-text="{{eventsGridsterItem.subHeaderText  | elipsis: 56}}"
+									class="information-sections-gridster-header"
+									style="font-size: 18px">
+									<div style="font-size: 20px;"
+										ng-if="isAdminPortalAdmin == true" class="ng-scope"
+										role="button" tabindex="0">
+										<a id="widgetHeaderBtns"
+											class="widgetHeaderBtn widgetHeaderBtnPosition singleBtnBorder"
+											ng-mousedown="showEventsOption=!showEventsOption"
+											ng-mouseleave="showEventsOption=false"
+											ng-class="singleBtnBorder" role="button" alt="Settings"
+											title="Settings" att-accessibility-click="13,32" tabindex="0">
+											<span class="ion-more" style="color:#888"></span>
+										</a>
+										<ul class="optionsMenu"
+											style="max-width: 130px; height: 32px; display: block"
+											ng-show="showEventsOption"
+											ng-mouseenter="showEventsOption=true"
+											ng-mouseleave="showEventsOption=false">
+											<!-- ngIf: widget.duplicateAllowed -->
+											<li ng-click="editWidgetModalPopup(eventData, 'EVENTS');">
+												<a class="optionsMenuLink" href="javascript:void(0)"
+												ddh-accessibility-click="13,32">Edit</a>
+											</li>
+											<!-- end ngIf: widget.duplicateAllowed -->
+										</ul>
+									</div>
+								</div>
+								<div att-gridster-item-body
+									class="information-section-gridsterContent">
+									<div class="events">
+										<ul ng-show="eventData.length!=0">
+											<li ng-repeat="event in eventData">
+												<div ng-click="event_content_show=!event_content_show">
+													<div class="events-date">{{event.mon}}/{{event.day}}/{{event.year}}
+													</div>
+													<div>
+														<div class="event-title-div">
+															<p ng-bind="event.title"></p>
+														</div>
+														<div>
+															<span class="ion-ios-arrow-up" ng-if="event_content_show"
+																style="color: #888; font-size: 22px;"></span> <span
+																class="ion-ios-arrow-down" ng-if="!event_content_show"
+																style="color: #888; font-size: 22px;"></span>
+
+														</div>
+														<div style="clear: both;"></div>
+													</div>
+												</div>
+												<div class="events-content" ng-show="event_content_show">
+													<div class="events-content-body">
+														<a class="events-link" ng-href="{{event.href}}"
+															target="_blank"> <span ng-bind="event.content"></span>
+														</a>
+													</div>
+													<div></div>
+												</div>
+											</li>
+
+
+										</ul>
+										<div ng-hide="eventData.length!=0">
+											<div class="activity-error-container"
+												style="background: rgb(255, 255, 255); overflow: hidden !important; width: 100%;">
+												<div class="activity-error-block">
+													<i class="ion-information-circled full-linear-ion-information-circled"
+														style="margin-left: 125px; font-size: 90px"></i> <br>
+													<div class="activity-error-msg1">There's currently no
+														event available.</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<!-- Important Resources -->
+							<div att-gridster-item='impoResGridsterItem'>
+								<div att-gridster-item-header
+									grips-img-path="assets/images/grips.png"
+									header-text="{{impoResGridsterItem.headerText | elipsis: 33}}"
+									header-icon="full-linear-icon-cloud"
+									sub-header-text="{{impoResGridsterItem.subHeaderText  | elipsis: 56}}"
+									class="information-sections-gridster-header"
+									style="font-size: 18px">
+									<!-- 									<span class="full-linear-icon-cloud" style="font-size: 33px; font-weight: bold;  margin-right: 10px;"></span>
+ -->
+									<div style="font-size: 20px;"
+										ng-if="isAdminPortalAdmin == true" class="ng-scope"
+										role="button" tabindex="0">
+										<a id="widgetHeaderBtns"
+											class="widgetHeaderBtn widgetHeaderBtnPosition singleBtnBorder"
+											ng-class="singleBtnBorder" role="button" alt="Settings"
+											ng-mousedown="showImpResOption=!showImpResOption"
+											ng-mouseleave="showImpResOption=false" title="Settings"
+											att-accessibility-click="13,32" tabindex="0"> <span
+											class="ion-more" style="color:#888"></span>
+										</a>
+
+										<ul class="optionsMenu"
+											style="max-width: 130px; height: 32px; display: block"
+											ng-show="showImpResOption"
+											ng-mouseenter="showImpResOption=true"
+											ng-mouseleave="showImpResOption=false">
+											<!-- ngIf: widget.duplicateAllowed -->
+											<li
+												ng-click="editWidgetModalPopup(importResData, 'IMPORTANTRESOURCES');">
+												<a class="optionsMenuLink" href="javascript:void(0)"
+												ddh-accessibility-click="13,32">Edit</a>
+											</li>
+											<!-- end ngIf: widget.duplicateAllowed -->
+
+										</ul>
+									</div>
+								</div>
+								<div att-gridster-item-body
+									class="information-section-gridsterContent">
+									<div class="resources">
+										<ul ng-show="importResData.length!=0">
+
+											<li ng-repeat="item in importResData"><a
+												href="{{item.href}}" target="_blanl">{{item.title}}</a></li>
+										</ul>
+										<div ng-hide="importResData.length!=0">
+											<div class="activity-error-container"
+												style="background: rgb(255, 255, 255); overflow: hidden !important; width: 100%;">
+												<div class="activity-error-block">
+													<i class="ion-information-circled full-linear-ion-information-circled"
+														style="margin-left: 125px; font-size: 90px"></i> <br>
+													<div class="activity-error-msg1">There's currently no
+														links available.</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="style_prevu_kit" att-gridster-item='item'
+							ng-repeat="item in widgetData">
+							<div>
+								<div att-gridster-item-header
+									grips-img-path="assets/images/grips.png"
+									header-text="{{item.headerText | elipsis: 33}}"
+									sub-header-text="{{item.subHeaderText  | elipsis: 56}}"
+									class="app-gridster-header"></div>
+								<div att-gridster-item-body></div>
+							</div>
+
+						</div>
+
+						<div class="style_prevu_kit" att-gridster-item='item'
+							ng-repeat="item in widgetData">
+							<div>
+								<div att-gridster-item-header
+									grips-img-path="assets/images/grips.png"
+									header-text="{{item.headerText | elipsis: 33}}"
+									sub-header-text="{{item.subHeaderText  | elipsis: 56}}"
+									class="app-gridster-header"></div>
+								<div att-gridster-item-body></div>
+							</div>
+
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div></div>
+
+		</div>
+
+	</div>
+</div>

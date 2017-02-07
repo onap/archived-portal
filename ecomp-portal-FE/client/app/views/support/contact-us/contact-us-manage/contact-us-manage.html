@@ -1,0 +1,136 @@
+<!--
+  ================================================================================
+  eCOMP Portal
+  ================================================================================
+  Copyright (C) 2017 AT&T Intellectual Property
+  ================================================================================
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  ================================================================================
+  -->
+<div style="margin-top: 10px; margin-bottom: 10px;">
+	
+</div>
+<br/>
+
+<div style="margin-top: 25px;">
+	<div id="title" class="manage-contactUs-home-title">Manage Contact Us</div>
+		<div class="contact-us-margin">         
+            <div class="get-access-table">
+                <div class="table-control">
+				<div class="c-ecomp-att-abs-table" style="height:300px"">
+                    <table att-table id="table-main" table-data="contactUsList" current-page="ignoredCurrentPage">
+                        <thead att-table-row type="header">
+	                        <tr>
+	                            <th id="th-users-0" att-table-header key="ecomp_function" default-sort="a" >App Name</th>
+	                            <th id="th-users-1" att-table-header key="app_name" sortable="true" >Contact Name</th>
+	                            <th id="th-users-2" att-table-header key="app_name" sortable="true" >Contact Email</th>
+	                            <th id="th-users-3" att-table-header key="role_name" sortable="true">Contact URL</th>
+	                            <th id="th-users-4" att-table-header key="role_name" sortable="true" >Description</th>
+	                            <th id="th-users-5" att-table-header key="role_name" sortable="true" >Edit</th>
+	                            <th id="th-users-6" att-table-header key="role_name" sortable="true" >Delete</th>   
+	                        </tr>
+                        </thead>
+                        <!-- Use track-by="UNIQUE KEY HERE" or leave out if no unique keys in data -->
+                        <tbody att-table-row type="body"  class="table-body" track-by="$index"  row-repeat="rowData in contactUsList">
+	                        <tr id="tr-rowData" ng-click="">
+	                            <td att-table-body>
+	                                <div id="users-page-td-appName" ng-bind="rowData.appName"></div>	                                
+	                            </td>
+	                            <td att-table-body>
+	                                <div id="users-page-td-name" ng-hide="rowData.showEdit"  ng-bind="rowData.contactName"></div>
+	                               <input class="input-inline-edit-text"  type="text" ng-show="rowData.showEdit" ng-model="contactUsList[$index].contactName"/>
+	                            </td>
+	                            <td att-table-body>
+	                                <div id="users-page-td-email" ng-hide="rowData.showEdit"  ng-bind="rowData.contactEmail"></div>
+	                               <input class="input-inline-edit-text" type="text" ng-show="rowData.showEdit" ng-model="contactUsList[$index].contactEmail"/>
+	                            </td>
+	                            <td att-table-body>
+	                                <div id="users-page-td-url" ng-hide="rowData.showEdit"  ng-bind="rowData.url"></div>
+	                                <input class="input-inline-edit-text" type="text" ng-show="rowData.showEdit" ng-model="contactUsList[$index].url"/>	                                
+	                            </td>
+	                            <td att-table-body>
+	                                <div id="users-page-td-descr" ng-hide="rowData.showEdit"  ng-bind=" rowData.description"></div>
+	                                <input class="input-inline-edit-text" type="text" ng-show="rowData.showEdit" ng-model="contactUsList[$index].description"/>
+	                            </td>
+	                            <td att-table-body>
+                                	<div class="delete-contact-us" ng-hide="rowData.showEdit" ng-click="rowData.showEdit=true">
+                                		<span class="ion-edit"></span>
+                                	</div>                     
+                                	<span ng-show="rowData.showEdit" >
+                                		<a att-button btn-type="primary"   ng-click="editContactUsFun(rowData); rowData.showEdit=false" class="button button--primary" size="small" >Save</a>
+                               		</span>
+	                            </td>
+	                           <td att-table-body>
+                                	<div class="delete-contact-us" ng-click="delContactUsFun(rowData)">
+                                		<span class="ion-trash-b"></span>
+                                	</div>
+	                            </td>
+	                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div att-divider-lines></div>
+					<div style="margin-top: 15px; margin-left: -78px;">				
+						<div id="addWidgetHeader" class="contact-us-margin">				
+							<h1 style="font-size:18px;">Add Application Contact Information</h1>
+							<!-- <div class="errMsg">{{errMsg}}</div> -->
+						</div>		
+						<div id="addWidget" class="contact-us-margin">
+							<div>	        
+                           		<div class="add-contact-us-field">
+						           <div id="mots-property-label" class="property-label">App Name</div>
+						           <div class="form-field" att-select="contactUsAllAppList" ng-model="newContactUs.app" placeholder="Select an App"></div>	           
+						        </div>
+						        <br>
+						        <div class="add-contact-us-field" >
+						            <div  class="property-label">Contact Name</div>
+						            <input class="input-text-area" type="text"  ng-model="newContactUs.name"/>						            
+						        </div>
+						        <div class="add-contact-us-field" >
+						            <div  class="property-label">Contact Email</div>
+						            <input class="input-text-area" type="text"  ng-model="newContactUs.email"/>						            
+						        </div>
+						        <div class="add-contact-us-field" >
+						            <div class="property-label">Contact URL</div>
+						            <input class="input-text-area" type="text" ng-model="newContactUs.url"/>
+						        </div>
+						        <div class="add-contact-us-field-des">
+						            <div  class="property-label">Description</div>
+						            <textarea style="margin-top: 0px; margin-bottom: 0px; height: 100px" ng-model="newContactUs.desc"></textarea>
+						        </div>
+					        </div>
+							<div style="height:50px;">
+								<a style="float:right; margin-top:20px" att-button btn-type="primary" class="button button--primary" size="small" ng-click="newContactUsFun()">Add New</a>
+							</div>
+							
+							<div att-divider-lines></div>
+							
+							<div style="height:50px;">
+								<a style="float:right; margin-right: -162px;" att-button btn-type="primary" class="button button--primary" size="small" ng-click="closeDialog()">Close</a>
+							</div>
+					
+						</div>
+					
+					</div>
+					                
+            </div>
+        </div>
+    </div>
+</div>
+	
+		<script type="application/javascript">
+    $(document).ready(function(){
+        $(".ngdialog-content").css("width","85%")
+    });
+</script>

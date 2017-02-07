@@ -1,0 +1,38 @@
+[
+  {
+    "userId": "aw3218",
+    "firstName": "ANDY",
+    "lastName": "WEEKS",
+    "jobTitle": "SENIOR-PRODUCT DEVELOPMENT ENGINEER"
+  },
+  {
+    "userId": "lr3268",
+    "firstName": "LORI A",
+    "lastName": "RESNICK",
+    "jobTitle": "SR MEMBER OF TECHNICAL STAFF"
+  },
+  {
+    "userId": "ml1386",
+    "firstName": "MIKE",
+    "lastName": "LITTLE",
+    "jobTitle": "PRINCIPAL MEMBER OF TECH STAFF"
+  },
+  {
+    "userId": "ak133d",
+    "firstName": "AVINASHWAR",
+    "lastName": "KOTESHWAR",
+    "jobTitle": "QUALITY TESTING"
+  },
+  {
+    "userId": "mm016f",
+    "firstName": "MOHAMED ANVAR BATCHA",
+    "lastName": "MOHAMED IBRAHIM",
+    "jobTitle": "APPLICATION/SW DEVELOPMENT/SUPPORT"
+  },
+  {
+    "userId": "rc580q",
+    "firstName": "RAMAKRISHNA",
+    "lastName": "CHUNDURU",
+    "jobTitle": "PRINCIPAL MEMBER OF TECH STAFF"
+  }
+]

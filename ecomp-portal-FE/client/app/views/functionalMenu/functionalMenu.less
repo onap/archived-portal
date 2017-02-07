@@ -1,0 +1,70 @@
+/*-
+ * ================================================================================
+ * eCOMP Portal
+ * ================================================================================
+ * Copyright (C) 2017 AT&T Intellectual Property
+ * ================================================================================
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * ================================================================================
+ */
+ .functional-admin-page-main{
+  .bg_w;
+  position: @page-main-position;
+  top: @page-main-top;
+  left: @page-main-left;
+  right: @page-main-right;
+  bottom: @page-main-bottom;
+  padding-top: @padding-top;
+  overflow-y: @page-main-overflow-y;
+  padding-left: @padding-left-side;
+  .u16r;
+
+  .functional-admin-container {
+    .content_justify;
+    position: relative;
+    padding: 0 0 32px;
+    width: 1170px;
+
+    .functional-admin-home-title {
+      .a24r;
+      padding-bottom: 20px;
+      .content_justify;
+    }
+    .tree{
+    }
+    .functional-admin-button-container {
+      padding-top: 10px;
+      .btn-blue{
+            height: 35px;
+            width: 140px;
+      }
+    }
+  }
+  .error-text {
+    width: 1170px;
+    margin: auto;
+    padding: 20px;
+    left: 20px;
+    font-weight: bold;
+    font-size: 16px;
+    text-align: left;
+    color: @err;
+    background-color: @u;
+
+    .error-help {
+      color: @o;
+      font-weight: normal;
+    }
+  }
+
+}

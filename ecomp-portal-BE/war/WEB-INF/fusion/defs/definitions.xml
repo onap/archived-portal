@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ================================================================================
+  eCOMP Portal
+  ================================================================================
+  Copyright (C) 2017 AT&T Intellectual Property
+  ================================================================================
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  ================================================================================
+  -->
+
+<!DOCTYPE tiles-definitions PUBLIC
+       "-//Apache Software Foundation//DTD Tiles Configuration 3.0//EN"
+       "http://tiles.apache.org/dtds/tiles-config_3_0.dtd">
+<tiles-definitions>
+
+    <definition name="ebz_template" template="/WEB-INF/fusion/jsp/ebz_template.jsp">  
+      <put-attribute name="title" value=""></put-attribute>  
+      <put-attribute name="header" value="/WEB-INF/fusion/jsp/ebz/ebz_header.jsp"></put-attribute>  
+      <put-attribute name="body" value=""></put-attribute>
+      <put-attribute name="footer" value="/WEB-INF/fusion/jsp/ebz/ebz_footer.jsp"></put-attribute>  
+    </definition>
+    
+    <definition name="ebz_template_noheader_nofooter" template="/WEB-INF/fusion/jsp/ebz_template_noheader_nofooter.jsp">  
+      <put-attribute name="body" value=""></put-attribute>
+    </definition>  
+      
+     <definition extends="ebz_template" name="user_profile">  
+     	<put-attribute name="body" value="/WEB-INF/jsp/user_profile.jsp"></put-attribute>
+    </definition>  
+    
+    <definition extends="ebz_template" name="profile_search">   
+     	<put-attribute name="body" value="/WEB-INF/fusion/jsp/profile_search.jsp"></put-attribute>
+     	<put-attribute name="viewName" value="profile_search"></put-attribute>  
+    </definition>
+    
+    <definition extends="ebz_template" name="profile">   
+     	<put-attribute name="body" value="/WEB-INF/fusion/jsp/profile.jsp"></put-attribute>
+     	<put-attribute name="viewName" value="profile"></put-attribute>  
+    </definition>   
+    
+	<definition extends="ebz_template" name="menu">   
+     	<put-attribute name="body" value="/WEB-INF/jsp/menu.jsp"></put-attribute>
+     	<put-attribute name="viewName" value="menu"></put-attribute>  
+    </definition>  
+    
+    
+    <definition extends="ebz_template" name="welcome">   
+       <put-attribute name="body" value="/WEB-INF/jsp/welcome.jsp"></put-attribute>
+       <put-attribute name="viewName" value="welcome"></put-attribute>  
+    </definition>
+    
+    <definition extends="ebz_template" name="openIdLogin">   
+       <put-attribute name="body" value="/WEB-INF/jsp/oid-login.jsp"></put-attribute>
+       <put-attribute name="viewName" value="openIdLogin"></put-attribute>  
+    </definition>
+    
+    
+    <definition extends="ebz_template" name="role_list">   
+       <put-attribute name="body" value="/WEB-INF/fusion/jsp/role_list.jsp"></put-attribute>
+       <put-attribute name="viewName" value="role_list"></put-attribute>  
+    </definition> 
+    
+    <definition extends="ebz_template" name="role">   
+       <put-attribute name="body" value="/WEB-INF/fusion/jsp/role.jsp"></put-attribute>
+       <put-attribute name="viewName" value="role"></put-attribute>  
+    </definition>    
+     
+    <definition extends="ebz_template" name="role_function_list">   
+       <put-attribute name="body" value="/WEB-INF/fusion/jsp/role_function_list.jsp"></put-attribute>
+       <put-attribute name="viewName" value="role_function_list"></put-attribute>  
+    </definition>     
+     
+    <definition extends="ebz_template" name="post_search">   
+       <put-attribute name="body" value="/WEB-INF/fusion/jsp/post_search.jsp"></put-attribute>
+       <put-attribute name="viewName" value="post_search"></put-attribute>  
+    </definition> 
+    
+     <definition extends="ebz_template" name="error">   
+       <put-attribute name="body" value="/WEB-INF/jsp/error.jsp"></put-attribute>
+       <put-attribute name="viewName" value="error"></put-attribute>  
+    </definition> 
+    
+     <definition extends="ebz_template" name="report_search">   
+       <put-attribute name="body" value="/WEB-INF/fusion/raptor/report_search.jsp"></put-attribute>
+       <put-attribute name="viewName" value="report_search"></put-attribute>  
+    </definition>  
+    
+    <definition extends="ebz_template" name="collaborate_list">   
+       <put-attribute name="body" value="/WEB-INF/fusion/jsp/collaborateList.jsp"></put-attribute>
+    </definition> 
+    
+    <definition extends="ebz_template" name="jcs_admin">   
+       <put-attribute name="body" value="/WEB-INF/fusion/jsp/jcs_admin.jsp"></put-attribute>
+       <put-attribute name="viewName" value="jcs_admin"></put-attribute> 
+    </definition>
+    
+    <definition extends="ebz_template" name="usage_list">   
+       <put-attribute name="body" value="/WEB-INF/fusion/jsp/usage_list.jsp"></put-attribute>
+       <put-attribute name="viewName" value="usage_list"></put-attribute> 
+    </definition>
+    <!-- 
+    <definition extends="ebz_template_noheader_nofooter" name="collaboration">   
+       <put-attribute name="body" value="/WEB-INF/fusion/jsp/webrtc/collaboration.jsp"></put-attribute>
+    </definition>
+    -->
+    <definition name="collaboration" template="/WEB-INF/fusion/jsp/webrtc/collaboration.jsp"/>
+    
+       
+</tiles-definitions>

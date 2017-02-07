@@ -1,0 +1,100 @@
+<!--
+  ================================================================================
+  eCOMP Portal
+  ================================================================================
+  Copyright (C) 2017 AT&T Intellectual Property
+  ================================================================================
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  ================================================================================
+  -->
+<div class="w-ecomp-main">
+    <div class="w-ecomp-main-container">
+        <div class="applications-page-main" id="contentId">
+            <div id='app-title' class="w-ecomp-main-view-title">Application Onboarding</div>
+            <div class="apps-table">
+                <div class="table-control">
+                    <input class="table-search"
+                           id="app-input-table-search"
+                           type="text"
+                           placeholder="Search by Application Name"
+                           ng-model="searchAppName"/>
+                    <div id="button-openAddNewApp" class="add-button" ng-click="apps.openAddNewAppModal()">Add App</div>
+                </div>
+                <span class="ecomp-spinner" ng-show="apps.isLoadingTable"></span>
+                <div class="c-ecomp-att-abs-table default" ng-hide="apps.isLoadingTable" id="div-app-table">
+                    <table att-table id="app-onboarding-table"
+                           table-data="apps.appsList"
+                           search-string="apps.searchString"
+                           view-per-page="apps.viewPerPageIgnored"
+                           current-page="apps.currentPageIgnored"
+                           total-page="apps.totalPageIgnored">
+                        <thead att-table-row type="header" id="att-table-row">
+                            <tr>
+                                <th id="app-header-delete" att-table-header sortable="false">Delete</th>
+                                <th id="app-header-Thumbnail" att-table-header sortable="false">Thumbnail</th>
+                                <th id="app-header-AppName" att-table-header sortable="true">Application Name</th>
+                                <th id="app-header-Active" att-table-header sortable="false">Active?</th>
+                                <th id="app-header-IntType" att-table-header sortable="false">Integration Type</th>
+                                <th id="app-header-Guest" att-table-header sortable="false">Guest Access</th>
+                                <th id="app-header-URL" att-table-header sortable="false">URL</th>
+                                <th id="app-header-RESTURL" att-table-header sortable="false">REST URL</th>
+                                <th id="app-header-Topic" att-table-header sortable="false">Communication Topic</th>
+                                <th id="app-header-CommKey" att-table-header sortable="false">Communication Key</th>
+                                <th id="app-header-Secret" att-table-header sortable="false">Communication Secret</th>
+                            </tr>
+                        </thead>
+                        <tbody att-table-row type="body"
+                               class="table-body"
+                               row-repeat="rowData in apps.appsList | filter:{name:searchAppName}  | orderBy: 'name'">
+                            <tr>
+                                <td ng-click="apps.deleteApp(rowData)">
+                                    <div id="{{$index}}-app-delete" class="ion-trash-b"></div>
+                                </td>
+                                <td ng-click="apps.openAddNewAppModal(rowData)">
+                                    <img id="{{$index}}-app-imageUrl" class="small-thumbnail" ng-src="{{rowData.imageUrl || apps.emptyImgForPreview}}">
+                                </td>
+                                <td ng-click="apps.openAddNewAppModal(rowData)">
+                                    <div id="{{$index}}-name">{{rowData.name}}</div>
+                                </td>
+                                <td ng-click="apps.openAddNewAppModal(rowData)">
+                                    <div id="{{$index}}-isEnabled">{{(rowData.isEnabled) ? 'yes' : 'no'}}</div>
+                                </td>
+                                <td ng-click="apps.openAddNewAppModal(rowData)">
+                                    <div id="{{$index}}-restrictedApp">{{(rowData.restrictedApp) ? 'link' : 'standard'}}</div>
+                                </td>
+                                <td ng-click="apps.openAddNewAppModal(rowData)">
+                                    <div id="{{$index}}-isOpen">{{(rowData.isOpen) ? 'yes' : 'no'}}</div>
+                                </td>
+                                <td ng-click="apps.openAddNewAppModal(rowData)">
+                                    <div id="{{$index}}-url">{{rowData.url | elipsis: 27}}</div>
+                                </td>
+                                <td ng-click="apps.openAddNewAppModal(rowData)">
+                                    <div id="{{$index}}-restUrl">{{rowData.restUrl | elipsis: 27}}</div>
+                                </td>
+                                <td ng-click="apps.openAddNewAppModal(rowData)">
+                                    <div id="{{$index}}-uebTopicName">{{rowData.uebTopicName}}</div>
+                                </td>
+                                <td ng-click="apps.openAddNewAppModal(rowData)">
+                                    <div id="{{$index}}-uebKey">{{rowData.uebKey}}</div>
+                                </td>
+                                <td ng-click="apps.openAddNewAppModal(rowData)">
+                                    <div id="{{$index}}-uebSecret">{{rowData.uebSecret}}</div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

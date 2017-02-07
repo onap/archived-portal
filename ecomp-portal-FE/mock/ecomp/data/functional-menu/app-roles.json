@@ -1,0 +1,34 @@
+[{
+  "roleId": 6001,
+  "rolename": "Standard User"
+}, {
+  "roleId": 6002,
+  "rolename": "System Administrator"
+}, {
+  "roleId": 6003,
+  "rolename": "Document Library Users"
+}, {
+  "roleId": 6004,
+  "rolename": "Document Library Admin"
+}, {
+  "roleId": 6005,
+  "rolename": "iTracker User"
+}, {
+  "roleId": 6006,
+  "rolename": "test role 1"
+}, {
+  "roleId": 6007,
+  "rolename": "tt"
+}, {
+  "roleId": 6008,
+  "rolename": "Policy Super Admin"
+}, {
+  "roleId": 6009,
+  "rolename": "iTracker Support"
+}, {
+  "roleId": 6010,
+  "rolename": "Policy Super Editor"
+}, {
+  "roleId": 6011,
+  "rolename": "Policy Super Guest"
+}]

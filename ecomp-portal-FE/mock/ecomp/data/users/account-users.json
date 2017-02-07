@@ -1,0 +1,40 @@
+[
+  {
+    "userId": "aw3218",
+    "firstName": "Andy",
+    "lastName": "Weeks",
+    "roles": [
+      {
+        "id": 1,
+        "name": "Standard user"
+      },
+      {
+        "id": 9,
+        "name": "Super standard user"
+      },
+      {
+        "id": 2,
+        "name": "Super duper standard user"
+      }
+    ]
+  },
+  {
+    "userId": "lr3268",
+    "firstName": "Lori",
+    "lastName": "Resnick",
+    "roles": [
+      {
+        "id": 10,
+        "name": "read"
+      },
+      {
+        "id": 91,
+        "name": "write"
+      },
+      {
+        "id": 2,
+        "name": "Super duper standard user"
+      }
+    ]
+  }
+]

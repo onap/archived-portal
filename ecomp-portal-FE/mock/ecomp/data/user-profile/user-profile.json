@@ -1,0 +1,6 @@
+{
+  "userId": "aw3218",
+  "firstName": "Bilbo",
+  "lastName": "Baggins",
+  "roles": ["superAdmin", "admin", "user"]
+}

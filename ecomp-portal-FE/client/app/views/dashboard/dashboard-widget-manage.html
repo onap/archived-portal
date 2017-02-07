@@ -1,0 +1,152 @@
+<!--
+  ================================================================================
+  eCOMP Portal
+  ================================================================================
+  Copyright (C) 2017 AT&T Intellectual Property
+  ================================================================================
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  ================================================================================
+  -->
+<div style="margin-top: 10px; margin-bottom: 10psx;">
+	<h1 class="heading1"></h1>
+</div>
+<br />
+
+<div style="margin-top: 25px;">
+	<div id="title" class="manage-contactUs-home-manageWidgets-title">Manage {{widgetTypeDisplay}} Widgets</div>
+		<div class="widgets-popup-margin">         
+            <div class="get-access-table">
+                <div class="table-control" style="margin:30px;">
+				  	<div class="c-ecomp-att-abs-table" style="height:300px"">
+                    <table att-table id="table-main" 
+                    	table-data="ignoredTableData"
+                        current-page="ignoredCurrentPage">
+                        <thead att-table-row type="header">
+	                        <tr>
+	                            <th id="th-users-1" att-table-header key="title" sortable="true" >Title</th>
+	                            <th id="th-users-2" att-table-header key="href" sortable="true" >URL</th>
+	                            <th ng-show="{{widgetType=='EVENTS'}}" id="th-users-3" att-table-header key="event_date" sortable="true" >Date</th>
+	                            <th ng-show="{{widgetType=='EVENTS'}}" id="th-users-4" att-table-header key="content" sortable="true" >Content</th>
+	                            <th id="th-users-5" att-table-header key="sortOrder" sortable="true" >Order</th>
+	                            <th id="th-users-6" att-table-header key="edit" sortable="false" >Edit</th>
+	                             <th id="th-users-7" att-table-header key="delete" sortable="false" >Delete</th>
+	                        </tr>
+                        </thead>
+                        <!-- Use track-by="UNIQUE KEY HERE" or leave out if no unique keys in data -->
+                        <tbody att-table-row type="body" class="table-body" track-by="$index" row-repeat="rowData in widgetData">
+	                        <tr id="tr-rowData" ng-click="">
+	                            <td att-table-body>
+	                                <div id="widget-td-title" ng-hide="rowData.showEdit" ng-bind="rowData.title"></div>
+	                               <input  type="text" ng-show="rowData.showEdit" ng-model="widgetData[$index].title"/>
+	                            </td>
+	                            <td att-table-body>
+	                                <div id="widget-td-href" ng-hide="rowData.showEdit" ng-bind="rowData.href"></div>
+	                                <input  type="text" ng-show="rowData.showEdit" ng-model="widgetData[$index].href"/>
+	                            </td>
+	                            <td  ng-show="{{widgetType=='EVENTS'}}" att-table-body>
+	                                <div id="widget-td-date" ng-hide="rowData.showEdit" ng-bind="rowData.eventDate"></div>
+	                                <input  type="text" ng-show="rowData.showEdit" ng-model="widgetData[$index].eventDate"/>
+	                            </td>
+	                            <td  ng-show="{{widgetType=='EVENTS'}}" att-table-body>
+	                                <div id="widget-td-content" ng-hide="rowData.showEdit">{{rowData.content | cut:true:20:' ...'}}</div>
+	                                <input  type="text" ng-show="rowData.showEdit" ng-model="widgetData[$index].content"/>
+	                            </td>
+	                            <td att-table-body>
+	                                <div id="widget-td-order" ng-hide="rowData.showEdit" ng-bind="rowData.sortOrder"></div>
+	                                <input  type="text" ng-show="rowData.showEdit" ng-model="widgetData[$index].sortOrder"/>      
+	                            </td>                            
+	                            <td att-table-body>
+                                	<div class="delete-contact-us" ng-hide="rowData.showEdit" ng-click="setEdit($index);">
+                                		<span class="ion-edit"></span>
+                                	</div>
+                                	<span ng-show="rowData.showEdit">
+                                		<a att-button btn-type="primary" ng-click="modify($index);" class="button button--primary" size="small" >Save</a>
+                               		</span>
+	                            </td>
+	                            <td att-table-body>
+                                	<div class="delete-contact-us" ng-click="remove($index);">
+                                		<span class="ion-trash-b"></span>
+                                	</div>
+	                            </td>
+	                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div att-divider-lines></div>
+					<div style="margin-top: 15px; margin-left: -80px;" >
+					<form name = "widgetForm" novalidate>				
+						<div id="addWidgetHeader" class="contact-us-margin">				
+							<h1 style="font-size:18px;">Add</h1>
+							<div class="errMsg">{{errMsg}}</div>
+							<div class="sucessMsg" ng-bind="successMsg"></div>
+						</div>								  
+						<div id="addWidget" class="contact-us-margin">
+							<div>
+								<div>
+									<div class="add-widget-field">
+							           <div id="mots-property-label" class="property-label">Title</div>
+							            <input class="input-text-area" type="text"  ng-model="newWidgetObject.title" name="title" ng-required="true"/>							          
+							        </div>
+							        <div class="add-widget-field">
+							            <div  class="property-label">URL</div>
+							            <input class="input-text-area" type="text"  ng-model="newWidgetObject.href" type="url" size="3" name = "url"  ng-required = "true"/>
+							        </div>
+							        <div class="add-widget-field" >
+							            <div class="property-label">Sort Order</div>
+							            <input class="input-text-area" type="text" ng-model="newWidgetObject.sortOrder"/>
+							        </div>
+						        </div>
+						         <div  class="add-widget-field"  ng-controller="DatePickerController" ng-show="{{widgetType=='EVENTS'}}">
+								    <h4>Event Date</h4>
+								    <div>
+								      <div>
+								        <p class="input-group">
+								          <input type="text" name = "eventDate" datetime="yyyy-MM-dd" class="input-text-area" uib-datepicker-popup="{{format}}" 
+								          		ng-model="newWidgetObject.eventDate" is-open="popup1.opened" datepicker-options="dateOptions" close-text="Close" alt-input-formats="altInputFormats" 
+								           ng-focus="open1()"
+								           ng-required = "widgetType =='EVENTS'" />
+								        </p>
+								      </div>
+									</div>
+								</div>	
+								
+						        <div class="add-contact-us-field-des"  ng-show="{{widgetType=='EVENTS'}}">
+						            <div  class="property-label">Content</div>
+						            <textarea style="margin-top: 0px; margin-bottom: 0px; height: 150px" ng-model="newWidgetObject.content" name="content" ng-required = "widgetType =='EVENTS'">
+						            </textarea>						            
+						        </div>
+					        </div>
+							<div style="height:50px;">
+								        <a style="float:right; margin-top:20px;" att-button btn-type="primary" class="button button--primary" size="small" ng-click="saveNew()">Add New</a>
+					
+							</div>
+							
+							<div att-divider-lines></div>
+					
+						</div>
+					</form>
+					</div>
+				    <div style="height:50px;">
+						<a style="float:right;" att-button btn-type="primary" class="button button--primary" size="small" ng-click="closeDialog()">Close</a>
+					</div>           
+            </div>
+        </div>
+    </div>
+</div>
+	
+<script type="application/javascript">
+    $(document).ready(function(){
+        $(".ngdialog-content").css("width","85%")
+    });
+</script>

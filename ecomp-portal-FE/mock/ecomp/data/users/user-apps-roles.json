@@ -1,0 +1,59 @@
+{
+  "userId": "vt7108",
+  "apps": [
+    {
+      "appName": "Default",
+      "appId": 1,
+      "appRoles": [
+        {
+          "roleName": "Special user of Default",
+          "roleId": 12,
+          "isApplied": false
+        },
+        {
+          "roleName": "Macro user of Default",
+          "roleId": 13,
+          "isApplied": false
+        }
+      ]
+    },
+    {
+      "appName": "SSP",
+      "appId": 2,
+      "appRoles": [
+        {
+          "roleName": "Regular user of SSP",
+          "roleId": 1,
+          "isApplied": false
+        },
+        {
+          "roleName": "Mini user of SSP",
+          "roleId": 2,
+          "isApplied": true
+        }
+      ]
+    },
+    {
+      "appName": "ASDC",
+      "appId": 3,
+      "appRoles": [
+        {
+          "roleName": "Simple user",
+          "roleId": 99,
+          "isApplied": false
+        }
+      ]
+    },
+    {
+      "appName": "Formation",
+      "appId": 309,
+      "appRoles": [
+        {
+          "roleName": "some user role",
+          "roleId": 919,
+          "isApplied": false
+        }
+      ]
+    }
+  ]
+}

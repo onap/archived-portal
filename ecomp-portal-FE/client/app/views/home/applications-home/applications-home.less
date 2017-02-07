@@ -1,0 +1,164 @@
+/*-
+ * ================================================================================
+ * eCOMP Portal
+ * ================================================================================
+ * Copyright (C) 2017 AT&T Intellectual Property
+ * ================================================================================
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * ================================================================================
+ */
+ .w-ecomp-applications-home {
+  .bg_w;
+  position: @page-main-position;
+  top: @page-main-top;
+  left: @page-main-left;
+  right: @page-main-right;
+  bottom: @page-main-bottom;
+  padding-top: @padding-top;
+  overflow-y: @page-main-overflow-y;
+  padding-left: @padding-left-side;
+
+  .go-button {
+    .btn-green;
+    width: 96px;
+    position: absolute;
+    border-radius: 0px;
+  }
+
+  .applications-home-container {
+    .content_justify;
+    position: relative;
+    padding: 15px 0 32px 0;
+    width: 100%;
+
+    .applications-home-title {
+      .a24r;
+      margin: auto;
+      .content_justify;
+    }
+    .portals-list {
+      min-height: 70vh;
+      justify-content: center;
+      flex-flow: row wrap;
+      width: 1170px;
+
+      margin: auto;
+      margin-bottom: 63px;
+
+      .app-gridster-header {
+        background-color: @u;
+      }
+
+      .app-gridster-footer {
+        background-color: @u;
+      }
+
+      .portals-list-item {
+        background-color: @u;
+        border-radius: 2px;
+        box-shadow: 0px -1px 2px 0px rgba(0, 0, 0, 0.1);
+        display: inline-block;
+        width: 360px;
+        height: 300px;
+        background-size: cover;
+        cursor: pointer;
+        margin: 15px;
+        overflow: hidden;
+
+        .portals-item-info {
+          background-color: @u;
+          height: 120px;
+          top: 180px;
+          position: relative;
+          box-shadow: 0px -1px 2px 0px rgba(0, 0, 0, 0.1);
+          padding: 16px;
+
+          .info-title {
+            .a24r;
+            margin-bottom: 4px;
+            
+            text-overflow: ellipsis;
+            overflow: hidden;
+          }
+          .info-description {
+            .c16r;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+          }
+          .info-button {
+            .btn-green;
+            width: 96px;
+            position: absolute;
+            bottom: 16px;
+            left: 16px;
+          }
+
+          &:hover {
+            opacity: .93;
+            z-index: 3;
+          }
+        }
+      }
+    }
+  }
+}
+.w-ecomp-main-error{	  
+  .o14r;
+  position: absolute;
+  width: 100%;
+  line-height: 1.5em;	
+}
+.w-ecomp-main-disclaimer {
+  text-align: center;
+  .o14r;
+  //position: absolute;
+  bottom: -75px;
+  line-height: 1.5em;
+  margin: 0 auto;
+  width:1170px;
+  position: relative;
+
+}
+.build-number {
+  .o12i;
+}
+
+@keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.slide.ng-hide-add, 
+.slide.ng-hide-remove,
+.slide.ng-enter,
+.slide.ng-leave {
+  transition: all 0.5s ease;
+}
+.slide.ng-hide,
+.slide.ng-enter {
+  transform: translate(-100%, 0);
+}
+.slide.ng-enter-active {
+  transform: translate(0, 0);
+}
+.slide.ng-leave {
+  transform: translate(0, 0);
+}
+.slide.ng-leave-active {
+  transform: translate(+100%, 0);
+}

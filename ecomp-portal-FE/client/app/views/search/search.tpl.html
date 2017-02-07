@@ -1,0 +1,82 @@
+<!--
+  ================================================================================
+  eCOMP Portal
+  ================================================================================
+  Copyright (C) 2017 AT&T Intellectual Property
+  ================================================================================
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  ================================================================================
+  -->
+
+<div  class="col-md-12 font-clearview">
+            <div class="form-field form-field__small" >
+                    <input id="mainSearchText" type="text" placeholder="What are you looking for?" class="form-field form-field__small"  style="height:30px;border-radius: 10px;border: 2px solid rgb(250,250,250);" />
+                    <i class="ion-ios-search" id="search-icon" style="position:relative;line-height:10px;top:-30px;right:-250px">&nbsp;</i>
+                    
+                    <div id="mainSearchSnippet" popover="searchSnippet.html"  
+                		aria-label="search Snippet" referby="searchSnippet" att-accessibility-click="13,32" 
+               			 popover-style="" popover-trigger="click" popover-placement="below" >
+					</div>
+            </div>
+            
+</div>
+
+
+
+
+<script type="text/ng-template" id="searchSnippet.html">
+	<div  style="line-height: normal; right: 167px; min-height: 122px; height: auto; width: auto;" ng-controller="searchSnippetCtrl" >
+		<div id="reg-header-snippet">
+			
+			<div tabindex="0" class="reg-profileDetails" id="reg-searchPop-id" >
+					<div id="contentVertical" att-scrollbar="y" class="ng-scope vertical" style="position: relative;">
+					<ul  class="searchUl">
+						<li>
+							<a class="ion-android-apps"></a>
+							<a id="searchItem" ng-click="goToUrl(item)" class="searchLiHeader">Applications:</a>
+						</li>
+						<li ng-repeat='item in items.application'>
+							<a id="searchItem" ng-click="goToUrl(item)" class="searchLiItems">{{item.name}}</a>
+						</li>
+					</ul>
+					
+					<ul  class="searchUl">
+						<li>
+							<a class="ion-android-apps"></a>
+							<a id="searchItem" ng-click="goToUrl(item)" class="searchLiHeader">Functional Menus:</a>
+						</li>
+						<li ng-repeat='item in items.menu'>
+							<a id="searchItem" ng-click="goToUrl(item)" class="searchLiItems">{{item.name}}</a>
+						</li>
+					</ul>
+
+
+					<ul  class="searchUl">
+						<li>
+							<a class="ion-ios-person-outline" style="font-size:16px;"></a>
+							<a id="searchItem" ng-click="goToUrl(item)" class="searchLiHeader">Users:</a>
+						</li>
+						<li ng-repeat='item in items.user'>
+							<a id="searchItem" ng-href="mailto:{{item.target}}" class="searchLiItems">{{item.name}}</a>
+							
+						</li>
+					</ul>
+											
+
+                </div>
+				</div>
+            </div>
+		</div>
+	
+
+</script>

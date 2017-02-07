@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<!--
+  ================================================================================
+  eCOMP Portal
+  ================================================================================
+  Copyright (C) 2017 AT&T Intellectual Property
+  ================================================================================
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  ================================================================================
+  -->
+
+<html>
+<head>
+	<title>DCAE Locations</title>
+ 
+    <link 
+        rel="stylesheet" 
+        href="./lib/leaflet.css"
+    />
+    <script src="./lib/d3.v3.min.js"></script>
+ 
+    <script
+        src= "./lib/leaflet.js" >
+    </script>
+ <style>
+  html,body {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+  }
+
+  #map {
+    height: 100%;
+    width: 50%;
+    position: absolute;
+  }
+  
+  .voronoi {
+    fill-opacity: .3;
+    stroke: black;
+    stroke-width: 2;
+  }
+
+  .cityhull {
+    fill: purple;
+    fill-opacity: .5;
+    stroke: black;
+    stroke-width: 1px;
+  }
+  
+  .point {
+    fill: darkred;
+    stroke: black;
+    stroke-width: 1px;
+  }
+
+  .wards {
+    fill: gray;
+    stroke: gray;
+    stroke-width: 1px;
+   }
+
+     .zip {
+      fill: none;
+      stroke: #CCC;
+      stroke-width: .5px;
+     }
+
+.d3-tip {
+  line-height: 1;
+  font-weight: bold;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  border-radius: 2px;
+}
+
+/* Creates a small triangle extender for the tooltip */
+.d3-tip:after {
+  box-sizing: border-box;
+  display: inline;
+  font-size: 10px;
+  width: 100%;
+  line-height: 1;
+  color: rgba(0, 0, 0, 0.8);
+  content: "\25BC";
+  position: absolute;
+  text-align: center;
+}
+
+/* Style northward tooltips differently */
+.d3-tip.n:after {
+  margin: -1px 0 0 0;
+  top: 100%;
+  left: 0;
+}
+
+cityname.tooltip {   
+  position: absolute;           
+  text-align: center;           
+  padding: 5px;             
+  font: 14px 'Raleway',Helvetica,sans-serif; 
+  color: white;       
+  background-color: rgba(0,0,0,0.7); 
+  border: 0px;      
+  border-radius: 4px;              
+  pointer-events: none;  
+  z-index:1;       
+}
+
+.canvas {
+  vertical-align: middle;
+  background: rgba(255,255,255, 0.2);
+  box-shadow: inset 0 0 3px 0px #CECECE;
+  position: absolute;
+  left: 750px;
+  top: 0px;
+}
+
+.header rect{
+  fill: #0099FF;
+}
+
+.header text{
+  fill: white;
+  font: 10px sans-serif;
+  text-anchor: middle;
+}
+
+.cell rect{
+  fill: #66FFFF;
+}
+
+.cell text{
+  fill: black;
+  font: 10px sans-serif;
+  text-anchor: middle;
+}
+
+table.gridtable {
+  font-family: verdana,arial,sans-serif;
+  font-size:11px;
+  color:#333333;
+  border-width: 1px;
+  border-color: #666666;
+  border-collapse: collapse;
+}
+table.gridtable th {
+  border-width: 1px;
+  padding: 8px;
+  border-style: solid;
+  border-color: #666666;
+  background-color: #dedede;
+}
+table.gridtable td {
+  border-width: 1px;
+  padding: 8px;
+  border-style: solid;
+  border-color: #666666;
+  background-color: #ffffff;
+}
+
+.dot {
+  fill: #c7141a;
+}
+
+.ring {
+  fill: none;
+  stroke: #c7141a;
+}
+
+ #legend {
+    position: absolute;
+    left: 20px;
+    bottom: 20px;
+    width: 250px;
+    height: 50px;
+    background: white;
+    border-radius: 5px;
+    border: 3px double gray;
+    box-shadow: 3px 3px black;
+  }
+    </style>
+</head>
+<body>
+
+    <div id="map" style="width:75%;height:100%;position:absolute;top:2px;"></div>
+    <div  id="cityDetail" style="width:25%;font-family: verdana,arial,sans-serif;
+  font-size:10px;position:absolute;right: 0px">Details for that location</div>
+    <div id="legend"></div>
+
+
+    <!--<script type="text/javascript">-->
+   <!--var req = new XMLHttpRequest();-->
+
+<!--// Feature detection for CORS-->
+<!--if ('withCredentials' in req) {-->
+    <!--req.open('GET', 'http://todo_url:8080/dcae-services?vnfLocation=Southfield,MI', true);-->
+    <!--// Just like regular ol' XHR-->
+    <!--req.onreadystatechange = function() {-->
+        <!--if (req.readyState === 4) {-->
+            <!--if (req.status >= 200 && req.status < 400) {-->
+                <!--// JSON.parse(req.responseText) etc.-->
+            <!--} else {-->
+                <!--// Handle error case-->
+            <!--}-->
+        <!--}-->
+    <!--};-->
+    <!--req.send();-->
+<!--}-->
+  <!--</script>-->
+ 
+	<script type="text/javascript">
+
+
+
+	var greaterthan75_text = "Existing UEB Prod Instances";
+  var greaterthan75_color = "red";
+
+  var lessthan50_75_text = "Initial Message Router Prod Instances";
+  var lessthan50_75_color = "yellow";
+
+  var lessthan50_text = "Existing Atlas Prod Instances";
+  var lessthan50_color = "green";
+
+   var cityname = d3.select('body').append('cityname')
+    .attr('class', 'tooltip')
+    .style('opacity', 0);
+
+  
+
+	    //var CSV_URL = "test1.csv";
+     // var CSV_URL = "customer_utilization2.csv";
+      var CSV_URL = "dcae_locations1.csv";
+        var map = L.map('map').setView([39,-99], 4);
+        mapLink = 
+            '<a href="http://mapbox.com">Mapbox</a>';
+        L.tileLayer(
+            //'http://{s}.tiles.mapbox.com/v3/elijahmeeks.map-azn21pbi/{z}/{x}/{y}.png', {
+            	'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; ' + mapLink + ' Contributors',
+            maxZoom: 18,
+            }).addTo(map);
+				
+	/* Initialize the SVG layer */
+	map._initPathRoot()    
+
+	/* We simply pick up the SVG from the map object */
+	var svg = d3.select("#map").select("svg"),
+	g = svg.append("g");
+	
+  var dispatcher = d3.dispatch('jsonLoad');
+
+   // optional dispatcher
+dispatcher.on('jsonLoad', function(data) {
+    // triggered afer json is loaded (just if you want to do additional stuff here.)
+    console.log(data);
+});
+
+	d3.csv(CSV_URL, function(data) {
+		// alert(data);
+		/* Add a LatLng object to each item in the dataset */
+		data.forEach(function(d) {
+			//console.log(d);
+			d.LatLng = new L.LatLng(d.lat,	
+									d.lon)
+			//alert(d.Latlng);
+		})
+		
+
+		var feature = g.selectAll("circle")
+			.data(data)
+			.enter().append("circle")
+			.attr("id", function(d) {return 'circle_'+removeSpecialCharacters(d.id);} )
+			.style("stroke", "black")  
+			.style("opacity", .6) 
+			.style("fill", function(d) {/*return p.leaf ? "darkred" : "#FFE6E6"*/ if(d!=null) { var perf = d.bandwidth;  if (perf>=50000 && perf <=120000) return lessthan50_75_color; else if (perf> 150001) { console.log("&&&&&&&&&&&&&&&&&&&&" + perf); return greaterthan75_color;}  else return lessthan50_color; } })
+			//.style("fill", "red")
+			.attr("r", 8)
+			
+	.on("mouseover", function(d){ cityname.transition()
+          .style('opacity', 1.0); 
+          cityname.style("visibility", "visible"); 
+
+        if(d.id) {
+          cityname.html(d.id + "<br/>" + d.popup_note) ;
+          var td_id = "#tdaddr_"+ removeSpecialCharacters(d.id);
+          d3.selectAll(td_id).style('background-color', '#9999ff');
+          //console.log(d3.selectAll(td_id));
+        }
+        var target_x = d3.event.target.cx.animVal.value;
+        //console.log("Target_x" + target_x);
+        //console.log(d3.select('#d3MapSVG'));
+        //console.log(this.getCTM() );
+        //console.log(this.getScreenCTM());
+        //cityname.transition().style('left', Number(target_x)+Number(d3.select('#d3MapSVG')[0][0].offsetWidth)+ 'px');
+        cityname.style('left', Number(this.getScreenCTM().e) + 10 + 'px');
+        cityname.style('top', (Number(this.getScreenCTM().f) - 0) + 'px');
+        cityname.style('zIndex', '1');
+
+        }) 
+
+.on("click", function(d) {
+      var city = d.popup_note;
+      console.log(city)
+      // d3.text('../../../portalApi/get_geo_map_api_url', function(error, pref_url) {
+    	  /* ajax call to return api call url*/
+    	  var prefix_url="https://todo_url:8080/dcae-services?vnfLocation=";
+        d3.json(prefix_url+city, function(error, d) {
+          console.log(prefix_url+city);
+    		  d3.selectAll("#cityDetail").text("Total Count: " + d.totalCount + "[" + d.popup_note + "]");
+    	        var out =  "";
+    	          out += "Total Count: " + JSON.stringify(d.totalCount, null,4) + "  [" + city + "]";
+    	         out += "<table class='gridtable'>";
+    	         out += "<tr><th>Service Id</th><th>Service Name</th><th> VNF Type </th> </tr>";
+    	        d.items.forEach(function(item) {
+
+    	        out += "<tr><td>" + 
+    	        item.serviceId +
+    	        "</td><td>" +
+    	        item.typeLink.title +
+    	         "</td><td>" +
+    	         item.vnfType +
+    	         "</td></tr>";
+
+    	        })
+    	    out += "</table>";
+    	        d3.select("#cityDetail").html(out);
+    	      });    	  
+    	  
+    	  
+      // });
+})
+.on("mouseout", function(d){  if(d.id) { var td_id = "#tdaddr_"+ removeSpecialCharacters(d.id);
+        d3.selectAll(td_id).style('background-color', '#ffffff');
+        } 
+        //console.log("mouseout"); 
+        return cityname.style("visibility", "hidden");}  );
+
+		
+		map.on("viewreset", update);
+		update();
+
+		function update() {
+			feature.attr("transform", 
+			function(d) { 
+				return "translate("+ 
+					map.latLngToLayerPoint(d.LatLng).x +","+ 
+					map.latLngToLayerPoint(d.LatLng).y +")";
+				}
+			)
+		}
+	})	
+
+
+
+var callback = function (error, root) {
+         dispatcher.jsonLoad(root);
+        console.log(root);
+    };
+
+
+  function csvJSON(csv){
+  //console.log(csv);
+  
+  //csv1.map(function(csv) { 
+  //console.log(csv);
+ 
+  var lines=csv.split("\n");
+
+  //console.log(lines);
+ 
+  var result = [];
+  //console.log("first line header");
+  //console.log(lines[0]); 
+  var headers=lines[0].split(",");
+  //console.log(headers);
+  //console.log(headers[headers.length-1])
+  //headers.splice(headers.length-1);
+ 
+  for(var i=1;i<lines.length;i++){
+ 
+    var obj = {};
+    var currentline=lines[i].split(",");
+    //console.log(currentline);
+ 
+    for(var j=0;j<headers.length;j++){
+      obj[headers[j]] = currentline[j];
+    } 
+ 
+    result.push(obj);
+    //console.log(result);
+ 
+  }
+  //console.log(JSON.stringify(result));
+  //return result; //JavaScript object
+  jsonData =  result; //JSON
+  //console.log(jsonData)
+
+  //refreshTable(null);
+  return jsonData;
+}
+
+function isString(o) {
+    return typeof o == "string" || (typeof o == "object" && o.constructor === String);
+}
+
+ function hyperTrigger(var1, popup_note, bandwidth) {
+	  var res = var1.split("*");
+    alert(res);
+    //alert(bandwidth);
+	  //parent.hyperTrigger2(res[0],res[1],popup_note, bandwidth);
+  }	
+
+  function removeSpecialCharacters(var1) {
+  return var1.replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, '');
+}	 
+</script>
+<script src="static/visjs/legend_v2.js"></script>
+</body>
+</html>

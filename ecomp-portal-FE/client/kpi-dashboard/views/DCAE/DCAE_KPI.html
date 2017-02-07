@@ -1,0 +1,204 @@
+<!--
+  ================================================================================
+  eCOMP Portal
+  ================================================================================
+  Copyright (C) 2017 AT&T Intellectual Property
+  ================================================================================
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  ================================================================================
+  -->
+<div class="kpi-page-main">
+<!--<button style="float: left; margin-left: 200px; width: 80%" ng-click="gotoKPIState('root.kpidash_ECOMP')">Hello</button>	-->
+<div ng-include="'kpi-dashboard/views/top-level-tabs.html'"></div>
+<div ng-include="'kpi-dashboard/views/sec-level-tabs.html'"></div>
+
+	<div class="DCAE_KPI_class">
+		<div style="float: left; margin-left: 200px; width: 80%">
+			<h4>
+				<b><font color="6633FF">Open DCAE-2016 Metrics &
+						Measurements</font></b>
+			</h4>
+			<div>
+				<div id="dcae_kpi_table_user_stories">
+					<div class="pull-left" style="margin-right: 10px;">
+						<h3>
+							<b><font color="purple">User Stories</font></b>
+						</h3>
+					</div>
+	<!-- 				<div class="pull-left"
+						ng-click="updateUserStory(releases,userStories,progressReadinessList,progressReadinessListIndexMap)"
+						style="vertical-align: bottom; font-size: 30px;">
+						<a href="javascript:void(0)" class="ion-edit"></a>
+					</div> -->
+				</div>
+				<!-- 			<table att-table table-data="tableData" view-per-page="viewPerPage"
+					current-page="currentPage" search-category="searchCategory"
+					search-string="searchString" total-page="totalPage"> -->
+				<table>
+					<thead type="header">
+						<tr class="info">
+							<th>Release</th>
+							<th>User Stories Delivered / In-Progress</th>
+							<th>IST Progress / Readiness</th>
+							<th>ETE Progress / Readiness</th>
+							<th><div style="float: left; vertical-align: bottom;">Key
+									Highlights in Release</div></th>
+						</tr>
+					</thead>
+					<tbody att-table-row type="body">
+						<tr ng-repeat="userStory in userStories | orderBy:'releaseKey'">
+							<td><b><font color="purple">{{userStory.releaseKey}}</font></b></td>
+							<td>{{userStory.delivered}}/{{userStory.inProgress}}
+								({{(userStory.delivered/userStory.inProgress*100)|number:0}}%)</td>
+							<td><font
+								color={{progressReadinessColorMap[userStory.istprogressReadiness]}}>{{progressReadinessMap[userStory.istprogressReadiness]}}</font></td>
+							<td><font
+								color={{progressReadinessColorMap[userStory.e2EProgressReadiness]}}>{{progressReadinessMap[userStory.e2EProgressReadiness]}}</font></td>
+							<td>{{userStory.keyHighlights}}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+	
+			<div id="dcae_kpi_table_lines_of_code">
+				<h3>
+					<b><font color="green">Lines of Code</font></b>
+				</h3>
+				<!-- <table att-table table-data="tableData" view-per-page="viewPerPage" current-page="currentPage" search-category="searchCategory" search-string="searchString" total-page="totalPage">  -->
+				<table>
+					<thead att-table-row type="header">
+						<tr class="info">
+							<th>Total LOC</th>
+							<th ng-repeat="singleloc in sortedLocArray">
+								{{singleloc.category}}</th>
+							<!--                             <th>Delete</th> -->
+						</tr>
+					</thead>
+					<tbody att-table-row type="body">
+						<tr>
+							<td><b><font color="green">{{totalLOC}}</font></b></td>
+							<td ng-repeat="singleloc in sortedLocArray"><b><font
+									color="green">{{singleloc.LOC}}</font></b></td>
+							<!--                        <td><div ng-click="" style="font-size:20px;"><a href="javascript:void(0)" class="icon-trash"></a></div></td> -->
+						</tr>
+					</tbody>
+				</table>
+			</div>
+	
+			<div id="dcae_kpi_table_api">
+				<div>
+					<div class="pull-left" style="margin-right: 10px;">
+						<h3>
+							<b><font color="66CCFF">API</font></b>
+						</h3>
+					</div>
+	<!-- 				<div class="pull-left"
+						ng-click="updateUserApi(userApiTypes,userApis)"
+						style="vertical-align: bottom; font-size: 30px;">
+						<a href="javascript:void(0)" class="ion-edit"></a>
+					</div> -->
+				</div>
+				<!--                     <h3><b><font color="66CCFF">API</font></b></h3>
+	                    <div ng-click="updateUserApi(userApiTypes,userApis)" style="float:right;font-size:20px;"><a href="javascript:void(0)" class="icon-edit"></a></div> -->
+				<!-- <table att-table table-data="tableData" view-per-page="viewPerPage" current-page="currentPage" search-category="searchCategory" search-string="searchString" total-page="totalPage">  -->
+				<table>
+					<thead att-table-row type="header">
+						<tr class="info">
+							<th ng-repeat="userApi in userApis">{{userApi.apiType}}</th>
+						</tr>
+					</thead>
+					<tbody att-table-row type="body">
+						<tr>
+							<td ng-repeat="userApi in userApis"><b><font
+									color="66CCFF">{{userApi.totalApi}}</font></b></td>
+						</tr>
+						<tr>
+							<td ng-repeat="userApi in userApis"><font color="black">{{userApi.comment}}</font></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+	
+			<div id="dcae_kpi_services_supported">
+				<h3>
+					<b><font color="orange">Services Supported</font></b>
+				</h3>
+				<!-- <table att-table table-data="tableData" view-per-page="viewPerPage" current-page="currentPage" search-category="searchCategory" search-string="searchString" total-page="totalPage">  -->
+				<table>
+					<thead att-table-row type="header">
+						<tr class="info">
+							<!--                             <th>Mobility (in 1607)</th>
+	                            <th>To be Migrated</th> -->
+							<th ng-repeat="kpiService in kpiServiceSupported">{{kpiService.serviceType}}</th>
+							<!--                                 <th ng-repeat = "userApi in userApis">{{userApi.apiType}} </th> -->
+						</tr>
+					</thead>
+					<tbody att-table-row type="body">
+						<tr>
+							<!--                                 <td ng-repeat = "userApi in userApis"><b><font color="66CCFF">{{userApi.totalApi}}</font></b></td> -->
+							<td ng-repeat="kpiService in kpiServiceSupported">{{kpiService.totalCount}}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+	
+	
+			<div id="dcae_kpi_dmaap_traffic_stats">
+				<h3>
+					<b><font color="purple">DMaaP Traffic Stats</font></b>
+				</h3>
+				<h6>
+					<font color="purple">DataRouter</font></b>
+				</h6>
+				<!-- <table att-table table-data="tableData" view-per-page="viewPerPage" current-page="currentPage" search-category="searchCategory" search-string="searchString" total-page="totalPage">  -->
+				<table>
+					<thead att-table-row type="header">
+						<tr class="info">
+							<th ng-repeat="trafficStat in kpiTrafficStats">{{trafficStat.title}}</th>
+	
+							<!--                                 <th ng-repeat = "userApi in userApis">{{userApi.apiType}} </th> -->
+						</tr>
+					</thead>
+					<tbody att-table-row type="body">
+						<tr>
+							<!--                                 <td ng-repeat = "userApi in userApis"><b><font color="66CCFF">{{userApi.totalApi}}</font></b></td> -->
+							<td ng-repeat="trafficStat in kpiTrafficStats">{{trafficStat.count}}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+	
+			<div id="dcae_kpi_dmaap_feed_stats">
+				<h3>
+					<b><font color="green">DMaaP Feed Stats</font></b>
+				</h3>
+				<!-- <table att-table table-data="tableData" view-per-page="viewPerPage" current-page="currentPage" search-category="searchCategory" search-string="searchString" total-page="totalPage">  -->
+				<table>
+					<thead att-table-row type="header">
+						<tr class="info">
+							<th ng-repeat="FeedStat in kpiFeedStats">{{FeedStat.title}}</th>
+	
+							<!--                                 <th ng-repeat = "userApi in userApis">{{userApi.apiType}} </th> -->
+						</tr>
+					</thead>
+					<tbody att-table-row type="body">
+						<tr>
+							<!--                                 <td ng-repeat = "userApi in userApis"><b><font color="66CCFF">{{userApi.totalApi}}</font></b></td> -->
+							<td ng-repeat="FeedStat in kpiFeedStats">{{FeedStat.count}}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>

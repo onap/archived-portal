@@ -1,0 +1,42 @@
+<!--
+  ================================================================================
+  eCOMP Portal
+  ================================================================================
+  Copyright (C) 2017 AT&T Intellectual Property
+  ================================================================================
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  ================================================================================
+  -->
+<div class="confirmation-box-container">
+    <div class="confirmation-message-wrap">
+        <div class="confirmation-message" >
+			<div>
+				You do not have access to this application.  
+				See the 
+				<a href="" ng-click="confirmBox.goTo('root.getAccess', {appName: confirmBox.message.headerText})">
+					Get Access page</a> and request access.
+					<br><br>
+					You may check this box if access is pending: 
+				<input type="checkbox" 
+					
+					ng-model="confirmBox.message.pending"
+					ng-change="confirmBox.storeSelection(confirmBox.message)"
+				>
+			</div>
+
+		</div>
+    </div>
+    <div class="dialog-control">
+        <div class="cancel-button" ng-click="confirmBox.closeBox(false)">Close</div>
+    </div>
+</div>

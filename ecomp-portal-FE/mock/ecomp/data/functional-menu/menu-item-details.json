@@ -1,0 +1,12 @@
+{
+    "menuId": 94,
+    "column": 1,
+    "text": "3rd Level App446",
+    "parentMenuId": 37,
+    "url": "http://www.app3b.com",
+    "appid": 16,
+    "roles":
+    [
+        6003, 6005
+    ]
+}
