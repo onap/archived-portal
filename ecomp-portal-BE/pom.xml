@@ -45,16 +45,16 @@
 	</distributionManagement>
 	<repositories>
 		<repository>
-			<!-- Snapshots repository has ECOMP snapshot artifacts -->
-			<id>nexus-snapshots</id>
-			<name>Nexus Maven Central - Snapshots</name>
-			<url>https://ecomp-nexus:8443/repository/maven-snapshots/</url>
+			<!-- Releases repository has ECOMP release artifacts -->
+			<id>ecomp-releases</id>
+			<name>OpenECOMP - Release Repository</name>
+			<url>https://nexus.openecomp.org/content/repositories/releases/</url>
 		</repository>
 		<repository>
-			<!-- Releases repository has ECOMP release artifacts -->
-			<id>nexus</id>
-			<name>Nexus Maven Central - Releases</name>
-			<url>https://ecomp-nexus:8443/repository/maven-releases/</url>
+			<!-- Snapshots repository has ECOMP snapshot artifacts -->
+			<id>ecomp-snapshots</id>
+			<name>OpenECOMP - Snapshot Repository</name>
+			<url>https://nexus.openecomp.org/content/repositories/snapshots/</url>
 		</repository>
 		<repository>
 			<!-- Snapshots repository has ECOMP snapshot artifacts -->
