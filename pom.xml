@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.openecomp.portal</groupId>
+	<artifactId>portal-project</artifactId>
+	<packaging>pom</packaging>
+	<!-- NOTE This value will not be picked from the property tag below, pass it as -Drelease.version="" when doing mvn deploy -->
+	<version>1.0.0</version>
+	<name>Portal (parent)</name>
+	<url>https://wiki/display/EcompPortal</url>
+	<description>ECOMP Portal Open-Source</description>
+	<scm>
+		<connection>scm:git:https://todourl/</connection>
+	</scm>
+
+	<modules>
+		<module>ecomp-portal-FE</module>
+		<module>ecomp-portal-BE</module>
+	</modules>
+
+</project>
