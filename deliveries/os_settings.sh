@@ -1,0 +1,11 @@
+IMGNAME=ep:1610-1
+VERSION=1.0.0
+ETCDIR=etc
+WORKINGDIR=PROJECT
+SDK_DIR=PROJECT/Source/ecomp-portal-core/ecomp-portal-BE/target/ecompportal
+FE_DIR=PROJECT/Source/ecomp-portal-core/ecomp-portal-FE
+SCRIPT_DIR="PROJECT/Source/ecomp-portal-core/ecomp-portal-BE/ecomp-portal-resources/sql scripts"
+SDK_SCRIPT_DIR=PROJECT/Source/ecomp-portal-core/ecomp-sdk/sdk-app/db-scripts
+DBC_SCRIPT_DIR=PROJECT/Source/ST_DBPA/dcae_dmaapbc_webapp/db-scripts
+PORTAL_SDK_DIR=PROJECT/Source/ecomp-portal-core/ecomp-sdk/sdk-app/target/ep-sdk-app-*
+PORTAL_DBC_DIR=PROJECT/Source/ST_DBPA/dcae_dmaapbc_webapp/target/ep-dbc-app
