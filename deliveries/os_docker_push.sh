@@ -1,5 +1,7 @@
 #!/bin/bash
 
+./run.sh
+
 REPO="nexus3.openecomp.org:10003"
 
 APPS="${REPO}/openecomp/portalapps:1.0.0"
