@@ -4,15 +4,23 @@
 
 REPO="nexus3.openecomp.org:10002"
 
-APPS="${REPO}/openecomp/portalapps:1.0.0"
-DB="${REPO}/openecomp/portaldb:1.0.0"
+VERSION="1.0.0"
+LATEST="latest"
 
-# docker login nexus3.openecomp.org:10002
+APPS_VERSION="${REPO}/openecomp/portalapps:${VERSION}"
+DB_VERSION="${REPO}/openecomp/portaldb:${VERSION}"
 
-# tag
-docker tag ep:1610-1 ${APPS}
-docker tag ecompdb:portal ${DB}
+APPS_LATEST="${REPO}/openecomp/portalapps:${LATEST}"
+DB_LATEST="${REPO}/openecomp/portaldb:${LATEST}"
+
+# tag version
+docker tag ep:1610-1 ${APPS_VERSION}
+docker tag ecompdb:portal ${DB_VERSION}
+docker tag ep:1610-1 ${APPS_LATEST}
+docker tag ecompdb:portal ${DB_LATEST}
 
 # push
-docker push ${APPS}
-docker push ${DB}
+docker push ${APPS_VERSION}
+docker push ${DB_VERSION}
+docker push ${APPS_LATEST}
+docker push ${DB_LATEST}
