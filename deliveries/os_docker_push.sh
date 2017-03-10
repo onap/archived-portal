@@ -4,7 +4,8 @@
 
 REPO="nexus3.openecomp.org:10003"
 
-VERSION="1.0.0"
+TIMESTAMP=$(date +%C%y%m%dT%H%M%S)
+VERSION="1.1.0-SNAPSHOT-${TIMESTAMP}"
 LATEST="latest"
 
 APPS_VERSION="${REPO}/openecomp/portalapps:${VERSION}"

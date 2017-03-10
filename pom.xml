@@ -5,7 +5,7 @@
 	<artifactId>portal-project</artifactId>
 	<packaging>pom</packaging>
 	<!-- NOTE This value will not be picked from the property tag below, pass it as -Drelease.version="" when doing mvn deploy -->
-	<version>1.0.0</version>
+	<version>1.1.0-SNAPSHOT</version>
 	<name>Portal (parent)</name>
 	<url>https://wiki/display/EcompPortal</url>
 	<description>ECOMP Portal Open-Source</description>

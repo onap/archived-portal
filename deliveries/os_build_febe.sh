@@ -41,7 +41,7 @@ cd $PROJECTDIR/ecomp-sdk/sdk-app
 
 ${MVN} install
 
-mv target/ep-sdk-app-1.0.0 target/ep-sdk-app
+mv target/ep-sdk-app-1.1.0-SNAPSHOT target/ep-sdk-app
 
 # now install DBC app
 cd $SOURCEDIR
@@ -59,7 +59,7 @@ cd $DBCDIR/dcae_dmaapbc_webapp
 ${MVN} install
 
 cd target
-mv dmaap-bc-app.1.0.0.0 ep-dbc-app
+mv dmaap-bc-app.1.1.0-SNAPSHOT.0 ep-dbc-app
 
 
 # install into docker

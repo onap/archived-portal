@@ -2,9 +2,10 @@
 
 ./run.sh
 
-REPO="nexus3.openecomp.org:10002"
+REPO="nexus3.openecomp.org:10003"
 
-VERSION="1.0.0"
+TIMESTAMP=$(date +%C%y%m%dT%H%M%S)
+VERSION="1.1.0-STAGING-${TIMESTAMP}"
 LATEST="latest"
 
 APPS_VERSION="${REPO}/openecomp/portalapps:${VERSION}"
