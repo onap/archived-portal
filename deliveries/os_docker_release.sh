@@ -2,7 +2,7 @@
 
 ./run.sh
 
-REPO="nexus3.openecomp.org:10002"
+REPO="nexus3.openecomp.org:10003"
 
 VERSION="1.0-STAGING-latest"
 LATEST="latest"
