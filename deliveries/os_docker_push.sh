@@ -4,7 +4,7 @@
 
 REPO="nexus3.openecomp.org:10003"
 
-VERSION="1.0.0"
+VERSION="1.0-SNAPSHOT-latest"
 LATEST="latest"
 
 APPS_VERSION="${REPO}/openecomp/portalapps:${VERSION}"
