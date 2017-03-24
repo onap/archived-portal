@@ -57,6 +57,12 @@
 			<url>https://nexus.openecomp.org/content/repositories/snapshots/</url>
 		</repository>
 		<repository>
+			<!-- Staging repository has ECOMP staging artifacts -->
+			<id>ecomp-staging</id>
+			<name>OpenECOMP - Staging Repository</name>
+			<url>https://nexus.openecomp.org/content/repositories/staging/</url>
+		</repository>
+		<repository>
 			<!-- Snapshots repository has ECOMP snapshot artifacts -->
 			<id>oss-snapshots</id>
 			<name>oss Central - Snapshots</name>
