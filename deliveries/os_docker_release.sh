@@ -2,7 +2,7 @@
 
 ./run.sh
 
-REPO="nexus3.openecomp.org:10003"
+REPO="nexus3.onap.org:10003"
 
 TIMESTAMP=$(date +%C%y%m%dT%H%M%S)
 VERSION="1.1.0-STAGING-${TIMESTAMP}"
