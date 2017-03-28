@@ -2,6 +2,8 @@
 
 source $(dirname $0)/os_settings.sh
 
+export MVN="${MVN} -gs ${GLOBAL_SETTINGS_FILE} -s ${SETTINGS_FILE}"
+
 CURRENTDIR="$(pwd)"
 
 
