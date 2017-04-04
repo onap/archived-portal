@@ -19,6 +19,7 @@
 		<snapshotNexusPath>/content/repositories/snapshots/</snapshotNexusPath>
 		<releaseNexusPath>/content/repositories/releases/</releaseNexusPath>
 		<stagingNexusPath>/content/repositories/staging/</stagingNexusPath>
+		<sitePath>/content/sites/site/org/openecomp/portal/${project.version}</sitePath>
 	</properties>
 	
 	<reporting>
@@ -43,8 +44,8 @@
     </reporting>
 	<distributionManagement>
                <site>
-                 <id>nexus</id>
-                 <url>dav:https://ecomp-nexus:8443/repository/portal-javadoc/${projectversion}</url>
+				   <id>ecomp-site</id>
+				   <url>dav:${nexusproxy}${sitePath}</url>
                </site>
 	</distributionManagement>
 	<repositories>
