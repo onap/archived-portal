@@ -19,7 +19,7 @@
 		<snapshotNexusPath>/content/repositories/snapshots/</snapshotNexusPath>
 		<releaseNexusPath>/content/repositories/releases/</releaseNexusPath>
 		<stagingNexusPath>/content/repositories/staging/</stagingNexusPath>
-		<sitePath>/content/sites/site/org/openecomp/portal/${project.version}</sitePath>
+		<sitePath>/content/sites/site/${project.groupId}/${project.artifactId}/${project.version}</sitePath>
 	</properties>
 	
 	<reporting>
