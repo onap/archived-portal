@@ -55,5 +55,9 @@
 			<name>OpenECOMP - Snapshot Repository</name>
 			<url>${nexusproxy}/${snapshotNexusPath}</url>
 		</snapshotRepository>
+		<site>
+			<id>ecomp-site</id>
+			<url>dav:${nexusproxy}${sitePath}</url>
+		</site>
 	</distributionManagement>
 </project>
