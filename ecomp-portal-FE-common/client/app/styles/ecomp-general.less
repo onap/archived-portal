@@ -1,0 +1,98 @@
+.w-ecomp-main-view-title {
+    //.a24r;
+    .blackText24m;
+    //margin-left: @table-margin-left;
+    width: @table-width;
+    padding-bottom: 15px;
+    //.content_justify;
+    //padding-left: 20px;
+    margin:auto;
+}
+
+.override_background {
+    .bg_portalGray; // 1610
+}
+
+input.table-search {
+  font-style: italic;
+  padding: 7px 10px;
+  width: 440px;
+  display: inline-block;
+  position: relative;
+  margin-bottom: 10px;
+  border-radius: 6px;
+  border: 1px solid @portalLGray;
+  height: 32px;
+  .form-field, .form-field-input-container {
+    width: 440px;
+  }
+  &:focus{
+    border-color: @blue-hover;
+  }
+  &:active{
+    border-color: @portalLGray;
+  }
+}
+
+.add-button {
+  cursor: pointer;
+  width: 120px;
+  float: right;
+
+  .btn-blue;
+
+  line-height: 32px;
+  height: 32px;
+
+  &::before {
+    .ico_add_user;
+    content: '';
+    vertical-align: middle;
+    display: inline-block;
+    margin-right: 10px;
+  }
+}
+
+.edit-button {
+  cursor: pointer;
+  width: 132px;
+  float:right;
+  .btn-blue;
+
+  line-height: 32px;
+  height: 32px;
+
+  &::before {
+  font-family: portalicons;
+    content: '\e6bc';
+    vertical-align: middle;
+    display: inline-block;
+    margin-right: 10px;
+  }
+}
+
+.errors-text {
+  .dGray14r;
+}
+
+.general-errors-text {
+  .dGray14r;
+  color: @err;
+}
+
+.ecomp-table-repeat{
+	margin-bottom:5px;
+}
+
+.table-control-fields{
+	display:inline-flex
+}
+
+.table-control-buttons{
+	float:right;
+}
+
+.table-control-fields input, .table-dropdown{
+	width:400px;
+	margin-right:10px;
+}

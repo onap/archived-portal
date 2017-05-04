@@ -1,0 +1,76 @@
+<!--
+  ================================================================================
+  ECOMP Portal
+  ================================================================================
+  Copyright (C) 2017 AT&T Intellectual Property
+  ================================================================================
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  ================================================================================
+  -->
+<div class="w-ecomp-main">
+	<div class="w-ecomp-main-container">
+		<div class="widget-catalog" id="widget-page-content">
+			<div id="title" class="w-ecomp-main-view-title">
+				<h1 class="heading-page">Widget Catalog</h1>
+			</div>
+			<div class="widget-centerAlignment">
+				<div class="portals-list">
+					<div ng-show="widgetCatalog.isCommError">Failed to
+						communicate with the widget microservice.</div>
+					<div id="widgets" class="information-section"
+						ng-hide="widgetCatalog.isCommError">
+						<div id="news-gridster-container"
+							class="gridster-container override_background">
+							<div class="content" gridster="widgetCatalog.gridsterOpts">
+								<ul>
+									<li gridster-item="widget" ng-repeat="widget in widgetViewData">
+										<div class="box">
+											<div class="box-header">
+												<i style="cursor: move;" class="icon-content-gridguide"></i>
+												<h3>{{ widget.headerText}}</h3>
+												<div class="form-row">
+													<label id="widget-checkbox-label" class="checkbox"> <input type="checkbox"
+														id="{{widget.headerText.split(' ').join('-')}}-checkbox"
+														ng-model="widget.select"
+														ng-change="storeSelection(widget)"> <i
+														class="skin"></i>
+													</label>
+												</div>
+											</div>
+											<div class="box-content">
+												<div dyn-attr="widget.attrb"></div>
+											</div>
+										</div>
+									</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+					<div ng-show="widgetCatalog.isEnlarged">
+						<div id="widgets-button-enlarge-close"
+							class="enlarge-close-button"
+							ng-click="widgetCatalog.isEnlarged=false">X</div>
+						<iframe id="iframe-widget-enlarge-close"
+							ng-src="{{widgetCatalog.enlargeURL | trusted}}"
+							class="enlarge-content"> </iframe>
+					</div>
+				</div>
+			</div>
+
+			<div id="widgets-disclaimer" class="w-ecomp-main-disclaimer">
+				To request access to an application widget, please visit the <a
+					ng-href="getAccess">Get Access</a> page.
+			</div>
+		</div>
+	</div>
+</div>

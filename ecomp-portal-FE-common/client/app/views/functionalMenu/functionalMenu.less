@@ -1,0 +1,60 @@
+.functional-menu-main{
+ .bg_portalWhite;//white for 1702
+   position: @page-main-position;
+  top: @page-main-top;
+  left: @page-main-left;
+  right: @page-main-right;
+  bottom: @page-main-bottom;
+  padding-top: @padding-top;
+  overflow-y: @page-main-overflow-y;
+  padding-left: @padding-left-side;
+
+  .functional-menu-container {
+    // .portalWhite16r;  // font color and size
+    position: relative;
+    padding-right: 0;
+    padding-left: 0;
+    padding-bottom: @container-bottom;
+    background-color:#ffffff;
+    
+    //width: @table-width;
+	.btn-blue{
+		margin-left:0px;
+	}
+	
+    .tree {
+   	  margin:auto;
+      width: @table-width;
+      //margin-left: @table-margin-left;
+      //margin: 0 auto 60px;
+       font-size:16px;
+      
+    }
+    
+    .functional-admin-button-container {
+      padding-top: 10px;
+      width: @table-width;
+      margin:auto;
+    }
+    
+    .error-text {
+      width: @table-width;
+      margin: auto;
+      padding: 20px;
+      left: 20px;
+      font-weight: bold;
+      font-size: 16px;
+      text-align: left;
+      color: @err;
+      background-color: @portalWhite;
+
+      .error-help {
+        color: @portalDGray;
+        font-weight: normal;
+      }
+    }
+    
+    
+  }
+  
+}

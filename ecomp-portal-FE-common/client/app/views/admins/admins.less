@@ -1,0 +1,45 @@
+.w-ecomp-admins-page-main {
+    .bg_portalWhite;//white for 1702
+      position: @page-main-position;
+    top: @page-main-top;
+    left: @page-main-left;
+    right: @page-main-right;
+    bottom: @page-main-bottom;
+    padding-top: @padding-top;
+    overflow-y: @page-main-overflow-y;
+    padding-left: @padding-left-side;
+#input-table-search::-webkit-input-placeholder,
+{
+font-style: italic;
+  color:   #D7D7D7;
+
+}
+	.ecomp-spinner{
+	top: 255px;
+	}
+
+    .admins-home-container {
+        position: relative;
+        padding-right: 0;
+        padding-left: 0;
+        padding-bottom: @container-bottom;
+
+        .admins-table {
+            width: @table-width;
+            //margin-left: @table-margin-left;
+            margin: 0 auto;
+
+            .table-control {
+                .table-dropdown-filter {
+                    width: @table-dropdown-filter-width;
+                    display: @table-dropdown-filter-display;
+                }
+            }
+
+            .table-body {
+                cursor: pointer;
+            }
+        }
+    }
+}
+

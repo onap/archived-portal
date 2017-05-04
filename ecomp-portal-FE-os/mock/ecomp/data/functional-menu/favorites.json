@@ -1,0 +1,27 @@
+[
+  {
+    "menuId": "90",
+    "text": "4th Level App1a R16",
+    "url": "http://google.com"
+  },
+  {
+    "menuId": "99",
+    "text": "3rd Level App1c R200",
+    "url": "https://ecomp.homer.att.com/ecompportal/applicationsHome"
+  },
+  {
+    "menuId": "22",
+    "text": "ECOMP Wasteland",
+    "url": "https://ecomp.homer.att.com/ecompportal/applicationsHome"
+  },
+  {
+    "menuId": "1",
+    "text": "Freaking great menu",
+    "url": "https://ecomp.homer.att.com/ecompportal/applicationsHome"
+  },
+  {
+    "menuId": "91",
+    "text": "Andy's test menu",
+    "url": "https://ecomp.homer.att.com/ecompportal/applicationsHome"
+  }
+]

@@ -1,0 +1,156 @@
+<!--
+  ================================================================================
+  ECOMP Portal
+  ================================================================================
+  Copyright (C) 2017 AT&T Intellectual Property
+  ================================================================================
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  ================================================================================
+  -->
+<div class="widget-details-modal">
+	<div id="'widgets-details-title" class="title">Widget Details</div>
+
+	<div class="widget-properties-main"
+		scroll-top="widgetOnboardingDetails.scrollApi">
+		<form id="widgets-details-form" name="widgetForm" novalidate
+			autocomplete="off">
+
+			<div class="item required">
+				<div class="item-label">Widget Name</div>
+				<input id="widgets-details-input-name" class="input-field"
+					type="text" ng-model="widgetOnboardingDetails.widget.name"
+					ng-change="widgetOnboardingDetails.updateWidgetName()" name="name"
+					ng-pattern="/^[\w -]*$/" maxlength="100"
+					ng-disabled="widgetOnboardingDetails.isEditMode" required />
+
+				<div class="error-container"
+					ng-show="(widgetOnboardingDetails.emptyWidgetName || widgetForm.name.$dirty) && !widgetOnboardingDetails.duplicatedName">
+					<div id="widgets-details-input-name-conflict" class="err-message">Name
+						not available - choose different name</div>
+				</div>
+
+				<div class="error-container"
+					ng-show="(widgetOnboardingDetails.emptyWidgetName || widgetForm.name.$dirty) && widgetOnboardingDetails.duplicatedName">
+					<div ng-messages="widgetForm.name.$error" class="error-container">
+						<small id="widgets-details-input-name-required"
+							class="err-message" ng-message="required">Widget Name is
+							required</small> <small id="widgets-details-input-name-pattern"
+							class="err-message" ng-message="pattern">Widget Name must
+							be letters, numbers, or underscore</small>
+					</div>
+				</div>
+			</div>
+
+
+			<div class="item">
+				<div class="item-label">Widget Description</div>
+				<input id="widgets-details-input-name" class="input-field"
+					type="text" ng-model="widgetOnboardingDetails.widget.desc"
+					name="desc" maxlength="200" />
+			</div>
+
+			<div class="widget-property">
+				<input id="widgets-checkbox-app-is-enabled" type="checkbox"
+					class="checkbox-field"
+					ng-model="widgetOnboardingDetails.widget.allUser" />
+				<div class="property-label checkbox-label">Allow all user
+					access</div>
+			</div>
+
+
+			<div class="item" ng-show="!widgetOnboardingDetails.isEditMode">
+				<div class="item-label">Service Endpoint</div>
+				<div>
+					<select id="widgets-details-input-endpoint-url" name="url"
+						class="input-field"
+						ng-model="widgetOnboardingDetails.widget.serviceURL"
+						ng-options="service as service.option
+						  for service in widgetOnboardingDetails.availableServices">
+						<option value="" selected="selected">Select Microservice
+							Endpoint</option>
+					</select>
+				</div>
+			</div>
+
+			<div class="item required"
+				ng-show="!widgetOnboardingDetails.widget.allUser">
+				<div class="item-label">Application Name</div>
+				<div>
+					<multiple-select id="widget-applications" unique-data="{{$index}}"
+						placeholder="Select Applications"
+						ng-model="widgetOnboardingDetails.availableApps"
+						on-change="widgetOnboardingDetails.appUpdate()" name-attr="name"
+						value-attr="isSelected"> </multiple-select>
+				</div>
+				<div class="error-container"
+					ng-show="widgetOnboardingDetails.appCounter == 0">
+					<div id="widgets-details-input-name-conflict" class="err-message">Please
+						select at least one Application</div>
+				</div>
+			</div>
+
+			<div class="item" ng-show="!widgetOnboardingDetails.widget.allUser">
+				<div ng-show="widgetOnboardingDetails.hasSelectedApp"
+					class="item-label">User Role Name</div>
+				<div ng-repeat="appRoles in widgetOnboardingDetails.availableApps"
+					id="roles-{{appRoles.roles.split(' ').join('-')}}">
+					<div class="item required">
+						<div class="app-item-left" ng-show="appRoles.isSelected">{{appRoles.name}}</div>
+						<div class="app-item-right" ng-show="appRoles.isSelected">
+							<multiple-select id="widget-roles-by-application"
+								unique-data="{{$index}}" placeholder="Select Roles"
+								ng-model="appRoles.roles" name-attr="name"
+								on-change="widgetOnboardingDetails.roleUpdate(appRoles)"
+								value-attr="isSelected"></multiple-select>
+							<div class="error-container" ng-show="!appRoles.roleSelected">
+								<div id="widgets-details-input-name-conflict"
+									class="err-message">Please select at least one role</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="item required">
+				<div class="item-label">Upload Widget</div>
+				<div>
+					<input id="widget-onboarding-details-upload-file"
+						file-model="widgetOnboardingDetails.widget.file" type="file"
+						style="height: 24px;" />
+
+
+					<div class="error-container"
+						ng-show="widgetOnboardingDetails.widget.file == undefined && !widgetOnboardingDetails.isEditMode">
+						<div class="err-message">Please upload your widget (.zip)</div>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+
+	<div class="dialog-control">
+		<span class="ecomp-save-spinner"
+			ng-show="widgetOnboardingDetails.isSaving"></span>
+		<button id="widgets-details-save-button" class="btn btn-alt btn-small"
+			ng-class="{disabled: widgetOnboardingDetails.widget.name == undefined || !widgetOnboardingDetails.duplicatedName 
+			|| (!widgetOnboardingDetails.widget.allUser && widgetOnboardingDetails.appCounter == 0) || (widgetOnboardingDetails.widget.file == undefined && !widgetOnboardingDetails.isEditMode)
+			|| (!widgetOnboardingDetails.widget.allUser && !widgetOnboardingDetails.allRoleSelected) || (widgetOnboardingDetails.widget.saving)}"
+			ng-click="widgetOnboardingDetails.saveChanges()">Save</button>
+		<button id="widgets-details-cancel-button"
+			class="btn btn-alt btn-small" ng-click="closeThisDialog()">Cancel</button>
+
+	</div>
+
+
+
+</div>

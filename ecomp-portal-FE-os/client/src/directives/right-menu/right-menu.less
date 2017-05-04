@@ -1,0 +1,182 @@
+/**
+ * Created by nnaffar on 1/28/16.
+ */
+@sidebar-width: 200px;
+@transition-duration: 0.25s;
+@overlayer-opacity: 0.65;
+
+
+.close-button {
+  //width: @sidebar-width;
+  .blackText24m;
+  //.bg_u;
+  font-size: 3em;
+  line-height: 18px;
+  position: absolute;
+  cursor: pointer;
+  vertical-align: middle;
+  top: @second-level-top;
+  left: 0;
+  -webkit-font-smoothing: antialiased;
+  height: 53px;
+  z-index: 101;
+  //box-shadow: 0 4px 5px rgba(0, 0, 0, .2);
+
+}
+.ecomp-right-sidebar-container{
+  position: absolute;
+  display: block;
+  left: 0;
+  z-index: 100;
+  transition: left @transition-duration;
+  margin-top: -15px;
+
+  .ecomp-right-sidebar-main {
+    //background-color: ;
+    position: absolute;
+    margin-top: 115px;
+    
+    height: 100vh;
+    .bg_portalWhite;//white for 1702
+    box-shadow: 0 4px 5px rgba(0, 0, 0, .2);
+	left: -90px; 
+	width:75px; 
+	padding:0px; 
+	height: 100vh; 
+
+
+
+    .accordion-container{
+      margin-top: 45px;
+    }
+    .portal-accordion-font{
+      font-size: .875rem;
+      color: #666;
+      display: inline-block;
+      font-family: Arial;
+
+    }
+
+    .portal-accordion-active{
+      color: #199DDF !important;
+    }
+
+    .sub-item{
+      .portal-accordion-font;
+      cursor: pointer;
+      height: 37px;
+      line-height: 37px;
+      padding-left: 20px;
+      padding-bottom: 10px;
+      vertical-align: middle;
+      width: 100%;
+    }
+    .sub-item:hover{
+      .portal-accordion-active;
+    }
+
+    .parent-item{
+      .portal-accordion-font;
+      border-bottom: 1px solid #bbb;
+      cursor: pointer;
+      height: 37px;
+      line-height: 37px;
+      padding-bottom: 10px;
+      vertical-align: middle;
+      width: 100%;
+    }
+    .parent-item:hover{
+      .portal-accordion-active;
+    }
+
+  }
+}
+
+.open-userbar {
+  left: 0;
+  transition: left .25s ease-in-out;
+   -moz-transition: left .25s ease-in-out;
+   -webkit-transition: left .25s ease-in-out;
+}
+
+.close-userbar {
+  left: 91px;
+  transition: left .25s ease-in-out;
+   -moz-transition: left .25s ease-in-out;
+   -webkit-transition: left .25s ease-in-out;
+}
+
+.content-overlayed {
+  position: fixed;
+  top: 110px;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: none repeat scroll 0 0 rgb(242, 242, 242);
+  z-index: 9999;
+}
+.fade-animation{
+  opacity: @overlayer-opacity;
+  transition: opacity @transition-duration ease-in-out;
+}
+.fade-animation.ng-hide {
+  opacity:0;
+  transition: opacity @transition-duration ease-in-out;
+}
+
+.activeUserIcon { 
+	transition: all .2s ease-in-out; 
+	display: block; 
+	margin-left: auto; margin-right: auto; height:55px; width:55px; border-radius: 50%;
+	
+}
+.activeUserIcon:hover { transform: scale(1.5); }
+
+.ecomp-right-sidebar-toggle{
+	position: absolute; 
+	top: 400px; 
+	right: 35px;
+}
+.ecomp-right-sidebar-toggle-btn{
+	position:relative;
+}
+.open-userbar-toggle {
+ // right: 0;
+  transition: right .25s ease-in-out;
+   -moz-transition: right .25s ease-in-out;
+   -webkit-transition: right .25s ease-in-out;
+}
+
+.close-userbar-toggle {
+  right: -36px;
+  transition: right .25s ease-in-out;
+   -moz-transition: right .25s ease-in-out;
+   -webkit-transition: right .25s ease-in-out;
+}
+
+.ecomp-right-sidebar-title{
+	font-family: Arial;
+	font-size: 14px;
+	color: #ef6f00;
+	margin-bottom:20px;
+	text-align: center;
+}
+
+.ecomp-right-sidebar-toggle a{
+	transform: rotate(-90deg);
+	z-index:2
+}
+.ecomp-right-sidebar-toggle button{
+	transform: rotate(-90deg);
+	z-index:2;
+	width: 100px!important;
+    height: 30px !important;
+    padding-bottom: 26px !important;
+	}
+	.btn:last-child {
+    margin-right: 6px !important;
+}
+
+.right-menu-button{
+	font-family: Omnes-ECOMP-W02,Arial
+}

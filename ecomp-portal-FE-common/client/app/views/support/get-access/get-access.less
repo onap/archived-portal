@@ -1,0 +1,55 @@
+.w-ecomp-get-access-home {
+    //.bg_portalWhite;//white for 1702
+    .bg_portalGray;  // gray for 1610
+    position: @page-main-position;
+    top: @page-main-top;
+    left: @page-main-left;
+    right: @page-main-right;
+    bottom: @page-main-bottom;
+    padding-top: @padding-top;
+    overflow-y: @page-main-overflow-y;
+    padding-left: @padding-left-side;
+    background-color: white;
+	
+	.w-ecomp-main-view-title{
+	    font-family: Omnes-ECOMP-W02-Light,Arial;
+	}
+
+    .get-access-home-container {
+        position: relative;
+        padding-right: 0;
+        padding-left: 0;
+        padding-bottom: @container-bottom;
+
+        .get-access-general-div {
+            width: @table-width;
+            //margin-left: @table-margin-left;
+            margin:auto;
+        }
+
+        .get-access-table {
+            margin-top: 15px;
+            width: @table-width;
+            //margin-left: @table-margin-left;
+			margin:0 auto;
+            .table-control {
+                .table-dropdown-filter {
+                      width: @table-dropdown-filter-width;
+                      display: @table-dropdown-filter-display;
+                }
+            }
+
+            .table-body {
+                cursor: pointer;
+            }
+        }
+    }
+}
+
+table th, table td {
+    padding: 15px 14px 10px;
+}
+	
+#access-page-currentRole{
+    text-align: center;
+}

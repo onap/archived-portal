@@ -1,0 +1,47 @@
+.users-page-main{
+  .bg_portalWhite;//white for 1702
+ //.bg_portalGray;  // gray for 1610
+  position: @page-main-position;
+  top: @page-main-top;
+  left: @page-main-left;
+  right: @page-main-right;
+  bottom: @page-main-bottom;
+  padding-top: @padding-top;
+  overflow-y: @page-main-overflow-y;
+  padding-left: @padding-left-side;
+#input-table-search::-webkit-input-placeholder,
+{
+font-style: italic;
+  color:    #D7D7D7;
+}
+    .users-table {
+      width: @table-width;
+      //margin-left: @table-margin-left;
+      margin: 0 auto;
+
+    }
+
+  .error-text {
+    width: 1170px;
+    margin: auto;
+    padding: 10px;
+    left: 20px;
+    font-weight: bold;
+    font-size: 16px;
+    text-align: left;
+    color: @err;
+    // background-color: @portalWhite;
+    background-color: @u;
+
+    .error-help {
+      color: @o; //@portalDGray;
+      font-weight: normal;
+    }
+
+    .error-help-bold {
+      color: @o; //@portalDGray;
+      font-weight: bold;
+    }
+
+  }
+}

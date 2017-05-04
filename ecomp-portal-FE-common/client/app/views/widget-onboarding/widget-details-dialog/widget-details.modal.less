@@ -1,0 +1,102 @@
+.widget-details-modal {
+  height: 580px;
+  .title {
+    //.n18r;
+    .dGray18r;  //AT&T Dark Gray
+    border-bottom: @portalDBlue 3px solid;
+  }
+  .widget-input-field{
+  	width:250px;
+  }
+  .widget-properties-main {
+    padding: 16px;
+    height: 460px;
+    overflow-y: auto;
+
+	.widget-property{
+      position: relative;
+      margin-bottom: 18px;
+      .property-label{
+        .dGray14r;
+      }
+      .checkbox-label{
+        display: inline-block;
+        padding-left: 3px;
+      }
+      .checkbox-field{
+        padding: 0;
+        margin: 0;
+        vertical-align: middle;
+        position: relative;
+        top: -1px;
+        height:15px;
+      } 
+      
+    }
+	.widget-upload-field{
+		height:24px;
+      	border: 0px solid #d2d2d2;
+		box-shadow: 0px 0px 2px -2px rgba(0, 0, 0, 0.08) inset;
+		padding-left: 2px;
+      }
+    .item{
+      position: relative;
+      margin-bottom: 18px;
+
+      .input-field{
+        .custom-input-field;
+        width: 100%;
+        &.url{
+          width: 78%;
+          display: inline-block;
+        }
+      }
+
+      .select-field {
+        .custom-select-field;
+      }
+
+      .item-label{
+        .dGray14r;
+      }
+
+      .right-item{
+        position: relative;
+        display: inline-block;
+        width: 48%;
+        float: right;
+      }
+      .left-item{
+        display: inline-block;
+        width: 48%;
+      }
+
+      .url-validation-button{
+        .btn-blue;
+        width: 20%;
+        display: inline-block;
+        float: right;
+      }
+
+      .error-container{
+        position: absolute;
+        width: 280px;
+        display: block;
+        height: 12px;
+        line-height: 12px;
+
+        .err-message{
+          color: @funcRed;
+          font-size: 9px;
+        }
+        .valid-message{
+          color: @funcGreen;
+          font-size: 9px;
+        }
+      }
+
+    }
+
+  }
+
+}

@@ -1,0 +1,113 @@
+<!--
+  ================================================================================
+  ECOMP Portal
+  ================================================================================
+  Copyright (C) 2017 AT&T Intellectual Property
+  ================================================================================
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  ================================================================================
+  -->
+<div class="new-catalog-modal">
+
+	<div class="user-catalog-roles" ng-show="userInfo.dialogState===2">
+	      <div >
+           <div class=display-userApp-Catalog-Roles >{{titleText}}</div>
+	     <div class="title"
+			ng-bind="userInfo.selectedUser.firstName + ' ' + userInfo.selectedUser.lastName + ' (' + userInfo.selectedUser.attuid + ')'"></div>
+     </div>
+		<div class="app-roles-main">
+
+			<div class="app-catalog-roles-list">
+				<div class="app-catalog-item" ng-repeat="app in userInfo.adminApps"
+					ng-if="app.name === userInfo.selectedUser.headerText"
+					id="app-name-{{app.name.split(' ').join('-')}}">
+					<div class="app-catalog-item-left"
+						id="div-app-name-{{app.name.split(' ').join('-')}}">{{app.name
+						| elipsis: 27}}</div>
+					<div class="app-catalog-item-right"
+						id="div-app-name-dropdown-{{app.name.split(' ').join('-')}}"
+						ng-show="!app.isError && !app.isLoading && !app.noChanges && !app.isUpdating && !app.isDoneUpdating && !app.isErrorUpdating"
+						ng-if="userAppRoles.length===0">
+						<multiple-select id="app-roles" unique-data="{{$index}}"
+							placeholder="Select roles" ng-model="app.appRoles"
+							on-change="userInfo.appChanged($index)" name-attr="roleName"
+							value-attr="isApplied"></multiple-select>
+					</div>
+
+					<div class="app-catalog-item-right"
+						id="div-app-name-dropdown-{{app.name.split(' ').join('-')}}"
+						ng-show="!app.isError && !app.isLoading && !app.noChanges && !app.isUpdating && !app.isDoneUpdating && !app.isErrorUpdating"
+						ng-if="userAppRoles.length!==0">
+						<multiple-select2 id="app-roles" unique-data="{{$index}}"
+							placeholder="Select roles" ng-model="app.appRoles"
+							on-change="userInfo.appChanged($index)" name-attr="roleName"
+							value-attr="isApplied"></multiple-select2>
+					</div>
+
+
+					<div id="app-item-no-contact" class="app-catalog-item-right-error"
+						ng-show="app.isError">{{app.errorMessage | elipsis: 35}}</div>
+					<div id="app-item-contacting"
+						class="app-catalog-item-right-contacting" ng-show="app.isLoading">Contacting
+						application...</div>
+					<div id="app-item-no-changes"
+						class="app-catalog-item-right-contacting" ng-show="app.noChanges">No
+						changes</div>
+					<div id="app-item-no-updating"
+						class="app-catalog-item-right-contacting" ng-show="app.isUpdating">Updating
+						application...</div>
+					<div id="app-item-done-updating"
+						class="app-catalog-item-right-contacting"
+						ng-show="app.isDoneUpdating">Finished updating application</div>
+					<div id="app-item-cannot-update"
+						class="app-catalog-item-right-error" ng-show="app.isErrorUpdating">Could
+						not update application...</div>
+					<div id='ecomp-small-spinner' class="ecomp-small-spinner"
+						ng-show="app.isLoading"></div>
+				</div>
+
+				&nbsp;
+
+				<div class="usr-app-roles" ng-show=displyUserAppCatalogRoles>
+					<div class="userApp-Catalog-Roles-label">{{title}}</div>
+					&nbsp;
+					<div class="display-userApp-Catalog-Roles-value"
+						style="height: 150px; width: 200px; overflow-y: auto;">
+						<div ng-repeat="getUserApplicationRole in userAppRoles">
+
+							<div class="userAppCatalog-lbl-value">
+								<span class="userAppCatalog-lbl-value-spn">
+									{{getUserApplicationRole.rolename}}</span>
+							</div>
+
+						</div>
+					</div>
+
+				</div>
+			</div>
+
+			<div class="dialog-control">
+				<span id="ecomp-save-spinner" class="ecomp-save-spinner"
+					ng-show="userInfo.isSaving || userInfo.isGettingAdminApps"></span>
+				<button id="new-user-next-button" class="next-button"
+					ng-click="userInfo.updateUserAppsRoles()"
+					ng-disabled="(!userInfo.anyChanges == true)">Submit</button>
+				<div id="new-user-cancel-button" class="cancel-button"
+					ng-click="closeThisDialog()">Cancel</div>
+			</div>
+
+		</div>
+
+	</div>
+
+</div>

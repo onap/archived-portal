@@ -1,0 +1,177 @@
+/**
+ * Created by nnaffar on 1/28/16.
+ */
+@sidebar-width: 200px;
+@transition-duration: 0.25s;
+@overlayer-opacity: 0.65;
+
+.left-menu-close-button {
+    padding-right: 10px;
+  font-size: 1.25em;
+  line-height: 18px;
+  position: absolute;
+  cursor: pointer;
+  vertical-align: middle;
+  top: @second-level-top;
+  left: 160px;
+  //-webkit-font-smoothing: antialiased;
+  height: 25px;
+  z-index: 101;
+  //box-shadow: 0 4px 5px rgba(0, 0, 0, .2);
+}
+
+@-moz-document url-prefix() {
+    .close-button-arrow {
+        top: 115px; // bug in Firefox
+    }
+}
+.close-button-arrow{
+    left: 180px;
+}
+
+@-moz-document url-prefix() {
+    .open-button-arrow{
+        top: 115px; // bug in Firefox
+    }
+}
+
+.close-button-arrow{
+    left: 180px;
+}
+
+.open-button-arrow{
+    left: 0;
+    padding-left: 13px;
+}
+
+.ecomp-sidebar-container {
+    position: absolute;
+    display: block;
+    left: 0;
+    //width: inherit;
+    z-index: 100;
+    //transition: left @transition-duration;
+    margin-top: -15px;
+
+  .ecomp-sidebar-main {
+      left: 0;
+    //background-color: ;
+    position: absolute;
+    margin-top: 125px;
+    width: @sidebar-width;
+    height: 100vh;
+    // .bg_portalWhite;//white for 1610
+    .bg_portalGray;  // gray for 1702
+    //box-shadow: 0 4px 5px rgba(0, 0, 0, .2);
+
+    //padding-right: 10px;
+    //padding-left: 10px;
+
+    .accordion-container{
+      margin-top: 45px;
+    }
+    .portal-accordion-font{
+      font-size: .875rem;
+      //color: #666;
+      display: inline-block;
+    }
+
+    .portal-accordion-active{
+        color: @funcBlueLink !important;
+        .bg_portalWhite;
+        padding-left: 10px;
+    }
+
+    .sub-item{
+      .portal-accordion-font;
+      cursor: pointer;
+      height: 37px;
+      line-height: 37px;
+      padding-left: 20px;
+      padding-bottom: 10px;
+      vertical-align: middle;
+      width: 100%;
+    }
+    .sub-item:hover{
+      .portal-accordion-active;
+    }
+
+    .parent-item{
+        .portal-accordion-font;
+        border-bottom: 1px solid @portalLGray;
+        cursor: pointer;
+        height: 37px;
+        line-height: 37px;
+        padding-bottom: 10px;
+        vertical-align: middle;
+        width: 100%;
+        padding-left: 10px;
+    }
+
+    .parent-item:hover{
+      .portal-accordion-active;
+    }
+
+  }
+}
+
+.open-sidebar {
+  width: @sidebar-width;
+}
+
+.close-sidebar {
+	display: none;
+    width: 35px !important;
+    span {color: transparent}
+}
+
+.content-overlayed {
+  position: fixed;
+  top: 110px;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: none repeat scroll 0 0 @funcBkgGray;
+  z-index: 9999;
+}
+.fade-animation{
+  opacity: @overlayer-opacity;
+  transition: opacity @transition-duration ease-in-out;
+}
+.fade-animation.ng-hide {
+  opacity:0;
+  transition: opacity @transition-duration ease-in-out;
+}
+
+.left-menu-collapsed {
+	width: 22px !important;
+} 
+
+.leftmenu-arrow-expand{
+	margin-left:200px
+}
+.leftmenu-arrow-collapse{
+	margin-left:0px;
+}
+
+.left-menu-div{
+	margin-top:110px;
+	float: left;
+}
+.b2b-subnav-content > li > a {
+	display: inline-block;
+}
+
+.leftment-items{
+	margin-left:40px;
+}
+
+.menu-icon {
+	line-height: 40px;
+}
+
+.menu-icon-collapse {
+	line-height: 40px;
+	margin-top:10px;
+	margin-bottom:10px;
+}

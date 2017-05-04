@@ -1,0 +1,48 @@
+.widgets-page-main{
+  .bg_portalWhite;//white for 1702
+  position: @page-main-position;
+  top: @page-main-top;
+  left: @page-main-left;
+  right: @page-main-right;
+  bottom: @page-main-bottom;
+  padding-top: @padding-top;
+  overflow-y: @page-main-overflow-y;
+  padding-left: @padding-left-side;
+
+  .widgets-table{
+    width: @table-width;
+    //margin-left: @table-margin-left;
+    //margin: @table-margin;
+	margin:auto;
+    .table-control{
+
+    }
+
+    .delete-widget{
+      .ico_trash_default;
+    }
+  }
+  .error-text {
+    width: 1170px;
+    margin: auto;
+    padding: 20px;
+    left: 20px;
+    font-weight: bold;
+    font-size: 16px;
+    text-align: left;
+    color: @err;
+    background-color: @u; // @portalWhite;
+
+    .error-help {
+      color: @o; // @portalDGray;
+      font-weight: normal;
+    }
+
+    .informational {
+      color: @o; // @portalDGray;
+      font-weight: normal;
+      font-style: italic;
+    }
+  }
+
+  }

@@ -1,0 +1,143 @@
+.form {
+    input, textarea, label , .multiple {
+        .blue14r;
+    }
+    input, textarea , .multiple {
+        &:focus {
+            outline: none;
+            border: 1px solid @portalDBlue;
+        }
+        border: 1px solid @portalDBlue;
+        padding: 8px;
+        &:disabled {
+            border: 1px solid @funcBkgGray;
+            .bg_portalDarkPurple;
+        }
+        &.ng-invalid.ng-touched {
+            border: 1px solid @err;
+            box-shadow: 0 0 2.55px 0.45px rgba(218,31,61,.5);
+            &:focus {
+                border: 1px solid @portalDBlue;
+            }
+        }
+    }
+    input[type=number] {
+        -moz-appearance:textfield;
+    }
+    textarea {
+        min-height: 148px;
+        max-width: @input-max-width;
+    }
+    .flex-group {
+        display: flex;
+        justify-content: space-between;
+    }
+    .form-group {
+        margin: 0 0 18px;
+        position: relative;
+    }
+    .checkbox {
+        label {
+            cursor: pointer;
+        }
+    }
+    label {
+        margin: 0 0 3px;
+        display: block;
+    }
+    .text {
+        width: 100%;
+        display: block;
+    }
+    .short {
+        width: 104px;
+    }
+    .multiple{
+        padding: 0;
+    }
+    .error {
+        color: @portalGreen;
+        background: @err;
+        border-radius: 0 5px 5px 0;
+        font-size: 12px;
+        line-height: 20px;
+        text-align: center;
+        width: 100%;
+        position: absolute;
+        top: 18px;
+        margin-left: 75%;
+        z-index: 100;
+        height: 33px;
+        padding: 8px;
+        box-shadow: 0 0 2.55px 0.45px rgba(218,31,61,.5);
+        &:before {
+            content: '';
+            width: 0;
+            height: 0;
+            position: absolute;
+            left: -9px;
+            top: 7px;
+            border-top: 9px solid transparent;
+            border-bottom: 9px solid transparent;
+            border-right: 9px solid @err;
+        }
+    }
+}
+
+.required:before {
+    color: @funcRed;
+    margin-right: 2px;
+    content:  "* ";
+    position: absolute;
+    top: 28px;
+    left: -10px;
+}
+
+.custom-input-field{
+    padding-left: 6px;
+    padding-top: 0;
+
+    height: 30px;
+    line-height: 30px;
+    width: 100%;
+    border: 1px solid @portalLGray;
+    border-radius: 0;
+    position: relative;
+    padding-bottom: 0px;
+
+}
+.custom-select-field{
+    padding-left: 6px;
+    padding-top: 0;
+
+    height: 30px;
+    line-height: 30px;
+    width: 100%;
+    border: 1px solid @portalLGray;
+    border-radius: 0;
+    position: relative;
+}
+
+.custom-select-wrap{
+    width: 100%;
+    position: relative;
+    display: inline-block;
+    vertical-align: middle;
+}
+.custom-select-wrap::after{
+    content: '';
+    .arrow_down;
+    display: block;
+    position: absolute;
+    top: 12px;
+    right: 10px;
+    z-index: 999;
+}
+
+select{
+    -webkit-appearance:none;
+    -moz-appearance:none;
+    appearance:none;
+    text-indent: 0.01px;
+    text-overflow: '';
+}

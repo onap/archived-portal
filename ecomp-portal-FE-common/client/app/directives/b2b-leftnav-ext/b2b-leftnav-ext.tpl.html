@@ -1,0 +1,62 @@
+<!--
+  ================================================================================
+  ECOMP Portal
+  ================================================================================
+  Copyright (C) 2017 AT&T Intellectual Property
+  ================================================================================
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  ================================================================================
+  -->
+<div class="b2b-nav-menu" id="left-menu-main-div" ng-init="(showmenu = true)" ng-class="{false: 'left-menu-collapsed'}[showmenu]">
+	<div class="b2b-subnav-container" id="left-menu-subnav-container">
+		<ul class="b2b-subnav-content" id="left-menu-subnav-content">
+			<li id="left-menu-subnav-content-li">
+				<div ng-class="{true: 'leftmenu-arrow-expand', false: 'leftmenu-arrow-collapse'}[showmenu]"	id="left-menu-arrow-toggle-div">
+					<a ng-click="toggleDrawer(showmenu);(showmenu = !showmenu) " class="text-right" id="left-menu-arrow-toggle-anchor"> 
+						<i ng-class="{true: 'icon-controls-left', false: 'icon-controls-right'}[showmenu]" id="left-menuf-arrow-toggle-icon">&nbsp;</i>
+					</a>
+				</div>
+			</li>
+			<li ng-repeat="menu in menuData" ui-sref="{{menu.state}}" id="left-menu-li-{{menu.name.split(' ').join('-')}}">
+				<span ng-class="{true: 'menu-icon', false: 'menu-icon-collapse'}[showmenu]"	
+					id="left-menu-span-{{menu.name.split(' ').join('-')}}"> 
+					<span class="{{menu.imageSrc}}" id="icon-image-{{menu.name.split(' ').join('-')}}"></span>
+				</span> 
+				<a ng-class="{expand: isOpen($index)}" ng-if="showmenu" title="{{menu.name}}"
+					aria-label="{{menu.name}}" aria-expanded="{{(idx==$index)?true:false;}}"
+					href="javascript:void(0);" id="parent-item-{{menu.name.split(' ').join('-')}}">
+					{{menu.name}} 
+					<i aria-hidden="true" ng-if="(menu.menuItems.length > 0)"
+						class="b2b-icon-primary-plus-minus"
+						ng-class="idx==$index ? 'icon-primary-expanded' : 'icon-primary-collapsed'"></i>
+				</a>
+				<div role="region" aria-hidden="{{(isOpen($index))?false:true;}}" 
+					id="left-menu-child-div-{{menu.name.split(' ').join('-')}}">
+					<ul ng-class="{expand: idx==$index}"
+						id="left-menu-child-ul-{{menu.name.split(' ').join('-')}}">
+						<li ng-repeat="menuItem in menu.menuItems"
+							ng-click="liveLink($event, $index, $parent.$index)"
+							id="left-menu-child-li-{{menuItem.name.split(' ').join('-')}}-{{menu.name.split(' ').join('-')}}">
+							<a ng-class="{active: itemIdx==$index && navIdx==$parent.$index}"
+								aria-hidden="{{!(idx==$parent.$index)}}" aria-label="{{menuItem.name}}" 
+								title="{{menuItem.name}}" href="{{menuItem.href}}"
+								tabindex="{{(idx==$parent.$index)?0:-1;}}"
+								id="child-item-{{menuItem.name.split(' ').join('-')}}">{{menuItem.name}}
+							</a>
+						</li>
+					</ul>
+				</div>
+			</li>
+		</ul>
+	</div>
+</div>

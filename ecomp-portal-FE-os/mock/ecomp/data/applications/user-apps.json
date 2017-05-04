@@ -1,0 +1,62 @@
+[
+        {
+            "id": 1,
+            "order": 1,
+            "name": "ASDC",
+            "imageUrl": "",
+            "description": "Some explanation text goes here",
+            "url": "http://www.att.com",
+            "alternateUrl": "http://www.att.com",
+            "notes": "Apache Tomcat, often referred to as Tomcat, is an open-source web server and servlet container developed by the Apache Software Foundation (ASF). Tomcat implements several Java EE specifications including Java Servlet, JavaServer Pages (JSP), Java EL, and WebSocket, and provides a \"pure Java\" HTTP web server environment for Java code to run in."
+        },
+        {
+            "id": 2,
+            "order": 2,
+            "name": "AIC Formation",
+            "imageUrl": "assets/images/tmp/portal2.png",
+            "description": "Some explanation text goes here",
+            "url": "http://www.att.com",
+            "alternateUrl": "http://www.att.com",
+            "notes": "AIC Formation description goes here"
+        },
+        {
+            "id": 3,
+            "order": 3,
+            "name": "AIC Self Service Portal",
+            "imageUrl": "assets/images/tmp/portal3.png",
+            "description": "Some explanation text goes here",
+            "url": "",
+            "alternateUrl": "http://www.att.com",
+            "notes": "AIC Self Service description goes here"
+        },
+        {
+            "id": 4,
+            "order": 4,
+            "name": "Portal Name",
+            "imageUrl": "assets/images/tmp/portal1.png",
+            "description": "Some explanation text goes here",
+            "url": "http://www.att.com",
+            "alternateUrl": "http://www.att.com",
+            "notes": "order: 2"
+        },
+        {
+            "id": 5,
+            "order": 5,
+            "name": "Nightskypix",
+            "imageUrl": "http://www.nightskypix.com/Solar/moon/moon12-25-07-web.jpg",
+            "description": "Some explanation text goes here",
+            "url": "http://www.nightskypix.com",
+            "alternateUrl": "http://www.nightskypix.com/Solar/moon/fullmoon.html",
+            "notes": "Andy's old web page"
+        },
+        {
+          "id": 6,
+          "order": 6,
+          "name": "This is an exceptionally long application name because I'm a freakin idiot who makes long application names",
+          "imageUrl": "assets/images/tmp/portal3.png",
+          "description": "Some explanation text goes here",
+          "url": "http://www.att.com",
+          "alternateUrl": "http://www.att.com",
+          "notes": "Description for this fake portal"
+        }
+]

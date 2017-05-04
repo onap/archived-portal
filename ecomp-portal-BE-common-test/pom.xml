@@ -1,0 +1,151 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>org.openecomp.portal</groupId>
+	<artifactId>ecomp-portal-BE-common-test</artifactId>
+	<version>1.1.0-SNAPSHOT</version>
+	<packaging>jar</packaging>
+
+	<name>ecomp-portal-BE-common-test</name>
+	<url>http://maven.apache.org</url>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<!-- <skipTests>true</skipTests> -->
+		<sonar.exclusions>**.js</sonar.exclusions>
+	</properties>
+
+	<build>
+		<sourceDirectory>src/main/java</sourceDirectory>
+		<!-- The war file name carries no version number -->
+		<finalName>${project.artifactId}</finalName>
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.1</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>2.6</version>
+				<configuration>
+					<skipTests>true</skipTests>
+					<failOnMissingWebXml>false</failOnMissingWebXml>
+					<archive>
+						<manifest>
+							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+						</manifest>
+						<manifestEntries>
+							<Build-Number>${project.version}.${build.number}</Build-Number>
+							<Build-Time>${maven.build.timestamp}</Build-Time>
+						</manifestEntries>
+					</archive>
+					<overlays>
+						<!-- specify the order in which these should be applied -->
+						<overlay>
+							<groupId>org.openecomp.portal</groupId>
+							<artifactId>ecompportal-be-common</artifactId>
+						</overlay>
+					</overlays>
+				</configuration>
+			</plugin>
+			<!--
+			<plugin>
+			    <groupId>org.codehaus.mojo</groupId>
+			    <artifactId>license-maven-plugin</artifactId>
+			    <version>1.10</version>
+			    <configuration>
+		              <encoding>UTF-8</encoding>
+			        <licenseName>my_license</licenseName>
+			        <licenseResolver>${project.baseUri}/license</licenseResolver>
+			        <inceptionYear>2017</inceptionYear>
+				<organizationName>AT&amp;T Intellectual Property</organizationName>
+				<projectName>ECOMP Portal</projectName> 
+				<addJavaLicenseAfterPackage>false</addJavaLicenseAfterPackage> 
+     				<processStartTag>================================================================================</processStartTag>
+     				<sectionDelimiter>================================================================================</sectionDelimiter>
+     				<processEndTag>================================================================================</processEndTag> 
+			    	<roots>
+					<root>src/main</root>
+					<root>src/test</root>
+				</roots>
+				<excludes>
+					<exclude>*.png</exclude>
+					<exclude>*.drl</exclude>
+					<exclude>*.gif</exclude>
+					<exclude>*.jpeg</exclude>
+					<exclude>*.jpg</exclude>
+					<exclude>*.bmp</exclude>
+					<exclude>*.ico</exclude>
+					<exclude>*.svg</exclude>
+				</excludes>
+			    </configuration>
+			    <executions>
+			        <execution>
+			            <id>first</id>
+			            <goals>
+			                <goal>update-file-header</goal>
+			            </goals>
+			            <phase>process-sources</phase>
+			        </execution>
+			    </executions>
+			</plugin>
+			-->
+		</plugins>
+
+		<resources>
+			<resource>
+				<directory>src/test/java</directory>
+				<includes>
+					<include>**/*Test*.*</include>
+				</includes>
+			</resource>
+			<resource>
+				<directory>src/main/resources</directory>
+				<includes>
+					<include>**/**</include>
+				</includes>
+			</resource>
+		</resources>
+	</build>
+
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.11</version>
+		</dependency>
+		<dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-api-mockito</artifactId>
+			<version>1.6.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-core</artifactId>
+			<version>1.6.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-module-junit4</artifactId>
+			<version>1.6.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<version>1.8.5</version>
+		</dependency>
+		<dependency>
+			<groupId>org.openecomp.portal</groupId>
+			<artifactId>ecompportal-be-common</artifactId>
+			<version>${project.version}</version>
+			<type>jar</type>
+			<classifier>classes</classifier>
+		</dependency>
+	</dependencies>
+
+</project>

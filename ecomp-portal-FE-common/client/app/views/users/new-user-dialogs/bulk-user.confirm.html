@@ -1,0 +1,83 @@
+<!--
+  ================================================================================
+  ECOMP Portal
+  ================================================================================
+  Copyright (C) 2017 AT&T Intellectual Property
+  ================================================================================
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  ================================================================================
+  -->
+<div class="bulk-user-modal">
+	<div class="title">Bulk User Upload Confirmation</div>
+		<div class="main">
+
+			<!-- progress indicator -->
+			<div class="upload-instructions"
+				ng-show="isProcessing">
+				{{progressMsg}}
+				<br>
+				<br>
+				<span class="ecomp-spinner"></span>
+			</div>
+
+			<div ng-hide="isProcessing">
+				<div class="upload-instructions">
+				Click OK to upload the valid requests. 
+				Invalid requests will be ignored.</div>
+				<div class="c-ecomp-portal-abs-table default"
+					style="height: 250px !important">
+					<table b2b-table table-data="uploadFile"
+						search-string="bulkUser.searchString"
+						view-per-page="bulkUser.viewPerPageIgnored"
+						current-page="bulkUser.currentPageIgnored"
+						total-page="bulkUser.totalPageIgnored">
+						<thead b2b-table-row type="header">
+							<tr>
+								<th id="th-line" b2b-table-header sortable="false">Line</th>
+								<th id="th-orgUserId" b2b-table-header sortable="false">Org User ID
+									</th>
+								<th id="th-approle" b2b-table-header sortable="false">App
+									Role</th>
+								<th id="th-status" b2b-table-header sortable="false">Status</th>
+							</tr>
+						</thead>
+						<!-- Use track-by="UNIQUE KEY HERE" or leave out if no unique keys in data -->
+						<tbody b2b-table-row type="body" class="table-body"
+							row-repeat="rowData in uploadFile">
+							<tr id="tr-rowData">
+								<td class="td-first" b2b-table-body>
+									<div ng-bind="rowData.line"></div>
+								</td>
+								<td b2b-table-body>
+									<div ng-bind="rowData.orgUserId"></div>
+								</td>
+								<td b2b-table-body>
+									<div ng-bind="rowData.role"></div>
+								</td>
+								<td b2b-table-body>
+									<div ng-bind="rowData.status"></div>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+
+			</div>
+			<div class="dialog-control">		
+					<button id="bulk-user-ok-button" class="btn btn-alt btn-small" ng-class="{disabled: isValidating}"
+					ng-click="updateDB()">Ok</button>
+					<button id="bulk-user-cancel-button" class="btn btn-alt btn-small" ng-click="cancelUpload()">Cancel</button>
+					
+			</div>
+		</div>
+</div>

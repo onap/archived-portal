@@ -1,0 +1,76 @@
+<div class="w-ecomp-main">
+	<div class="w-ecomp-main-container">
+		<div class="account-onboarding" id="page-content">
+			<div id="account-onboarding-title" class="w-ecomp-main-view-title">Account
+				Onboarding</div>
+			<div class="account-table">
+				<div class="table-control">
+
+					<div class="table-control-buttons">
+						<button class="btn btn-alt btn-small"
+							id="account-onboarding-button-add"
+							ng-click="accountOnboarding.openAddNewAccountModal()">
+							<i class="icon-people-userbookmark" aria-hidden="true"></i>&nbsp;Add
+							Account
+						</button>
+					</div>
+
+
+					<div>
+						<div class="c-ecomp-b2b-abs-table default">
+							<table b2b-table table-data="serviceList"
+								view-per-page="accountOnboardingviewPerPageIgnored"
+								current-page="accountOnboarding.currentPageIgnored"
+								total-page="accountOnboarding.totalPageIgnored">
+								<thead b2b-table-row type="header">
+									<tr>
+										<th id="account-catalog-th-header-name"
+											ng-repeat="header in accountOnboarding.accoutTableHeaders"
+											b2b-table-header key="{{header.value}}"
+											sortable="{{header.isSortable}}">{{header.name}}</th>
+
+										<th id="account-catalog-th-header-endpoints" b2b-table-header
+											key="endpoints" sortable="false">Endpoints</th>
+
+										<th id="account-catalog-th-header-delete" b2b-table-header
+											sortable="false">Delete</th>
+									</tr>
+								</thead>
+								<tbody b2b-table-row type="body" class="table-body"
+									row-repeat="rowData in accountList">
+
+									<tr>
+										<td b2b-table-body
+											ng-repeat="header in accountOnboarding.accoutTableHeaders"
+											ng-click="accountOnboarding.openAddNewAccountModal(rowData)">
+											<div id="account-catalog-name-{{rowData.id}}"
+												ng-bind="rowData[header.value]"></div>
+										</td>
+
+										<td b2b-table-body
+											ng-click="accountOnboarding.openAddNewAccountModal(rowData)">
+											<div ng-show="rowData.endpoints.length > 0">
+												<div ng-repeat="row in rowData.endpoints">
+													<div id="account-catalog-account-endpoint"
+														ng-bind="row.name"></div>
+												</div>
+											</div>
+											<div ng-hide="rowData.endpoints.length > 0">All
+												endpoints</div>
+										</td>
+
+										<td b2b-table-body>
+											<div id="account-onboarding-div-delete-{{$index}}"
+												class="delete-account"
+												ng-click="accountOnboarding.deleteAccount(rowData)"></div>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

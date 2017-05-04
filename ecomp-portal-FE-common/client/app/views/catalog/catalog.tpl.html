@@ -1,0 +1,90 @@
+<!--
+  ================================================================================
+  ECOMP Portal
+  ================================================================================
+  Copyright (C) 2017 AT&T Intellectual Property
+  ================================================================================
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  ================================================================================
+  -->
+<div class="w-ecomp-app-catalog">
+	<div class="app-catalog-container" id="page-content">
+	        <div id="title" class="w-ecomp-main-view-title">
+			<h1 class="heading-page">Application Catalog</h1>
+		</div>
+		<div class="app-catalog-list">
+			<div class="simulateCatGridHeader">
+				<span class="simulateCatGridHeaderDetails"> Click the check
+					boxes below to choose which applications are shown on the <a
+					href="applicationsHome">home page</a>.
+				</span> <br> <br> <label id="label-all"
+					class="simulateCatGridHeaderRadio"> Filter: <input
+					id="radio-button-all" type="radio" ng-model="radioValue"
+					value="All"> All
+				</label> <label id="label-accessible" class="simulateCatGridHeaderRadio">
+					<input id="radio-button-accessible" type="radio"
+					ng-model="radioValue" value="Accessible"> Accessible
+				</label> <label id="label-homepage" class="simulateCatGridHeaderRadio">
+					<input id="radio-button-homepage" type="radio"
+					ng-model="radioValue" value="Selected"> On Home Page
+				</label>
+
+			</div>
+			<div class="appCatalogue-boarder" >
+				<div gridster="catalog.gridsterOpts">	
+					<ul>	
+						<li gridster-item="item" ng-repeat="item in appCatalog"
+							ng-if="(item.select && radioValue=='Selected') || (item.access && radioValue=='Accessible') || (radioValue == 'All')">
+							<div class="gridster-box" style="{{!item.access?' color:lightgray !important':''}}">
+								<div class="gridster-box-header"
+									ng-show="(item.select && radioValue=='Selected') || (item.access && radioValue=='Accessible') || (radioValue == 'All')">
+									<i class="icon-content-gridguide"></i>
+									<h3 style="cursor: context-menu">{{item.headerText |
+										elipsis: 13}}</h3>
+								            <div class="form-row" ng-show="item.access || isAdminPortalAdmin">
+								                <label class="checkbox">
+								                    <input type="checkbox" ng-model="item.select" ng-change="catalog.storeSelection(item)">
+								                    <i class="skin"></i> 
+								                </label> 
+								                <i ng-show="item.pending" class="icon-tickets-contested"></i>							                      								                
+									</div>
+								</div>
+								<div class="gridster-box-content"
+									ng-style="{'cursor':'pointer',
+										'background-image': 'url('+(item.imageLink)+')',
+										'order': item.order, 
+										'background-color':'white',
+										'background-repeat': 'no-repeat',
+										'background-size': '170px 130px'}"
+									ng-click="catalog.openAddRoleModal(item)"
+									ng-hide="users.isLoadingTable && !users.getAppCatalogIsDone"
+									>
+								</div>
+							</div>
+						</li>
+					</ul>
+				</div>
+			</div>
+			
+			<br>
+
+			<div style="text-align: right;">
+				To request access to an application, please visit the <a
+					ng-href="getAccess">Get Access</a> page.
+			</div>
+
+			<br>
+		</div>
+
+	</div>
+</div>

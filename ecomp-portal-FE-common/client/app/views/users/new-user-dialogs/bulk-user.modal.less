@@ -1,0 +1,60 @@
+.bulk-user-modal {
+	height: 430px;
+
+	.title {
+		.dGray18r;  //AT&T Dark Gray
+		border-bottom: @blue-active 3px solid;
+	}
+	
+	.main {
+		margin: 16px;
+    
+		.upload-instructions {
+			.dGray14r;
+		}
+		
+		// http://stackoverflow.com/questions/572768/styling-an-input-type-file-button
+
+		.file-label {
+			border: 1px solid #ffffff;
+			border-radius: 6px;
+			margin-top: 4px;
+			margin-bottom: 4px;
+			margin-left: 0px;
+			margin-right: 8px;
+			color: #ffffff;
+			background: #067ab4;
+			display: inline-block;
+			text-align: center;
+			font-family: Omnes-ECOMP-W02-Medium,Arial;
+			font-size: 14px;
+			height: 29px;
+			line-height: 29px;
+			width: 90px;
+
+			input[type="file"] {
+				// Hide the browser's control
+				display: none;
+			}
+		
+		}
+
+		.file-label:hover {
+			background: #009fdb;
+		}
+		
+		.file-label:active {
+			background: #009fdb;
+		}
+		
+		.file-label:invalid+span {
+			color: #ffffff;
+		}
+		
+		.file-label:valid+span {
+			color: #ffffff;
+		}
+
+	}
+    
+}

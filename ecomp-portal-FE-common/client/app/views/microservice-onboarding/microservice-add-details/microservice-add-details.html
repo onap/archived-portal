@@ -1,0 +1,205 @@
+<!--
+  ================================================================================
+  ECOMP Portal
+  ================================================================================
+  Copyright (C) 2017 AT&T Intellectual Property
+  ================================================================================
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  ================================================================================
+  -->
+<div class="microservice-add-details-model">
+	<div id="microservice-add-details-title" class="title">microservice Details</div>
+
+	<div id="microservices" class="microservice-scrolling-table">
+		<div class="microservice-properties-main"
+			scroll-top="microserviceAddDetails.scrollApi">
+			<form id="microservices-details-form" name="serviceForm" novalidate
+				autocomplete="off">
+				<div class="item required">
+					<div class="item-label">microservice Name</div>
+					<input id="microservice-details-input-name" class="table-search-field"
+						type="text" name="name" ng-pattern="/^[\w -]*$/" maxlength="100"
+						ng-model="microserviceAddDetails.service.name"
+						ng-change="microserviceAddDetails.updateServiceName()"
+						ng-disabled="microserviceAddDetails.isEditMode" required />
+
+					<div class="error-container"
+						ng-show="(microserviceAddDetails.emptyServiceName || serviceForm.name.$dirty)">
+						<div ng-messages="serviceForm.name.$error" class="error-container">
+							<small id="microservices-details-input-name-required"
+								class="err-message" ng-message="required">Microservice
+								Name is required</small> <small
+								id="microservices-details-input-name-pattern"
+								class="err-message" ng-message="pattern">Microservice
+								Name must be letters, numbers, or underscore</small>
+						</div>
+					</div>
+
+					<div class="error-container"
+						ng-show="microserviceAddDetails.isEditMode == false && microserviceAddDetails.dupliateName == true">
+						<small id="microservices-details-input-name-dupliated"
+							class="err-message">Name not available - choose different
+							name </small>
+					</div>
+				</div>
+
+				<div class="item required">
+					<div class="item-label">microservice Description</div>
+					<textarea b2b-reset b2b-reset-textarea id="widgets-details-input-desc"
+						name="desc" ng-model="microserviceAddDetails.service.desc"
+						ng-change="microserviceAddDetails.updateDesc()"></textarea>
+					<div class="error-container"
+						ng-show="(microserviceAddDetails.emptyServiceDesc 
+					|| (serviceForm.desc.$dirty && microserviceAddDetails.service.desc == ''))">
+						<small id="microservices-details-input-desc-required"
+							class="err-message">Microservice Description is required</small>
+					</div>
+				</div>
+
+
+
+				<div class="item"
+					ng-show="microserviceAddDetails.isEditMode && microserviceAddDetails.availableWidgets.length > 0">
+					<div class="item-label">Client Widgets</div>
+					<div ng-repeat="widget in microserviceAddDetails.availableWidgets">{{widget.name}}</div>
+				</div>
+
+				<div class="item required">
+					<div class="item-label">Application Name</div>
+					<div class="service-select">					
+						<div class="table-dropdown">
+							<select id="microservice-details-input-app" name="app" b2b-dropdown placeholder-text="Select Application" ng-model="microserviceAddDetails.service.application.name" ng-change="microserviceAddDetails.updateApp()">
+				            	<option b2b-dropdown-list option-repeat="d in microserviceAddDetails.availableApps" value="{{d.name}}">{{d.name}}</option>
+				            </select>
+						</div>
+					</div>
+
+					<div class="error-container"
+						ng-show="(microserviceAddDetails.emptyServiceApp 
+					|| (serviceForm.app.$dirty && microserviceAddDetails.service.application == null))">
+						<small id="microservices-details-input-url-required"
+							class="err-message">Please select microservice
+							Application</small>
+					</div>
+				</div>
+
+				<div class="item required">
+					<div class="item-label">microservice Endpoint URL</div>
+					<input id="microservice-details-input-endpoint-url"
+						class="table-search-field" ng-model="microserviceAddDetails.service.url"
+						ng-change="microserviceAddDetails.updateURL()" type="text"
+						name="url" maxlength="200" />
+
+					<div class="error-container"
+						ng-show="(microserviceAddDetails.emptyServiceURL 
+					|| (serviceForm.url.$dirty && microserviceAddDetails.service.url == ''))">
+						<small id="microservices-details-input-url-required"
+							class="err-message">Microservice Endpoint URL is required</small>
+					</div>
+				</div>
+
+				<div class="item required">
+					<div class="item-label">Security Type</div>
+					<div class="service-select">					
+						<div class="table-dropdown">
+							<select id="microservice-details-input-security-type" name="microservice-details-input-security-type" b2b-dropdown placeholder-text="Select Application" ng-model="microserviceAddDetails.service.security.name" ng-change="microserviceAddDetails.updateApp()">
+				            	<option b2b-dropdown-list option-repeat="d in microserviceAddDetails.availableSecurityTypes" value="{{d.name}}">{{d.name}}</option>				            	
+				            </select>
+						</div>
+					</div>				
+				</div>
+
+				<div class="item"
+					ng-show="microserviceAddDetails.service.security.id == 1">
+					<div class="item-label">Username</div>
+					<input id="microservice-details-input-username" class="table-search-field"
+						type="text" name="username" maxlength="100"
+						ng-model="microserviceAddDetails.service.username" />
+				</div>
+
+				<div class="item"
+					ng-show="microserviceAddDetails.service.security.id == 1">
+					<div class="item-label">Password</div>
+					<input id="microservice-details-input-password" class="table-search-field"
+						type="password" name="password" maxlength="100"
+						ng-model="microserviceAddDetails.service.password" />
+				</div>
+
+
+				<div class="item" ng-show="microserviceAddDetails.isEditMode">
+					<div class="left-test-item">
+						<div class="item-label">Test Microservice</div>
+					</div>
+					<div class="right-test-item">
+						<div id="microservice-details-test-button" class="test-button"
+							ng-click="microserviceAddDetails.testServiceURL()">Test</div>
+					</div>
+				</div>
+
+				<div class="item" ng-show="microserviceAddDetails.isEditMode">
+					<div class="item-label">JSON output</div>
+					<textarea id="microservice-details-input-json" class="json-field"
+						name="json"></textarea>
+				</div>
+
+				<div class="add-para-item">
+					<div class="item-label add-label-left">Add User Parameter</div>
+					<div class="icon-primary-accordion-plus"
+						ng-click="microserviceAddDetails.addParameter()"></div>
+				</div>
+				<div class="item">
+					<div class="para-label-item-left"
+						ng-show="microserviceAddDetails.service.parameterList.length > 0">
+						Parameter Key</div>
+					<div class="para-label-item-right"
+						ng-show="microserviceAddDetails.service.parameterList.length > 0">
+						Parameter Default Value</div>
+
+					<div id="microservice-details-user-paramters"
+						ng-repeat="parameter in microserviceAddDetails.service.parameterList">
+
+						<div class="para-item-left">
+							<input id="microservice-details-input-user-parameter-key"
+								class="table-search-field" type="text" name="param-key" maxlength="200"
+								ng-model="parameter.para_key" />
+						</div>
+						<div class="para-item-middle">
+							<input id="microservice-details-input-user-parameter-value"
+								class="table-search-field" type="text" name="param-value"
+								maxlength="200" ng-model="parameter.para_value" />
+						</div>
+
+						<div class="icon-primary-accordion-minus para-item-right"
+							ng-click="microserviceAddDetails.removeParamItem(parameter)"></div>
+					</div>
+
+					<div class="microservice-property">
+						<input id="microservices-checkbox-app-is-enabled" type="checkbox"
+							class="checkbox-field"
+							ng-model="microserviceAddDetails.service.active" />
+						<div class="property-label checkbox-label">Active</div>
+					</div>
+					
+				</div>
+					
+				<div id="microservice-scroll-end"></div>
+				<div class="dialog-control">
+					<button class="btn btn-alt btn-small" id="microservice-details-save-button" ng-click="microserviceAddDetails.saveChanges()">Save</button>				
+					<button class="btn btn-alt btn-small" id="microservice-details-close-button" ng-click="microserviceAddDetails.closeThisDialog()">Close</button>	
+				</div>
+			</form>
+		</div>
+
+
+	</div>
+</div>

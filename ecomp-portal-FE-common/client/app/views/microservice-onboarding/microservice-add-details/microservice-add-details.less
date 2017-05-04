@@ -1,0 +1,234 @@
+.microservice-add-details-model{
+	height: 550px;
+	overflow-y: auto;
+	.title {
+		.dGray18r;  //AT&T Dark Gray
+		border-bottom: @blue-active 3px solid;
+	}
+	.microservice-details-title {
+	    color: #191919;
+	    font-family: "Omnes-ECOMP-W02", Arial;;
+	    font-size: 24px;
+	    padding-bottom: 15px;
+	    padding-top:30px;
+	    margin-left: 25px;
+	}
+	.microservice-properties-main {
+	    padding-top: 20px;
+	    padding-left: 20px;
+	    padding-right: 20px;
+	    margin-bottom: 50px;
+	    
+	    height: 100%;
+	    width:100%;
+	    
+	    .microservice-property{
+	      margin-top: 10px;
+	      position: relative;
+	      .property-label{
+	        .dGray14r;
+	      }
+	      .checkbox-label{
+	        display: inline-block;
+	        padding-left: 3px;
+	      }
+	      .checkbox-field{
+	        padding: 0;
+	        margin: 0;
+	        vertical-align: middle;
+	        position: relative;
+	        top: -1px;
+	      } 
+	    }
+		.add-para-item{
+			position: relative;
+	        .add-label-left{
+	  	  	  line-height: 25px;
+	          height: 30px;
+	          vertical-align: middle;
+	          display:inline-block;
+	         
+	          margin-right: 10px;
+	          background: @portalWhite;
+			  .dGray14r;
+	  	   }
+	  	   .add-label-right{
+	  	   	  height: 14px;
+	  	   	  width: 14px;
+	          display:inline-block;
+	  	   }
+		}
+		.item{
+	      position: relative;
+	      margin-bottom: 15px;
+	      width:400px;
+	      .service-select{
+	 		  select{
+	 		  	cursor: pointer;
+			    position: relative;
+			    border: 1px solid #5a5a5a;
+			    white-space: nowrap;
+			    overflow: hidden;
+			    text-overflow: ellipsis;
+			    line-height: 15px;
+			    height: 32px;
+			    padding-left: 10px;
+			    padding-right: 10px;
+		      	border-radius: 0px;
+	 		  }
+	          display:inline-block;
+	          width: 100%;
+    	  }
+    	  .error-container{
+	        position: absolute;
+	        width: 280px;
+	        display: block;
+	        height: 12px;
+	        line-height: 12px;
+	
+	        .err-message{
+	          color: @funcRed;
+	          font-size: 9px;
+	        }
+	        .valid-message{
+	          color: @funcGreen;
+	          font-size: 9px;
+	        }
+	      }
+	      .auth-item-left{
+	          padding-top: 0;
+	          line-height: 30px;
+	          height: 30px;
+	          vertical-align: middle;
+	          display:inline-block;
+	          width: 15%;
+	          //border-radius: 2px;
+	          //border: 1px solid @portalLGray;
+	          margin-right: 10px;
+	          background: @portalWhite;
+	          white-space: nowrap;
+			  .dGray14r;
+       	  }
+          .auth-item-right{
+	          display:inline-block;
+	          width: 45%;
+	          border-radius: 2px;
+	          border: 1px solid @portalLGray;
+	          background: @portalWhite;
+	          vertical-align: middle;
+          }
+          .para-label-item-left{
+	          line-height: 30px;
+	          height: 30px;
+	          vertical-align: middle;
+	          display:inline-block;
+	          width: 45%;
+	          margin-right: 10px;
+	          background: @portalWhite;
+	          white-space: nowrap;
+			  .dGray14r;
+       	  }
+          .para-label-item-right{
+	          line-height: 30px;
+	          height: 30px;
+	          display:inline-block;
+	          width: 45%;
+	          background: @portalWhite;
+	          vertical-align: middle;
+	          white-space: nowrap;
+	          .dGray14r;
+          }
+           .para-item-left{
+	          line-height: 30px;
+	          height: 36px;
+	          margin:3px;
+	          vertical-align: middle;
+	          display:inline-block;
+	          width: 43%;
+	          border-radius: 2px;
+	          border: 1px solid @portalLGray;
+	          margin-right: 10px;
+	          background: @portalWhite;
+	          white-space: nowrap;
+			  .dGray14r;
+       	  }
+          .para-item-middle{
+	          line-height: 30px;
+	          height: 36px;
+	          margin:3px;
+	          display:inline-block;
+	          width: 43%;
+	          border-radius: 2px;
+	          border: 1px solid @portalLGray;
+	          background: @portalWhite;
+	          vertical-align: middle;
+	          white-space: nowrap;
+	          .dGray14r;
+          }
+          .json-field{
+		  	position: relative;
+	      	.custom-input-field;
+	      	height:80px;
+		  }
+           .left-test-item{
+	        display: inline-block;
+	        width: 85%;
+	        background: @portalWhite;
+	      }
+          
+          .right-test-item{
+	        position: relative;
+	        display: inline-block;
+	        width: 15%;
+	        float: right;
+	      }
+	      
+          .test-button {
+   			  .btn-blue;
+  	  	  }
+          .para-item-right{
+          	  margin-top: 10px;
+	          height: 14px;
+	          width: 14px;
+	          float: right;
+	          display:inline-block;
+          }
+	      .input-field{
+	        .custom-input-field;
+	        width: 100%; 
+	       }
+	       .textarea-field{
+	      	position: relative;
+	      	.custom-input-field;
+	      	height:50px;
+      	    }
+	       .submit-button {
+	       	 margin-top: 25px;
+	  	 	 position: relative;
+	  	 	 float: right;
+	  	 	 width: 20%;
+	   		.btn-blue;
+	  	  }
+	  	  
+	  	 
+	  	  
+	  	  .add-para-button{
+			height: 14px;
+	  	  	width: 14px;
+	  	  	float: right;
+	  	  }
+	  	  .item-label{
+        	.dGray14r;
+      	  }
+	    }
+	}
+}
+.microservice-scrolling-table{
+	width: 548px;
+    margin-left: 16px;
+    height: 430px;
+    overflow: auto;
+}
+#microservice-scroll-end{
+	height: 20px;
+} 

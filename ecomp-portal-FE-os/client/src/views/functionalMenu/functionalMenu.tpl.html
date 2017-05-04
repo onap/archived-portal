@@ -1,0 +1,46 @@
+<!--
+  ================================================================================
+  ECOMP Portal
+  ================================================================================
+  Copyright (C) 2017 AT&T Intellectual Property
+  ================================================================================
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  ================================================================================
+  -->
+<div class="functional-menu-main">
+    <div class="functional-menu-container" id="page-content">
+		<div id="title" class="w-ecomp-main-view-title">
+           	 <h1 class="heading-page" >Edit Functional Menu</h1>
+        </div>        
+        <div id="tree1">
+            <div id="Service_Creation"></div>
+        </div>
+        <div id="jq-tree-div" jq-tree class="tree"></div>
+        <script type="text/ng-template" id="jqtree-tmpl.html">
+            <div id="jqTree"></div>
+            <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+                <li id="functional-menu-view-li"><a id="functional-menu-view-href" ng-href="#view"><i class="icon-data"></i> View</a></li>
+                <li class="divider"></li>
+                <li id="functional-menu-add-li"><a  id="functional-menu-add-href" ng-href="#add"><i class="icon-plus"></i> Add</a></li>
+                <li class="divider"></li>
+                <li id="functional-menu-edit-li"><a  id="functional-menu-edit-href"  ng-href="#edit"><i class="icon-edit"></i> Edit</a></li>
+                <li class="divider"></li>
+                <li id="functional-menu-delete-li"><a id="functional-menu-delete-href"  ng-href="#delete"><i class="icon-misc-trash"></i> Delete</a></li>
+            </ul>
+        </script>
+        <div class="functional-admin-button-container">
+       <button id="regenrate-functionalmenu-btn" class="btn btn-alt btn-small" ng-click="functionalMenu.regenerateFunctionalMenuAncestors()">Regenerate Menu</button>     
+            <span class="n16r" style="color:black">Click when you are done with your changes</span>
+        </div>
+    </div>
+</div>

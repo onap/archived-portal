@@ -1,0 +1,75 @@
+.widget-details-modal {
+  height: 580px;
+
+  .title {
+    //.n18r;
+    .dGray18r;  //AT&T Dark Gray
+    border-bottom: @portalDBlue 3px solid;
+  }
+
+  .widget-properties-main {
+    padding: 16px;
+    height: 460px;
+    overflow-y: auto;
+
+    .item{
+      position: relative;
+      margin-bottom: 18px;
+
+      .input-field{
+        .custom-input-field;
+        width: 100%;
+        &.url{
+          width: 78%;
+          display: inline-block;
+        }
+      }
+
+      .select-field {
+        .custom-select-field;
+      }
+
+      .item-label{
+        .dGray14r;
+      }
+
+      .right-item{
+        position: relative;
+        display: inline-block;
+        width: 48%;
+        float: right;
+      }
+      .left-item{
+        display: inline-block;
+        width: 48%;
+      }
+
+      .url-validation-button{
+        .btn-blue;
+        width: 20%;
+        display: inline-block;
+        float: right;
+      }
+
+      .error-container{
+        position: absolute;
+        width: 280px;
+        display: block;
+        height: 12px;
+        line-height: 12px;
+
+        .err-message{
+          color: @funcRed;
+          font-size: 9px;
+        }
+        .valid-message{
+          color: @funcGreen;
+          font-size: 9px;
+        }
+      }
+
+    }
+
+  }
+
+}

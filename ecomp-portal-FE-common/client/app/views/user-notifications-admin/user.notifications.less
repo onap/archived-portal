@@ -1,0 +1,128 @@
+.w-ecomp-user-notification-admin{
+ .bg_portalWhite;//white for 1702
+    //.bg_portalGray;  // gray for 1610
+    position: @page-main-position;
+    top: @page-main-top;
+    left: @page-main-left;
+    right: @page-main-right;
+    bottom: @page-main-bottom;
+    padding-top: @padding-top;
+    overflow-y: @page-main-overflow-y;
+    padding-left: @padding-left-side;
+
+    .tab-bottom {
+        bottom: 0;
+    }
+   
+    .tablesorter-default .tablesorter-header .tablesorter-header-inner {
+    //background-image: url(images/upanddown.png);
+    background-position: center right;
+    background-repeat: no-repeat;
+    cursor: pointer;
+    white-space: normal;
+    display: inline-block;
+    vertical-align: baseline;
+    zoom: 1;
+    padding: -1px 50px;
+}
+
+
+p {
+    display: inline;
+}
+.userNotifTable {
+        width: @table-width;
+        //margin-left: @table-margin-left;
+        //margin: @table-margin;
+		margin:auto;
+        .delete-app{
+            .ico_trash_default;
+        }
+        }
+  .user-notification-container {
+    .content_justify;
+      position: relative;
+    padding: 15px 0 32px 0;
+    width: 100%;
+
+    .user-notification-list {
+        min-height: 70vh;
+        //display: flex;
+        justify-content: center;
+        flex-flow: row wrap;
+        width: @table-width;
+        margin: auto;
+        margin-bottom: 63px;
+
+        .app-gridster-header {
+        background-color: @portalWhite;
+               
+      }
+
+      .app-gridster-footer {
+        background-color: @portalWhite;
+      }
+
+      .user-notification-list-item {
+        background-color: @portalWhite;
+        border-radius: 2px;
+        box-shadow: 0px -1px 2px 0px rgba(0, 0, 0, 0.1);
+        display: inline-block;
+        width: 360px;
+        height: 300px;
+        background-size: cover;
+        cursor: pointer;
+        margin: 15px;
+        overflow: hidden;
+
+        .notification-item-info {
+          background-color: @portalWhite;
+          height: 120px;
+          top: 180px;
+          position: relative;
+          box-shadow: 0px -1px 2px 0px rgba(0, 0, 0, 0.1);
+          padding: 50px;
+
+          .info-title {
+            //.a24r;
+            .dBlue24r;  // AT&T Dark Blue
+            margin-bottom: 4px;
+            
+            text-overflow: ellipsis;
+            overflow: hidden;
+          }
+          .info-description {
+            .portalDBlue16r;  // omnes 16 regular
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+          }
+          .info-button {
+            .btn-green;
+            width: 96px;
+            position: absolute;
+            bottom: 16px;
+            left: 16px;
+          }
+
+          &:hover {
+            opacity: .93;
+            z-index: 3;
+          }
+        }
+      }
+    }
+  }
+
+    .go-button {
+        .btn-green;
+        width: 96px;
+        position: absolute;
+        border-radius: 0px;
+    }
+    .user-notification-add-button {
+    width: 160px;
+    margin-bottom: 11px;
+  }
+
+}

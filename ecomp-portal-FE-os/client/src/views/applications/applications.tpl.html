@@ -1,0 +1,81 @@
+<!--
+  ================================================================================
+  eCOMP Portal
+  ================================================================================
+  Copyright (C) 2017 AT&T Intellectual Property
+  ================================================================================
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  ================================================================================
+  -->
+<div class="w-ecomp-main">
+    <div class="w-ecomp-main-container">
+
+        <div class="applications-page-main" id="page-content">
+            <div id='app-title' class="w-ecomp-main-view-title">
+            	 <h1 class="heading-page" >Application Onboarding</h1>           
+            </div>
+            <div class="apps-table">
+                <div class="table-control">
+               		 <div class="table-control-fields">		
+						<div >
+							<input id="input-table-search" placeholder="Search in entire table" class="table-search-field" type="text" data-ng-model="searchAppName">
+						</div>
+					</div>    
+					<div class="table-control-buttons">
+						<button class="btn btn-alt btn-small" ng-click="apps.openAddNewAppModal()"><i class="icon-people-userbookmark" aria-hidden="true"></i>&nbsp;Add App</button> 
+					</div> 
+                </div>
+                <span class="ecomp-spinner" ng-show="apps.isLoadingTable"></span>
+                
+                
+                <div b2b-table table-data="apps.appsList"  ng-hide="apps.isLoadingTable"	search-string="searchAppName" class="b2b-table-div">
+					<table>
+						<thead b2b-table-row type="header">
+								<th b2b-table-header id="col1" sortable="false" >Thumbnail</th>
+								<th b2b-table-header id="col2" key="name" sortable="true" >Application Name</th>
+								<th b2b-table-header id="col3" sortable="false" >Active?</th>
+								<th b2b-table-header id="col4" sortable="false" >Integration Type</th>
+								<th b2b-table-header id="col5" sortable="false" >Guest Access</th>
+	                            <th b2b-table-header id="app-header-URL" sortable="false">URL</th>
+	                            <th b2b-table-header id="app-header-RESTURL" sortable="false">REST URL</th>
+	                            <th b2b-table-header id="app-header-Topic" sortable="false">Communication Topic</th>
+	                            <th b2b-table-header id="app-header-CommKey" sortable="false">Communication Key</th>
+	                            <th b2b-table-header id="app-header-Secret" sortable="false">Communication Secret</th>
+	                            <th b2b-table-header id="app-header-delete" sortable="false">Delete</th>	                            	                            
+							</tr>
+						</thead>
+						<tbody b2b-table-row type="body" 	row-repeat="rowData in apps.appsList">
+							<tr>
+								<td b2b-table-body id="rowheader_t1_{{$index}}" headers="col1" ng-click="apps.openAddNewAppModal(rowData)">
+									<img id="{{$index}}-app-imageUrl" class="small-thumbnail" ng-src="{{rowData.imageLink || apps.emptyImgForPreview}}">
+								</td>
+								<td b2b-table-body headers="rowheader_t1_{{$index}} col2" ng-bind="rowData.name" ng-click="apps.openAddNewAppModal(rowData)"></td>
+								<td b2b-table-body headers="rowheader_t1_{{$index}} col3" ng-click="apps.openAddNewAppModal(rowData)">{{(rowData.isEnabled) ? 'yes' : 'no'}}</td>
+								<td b2b-table-body headers="rowheader_t1_{{$index}} col4" ng-click="apps.openAddNewAppModal(rowData)">{{(rowData.restrictedApp) ? 'link' : 'standard'}}</td>		
+								<td b2b-table-body headers="rowheader_t1_{{$index}} col5" ng-click="apps.openAddNewAppModal(rowData)">{{(rowData.isOpen) ? 'yes' : 'no'}}</td>			
+								<td b2b-table-body headers="rowheader_t1_{{$index}} col7" ng-click="apps.openAddNewAppModal(rowData)">{{rowData.url | elipsis: 27}}</td>	
+								<td b2b-table-body headers="rowheader_t1_{{$index}} col8" ng-click="apps.openAddNewAppModal(rowData)">{{rowData.restUrl | elipsis: 27}}</td>	
+        						<td b2b-table-body headers="rowheader_t1_{{$index}} col11" ng-click="apps.openAddNewAppModal(rowData)"ng-bind="rowData.uebTopicName"></td>	
+                               	<td b2b-table-body headers="rowheader_t1_{{$index}} col12" ng-click="apps.openAddNewAppModal(rowData)"ng-bind="rowData.uebKey"></td>	
+            					<td b2b-table-body headers="rowheader_t1_{{$index}} col13" ng-click="apps.openAddNewAppModal(rowData)"ng-bind="rowData.uebSecret"></td>	
+        						<td b2b-table-body headers="rowheader_t1_{{$index}} col14" >
+        							<span class="icon-misc-trash" ng-click="apps.deleteApp(rowData)"></span>
+        						</td>		
+							</tr>
+						</tbody>
+					</table>
+				</div>               
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,102 @@
+<!--
+  ================================================================================
+  ECOMP Portal
+  ================================================================================
+  Copyright (C) 2017 AT&T Intellectual Property
+  ================================================================================
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  ================================================================================
+  -->
+<div class="w-ecomp-get-access-home">
+	<div class="get-access-home-container" id="page-content">
+		<div class="admins-page-main">
+			<div id="title" class="w-ecomp-main-view-title">
+			<h1 class="heading-page">Get Access</h1>
+			</div>
+			<div ng-include
+				src="'app/views/support/get-access/get-accessinfo.html'"></div>
+			<div class="get-access-table">
+				<div class="table-control">
+					<input id="input-table-search" class="table-search" type="text"
+						placeholder="Search" ng-model="access.searchString" /> <span
+						class="ecomp-spinner" ng-show="access.isLoadingTable"></span>
+					<div b2b-table table-data="access.appTable"
+						ng-hide="access.isLoadingTable"
+						search-string="access.searchString"
+						class="b2b-table-div">
+						<table>
+							<thead b2b-table-row type="header">
+								<tr>
+									<th id="th-access-0" b2b-table-header key="ecomp_function"
+										sortable="false" >{{access.getAccessTableHeaders[0]}}</th>
+									<th id="th-access-1" b2b-table-header key="app_name"
+										sortable="false">{{access.getAccessTableHeaders[1]}}</th>
+									<th id="th-access-2" b2b-table-header key="role_name"
+										sortable="false">{{access.getAccessTableHeaders[2]}}</th>
+									<th id="th-access-3" b2b-table-header key="current_role"
+										sortable="false">{{access.getAccessTableHeaders[3]}}</th>
+									<th id="th-access-4" b2b-table-header key="request_access"
+										sortable="false">{{access.getAccessTableHeaders[4]}}</th>
+								</tr>
+							</thead>
+							<tbody b2b-table-row type="body"
+								row-repeat="rowData in access.appTable | limitTo:access.viewPerPage:access.startIndex | orderBy:'ecomp_function'"  track-by="$index">
+								<tr id="tr-rowData" ng-click="openAppRoleModal(rowData)">
+									<td b2b-table-body>
+										<div id="access-page-function"
+											ng-if="rowData.ecomp_function !== 'Ecomp Function Not Available'"
+											ng-show="$index == 0 || access.appTable[$index-1].ecomp_function != rowData.ecomp_function"
+											ng-bind="rowData.ecomp_function"></div>
+										<div id="access-page-function"
+											ng-if="rowData.ecomp_function === 'Ecomp Function Not Available'"
+											ng-bind="rowData.ecomp_function"></div>
+									</td>
+									<td b2b-table-body>
+										<div id="access-page-appName"
+											ng-show="$index == 0 || access.appTable[$index-1].app_name != rowData.app_name"
+											ng-bind="rowData.app_name"></div>
+									</td>
+									<td b2b-table-body>
+										<div id="access-page-roleName" ng-bind="rowData.role_name"></div>
+									</td>
+									<td b2b-table-body>
+										<div id="access-page-currentRole"
+											ng-if="rowData.current_role === 'Y'">
+											<i class="icon-included-checkmark"></i>
+										</div>
+									</td>
+									<td b2b-table-body>
+										<div id="access-page-RequestAccess"
+											ng-if="rowData.request_type !== null"
+											ng-bind="rowData.request_type"></div>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+			<div b2b-pagination="" input-id="goto-page-1" total-pages="access.totalPage" current-page="access.currentPage" click-handler="access.updateTable" role="navigation" aria-label="Customer Data Pages"></div>	
+		</div>
+	</div>
+</div>
+
+<style>
+.tablesorter-default {
+	cursor: default;
+}
+
+.admins-page-main .admins-table .table-body {
+	cursor: default;
+}
+</style>

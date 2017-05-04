@@ -1,0 +1,100 @@
+<!--
+  ================================================================================
+  ECOMP Portal
+  ================================================================================
+  Copyright (C) 2017 AT&T Intellectual Property
+  ================================================================================
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  ================================================================================
+  -->
+<div class="w-ecomp-user-notification-history"
+	ng-style="{bottom: tabBottom}">
+	<div class="user-notification-history" id="page-content">
+		<div id='app-title' class="w-ecomp-main-view-title">
+			<h1 class="heading-page" >Recent Notifications</h1>
+		</div>
+		<div class="notifHistTable">
+
+			<div class="table-control">
+				<div class="simulateCatGridHeaderDetails">This table shows
+					notifications published in the last 30 days.</div>
+				<div align="right">
+					<input class="table-search" type="text" id="input-search"
+						placeholder="Search in entire table" ng-model="searchString" />
+				</div>
+			</div>
+
+            <span class="ecomp-spinner" ng-show="isLoadingTable"></span>
+
+			<div id="table-main" class="b2b-table-div" ng-hide="isLoadingTable">
+				<table b2b-table id="notification-history-table"
+					table-data="notificationHistory"
+					search-string="searchString"
+					view-per-page="viewPerPagerIgnored"
+					current-page="ignoredCurrentPage"
+					total-page="totalPageIgnored">
+					<thead b2b-table-row type="header">
+						<tr>
+							<th id="th-notif-0" b2b-table-header key="msgSource"
+								sortable="true" style=" width: 10px;">Message Source</th>
+							<th id="th-notif-1" b2b-table-header key="msgHeader"
+								sortable="true">Message</th>
+							<th id="th-notif-2" b2b-table-header key="startTime"
+								sortable="true">Start Date (Local Time)</th>
+							<th id="th-notif-3" b2b-table-header key="endTime"
+								sortable="true">End Date  (Local Time)</th>
+							<th id="th-notif-4" b2b-table-header key="priority"
+								sortable="true">Priority</th>
+							<th id="th-notif-5" b2b-table-header key="loginId"
+								sortable="true">Created By</th>
+							<th id="th-notif-6" b2b-table-header key="createdDate"
+								sortable="true">Created Time</th>
+						</tr>
+					</thead>
+
+					<tbody b2b-table-row 
+						type="body"
+						class="table-body"
+						track-by="$index"
+						row-repeat="rowData in notificationHistory">
+						<tr id="row-{{$index}}">
+								<td b2b-table-body style="{{rowData.expired?'color:lightgray !important':''}}">
+								<div id="{{$index}}-msgSource">{{rowData.msgSource}}</div>
+							</td>
+								<td class="td-first" b2b-table-body style="{{rowData.expired?'color:lightgray !important':''}}"  ng-click="rowData.msgSource=='EP'||showDetailedJsonMessage(rowData)">
+								<div id="{{$index}}-title" style="font-weight: bold;" ng-bind="rowData.msgHeader"></div>
+								<div id="{{$index}}-message" ng-if="rowData.msgSource==='EP'"  style="width:500px" ng-bind="rowData.msgDescription"></div>
+								<div id="{{$index}}-message" ng-if="rowData.msgSource!=='EP'"  ng-bind="rowData.msgDescription| elipsis: 27"></div>
+							</td>
+							<td b2b-table-body style="{{rowData.expired?'color:lightgray !important':''}}">
+								<div id="{{$index}}-startTime" ng-bind="rowData.startTime |	date:'medium'"></div>
+							</td>
+							<td b2b-table-body style="{{rowData.expired?'color:lightgray !important':''}}">
+								<div id="{{$index}}-endTime" ng-bind="rowData.endTime |	date:'medium'"></div>
+							</td>
+							<td b2b-table-body style="{{rowData.expired?'color:lightgray !important':''}}">
+								<div id="{{$index}}-priority" ng-bind="priorityItems[rowData.priority]"></div>
+							</td>
+							<td b2b-table-body style="{{rowData.expired?'color:lightgray !important':''}}">
+								<div id="{{$index}}-loginId" ng-bind="!rowData.loginId ? externalNotification : rowData.loginId"></div>
+							</td>
+							<td b2b-table-body style="{{rowData.expired?'color:lightgray !important':''}}">
+								<div id="{{$index}}-createdDate" ng-bind="rowData.createdDate | date:'medium'"></div>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>

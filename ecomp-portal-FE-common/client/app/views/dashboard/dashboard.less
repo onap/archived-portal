@@ -1,0 +1,901 @@
+.w-ecomp-dashboard-home {
+ .bg_portalWhite;//white for 1702
+   position: @page-main-position;
+  top: @page-main-top;
+  left: @page-main-left;
+  right: @page-main-right;
+  bottom: @page-main-bottom;
+  padding-top: @padding-top;
+  overflow-y: @page-main-overflow-y;
+  padding-left: @padding-left-side;
+
+  .gridster-item-container .gridster-item-body {
+    overflow-y:auto;
+    overflow-x:hidden;
+  }
+
+  .dashboard-home-container {
+      position: relative;
+      padding-right: 0;
+      padding-left: 0;
+      padding-bottom: @container-bottom;
+
+    .dashboard-home-title {
+      .blackText24m;
+      margin: auto;
+      .content_justify;
+    }
+    
+    .portals-list {
+      min-height: 70vh;
+      //display: flex;
+      justify-content: center;
+      flex-flow: row wrap;
+      width: @table-width;
+      //margin-left: 230px;
+      margin-bottom: 63px;
+	  margin:auto;
+      .app-gridster-header {
+        background-color: @u;
+        font-size:12px;
+        overflow:hidden
+      }
+
+      .app-gridster-footer {
+        background-color: @u;
+      }
+
+      .portals-list-item {
+        background-color: @u;
+        border-radius: 2px;
+        box-shadow: 0px -1px 2px 0px rgba(0, 0, 0, 0.1);
+        display: inline-block;
+        width: 360px;
+        height: 300px;
+        background-size: cover;
+        cursor: pointer;
+        margin: 15px;
+        overflow: hidden;
+
+        .portals-item-info {
+          background-color: @u;
+          height: 120px;
+          top: 180px;
+          position: relative;
+          box-shadow: 0px -1px 2px 0px rgba(0, 0, 0, 0.1);
+          padding: 16px;
+
+          .info-title {
+            .blackText24m;
+            margin-bottom: 4px;
+            
+            text-overflow: ellipsis;
+            overflow: hidden;
+          }
+          .info-description {
+            .portalDBlue16r;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+          }
+          .info-button {
+            .btn-green;
+            width: 96px;
+            position: absolute;
+            bottom: 16px;
+            left: 16px;
+          }
+
+          &:hover {
+            opacity: .93;
+            z-index: 3;
+          }
+        }
+      }
+    }
+  }
+}
+.w-ecomp-main-error{	  
+  .portalRed;
+  position: absolute;
+  width: 100%;
+  line-height: 1.5em;	
+}
+.w-ecomp-main-disclaimer {
+  text-align: center;
+  .dGray14r;
+  //position: absolute;
+  bottom: -75px;
+  line-height: 1.5em;
+  margin: 0 auto;
+  width:1170px;
+  position: relative;
+
+}
+
+@keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.slide.ng-hide-add, 
+.slide.ng-hide-remove,
+.slide.ng-enter,
+.slide.ng-leave {
+  transition: all 0.5s ease;
+}
+.slide.ng-hide,
+.slide.ng-enter {
+  transform: translate(-100%, 0);
+}
+.slide.ng-enter-active {
+  transform: translate(0, 0);
+}
+.slide.ng-leave {
+  transform: translate(0, 0);
+}
+.slide.ng-leave-active {
+  transform: translate(+100%, 0);
+}
+.dashboard-boarder{
+	// border: 2px solid #ccc!important;    
+	// border-radius: 16px!important; 
+	  height: 210px;
+    overflow: auto;
+}
+.dashboard-information-boarder{
+	border: 2px solid #ccc!important; 
+	border-radius: 16px!important;    
+}
+
+#information-section {
+   margin-top:50px;
+}
+
+.information-section-title{
+    color: #0574ac;
+    font-family: Omnes-ECOMP-W02-Bold,Arial;
+    font-size: 25px;
+    margin: 20px;
+    width: 1170px;
+}
+#left {
+    float: left;
+    width: 33%;
+    height:300px;
+    background-color: white;
+}
+
+#center {
+    float: right;
+    width: 33%;
+    height:300px;
+        background: white;
+} 
+#right {
+    margin-left:34%;
+	margin-right:34%;
+	height:300px;
+	background:white;
+}  
+
+
+/*hover*/
+
+
+.dock ul{
+display: inline-block;
+
+width: auto;
+margin: 0px;
+padding: 0px;
+list-style: none;
+
+}
+.dock ul li {
+width: auto;
+height: auto;
+display: inline-block;
+bottom: 0;
+vertical-align: bottom;
+margin-top: -43px;
+}
+.dock ul li a {
+display: block;
+height: 150px;
+width: 150px;
+position: relative;
+-webkit-transition-property: width, height,margin-top;
+-webkit-transition-duration: 0.5s;
+-o-transition-property: width, height,margin-top;
+-o-transition-duration: 0.5s;
+-moz-transition-property: width, height,margin-top;
+-moz-transition-duration: 0.5s;
+}
+.dock ul li a:hover {
+width: 200px;
+height: 200px;
+margin-top: -50px;
+}
+.dock ul li a img {
+width: 100%;
+position: absolute;
+bottom: 0;
+left: 0;
+border: none;
+padding: 0px 0px 0px 30px;
+}
+.dock_left{
+width: 31px;
+-webkit-transform: rotate(33deg);
+-moz-transform: rotate(33deg);
+-o-transform: rotate(33deg);
+position: relative;
+background: #EEE;
+overflow: hidden;
+float: left;
+height: 100px;
+z-index: 2;
+margin: -18px;
+}
+.dock_right{
+width: 36px;
+-webkit-transform: rotate(-33deg);
+-moz-transform: rotate(-33deg);
+-o-transform: rotate(-33deg);
+position: relative;
+background: #EEE;
+overflow: hidden;
+float: left;
+height: 100px;
+z-index: 2;
+margin: -18px;
+}
+
+
+
+
+/*Time for the CSS*/
+* {margin: 0; padding: 0;}
+body {background: #ccc;}
+
+.slider{
+	width: 640px; /*Same as width of the large image*/
+	position: relative;
+	/*Instead of height we will use padding*/
+	padding-top: 320px; /*That helps bring the labels down*/
+	
+	margin: 50px auto;
+	
+	/*Lets add a shadow*/
+	box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.75);
+}
+
+
+/*Last thing remaining is to add transitions*/
+.slider>img{
+	position: absolute;
+	left: 0; top: 0;
+	transition: all 0.5s;
+}
+
+.slider input[name='slide_switch'] {
+	display: none;
+}
+
+.slider label {
+	/*Lets add some spacing for the thumbnails*/
+	margin: 18px 0 0 18px;
+	border: 3px solid #999;
+	
+	float: left;
+	cursor: pointer;
+	transition: all 0.5s;
+	
+	/*Default style = low opacity*/
+	opacity: 0.6;
+}
+
+.slider label img{
+	display: block;
+}
+
+/*Time to add the click effects*/
+.slider input[name='slide_switch']:checked+label {
+	border-color: #666;
+	opacity: 1;
+}
+/*Clicking any thumbnail now should change its opacity(style)*/
+/*Time to work on the main images*/
+.slider input[name='slide_switch'] ~ img {
+	opacity: 0;
+	transform: scale(1.1);
+}
+/*That hides all main images at a 110% size
+On click the images will be displayed at normal size to complete the effect
+*/
+.slider input[name='slide_switch']:checked+label+img {
+	opacity: 1;
+	transform: scale(1);
+}
+/*Clicking on any thumbnail now should activate the image related to it*/
+
+/*We are done :)*/
+
+
+
+.accordion {
+	width: 895px; height: 320px;
+	overflow: hidden;
+  box-shadow: 0 10px 6px -6px #111;
+  margin: 20px auto
+}
+.accordion ul { width: 200% }
+
+.accordion li {
+	position: relative;
+	display: block;
+	width: 160px;
+	float: left;
+  box-shadow: 0 0 30px 8px #222;
+	transition: all 0.4s ease .300ms;
+}
+
+.accordion ul:hover li {width: 40px }
+.accordion ul li:hover {width: 640px }
+
+.caption {
+	background: rgba(0, 0, 0, 0.5);
+	position: absolute;
+  bottom: 0;	
+	width: 640px
+}
+
+.caption a {
+	display: block;
+	color: #fff;
+	text-decoration: none;
+  font: normal 16px 'Lato', Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+	padding: 15px;
+}
+
+
+/*events*/
+.events-date{
+	margin-left: 10px; 
+	float:left; 
+	white-space: normal; 
+	display: inline-block; 
+	vertical-align: middle;
+    width: 55px;
+}
+.event-title-div{
+	float: left;
+	width: 235px;
+	line-height: 20px;
+    padding: 5px;
+   	font-size: 14px; 
+   	margin-left: 4px;
+}
+.events-date{
+	height: 20px;
+	margin-left: 4px; 
+	font-size: 14px; 
+}
+.events-content{
+	font-size: 14px; 
+	color: #444;
+    margin-right: 10px;
+}
+.events-content-body{
+	margin-top:5px;
+	color:#444;
+	margin-left:12px;
+	line-height:1.5;
+}
+.events {
+	border-radius: 4px;
+	padding: 3px;
+	-webkit-user-select: none;   
+}
+.events ul {
+	float: left;
+	width:100%;
+	-webkit-user-select: none
+}
+.events ul li {
+	line-height: 30px; 
+	list-style: none;
+    border-bottom: 2px solid grey;
+    height: 100%;
+    min-height: 42px;
+}
+.events ul li:hover {
+    background: #ddd;
+    cursor: pointer;
+}
+.events ul li a {
+	color: black;
+	text-decoration: none;
+	font: 14px Helvetica, Arial, sans-serif;
+	-webkit-font-smoothing: antialiased;
+	-webkit-user-select: none;
+	font-family: "Omnes-ECOMP-W02", Arial;
+}
+.events-link{
+	color: #067ab4 !important; 
+}
+
+
+/*widgets*/
+
+.handle-e{
+    width: 5px;
+}
+
+.singleBtnBorder {
+    border-radius: 6px 6px 6px 6px;  
+}
+
+.widgetHeaderBtn{
+    
+    height: 30px;
+    background-color: #FFFFFF;
+    position: relative;
+    display: inline-block;
+    -moz-background-clip: padding-box;
+    -webkit-background-clip: padding-box;
+    background-clip: padding-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    padding: 8px 20px;
+    font-size: 14px;
+    line-height: 14px;
+    min-width: 60px;
+    border: none;
+    border-radius: 6px;
+    background-color: #ffffff;
+    background-image: none;
+    color: #ffffff;
+    vertical-align: middle;
+    text-align: center;
+    text-decoration: none;
+    text-transform: capitalize;
+    text-shadow: none !important;
+    white-space: nowrap;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+    -webkit-transition: background-color 0.3s ease-out;
+    -moz-transition: background-color 0.3s ease-out;
+    transition: background-color 0.3s ease-out;
+    }
+  
+.widgetHeaderBtnPosition {
+	width: 30px;
+    min-width: 0px;
+    border: 1px solid #AAAAAA;
+    padding-left: 3px;
+    padding-right: 5px;
+    }
+    
+.icon-anchor {
+    color: #888;
+}
+   
+.widgetHeaderBtn:hover, .widgetHeaderBtn:focus {
+    background: rgba(0, 0, 0, 0);
+    color: #3a7999;
+    box-shadow: inset 0 0 0 2px #3a7999;
+}
+/*news*/
+
+@keyframes ticker {
+	0%   {margin-top: 0}
+	25%  {margin-top: -55px}
+	50%  {margin-top: -110px}
+	75%  {margin-top: -165px}
+	100% {margin-top: 0}
+}
+
+body { background: #333; width: 100%; height: 100% }
+
+.news {
+ 
+  width: 350px;
+  height: 250px;
+  margin: 0px auto;
+  // overflow: auto;
+  border-radius: 4px;
+  padding: 3px;
+  -webkit-user-select: none;
+     
+} 
+
+
+
+.news ul {
+  float: left;
+  width:100%;
+  // animation: ticker 25s cubic-bezier(1, 0, .5, 0) infinite;
+  -webkit-user-select: none
+}
+
+.news ul li {line-height: 30px; list-style: none;
+    border-bottom: 2px solid grey;
+    min-height: 42px;
+ }
+ 
+.news ul li:hover {
+    background: #ddd;
+    cursor: pointer;
+}
+
+.news ul li a {
+  color: black;
+  text-decoration: none;
+  font-size: 14px;
+  line-height: 1.5;
+  display: inline-block;
+  width:100%;
+  min-height:40px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  -webkit-font-smoothing: antialiased;
+  -webkit-user-select: none;
+}
+
+.news ul:hover { animation-play-state: paused }
+.news span:hover+ul { animation-play-state: paused }
+/*resources*/
+.resources {
+ 
+  width: 100%;
+  height: 200px;
+  margin-left: 5px;
+  border-radius: 4px;
+  padding: 3px;
+  -webkit-user-select: none;
+     
+} 
+
+
+
+.resources ul {
+  float: left;
+  width:100%;
+ 
+  -webkit-user-select: none
+}
+
+.resources ul li {line-height: 30px; list-style: none;
+    border-bottom: 2px solid grey;
+    min-height: 42px;
+ }
+ 
+.resources ul li:hover {
+    background: #ddd;
+    cursor: pointer;
+}
+
+.resources ul li a {
+  color: black;
+  text-decoration: none;
+  font-size: 14px;
+  line-height: 1.5;
+  width:100%;
+  min-height:40px;
+  display: inline-block;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  -webkit-font-smoothing: antialiased;
+  -webkit-user-select: none;
+}
+
+
+/* OTHER COLORS */
+.blue { background: #347fd0 }
+.blue span { background: #2c66be }
+.red { background: #d23435 }
+.red span { background: #c22b2c }
+.green { background: #699B67 }
+.green span { background: #547d52 }
+.magenta { background: #b63ace }
+.magenta span { background: #842696 }
+
+
+/*broadcast*/
+
+.box-one {
+  -webkit-transition:all linear 0.4s;
+  transition:all linear 0.4s;
+  height:100px; width:200px; background:white;    border: 2px solid #ccc!important;
+    border-radius: 16px!important;
+}
+.box-one.ng-hide {
+display: block!important;
+  opacity:0;
+}
+
+.gridsterContent{
+	height:120px;
+}
+
+.gridster-item{
+    z-index:0 !important;
+}
+.gridsterAppContent{
+	height:120px;
+	
+}
+
+ .gridsterImage{
+ 	height:84px; 
+ 	width:168px;
+ }
+ .grider-content-ecomp{
+ 	transition: transform 0.5s ease-out;
+ }
+  .grider-content-ecomp:hover{
+    transform: scale(1.1);
+}
+
+
+/*information section*/
+
+.information-section{
+	/*margin-top:25px;*/
+}
+.information-section-gridsterContent{
+	/*height:300px;*/
+}
+.information-sections-gridster-header{
+	color: #0574ac;
+    font-family: Omnes-ECOMP-W02-Bold,Arial;
+    font-size: 25px;
+   
+}
+/*application empty div*/
+.app-error-block {
+    padding-top: 10px;
+   
+}
+/*news empty div*/
+.activity-error-block {
+    padding-top: 60px;
+   
+}
+
+.activity-error-msg1{
+	text-align: center;
+    margin-top: 20px;
+    font-family: "Omnes-ECOMP-W02", Arial;
+    color: #444;
+    font-size: 20px;
+    
+}
+
+.newstape {
+  background: white;
+  color: black;
+  height: 400px;
+  overflow: hidden;
+}
+
+.newstape-content {
+  position: relative;
+  padding: 15px;
+}
+
+.newstape-drag { cursor: ns-resize; }
+
+.text-center { text-align: center; }
+
+.text-right { text-align: right; }
+
+.text-justify { text-align: justify; }
+
+// #newsContainer{
+//   overflow:auto;
+//   height: 100%;
+// }
+
+/*widget header*/
+.optionsMenu{
+	    position: absolute;
+    list-style: none;
+    top: 25px;
+    right: 10px;
+    border: 1px solid #067ab4;
+    display: none;
+    z-index: 2;
+    border-radius: 6px 0px 6px 6px;
+    background: #fff;
+    width: 130px;
+}
+
+.optionsMenuLink {
+    position: relative;
+    padding-left: 8px;
+    padding-right: 2px;
+    font-size: 12px;
+    line-height: 30px;
+    color: #444444;
+}
+.optionsMenu > li:hover a {
+    color: #ffffff !important;
+}
+.optionsMenu > li {
+    width: 100%;
+    text-align: left;
+}
+.optionsMenu > li:hover {
+    background-color: #0faaf7;
+    border-color: none !important;
+    cursor: pointer;
+}
+
+.dashboardSortHeader{
+    margin-left: 756px;
+}
+
+#dashboardAddWidgetPreference{
+    display: inline-block; 
+    font-size: 14px; 
+    color: #3e3e3e; 
+    width: 69%; 
+    text-align: center; 
+    padding: 15px 0px 15px 0px;
+    font-family: "Omnes-ECOMP-W02", Arial;
+}
+
+#dashboardAddWidgetPreference:hover{
+    background-color: #0568ae;
+    color:white !important; 
+}
+
+#dashboardDefaultPreference{
+    display: inline-block; 
+    font-size: 14px; 
+    color: #3e3e3e; 
+    width: 30%; 
+    text-align: center; 
+    padding: 15px 0px 15px 0px; 
+    font-family: "Omnes-ECOMP-W02", Arial;
+}
+
+#dashboardDefaultPreference:hover{
+    background-color: #0568ae;
+    color:white !important;    
+}
+
+.simulateGridHeader{
+	position: relative;
+    height: 50px !important;
+    border: 1px solid #d3d3d3;
+    border-bottom: 0;
+    background-color: #E5E5E5;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    z-index: 1;
+}
+
+.simulateGridHeaderTitle{
+	line-height: 44px;
+    margin-left: 26px;
+    font-family: "Omnes-ECOMP-W02", Arial;
+    font-size: 18px; 
+    color: #444444;
+    float: left;
+}
+
+.simulateGridHeaderHandle{
+	cursor: move;
+    margin: 12px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    border: 0;
+    vertical-align: middle;
+    -ms-interpolation-mode: bicubic;
+    display: block;
+}
+
+/* apps gridsters */
+ul {
+    list-style: none;
+}
+.gridster-box {
+    height: 100%;
+    border: 1px solid #ccc;
+    background-color: #fff;
+ 	transition: transform 0.5s ease-out;
+}
+.gridster-box-header {
+    background-color: #fff;
+    padding: 0 0px 0 10px;
+    border-bottom: 1px solid #ccc;
+    position: relative;
+    height: 50px !important;
+}
+.gridster-box-header h3 {
+    margin-top: 15px;
+    display: inline-block;
+    font-family: "Omnes-ECOMP-W02", Arial;
+}
+
+.gridster-box-header i {
+font-size: 22px; 
+}
+
+.gridster-box-content {
+    padding: 59px;
+}
+.gridster-box:hover{
+    transform: scale(1.1);
+}
+.gridster-box-header-btns {
+    top: 15px;
+    right: 10px;
+    position: absolute;
+}
+
+/*** widgets ***/
+ul {
+    list-style: none;
+}
+.box {
+    height: 100%;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    font-family: "Omnes-ECOMP-W02", Arial;
+}
+.box-header {
+   	height : 50px;
+    background-color: #fff;
+    padding: 0 30px 0 10px;
+    border-bottom: 1px solid #ccc;
+    position: relative;
+}
+.box-header h3 {
+    margin-top: 15px;
+    display: inline-block;
+    font-size: 16px;
+}
+.box-content {
+    position: absolute;
+    width: 100%;
+    top: 50px;
+    left: 0;
+    right: 0;
+    bottom: 29px;
+    border: 1px solid #d3d3d3;
+    box-sizing: border-box;
+    overflow-y: auto;
+    overflow-x: hidden;
+    color: #444444;
+    bottom: 0px;
+}
+.box-header-btns {
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+    position: absolute;
+}
+
+#widget-boarder{
+  background-color: #eee;
+  border: 1px dashed white;
+}
+.icon-content-gridguide{
+cursor:move;
+}

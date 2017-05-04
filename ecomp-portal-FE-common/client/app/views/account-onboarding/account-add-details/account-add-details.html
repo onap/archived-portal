@@ -1,0 +1,125 @@
+<div class="account-add-details-modal">
+	<div id="account-add-details-title" class="account-details-title">Account
+		Details</div>
+
+	<div id="accounts">
+		<div class="account-properties-main"
+			scroll-top="accountAddDetails.scrollApi">
+			<form id="accounts-details-form" name="serviceForm" novalidate
+				autocomplete="off">
+				<div class="item required">
+					<div class="item-label">Account Name</div>
+					<input id="account-details-input-name"
+						type="text" name="name" ng-pattern="/^[\w -]*$/" maxlength="100"
+						ng-model="accountAddDetails.account.applicationName"
+						ng-change="accountAddDetails.updateAccountName()" required />
+
+					<div class="error-container"
+						ng-show="(accountAddDetails.emptyAccountName || serviceForm.name.$dirty)">
+						<div ng-messages="serviceForm.name.$error" class="error-container">
+							<small id="accounts-details-input-name-required"
+								class="err-message" ng-message="required">account Name
+								is required</small> <small id="accounts-details-input-name-pattern"
+								class="err-message" ng-message="pattern">account Name
+								must be letters, numbers, or underscore</small>
+						</div>
+					</div>
+
+					<div class="error-container"
+						ng-show="accountAddDetails.dupliateName == true">
+						<small id="accounts-details-input-name-dupliated"
+							class="err-message">Name not available - choose different
+							name </small>
+					</div>
+				</div>
+
+				<div class="item required">
+					<div class="item-label">Username</div>
+					<input id="account-details-input-username" 
+						type="text" name="username" maxlength="100"
+						ng-model="accountAddDetails.account.username"
+						ng-change="accountAddDetails.updateUsername()" />
+
+					<div class="error-container"
+						ng-show="(accountAddDetails.emptyAccountUsername 
+					|| (serviceForm.username.$dirty && accountAddDetails.account.username == ''))">
+						<small id="account-details-input-username-required"
+							class="err-message">Username is required</small>
+					</div>
+
+				</div>
+
+				<div class="item">
+					<div class="item-label">Password</div>
+					<input id="account-details-input-password"
+						type="password" name="password" maxlength="100"
+						ng-model="accountAddDetails.account.password" />
+				</div>
+
+				<div class="item">
+					<div class="item-label">Retype Password</div>
+					<input id="account-details-input-repassword"
+						type="password" name="repassword" maxlength="100"
+						ng-model="accountAddDetails.account.repassword"
+						ng-change="accountAddDetails.confirmPassword()" />
+
+					<div class="error-container"
+						ng-show="accountAddDetails.passwordMatched == false">
+						<small id="accounts-details-input-name-dupliated"
+							class="err-message">Password does not match the confirm
+							password</small>
+					</div>
+				</div>
+
+
+				<div class="add-endpoint-item">
+					<div class="item-label add-label-left">Add Endpoint</div>
+					<div class="icon-add add-label-right"
+						ng-click="accountAddDetails.addEndpoint()"></div>
+				</div>
+				<div class="item">
+					<div class="item-label"
+						ng-show="accountAddDetails.account.endpointList.length > 0">
+						Account endpoint</div>
+
+					<div id="account-details-user-paramters"
+						ng-repeat="endpoint in accountAddDetails.account.endpointList">
+
+						<div class="endpoint-item-left">
+							<input id="account-details-input-endpoint-name"
+								type="text" name="endpointName"
+								maxlength="200" ng-model="endpoint.name" 
+								ng-change="accountAddDetails.updateAccountEndpoint(endpoint)"/>
+						</div>
+
+						<div class="icon-circle-action-remove endpoint-item-middle"
+							ng-click="accountAddDetails.removeEndpointItem(endpoint)"></div>
+							
+						<div class="error-container endpoint-item-right"
+								ng-show="endpoint.valid == false">
+								<small id="accounts-details-input-invalid-endpoint"
+									class="err-message">Invalid end point format</small>
+						</div>
+							
+					</div>
+
+					<div class="account-property">
+						<input id="accounts-checkbox-app-is-enabled" type="checkbox"
+							class="checkbox-field"
+							ng-model="accountAddDetails.account.active" />
+						<div class="property-label checkbox-label">Active</div>
+					</div>
+					<div class="item">
+						<div id="account-details-next-button" class="submit-button"
+							ng-click="accountAddDetails.closeThisDialog()">close</div>
+						<div id="account-details-next-button" class="submit-button"
+							ng-click="accountAddDetails.saveChanges()">Save</div>
+					</div>
+				</div>
+
+			</form>
+		</div>
+
+
+	</div>
+</div>

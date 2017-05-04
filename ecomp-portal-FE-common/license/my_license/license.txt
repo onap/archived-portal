@@ -1,0 +1,4 @@
+name=my_license
+description=<null>
+licenseURL=<null>
+headerURL=<null>

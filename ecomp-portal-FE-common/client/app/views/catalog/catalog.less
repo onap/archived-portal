@@ -1,0 +1,413 @@
+.w-ecomp-app-catalog {
+  .bg_portalWhite;//white for 1702
+  position: @page-main-position;
+  top: @page-main-top;
+  left: @page-main-left;
+  right: @page-main-right;
+  bottom: @page-main-bottom;
+  padding-top: @padding-top;
+  overflow-y: @page-main-overflow-y;
+  padding-left: @padding-left-side;
+   input:not([type="button"]) {
+    height: 13px;
+} 
+
+  .gridster-item-container .gridster-item-body {
+    overflow-y:auto;
+    overflow-x:hidden;
+  }
+	
+  .appCatalogue-boarder{
+  background-color: #eee;
+  border: 1px dashed white;
+  overflow-y: auto;
+  overflow-x: hidden;
+  }
+  
+  .app-catalog-container {
+    .content_justify;
+    position: relative;
+    padding: 0 0 32px 0;
+    width: 100%;
+
+    .app-catalog-title {
+      //.a24r;
+      margin: auto;
+     // margin-left: 230px;
+      .content_justify;
+    }
+    
+    .app-catalog-list {
+      min-height: 70vh;
+      //display: flex;
+      justify-content: center;
+      flex-flow: row wrap;
+      width: @table-width;
+      //margin-left: 230px;
+      margin-bottom: 63px;
+	  margin:auto;
+      .app-gridster-header {
+        background-color: @u;
+        font-size:12px;
+        overflow:hidden
+      }
+
+      .app-gridster-footer {
+        background-color: @u;
+      }
+
+    }
+  }
+}
+
+@keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.slide.ng-hide-add, 
+.slide.ng-hide-remove,
+.slide.ng-enter,
+.slide.ng-leave {
+  transition: all 0.5s ease;
+}
+.slide.ng-hide,
+.slide.ng-enter {
+  transform: translate(-100%, 0);
+}
+.slide.ng-enter-active {
+  transform: translate(0, 0);
+}
+.slide.ng-leave {
+  transform: translate(0, 0);
+}
+.slide.ng-leave-active {
+  transform: translate(+100%, 0);
+}
+.appCatalogue-boarder{
+	// border: 2px solid #ccc!important;    
+	// border-radius: 16px!important; 
+	  height: 800px;
+    overflow: auto;
+}
+.app-visibility.false {
+	opacity: 0.5;  
+} 
+
+.dock ul{
+display: inline-block;
+
+width: auto;
+margin: 0px;
+padding: 0px;
+list-style: none;
+
+}
+.dock ul li {
+width: auto;
+height: auto;
+display: inline-block;
+bottom: 0;
+vertical-align: bottom;
+margin-top: -43px;
+}
+.dock ul li a {
+display: block;
+height: 150px;
+width: 150px;
+position: relative;
+-webkit-transition-property: width, height,margin-top;
+-webkit-transition-duration: 0.5s;
+-o-transition-property: width, height,margin-top;
+-o-transition-duration: 0.5s;
+-moz-transition-property: width, height,margin-top;
+-moz-transition-duration: 0.5s;
+}
+.dock ul li a:hover {
+width: 200px;
+height: 200px;
+margin-top: -50px;
+}
+.dock ul li a img {
+width: 100%;
+position: absolute;
+bottom: 0;
+left: 0;
+border: none;
+padding: 0px 0px 0px 30px;
+}
+.dock_left{
+width: 31px;
+-webkit-transform: rotate(33deg);
+-moz-transform: rotate(33deg);
+-o-transform: rotate(33deg);
+position: relative;
+background: #EEE;
+overflow: hidden;
+float: left;
+height: 100px;
+z-index: 2;
+margin: -18px;
+}
+.dock_right{
+width: 36px;
+-webkit-transform: rotate(-33deg);
+-moz-transform: rotate(-33deg);
+-o-transform: rotate(-33deg);
+position: relative;
+background: #EEE;
+overflow: hidden;
+float: left;
+height: 100px;
+z-index: 2;
+margin: -18px;
+}
+
+
+
+
+/*Time for the CSS*/
+* {margin: 0; padding: 0;}
+body {background: #ccc;}
+
+.caption {
+	background: rgba(0, 0, 0, 0.5);
+	position: absolute;
+  bottom: 0;	
+	width: 640px
+}
+
+.caption a {
+	display: block;
+	color: #fff;
+	text-decoration: none;
+  font: normal 16px 'Lato', Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+	padding: 15px;
+}
+
+
+/*widgets*/
+.singleBtnBorder {
+    border-radius: 6px 6px 6px 6px;  
+}
+    
+.icon-anchor {
+    color: #888;
+}
+   
+.widgetHeaderBtn:hover, .widgetHeaderBtn:focus {
+    background: rgba(0, 0, 0, 0);
+    color: #3a7999;
+    box-shadow: inset 0 0 0 2px #3a7999;
+}
+
+.box-one {
+  -webkit-transition:all linear 0.4s;
+  transition:all linear 0.4s;
+  height:100px; width:200px; background:white;    border: 2px solid #ccc!important;
+    border-radius: 16px!important;
+}
+.box-one.ng-hide {
+display: block!important;
+  opacity:0;
+}
+
+.gridsterContent{
+	height:120px;
+}
+.gridsterAppContent{
+	height:120px;
+}
+ .gridsterImage{
+ 	height:84px; 
+ 	width:168px;
+ }
+
+/*application empty div*/
+.app-error-block {
+    padding-top: 10px;
+}
+
+.text-center { text-align: center; }
+
+.text-right { text-align: right; }
+
+.text-justify { text-align: justify; }
+
+/*widget header*/
+.optionsMenu{
+	position: absolute;
+    list-style: none;
+    top: 25px;
+    right: 10px;
+    border: 1px solid #067ab4;
+    display: none;
+    z-index: 2;
+    border-radius: 6px 0px 6px 6px;
+    background: #fff;
+    width: 130px;
+}
+
+.optionsMenuLink {
+    position: relative;
+    padding-left: 8px;
+    padding-right: 2px;
+    font-size: 12px;
+    line-height: 30px;
+    color: #444444;
+}
+.optionsMenu > li:hover a {
+    color: #ffffff !important;
+}
+.optionsMenu > li {
+    width: 100%;
+    text-align: left;
+}
+.optionsMenu > li:hover {
+    background-color: #0faaf7;
+    border-color: none !important;
+    cursor: pointer;
+}
+
+.simulateCatGridHeader{
+	position: relative;
+    height: 70px !important;
+    border: 1px solid #d3d3d3;
+    border-bottom: 0;
+    background-color: #E5E5E5;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    z-index: 1;
+}
+
+.simulateCatGridHeaderTitle{
+	line-height: 20px;
+	margin-top: 10px;
+	 margin-left: 26px;
+    font-family: "Omnes-ECOMP-W02", Arial;
+    font-size: 18px; 
+    color: #444444;
+    float: left;
+}
+
+.simulateCatGridHeaderRadio{
+    line-height: 20px;
+    margin-top: 10px; 
+    margin-left: 10px;
+    font-family: "Omnes-ECOMP-W02", Arial;
+    font-size: 12px;
+    color: #444444;
+    float: left; 
+}
+
+.simulateCatGridHeaderDetails{
+	line-height: 20px;
+    margin-left: 10px;
+    font-family: "Omnes-ECOMP-W02", Arial;
+    font-size: 12px; 
+    color: #444444;
+    float: left;
+}
+
+.simulateGridHeaderHandle{
+	cursor: move;
+    margin: 12px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    border: 0;
+    vertical-align: middle;
+    -ms-interpolation-mode: bicubic;
+    display: block;
+}
+
+.portal-checkbox--on .portal-checkbox__indicator, .portal-radio--on .portal-radio__indicator {
+    opacity: 1;
+}
+
+.animate-enter, 
+.animate-leave
+{ 
+    -webkit-transition: 400ms cubic-bezier(0.250, 0.250, 0.750, 0.750) all;
+    -moz-transition: 400ms cubic-bezier(0.250, 0.250, 0.750, 0.750) all;
+    -ms-transition: 400ms cubic-bezier(0.250, 0.250, 0.750, 0.750) all;
+    -o-transition: 400ms cubic-bezier(0.250, 0.250, 0.750, 0.750) all;
+    transition: 400ms cubic-bezier(0.250, 0.250, 0.750, 0.750) all;
+    position: relative;
+    display: block;
+} 
+
+.animate-enter.animate-enter-active, 
+.animate-leave {
+    opacity: 1;
+    top: 0;
+    height: 30px;
+}
+
+.animate-leave.animate-leave-active,
+.animate-enter {
+    opacity: 0;
+    top: -50px;
+    height: 0px;
+}
+
+/** gridster style**/
+ul {
+    list-style: none;
+}
+.gridster-box {
+    height: 100%;
+    border: 1px solid #ccc;
+    background-color: #fff;
+ 	transition: transform 0.5s ease-out;
+}
+.gridster-box-header {
+    background-color: #fff;
+    padding: 0 0px 0 10px;
+    border-bottom: 1px solid #ccc;
+    position: relative;
+    height: 50px !important;
+}
+.gridster-box-header h3 {
+    margin-top: 15px;
+    display: inline-block;
+    font-family: "Omnes-ECOMP-W02", Arial;
+}
+.gridster-box-content {
+    padding: 59px;
+}
+.gridster-box:hover{
+    transform: scale(1.1);
+}
+.gridster-box-header-btns {
+    top: 15px;
+    right: 10px;
+    position: absolute;
+}
+.checkbox .skin {
+    left: 125px;
+    top: -24px;
+}
+.form-row {
+    margin-top: -14px;
+}
+
+.icon-content-gridguide{
+cursor:move;
+font-size: 22px; 
+}
+.icon-tickets-contested{
+font-size: 20px;
+margin-left: 126px;
+}
+
+.checkbox, .radio {
+    min-height: 0px; 
+    padding-left: 0px; 
+
+}

@@ -1,0 +1,161 @@
+<!--
+  ================================================================================
+  ECOMP Portal
+  ================================================================================
+  Copyright (C) 2017 AT&T Intellectual Property
+  ================================================================================
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  ================================================================================
+  -->
+<div class="user-notification-details-modal">
+	<!--<div class="functional-menu-container">-->
+	<div id="app-title" class="title">{{modalPgTitle}}</div>
+	<div class="user-notification-details-contents">
+		<div class="left-container">
+			<div class="add-widget-field" style="{{isEditMode? 'opacity : 0.6; pointer-events: none;':' '}} ">
+				<div class="user-notif-label">Broadcast to All Categories</div>
+				<label id="label-yes" class="simulateCatGridHeaderRadioButton"> <input
+					id="radio-button-yes" type="radio" ng-model="isForAllRoles" value="Y"> Yes
+				</label> <label id="label-no" class="simulateCatGridHeaderRadioButton"> <input
+					id="radio-button-no" type="radio" ng-model="isForAllRoles" value="N"> No
+				</label>
+			</div>
+			<div 
+				style="padding-left: 10px; {{(! isForAllRoles ||isForAllRoles=='Y')? 'opacity : 0.6; pointer-events: none;':' '}} {{isEditMode? 'opacity : 0.6;':' '}} "
+				class="user-notif-label">
+				<div id="notifcation-label-user" class="user-notif-label">
+					<span ng-show="isForAllRoles=='N'" runat="server" ID="required" style="color: Red;">*</span>
+					Categories
+				</div>
+				<div>
+
+				<div id="notifcation-label-user-div" class="user-notif-label"></div>
+				<label id="funcMenu-label-yes" > <input id="radio-button-funcMenu"
+				type="radio" ng-model="isFunctionalMenu" ng-click="getFunctionalMenu()" value="Y"> Functional Menu
+				<br/>
+				</label> <label id="approles-label-no" > <input id="radio-button-approles"
+				type="radio" ng-model="isFunctionalMenu" ng-click="getAppRoleIds()" value="N"> Application Roles
+				</label>
+
+				<div id="approles-checkbox" ng-show="!checkBoxObj.isAnyRoleSelected&&(isForAllRoles=='N')&&(!isEditMode)">
+					
+					<div id="approles-checkbox-required" ng-show="!checkBoxObj.isAnyRoleSelected" >
+						
+
+						<small class="checkbox-categories">At least
+							one category is required</small>
+
+					</div>
+				</div>
+				
+				</div>
+				
+				<div  id="tree1">
+					<div id="Service_Creation"></div>
+				</div>
+				<div 
+					
+					id="jq-tree-div" jq-tree-user-notif ></div>
+
+					
+
+				<script type="text/ng-template" id="jq-tree-tmpl-user-notif.html">
+            	<div  id="jqTreeUserNotif" class="tree"></div>
+        	</script>
+			</div>
+			<div>
+
+				<div id="add-user-notif-priority" class="add-widget-field" style="{{isEditMode? 'opacity : 0.6; pointer-events: none;':' '}} ">
+					<div id="user-notification-priority-label" class="user-notif-label">Priority</div>
+					<label id="label-important" class="simulateCatGridHeaderRadioButton"> <input
+						id="radio-button-normal" type="radio" ng-model="selectedPriority" value="1"> Normal
+					</label> <label id="label-normal" class="simulateCatGridHeaderRadioButton"> <input
+						id="radio-button-important" type="radio" ng-model="selectedPriority" value="2">
+						Important
+					</label>
+				</div>
+			</div>
+		</div>
+		<div id="app-conatiner-right" class="right-container">
+
+			<div id="add-user-notif-startdate" class="add-widget-field"
+				style="padding-bottom: 12px; width: 301px !important;{{( isEditMode )? 'opacity : 0.6; pointer-events: none;':' '}}">
+				<div id="user-notification-startdate-label" class="user-notif-label">
+					<div class="user-notif-label">
+						<span runat="server" ID="required" style="color: Red;">*</span>
+						Start Date (Local Time)
+					</div>
+					<input class="notif-input-calendar" id="datepicker-start" type="text" 
+						ng-model="startTime" b2b-datepicker min="minDate" max="maxDate" 
+						required />
+					<div id="user-startdate-required" ng-show="!startTime">
+						<small class="mandatory-categories">Start Date is Required</small>
+					</div>
+				</div>
+				<div ng-show="!isEditMode" ng-init="formatStartDate()"></div> 
+			</div>			
+
+			<div id="add-user-notif-enddate" class="add-widget-field"
+				style="padding-bottom: 12px;     width: 301px !important; {{( isEditMode )? 'opacity : 0.6; pointer-events: none;':' '}}">
+				<div id="user-notification-enddate-label" class="user-notif-label">
+					<span runat="server" ID="required" style="color: Red;">*</span> End	Date (Local Time)
+				</div>
+				<input class="notif-input-calendar" type="text" id="datepicker-end" 
+					ng-model="endTime" b2b-datepicker min="minDate" max="maxDate" 
+					required />
+				<div id="user-enddate-required" ng-show="!endTime" >
+					<small class="mandatory-categories">End Date is Required</small>
+				</div>
+				<div id="user-enddate-error" ng-show="endTime&&startTime&&startTime.getTime()>=endTime.getTime()" style="color: #cf2a2a; font-size: 10px;">
+					<small style="position: absolute;">End Date must be greater than start Date</small>
+				</div>
+				<div ng-show="!isEditMode" ng-init="formatEndDate()" ></div> 
+			</div>
+
+			<div id="add-user-notif-title" class="add-widget-field"
+				style="padding-bottom: 12px; {{( isEditMode )? 'opacity : 0.6; pointer-events: none;':' '}}">
+				<div id="user-notification-title-label" class="user-notif-label">
+					<span runat="server" ID="required" style="color: Red;"
+						visible="false"> *</span> Title
+				</div>
+				<textarea id="add-notification-input-title" class="notif-input" ng-model="msgHeader" name="content" style="height: 50px;">
+                </textarea>
+				<div id="user-title-required" ng-show="msgHeader.length == 0">
+					<small class="mandatory-categories">Title is Required</small>
+				</div>
+			</div>
+			
+			<div id="add-user-notif-message" class="add-widget-field"
+				style="padding-bottom: 12px; {{( isEditMode )? 'opacity : 0.6; pointer-events: none;':' '}}">
+				<div id="user-notif-message-label" class="user-notif-label">
+					<span runat="server" ID="required" style="color: Red;"
+						visible="false"> *</span> Message
+				</div>
+				<textarea id="user-notif-input-message" class="notif-input" style="height: 150px"
+					ng-model="msgDescription" name="content">
+				</textarea>
+				<div id="user-notif-message-required" ng-show="msgDescription.length ==0 ">
+				<small class="mandatory-categories">Message is Required</small>
+				</div>
+			</div>
+
+			<div class="dialog-control">
+				<a ng-show="!isEditMode">
+				<button id="button-notification-save" class="btn btn-alt btn-small" size="small" ng-disabled="addUserNotificationValidation()"
+					ng-click="addUserNotification()">Save</button></a> 						
+				<button id="button-notification-cancel" class="btn btn-alt btn-small" ng-click="closeThisDialog()" role="button" tabindex="0">Cancel</button>
+			</div>
+			
+		</div>
+	</div>
+</div>

@@ -1,0 +1,62 @@
+.multiple-select{
+  position: relative;
+  width: 100%;
+
+  .selectBox{
+    cursor: pointer;
+    position: relative;
+    border: 1px solid @portalDGray;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 30px;
+    height: 30px;
+    padding-left: 10px;
+    padding-right: 10px;
+
+    &.open::after{
+      content: '';
+      .arrow_up;
+      display: block;
+      position: absolute;
+      top: 12px;
+      right: 4px;
+    }
+    &.closed::after{
+      content: '';
+      .arrow_down;
+      display: block;
+      position: absolute;
+      top: 12px;
+      right: 4px;
+    }
+    &.disabled{
+      cursor: default;
+      background: @portalLGray;
+    }
+
+  }
+
+  .checkboxes{
+    z-index: 99999;
+    padding-left: 8px;
+    padding-right: 8px;
+    position: absolute;
+    top: 30px;
+    width: 100%;
+    background: @portalWhite;
+
+    display: block;
+    border: 1px @portalLGray solid;
+
+    label{
+      cursor: pointer;
+      display: block;
+    }
+    input{
+      cursor: pointer;
+    }
+
+
+  }
+}

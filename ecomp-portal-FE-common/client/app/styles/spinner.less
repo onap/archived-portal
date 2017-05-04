@@ -1,0 +1,37 @@
+.ecomp-spinner{
+  background: url('../assets/images/spinner.gif') top left no-repeat;
+  @height: 32px;
+  @width: 32px;
+
+  width: @width;
+  height: @height;
+  position: absolute;
+  top: 35%;
+  left: ~"calc(50% - @{width}/2)";
+}
+
+.ecomp-save-spinner{
+  background: url('../assets/images/spinner.gif') top left no-repeat;
+  @resize: 25px;
+  width: @resize;
+  height: @resize;
+  background-size: @resize;
+  position: absolute;
+  left: -50px;
+  top: 2px;
+}
+
+.ecomp-small-spinner{
+  background: url('../assets/images/spinner.gif') top left no-repeat;
+  @resize: 25px;
+  width: @resize;
+  height: @resize;
+  background-size: @resize;
+  position: relative;
+  display: inline-block;
+  vertical-align: 2px;
+  cursor: pointer;
+  top: 6px;
+  color: transparent;
+  margin-left: 8px;
+}

@@ -1,0 +1,81 @@
+<!--
+  ================================================================================
+  ECOMP Portal
+  ================================================================================
+  Copyright (C) 2017 AT&T Intellectual Property
+  ================================================================================
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  ================================================================================
+  -->
+<div class="w-ecomp-main">
+    <div class="w-ecomp-main-container">
+        <div class="widgets-page-main" id="page-content">
+            <div id="widget-onboarding-title" class="w-ecomp-main-view-title">Widget Onboarding</div>
+            <div class="widgets-table">
+                <div class="table-control">
+                        <div class="c-ecomp-portal-abs-select default">
+                            <div class="form-field" id="widegets-available-apps"
+                                 att-select="widgets.availableApps"
+                                 ng-model="widgets.filterByApp"></div>
+                        </div>
+                    <input class="table-search" type="text" id="widget-onboarding-table-search"
+                           placeholder="Search in entire table"
+                           ng-model="widgets.searchString"/>
+
+                    <div id="widget-onboarding-button-add" class="add-button" ng-click="widgets.openWidgetDetailsModal()">Add Widget</div>
+                </div>
+                <div class="error-text" ng-show="infoMessage">
+                    <span class="error-help">Only widgets for active applications are displayed.</span>
+                    <button type="button" class="close" ng-click="hideMe()">&times;</button>
+                </div>
+                <div class="error-text" ng-show="noWidgets">
+                    <span class="informational">There are currently no widgets available.</span>
+                </div>
+
+                <span class="ecomp-spinner" ng-show="widgets.isLoadingTable"></span>
+                <div class="c-ecomp-portal-abs-table default" ng-hide="widgets.isLoadingTable">
+                    <table b2b-table
+                           table-data="widgets.widgetsList"
+                           search-string="widgets.searchString"
+                           view-per-page="widgets.viewPerPageIgnored"
+                           current-page="widgets.currentPageIgnored"
+                           total-page="widgets.totalPageIgnored">
+                        <thead b2b-table-row type="header">
+                        <tr>
+                            <th id="widget-onboarding-th-header-name" ng-repeat="header in widgets.widgetsTableHeaders" b2b-table-header key="{{header.value}}" sortable="{{header.isSortable}}">{{header.name}}</th>
+                            <th id="widget-onboarding-th-header-url" b2b-table-header  key="url" sortable="{{false}}">URL</th>
+                            <th id="widget-onboarding-th-header-delete" b2b-table-header  sortable="{{false}}">Delete</th>
+                        </tr>
+                        </thead>
+                        <tbody b2b-table-row type="body"
+                               class="table-body"
+                               row-repeat="rowData in widgets.widgetsList | filter:widgets.filterByDropdownValue">
+                        <tr >
+                            <td b2b-table-body ng-repeat="header in widgets.widgetsTableHeaders" ng-click="widgets.openWidgetDetailsModal(rowData)">
+                                <div id="widget-onboarding-div-{{rowData[header.value].split(' ').join('-')}}" ng-bind="rowData[header.value]"></div>
+                            </td>
+                            <td b2b-table-body ng-click="widgets.openWidgetDetailsModal(rowData)">
+                                <div id="widget-onboarding-div-url-{{rowData[header.value].split(' ').join('-')}}" ng-bind="rowData.url | trusted"></div>
+                            </td>
+                            <td b2b-table-body>
+                                <div id="widget-onboarding-div-delete-widget-{{$index}}" class="delete-widget" ng-click="widgets.deleteWidget(rowData)"></div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

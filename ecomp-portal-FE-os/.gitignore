@@ -1,0 +1,11 @@
+/target/
+.classpath
+.project
+.settings/
+dist/
+bin
+node
+node_modules
+app
+.tmp
+client/bower_components

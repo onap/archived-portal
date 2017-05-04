@@ -1,0 +1,156 @@
+.widget-catalog{
+    .bg_portalWhite;//white for 1702
+    //.bg_portalGray;  // gray for 1610
+    position: @page-main-position;
+    top: @page-main-top;
+    left: @page-main-left;
+    right: @page-main-right;
+    bottom: @page-main-bottom;
+    padding-top: @padding-top;
+    overflow-y: @page-main-overflow-y;
+    padding-left: @padding-left-side;
+    margin: auto;
+
+    .widget-title {
+        padding-left: 20px;
+        margin-bottom: -15px;
+    }
+
+  .widget-gridster-header {
+	color: #0574ac;
+    font-family: Omnes-ECOMP-W02-Bold, Arial;
+    font-size: 18px;
+  }
+
+  .widget-gridster-footer {
+    background-color: @portalWhite
+  }
+
+  .widget-iframe {
+    width: 100%;
+    height: 100%;
+  }
+
+  .widget-image {
+    cursor: pointer;
+    width: 20px;
+    height: 25px;
+  }
+
+  .enlarge-content{
+    top: 120px;
+    left: 400px;
+    width:1170px;
+    height:600px;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: none repeat scroll 0 0 @funcBkgGray;
+  }
+
+  .enlarge-close-button{
+    .btn-blue;
+    position: relative;
+    top : -20px;
+    left : 1145px;
+    width : 25px;
+  }
+
+  .widgets-home-container {
+    //.content_justify;
+    //position: relative;
+    padding-right: 0;
+    padding-left: 0;
+    padding-bottom: 32px;
+    width: 100%;
+      //margin-left: @table-margin-left;
+
+    .portals-list {
+      min-height: 70vh;
+      //display: flex;
+      //justify-content: center;
+      flex-flow: row wrap;
+      width: @table-width;
+	  margin:auto;
+      //margin-left: @table-margin-left;
+      margin-bottom: 63px;
+
+      .portals-list-item {
+        background-color: @portalWhite;
+        border-radius: 2px;
+        box-shadow: 0px -1px 2px 0px rgba(0, 0, 0, 0.1);
+        display: inline-block;
+        width: 360px;
+        height: 300px;
+        background-size: cover;
+        cursor: pointer;
+        margin: 15px;
+        overflow: hidden;
+
+        .portals-item-info {
+          background-color: @portalWhite;
+          height: 50px;
+          top: 180px;
+         // position: relative;
+          box-shadow: 0px -1px 2px 0px rgba(0, 0, 0, 0.1);
+          padding: 16px;
+
+          .info-title {
+            //.a24r;
+            .dBlue24r;  // AT&T Dark Blue
+            margin-bottom: 4px;
+            
+            text-overflow: ellipsis;
+            overflow: hidden;
+          }
+          .info-description {
+            .portalDBlue16r;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+          }
+          .info-button {
+            .btn-green;
+            width: 96px;
+          //  position: absolute;
+            bottom: 16px;
+            left: 16px;
+          }
+
+          &:hover {
+            opacity: .93;
+            z-index: 3;
+          }
+        }
+      }
+    }
+  }
+}
+
+.gridster-item-container .gridster-item-body {
+	bottom:0px;
+	overflow-y:auto;
+    overflow-x:hidden;
+}
+
+@keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+#widget-page-content{
+	padding-left:250px;
+}
+
+.widget-centerAlignment{
+margin: auto;
+width: 1170px;
+}
+#widget-checkbox-label{
+margin-left: 190px;
+top: 3px;
+}

@@ -1,0 +1,66 @@
+<!--
+  ================================================================================
+  ECOMP Portal
+  ================================================================================
+  Copyright (C) 2017 AT&T Intellectual Property
+  ================================================================================
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  ================================================================================
+  -->
+<div class="w-ecomp-admins-page-main">
+    <div class="admins-home-container" id="page-content">
+            <div id="title" class="w-ecomp-main-view-title">
+	 			<h1 class="heading-page" >Admins</h1>
+			</div>
+            <div class="admins-table">
+                <div class="table-control">
+                	 <div class="table-control-fields">		
+						<div class="table-dropdown">
+							<select id="dropdown1" name="dropdown1" b2b-dropdown placeholder-text="All application" ng-model="admins.filterByApp.value">
+				                <option b2b-dropdown-list option-repeat="d in admins.availableApps" value="{{d.value}}">{{d.title}}</option>
+				            </select>
+						</div>
+						<div >
+							<input id="input-table-search" placeholder="Search in entire table" class="table-search-field" type="text" data-ng-model="admins.searchString">
+						</div>
+						<button class="btn btn-alt btn-small" ng-click="admins.openAddNewAdminModal()"><i class="icon-people-userbookmark" aria-hidden="true"></i>&nbsp;Add Admin</button> 
+					</div>                  
+            	</div>
+                <span class="ecomp-spinner" ng-show="admins.isLoadingTable"></span>
+                <div b2b-table table-data="admins.adminsTableData"  ng-hide="admins.isLoadingTable"	search-string="admins.searchString" class="b2b-table-div">
+					<table>
+						<thead b2b-table-row type="header">
+							<tr >
+								<th b2b-table-header key="firstName" sortable="true" id="col1">First Name</th>
+								<th b2b-table-header key="lastName" sortable="true" id="col2">Last Name</th>
+								<th b2b-table-header key="orgUserId" sortable="true" id="col3">User ID</th>
+								<th b2b-table-header key="" sortable="falses" id="col4">Applications</th>
+							</tr>
+						</thead>
+						<tbody b2b-table-row type="body" 	row-repeat="rowData in admins.adminsTableData | filter: admins.portalsRowFilter">
+							<tr ng-click="admins.openAddNewAdminModal(rowData)">
+								<td b2b-table-body id="rowheader_t1_{{$index}}" headers="col1" ng-bind="rowData.firstName"></td>
+								<td b2b-table-body headers="rowheader_t1_{{$index}} col2" ng-bind="rowData.lastName"></td>
+								<td b2b-table-body headers="rowheader_t1_{{$index}} col3" ng-bind="rowData.orgUserId"></td>
+								<td b2b-table-body headers="rowheader_t1_{{$index}} col4">
+									<div class="ecomp-table-repeat" ng-repeat="app in rowData.apps" ng-bind="app.appName"></div>
+								</td>							
+							</tr>
+						</tbody>
+					</table>
+				</div>
+            </div>
+        </div>
+    </div>
+
+</div>

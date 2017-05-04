@@ -1,0 +1,55 @@
+<!--
+  ================================================================================
+  ECOMP Portal
+  ================================================================================
+  Copyright (C) 2017 AT&T Intellectual Property
+  ================================================================================
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  ================================================================================
+  -->
+<div class="w-ecomp-admins-page-main">
+	<div class="admins-home-container" id="page-content">
+		<div id="title" class="w-ecomp-main-view-title">
+			<h1 class="heading-page" >Roles</h1>
+		</div>
+		<div class="admins-table">
+			<div id="button-create-role" align="left" style="marin-bottom: 50px;" >
+				<button ng-click="goToUrl(0)" class = "btn btn-alt btn-small">Create</button>
+			</div>
+			<div b2b-table table-data="availableRoles"  search-string="searchString" class="b2b-table-div">
+		        <table>
+		            <thead b2b-table-row type="header">
+		                <tr>
+		                    <th b2b-table-header key="name" sortable="true" default-sort="a" id="col1">Name</th>
+		                    <th b2b-table-header key="priority" sortable="true" id="col2">Priority</th>
+		                    <th b2b-table-header id="col3" sortable="false">Active</th>
+		                </tr>
+		            </thead>
+		            <tbody b2b-table-row type="body" row-repeat="rowData in availableRoles">
+		                <tr>
+		                    <td b2b-table-body id="rowheader_t1_{{$index}}" headers="col1" ng-bind="rowData['name']"></td>
+		                    <td b2b-table-body ng-bind="rowData['priority']"></td>
+		                    <td b2b-table-body headers="rowheader_t1_{{$index}} col3" >
+		                    	<div >
+						    		<label class="btn-switch-label" tabindex="0" role="option">
+										<input type="checkbox" b2b-switches ng-model="rowData.active" ng-click="toggleRole(rowData.active,rowData);">
+								    </label> 
+						    	</div>
+		                    </td>
+		                </tr>
+		            </tbody>
+		        </table>
+		    </div>
+		</div>
+	</div>
+</div>

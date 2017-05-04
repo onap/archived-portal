@@ -1,0 +1,117 @@
+<!--
+  ================================================================================
+  ECOMP Portal
+  ================================================================================
+  Copyright (C) 2017 AT&T Intellectual Property
+  ================================================================================
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  ================================================================================
+  -->
+<div class="w-ecomp-user-notification-admin"
+	ng-style="{bottom: tabBottom}">
+	 <div class="w-ecomp-main-container" >
+	<div class="user-notification" id="page-content">
+		<div id="title" class="w-ecomp-main-view-title">
+			<h1 class="heading-page" >User Notifications</h1>
+		</div>
+		<div class="userNotifTable">
+		
+		   <div class="table-control-fields">
+		   <input class="input-table-search" type="text" id="table-search-field"
+						placeholder="Search in entire table" ng-model="searchString" />
+					</div>
+			  <div class="table-control-buttons" ng-controller="userNotificationsCtrl">
+						<button class="btn btn-alt btn-small"id="button-openAddNewApp"   ng-click="openUserNotificationModal()" >
+		                	<i class="icon-people-userbookmark" aria-hidden="true"></i>&nbsp;Add Notification
+		                </button> 
+					</div>
+		
+			<span class="ecomp-spinner" ng-show="isLoadingTable"></span>
+			<div class="b2b-table-div"
+				ng-hide="isLoadingTable" id="table-main">
+				<table b2b-table id="table-main" table-data="adminNotifications" search-string="searchString"
+					current-page="ignoredCurrentPage">
+					<thead b2b-table-row type="header">
+						<tr>
+							<th id="th-notif-0" b2b-table-header key="msgSource"
+								sortable="true" style=" width: 10px;">Message Source</th>
+							<th id="th-notif-1" b2b-table-header key="msgHeader"
+								sortable="true" style=" width: 10px;">Message</th>
+							<th id="th-notif-2"  b2b-table-header key="startTime"
+								sortable="true">Start Date (Local Time)</th>
+							<th id="th-notif-3" b2b-table-header key="endTime"
+								sortable="true">End Date  (Local Time)</th>
+							<th id="th-notif-4" b2b-table-header key="priority"
+								sortable="true">Priority</th>
+							<th id="th-notif-5" b2b-table-header key="loginId"
+								sortable="true">Created By</th>
+							<th id="th-notif-6" b2b-table-header key="createdDate"
+								sortable="true">Created Time</th>
+							<th id="th-notif-7" b2b-table-header key="isForAllRoles"
+								sortable="true">All Users (Roles)?</th>
+							<th id="th-notif-8" b2b-table-header key="edit" sortable="false">View/Delete</th>
+						</tr>
+					</thead>
+					<tbody b2b-table-row type="body" class="table-body"
+						row-repeat="rowData in tableAdminNotifItems">
+						<tr>
+							<td b2b-table-body style="{{rowData.expired?'color:lightgray !important':''}}">
+								<div  id="{{$index}}-msgSource">{{rowData.msgSource}}</div>
+							</td>
+							<td b2b-table-body style="{{rowData.expired?' color:lightgray !important':''}}">
+								<div id="{{$index}}-msgHeader" style="font-weight: bold;">{{rowData.msgHeader}}</div>
+								<div id="{{$index}}-message" ng-if="rowData.msgSource==='EP'" style="width:500px"  ng-bind="rowData.msgDescription"></div>
+								<div id="{{$index}}-message" ng-if="rowData.msgSource!=='EP'"  ng-bind="rowData.msgDescription| elipsis: 27"></div>
+							</td>
+							<td b2b-table-body style="{{rowData.expired?'color:lightgray !important':''}}">
+								<div id="{{$index}}-startTime">{{rowData.startTime |
+									date:'medium'}}</div>
+							</td >
+							<td b2b-table-body style="{{rowData.expired?'color:lightgray !important':''}}">
+								<div id="{{$index}}-endTime">{{rowData.endTime |
+									date:'medium'}}</div>
+							</td>
+							<td b2b-table-body style="{{rowData.expired?'color:lightgray !important':''}}">
+								<div id="{{$index}}-priority">{{priorityItems[rowData.priority]}}</div>
+							</td>
+							<td b2b-table-body style="{{rowData.expired?'color:lightgray !important':''}}">
+								<div id="{{$index}}-loginId">{{!rowData.loginId ?externalNotification: rowData.loginId}}</div>
+							</td>
+							<td b2b-table-body style="{{rowData.expired?'color:lightgray !important':''}}">
+								<div id="{{$index}}-createdDate">{{rowData.createdDate |
+									date:'medium'}}</div>
+							</td>
+							<td b2b-table-body style="{{rowData.expired?'color:lightgray !important':''}}">
+								<div id="{{$index}}-isForAllRoles">{{rowData.isForAllRoles}}</div>
+							</td>
+							<td b2b-table-body style="{{rowData.expired?' color:lightgray !important':''}}">
+							
+							<p id="{{$index}}-notification-edit" ng-if="rowData.msgSource==='EP'" ng-click="editUserNotificationModal(rowData)"class="icon-overview"  >  /</p> 
+							<p id="{{$index}}-notification-edit" ng-if="rowData.msgSource!=='EP'" ng-click="showDetailedJsonMessage(rowData)"class="icon-overview"  >/ </p> 
+							<p id="{{$index}}-notification-delete" ng-click="removeUserNotification(rowData)" class="icon-misc-trash"></p> 
+							
+						
+							</td>
+						</tr>
+					</tbody>
+				</table>
+				
+			</div>
+					<div b2b-pagination="" total-pages="totalPages1"
+						current-page="currentPage1" click-handler="customPageHandler"
+						role="navigation" aria-label="Customer Data Pages"></div>
+				
+						
+		</div>
+	</div>
+</div>

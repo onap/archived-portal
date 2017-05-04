@@ -1,0 +1,31 @@
+.applications-page-main{
+ .bg_portalWhite;//white for 1702
+    position: @page-main-position;
+    top: @page-main-top;
+    left: @page-main-left;
+    right: @page-main-right;
+    bottom: @page-main-bottom;
+    padding-top: @padding-top;
+    overflow-y: @page-main-overflow-y;
+    padding-left: @padding-left-side;
+	#input-table-search::-webkit-input-placeholder,
+	{
+	font-style: italic;
+	  color:    #D7D7D7;
+	}
+    .apps-table {
+        width: @table-width;
+        //margin-left: @table-margin-left;
+        //margin: @table-margin;
+		margin:auto;
+        .delete-app{
+            .ico_trash_default;
+        }
+        .small-thumbnail{
+            width: 72px;
+            height: 60px;
+            border: 1px solid @portalLGray;
+            border-radius: 2px;
+        }
+    }
+}

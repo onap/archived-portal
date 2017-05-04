@@ -1,0 +1,92 @@
+//portal abs table component
+.c-ecomp-portal-abs-table{
+    width: 100%;
+    height: 600px;
+    overflow-x: auto;
+    overflow-y: auto;
+    background-color: @portalLightGray;
+
+    .tablesorter-default {
+        //border: 1px solid @q;
+
+        th,
+        thead td {
+            .dGray16m;
+            color: #333333;
+            background-color: @portalLightGray;
+            border-collapse: collapse;
+            //border-top-style: none;
+            border: 1px solid @q;
+            padding: 0;
+            font-weight: 700;
+            height: 38px;
+        }
+
+        tbody tr td {
+            .dGray16m;
+            border-left: 1px solid @portalLGray;
+            background-color: @portalWhite;
+            border-bottom: 1px solid @portalLGray;
+            height: 32px;
+            div {
+                line-height: 32px;
+            }
+        }
+
+        .td-first {
+            border-left: none;
+        }
+
+        .tablesorter-search-highlight {
+            font-weight: bold;
+        }
+
+
+        tr:first-child {
+            border-bottom: 1px solid @portalLGray;
+        }
+
+        th:first-child{
+            border-right: 1px solid @portalLGray;
+        }
+        th:nth-child(2){
+            border-right: 1px solid @portalLGray;
+        }
+        th:nth-child(3){
+            border-right: 1px solid @portalLGray;
+        }
+
+        tr:last-child {
+            td {
+                border-bottom-style:  none;
+            }
+        }
+
+
+    }
+}
+
+//portal abs select component
+.c-ecomp-portal-abs-select{
+    width: @select-width;
+    display: inline-block;
+    margin-right: 10px;
+    .select2-chosen{
+        width: @select-width;
+        line-height: 20px;
+    }
+    .select2-container .select2-choice {
+        width: @select-width;
+        border-radius: 6px;
+        border-color: @portalLGray;
+    }
+
+  .select2-results {
+    width: @select-width;
+    background-color: @portalWhite;
+  }
+
+    .form-field, .form-field-input-container {
+        width: @select-width;
+    }
+}

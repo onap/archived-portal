@@ -1,63 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+	
 	<groupId>org.openecomp.portal</groupId>
-	<artifactId>portal-project</artifactId>
+	<artifactId>ecompportal</artifactId>
+	<version>0</version>
 	<packaging>pom</packaging>
-	<!-- NOTE This value will not be picked from the property tag below, pass it as -Drelease.version="" when doing mvn deploy -->
-	<version>1.1.0-SNAPSHOT</version>
-	<name>Portal (parent)</name>
-	<url>https://wiki/display/EcompPortal</url>
-	<description>ECOMP Portal Open-Source</description>
-	<scm>
-		<connection>scm:git:https://todourl/</connection>
-	</scm>
-
+	<name>ECOMP Portal maven parent project</name>
+	
 	<modules>
-		<module>ecomp-portal-FE</module>
-		<module>ecomp-portal-BE</module>
+		<!-- Child modules do NOT name this parent. -->
+		<!-- Defined for build convenience only! -->
+
+		<!-- BE -->	
+		<module>ecomp-portal-BE-common</module>
+		<module>ecomp-portal-BE-os</module>	
+		<module>ecomp-portal-BE-common-test</module>
+		<module>ecomp-portal-FE-os</module>
+		
 	</modules>
 
-	<properties>
-		<nexusproxy>https://nexus.onap.org</nexusproxy>
-		<snapshotNexusPath>/content/repositories/snapshots/</snapshotNexusPath>
-		<releaseNexusPath>/content/repositories/releases/</releaseNexusPath>
-		<stagingNexusPath>/content/repositories/staging/</stagingNexusPath>
-	</properties>
-
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.sonatype.plugins</groupId>
-				<artifactId>nexus-staging-maven-plugin</artifactId>
-				<version>1.6.7</version>
-				<extensions>true</extensions>
-				<configuration>
-					<nexusUrl>${nexusproxy}</nexusUrl>
-					<stagingProfileId>176c31dfe190a</stagingProfileId>
-					<serverId>ecomp-staging</serverId>
-				</configuration>
-			</plugin>
-		</plugins>
-
-	</build>
-
-	<distributionManagement>
-		<!-- Publish jars to the Nexus Repository - public group -->
-		<!-- The id below must match your .m2/settings.xml/servers/server/id -->
-		<repository>
-			<id>ecomp-releases</id>
-			<name>OpenECOMP - Release Repository</name>
-			<url>${nexusproxy}/${releaseNexusPath}</url>
-		</repository>
-		<snapshotRepository>
-			<id>ecomp-snapshots</id>
-			<name>OpenECOMP - Snapshot Repository</name>
-			<url>${nexusproxy}/${snapshotNexusPath}</url>
-		</snapshotRepository>
-		<site>
-			<id>ecomp-site</id>
-			<url>dav:${nexusproxy}${sitePath}</url>
-		</site>
-	</distributionManagement>
 </project>

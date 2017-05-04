@@ -1,0 +1,98 @@
+<!--
+  ================================================================================
+  ECOMP Portal
+  ================================================================================
+  Copyright (C) 2017 AT&T Intellectual Property
+  ================================================================================
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  ================================================================================
+  -->
+<div class="w-ecomp-main">
+    <div class="w-ecomp-main-container" >
+        <div class="users-page-main" id="page-content">
+            <div id="users-page-title" class="w-ecomp-main-view-title">
+            	 <h1 class="heading-page" >Users</h1>
+            </div>
+            <div class="users-table">
+                <div class="table-control">
+                    <div class="table-control-fields">		
+						<div class="table-dropdown">
+							<select id="dropdown1" name="dropdown1" b2b-dropdown placeholder-text="Select Application" ng-model="users.selectedApp.value">
+				            	<option b2b-dropdown-list option-repeat="d in users.adminApps" value="{{d.value}}">{{d.title}}</option>
+				            </select>
+						</div>
+						<div>
+							<input id="input-table-search" placeholder="Search" class="table-search-field" type="text" data-ng-model="users.searchString">
+						</div>
+						<button class="btn btn-alt btn-small" ng-click="users.openAddNewUserModal()"><i class="icon-people-userbookmark" aria-hidden="true"></i>&nbsp;Add User</button> 
+	                   	<button class="btn btn-alt btn-small" ng-click="users.openBulkUserUploadModal()"><i class="icon-arrows-upload" aria-hidden="true"></i>&nbsp;Bulk Upload</button>
+					</div>
+                </div>
+                <div ng-hide="users.isLoadingTable">
+                    <div class="error-text" id="div-select-app" ng-show="noAppSelected">
+                        <p class="error-help">Use the 'Select application' dropdown to see users.</p>
+                    </div>
+                    <div class="error-text"
+                         id="div-error-no-users"
+                         ng-show="noUsersInApp">
+                        <p>&nbsp;</p>
+                        <p class="error-help">
+                        	No users found. Select "Add User" to add a User to the application.
+                        </p>
+                    </div>
+                    <div class="error-text"
+                         id="div-error-app-down"
+                         ng-show="appsIsDown" >
+                        <p>&nbsp;</p>
+                        <p class="error-help">
+                        	Failed to communicate with the application.
+                            Please try again later or contact a system administrator.
+                        </p>
+                    </div>
+                </div>
+                <span class="ecomp-spinner" ng-show="users.isLoadingTable"></span>
+                <div b2b-table table-data="users.accountUsers"  ng-hide="users.isLoadingTable"	search-string="users.searchString" class="b2b-table-div">
+					<table>
+						<thead b2b-table-row type="header">
+							<tr >
+								<th b2b-table-header key="firstName" sortable="true" id="col1">First Name</th>
+								<th b2b-table-header key="lastName" sortable="true" id="col2">Last Name</th>
+								<th b2b-table-header key="orgUserId" sortable="true" id="col3">User ID</th>
+								<th b2b-table-header key="" sortable="falses" id="col4">Roles</th>
+							</tr>
+						</thead>
+						<tbody b2b-table-row type="body" 	row-repeat="rowData in users.accountUsers">
+							<tr ng-click="users.openAddNewUserModal(rowData)">
+								<td b2b-table-body id="rowheader_t1_{{$index}}" headers="col1" ng-bind="rowData.firstName"></td>
+								<td b2b-table-body headers="rowheader_t1_{{$index}} col2" ng-bind="rowData.lastName"></td>
+								<td b2b-table-body headers="rowheader_t1_{{$index}} col3" ng-bind="rowData.orgUserId"></td>
+								<td b2b-table-body headers="rowheader_t1_{{$index}} col4">
+									<div class="ecomp-table-repeat" ng-repeat="role in rowData.roles" ng-bind="role.name"></div>
+								</td>							
+							</tr>
+						</tbody>
+					</table>
+				</div>
+            </div>
+            <div class="error-text"  id="div-error-403" ng-show="adminAppsIsNull==true">
+                <h1>Attention:</h1>
+                <p>&nbsp;</p>
+                <p class="error-help">It appears that you have not been added as an admin yet to an application.</p>
+                <p>&nbsp;</p>
+                <p class="error-help">Click on the Admins link to the left and check and see if you are listed as an admin for an application.
+                    If not, you can add yourself to the appropriate application.</p>
+            </div>
+        </div>
+    </div>
+
+</div>
