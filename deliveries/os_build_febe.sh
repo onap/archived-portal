@@ -3,6 +3,7 @@
 source $(dirname $0)/os_settings.sh
 
 export MVN="${MVN} -gs ${GLOBAL_SETTINGS_FILE} -s ${SETTINGS_FILE}"
+#export MVN="mvn"
 
 CURRENTDIR="$(pwd)"
 
@@ -22,28 +23,39 @@ mkdir $PROJECTDIR
 cd $CURRENTDIR
 cd ..
 
-cp -r ecomp-portal-FE $PROJECTDIR/ecomp-portal-FE
-cp -r ecomp-portal-BE $PROJECTDIR/ecomp-portal-BE
+cp -r ecomp-portal-FE-common $PROJECTDIR/ecomp-portal-FE-common
+cp -r ecomp-portal-FE-os $PROJECTDIR/ecomp-portal-FE-os
+cp -r ecomp-portal-BE-common $PROJECTDIR/ecomp-portal-BE-common
+cp -r ecomp-portal-BE-os $PROJECTDIR/ecomp-portal-BE-os
+cp -r ecomp-portal-DB-common $PROJECTDIR/ecomp-portal-DB-common
+cp -r ecomp-portal-DB-os $PROJECTDIR/ecomp-portal-DB-os
+
 cp -r ecompsdkos/ecomp-sdk $PROJECTDIR/ecomp-sdk
 
 #!/bin/bash
 shopt -s expand_aliases
 source ~/.bashrc
 
-cd $PROJECTDIR/ecomp-portal-FE/
+cd $PROJECTDIR/ecomp-portal-FE-os/
+
+${MVN} clean install
+
+cd $PROJECTDIR/ecomp-portal-BE-common
 
 ${MVN} install
 
-cd $PROJECTDIR/ecomp-portal-BE
+
+cd $PROJECTDIR/ecomp-portal-BE-os
 
 ${MVN} install
+
 
 # now install sdk app
-cd $PROJECTDIR/ecomp-sdk/sdk-app
+cd $PROJECTDIR/ecomp-sdk/epsdk-app-os
 
 ${MVN} install
 
-mv target/ep-sdk-app-1.1.0-SNAPSHOT target/ep-sdk-app
+mv target/epsdk-app-os-1.1.0-SNAPSHOT target/ep-sdk-app
 
 # now install DBC app
 cd $SOURCEDIR
@@ -60,8 +72,9 @@ cd $DBCDIR/dcae_dmaapbc_webapp
 
 ${MVN} install
 
-cd target
-mv dmaap-bc-app.1.1.0-SNAPSHOT.0 ep-dbc-app
+cd dbca-os/target
+
+mv  dmaap-bc-app-os-1.1.0-SNAPSHOT ep-dbc-app
 
 
 # install into docker

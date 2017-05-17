@@ -4,18 +4,25 @@ FROM mariadb:latest
 MAINTAINER Manoop talasila@research.att.com 
 
 ARG SCRIPT_DIR=${SCRIPT_DIR}
+ARG SCRIPT_COMMON_DIR=${SCRIPT_COMMON_DIR}
 ARG SDK_SCRIPT_DIR=${SDK_SCRIPT_DIR}
+ARG SDK_COMMON_SCRIPT_DIR=${SDK_COMMON_SCRIPT_DIR}
+ARG DBC_COMMON_SCRIPT_DIR=${DBC_COMMON_SCRIPT_DIR}
 ARG DBC_SCRIPT_DIR=${DBC_SCRIPT_DIR}
 #Add config file
 ADD my.cnf /etc/mysql/my.cnf
 #ADD cluster.cnf /etc/mysql/conf.d
 
 #Add DDL and DML SQL files
-ADD ${SCRIPT_DIR}/EcompPortalDDLMySql_1610_Complete_OS.sql docker-entrypoint-initdb.d/EcompPortalDDLMySql_1610_Complete_OS.sql
-ADD ${SCRIPT_DIR}/EcompPortalDMLMySql_1610_Complete_OS.sql docker-entrypoint-initdb.d/EcompPortalDMLMySql_1610_Complete_OS.sql
+ADD ${SCRIPT_COMMON_DIR}/EcompPortalDDLMySql_1707_Common.sql docker-entrypoint-initdb.d/EcompPortalDDLMySql_1707_Common.sql
+ADD ${SCRIPT_DIR}/EcompPortalDDLMySql_1707_OS.sql docker-entrypoint-initdb.d/EcompPortalDDLMySql_1707_OS.sql
+ADD ${SCRIPT_COMMON_DIR}/EcompPortalDMLMySql_1707_Common.sql docker-entrypoint-initdb.d/EcompPortalDMLMySql_1707_Common.sql
+ADD ${SCRIPT_DIR}/EcompPortalDMLMySql_1707_OS.sql docker-entrypoint-initdb.d/EcompPortalDMLMySql_1707_OS.sql
 
-ADD ${SDK_SCRIPT_DIR}/EcompSdkDDLMySql_1610_Complete_OS.sql docker-entrypoint-initdb.d/EcompSdkDDLMySql_1610_Complete_OS.sql
-ADD ${SDK_SCRIPT_DIR}/EcompSdkDMLMySql_1610_Complete_OS.sql docker-entrypoint-initdb.d/EcompSdkDMLMySql_1610_Complete_OS.sql
+ADD ${SDK_COMMON_SCRIPT_DIR}/EcompSdkDDLMySql_1707_Common.sql docker-entrypoint-initdb.d/EcompSdkDDLMySql_1707_Common.sql
+ADD ${SDK_SCRIPT_DIR}/EcompSdkDDLMySql_1707_OS.sql docker-entrypoint-initdb.d/EcompSdkDDLMySql_1707_OS.sql
+ADD ${SDK_COMMON_SCRIPT_DIR}/EcompSdkDMLMySql_1707_Common.sql docker-entrypoint-initdb.d/EcompSdkDMLMySql_1707_Common.sql
+ADD ${SDK_SCRIPT_DIR}/EcompSdkDMLMySql_1707_OS.sql docker-entrypoint-initdb.d/EcompSdkDMLMySql_1707_OS.sql
 
-ADD ${DBC_SCRIPT_DIR}/EcompSdkDDLMySql_1610_Complete_OS.sql docker-entrypoint-initdb.d/EcompDbcDDLMySql_1610_Complete_OS.sql
-ADD ${DBC_SCRIPT_DIR}/EcompSdkDMLMySql_1610_Complete_OS.sql docker-entrypoint-initdb.d/EcompDbcDMLMySql_1610_Complete_OS.sql
+#ADD ${DBC_COMMON_SCRIPT_DIR}/dbca-ddl-mysql-1707-common.sql docker-entrypoint-initdb.d/dbca-ddl-mysql-1707-common.sql
+#ADD ${DBC_SCRIPT_DIR}/dbca-dml-mysql-1707-os.sql docker-entrypoint-initdb.d/dbca-dml-mysql-1707-os.sql

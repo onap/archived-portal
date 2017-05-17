@@ -6,7 +6,7 @@ REPO="nexus3.onap.org:10003"
 
 TIMESTAMP=$(date +%C%y%m%dT%H%M%S)
 VERSION="1.1.0-STAGING-${TIMESTAMP}"
-LATEST="latest"
+LATEST="1.1-STAGING-latest"
 
 APPS_VERSION="${REPO}/openecomp/portalapps:${VERSION}"
 DB_VERSION="${REPO}/openecomp/portaldb:${VERSION}"
