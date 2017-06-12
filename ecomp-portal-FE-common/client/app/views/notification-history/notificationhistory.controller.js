@@ -44,11 +44,15 @@
             getNotificationHistory();           
         	
             $scope.showDetailedJsonMessage=function (selectedAdminNotification) {
+       		 notificationService.getMessageRecipients(selectedAdminNotification.notificationId).then(res =>{
+                    $scope.messageRecipients = res;
 				 var messageObject=JSON.parse(selectedAdminNotification.msgDescription);
 				 var html="";
 				 html+='<p>'+'Message Source'+' : '+selectedAdminNotification.msgSource+'</p>';
 				 html+='<p>'+'Message Title'+' : '+selectedAdminNotification.msgHeader+'</p>';
-				  for(var field in  messageObject){
+				 html+='<p>'+'Message Recipient'+' : '+$scope.messageRecipients+'</p>';
+
+				 for(var field in  messageObject){
 					 if(field=='eventDate'||field=='lastModifiedDate'){
 						 html+='<p>'+field+' : '+new Date(+messageObject[field])+'</p>';
 						  
@@ -57,7 +61,7 @@
 					 
 					 }
 				 }
-			
+
 		     var modalInstance = ngDialog.open({
 				    templateUrl: 'app/views/user-notifications-admin/user.notifications.Json.details.modal.page.html',
 				    controller: 'userNotificationCtrl',
@@ -73,8 +77,12 @@
 				     
 				      }
 				  }); 
-			
-				 
+		     
+       	 }).catch(err => {
+                $log.error('userNotificationsCtrl:getMessageRecipients:: error ', err);
+                $scope.isLoadingTable = false;
+            });
+
 			 };
          }
     }

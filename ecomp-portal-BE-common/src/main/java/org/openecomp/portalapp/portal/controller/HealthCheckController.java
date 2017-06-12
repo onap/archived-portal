@@ -41,16 +41,17 @@ import org.openecomp.portalapp.portal.utils.EPCommonSystemProperties;
 import org.openecomp.portalapp.portal.utils.EcompPortalUtils;
 import com.google.gson.Gson;
 
-/*
- * This controller checks the health status and returns JSON response.
- * It does not require authentication or session.
+/**
+ * This controller processes requests for the health-check feature implemented
+ * in the HealthMonitor, which runs in its own thread. These requests do not
+ * require any authentication nor an active user session.
  */
 @RestController
 @org.springframework.context.annotation.Configuration
 @EnableAspectJAutoProxy
 @EPAuditLog
 public class HealthCheckController extends EPUnRestrictedBaseController {
-	
+
 	private class HealthStatus {
 		public int statusCode;
 		@SuppressWarnings("unused")
@@ -96,8 +97,8 @@ public class HealthCheckController extends EPUnRestrictedBaseController {
 	private final String statusDown = "DOWN";
 	private final String statusOk = "OK";
 
-	EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(HealthCheckController.class);
-	
+	private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(HealthCheckController.class);
+
 	@RequestMapping(value = { "/portalApi/healthCheck" }, method = RequestMethod.GET, produces = "application/json")
 	public HealthStatus healthCheck(HttpServletRequest request, HttpServletResponse response) {
 		HealthStatus healthStatus = new HealthStatus(500, "");
@@ -106,7 +107,8 @@ public class HealthCheckController extends EPUnRestrictedBaseController {
 		if (HealthMonitor.isSuspended) {
 			healthStatus.body = "Suspended";
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			MDC.put(EPCommonSystemProperties.RESPONSE_CODE, Integer.toString(HttpServletResponse.SC_INTERNAL_SERVER_ERROR));
+			MDC.put(EPCommonSystemProperties.RESPONSE_CODE,
+					Integer.toString(HttpServletResponse.SC_INTERNAL_SERVER_ERROR));
 			return healthStatus;
 		}
 
@@ -142,28 +144,27 @@ public class HealthCheckController extends EPUnRestrictedBaseController {
 				dbInfo.description = "Check the logs for more details";
 				EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeDaoSystemError);
 			}
-					
+
 			if (!HealthMonitor.isClusterStatusOk()) {
 				dbInfo.dbClusterStatus = "Problem, check the logs for more details";
 				EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeDaoSystemError);
-			}
-			else {
+			} else {
 				dbInfo.dbClusterStatus = statusOk;
 			}
-			
+
 			if (!HealthMonitor.isDatabasePermissionsOk()) {
 				dbInfo.dbPermissions = "Problem, check the logs for more details";
 				EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeDaoSystemError);
-			}
-			else {
+			} else {
 				dbInfo.dbPermissions = statusOk;
 			}
 			statusCollection.add(dbInfo);
 
 			HealthStatusInfo uebInfo = new HealthStatusInfo("UEB");
 			if (!HealthMonitor.isUebUp()) {
-				//As per test case review meeting, UEB is considered as critical as DB. Hence commenting
-				//overallStatus = false;
+				// As per test case review meeting, UEB is considered as
+				// critical as DB. Hence commenting
+				// overallStatus = false;
 				uebInfo.healthCheckStatus = statusDown;
 				uebInfo.description = "Check the logs for more details";
 				EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeUebConnectionError);
@@ -186,12 +187,13 @@ public class HealthCheckController extends EPUnRestrictedBaseController {
 			}
 			MDC.put(EPCommonSystemProperties.RESPONSE_CODE, Integer.toString(healthStatus.statusCode));
 		} catch (Exception e) {
-			logger.error(EELFLoggerDelegate.errorLogger, "Exception occurred while performing the healthcheck. Details: "
-					+ EcompPortalUtils.getStackTrace(e));
+			logger.error(EELFLoggerDelegate.errorLogger,
+					"Exception occurred while performing the healthcheck. Details: "
+							+ EcompPortalUtils.getStackTrace(e));
 		}
-		
+
 		EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/healthCheck", "GET result =", response.getStatus());
-		
+
 		return healthStatus;
 	}
 
@@ -202,10 +204,10 @@ public class HealthCheckController extends EPUnRestrictedBaseController {
 
 		HealthMonitor.isSuspended = true;
 		healthStatus.statusCode = 200;
-		
+
 		EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/healthCheckSuspend", "GET result =",
-																		response.getStatus());
-		
+				response.getStatus());
+
 		return healthStatus;
 	}
 
@@ -217,19 +219,15 @@ public class HealthCheckController extends EPUnRestrictedBaseController {
 		HealthMonitor.isSuspended = false;
 		healthStatus.statusCode = 200;
 		EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/healthCheckResume", "GET result =",
-																			response.getStatus());
+				response.getStatus());
 		return healthStatus;
 	}
-	
-	
 
-	@RequestMapping(value = {
-			"/portalApi/ping" }, method = RequestMethod.GET, produces = "application/json")
+	@RequestMapping(value = { "/portalApi/ping" }, method = RequestMethod.GET, produces = "application/json")
 	public HealthStatus ping(HttpServletRequest request, HttpServletResponse response) {
-		HealthStatus healthStatus = new HealthStatus(200, "OK");	
-		EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/ping", "GET result =",
-				response.getStatus());
-		
+		HealthStatus healthStatus = new HealthStatus(200, "OK");
+		EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/ping", "GET result =", response.getStatus());
+
 		return healthStatus;
 	}
 }

@@ -19,16 +19,13 @@
  */
 package org.openecomp.portalapp.portal.controller;
 
-import java.util.List;
+import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.openecomp.portalapp.controller.EPUnRestrictedBaseController;
 import org.openecomp.portalapp.portal.domain.EPUser;
-import org.openecomp.portalapp.portal.domain.WidgetParameterResult;
-import org.openecomp.portalapp.portal.ecomp.model.PortalRestResponse;
-import org.openecomp.portalapp.portal.ecomp.model.PortalRestStatusEnum;
 import org.openecomp.portalapp.portal.logging.aop.EPAuditLog;
 import org.openecomp.portalapp.portal.service.MicroserviceProxyService;
 import org.openecomp.portalapp.util.EPUserUtils;
@@ -62,47 +59,40 @@ public class MicroserviceProxyController extends EPUnRestrictedBaseController {
 			@PathVariable("serviceId") long serviceId) throws Exception {
 		EPUser user = EPUserUtils.getUserSession(request);
 		String answer = "";
-		try{
+		try {
 			answer = microserviceProxyService.proxyToDestination(serviceId, user, request);
-		}catch(HttpClientErrorException e){
-			//Check whether the error message is valid JSON format
-			boolean valid = true;
-			ObjectMapper objectMapper = new ObjectMapper();
-		    try{ 
-		        objectMapper.readTree(e.getResponseBodyAsString());
-		    } catch(JsonProcessingException exception){
-		        valid = false;
-		    }
-		    if(valid)
-		    	return e.getResponseBodyAsString();
-		    else
-		    	return "{\"error\":\""+ e.getResponseBodyAsString() +"\"}";
+		} catch (HttpClientErrorException e) {
+			answer = e.getResponseBodyAsString();
 		}
-		return answer;		
+		return isValidJSON(answer) ? answer : "{\"error\":\"" + answer.replace(System.getProperty("line.separator"), "") + "\"}";
 	}
-	
+
 	@RequestMapping(value = { "/portalApi/microservice/proxy/parameter/{widgetId}" }, method = {
 			RequestMethod.GET }, produces = "application/json")
 	public String getMicroserviceProxyByWidgetId(HttpServletRequest request, HttpServletResponse response,
 			@PathVariable("widgetId") long widgetId) throws Exception {
 		EPUser user = EPUserUtils.getUserSession(request);
 		String answer = "";
-		try{
+		try {
 			answer = microserviceProxyService.proxyToDestinationByWidgetId(widgetId, user, request);
-		}catch(HttpClientErrorException e){
-			//Check whether the error message is valid JSON format
-			boolean valid = true;
-			ObjectMapper objectMapper = new ObjectMapper();
-		    try{ 
-		        objectMapper.readTree(e.getResponseBodyAsString());
-		    } catch(JsonProcessingException exception){
-		        valid = false;
-		    }
-		    if(valid)
-		    	return e.getResponseBodyAsString();
-		    else
-		    	return "{\"error\":\""+ e.getResponseBodyAsString() +"\"}";
+		} catch (HttpClientErrorException e) {
+			answer = e.getResponseBodyAsString();
 		}
-		return answer;		
+		return isValidJSON(answer) ? answer : "{\"error\":\"" + answer.replace(System.getProperty("line.separator"), "") + "\"}";
+	}
+
+	/**
+	 * Check whether the response is a valid JSON
+	 * @param response
+	 * @return true if the response is valid JSON, otherwise, false
+	 */
+	private boolean isValidJSON(String response) {
+		try {
+			final ObjectMapper mapper = new ObjectMapper();
+			mapper.readTree(response);
+			return true;
+		} catch (IOException e) {
+			return false;
+		}
 	}
 }

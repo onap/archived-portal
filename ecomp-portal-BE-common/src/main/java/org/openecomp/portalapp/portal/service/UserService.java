@@ -24,11 +24,13 @@ import java.util.List;
 import org.openecomp.portalapp.portal.domain.EPUser;
 
 public interface UserService {
-	
+
 	List<EPUser> getUserByUserId(String orgUserId);
-	
+
 	List<EPUser> getUserByFirstLastName(String firstName, String lastName);
-	
+
 	public String saveNewUser(EPUser newUser, String checkDuplicate) throws Exception;
-	
+
+	public void saveUser(EPUser user) throws Exception;
+
 }

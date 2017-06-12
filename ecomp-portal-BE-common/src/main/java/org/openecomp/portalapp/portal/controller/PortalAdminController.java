@@ -36,6 +36,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.openecomp.portalsdk.core.domain.AuditLog;
 import org.openecomp.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.openecomp.portalsdk.core.service.AuditService;
+import org.openecomp.portalsdk.core.util.SystemProperties;
 import org.openecomp.portalapp.controller.EPRestrictedBaseController;
 import org.openecomp.portalapp.portal.domain.EPRole;
 import org.openecomp.portalapp.portal.domain.EPUser;
@@ -91,7 +92,7 @@ public class PortalAdminController extends EPRestrictedBaseController {
 	 */
 
 	@RequestMapping(value = { "/portalApi/portalAdmin" }, method = RequestMethod.POST)
-	public FieldsValidator createPortalAdmin(HttpServletRequest request, @RequestBody String sbcid,
+	public FieldsValidator createPortalAdmin(HttpServletRequest request, @RequestBody String userId,
 			HttpServletResponse response) {
 		EPUser user = EPUserUtils.getUserSession(request);
 		FieldsValidator fieldsValidator = null;
@@ -102,24 +103,28 @@ public class PortalAdminController extends EPRestrictedBaseController {
 			logger.debug(EELFLoggerDelegate.debugLogger, "PortalAdminController.createPortalAdmin bad permissions");
 			EcompPortalUtils.setBadPermissions(user, response, "createPortalAdmin");
 		} else {
-			fieldsValidator = portalAdminService.createPortalAdmin(sbcid);
+			fieldsValidator = portalAdminService.createPortalAdmin(userId);
 			int statusCode = fieldsValidator.httpStatusCode.intValue();
 			response.setStatus(statusCode);
 			if (statusCode == 200) {
 				AuditLog auditLog = new AuditLog();
 				auditLog.setUserId(user.getId());
 				auditLog.setActivityCode(EcompAuditLog.CD_ACTIVITY_ADD_PORTAL_ADMIN);
-				auditLog.setAffectedRecordId(sbcid);
+				auditLog.setAffectedRecordId(userId);
 				auditService.logActivity(auditLog, null);
 
 				MDC.put(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP, EPEELFLoggerAdvice.getCurrentDateTimeUTC());
 				MDC.put(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP, EPEELFLoggerAdvice.getCurrentDateTimeUTC());
+				EcompPortalUtils.calculateDateTimeDifferenceForLog(
+						MDC.get(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP),
+						MDC.get(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP));
 				logger.info(EELFLoggerDelegate.auditLogger,
 						EPLogUtil.formatAuditLogMessage("PortalAdminController.createPortalAdmin",
-								EcompAuditLog.CD_ACTIVITY_ADD_PORTAL_ADMIN, user.getOrgUserId(), sbcid,
+								EcompAuditLog.CD_ACTIVITY_ADD_PORTAL_ADMIN, user.getOrgUserId(), userId,
 								"A new Portal Admin has been added"));
 				MDC.remove(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP);
 				MDC.remove(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP);
+				MDC.remove(SystemProperties.MDC_TIMER);
 			}
 		}
 		EcompPortalUtils.logAndSerializeObject(logger, "/portalAdmin", "POST result =", response.getStatus());
@@ -129,22 +134,22 @@ public class PortalAdminController extends EPRestrictedBaseController {
 
 	@RequestMapping(value = { "/portalApi/portalAdmin/{userInfo}" }, method = RequestMethod.DELETE)
 	public FieldsValidator deletePortalAdmin(HttpServletRequest request, @PathVariable("userInfo") String userInfo,
-			 HttpServletResponse response) {
+			HttpServletResponse response) {
 		int userIdIdx = userInfo.indexOf("-");
 		Long userId = null;
 		String sbcid = null;
 		FieldsValidator fieldsValidator = null;
-		try{
-			if(userIdIdx==-1){
-				logger.error(EELFLoggerDelegate.errorLogger,"deletePortalAdmin missing userId");
+		try {
+			if (userIdIdx == -1) {
+				logger.error(EELFLoggerDelegate.errorLogger, "deletePortalAdmin missing userId");
 				return fieldsValidator;
-			}else{
+			} else {
 				String userIdStr = userInfo.substring(0, userIdIdx);
 				userId = Long.valueOf(userIdStr);
-				sbcid = userInfo.substring(userIdIdx+1, userInfo.length());
+				sbcid = userInfo.substring(userIdIdx + 1, userInfo.length());
 			}
-		}catch(Exception e){
-			logger.error(EELFLoggerDelegate.errorLogger,"deletePortalAdmin error while parsing the userInfo",e);
+		} catch (Exception e) {
+			logger.error(EELFLoggerDelegate.errorLogger, "deletePortalAdmin error while parsing the userInfo", e);
 		}
 		EPUser user = EPUserUtils.getUserSession(request);
 		if (!adminRolesService.isSuperAdmin(user)) {
@@ -162,12 +167,16 @@ public class PortalAdminController extends EPRestrictedBaseController {
 
 				MDC.put(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP, EPEELFLoggerAdvice.getCurrentDateTimeUTC());
 				MDC.put(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP, EPEELFLoggerAdvice.getCurrentDateTimeUTC());
+				EcompPortalUtils.calculateDateTimeDifferenceForLog(
+						MDC.get(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP),
+						MDC.get(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP));
 				logger.info(EELFLoggerDelegate.auditLogger,
 						EPLogUtil.formatAuditLogMessage("PortalAdminController.deletePortalAdmin",
 								EcompAuditLog.CD_ACTIVITY_DELETE_PORTAL_ADMIN, user.getOrgUserId(), sbcid,
 								"A Portal Admin has been deleted"));
 				MDC.remove(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP);
 				MDC.remove(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP);
+				MDC.remove(SystemProperties.MDC_TIMER);
 			}
 		}
 		EcompPortalUtils.logAndSerializeObject(logger, "/portalAdmin", "DELETE result =", response.getStatus());

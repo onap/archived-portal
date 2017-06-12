@@ -28,7 +28,7 @@ public class AppWithRolesForUser {
 	public Long appId;
 
 	public String appName;
-		
+
 	public List<RoleInAppForUser> appRoles;
 
 	public String getOrgUserId() {
@@ -68,6 +68,5 @@ public class AppWithRolesForUser {
 		return "AppWithRolesForUser [orgUserId=" + orgUserId + ", appId=" + appId + ", appName=" + appName
 				+ ", appRoles=" + appRoles + "]";
 	}
-
 
 }

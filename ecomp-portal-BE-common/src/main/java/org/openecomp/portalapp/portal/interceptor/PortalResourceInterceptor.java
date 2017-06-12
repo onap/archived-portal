@@ -18,7 +18,6 @@
  * ================================================================================*/
 package org.openecomp.portalapp.portal.interceptor;
 
-import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.Base64;
 import java.util.Set;
@@ -59,7 +58,7 @@ public class PortalResourceInterceptor extends ResourceInterceptor {
 	private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(PortalResourceInterceptor.class);
 
 	@Autowired
-	private  RemoteWebServiceCallService remoteWebServiceCallService;
+	private RemoteWebServiceCallService remoteWebServiceCallService;
 
 	@Autowired
 	private ManageService manageService;
@@ -196,11 +195,12 @@ public class PortalResourceInterceptor extends ResourceInterceptor {
 	 * @throws Exception
 	 */
 	private boolean checkBasicAuth(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		
 		String uri = request.getRequestURI().toString();
 		uri = uri.substring(uri.indexOf("/", 1));
-		
+
 		final String authHeader = request.getHeader("Authorization");
+
+		// Unauthorized access due to missing HTTP Authorization request header
 		if (authHeader == null) {
 			final String msg = "no authorization found";
 			logger.debug(EELFLoggerDelegate.debugLogger, "checkBasicAuth: {}", msg);
@@ -210,7 +210,7 @@ public class PortalResourceInterceptor extends ResourceInterceptor {
 
 		String[] accountNamePassword = getUserNamePassword(authHeader);
 		if (accountNamePassword == null || accountNamePassword.length != 2) {
-			final String msg = "failed to get username and password from auth header";
+			final String msg = "failed to get username and password from Atuhorization header";
 			logger.debug(EELFLoggerDelegate.debugLogger, "checkBasicAuth: {}", msg);
 			sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, msg);
 			return false;
@@ -218,86 +218,54 @@ public class PortalResourceInterceptor extends ResourceInterceptor {
 
 		BasicAuthCredentials creds;
 		try {
-			creds = basicAuthService.getBasicAuthCredentialByAppName(accountNamePassword[0]);
+			creds = basicAuthService.getBasicAuthCredentialByUsernameAndPassword(accountNamePassword[0],
+					encrypted(accountNamePassword[1]));
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "checkBasicAuth failed to get credentials", e);
 			final String msg = "Failed while getting basic authentication credential: " + e.toString();
 			sendErrorResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, msg);
 			throw e;
 		}
-		
-		boolean isAllowedEp = false;
-		for(EPEndpoint ep: creds.getEndpoints()){
-			if(ep.getName().equals(uri)){
-				isAllowedEp = true;
-				break;
-			}
-		}
-		if(!isAllowedEp){
-			response.setStatus(401);
-			response.setContentType("application/json");
-			response.getWriter().write("{\"error\":\"Unauthorized: Endpoint access denied\"}");
-			response.getWriter().flush();
-			response.getWriter().close();
-			return false;
-		}
-		
-		if (creds == null) {
-			final String msg = "failed to find match for credentials";
+
+		// Unauthorized access due to invalid credentials (username and
+		// password)
+		if (creds == null || !creds.getUsername().equals(accountNamePassword[0])) {
+			final String msg = "Unauthorized: Access denied";
 			logger.debug(EELFLoggerDelegate.debugLogger, "checkBasicAuth: {}", msg);
 			sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, msg);
 			return false;
 		}
 
-		boolean isAuth;
-		try {
-			isAuth = authorization(authHeader, creds.getApplicationName(), creds.getPassword());
-		} catch (Exception e) {
-			logger.error(EELFLoggerDelegate.errorLogger, "checkBasicAuth failed to check authorization", e);
-			final String msg = "failed while checking authorization: " + e.toString();
-			sendErrorResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, msg);
-			throw e;
+		// Unauthorized access due to inactive account
+		if (creds.getIsActive().equals("N")) {
+			final String msg = "Unauthorized: The account is inactive";
+			logger.debug(EELFLoggerDelegate.debugLogger, "checkBasicAuth: {}", msg);
+			sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, msg);
+			return false;
+		}
+		boolean isAllowedEp = false;
+		for (EPEndpoint ep : creds.getEndpoints()) {
+			if (ep.getName().equals(uri)) {
+				isAllowedEp = true;
+				break;
+			}
 		}
 
-		if (!isAuth) {
-			response.setStatus(401);
-			response.setContentType("application/json");
-			response.getWriter().write("{\"error\":\"Unauthorized: Invalid username or password\"}");
-			response.getWriter().flush();
-			response.getWriter().close();
-			final String msg = "Unauthorized: Access denied";
+		// If user doesn't specify any endpoint, allow all endpoints for that
+		// account
+		if (creds.getEndpoints().size() == 0)
+			isAllowedEp = true;
+
+		// Unauthorized access due to the invalid endpoints
+		if (!isAllowedEp) {
+			final String msg = "Unauthorized: Endpoint access denied";
+			logger.debug(EELFLoggerDelegate.debugLogger, "checkBasicAuth: {}", msg);
 			sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, msg);
 			return false;
 		}
 
 		// Made it to the end!
 		return true;
-	}
-
-	/**
-	 * 
-	 * Basic Authorization check
-	 * 
-	 * @param auth
-	 * @param security_user
-	 * @param security_pass
-	 * @return
-	 * @throws Exception
-	 */
-
-	protected boolean authorization(String auth, String security_user, String security_pass) throws Exception {
-
-		if (auth != null && auth.startsWith("Basic")) {
-			String[] usernamePassword = getUserNamePassword(auth);
-			if (security_user.equals(usernamePassword[0]) && decrypted(security_pass).equals(usernamePassword[1]))
-				return true;
-		}
-		return false;
-	}
-
-	public static void main(String str[]) {
-		System.out.println(new PortalResourceInterceptor().getUserNamePassword("Basic Qy1CVVM6X3Bhc3M=")[0]);
-		System.out.println(new PortalResourceInterceptor().getUserNamePassword("Basic Qy1CVVM6X3Bhc3M=")[1]);
 	}
 
 	private String[] getUserNamePassword(String authValue) {
@@ -314,6 +282,20 @@ public class PortalResourceInterceptor extends ResourceInterceptor {
 				result = CipherUtil.decrypt(encrypted, SystemProperties.getProperty(SystemProperties.Decryption_Key));
 			} catch (Exception e) {
 				logger.error(EELFLoggerDelegate.errorLogger, "decryptedPassword failed", e);
+				throw e;
+			}
+		}
+		return result;
+	}
+
+	private String encrypted(String decryptedPwd) throws Exception {
+		String result = "";
+		if (decryptedPwd != null & decryptedPwd.length() > 0) {
+			try {
+				result = CipherUtil.encrypt(decryptedPwd,
+						SystemProperties.getProperty(SystemProperties.Decryption_Key));
+			} catch (Exception e) {
+				logger.error(EELFLoggerDelegate.errorLogger, "encryptedPassword() failed", e);
 				throw e;
 			}
 		}

@@ -20,3 +20,7 @@ scope.toggleDrawer = function(showmenu){
 	else
 		document.getElementById('page-content').style.paddingLeft = "230px";           	
 };
+
+26 May 2017 : Changed b2b sort icons
++
+"<i ng-class=\"{'icon-controls-upPRIMARY active': sortPattern === 'ascending', 'icon-controls-down active down': sortPattern === 'descending'}\"></i>\n" 

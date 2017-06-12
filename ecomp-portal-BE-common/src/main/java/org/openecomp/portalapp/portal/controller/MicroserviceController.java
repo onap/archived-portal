@@ -19,7 +19,6 @@
  */
 package org.openecomp.portalapp.portal.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -34,7 +33,7 @@ import org.openecomp.portalapp.portal.ecomp.model.PortalRestStatusEnum;
 import org.openecomp.portalapp.portal.logging.aop.EPAuditLog;
 import org.openecomp.portalapp.portal.service.ConsulHealthService;
 import org.openecomp.portalapp.portal.service.MicroserviceService;
-import org.openecomp.portalsdk.core.logging.logic.EELFLoggerDelegate;
+import org.openecomp.portalsdk.core.util.SystemProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.core.ParameterizedTypeReference;
@@ -46,7 +45,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 @SuppressWarnings("unchecked")
@@ -116,7 +114,7 @@ public class MicroserviceController extends EPRestrictedBaseController {
 			};
 			// If this service is assoicated with widgets, cannnot be deleted
 			ResponseEntity<List<WidgetCatalog>> ans = (ResponseEntity<List<WidgetCatalog>>) template.exchange(
-					HTTPS + consulHealthService.getServiceLocation(whatService)
+					HTTPS + consulHealthService.getServiceLocation(whatService, SystemProperties.getProperty("microservices.widget.local.port"))
 							+ "/widget/microservices/widgetCatalog/service/" + serviceId,
 					HttpMethod.GET, new HttpEntity(WidgetServiceHeaders.getInstance()), typeRef);
 			List<WidgetCatalog> widgets = ans.getBody();

@@ -163,7 +163,37 @@
             return deferred.promise;
         }
         
-        
+        getAppsFullList() {
+            let deferred = this.$q.defer();
+            this.$http({
+                	method: "GET",
+                	url: this.conf.api.appsFullList,
+                    cache: false,
+                    headers: {
+                        'X-ECOMP-RequestID':this.uuid.generate()
+                    }
+                })
+                .then( res => {
+                	if (this.debug)
+                		this.$log.debug('CatalogService::getAppsFullList: result is ' + JSON.stringify(res));
+                    // Res is always JSON, but the data object might be an HTML error page.
+                    if (! this.utilsService.isValidJSON(res.data)) {
+                    	var msg = 'CatalogService::getAppsFullList: result data is not JSON';
+                    	if (this.debug)
+                    		this.$log.error(msg);
+                    	deferred.reject(msg);
+                    } else {
+                    	if (this.debug)
+                    		this.$log.debug('CatalogService::getAppsFullList: success');
+                        deferred.resolve(res.data);
+                    }
+                })
+                .catch( status => {
+                	this.$log.error('CatalogService:getAppsFullList failed: ' + status);
+                    deferred.reject(status);
+                });
+            return deferred.promise;
+        }
 
     }
     

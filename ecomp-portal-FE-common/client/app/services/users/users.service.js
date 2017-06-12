@@ -113,8 +113,7 @@
             return deferred.promise;
         }
 
-        getUserAppRoles(appid, orgUserId){
-//            let deferred = this.$q.defer();
+        getUserAppRoles(appid, orgUserId, extRequestValue){
         	let canceller = this.$q.defer();
             let isActive = false;
 
@@ -125,27 +124,22 @@
                 }
             };
 
-            // this.$log.info('UsersService::getUserAppRoles');
-
             let promise = () => {
                 let deferred = this.$q.defer();
                 isActive = false;
             this.$http({
                 method: 'GET',
                 url: this.conf.api.userAppRoles,
-                params: {user: orgUserId, app: appid},
+                params: {user: orgUserId, app: appid, externalRequest: extRequestValue},
                 cache: false,
                 headers: {
                     'X-ECOMP-RequestID':this.uuid.generate()
                 }
             }).then( res => {
-                    //this.$log.debug('getUserAppRoles response: ', JSON.stringify(res))
-                    // If response comes back as a redirected HTML page which IS NOT a success
-                    if (this.utilsService.isValidJSON(res)== false) {
+                    if (!this.utilsService.isValidJSON(res.data)) {
                         deferred.reject('UsersService::getUserAppRoles: Failed');
                     } else {
                     	isActive = false;
-                        //this.$log.info('UsersService::getUserAppRoles: Succeeded');
                         deferred.resolve(res.data);
                     }
                 })
@@ -207,6 +201,65 @@
                 promise: promise
             };
 
+        }
+        
+        getLoggedInUser () {
+        	let deferred = this.$q.defer();
+        	this.$http({
+        		method: 'GET',
+        		url: this.conf.api.loggedinUser,
+        		cache: false,
+        		headers: {
+        			'X-ECOMP-RequestID':this.uuid.generate(),
+        			'Content-Type': 'application/json'
+                },
+                data: ''
+        	}).then( res => {
+        		if (res.data==null || !this.utilsService.isValidJSON(res.data)) { 			
+        			deferred.reject('MenusService::getLoggedInUser rest call failed');
+        		} else {
+        			if(res.data.status!='OK' && res.data.message!=null)
+            			deferred.reject('MenusService::getLoggedInUser rest call failed ' + res.data.message);
+        			else
+        				deferred.resolve(res.data);
+        		}
+        	})
+        	.catch( status => {
+        		this.$log.error('MenusService::getLoggedInUser rejection:' + status);
+        		deferred.reject(status);
+        	});
+
+        	return deferred.promise;
+        }
+        
+        modifyLoggedInUser (profileDetail) {
+        	let deferred = this.$q.defer();
+        	this.$http({
+        		method: 'PUT',
+        		url: this.conf.api.modifyLoggedinUser,
+        		cache: false,
+        		headers: {
+        			'X-ECOMP-RequestID':this.uuid.generate(),
+        			'Content-Type': 'application/json'
+                },
+                data: profileDetail
+        	}).then( res => {
+        		if (res.data==null || !this.utilsService.isValidJSON(res.data)) { 			
+        			deferred.reject('MenusService::getLoggedInUser rest call failed');
+        		} else {
+        			if(res.data.status!='OK' && res.data.message!=null)
+            			deferred.reject('MenusService::getLoggedInUser rest call failed ' + res.data.message);
+        			else
+        				deferred.resolve(res.data);
+        		}
+        	})
+        	.catch( status => {
+        		console.log(status);
+        		this.$log.error('MenusService::getLoggedInUser rejection:' + status);
+        		deferred.reject(status);
+        	});
+
+        	return deferred.promise;
         }
 
     }

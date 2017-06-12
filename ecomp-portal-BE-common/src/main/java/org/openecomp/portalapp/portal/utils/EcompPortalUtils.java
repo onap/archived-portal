@@ -313,6 +313,19 @@ public class EcompPortalUtils {
 				? defaultValue : SystemProperties.getProperty(property));
 	}
 
+	/**
+	 * Calculates the time duration of a function call for logging purpose. It
+	 * stores the result by using "MDC.put(SystemProperties.MDC_TIMER,
+	 * timeDifference);" It is important to call
+	 * "MDC.remove(SystemProperties.MDC_TIMER);" after this method call to clean
+	 * up the record in MDC
+	 *
+	 * @param beginDateTime
+	 *            the given begin time for the call
+	 * @param endDateTime
+	 *            the given end time for the call
+	 * 
+	 */
 	public static void calculateDateTimeDifferenceForLog(String beginDateTime, String endDateTime) {
 		if (beginDateTime != null && endDateTime != null) {
 			try {

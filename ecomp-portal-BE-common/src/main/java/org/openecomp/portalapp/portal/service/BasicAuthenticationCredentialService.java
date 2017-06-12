@@ -26,10 +26,10 @@ public interface BasicAuthenticationCredentialService {
 	 * Gets the basic authentication credential for the specified appName from
 	 * table ep_basic_auth_account
 	 * 
-	 * @param appName
-	 *            External application name
-	 * @return BasicAuthCredentials for the specified app; null if the app is
-	 *         not known.
+	 * @param username
+	 *            External user name
+	 * @return BasicAuthCredentials for the specified app; null if the username
+	 *         is not known.
 	 */
-	public BasicAuthCredentials getBasicAuthCredentialByAppName(String appName);
+	public BasicAuthCredentials getBasicAuthCredentialByUsernameAndPassword(String username, String password);
 }

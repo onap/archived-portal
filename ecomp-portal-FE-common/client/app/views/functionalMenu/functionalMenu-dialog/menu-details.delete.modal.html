@@ -1,0 +1,18 @@
+<div class="functionalMenu-details-modal">
+    <div id="title" class="title">Delete Menu Item</div>
+
+    <div id="functionalMenu-main" class="functionalMenu-properties-main" scroll-top="functionalMenuDetails.scrollApi">
+        <form name="functionalMenuForm" novalidate>
+
+            <div class="confirmation-message-wrap">
+                <div class="confirmation-message" ng-bind="confirmBox.message"></div>
+            </div>
+        </form>
+    </div>
+    <div class="dialog-control">
+        <span class="ecomp-save-spinner" ng-show="functionalMenuDetails.isSaving"></span>
+        <div id='menu-details-next-button' class="next-button"
+             ng-class="{disabled: functionalMenuForm.$invalid}" ng-click="functionalMenuDetails.saveChanges()">Delete</div>
+        <div id='menu-details-cancel-button' class="cancel-button" ng-click="closeThisDialog()">Cancel</div>
+    </div>
+</div>

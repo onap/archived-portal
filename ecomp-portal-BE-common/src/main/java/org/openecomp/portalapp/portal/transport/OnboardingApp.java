@@ -31,6 +31,8 @@ public class OnboardingApp {
 
 	public String imageUrl;
 
+	public String imageLink;
+
 	public String description;
 
 	public String notes;

@@ -186,7 +186,7 @@
               				option: services[i].name + ": " + services[i].url
               			});
               			
-              			if(this.widget.service != null && this.widget.service.id == services[i].id){
+              			if(this.widget.serviceId != null && this.widget.serviceId == services[i].id){
               				this.widget.serviceURL = this.availableServices[i];
               			}
               		}

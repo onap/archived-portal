@@ -40,7 +40,7 @@ public class MockEPUser {
 		ePUser.setAddressId(null);
 		ePUser.setAlertMethodCd(null);
 		ePUser.setHrid(null);
-		ePUser.setOrgUserId("guest");
+		ePUser.setOrgUserId("guestT");
 		ePUser.setOrgCode(null);
 		ePUser.setAddress1(null);
 		ePUser.setAddress2(null);
@@ -78,9 +78,7 @@ public class MockEPUser {
 		ePUser.setUserApps(null);
 		ePUser.setPseudoRoles(null);
 
-		ePUser.setId((long) 99999999);
-
+		ePUser.setId((long) -1);
 		return ePUser;
-
 	}
 }

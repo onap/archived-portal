@@ -25,9 +25,8 @@ import java.sql.SQLException;
 import javax.sql.DataSource;
 
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
-import org.openecomp.portalapp.portal.test.framework.ApplicationCommonContextTestSuite;
+import org.openecomp.portalapp.test.framework.ApplicationCommonContextTestSuite;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.datasource.DataSourceUtils;

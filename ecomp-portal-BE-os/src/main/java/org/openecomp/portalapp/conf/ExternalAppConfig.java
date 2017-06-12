@@ -97,6 +97,7 @@ public class ExternalAppConfig extends AppConfig implements Configurable {
 
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
+		registry.addResourceHandler("/app/fusion/**").addResourceLocations("/app/fusion/"); 		
 		registry.addResourceHandler("/static/**").addResourceLocations("/static/");
 		registry.addResourceHandler("/images/**").addResourceLocations("/images/");
 		registry.addResourceHandler("/**").addResourceLocations("/public/");

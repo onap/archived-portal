@@ -26,9 +26,9 @@
          ng-class="{open: isExpanded, closed: !isExpanded, disabled: isDisabled}"></div>
 
     <div class="checkboxes" ng-show="isExpanded">
-        <div ng-repeat="item in ngModel" id="{{item[nameAttr]}}-checkbox-div">
-            <label id="{{item[nameAttr]}}-checkbox-label">
-                <input type="checkbox" id="{{item[nameAttr]}}-checkbox" ng-model="item[valueAttr]" ng-change="onCheckboxClicked()">
+        <div ng-repeat="item in ngModel" id="{{item[nameAttr].split(' ').join('-')}}-checkbox-div">
+            <label id="{{item[nameAttr].split(' ').join('-')}}-checkbox-label">
+                <input type="checkbox" id="{{item[nameAttr].split(' ').join('-')}}-checkbox" ng-model="item[valueAttr]" ng-change="onCheckboxClicked()">
                 {{item[nameAttr]}}
             </label>
         </div>

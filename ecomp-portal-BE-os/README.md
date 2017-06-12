@@ -1,23 +1,22 @@
-# ECOMP Portal Web Application Back End Common Files
+# ECOMP Portal Web Application Back End for Open Source
 
 ## Overview
 
-This is a Maven overlay project with the ECOMP Portal back-end common files. 
-This is not a stand-alone web application.  This project has common Java classes
-that are used for the ECOMP Portal web application.  Those specific versions are built using separate
-Maven projects that copy in ("overlay") the contents of this project at package time.
+This is a Maven project with the ECOMP Portal web application back-end files
+for public release, containing Java files specific to requirements of the
+open-source version.  This project uses the Maven war plugin to copy in
+("overlay") the contents of the ECOMP Portal web application back-end
+common distribution at package time.
 
+Use Apache Maven to build, package and deploy this webapp to a web container
+like Apache Tomcat.  Eclipse users must install the M2E-WTP connector, see 
+https://www.eclipse.org/m2e-wtp/
 
 ## Release Notes
 
-Release notes for all ECOMP Portal *COMMON* files, back-end files and front-end files,
-are tracked here for convenience.
+Version 1.1.0, July 2017
+- [Portal-7] Improvements added as part of the rebasing process
+- [Portal-6] Updates to License and Trademark in the PORTAL Source Code
 
-The last number in each build identifier is assigned by the Jenkins CI system to
-the back-end component.
-
-
-
-Build 1.1.0-SNAPSHOT, ?? May 2017
-[ PORTAL 7] Rebase; This rebasing includes addition of common libraries and common overlays projects
-and abstraction of components
+Version 1.0.0, February 2017
+- Initial release

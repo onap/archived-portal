@@ -32,25 +32,14 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.cxf.transport.http.HTTPException;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import org.openecomp.portalsdk.core.logging.logic.EELFLoggerDelegate;
-import org.openecomp.portalsdk.core.service.UserProfileService;
 import org.openecomp.portalapp.controller.EPRestrictedBaseController;
 import org.openecomp.portalapp.portal.domain.EPUser;
 import org.openecomp.portalapp.portal.domain.SharedContext;
+import org.openecomp.portalapp.portal.ecomp.model.PortalRestResponse;
+import org.openecomp.portalapp.portal.ecomp.model.PortalRestStatusEnum;
 import org.openecomp.portalapp.portal.logging.aop.EPAuditLog;
 import org.openecomp.portalapp.portal.service.AdminRolesService;
-import org.openecomp.portalapp.portal.service.EPAuditService;
 import org.openecomp.portalapp.portal.service.FunctionalMenuService;
 import org.openecomp.portalapp.portal.service.SearchService;
 import org.openecomp.portalapp.portal.service.SharedContextService;
@@ -64,6 +53,16 @@ import org.openecomp.portalapp.portal.transport.FunctionalMenuItemWithRoles;
 import org.openecomp.portalapp.portal.utils.EPCommonSystemProperties;
 import org.openecomp.portalapp.portal.utils.EcompPortalUtils;
 import org.openecomp.portalapp.util.EPUserUtils;
+import org.openecomp.portalsdk.core.logging.logic.EELFLoggerDelegate;
+import org.openecomp.portalsdk.core.util.SystemProperties;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Supports menus at the top of the Portal app landing page.
@@ -73,24 +72,25 @@ import org.openecomp.portalapp.util.EPUserUtils;
 @EnableAspectJAutoProxy
 @EPAuditLog
 public class FunctionalMenuController extends EPRestrictedBaseController {
-	EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(FunctionalMenuController.class);
+
+	private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(FunctionalMenuController.class);
 
 	@Autowired
-	AdminRolesService adminRolesService;
+	private AdminRolesService adminRolesService;
 	@Autowired
-	FunctionalMenuService functionalMenuService;
+	private FunctionalMenuService functionalMenuService;
 	@Autowired
-	SharedContextService sharedContextService;
+	private SharedContextService sharedContextService;
 	@Autowired
-	UserProfileService service;
-	@Autowired
-	SearchService searchService;
-	@Autowired
-	EPAuditService epAuditService;
+	private SearchService searchService;
 
 	/**
 	 * RESTful service method to fetch all the FunctionalMenuItems.
 	 * 
+	 * @param request
+	 *            HttpServletRequest
+	 * @param response
+	 *            HttpServletResponse
 	 * @return List of FunctionalMenuItem objects
 	 */
 	@RequestMapping(value = { "/portalApi/functionalMenu" }, method = RequestMethod.GET, produces = "application/json")
@@ -109,10 +109,37 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 	}
 
 	/**
+	 * RESTful service method to get ECOMP Portal Title.
+	 * 
+	 * @param request
+	 *            HttpServletRequest
+	 * @param response
+	 *            HttpServletResponse
+	 * @return PortalRestResponse of ECOMP portal title
+	 */
+	@RequestMapping(value = { "/portalApi/ecompTitle" }, method = RequestMethod.GET, produces = "application/json")
+	public PortalRestResponse<String> getECOMPTitle(HttpServletRequest request, HttpServletResponse response) {
+		PortalRestResponse<String> portalRestResponse = null;
+		try {
+			String ecompTitle = SystemProperties.getProperty(SystemProperties.APP_DISPLAY_NAME);
+			portalRestResponse = new PortalRestResponse<String>(PortalRestStatusEnum.OK, "success", ecompTitle);
+			EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/ecompTitle", "result =", ecompTitle);
+		} catch (Exception e) {
+			portalRestResponse = new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, e.getMessage(), null);
+			logger.error(EELFLoggerDelegate.errorLogger, "getEcompTitle failed", e);
+		}
+		return portalRestResponse;
+	}
+
+	/**
 	 * RESTful service method to fetch all the FunctionalMenuItems, both active
 	 * and inactive, for the EditFunctionalMenu feature. Can only be accessed by
 	 * the portal admin.
 	 * 
+	 * @param request
+	 *            HttpServletRequest
+	 * @param response
+	 *            HttpServletResponse
 	 * @return List of FunctionalMenuItem objects
 	 */
 	@RequestMapping(value = {
@@ -127,7 +154,8 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 			} else {
 				menuItems = functionalMenuService.getFunctionalMenuItems(true);
 			}
-			EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/functionalMenuForEditing", "result =", menuItems);
+			EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/functionalMenuForEditing", "result =",
+					menuItems);
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger,
 					"Exception occurred while calling functionalMenuForEditing. Details: "
@@ -135,22 +163,28 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 		}
 		return menuItems;
 	}
-	
+
 	/**
-	 * RESTful service method to fetch all the FunctionalMenuItems,  active
-	 *, for the Functional menu in notification Tree feature.
+	 * RESTful service method to fetch all the FunctionalMenuItems, active , for
+	 * the Functional menu in notification Tree feature.
 	 * 
+	 * @param request
+	 *            HttpServletRequest
+	 * @param response
+	 *            HttpServletResponse
 	 * @return List of FunctionalMenuItem objects
 	 */
 	@RequestMapping(value = {
 			"/portalApi/functionalMenuForNotificationTree" }, method = RequestMethod.GET, produces = "application/json")
-	public List<FunctionalMenuItem> getMenuItemsForNotifications(HttpServletRequest request, HttpServletResponse response) {
+	public List<FunctionalMenuItem> getMenuItemsForNotifications(HttpServletRequest request,
+			HttpServletResponse response) {
 		// TODO: should only the superuser be allowed to use this API?
-		EPUser user = EPUserUtils.getUserSession(request);
+		// EPUser user = EPUserUtils.getUserSession(request);
 		List<FunctionalMenuItem> menuItems = null;
 		try {
 			menuItems = functionalMenuService.getFunctionalMenuItemsForNotificationTree(true);
-			EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/functionalMenuForNotificationTree", "result =", menuItems);
+			EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/functionalMenuForNotificationTree", "result =",
+					menuItems);
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger,
 					"Exception occurred while calling functionalMenuForNotifications. Details: "
@@ -163,18 +197,25 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 	 * RESTful service method to fetch all FunctionalMenuItems associated with
 	 * an application.
 	 * 
+	 * @param request
+	 *            HttpServletRequest
+	 * @param response
+	 *            HttpServletResponse
+	 * @param appId
+	 *            application ID
 	 * @return List of FunctionalMenuItem objects
 	 */
 	@RequestMapping(value = {
 			"/portalApi/functionalMenuForApp/{appId}" }, method = RequestMethod.GET, produces = "application/json")
-	public List<FunctionalMenuItem> getMenuItemsForApp(HttpServletRequest request, @PathVariable("appId") Integer appId)
-			throws HTTPException {
+	public List<FunctionalMenuItem> getMenuItemsForApp(HttpServletRequest request,
+			@PathVariable("appId") Integer appId) {
 		// TODO: should only the superuser be allowed to use this API?
 		List<FunctionalMenuItem> menuItems = null;
 		try {
 			menuItems = functionalMenuService.getFunctionalMenuItemsForApp(appId);
 			functionalMenuService.assignHelpURLs(menuItems);
-			EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/functionalMenuForApp/" + appId, "result =", menuItems);
+			EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/functionalMenuForApp/" + appId, "result =",
+					menuItems);
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger,
 					"Exception occurred while calling functionalMenuForApp. Details: "
@@ -187,18 +228,23 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 	 * RESTful service method to fetch all FunctionalMenuItems associated with
 	 * the applications and roles that a user has access to.
 	 * 
+	 * @param request
+	 *            HttpServletRequest
+	 * @param orgUserId
+	 *            user ID
 	 * @return List of FunctionalMenuItem objects
 	 */
 	@RequestMapping(value = {
 			"/portalApi/functionalMenuForUser/{orgUserId}" }, method = RequestMethod.GET, produces = "application/json")
 	public List<FunctionalMenuItem> getMenuItemsForUser(HttpServletRequest request,
-			@PathVariable("orgUserId") String orgUserId) throws HTTPException {
+			@PathVariable("orgUserId") String orgUserId) {
 		// TODO: should only the superuser be allowed to use this API?
 		List<FunctionalMenuItem> menuItems = null;
 		try {
 			menuItems = functionalMenuService.getFunctionalMenuItemsForUser(orgUserId);
 			functionalMenuService.assignHelpURLs(menuItems);
-			EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/functionalMenuForUser/" + orgUserId, "result =", menuItems);
+			EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/functionalMenuForUser/" + orgUserId, "result =",
+					menuItems);
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger,
 					"Exception occurred while calling functionalMenuForUser. Details: "
@@ -212,6 +258,10 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 	 * RESTful service method to fetch all FunctionalMenuItems associated with
 	 * the applications and roles that the authenticated user has access to.
 	 * 
+	 * @param request
+	 *            HttpServletRequest
+	 * @param response
+	 *            HttpServletResponse
 	 * @return List of FunctionalMenuItem objects
 	 */
 	@RequestMapping(value = {
@@ -228,8 +278,8 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 				// calculate the menu items
 				String orgUserId = user.getOrgUserId();
 				menuItems = functionalMenuService.getFunctionalMenuItemsForUser(orgUserId);
-				EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/functionalMenuForUser/" + orgUserId, "result =",
-						menuItems);
+				EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/functionalMenuForUser/" + orgUserId,
+						"result =", menuItems);
 			}
 			functionalMenuService.assignHelpURLs(menuItems);
 		} catch (Exception e) {
@@ -244,12 +294,18 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 	 * RESTful service method to fetch the details for a functional menu item.
 	 * Requirement: you must be the Ecomp portal super admin user.
 	 * 
+	 * @param request
+	 *            HttpServletRequest
+	 * @param response
+	 *            HttpServletResponse
+	 * @param menuId
+	 *            menu ID
 	 * @return FunctionalMenuItem object
 	 */
 	@RequestMapping(value = {
 			"/portalApi/functionalMenuItemDetails/{menuId}" }, method = RequestMethod.GET, produces = "application/json")
 	public FunctionalMenuItem getFunctionalMenuItemDetails(HttpServletRequest request,
-			@PathVariable("menuId") Integer menuId, HttpServletResponse response) throws HTTPException {
+			@PathVariable("menuId") Integer menuId, HttpServletResponse response) {
 		// TODO: return FunctionalMenuItemJson
 		// TODO: modify FunctionalMenuItem to not include the transient fields
 		FunctionalMenuItem menuItem = null;
@@ -259,8 +315,8 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 				EcompPortalUtils.setBadPermissions(user, response, "getFunctionalMenuItemDetails");
 			} else {
 				menuItem = functionalMenuService.getFunctionalMenuItemDetails(menuId);
-				EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/functionalMenuItemDetails/" + menuId, "result =",
-						menuItem);
+				EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/functionalMenuItemDetails/" + menuId,
+						"result =", menuItem);
 			}
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger,
@@ -275,6 +331,14 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 	 * RESTful service method to create a new menu item.
 	 * 
 	 * Requirement: you must be the Ecomp portal super admin user.
+	 * 
+	 * @param request
+	 *            HttpServletRequest
+	 * @param response
+	 *            HttpServletResponse
+	 * @param menuItemJson
+	 *            FunctionalMenuItemWithRoles
+	 * @return FieldsValidator
 	 */
 	@RequestMapping(value = { "/portalApi/functionalMenuItem" }, method = RequestMethod.POST)
 	public FieldsValidator createFunctionalMenuItem(HttpServletRequest request,
@@ -300,6 +364,12 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 	 * 
 	 * Requirement: you must be the Ecomp portal super admin user.
 	 * 
+	 * @param request
+	 *            HttpServletRequest
+	 * @param response
+	 *            HttpServletResponse
+	 * @param menuItemJson
+	 *            FunctionalMenuItemWithRoles
 	 * @return FieldsValidator
 	 */
 	@RequestMapping(value = { "/portalApi/functionalMenuItem" }, method = RequestMethod.PUT)
@@ -322,6 +392,12 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 	/**
 	 * RESTful service method to delete a menu item
 	 * 
+	 * @param request
+	 *            HttpServletRequest
+	 * @param response
+	 *            HttpServletResponse
+	 * @param menuId
+	 *            menu identifier
 	 * @return FieldsValidator
 	 */
 	@RequestMapping(value = { "/portalApi/functionalMenuItem/{menuId}" }, method = RequestMethod.DELETE)
@@ -345,8 +421,9 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 	 * RESTful service to regenerate table
 	 * 
 	 * @param request
+	 *            HttpServletRequest
 	 * @param response
-	 * 
+	 *            HttpServletResponse
 	 * @return FieldsValidator
 	 */
 	@RequestMapping(value = { "/portalApi/regenerateFunctionalMenuAncestors" }, method = RequestMethod.GET)
@@ -370,6 +447,12 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 	/**
 	 * RESful service to set a favorite item.
 	 * 
+	 * @param request
+	 *            HttpServletRequest
+	 * @param response
+	 *            HttpServletResponse
+	 * @param menuItemJson
+	 *            FunctionalMenuItemWithRoles
 	 * @return FieldsValidator
 	 */
 	@RequestMapping(value = { "/portalApi/setFavoriteItem" }, method = RequestMethod.POST)
@@ -380,7 +463,8 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 		menuItemJson.userId = user.getId();
 		fieldsValidator = functionalMenuService.setFavoriteItem(menuItemJson);
 		response.setStatus(fieldsValidator.httpStatusCode.intValue());
-		EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/setFavoriteItem", "Post result =", response.getStatus());
+		EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/setFavoriteItem", "Post result =",
+				response.getStatus());
 
 		return fieldsValidator;
 	}
@@ -389,6 +473,10 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 	 * RESTful service to get favorites for the current user as identified in
 	 * the session
 	 * 
+	 * @param request
+	 *            HttpServletRequest
+	 * @param response
+	 *            HttpServletResponse
 	 * @return List of FavoritesFunctionalMenuItemJson
 	 */
 	@RequestMapping(value = {
@@ -399,7 +487,8 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 		List<FavoritesFunctionalMenuItemJson> favorites = functionalMenuService.getFavoriteItems(user.getId());
 		FieldsValidator fieldsValidator = new FieldsValidator();
 		response.setStatus(fieldsValidator.httpStatusCode.intValue());
-		EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/getFavoriteItems", "GET result =", response.getStatus());
+		EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/getFavoriteItems", "GET result =",
+				response.getStatus());
 		return favorites;
 	}
 
@@ -407,6 +496,12 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 	 * RESTful service to delete a favorite menu item for the current user as
 	 * identified in the session.
 	 * 
+	 * @param request
+	 *            HttpServletRequest
+	 * @param response
+	 *            HttpServletResponse
+	 * @param menuId
+	 *            menu identifier
 	 * @return FieldsValidator
 	 */
 	@RequestMapping(value = { "/portalApi/removeFavoriteItem/{menuId}" }, method = RequestMethod.DELETE)
@@ -423,13 +518,17 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 	}
 
 	/**
-	 * RESTful service to get user information: user's first and last names, ATT
-	 * UID, email and last-login. (Actually has nothing to do with the real
+	 * RESTful service to get user information: user's first and last names, org
+	 * user ID, email and last-login. (Actually has nothing to do with the real
 	 * functional menu.) First attempts to get the information from the Tomcat
 	 * session (i.e., the CSP cookie); if that fails, calls the shared context
 	 * service to read the information from the database. Gives back what it
 	 * found, any of which may be null, as a JSON collection.
 	 * 
+	 * @param request
+	 *            HttpServletRequest
+	 * @param response
+	 *            HttpServletResponse
 	 * @return JSON collection of key-value pairs shown below.
 	 */
 	@RequestMapping(value = {
@@ -439,7 +538,7 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 		// Get user details from session
 		logger.debug(EELFLoggerDelegate.debugLogger, "getFunctionalMenuStaticInfo: getting user info");
 		String fnMenuStaticResponse = null;
-		try {			
+		try {
 			String orgUserIdStr = null, firstNameStr = null, lastNameStr = null, emailStr = null, lastLogin = null;
 			EPUser user = EPUserUtils.getUserSession(request);
 			firstNameStr = user.getFirstName();
@@ -456,23 +555,24 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 				// should never happen
 				logger.error(EELFLoggerDelegate.errorLogger, "getFunctionalMenuStaticInfo: no last login in session");
 				lastLogin = "no last login available";
-			}
-			else {
+			} else {
 				lastLogin = sdf.format(lastLoginDate);
 			}
-			
+
 			// If any item is missing from session, try the Shared Context
 			// service.
 			SharedContext orgUserIdSC = null, firstNameSC = null, lastNameSC = null, emailSC = null;
 			String sessionId = request.getSession().getId();
 			if (firstNameStr == null)
-				firstNameSC = sharedContextService.getSharedContext(sessionId, EPCommonSystemProperties.USER_FIRST_NAME);
+				firstNameSC = sharedContextService.getSharedContext(sessionId,
+						EPCommonSystemProperties.USER_FIRST_NAME);
 			if (lastNameStr == null)
 				lastNameSC = sharedContextService.getSharedContext(sessionId, EPCommonSystemProperties.USER_LAST_NAME);
 			if (emailStr == null)
 				emailSC = sharedContextService.getSharedContext(sessionId, EPCommonSystemProperties.USER_EMAIL);
 			if (orgUserIdStr == null)
-				orgUserIdSC = sharedContextService.getSharedContext(sessionId, EPCommonSystemProperties.USER_ORG_USERID);
+				orgUserIdSC = sharedContextService.getSharedContext(sessionId,
+						EPCommonSystemProperties.USER_ORG_USERID);
 
 			// Build the response
 			Map<String, String> map = new HashMap<String, String>();
@@ -481,7 +581,8 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 			map.put("lastName",
 					lastNameStr != null ? lastNameStr : (lastNameSC != null ? lastNameSC.getCvalue() : null));
 			map.put("email", emailStr != null ? emailStr : (emailSC != null ? emailSC.getCvalue() : null));
-			map.put("userId", orgUserIdStr != null ? orgUserIdStr : (orgUserIdSC != null ? orgUserIdSC.getCvalue() : null));
+			map.put("userId",
+					orgUserIdStr != null ? orgUserIdStr : (orgUserIdSC != null ? orgUserIdSC.getCvalue() : null));
 			map.put("last_login", lastLogin);
 			JSONObject j = new JSONObject(map);
 			fnMenuStaticResponse = j.toString();
@@ -498,58 +599,64 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 		}
 		return fnMenuStaticResponse;
 	}
-	
+
 	private Comparator<BusinessCardApplicationRole> getUserAppRolesComparator = new Comparator<BusinessCardApplicationRole>() {
 		public int compare(BusinessCardApplicationRole o1, BusinessCardApplicationRole o2) {
 			return o1.getAppName().compareTo(o2.getAppName());
 		}
 	};
 
+	/**
+	 * 
+	 * @param request
+	 *            HttpServletRequest
+	 * @param userId
+	 *            user ID
+	 * @return List<BusinessCardApplicationRolesList>
+	 * @throws IOException
+	 *             on error
+	 */
 	@RequestMapping(value = {
 			"/portalApi/userApplicationRoles" }, method = RequestMethod.GET, produces = "application/json")
-	public List<BusinessCardApplicationRolesList> getAppList(HttpServletRequest request,@RequestParam("userId") String userId) throws IOException {
+	public List<BusinessCardApplicationRolesList> getAppList(HttpServletRequest request,
+			@RequestParam("userId") String userId) throws IOException {
 
-		
 		List<BusinessCardApplicationRolesList> AppRoles = null;
 		try {
 			List<BusinessCardApplicationRole> userAppRoleList = functionalMenuService.getUserAppRolesList(userId);
-			
+
 			Collections.sort(userAppRoleList, getUserAppRolesComparator);
-			EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/userApplicationRoles", "result =", userAppRoleList);
-			
-			 AppRoles = new ArrayList<BusinessCardApplicationRolesList>();	   
-			for(BusinessCardApplicationRole userAppRole: userAppRoleList)
-			{    
-				  boolean found = false;
-			      List<String> roles = null;
-			     
-				for(BusinessCardApplicationRolesList app :AppRoles)
-				{	
-					if(app.getAppName().equals(userAppRole.getAppName()))
-					{
-						roles= app.getRoleNames();
+			EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/userApplicationRoles", "result =",
+					userAppRoleList);
+
+			AppRoles = new ArrayList<BusinessCardApplicationRolesList>();
+			for (BusinessCardApplicationRole userAppRole : userAppRoleList) {
+				boolean found = false;
+				List<String> roles = null;
+
+				for (BusinessCardApplicationRolesList app : AppRoles) {
+					if (app.getAppName().equals(userAppRole.getAppName())) {
+						roles = app.getRoleNames();
 						roles.add(userAppRole.getRoleName());
 						app.setRoleNames(roles);
-						found = true;	
-						break;	
+						found = true;
+						break;
 					}
 				}
-				
-				if(!found)
-				{
-				roles = new ArrayList<String>();	
-				roles.add(userAppRole.getRoleName());
-				AppRoles.add(new BusinessCardApplicationRolesList(userAppRole.getAppName(), roles));
-				}	
-				
+
+				if (!found) {
+					roles = new ArrayList<String>();
+					roles.add(userAppRole.getRoleName());
+					AppRoles.add(new BusinessCardApplicationRolesList(userAppRole.getAppName(), roles));
+				}
+
 				Collections.sort(roles);
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			logger.error(EELFLoggerDelegate.errorLogger, "getAppList failed", e);
 		}
 
-	return  AppRoles;
+		return AppRoles;
 
 	}
 }

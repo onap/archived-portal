@@ -20,10 +20,12 @@
 package org.openecomp.portalapp.portal.service;
 
 import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -76,6 +78,7 @@ import com.att.nsa.apiClient.http.HttpException;
 import com.att.nsa.cambria.client.CambriaClient.CambriaApiException;
 import com.att.nsa.cambria.client.CambriaClientBuilders;
 import com.att.nsa.cambria.client.CambriaIdentityManager;
+import com.att.nsa.cambria.client.CambriaTopicManager;
 import com.google.common.primitives.Ints;
 
 public class EPAppCommonServiceImpl implements EPAppService {
@@ -91,13 +94,13 @@ public class EPAppCommonServiceImpl implements EPAppService {
 	private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(EPAppCommonServiceImpl.class);
 
 	@Autowired
-	AdminRolesService adminRolesService;
+	private AdminRolesService adminRolesService;
 	@Autowired
 	private SessionFactory sessionFactory;
 	@Autowired
 	private DataAccessService dataAccessService;
 	@Autowired
-	EPUebHelper epUebHelper;
+	private EPUebHelper epUebHelper;
 
 	@PostConstruct
 	private void init() {
@@ -223,7 +226,7 @@ public class EPAppCommonServiceImpl implements EPAppService {
 		try {
 			params.put("appName", appName);
 			@SuppressWarnings("unchecked")
-			List<EPApp> apps = (List<EPApp>) dataAccessService.executeNamedQuery("getAppDetails", params, null);
+			List<EPApp> apps = (List<EPApp>) dataAccessService.executeNamedQuery("getMyloginAppDetails", params, null);
 			return (apps.size() > 0) ? apps.get(0) : null;
 		} catch (Exception e) {
 			EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeDaoSystemError, e);
@@ -272,17 +275,14 @@ public class EPAppCommonServiceImpl implements EPAppService {
 		this.dataAccessService = dataAccessService;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<AdminUserApplications> getAppsAdmins() {
-		String sql = "SELECT apps.APP_NAME, apps.APP_ID, user.USER_ID, user.FIRST_NAME, user.LAST_NAME, user.org_user_id FROM fn_user_role userrole "
-				+ "INNER JOIN fn_user user ON user.USER_ID = userrole.USER_ID "
-				+ "INNER JOIN fn_app apps ON apps.APP_ID = userrole.APP_ID " + "WHERE userrole.ROLE_ID = "
-				+ ACCOUNT_ADMIN_ROLE_ID + " AND (apps.ENABLED = 'Y' OR apps.APP_ID=1)";
-		logQuery(sql);
 		try {
-			@SuppressWarnings("unchecked")
-			List<AdminUserApp> adminApps = dataAccessService.executeSQLQuery(sql, AdminUserApp.class, null);
-			// DataAccessService does not use generic types.
+			Map<String, String> params = new HashMap<>();
+			params.put("accountAdminRoleId", ACCOUNT_ADMIN_ROLE_ID);
+			List<AdminUserApp> adminApps = (List<AdminUserApp>) dataAccessService.executeNamedQuery("getAppsAdmins",
+					params, null);
 			return aggregateRowsResultsByUserId(adminApps);
 		} catch (Exception e) {
 			EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeDaoSystemError, e);
@@ -790,12 +790,6 @@ public class EPAppCommonServiceImpl implements EPAppService {
 			query = localSession.createSQLQuery(sql);
 			query.executeUpdate();
 
-			// Remove any widgets associated with this app
-			sql = "delete from fn_widget where app_id='" + appid + "'";
-			logQuery(sql);
-			query = localSession.createSQLQuery(sql);
-			query.executeUpdate();
-
 			// Remove rows in the app personalization selection table
 			sql = "delete from fn_pers_user_app_sel where app_id='" + appid + "'";
 			logQuery(sql);
@@ -804,6 +798,18 @@ public class EPAppCommonServiceImpl implements EPAppService {
 
 			// Remove rows in the app personalization sort table
 			sql = "delete from ep_pers_user_app_man_sort where app_id='" + appid + "'";
+			logQuery(sql);
+			query = localSession.createSQLQuery(sql);
+			query.executeUpdate();
+
+			// Remove rows in the app personalization sort table
+			sql = "delete from ep_user_roles_request where app_id='" + appid + "'";
+			logQuery(sql);
+			query = localSession.createSQLQuery(sql);
+			query.executeUpdate();
+
+			// Remove rows in the app personalization sort table
+			sql = "delete from ep_web_analytics_source where app_id='" + appid + "'";
 			logQuery(sql);
 			query = localSession.createSQLQuery(sql);
 			query.executeUpdate();
@@ -911,7 +917,49 @@ public class EPAppCommonServiceImpl implements EPAppService {
 						// keys will be visible to the
 						// admin on the ECOMP portal.
 						// -------------------------------------------------------------------------------------------
-						TopicManager topicManager = new TopicManager();
+						TopicManager topicManager = new TopicManager() {
+
+							EPAppCommonServiceImpl service;
+
+							public void init(EPAppCommonServiceImpl _service) {
+								service = _service;
+							}
+
+							public void createTopic(String key, String secret, String topicName,
+									String topicDescription) throws HttpException, CambriaApiException, IOException {
+
+								init(EPAppCommonServiceImpl.this);
+								final LinkedList<String> urlList = Helper.uebUrlList();
+								if (logger.isInfoEnabled()) {
+									logger.info("==> createTopic");
+									logger.info("topicName: " + topicName);
+									logger.info("topicDescription: " + topicDescription);
+								}
+								CambriaTopicManager tm = null;
+								try {
+									tm = service.getTopicManager(urlList, key, secret);
+								} catch (Exception e) {
+									logger.error("pub.build Exception ", e);
+									throw new CambriaApiException(topicName);
+								}
+								tm.createTopic(topicName, topicDescription, 1, 1);
+							}
+
+							public void addPublisher(String topicOwnerKey, String topicOwnerSecret, String publisherKey,
+									String topicName) throws HttpException, CambriaApiException, IOException {
+								logger.info("==> addPublisher to topic " + topicName);
+								final LinkedList<String> urlList = Helper.uebUrlList();
+								CambriaTopicManager tm = null;
+								try {
+									tm = service.getTopicManager(urlList, topicOwnerKey, topicOwnerSecret);
+								} catch (Exception e) {
+									logger.error("pub.build Exception ", e);
+									throw new CambriaApiException(topicName);
+								}
+								tm.allowProducer(topicName, publisherKey);
+							}
+
+						};
 						final CambriaIdentityManager im = new CambriaClientBuilders.IdentityManagerBuilder()
 								.usingHosts(Helper.uebUrlList()).build();
 						com.att.nsa.apiClient.credentials.ApiCredential credential = im.createApiKey(user.getEmail(),
@@ -1036,6 +1084,11 @@ public class EPAppCommonServiceImpl implements EPAppService {
 		}
 	}
 
+	public CambriaTopicManager getTopicManager(LinkedList<String> urlList, String key, String secret)
+			throws GeneralSecurityException, Exception {
+		throw new Exception("This method can only be invoked from child class");
+	}
+
 	/**
 	 * Populates a transport model of the application from a database row model.
 	 * Leaves out the thumbnail because the FE fetches images via a different
@@ -1107,7 +1160,7 @@ public class EPAppCommonServiceImpl implements EPAppService {
 				app.setImageUrl(constructImageName(onboardingApp));
 				app.setThumbnail(decodedImage);
 			}
-		} else if (app.getThumbnail() != null) {
+		} else if (app.getThumbnail() != null && onboardingApp.imageLink == null) {
 			// The thumbnail that came in from the json is empty; the previous
 			// thumbnail is NOT empty. Must delete it.
 			logger.debug(EELFLoggerDelegate.debugLogger,
@@ -1116,7 +1169,7 @@ public class EPAppCommonServiceImpl implements EPAppService {
 			app.setThumbnail(null);
 		} else {
 			logger.debug(EELFLoggerDelegate.debugLogger,
-					"createAppFromOnboarding: onboarding thumbnail is empty; db thumbnail is null");
+					"createAppFromOnboarding: making no changes to thumbnail as imageLink is not null");
 		}
 		return app;
 	}

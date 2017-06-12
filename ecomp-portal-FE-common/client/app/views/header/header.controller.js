@@ -20,7 +20,7 @@
 'use strict';
 (function () {
 	class HeaderCtrl {
-        constructor($log, $window, userProfileService, menusService, $scope, ECOMP_URL_REGEX, $cookies, $state,auditLogService,notificationService) {
+        constructor($log, $window, userProfileService, menusService, $scope, ECOMP_URL_REGEX, $cookies, $state,auditLogService,notificationService,recommendationService,ngDialog) {
             this.firstName = '';
             this.lastName = '';
             this.$log = $log;
@@ -33,6 +33,7 @@
             $scope.emptyFavorites = false;
             $scope.favoritesWindow = false;
             $scope.notificationCount=0;
+            $scope.recommendationCount=0;
             $scope.showNotification = true;
 
             $scope.hideMenus = false;
@@ -46,6 +47,7 @@
             };
             $scope.megaMenuDataObject =[];
             $scope.notificationCount= notificationService.notificationCount;
+            $scope.recommendationCount= recommendationService.recommendationCount;
             this.isLoading = true;
             this.ECOMP_URL_REGEX = ECOMP_URL_REGEX;
             
@@ -199,6 +201,18 @@
 
             }
             
+            /*Getting Ecomp portal Title*/
+
+            let getEcompPortalTitle  = () => {
+            	menusService.getEcompPortalTitle()
+            	.then(title=> {
+            		$scope.ecompTitle = title.response;
+            	}).catch(err=> {
+            		$log.error('HeaderCtrl.getEcompPortalTitle:: Error retrieving ECMOP portal title: ' + err);
+            	});
+            }
+            getEcompPortalTitle();
+            
             let generateFavoriteItems  = () => {
                 menusService.getFavoriteItems()
                     .then(favorites=> {
@@ -253,7 +267,22 @@
                 	$cookies.putObject('addTab', tabContent );
                 }
             };
-
+            
+            $scope.editProfile = () => {
+                let data = null;
+               
+                ngDialog.open({
+                    templateUrl: 'app/views/header/profile-edit-dialogs/profile-edit.modal.html',
+                    controller: 'EditProfileModalCtrl',
+                    controllerAs: 'profileDetail',
+                    data: ''
+                }).closePromise.then(needUpdate => {
+                    if(needUpdate.value === true){
+                        // $log.debug('AdminsCtrl:openAddNewAdminModal:: updating table data...');
+                        updateTableData();
+                    }
+                });
+            };
         }
     }
     class LoginSnippetCtrl {
@@ -375,13 +404,15 @@
  				$interval.cancel(intervalPromise);
  			 };
  			 
-   			
-  			 $scope.showDetailedJsonMessage=function (selectedAdminNotification) {
-   				if (selectedAdminNotification.source!=='EP'){
+ 			 $scope.showDetailedJsonMessage=function (selectedAdminNotification) {
+        		 notificationService.getMessageRecipients(selectedAdminNotification.id).then(res =>{
+                     $scope.messageRecipients = res;
 				 var messageObject=JSON.parse(selectedAdminNotification.message);
 				 var html="";
 				 html+='<p>'+'Message Source'+' : '+selectedAdminNotification.source+'</p>';
 				 html+='<p>'+'Message Title'+' : '+selectedAdminNotification.title+'</p>';
+				 html+='<p>'+'Message Recipient'+' : '+$scope.messageRecipients+'</p>';
+
 				 for(var field in  messageObject){
 					 if(field=='eventDate'||field=='lastModifiedDate'){
 						 html+='<p>'+field+' : '+new Date(+messageObject[field])+'</p>';
@@ -391,8 +422,8 @@
 					 
 					 }
 				 }
- 			
- 		     var modalInstance = ngDialog.open({
+
+				 var modalInstance = ngDialog.open({
  				    templateUrl: 'app/views/user-notifications-admin/user.notifications.Json.details.modal.page.html',
  				    controller: 'userNotificationCtrl',
  				    resolve: {
@@ -407,9 +438,12 @@
  				     
  				      }
  				  }); 
- 			
-   				} 
- 			 };
+ 		     
+        	 }).catch(err => {
+                 $log.error('userNotificationsCtrl:getMessageRecipients:: error ', err);
+                 $scope.isLoadingTable = false;
+             });
+        	 };
  			 
  			notificationService.getNotificationRate().then(res=> {
             	if (res == null || res.response == null) {
@@ -439,11 +473,86 @@
              }
     	}
     }
+    
+    class RecommendationCtrl{
+    	constructor($log, $scope, $cookies, $timeout, sessionService,recommendationService,notificationService,$interval,ngDialog) {
+    		 $scope.recommendations=[];   
+    		 var intervalPromise = null;
+             $scope.recommendationCount=  recommendationService.recommendationCount;
+             console.log("$",$);
+            $scope.getRecommendations = function(){ 
+            	$("#recommendation-bulb").removeClass('icon-misc-bulbL').addClass('icon-misc-bulb')
+            	 recommendationService.getRecommendations()
+            	 
+                 .then(res=> {
+                	 	$("#recommendation-bulb").removeClass('icon-misc-bulb').addClass('icon-misc-bulbL')
+                	recommendationService.decrementRefreshCount();
+                	var count = recommendationService.getRefreshCount();
+                 	if ( res.data==null) {
+                 		$log.error('RecommendationCtrl::update Recommendation: failed to get recommendation');
+                 		if (intervalPromise != null)
+                 			$interval.cancel(intervalPromise);
+                 	} else if(count>=0){
+                 		if (intervalPromise != null)
+                 			$interval.cancel(intervalPromise);
+                 	} else {
+                 		$scope.recommendations = [];
+                 		recommendationService.setRecommendationCount(res.data.recommendations.length);
+                 		for(var i=0;i<res.data.recommendations.length;i++){
+                 			var data = res.data.recommendations[i];                			
+			            	var recommendations ={
+			            				            			
+			            			recommendation:data
+			            	};
+			            	$scope.recommendations.push(recommendations);       
+			             }  
+                 	}   	
+                 }).catch(err=> {
+                 	$log.error('RecommendationCtrl::gatRecommendations: caught exception: ' + err);
+                 	if (intervalPromise != null)
+                 		$interval.cancel(intervalPromise);
+                 });      
+             }
+             $scope.getRecommendations();
+             
+             function updateRecommendations() {
+            	 $scope.getRecommendations();
+             }
+             
+             notificationService.getNotificationRate().then(res=> {
+              	if (res == null || res.response == null) {
+              		$log.error('NotificationCtrl: failed to notification update rate or duration, check system.properties file.');
+              	} else {
+              		var rate = parseInt(res.response.updateRate);
+  					var duration = parseInt(res.response.updateDuration);
+  					notificationService.setMaxRefreshCount(parseInt(duration/rate)+1);
+  					notificationService.setRefreshCount(notificationService.maxCount);
+             			if (rate != NaN && duration != NaN) {
+  						$scope.updateRate=rate;
+  			            setInterval(function(){$scope.getRecommendations();},rate);
+
+             			}            			
+              	}
+              }).catch(err=> {
+              	$log.error('NotificationCtrl: getNotificationRate() failed: ' + err);
+              });             
+             $scope.deleteRecommendation = function(index){
+            	 if ($scope.recommendations[index] == null || $scope.recommendations[index] == '') {
+             		$log.error('RecommendationCtrl: failed to delete Recommendation.');
+             		return;
+            	 }
+            	 $scope.recommendations.splice(index,1);
+            	 recommendationService.setRecommendationCount($scope.recommendations.length);     	 
+             }
+    	}
+    }
     NotificationCtrl.$inject = ['$log', '$scope', '$cookies', '$timeout', 'sessionService','notificationService','$interval','ngDialog'];
+    RecommendationCtrl.$inject = ['$log', '$scope', '$cookies', '$timeout', 'sessionService','recommendationService','notificationService','$interval','ngDialog'];
     LoginSnippetCtrl.$inject = ['$log', '$scope', '$cookies', '$timeout','userProfileService', 'sessionService'];
-    HeaderCtrl.$inject = ['$log', '$window', 'userProfileService', 'menusService', '$scope', 'ECOMP_URL_REGEX','$cookies','$state','auditLogService','notificationService'];
+    HeaderCtrl.$inject = ['$log', '$window', 'userProfileService', 'menusService', '$scope', 'ECOMP_URL_REGEX','$cookies','$state','auditLogService','notificationService','recommendationService','ngDialog'];
     angular.module('ecompApp').controller('HeaderCtrl', HeaderCtrl);
     angular.module('ecompApp').controller('loginSnippetCtrl', LoginSnippetCtrl);
     angular.module('ecompApp').controller('notificationCtrl', NotificationCtrl);
+    angular.module('ecompApp').controller('recommendationCtrl', RecommendationCtrl);
 
 })();

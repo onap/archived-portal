@@ -69,12 +69,12 @@ import io.swagger.annotations.ApiOperation;
 public class SharedContextRestController extends EPRestrictedRESTfulBaseController {
 
 	/**
-	 * Model for a one-element JSON object returned by many methods. 
+	 * Model for a one-element JSON object returned by many methods.
 	 */
 	class SharedContextJsonResponse {
 		String response;
 	}
-	
+
 	/**
 	 * Access to the database
 	 */
@@ -94,12 +94,16 @@ public class SharedContextRestController extends EPRestrictedRESTfulBaseControll
 	/**
 	 * Gets a value for the specified context and key (RESTful service method).
 	 * 
-	 * @param ctxtId
+	 * @param request
+	 *            HTTP servlet request
+	 * @param context_id
 	 *            ID that identifies the context, usually the ECOMP Portal
 	 *            session key.
 	 * @param ckey
 	 *            Key for the key-value pair to fetch
 	 * @return JSON with shared context object; response=null if not found.
+	 * @throws Exception
+	 *             on bad arguments
 	 */
 	@ApiOperation(value = "Gets a value for the specified context and key.", response = SharedContext.class)
 	@RequestMapping(value = { "/get" }, method = RequestMethod.GET, produces = "application/json")
@@ -123,12 +127,15 @@ public class SharedContextRestController extends EPRestrictedRESTfulBaseControll
 	/**
 	 * Gets user information for the specified context (RESTful service method).
 	 * 
-	 * @param ctxtId
+	 * @param request
+	 *            HTTP servlet request
+	 * @param context_id
 	 *            ID that identifies the context, usually the ECOMP Portal
 	 *            session key.
-	 * 
 	 * @return List of shared-context objects as JSON; should have user's first
 	 *         name, last name and email address; null if none found
+	 * @throws Exception
+	 *             on bad arguments
 	 */
 	@ApiOperation(value = "Gets user information for the specified context.", response = SharedContext.class, responseContainer = "List")
 	@RequestMapping(value = { "/get_user" }, method = RequestMethod.GET, produces = "application/json")
@@ -162,6 +169,8 @@ public class SharedContextRestController extends EPRestrictedRESTfulBaseControll
 	 * Tests for presence of the specified key in the specified context (RESTful
 	 * service method).
 	 * 
+	 * @param request
+	 *            HTTP servlet request
 	 * @param context_id
 	 *            ID that identifies the context, usually the ECOMP Portal
 	 *            session key.
@@ -169,6 +178,8 @@ public class SharedContextRestController extends EPRestrictedRESTfulBaseControll
 	 *            Key for the key-value pair to test
 	 * @return JSON with result indicating whether the context and key were
 	 *         found.
+	 * @throws Exception
+	 *             on bad arguments
 	 */
 	@ApiOperation(value = "Tests for presence of the specified key in the specified context.", response = SharedContextJsonResponse.class)
 	@RequestMapping(value = { "/check" }, method = RequestMethod.GET, produces = "application/json")
@@ -192,6 +203,8 @@ public class SharedContextRestController extends EPRestrictedRESTfulBaseControll
 	 * Removes the specified key in the specified context (RESTful service
 	 * method).
 	 * 
+	 * @param request
+	 *            HTTP servlet request
 	 * @param context_id
 	 *            ID that identifies the context, usually the ECOMP Portal
 	 *            session key.
@@ -199,6 +212,8 @@ public class SharedContextRestController extends EPRestrictedRESTfulBaseControll
 	 *            Key for the key-value pair to remove
 	 * @return JSON with result indicating whether the context and key were
 	 *         found.
+	 * @throws Exception
+	 *             on bad arguments
 	 */
 	@ApiOperation(value = "Removes the specified key in the specified context.", response = SharedContextJsonResponse.class)
 	@RequestMapping(value = { "/remove" }, method = RequestMethod.GET, produces = "application/json")
@@ -224,11 +239,15 @@ public class SharedContextRestController extends EPRestrictedRESTfulBaseControll
 	 * Clears all key-value pairs in the specified context (RESTful service
 	 * method).
 	 * 
+	 * @param request
+	 *            HTTP servlet request
 	 * @param context_id
 	 *            ID that identifies the context, usually the ECOMP Portal
 	 *            session key.
 	 * @return JSON with result indicating the number of key-value pairs
 	 *         removed.
+	 * @throws Exception
+	 *             on bad arguments
 	 */
 	@ApiOperation(value = "Clears all key-value pairs in the specified context.", response = SharedContextJsonResponse.class)
 	@RequestMapping(value = { "/clear" }, method = RequestMethod.GET, produces = "application/json")
@@ -248,6 +267,8 @@ public class SharedContextRestController extends EPRestrictedRESTfulBaseControll
 	 * method). Creates the context if no context with the specified ID-key pair
 	 * exists, overwrites the value if it exists already.
 	 * 
+	 * @param request
+	 *            HTTP servlet request
 	 * @param userJson
 	 *            JSON block with these tag-value pairs:
 	 *            <UL>
@@ -257,6 +278,8 @@ public class SharedContextRestController extends EPRestrictedRESTfulBaseControll
 	 *            </UL>
 	 * @return JSON with result indicating whether the value was added (key not
 	 *         previously known) or replaced (key previously known).
+	 * @throws Exception
+	 *             on bad arguments
 	 */
 	@ApiOperation(value = "Sets a context value for the specified context and key. Creates the context if no context with the specified ID-key pair exists, overwrites the value if it exists already.", response = SharedContextJsonResponse.class)
 	@RequestMapping(value = { "/set" }, method = RequestMethod.POST, produces = "application/json")
@@ -314,7 +337,7 @@ public class SharedContextRestController extends EPRestrictedRESTfulBaseControll
 	/**
 	 * Creates a JSON object with the content of the shared context; null is ok.
 	 * 
-	 * @param responseBody
+	 * @param context
 	 * @return tag "response" with collection of context object's fields
 	 * @throws JsonProcessingException
 	 */

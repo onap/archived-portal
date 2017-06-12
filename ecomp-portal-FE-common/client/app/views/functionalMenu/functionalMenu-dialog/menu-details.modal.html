@@ -1,0 +1,97 @@
+<div class="functionalMenu-details-modal">
+    <div class="title">{{ngDialogData.title}}</div>
+
+
+    <div class="functionalMenu-properties-main" scroll-top="functionalMenuDetails.scrollApi">
+        <form name="functionalMenuForm">
+
+            <div class="span6" >
+					<div class="item-label">Parent</div>
+					<input id="input-parent" ddh-reset class="functionalMenu-height"
+						 ng-model="functionalMenuDetails.menuLocation"
+						type="text"	name="menuItem"  readonly="readonly"  />
+			</div>
+				
+            <div class="span6" >
+                <div class="item-label">Title</div>
+                <input id="input-title" ddh-reset ng-readonly="!functionalMenuDetails.formEditable ? 'checked':'' " placeholder="Enter text"class="functionalMenu-height" ng-model="functionalMenuDetails.menutitle" type="text" name="text"/>
+                <div id="div-error-conflict" class="error-container" ng-show="functionalMenuDetails.conflictMessages.text">
+                    <small id="msg-error-conflict" id="functionalMenuDetails-input-title-conflict" class="err-message" ng-bind="functionalMenuDetails.conflictMessages.text"></small>
+                </div>
+            </div>
+            
+            
+              <div class="span6">
+                <div class="left-item">
+                   <div class="item-label">URL</div>
+                    <input id="input-url" ddh-reset ng-readonly="!functionalMenuDetails.formEditable ? 'checked':'' " class="functionalMenu-height" placeholder="http://" class="input-field" ng-model="functionalMenuDetails.menuItem.menu.url" type="url" name="url"/>
+					<div id="error-url-conflict" ng-show="functionalMenuForm.url.$error.url">
+					<small class="err-message"	style="color: Red; font-size: 11px;">Not valid URL!</small>
+				</div>                
+				</div>
+                </div>
+                 <div class="right-item">
+                    <div class="item-label">App</div>
+                    <div class="custom-select-wraps" ng-readonly="checked">
+                    				<div id='ecomp-small-spinner' class="ecomp-small-spinner"
+                    									ng-if="isAllApplications"></div>
+                    				<div ng-if="!isAllApplications">
+                                            <select id="select-app" class="select-field"
+                                ng-model="functionalMenuDetails.selectedApp"
+                                ng-change="functionalMenuDetails.updateSelectedApp(functionalMenuDetails.selectedApp);"
+                                ng-options="app.title for app in functionalMenuDetails.availableApps track by app.index"
+                               
+                                required>
+                            <option value="" >No Application</option>
+                        </select>
+                    </div>
+                    </div>
+                    <!--<span class="err-message" ng-show="functionalMenuForm.app.$dirty && functionalMenuForm.app.$error.required"> Please select App!</span>-->
+                 <!--   <pre>{{functionalMenuDetails.menuItem | json}}</pre> -->
+                </div>
+           
+                    
+            <div class="item" ng-show="functionalMenuDetails.displayRoles==true">
+                <div class="item-label">Roles</div>
+                    <dropdown-multiselect id="dropdown-roles" dropdown-title="Select Roles" pre-selected="functionalMenuDetails.preSelectedRoles.roles"
+                                          model="functionalMenuDetails.selectedRole"
+                                          options="functionalMenuDetails.availableRoles" source="ngDialogData.source" >
+                    </dropdown-multiselect>
+            </div>
+            <div ng-show="functionalMenuDetails.selectedApp && functionalMenuDetails.selectedApp.isDisabled" class="err-message">Application is disabled</div>
+             </div>
+        </form>
+    </div>
+    <div class="dialog-control">
+        <div ng-if="ngDialogData.source!='view'">
+            <span class="ecomp-save-spinner" ng-show="functionalMenuDetails.isSaving"></span>
+            <span ng-if="ngDialogData.source=='edit' && functionalMenuDetails.isLeafMenuItem()">
+                <button class="btn btn-alt btn-small" id="add-menu-button-save"
+                        ng-show="!functionalMenuDetails.menuItem.menu.url ||
+                        !(functionalMenuDetails.selectedApp.index>0) ||
+                        functionalMenuDetails.displayRoles"
+                        ng-disabled="!functionalMenuForm.text.$valid"
+                        ng-click="functionalMenuDetails.saveChanges()">Save</button>
+                <button class="btn btn-alt btn-small" id="add-menu-button-continue"
+                        ng-show="!!functionalMenuDetails.menuItem.menu.url &&
+                        functionalMenuDetails.selectedApp.index>0 &&
+                        functionalMenuDetails.menutitle &&
+                        !functionalMenuDetails.displayRoles"
+                        ng-disabled="!functionalMenuForm.url.$valid" ng-click="functionalMenuDetails.continue()">Continue</button>
+            </span>
+            <span ng-if="ngDialogData.source=='add' || (ngDialogData.source=='edit' && !functionalMenuDetails.isLeafMenuItem())">
+                <button id="button-save-add"
+                        class="btn btn-alt btn-small" ng-show="!functionalMenuDetails.menuItem.menu.url || !(functionalMenuDetails.selectedApp.index>0)
+                || functionalMenuDetails.selectedRole.length>0 || !functionalMenuDetails.menutitle" ng-disabled="!functionalMenuForm.text.$valid || !functionalMenuDetails.menutitle"
+                        ng-click="functionalMenuDetails.saveChanges()">Save</button>
+                <button id="button-save-continue" class="save-button" ng-show="!!functionalMenuDetails.menuItem.menu.url && functionalMenuDetails.selectedApp.index>0 && functionalMenuDetails.menutitle
+                && !functionalMenuDetails.selectedRole.length>0" ng-disabled="!functionalMenuForm.url.$valid"
+                        ng-click="functionalMenuDetails.continue()">Continue</button>
+            </span>
+            <button id="button-cancel-close-dialog" class="btn btn-alt btn-small" ng-click="closeThisDialog()">Cancel</button>
+        </div>
+        <div ng-if="ngDialogData.source=='view'">
+            <div  id="div-close-dialog"  class="btn btn-alt btn-small" ng-click="closeThisDialog()">Close</div>
+        </div>
+    </div>
+</div>

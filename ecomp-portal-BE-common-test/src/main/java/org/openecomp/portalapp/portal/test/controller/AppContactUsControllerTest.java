@@ -40,14 +40,10 @@ import org.openecomp.portalapp.portal.ecomp.model.PortalRestResponse;
 import org.openecomp.portalapp.portal.ecomp.model.PortalRestStatusEnum;
 import org.openecomp.portalapp.portal.service.AppContactUsService;
 import org.openecomp.portalapp.portal.service.AppContactUsServiceImpl;
-import org.openecomp.portalapp.portal.test.framework.MockitoTestSuite;
+import org.openecomp.portalapp.test.framework.MockitoTestSuite;
 import org.openecomp.portalapp.util.EPUserUtils;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 
-public class AppContactUsControllerTest {
+public class AppContactUsControllerTest extends MockitoTestSuite{
 
 	@Mock
 	AppContactUsService contactUsService = new AppContactUsServiceImpl();
@@ -73,10 +69,10 @@ public class AppContactUsControllerTest {
 		List<AppContactUsItem> appContactUsItemList = new ArrayList<AppContactUsItem>();
 		AppContactUsItem appContactUsItem = new AppContactUsItem();
 		appContactUsItem.setAppId((long) 1);
-		appContactUsItem.setAppName("Ecmop Portal");
+		appContactUsItem.setAppName("ECOMP Portal");
 		appContactUsItem.setDescription("Test");
 		appContactUsItem.setContactName("Test");
-		appContactUsItem.setContactEmail("Test@att.com");
+		appContactUsItem.setContactEmail("person@onap.org");
 		appContactUsItem.setUrl("Test_URL");
 		appContactUsItem.setActiveYN("Y");
 		appContactUsItemList.add(appContactUsItem);
@@ -90,8 +86,7 @@ public class AppContactUsControllerTest {
 		List<AppContactUsItem> appContactUsItemList = mockResponse();
 		expectedportalRestResponse.setMessage("success");
 		expectedportalRestResponse.setResponse(appContactUsItemList);
-		PortalRestStatusEnum portalRestStatusEnum = null;
-		expectedportalRestResponse.setStatus(portalRestStatusEnum.OK);
+		expectedportalRestResponse.setStatus(PortalRestStatusEnum.OK);
 		return expectedportalRestResponse;
 
 	}
@@ -100,8 +95,7 @@ public class AppContactUsControllerTest {
 		PortalRestResponse<List<AppContactUsItem>> expectedportalRestResponse = new PortalRestResponse<List<AppContactUsItem>>();
 		expectedportalRestResponse.setMessage(null);
 		expectedportalRestResponse.setResponse(null);
-		PortalRestStatusEnum portalRestStatusEnum = null;
-		expectedportalRestResponse.setStatus(portalRestStatusEnum.ERROR);
+		expectedportalRestResponse.setStatus(PortalRestStatusEnum.ERROR);
 		return expectedportalRestResponse;
 
 	}
@@ -173,8 +167,7 @@ public class AppContactUsControllerTest {
 		PortalRestResponse<List<AppCategoryFunctionsItem>> expectedportalRestResponse = new PortalRestResponse<List<AppCategoryFunctionsItem>>();
 		expectedportalRestResponse.setMessage("success");
 		expectedportalRestResponse.setResponse(contents);
-		PortalRestStatusEnum portalRestStatusEnum = null;
-		expectedportalRestResponse.setStatus(portalRestStatusEnum.OK);
+		expectedportalRestResponse.setStatus(PortalRestStatusEnum.OK);
 
 		Mockito.when(contactUsService.getAppCategoryFunctions()).thenReturn(contents);
 		actualportalRestResponse = appContactUsController.getAppCategoryFunctions(mockedRequest);
@@ -198,10 +191,10 @@ public class AppContactUsControllerTest {
 
 		AppContactUsItem contactUs = new AppContactUsItem();
 		contactUs.setAppId((long) 1);
-		contactUs.setAppName("Ecmop Portal");
+		contactUs.setAppName("Ecomp Portal");
 		contactUs.setDescription("Test");
 		contactUs.setContactName("Test");
-		contactUs.setContactEmail("Test@att.com");
+		contactUs.setContactEmail("person@onap.org");
 		contactUs.setUrl("Test_URL");
 		contactUs.setActiveYN("Y");
 
@@ -216,10 +209,10 @@ public class AppContactUsControllerTest {
 
 		AppContactUsItem contactUs = new AppContactUsItem();
 		contactUs.setAppId((long) 1);
-		contactUs.setAppName("Ecmop Portal");
+		contactUs.setAppName("Ecomp Portal");
 		contactUs.setDescription("Test");
 		contactUs.setContactName("Test");
-		contactUs.setContactEmail("Test@att.com");
+		contactUs.setContactEmail("person@onap.org");
 		contactUs.setUrl("Test_URL");
 		contactUs.setActiveYN("Y");
 

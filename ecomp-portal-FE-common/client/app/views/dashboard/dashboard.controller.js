@@ -431,43 +431,64 @@ $scope.widgetsView = [];
 		
 		// navigate to application url in new tab
 		this.goToPortal = function(item) {
-			if (!item.url) {
-				$log.error('No URL found for this application, doing nothing!');
-				return;
-			}
-			if (item.restrictedApp) {
-				// Link-based apps open in their own browser tab
-				$window.open(item.url, '_blank');
-			} else {
-				// cache control so browsers load app page every time
-				var ccParam = 'cc=' + new Date().getTime();
-				var urlParts = item.url.split('#');
-				var appUrl = null;
-				if (urlParts.length < 2) {
-					// no #
-					let urlLastChar = item.url.charAt(item.url.length - 1);
-					if (item.url.includes("?"))
-						appUrl = (urlLastChar === '&' ? item.url + ccParam : item.url + '&' + ccParam);
-					else 
-						appUrl = item.url + '?' + ccParam;
-				} else {
-					// has #
-					let urlLastChar = urlParts[0].charAt(urlParts[0].length - 1);
-					if (item.url.includes("?"))
-						appUrl = (urlLastChar === '&' ? urlParts[0] + ccParam + '#' + urlParts[1]  :  urlParts[0] + '&' + ccParam + '#' + urlParts[1]);
-					else
-						appUrl = urlParts[0] + '?' + ccParam + "#" + urlParts[1];
-				}
-				// $log.debug('DashboardCtrlr::goToPortal: opening tab with URL
-				// ' + appUrl);
-				var tabContent = {
-					id: new Date(),
-					title: item.headerText,
-					url: appUrl,
-					appId: item.appId
-				};
-				$cookies.putObject('addTab', tabContent);
-			}
+			userProfileService.getUserRolesForApplication($scope.orgUserId,item.appid)
+	          .then(res=>{
+	        	  var count = 0;
+	        	  for(var i=0;i<res.length;i++){
+	        		 if(!res[i].isApplied)
+	        			 {
+	        			 count++;
+	        			 }
+	        		   }
+	        	  if((count>0 && res.length == count)||res.length==0)
+	        		  {
+	            		confirmBoxService.showInformation('You have no roles assigned to this application to access.').then(isConfirmed => {});
+
+	        		  }
+	        	  else{
+	        			if (!item.url) {
+	        				$log.error('No URL found for this application, doing nothing!');
+	        				return;
+	        			}
+	        			if (item.restrictedApp) {
+	        				// Link-based apps open in their own browser tab
+	        				$window.open(item.url, '_blank');
+	        			} else {
+	        				// cache control so browsers load app page every time
+	        				var ccParam = 'cc=' + new Date().getTime();
+	        				var urlParts = item.url.split('#');
+	        				var appUrl = null;
+	        				if (urlParts.length < 2) {
+	        					// no #
+	        					let urlLastChar = item.url.charAt(item.url.length - 1);
+	        					if (item.url.includes("?"))
+	        						appUrl = (urlLastChar === '&' ? item.url + ccParam : item.url + '&' + ccParam);
+	        					else 
+	        						appUrl = item.url + '?' + ccParam;
+	        				} else {
+	        					// has #
+	        					let urlLastChar = urlParts[0].charAt(urlParts[0].length - 1);
+	        					if (item.url.includes("?"))
+	        						appUrl = (urlLastChar === '&' ? urlParts[0] + ccParam + '#' + urlParts[1]  :  urlParts[0] + '&' + ccParam + '#' + urlParts[1]);
+	        					else
+	        						appUrl = urlParts[0] + '?' + ccParam + "#" + urlParts[1];
+	        				}
+	        				// $log.debug('DashboardCtrlr::goToPortal: opening tab with URL
+	        				// ' + appUrl);
+	        				var tabContent = {
+	        					id: new Date(),
+	        					title: item.headerText,
+	        					url: appUrl,
+	        					appId: item.appId
+	        				};
+	        				$cookies.putObject('addTab', tabContent);
+	        			}
+	        		  
+	        	  }
+	         });
+		
+			
+		
 
 		};
 		

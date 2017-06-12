@@ -33,6 +33,12 @@
             $rootScope.showFooter = "";
             $cookies.putObject('show_app_header', false,{domain: cookieDomain, path : '/'});
 
+            let  getCookieDomain = function() {
+         	   return window.location.hostname;
+         	}
+          let getContextPath=function() {
+         	   return  window.location.pathname.substring( 0, window.location.pathname.lastIndexOf( '/' ) + 1 );
+         	}
 
             let noRefresh = function () {
                     window.onbeforeunload = function(e) {
@@ -72,8 +78,9 @@
                     if ($scope.tabs.length > 1) {
                         noRefresh();
                     }
-                    $cookies.putObject('cookieTabs', $scope.tabs,{domain: cookieDomain, path : '/'});
-                    $cookies.putObject('visInVisCookieTabs', $scope.tabs,{domain: cookieDomain, path : '/'});
+                    $cookies.putObject('cookieTabs', $scope.tabs,{domain: getCookieDomain(), path : getContextPath()});
+                    $cookies.putObject('visInVisCookieTabs', $scope.tabs,{domain: getCookieDomain(), path : getContextPath()});
+                   
             	}
             };
             
@@ -92,8 +99,8 @@
                     if ($scope.tabs.length > 1) {
                         noRefresh();
                     }
-                    $cookies.putObject('cookieTabs', $scope.tabs,{domain: cookieDomain, path : '/'});
-                    $cookies.putObject('visInVisCookieTabs', $scope.tabs,{domain: cookieDomain, path : '/'});
+                    $cookies.putObject('cookieTabs', $scope.tabs,{domain: getCookieDomain(), path : getContextPath()});
+                    $cookies.putObject('visInVisCookieTabs', $scope.tabs,{domain: getCookieDomain(), path : getContextPath()});
             	}
             };
             
@@ -124,7 +131,7 @@
               event.preventDefault();
               event.stopPropagation();
               $scope.tabs.splice(index, 1);
-              $cookies.putObject('cookieTabs', $scope.tabs,{domain: cookieDomain, path : '/'});
+              $cookies.putObject('cookieTabs', $scope.tabs,{domain: getCookieDomain(), path : getContextPath()});
             };
             
           //adjust height of the tab due to the search popup being hidden 

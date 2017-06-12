@@ -20,7 +20,9 @@
 package org.openecomp.portalapp.portal.service;
 
 
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeSet;
 
@@ -32,6 +34,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.att.nsa.cambria.client.CambriaClientFactory;
+import com.att.nsa.cambria.client.CambriaTopicManager;
 
 @Service("epAppService")
 @Transactional
@@ -68,4 +73,9 @@ public class EPAppServiceImpl extends EPAppCommonServiceImpl implements EPAppSer
 			return userApps;
 	
 	}
+	
+	public CambriaTopicManager getTopicManager(LinkedList<String> urlList, String key, String secret) throws GeneralSecurityException, Exception{
+		return CambriaClientFactory.createTopicManager( null, urlList, key, secret);
+	}
+
 }

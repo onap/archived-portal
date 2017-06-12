@@ -27,7 +27,6 @@ import org.hibernate.criterion.Restrictions;
 import org.openecomp.portalapp.portal.domain.BasicAuthCredentials;
 import org.openecomp.portalapp.portal.domain.EPEndpoint;
 import org.openecomp.portalapp.portal.domain.EPEndpointAccount;
-import org.openecomp.portalapp.portal.domain.SharedContext;
 import org.openecomp.portalapp.portal.logging.aop.EPMetricsLog;
 import org.openecomp.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.openecomp.portalsdk.core.service.DataAccessService;
@@ -46,16 +45,20 @@ public class BasicAuthenticationCredentialServiceImpl implements BasicAuthentica
 	private DataAccessService dataAccessService;
 
 	@Override
-	public BasicAuthCredentials getBasicAuthCredentialByAppName(String appName) {
-	
+	public BasicAuthCredentials getBasicAuthCredentialByUsernameAndPassword(String username, String password) {
+
 		List<Criterion> restrictionsList = new ArrayList<Criterion>();
-		Criterion contextIdCrit = Restrictions.eq("applicationName", appName);
-		restrictionsList.add(contextIdCrit);
+		Criterion contextUserNameCrit = Restrictions.eq("username", username);
+		restrictionsList.add(contextUserNameCrit);
+		Criterion contextPasswordCrit = Restrictions.eq("password", password);
+		restrictionsList.add(contextPasswordCrit);
+
 		@SuppressWarnings("unchecked")
-		List<BasicAuthCredentials> credList = (List<BasicAuthCredentials>) dataAccessService.getList(BasicAuthCredentials.class, null, restrictionsList, null);
+		List<BasicAuthCredentials> credList = (List<BasicAuthCredentials>) dataAccessService
+				.getList(BasicAuthCredentials.class, null, restrictionsList, null);
 		if (credList == null || credList.size() == 0) {
 			logger.error(EELFLoggerDelegate.errorLogger,
-					"getBasicAuthCredentialByAppName: no credential(s) for " + appName);
+					"getBasicAuthCredentialByAppName: no credential(s) for " + username);
 			return null;
 		}
 		logger.debug(EELFLoggerDelegate.debugLogger,
@@ -64,15 +67,16 @@ public class BasicAuthenticationCredentialServiceImpl implements BasicAuthentica
 		cred.setEndpoints(getEndpointsByAccountId(cred.getId()));
 		return cred;
 	}
-	
-	private List<EPEndpoint> getEndpointsByAccountId(long id){
-		
+
+	private List<EPEndpoint> getEndpointsByAccountId(long id) {
 		List<EPEndpoint> list = new ArrayList<>();
 		List<Criterion> restrictionsList = new ArrayList<Criterion>();
 		Criterion contextIdCrit = Restrictions.eq("account_id", id);
 		restrictionsList.add(contextIdCrit);
-		List<EPEndpointAccount> epList = (List<EPEndpointAccount>) dataAccessService.getList(EPEndpointAccount.class, null, restrictionsList, null);
-		for(EPEndpointAccount ep: epList){
+		@SuppressWarnings("unchecked")
+		List<EPEndpointAccount> epList = (List<EPEndpointAccount>) dataAccessService.getList(EPEndpointAccount.class,
+				null, restrictionsList, null);
+		for (EPEndpointAccount ep : epList) {
 			list.add((EPEndpoint) dataAccessService.getDomainObject(EPEndpoint.class, ep.getEp_id(), null));
 		}
 		return list;

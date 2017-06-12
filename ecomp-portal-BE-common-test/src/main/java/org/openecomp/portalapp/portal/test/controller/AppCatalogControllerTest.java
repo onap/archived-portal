@@ -25,7 +25,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -49,10 +48,10 @@ import org.openecomp.portalapp.portal.service.EPAppService;
 import org.openecomp.portalapp.portal.service.PersUserAppService;
 import org.openecomp.portalapp.portal.service.PersUserAppServiceImpl;
 import org.openecomp.portalapp.portal.test.core.MockEPUser;
-import org.openecomp.portalapp.portal.test.framework.MockitoTestSuite;
 import org.openecomp.portalapp.portal.transport.AppCatalogPersonalization;
 import org.openecomp.portalapp.portal.transport.FieldsValidator;
 import org.openecomp.portalapp.portal.transport.FieldsValidator.FieldName;
+import org.openecomp.portalapp.test.framework.MockitoTestSuite;
 import org.openecomp.portalapp.util.EPUserUtils;
 import org.openecomp.portalsdk.core.util.SystemProperties;
 

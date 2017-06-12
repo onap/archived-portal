@@ -56,7 +56,34 @@
 
       return deferred.promise;
     }
-      
+
+    getEcompPortalTitle () {
+    	let deferred = this.$q.defer();
+    	this.$http({
+    		method: 'GET',
+    		url: this.conf.api.ecompTitle,
+    		cache: false,
+    		headers: {
+    			'X-ECOMP-RequestID':this.uuid.generate()
+    		}
+    	}).then( res => {
+    		if (res.data==null || !this.utilsService.isValidJSON(res.data)) { 			
+    			deferred.reject('MenusService::getEcompPortalTitle rest call failed');
+    		} else {
+    			if(res.data.status!='OK' && res.data.message!=null)
+        			deferred.reject('MenusService::getEcompPortalTitle rest call failed ' + res.data.message);
+    			else
+    				deferred.resolve(res.data);
+    		}
+    	})
+    	.catch( status => {
+    		this.$log.error('MenusService::getEcompPortalTitle rejection:' + status);
+    		deferred.reject(status);
+    	});
+
+    	return deferred.promise;
+    }
+
     getFavoriteItems() {
       let deferred = this.$q.defer();
       // this.$log.info('MenusService::getFavoriteItems via REST API');

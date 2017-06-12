@@ -69,7 +69,6 @@
 						</configuration>
 					</execution>
 
-					<!-- copy b2b library into att template -->
 					<execution>
 						<id>copy-bower-components-external</id>
 						<phase>generate-resources</phase>

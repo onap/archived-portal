@@ -62,16 +62,16 @@ public class GetAccessResult implements Serializable{
 	
 	
 	
-	public final String getRowId() {
+	public String getRowId() {
 		return rowId;
 	}
-	public final void setRowId(String rowId) {
+	public void setRowId(String rowId) {
 		this.rowId = rowId;
 	}
-	public final Long getRoleId() {
+	public Long getRoleId() {
 		return roleId;
 	}
-	public final void setRoleId(Long roleId) {
+	public void setRoleId(Long roleId) {
 		this.roleId = roleId;
 	} 
 	public String getEcompFunction() {
@@ -98,16 +98,16 @@ public class GetAccessResult implements Serializable{
 	public void setRoleName(String roleName) {
 		this.roleName = roleName;
 	}
-	public final String getRoleActive() {
+	public String getRoleActive() {
 		return roleActive;
 	}
-	public final void setRoleActive(String roleActive) {
+	public void setRoleActive(String roleActive) {
 		this.roleActive = roleActive;
 	}
-	public final String getReqType() {
+	public String getReqType() {
 		return reqType;
 	}
-	public final void setReqType(String reqType) {
+	public void setReqType(String reqType) {
 		this.reqType = reqType;
 	}
 	

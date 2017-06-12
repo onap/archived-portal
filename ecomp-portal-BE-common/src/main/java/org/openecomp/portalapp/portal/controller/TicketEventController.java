@@ -97,15 +97,15 @@ public class TicketEventController implements BasicAuthenticationController {
 			epItem.setIsForOnlineUsers("Y");
 			epItem.setIsForAllRoles("N");
 			epItem.setActiveYn("Y");
-			//JsonNode application = ticketEventNotif.get("application");
+
 			JsonNode event = ticketEventNotif.get("event");
 			JsonNode header = event.get("header");
 			JsonNode body = event.get("body");
 			epItem.setMsgDescription(body.toString());
-			Long eventDate = body.get("eventDate").asLong();
-
-			String assetID = body.get("assetID").asText();
-			epItem.setMsgHeader(assetID);
+			Long eventDate = System.currentTimeMillis();
+			if (body.get("eventDate") != null) {
+				eventDate = body.get("eventDate").asLong();
+			}
 			String eventSource = header.get("eventSource").asText();
 			epItem.setMsgSource(eventSource);
 			epItem.setStartTime(new Date(eventDate));
@@ -114,8 +114,11 @@ public class TicketEventController implements BasicAuthenticationController {
 			int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
 			calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth + 30);
 			epItem.setEndTime(calendar.getTime());
-			String severityString=  (body.get("severity").toString()).substring(1, 2);
-			Long  severity=Long.parseLong(severityString);
+			String severityString = "1";
+			if (body.get("severity") != null) {
+				severityString = (body.get("severity").toString()).substring(1, 2);
+			}
+			Long severity = Long.parseLong(severityString);
 			epItem.setPriority(severity);
 			epItem.setCreatorId(null);
 			Set<EpRoleNotificationItem> roles = new HashSet<>();
@@ -123,6 +126,13 @@ public class TicketEventController implements BasicAuthenticationController {
 			JsonNode userList = SubscriberInfo.get("UserList");
 			String UserIds[] = userList.toString().replace("[", "").replace("]", "").trim().replace("\"", "")
 					.split(",");
+			String assetID = eventSource + ' '
+					+ userList.toString().replace("[", "").replace("]", "").trim().replace("\"", "") + ' '
+					+ new Date(eventDate);
+			if (body.get("assetID") != null) {
+				assetID = body.get("assetID").asText();
+			}
+			epItem.setMsgHeader(assetID);
 			List<EPUser> users = userNotificationService.getUsersByOrgIds(Arrays.asList(UserIds));
 			for (String userId : UserIds) {
 				EpRoleNotificationItem roleNotifItem = new EpRoleNotificationItem();
@@ -165,15 +175,10 @@ public class TicketEventController implements BasicAuthenticationController {
 			return "application is mandatory";
 		if (body == null)
 			return "body is mandatory";
-		if (body.get("assetID") == null)
-			return "Asset Id is mandatory";
-		if (body.get("eventDate") == null)
-			return "Event Date is mandatory";
 		if (header.get("eventSource") == null)
 			return "Message Source is mandatory";
 		if (SubscriberInfo.get("UserList") == null)
 			return "At least one user Id is mandatory";
 		return null;
 	}
-	
 }

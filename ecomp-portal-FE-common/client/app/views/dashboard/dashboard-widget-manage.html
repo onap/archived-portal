@@ -47,34 +47,34 @@
 	                        <tr id="tr-rowData" ng-click="">
 	                            <td b2b-table-body>
 	                                <div id="widget-td-title" ng-hide="rowData.showEdit" ng-bind="rowData.title"></div>
-	                               <input id="widget-input-title"  type="text" ng-show="rowData.showEdit" ng-model="widgetData[$index].title"/>
+	                               <input id="widget-input-title-{{$index}}"  type="text" ng-show="rowData.showEdit" ng-model="widgetData[$index].title"/>
 	                            </td>
 	                            <td b2b-table-body>
 	                                <div id="widget-td-href" ng-hide="rowData.showEdit" ng-bind="rowData.href"></div>
-	                                <input id="widget-input-href" type="text" ng-show="rowData.showEdit" ng-model="widgetData[$index].href"/>
+	                                <input id="widget-input-href-{{$index}}" type="text" ng-show="rowData.showEdit" ng-model="widgetData[$index].href"/>
 	                            </td>
 	                            <td  ng-show="{{widgetType=='EVENTS'}}" b2b-table-body>
 	                                <div id="widget-td-date" ng-hide="rowData.showEdit" ng-bind="rowData.eventDate"></div>
-	                                <input id="widget-input-date" type="text" ng-show="rowData.showEdit" ng-model="widgetData[$index].eventDate"/>
+	                                <input id="widget-input-date-{{$index}}" type="text" ng-show="rowData.showEdit" ng-model="widgetData[$index].eventDate"/>
 	                            </td>
 	                            <td  ng-show="{{widgetType=='EVENTS'}}" b2b-table-body>
 	                                <div id="widget-td-content" ng-hide="rowData.showEdit">{{rowData.content | cut:true:20:' ...'}}</div>
-	                                <input id="widget-input-content"  type="text" ng-show="rowData.showEdit" ng-model="widgetData[$index].content"/>
+	                                <input id="widget-input-content-{{$index}}"  type="text" ng-show="rowData.showEdit" ng-model="widgetData[$index].content"/>
 	                            </td>
 	                            <td b2b-table-body>
 	                                <div id="widget-td-order" ng-hide="rowData.showEdit" ng-bind="rowData.sortOrder"></div>
-	                                <input id="widget-input-order"  type="text" ng-show="rowData.showEdit" ng-model="widgetData[$index].sortOrder"/>      
+	                                <input id="widget-input-order-{{$index}}"  type="text" ng-show="rowData.showEdit" ng-model="widgetData[$index].sortOrder"/>      
 	                            </td>                            
 	                            <td b2b-table-body>
-                                	<div class="delete-contact-us" ng-hide="rowData.showEdit" ng-click="setEdit($index);">
+                                	<div id="edit-contact-us-button" class="delete-contact-us" ng-hide="rowData.showEdit" ng-click="setEdit($index);">
                                 		<span class="icon-edit"></span>
                                 	</div>
                                 	<span ng-show="rowData.showEdit">
-                                		<a att-button btn-type="primary" ng-click="modify($index);" class="button button--primary" size="small" >Save</a>
+                                		<a id="save-button" att-button btn-type="primary" ng-click="modify($index);" class="button button--primary" size="small" >Save</a>
                                		</span>
 	                            </td>
 	                            <td b2b-table-body>
-                                	<div class="delete-contact-us" ng-click="remove($index);">
+                                	<div id="remove-contact-us" class="delete-contact-us" ng-click="remove($index);">
                                 		<span class="icon-misc-trash"></span>
                                 	</div>
 	                            </td>
@@ -128,7 +128,7 @@
 						        </div>
 					        </div>
 							<div style="height:50px;">
-								        <a style="float:right; margin-top:20px;" att-button btn-type="primary" class="button button--primary" size="small" ng-click="saveNew()">Add New</a>
+								        <a id="add-button" style="float:right; margin-top:20px;" att-button btn-type="primary" class="button button--primary" size="small" ng-click="saveNew()">Add New</a>
 					
 							</div>
 							
@@ -138,7 +138,7 @@
 					</form>
 					</div>
 				    <div style="height:50px;">
-						<a style="float:right;" att-button btn-type="primary" class="button button--primary" size="small" ng-click="closeDialog()">Close</a>
+						<a id="close-button" style="float:right;" att-button btn-type="primary" class="button button--primary" size="small" ng-click="closeDialog()">Close</a>
 					</div>           
             </div>
         </div>
@@ -147,6 +147,7 @@
 	
 <script type="application/javascript">
     $(document).ready(function(){
-        $(".ngdialog-content").css("width","85%")
+        $(".ngdialog-content").css("width","85%");
+        $(".ngdialog-close").attr('id','dialog-close');
     });
 </script>

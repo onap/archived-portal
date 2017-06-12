@@ -33,6 +33,7 @@
 		                    <th b2b-table-header key="name" sortable="true" default-sort="a" id="col1">Name</th>
 		                    <th b2b-table-header key="priority" sortable="true" id="col2">Priority</th>
 		                    <th b2b-table-header id="col3" sortable="false">Active</th>
+		                    <th b2b-table-header id="col4" sortable="false">Edit</th>
 		                </tr>
 		            </thead>
 		            <tbody b2b-table-row type="body" row-repeat="rowData in availableRoles">
@@ -46,6 +47,7 @@
 								    </label> 
 						    	</div>
 		                    </td>
+		                    <td b2b-table-body class="icon-misc-pen" ng-click="goToUrl(rowData.id)"></td>    
 		                </tr>
 		            </tbody>
 		        </table>

@@ -1,9 +1,8 @@
 'use strict';
 (function () {
     class AccountAddDetailsCtrl {
-        constructor($scope, $log, $interval, basicAuthAccountSerivce, errorMessageByCode, ECOMP_URL_REGEX, $window, confirmBoxService, $cookies) {
-     	    
-          
+        constructor($scope, $log, $interval, basicAuthAccountService, errorMessageByCode, ECOMP_URL_REGEX, $window, confirmBoxService, $cookies) {
+         
            this.addEndpoint = () => {
            	  this.account.endpointList.push({
            		  valid: true
@@ -144,21 +143,17 @@
             		var message = "Are you sure you want to change '" + this.account.applicationName + "'?"
             		confirmBoxService.editItem(message).then(isConfirmed => {
 	            		if(isConfirmed){
-	            			basicAuthAccountSerivce.updateAccount(this.account.id, newAccount).then(() => {
+	            			basicAuthAccountService.updateAccount(this.account.id, newAccount).then(() => {
 	                			$scope.closeThisDialog(true);
 	                		});
 	           			}
             		});
             	}else{
-            		basicAuthAccountSerivce.createAccount(newAccount).then(() => {
+            		basicAuthAccountService.createAccount(newAccount).then(() => {
             			$scope.closeThisDialog(true);
             		});
             	}
-            	
-            	
-            
             }
-            
             
             init();
             $scope.$on('$stateChangeStart', e => {
@@ -166,6 +161,6 @@
             });
         }
     }
-    AccountAddDetailsCtrl.$inject = ['$scope', '$log', '$interval', 'basicAuthAccountSerivce', 'errorMessageByCode', 'ECOMP_URL_REGEX', '$window', 'confirmBoxService', '$cookies'];
+    AccountAddDetailsCtrl.$inject = ['$scope', '$log', '$interval', 'basicAuthAccountService', 'errorMessageByCode', 'ECOMP_URL_REGEX', '$window', 'confirmBoxService', '$cookies'];
     angular.module('ecompApp').controller('AccountAddDetailsCtrl', AccountAddDetailsCtrl);
 })(); 

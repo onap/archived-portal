@@ -19,7 +19,9 @@
  */
 package org.openecomp.portalapp.portal.service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletResponse;
@@ -27,13 +29,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
-import org.springframework.stereotype.Service;
-
-import org.openecomp.portalsdk.core.logging.logic.EELFLoggerDelegate;
-import org.openecomp.portalsdk.core.service.DataAccessService;
-import org.openecomp.portalsdk.core.util.SystemProperties;
 import org.openecomp.portalapp.portal.domain.EPUser;
 import org.openecomp.portalapp.portal.logging.aop.EPMetricsLog;
 import org.openecomp.portalapp.portal.transport.FieldsValidator;
@@ -41,6 +36,12 @@ import org.openecomp.portalapp.portal.transport.PortalAdmin;
 import org.openecomp.portalapp.portal.transport.PortalAdminUserRole;
 import org.openecomp.portalapp.portal.utils.EPCommonSystemProperties;
 import org.openecomp.portalapp.portal.utils.EcompPortalUtils;
+import org.openecomp.portalsdk.core.logging.logic.EELFLoggerDelegate;
+import org.openecomp.portalsdk.core.service.DataAccessService;
+import org.openecomp.portalsdk.core.util.SystemProperties;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.stereotype.Service;
 
 @Service("portalAdminService")
 @org.springframework.context.annotation.Configuration
@@ -68,16 +69,13 @@ public class PortalAdminServiceImpl implements PortalAdminService {
 
 	public List<PortalAdmin> getPortalAdmins() {
 		try {
-			String sql = "SELECT u.user_id, u.first_name, u.last_name, u.login_id "
-					+ " FROM fn_user u, fn_user_role ur WHERE u.user_id = ur.user_id AND ur.role_id="
-					+ SYS_ADMIN_ROLE_ID;
-			logQuery(sql);
-
+			Map<String, String> params = new HashMap<>();
+			params.put("adminRoleId", SYS_ADMIN_ROLE_ID);
 			@SuppressWarnings("unchecked")
-			List<PortalAdmin> portalAdmins = dataAccessService.executeSQLQuery(sql, PortalAdmin.class, null);
+			List<PortalAdmin> portalAdmins = (List<PortalAdmin>) dataAccessService.executeNamedQuery("getPortalAdmins",
+					params, null);
 			logger.debug(EELFLoggerDelegate.debugLogger, "getPortalAdmins was successful");
 			return portalAdmins;
-
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger,
 					"Exception occurred while performing getPortalAdmins operation, Details: "
@@ -86,71 +84,70 @@ public class PortalAdminServiceImpl implements PortalAdminService {
 		}
 	}
 
-	@SuppressWarnings("unchecked") 
+	@SuppressWarnings("unchecked")
 	public FieldsValidator createPortalAdmin(String orgUserId) {
-		FieldsValidator fieldsValidator = new FieldsValidator(); 
-		logger.debug(EELFLoggerDelegate.debugLogger, "LR: createPortalAdmin: test 1"); 
-		boolean result = false; 
-		EPUser user = null; 
-		boolean createNewUser = false; 
+		FieldsValidator fieldsValidator = new FieldsValidator();
+		logger.debug(EELFLoggerDelegate.debugLogger, "LR: createPortalAdmin: test 1");
+		boolean result = false;
+		EPUser user = null;
+		boolean createNewUser = false;
 		List<EPUser> localUserList = dataAccessService.getList(EPUser.class, " where orgUserId='" + orgUserId + "'",
-				null, null); 
-		if (localUserList.size() > 0) { 
-			user = localUserList.get(0); 
-		} else { 
-			createNewUser = true; 
-		} 
- 
-		if (user!=null && isLoggedInUserPortalAdmin(user.getId())) { 
-			fieldsValidator.httpStatusCode = new Long(HttpServletResponse.SC_CONFLICT); 
-			logger.error(EELFLoggerDelegate.errorLogger, "User '" + user.getOrgUserId() + "' already has PortalAdmin role assigned."); 
-		} 
-		else if (user != null || createNewUser) { 
-			Session localSession = null; 
-			Transaction transaction = null; 
-			try { 
-				localSession = sessionFactory.openSession(); 
- 
-				transaction = localSession.beginTransaction(); 
-				if (createNewUser) { 
-				user = this.searchService.searchUserByUserId(orgUserId);
-					if (user != null) { 
-						// insert the user with active true in order to 
-						// pass login phase. 
-						user.setActive(true); 
-						localSession.save(EPUser.class.getName(), user); 
-					} 
-				} 
-				if (user != null) { 
-					Long userid = user.getId(); 
-					PortalAdminUserRole userRole = new PortalAdminUserRole(); 
-					userRole.userId = userid; 
-					userRole.roleId = Long.valueOf(SYS_ADMIN_ROLE_ID); 
-					userRole.appId = Long.valueOf(ECOMP_APP_ID); 
- 
-					localSession.save(PortalAdminUserRole.class.getName(), userRole); 
-				} 
-	//			logger.debug(EELFLoggerDelegate.debugLogger, "after saving menu object, new id: " + userid); 
- 
-				transaction.commit(); 
-				result = true; 
-			} catch (Exception e) { 
-				EcompPortalUtils.rollbackTransaction(transaction, 
-						"createPortalAdmin rollback, exception = " + e); 
-				logger.error(EELFLoggerDelegate.errorLogger, EcompPortalUtils.getStackTrace(e)); 
-			} finally { 
-				EcompPortalUtils.closeLocalSession(localSession, "createPortalAdmin"); 
-			} 
-			if (!result) { 
-				logger.debug(EELFLoggerDelegate.debugLogger, "LR: createPortalAdmin: no result. setting httpStatusCode to " 
-						+ HttpServletResponse.SC_INTERNAL_SERVER_ERROR); 
-				fieldsValidator.httpStatusCode = new Long(HttpServletResponse.SC_INTERNAL_SERVER_ERROR); 
-				logger.error(EELFLoggerDelegate.errorLogger, "PortalAdminServiceImpl.createPortalAdmin: bad request"); 
-			} 
-		} 
-		return fieldsValidator; 
+				null, null);
+		if (localUserList.size() > 0) {
+			user = localUserList.get(0);
+		} else {
+			createNewUser = true;
+		}
+
+		if (user != null && isLoggedInUserPortalAdmin(user.getId())) {
+			fieldsValidator.httpStatusCode = new Long(HttpServletResponse.SC_CONFLICT);
+			logger.error(EELFLoggerDelegate.errorLogger,
+					"User '" + user.getOrgUserId() + "' already has PortalAdmin role assigned.");
+		} else if (user != null || createNewUser) {
+			Session localSession = null;
+			Transaction transaction = null;
+			try {
+				localSession = sessionFactory.openSession();
+
+				transaction = localSession.beginTransaction();
+				if (createNewUser) {
+					user = this.searchService.searchUserByUserId(orgUserId);
+					if (user != null) {
+						// insert the user with active true in order to
+						// pass login phase.
+						user.setActive(true);
+						localSession.save(EPUser.class.getName(), user);
+					}
+				}
+				if (user != null) {
+					Long userid = user.getId();
+					PortalAdminUserRole userRole = new PortalAdminUserRole();
+					userRole.userId = userid;
+					userRole.roleId = Long.valueOf(SYS_ADMIN_ROLE_ID);
+					userRole.appId = Long.valueOf(ECOMP_APP_ID);
+
+					localSession.save(PortalAdminUserRole.class.getName(), userRole);
+				}
+
+				transaction.commit();
+				result = true;
+			} catch (Exception e) {
+				EcompPortalUtils.rollbackTransaction(transaction, "createPortalAdmin rollback, exception = " + e);
+				logger.error(EELFLoggerDelegate.errorLogger, EcompPortalUtils.getStackTrace(e));
+			} finally {
+				EcompPortalUtils.closeLocalSession(localSession, "createPortalAdmin");
+			}
+			if (!result) {
+				logger.debug(EELFLoggerDelegate.debugLogger,
+						"LR: createPortalAdmin: no result. setting httpStatusCode to "
+								+ HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+				fieldsValidator.httpStatusCode = new Long(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+				logger.error(EELFLoggerDelegate.errorLogger, "PortalAdminServiceImpl.createPortalAdmin: bad request");
+			}
+		}
+		return fieldsValidator;
 	}
-	
+
 	public FieldsValidator deletePortalAdmin(Long userId) {
 		FieldsValidator fieldsValidator = new FieldsValidator();
 		logger.debug(EELFLoggerDelegate.debugLogger, "deletePortalAdmin: test 1");
@@ -183,28 +180,28 @@ public class PortalAdminServiceImpl implements PortalAdminService {
 	private void logQuery(String sql) {
 		logger.debug(EELFLoggerDelegate.debugLogger, "Executing query: " + sql);
 	}
-	
-	private boolean isLoggedInUserPortalAdmin(Long userId) { 
-		try { 
-			String sql = "SELECT u.user_id, u.first_name, u.last_name, u.login_id " + 
-					" FROM fn_user u, fn_user_role ur " + 
-					" WHERE u.user_id = ur.user_id " + 
-					" AND ur.user_id=" + userId + 
-					" AND ur.role_id=" + SYS_ADMIN_ROLE_ID;
- 
-			logQuery(sql); 
- 
-			@SuppressWarnings("unchecked") 
-			List<PortalAdmin> portalAdmins = dataAccessService.executeSQLQuery(sql, PortalAdmin.class, null); 
-			logger.debug(EELFLoggerDelegate.debugLogger, portalAdmins.toString()); 
-			if (portalAdmins==null || portalAdmins.size()<=0) { 
-				return false; 
-			} 
-			return true; 
- 
-		} catch (Exception e) { 
-			logger.error(EELFLoggerDelegate.errorLogger, "Exception occurred while performing isLoggedInUserPortalAdmin operation, Details: " + EcompPortalUtils.getStackTrace(e)); 
-			return false; 
-		} 
+
+	private boolean isLoggedInUserPortalAdmin(Long userId) {
+		try {
+			String sql = "SELECT u.user_id, u.first_name, u.last_name, u.login_id "
+					+ " FROM fn_user u, fn_user_role ur " + " WHERE u.user_id = ur.user_id " + " AND ur.user_id="
+					+ userId + " AND ur.role_id=" + SYS_ADMIN_ROLE_ID;
+
+			logQuery(sql);
+
+			@SuppressWarnings("unchecked")
+			List<PortalAdmin> portalAdmins = dataAccessService.executeSQLQuery(sql, PortalAdmin.class, null);
+			logger.debug(EELFLoggerDelegate.debugLogger, portalAdmins.toString());
+			if (portalAdmins == null || portalAdmins.size() <= 0) {
+				return false;
+			}
+			return true;
+
+		} catch (Exception e) {
+			logger.error(EELFLoggerDelegate.errorLogger,
+					"Exception occurred while performing isLoggedInUserPortalAdmin operation, Details: "
+							+ EcompPortalUtils.getStackTrace(e));
+			return false;
+		}
 	}
 }

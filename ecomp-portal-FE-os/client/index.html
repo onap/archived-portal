@@ -32,19 +32,7 @@
     <!--!!!!!!!!!!!!!!!!!!!!! moved base href from here to script tag in body, please change base href based on your server -->
     <!-- nabil - add this part to gruntfile -->
     <link rel="stylesheet" href="bower_components_external/ionicons-2.0.1/css/ionicons.css">
-    <link rel="stylesheet" href="bower_components_external/angular.att.abs-2.17.0/styles/base.css">
-    <link rel="stylesheet" href="bower_components_external/angular.att.abs-2.17.0/styles/btn.css">
-    <link rel="stylesheet" href="bower_components_external/angular.att.abs-2.17.0/styles/demo.css">
-    <link rel="stylesheet" href="bower_components_external/angular.att.abs-2.17.0/styles/dtpk.css">
-    <link rel="stylesheet" href="bower_components_external/angular.att.abs-2.17.0/styles/frms.css">
-    <link rel="stylesheet" href="bower_components_external/angular.att.abs-2.17.0/styles/sldr.css">
-    <link rel="stylesheet" href="bower_components_external/angular.att.abs-2.17.0/styles/style.css">
-    <link rel="stylesheet" href="bower_components_external/angular.att.abs-2.17.0/styles/tbs.css">
-    <link rel="stylesheet" href="bower_components_external/angular.att.abs-2.17.0/styles/pages/iconography.css">
-
-    <link rel="stylesheet" href="bower_components_external/angular-att-gridster/styles/ui-gridster.css">
-    <link rel="stylesheet" href="bower_components_external/angular-att-gridster/css/angular-gridster.css">
-    
+    <link rel="stylesheet" href="bower_components_external/ionicons-2.0.1/css/ecomp-ionicons.css">    
     <link rel="stylesheet" href="bower_components_external/b2b/css/b2b-angular/b2b-angular.css">
     <link rel="stylesheet" href="bower_components_external/b2b/js/b2b-angular/font_icons.css">
 
@@ -156,14 +144,12 @@
 <!-- build:js({client,node_modules}) app/vendor.js -->
 <!-- bower:js -->
 <script src="bower_components/jquery/dist/jquery.js"></script>
-<script src="bower_components/es5-shim/es5-shim.js"></script>
 <script src="bower_components/angular/angular.js"></script>
 <script src="bower_components/angular-animate/angular-animate.js"></script>
 <script src="bower_components/angular-route/angular-route.js"></script>
 <script src="bower_components/angular-aria/angular-aria.js"></script>
 <script src="bower_components/angular-messages/angular-messages.js"></script>
 <script src="bower_components/angular-material/angular-material.js"></script>
-<script src="bower_components/json3/lib/json3.js"></script>
 <script src="bower_components/angular-resource/angular-resource.js"></script>
 <script src="bower_components/angular-cookies/angular-cookies.js"></script>
 <script src="bower_components/angular-sanitize/angular-sanitize.js"></script>
@@ -189,8 +175,6 @@
 <!-- endbuild -->
 
 <!-- nabil - add this part to gruntfile -->
-<script src="bower_components_external/angular.att.abs-2.17.0/att-abs-tpls.js"></script>
-<script src="bower_components_external/angular-att-gridster/ui-gridster-tpls.js"></script>
 <script src="bower_components_external/angular-gridster/angular-gridster.min.js"></script>
 <script src="bower_components_external/bowser/bowser.js"></script>
 
@@ -226,6 +210,7 @@
   <script src="app/services/applications/applications.service.js"></script>
   <script src="app/services/audit-log/audit-log.service.js"></script>
   <script src="app/services/base64/base64.service.js"></script>
+  <script src="app/services/basic-auth-account/basic-auth-account.service.js"></script>
   <script src="app/services/be-property-reader/be-property-reader.service.js"></script>
   <script src="app/services/catalog/catalog.service.js"></script>
   <script src="app/services/confirm-box/confirm-box.service.js"></script>
@@ -240,6 +225,7 @@
   <script src="app/services/microservice/microservice.service.js"></script>
   <script src="app/services/notification/notification.service.js"></script>
   <script src="app/services/portal-admins/portal-admins.service.js"></script>
+  <script src="app/services/recommendation/recommendation.service.js"></script>
   <script src="app/services/role/role.service.js"></script>
   <script src="app/services/support/getAccess/get-access.service.js"></script>
   <script src="app/services/support/session/session.service.js"></script>
@@ -249,6 +235,8 @@
   <script src="app/services/utils/utils.service.js"></script>
   <script src="app/services/widgets-catalog/widgets-catalog.service.js"></script>
   <script src="app/services/widgets/widgets.service.js"></script>
+  <script src="app/views/account-onboarding/account-add-details/account-add-details.js"></script>
+  <script src="app/views/account-onboarding/account-onboarding.controller.js"></script>
   <script src="app/views/admins/add-admin-dialogs/new-admin.controller.js"></script>
   <script src="app/views/admins/admins.controller.js"></script>
   <script src="app/views/applications/application-details-dialog/application-details.controller.js"></script>
@@ -257,6 +245,7 @@
   <script src="app/views/catalog/catalog.controller.js"></script>
   <script src="app/views/catalog/catalogconfirmation.controller.js"></script>
   <script src="app/views/confirmation-box/confirmation-box.controller.js"></script>
+  <script src="app/views/dashboard/dashboard-widget-parameters.controller.js"></script>
   <script src="app/views/dashboard/dashboard-widget.controller.js"></script>
   <script src="app/views/dashboard/dashboard.controller.js"></script>
   <script src="app/views/dashboard/newsticker.controller.js"></script>
@@ -265,6 +254,7 @@
   <script src="app/views/functionalMenu/functionalMenu.controller.js"></script>
   <script src="app/views/functionalMenu/jqTreeContextMenu.js"></script>
   <script src="app/views/header/header.controller.js"></script>
+  <script src="app/views/header/profile-edit-dialogs/profile-edit.controller.js"></script>
   <script src="app/views/microservice-onboarding/microservice-add-details/microservice-add-details.js"></script>
   <script src="app/views/microservice-onboarding/microservice-onboarding.controller.js"></script>
   <script src="app/views/notification-history/notificationhistory.controller.js"></script>

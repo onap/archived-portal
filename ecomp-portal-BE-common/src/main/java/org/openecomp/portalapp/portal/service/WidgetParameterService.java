@@ -57,7 +57,7 @@ public interface WidgetParameterService {
 	 * @param widgetId
 	 * @param userId
 	 * @param paramId
-	 * @return
+	 * @return WidgetCatalogParameter
 	 */
 	WidgetCatalogParameter getUserParamById(Long widgetId, Long userId, Long paramId);
 	

@@ -29,7 +29,7 @@ public interface RemoteWebServiceCallService {
 	 *            Key used to decrypt passwords; ignored if null.
 	 * @param requestUebKey
 	 *            UEB key that identifies the application
-	 * @param requesUserName
+	 * @param requestUserName
 	 *            User name for the application
 	 * @param requestPassword
 	 *            Password for the application
@@ -40,9 +40,15 @@ public interface RemoteWebServiceCallService {
 	 */
 	public boolean verifyRESTCredential(String secretKey, String requestUebKey, String requestUserName,
 			String requestPassword) throws Exception;
-	
-	
-	
+
+	/**
+	 * 
+	 * @param requestUebKey
+	 *            UEB key
+	 * @return boolean
+	 * @throws Exception
+	 *             on error
+	 */
 	public boolean verifyAppKeyCredential(String requestUebKey) throws Exception;
 
 }

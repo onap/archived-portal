@@ -17,11 +17,15 @@
 -- limitations under the License.
 -- ================================================================================
 ---
-delete from fn_user_role where user_id ='99999999';
-delete from ep_user_notification where user_id='99999999';
-delete from fn_audit_log where user_id='99999999';
-delete from fn_user where user_id='99999999';
-delete from fn_menu_functional_roles where id='99999999';
-delete from fn_menu_functional_ancestors where menu_id=99999999;
-delete from fn_menu_functional where menu_id='99999999';
-delete from fn_menu_favorites where user_id=3 and menu_id=141;
+delete from fn_user_role where user_id =-1;
+delete from ep_user_notification where user_id=-1;
+delete from fn_audit_log where user_id=-1;
+delete from fn_menu_favorites where user_id=-1 and menu_id=141;
+delete from fn_user where user_id=-1;
+delete from fn_menu_functional_roles where id=-1;
+delete from fn_menu_functional_ancestors where menu_id=-1;
+delete from fn_menu_functional where menu_id=-1;
+delete from fn_menu_favorites where user_id=-1 and menu_id=141;
+delete from ep_web_analytics_source where resource_id=-1;
+delete from ep_role_notification where notification_ID='-1';
+delete from ep_notification where notification_ID='-1';

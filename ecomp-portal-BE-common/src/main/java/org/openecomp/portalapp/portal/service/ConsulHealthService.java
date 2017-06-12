@@ -26,7 +26,18 @@ import com.ecwid.consul.ConsulException;
 import com.orbitz.consul.model.health.ServiceHealth;
 
 public interface ConsulHealthService {
-	public String getServiceLocation(String service)  throws NoHealthyServiceException;
-	public List<ServiceHealth> getAllHealthyNodes(String service)  throws ConsulException;
-	public List<ServiceHealth> getAllNodes(String service)  throws ConsulException;
+	/**
+	 * This method returns the location of one healthy node if found in Consul -
+	 * If not found in / by Consul, it falls back to 'localhost'
+	 * 
+	 * @param service
+	 * @param fallbackPortOnLocalhost
+	 *            value provided by the calling service
+	 * @return Service location
+	 */
+	public String getServiceLocation(String service, String fallbackPortOnLocalhost) throws NoHealthyServiceException;
+
+	public List<ServiceHealth> getAllHealthyNodes(String service) throws ConsulException;
+
+	public List<ServiceHealth> getAllNodes(String service) throws ConsulException;
 }

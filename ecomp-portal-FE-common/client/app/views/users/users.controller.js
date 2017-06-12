@@ -180,7 +180,8 @@
                         selectedUser: {
                             orgUserId: user.orgUserId,
                             firstName: user.firstName,
-                            lastName: user.lastName
+                            lastName: user.lastName,
+
                         }
                     }
                 }

@@ -42,48 +42,65 @@ import org.openecomp.portalapp.portal.utils.EPCommonSystemProperties;
 @EnableAspectJAutoProxy
 @EPMetricsLog
 public class EPAuditServiceImpl implements EPAuditService {
-	EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(EPAuditServiceImpl.class);
+
+	private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(EPAuditServiceImpl.class);
 
 	@Autowired
-	private DataAccessService  dataAccessService;
+	private DataAccessService dataAccessService;
 
 	@Override
-	/* get the guest last login time with orgUserId as param.
-	 * If record not found in table, return null.
-	 *  
+	/*
+	 * get the guest last login time with orgUserId as param. If record not
+	 * found in table, return null.
+	 * 
 	 * (non-Javadoc)
-	 * @see org.openecomp.portalapp.portal.service.EPUserService#getGuestLastLogin(java.lang.String)
+	 * 
+	 * @see
+	 * org.openecomp.portalapp.portal.service.EPUserService#getGuestLastLogin(
+	 * java.lang.String)
 	 */
 	public Date getGuestLastLogin(String userId) {
 		Map<String, String> params = new HashMap<>();
 		params.put("userId", userId);
-		List<Date> list = getDataAccessService().executeNamedQuery("getGuestLastLogin", params, null);	
-		Date date=null;
-		if(list!=null){
-			if(list.size()==1) /* if list only contains one item, meaning this is the first time user logs in or record not found in db*/
-				date = list.get(0); /*the guest's current log in time*/
-			else if(list.size()==2)
-				date = list.get(1); /*most recent login date from db*/
+		@SuppressWarnings("unchecked")
+		List<Date> list = getDataAccessService().executeNamedQuery("getGuestLastLogin", params, null);
+		Date date = null;
+		if (list != null) {
+			/*
+			 * if list only contains one item, meaning this is the first time
+			 * user logs in or record not found in db
+			 */
+			if (list.size() == 1)
+				date = list.get(0); /* the guest's current log in time */
+			else if (list.size() == 2)
+				date = list.get(1); /* most recent login date from db */
 		}
-		return date;   	
+		return date;
 	}
 
-	@Override
-	/* Clean all the records in fn_audit_log table that are less than defined date in system.property
+	/*
+	 * Cleans all the records in fn_audit_log table that are less than defined
+	 * date in system.property
 	 * 
 	 * (non-Javadoc)
-	 * @see org.openecomp.portalapp.portal.service.EPAuditService#delAuditLogFromDay()
+	 * 
+	 * @see
+	 * org.openecomp.portalapp.portal.service.EPAuditService#delAuditLogFromDay(
+	 * )
 	 */
-	public void delAuditLogFromDay(){	
+	@Override
+	public void delAuditLogFromDay() {
 		if (EPCommonSystemProperties.containsProperty(EPCommonSystemProperties.AUDITLOG_DEL_DAY_FROM)) {
-			String day = EPCommonSystemProperties.getProperty(EPCommonSystemProperties.AUDITLOG_DEL_DAY_FROM);				
+			String day = EPCommonSystemProperties.getProperty(EPCommonSystemProperties.AUDITLOG_DEL_DAY_FROM);
 			LocalDate removeDateFrom = LocalDate.now().minusDays(Integer.valueOf(day));
-			getDataAccessService().deleteDomainObjects(AuditLog.class, "audit_date  <'"+removeDateFrom+"'",null);
-		}else{
-			logger.error(EELFLoggerDelegate.errorLogger, "delAuditLogFromDay Exception = system.propertiy value is empty on" + EPCommonSystemProperties.AUDITLOG_DEL_DAY_FROM);
-		}	
+			getDataAccessService().deleteDomainObjects(AuditLog.class, "audit_date  <'" + removeDateFrom + "'", null);
+		} else {
+			logger.error(EELFLoggerDelegate.errorLogger,
+					"delAuditLogFromDay Exception = system.propertiy value is empty on"
+							+ EPCommonSystemProperties.AUDITLOG_DEL_DAY_FROM);
+		}
 	}
-	
+
 	public DataAccessService getDataAccessService() {
 		return dataAccessService;
 	}
@@ -91,6 +108,5 @@ public class EPAuditServiceImpl implements EPAuditService {
 	public void setDataAccessService(DataAccessService dataAccessService) {
 		this.dataAccessService = dataAccessService;
 	}
-
 
 }

@@ -18,6 +18,7 @@
  * ================================================================================
  */
 package org.openecomp.portalapp.portal.transport;
+
 import java.io.Serializable;
 
 import javax.persistence.Column;
@@ -31,12 +32,28 @@ public class LocalRole implements Serializable {
 	@Id
 	@Column(name = "ROLE_ID")
 	public Integer roleId;
-	
+
 	@Column(name = "ROLE_NAME")
 	public String rolename;
-	
+
 	public void normalize() {
 		this.rolename = (this.rolename == null) ? "" : this.rolename.trim();
+	}
+
+	public Integer getRoleId() {
+		return roleId;
+	}
+
+	public void setRoleId(Integer roleId) {
+		this.roleId = roleId;
+	}
+
+	public String getRolename() {
+		return rolename;
+	}
+
+	public void setRolename(String rolename) {
+		this.rolename = rolename;
 	}
 
 }

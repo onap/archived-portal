@@ -23,6 +23,7 @@
         constructor($log, $scope,  $stateParams, getAccessService, userProfileService, ExternalRequestAccessService, applicationsService, ngDialog) {
         	// $log.debug('GetAccessCtrl: appService param is: ' + applicationsService.goGetAccessAppName);
         	var resultAccessValue = null;
+        	var externalRequest = true;
         	
         	$scope.openAppRoleModal = (itemData) => {    	
         		if(resultAccessValue){
@@ -33,7 +34,8 @@
                             attuid: $scope.attuid,
                             firstName: $scope.firstName,
                             lastName: $scope.lastName,
-                            headerText: itemData.app_name
+                            headerText: itemData.app_name,
+                            extReqValue : externalRequest
                         }
                     }
                 ngDialog.open({

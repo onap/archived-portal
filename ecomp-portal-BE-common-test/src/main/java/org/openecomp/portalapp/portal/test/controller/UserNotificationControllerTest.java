@@ -34,6 +34,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -46,10 +47,10 @@ import org.openecomp.portalapp.portal.service.FunctionalMenuServiceImpl;
 import org.openecomp.portalapp.portal.service.UserNotificationService;
 import org.openecomp.portalapp.portal.service.UserNotificationServiceImpl;
 import org.openecomp.portalapp.portal.test.core.MockEPUser;
-import org.openecomp.portalapp.portal.test.framework.MockitoTestSuite;
 import org.openecomp.portalapp.portal.transport.EpNotificationItem;
 import org.openecomp.portalapp.portal.transport.EpNotificationItemVO;
 import org.openecomp.portalapp.portal.transport.FunctionalMenuRole;
+import org.openecomp.portalapp.test.framework.MockitoTestSuite;
 import org.openecomp.portalapp.util.EPUserUtils;
 import org.openecomp.portalsdk.core.util.SystemProperties;
 import org.openecomp.portalsdk.core.web.support.UserUtils;
@@ -111,8 +112,7 @@ public class UserNotificationControllerTest {
 		PortalRestResponse<List<EpNotificationItem>> expectedportalRestResponse = new PortalRestResponse<List<EpNotificationItem>>();
 		expectedportalRestResponse.setMessage("success");
 		expectedportalRestResponse.setResponse(expectedEpNotificationList);
-		PortalRestStatusEnum portalRestStatusEnum = null;
-		expectedportalRestResponse.setStatus(portalRestStatusEnum.OK);
+		expectedportalRestResponse.setStatus(PortalRestStatusEnum.OK);
 		PortalRestResponse<List<EpNotificationItem>> actualPortalRestResponse = null;
 		Mockito.when(userNotificationService.getNotifications(user.getId())).thenReturn(expectedEpNotificationList);
 		actualPortalRestResponse = userNotificationController.getNotifications(mockedRequest, mockedResponse);
@@ -130,23 +130,25 @@ public class UserNotificationControllerTest {
 		PortalRestResponse<List<EpNotificationItem>> expectedportalRestResponse = new PortalRestResponse<List<EpNotificationItem>>();
 		expectedportalRestResponse.setMessage(null);
 		expectedportalRestResponse.setResponse(expectedEpNotificationList);
-		PortalRestStatusEnum portalRestStatusEnum = null;
-		expectedportalRestResponse.setStatus(portalRestStatusEnum.ERROR);
+		expectedportalRestResponse.setStatus(PortalRestStatusEnum.ERROR);
 		PortalRestResponse<List<EpNotificationItem>> actualPortalRestResponse = null;
 		Mockito.when(userNotificationService.getNotifications(user.getId())).thenThrow(new NullPointerException());
 		actualPortalRestResponse = userNotificationController.getNotifications(mockedRequest, mockedResponse);
 		assertTrue(expectedportalRestResponse.equals(actualPortalRestResponse));
-
 	}
 
 	@Test
 	public void getAdminNotificationsTest() {
+		EPUser user = mockUser.mockEPUser();
+		HttpSession session = mockedRequest.getSession();
+		session.setAttribute(SystemProperties.getProperty(SystemProperties.USER_ATTRIBUTE_NAME), user);
+		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
 		List<EpNotificationItemVO> actualEpNotificationsList = new ArrayList<EpNotificationItemVO>();
 		List<EpNotificationItemVO> expectedEpNotificationsList = new ArrayList<EpNotificationItemVO>();
 		EpNotificationItemVO epNotificationItemVO = new EpNotificationItemVO();
 		epNotificationItemVO.setId((long) 1);
 		expectedEpNotificationsList.add(epNotificationItemVO);
-		Mockito.when(userNotificationService.getAdminNotificationVOS()).thenReturn(expectedEpNotificationsList);
+		Mockito.when(userNotificationService.getAdminNotificationVOS(Matchers.anyLong())).thenReturn(expectedEpNotificationsList);
 		actualEpNotificationsList = userNotificationController.getAdminNotifications(mockedRequest, mockedResponse);
 		assertTrue(actualEpNotificationsList.equals(expectedEpNotificationsList));
 	}
@@ -162,8 +164,7 @@ public class UserNotificationControllerTest {
 		PortalRestResponse<String> expectedPortalRestResponse = new PortalRestResponse<String>();
 		expectedPortalRestResponse.setMessage("FAILURE");
 		expectedPortalRestResponse.setResponse("Notification Header cannot be null or empty");
-		PortalRestStatusEnum portalRestStatusEnum = null;
-		expectedPortalRestResponse.setStatus(portalRestStatusEnum.ERROR);
+		expectedPortalRestResponse.setStatus(PortalRestStatusEnum.ERROR);
 
 		EpNotificationItem notificationItem = null;
 		actualPortalRestResponse = userNotificationController.save(mockedRequest, mockedResponse, notificationItem);
@@ -180,8 +181,7 @@ public class UserNotificationControllerTest {
 		PortalRestResponse<String> expectedPortalRestResponse = new PortalRestResponse<String>();
 		expectedPortalRestResponse.setMessage("FAILURE");
 		expectedPortalRestResponse.setResponse("End Time should be greater than  start time");
-		PortalRestStatusEnum portalRestStatusEnum = null;
-		expectedPortalRestResponse.setStatus(portalRestStatusEnum.ERROR);
+		expectedPortalRestResponse.setStatus(PortalRestStatusEnum.ERROR);
 		EpNotificationItem notificationItem = new EpNotificationItem();
 		notificationItem.setNotificationId((long) 1);
 		notificationItem.setMsgHeader("Test");
@@ -208,8 +208,7 @@ public class UserNotificationControllerTest {
 		PortalRestResponse<String> expectedPortalRestResponse = new PortalRestResponse<String>();
 		expectedPortalRestResponse.setMessage("FAILURE");
 		expectedPortalRestResponse.setResponse("No Roles Ids Exist for the selected Roles");
-		PortalRestStatusEnum portalRestStatusEnum = null;
-		expectedPortalRestResponse.setStatus(portalRestStatusEnum.ERROR);
+		expectedPortalRestResponse.setStatus(PortalRestStatusEnum.ERROR);
 		EpNotificationItem notificationItem = new EpNotificationItem();
 		notificationItem.setNotificationId((long) 1);
 		notificationItem.setMsgHeader("Test");
@@ -237,8 +236,7 @@ public class UserNotificationControllerTest {
 		PortalRestResponse<String> expectedPortalRestResponse = new PortalRestResponse<String>();
 		expectedPortalRestResponse.setMessage("SUCCESS");
 		expectedPortalRestResponse.setResponse("");
-		PortalRestStatusEnum portalRestStatusEnum = null;
-		expectedPortalRestResponse.setStatus(portalRestStatusEnum.OK);
+		expectedPortalRestResponse.setStatus(PortalRestStatusEnum.OK);
 		EpNotificationItem notificationItem = new EpNotificationItem();
 		notificationItem.setNotificationId((long) 1);
 		notificationItem.setMsgHeader("Test");

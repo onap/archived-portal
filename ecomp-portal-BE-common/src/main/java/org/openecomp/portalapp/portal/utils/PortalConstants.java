@@ -23,4 +23,7 @@ public interface PortalConstants {
 	public static final Long PORTAL_APP_ID = 1L;
 	public static final Long DEFAULT_NOTIFICATION_CREATOR = 1L;
 	public static final String REST_AUX_API = "/auxapi";
-}	
+	public static final Long ACCOUNT_ADMIN_ROLE_ID = 999L;
+	public static final int SYS_ADMIN_ROLE_ID = 1;
+	public static final String ADMIN_ROLE = "Account Administrator";
+}

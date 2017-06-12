@@ -25,18 +25,10 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
-
-import org.openecomp.portalsdk.core.logging.logic.EELFLoggerDelegate;
-
 import org.openecomp.portalapp.controller.EPRestrictedBaseController;
 import org.openecomp.portalapp.portal.domain.EPApp;
 import org.openecomp.portalapp.portal.domain.EPUser;
+import org.openecomp.portalapp.portal.ecomp.model.AppCatalogItem;
 import org.openecomp.portalapp.portal.logging.aop.EPAuditLog;
 import org.openecomp.portalapp.portal.service.AdminRolesService;
 import org.openecomp.portalapp.portal.service.EPAppService;
@@ -44,28 +36,40 @@ import org.openecomp.portalapp.portal.service.PersUserAppService;
 import org.openecomp.portalapp.portal.transport.AppCatalogPersonalization;
 import org.openecomp.portalapp.portal.transport.FieldsValidator;
 import org.openecomp.portalapp.portal.utils.EcompPortalUtils;
-import org.openecomp.portalapp.portal.ecomp.model.AppCatalogItem;
 import org.openecomp.portalapp.util.EPUserUtils;
+import org.openecomp.portalsdk.core.logging.logic.EELFLoggerDelegate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @org.springframework.context.annotation.Configuration
 @EnableAspectJAutoProxy
 @EPAuditLog
 public class AppCatalogController extends EPRestrictedBaseController {
-	EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(AppCatalogController.class);
+
+	private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(AppCatalogController.class);
 
 	@Autowired
-	AdminRolesService adminRolesService;
+	private AdminRolesService adminRolesService;
 	@Autowired
-	EPAppService appService;
+	private EPAppService appService;
 	@Autowired
-	PersUserAppService persUserAppService;
+	private PersUserAppService persUserAppService;
 
 	/**
 	 * RESTful service method to fetch all enabled applications, with details
 	 * about which are accessible to the current user, selected by the current
 	 * user.
 	 * 
+	 * @param request
+	 *            HttpServletRequest
+	 * @param response
+	 *            HttpServletResponse
+	 * @throws IOException If sendError fails
 	 * @return List of items suitable for display
 	 */
 	@RequestMapping(value = { "/portalApi/appCatalog" }, method = RequestMethod.GET, produces = "application/json")
@@ -81,10 +85,10 @@ public class AppCatalogController extends EPRestrictedBaseController {
 					appCatalog = appService.getAdminAppCatalog(user);
 				else
 					appCatalog = appService.getUserAppCatalog(user);
-				EcompPortalUtils.logAndSerializeObject(logger,"/portalApi/getAppCatalog", "GET result =", appCatalog);
+				EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/getAppCatalog", "GET result =", appCatalog);
 			}
 		} catch (Exception e) {
-			logger.error(EELFLoggerDelegate.errorLogger, "Failed in getAppCatalog", e);
+			logger.error(EELFLoggerDelegate.errorLogger, "getAppCatalog failed", e);
 			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
 		}
 		return appCatalog;
@@ -95,11 +99,13 @@ public class AppCatalogController extends EPRestrictedBaseController {
 	 * catalog.
 	 * 
 	 * @param request
-	 * @param selectRequest
+	 *            HttpServletRequest
+	 * @param persRequest
 	 *            JSON with data including application ID
 	 * @param response
+	 *            HttpServletResponse
 	 * @return FieldsValidator
-	 * @throws IOException
+	 * @throws IOException If sendError fails
 	 */
 	@RequestMapping(value = { "/portalApi/appCatalog" }, method = RequestMethod.PUT, produces = "application/json")
 	public FieldsValidator putAppCatalogSelection(HttpServletRequest request,
@@ -114,7 +120,7 @@ public class AppCatalogController extends EPRestrictedBaseController {
 				persUserAppService.setPersUserAppValue(user, app, persRequest.getSelect(), persRequest.getPending());
 			}
 		} catch (Exception e) {
-			logger.error(EELFLoggerDelegate.errorLogger, "Failed in putAppCatalogSelection", e);
+			logger.error(EELFLoggerDelegate.errorLogger, "putAppCatalogSelection failed", e);
 			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
 		}
 		result.httpStatusCode = new Long(HttpServletResponse.SC_OK);

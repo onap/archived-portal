@@ -99,7 +99,8 @@ public class UserNotificationController extends EPRestrictedBaseController {
 			"/portalApi/getAdminNotifications" }, method = RequestMethod.GET, produces = "application/json")
 	public List<EpNotificationItemVO> getAdminNotifications(HttpServletRequest request, HttpServletResponse response) {
 		List<EpNotificationItemVO> adminNotificationList = null;
-		adminNotificationList = userNotificationService.getAdminNotificationVOS();
+		EPUser user = EPUserUtils.getUserSession(request);
+		adminNotificationList = userNotificationService.getAdminNotificationVOS(user.getId());
 		return adminNotificationList;
 	}
 
@@ -203,7 +204,7 @@ public class UserNotificationController extends EPRestrictedBaseController {
 		}
 		return epAppRoleList;
 	}
-	
+
 	@RequestMapping(value = {
 			"/portalApi/getMessageRecipients" }, method = RequestMethod.GET, produces = "application/json")
 	public List<String> getMessageRecipients(@RequestParam("notificationId") Long notificationID) {

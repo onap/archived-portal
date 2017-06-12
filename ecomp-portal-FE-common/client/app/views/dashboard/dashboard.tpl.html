@@ -28,12 +28,15 @@
 			<div>
 				<div class="simulateGridHeader">
 					<span class="simulateGridHeaderTitle">Applications <span
-						class="dashboardSortHeader">Sort by:</span></span>
-					<div style="float: right; margin: 7px 7px 7px 0px;"
-						class="form-field" att-select="sort_options"
-						ng-model="selectedSortType"
-						id="sort-by-{{selectedSortType.value}}"
-						ng-change="selectedSortTypeChanged(selectedSortType.value)"></div>
+						class="dashboardSortHeader">Sort by:</span>
+						
+						<div id="dashboard-dropdown">
+						<select id="sort-by-{{selectedSortType.value}}" name="dropdown1" b2b-dropdown  ng-model="selectedSortType.value" ng-change="selectedSortTypeChanged(selectedSortType.value)">  
+				        <option b2b-dropdown-list option-repeat="d in sort_options" value="{{d.value}}">{{d.title}}</option>
+				                </select>
+				                </div>
+				                </span>
+						
 				</div>
 				<div class="dashboard-boarder">
 					<div class="gridster-container override_background">
@@ -43,9 +46,8 @@
 									style="margin-left: 50%; font-size: 90px; color: black"></i> <br>
 								<div class="activity-error-msg1">
 									You do not have access to any application or function in ECOMP
-									Portal. <br> Please request access via <a
-										href="https://mylogins.cso.att.com/index.cfm"
-										target="_mylogins">MyLogins</a>.
+									Portal.
+									<div ng-include src="'app/views/dashboard/dashboard-extension.tpl.html'"></div>
 								</div>
 							</div>
 						</div>
@@ -56,11 +58,12 @@
 								<li gridster-item="item" ng-repeat="item in appsViewData">
 									<div class="gridster-box" ng-if="item.addRemoveApps == null">
 										<div class="gridster-box-header">
-											<i class="icon-content-gridguide"></i>
+											<i id="gridster-{{item.headerText.split(' ').join('-')}}-icon" class="icon-content-gridguide"></i>
 											<h3 style="cursor: context-menu">{{item.headerText |
 												elipsis: 14}}</h3>
 										</div>
 										<div class="gridster-box-content"
+										id="gridster-{{item.headerText.split(' ').join('-')}}-icon-link"
 											ng-style="{'cursor':'pointer',
 											'background-image': 'url('+(item.imageLink)+')',
 											'background-color':'white',
@@ -78,6 +81,7 @@
 
 										</div>
 										<div class="gridster-box-content"
+										id="gridster-personalize"
 											ng-style="{'cursor':'pointer',
 										'order': item.order, 
 										'text-align': 'center',
@@ -87,9 +91,9 @@
 										'padding': '4px',
 										'opacity': '1'}"
 											ng-click="dashboard.goToCatalog()" class="gridsterContent">
-											<label style="font-size: 12px;">Click
+											<label id="add-icon-label"  style="font-size: 12px;">Click
 												here to personalize <br> this applications page
-											</label> <i class="icon-controls-add-maximize"
+											</label> <i  id="add-icon" class="icon-controls-add-maximize"
 												style="font-size: 80px; color: #067ab4"></i>
 										</div>
 									</div>
@@ -105,7 +109,7 @@
 			<br> <br>
 
 
-			<div style="font-family: Omnes-ECOMP-W02;"
+			<div 
 				ng-show=dashboard.isCommError>Failed to communicate with the
 				widget microservice.</div>
 			
@@ -114,7 +118,7 @@
 					<li gridster-item="widget" ng-repeat="widget in widgetsViewData">
 						<div class="box">
 							<div class="box-header">
-							<i style="cursor:move;" class="icon-content-gridguide"></i>
+							<i id="widget-gridster-{{widget.headerText.split(' ').join('-')}}-icon" style="cursor:move;" class="icon-content-gridguide"></i>
 								<h3>{{ widget.headerText}}</h3>
 								<div class="box-header-btns pull-right"
 									ng-if="isAdminPortalAdmin == true" class="ng-scope">
@@ -138,13 +142,13 @@
 											<!-- ngIf: widget.duplicateAllowed -->
 											<li ng-show="widget.widgetIdentifier != ''"
 												ng-click="editWidgetModalPopup(importResData, widget.widgetIdentifier);">
-												<a class="optionsMenuLink" href="javascript:void(0)"
+												<a id="edit-widget-popup" class="optionsMenuLink" href="javascript:void(0)"
 												ddh-accessibility-click="13,32">Edit</a>
 											</li>
 											
 											<li
 												ng-click="editWidgetParameters(widget.widgetid);">
-												<a class="optionsMenuLink" href="javascript:void(0)"
+												<a id="parameters-widget-popup" class="optionsMenuLink" href="javascript:void(0)"
 												ddh-accessibility-click="13,32">Parameters</a>
 											</li>
 											

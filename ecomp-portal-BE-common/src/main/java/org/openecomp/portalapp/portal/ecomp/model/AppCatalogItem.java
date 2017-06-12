@@ -38,6 +38,7 @@ public class AppCatalogItem extends DomainVo {
 	@Id
 	private Long id;
 	private String name;
+	private String mlAppName;
 	private String imageUrl;
 	private String description;
 	private String notes;
@@ -63,6 +64,14 @@ public class AppCatalogItem extends DomainVo {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public String getMlAppName() {
+		return mlAppName;
+	}
+
+	public void setMlAppName(String mlAppName) {
+		this.mlAppName = mlAppName;
 	}
 
 	public String getImageUrl() {

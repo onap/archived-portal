@@ -5,14 +5,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.hibernate.Session;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 import org.openecomp.portalapp.portal.domain.BasicAuthCredentials;
 import org.openecomp.portalapp.portal.domain.EPEndpoint;
 import org.openecomp.portalapp.portal.domain.EPEndpointAccount;
-import org.openecomp.portalapp.portal.domain.MicroserviceData;
-import org.openecomp.portalapp.portal.domain.MicroserviceParameter;
 import org.openecomp.portalapp.portal.logging.aop.EPMetricsLog;
 import org.openecomp.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.openecomp.portalsdk.core.onboarding.util.CipherUtil;
@@ -136,6 +133,7 @@ public class BasicAuthAccountServiceImpl implements BasicAuthAccountService{
 
 	@Override
 	public List<BasicAuthCredentials> getAccountData() throws Exception {
+		@SuppressWarnings("unchecked")
 		List<BasicAuthCredentials> list = (List<BasicAuthCredentials>) dataAccessService.getList(BasicAuthCredentials.class, null);
 		for (int i = 0; i < list.size(); i++) {
 			if (list.get(i).getPassword() != null)

@@ -34,6 +34,7 @@ function _classCallCheck(instance, Constructor) {
 
 		this.conf = conf;	
 		var _this = this;
+		var externalRequest = true;
 		_classCallCheck(this, CatalogCtrl);
 
 		// activate spinner
@@ -91,6 +92,7 @@ function _classCallCheck(instance, Constructor) {
 					sizeY : 2,
 					id : _this.apps[i].id,
 					headerText : _this.apps[i].name,
+					mlAppName: _this.apps[i].mlAppName,
 					imageLink : imgLnk,
 					restricted : _this.apps[i].restricted,  
 					select : _this.apps[i].select,
@@ -127,7 +129,9 @@ function _classCallCheck(instance, Constructor) {
                         firstName: $scope.firstName,
                         lastName: $scope.lastName,
                         headerText: item.headerText,
-                    	item: item
+                        haloAppName : item.mlAppName,
+                    	item: item,
+                    	extReqValue : externalRequest
                         
                     }
                 }
@@ -206,6 +210,9 @@ function _classCallCheck(instance, Constructor) {
 			pushing : true,
 			floating : true,
 			swapping : true,
+			resizable: {
+				enabled: false,
+			},
 		};
 
 		if (getParameterByName('noUserError') != null) {

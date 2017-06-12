@@ -23,21 +23,21 @@ import static com.att.eelf.configuration.Configuration.MDC_ALERT_SEVERITY;
 
 import java.text.MessageFormat;
 
+import org.openecomp.portalapp.portal.logging.format.EPAppMessagesEnum;
+import org.openecomp.portalsdk.core.logging.format.AlarmSeverityEnum;
+import org.openecomp.portalsdk.core.logging.format.ErrorSeverityEnum;
+import org.openecomp.portalsdk.core.logging.logic.EELFLoggerDelegate;
+import org.openecomp.portalsdk.core.web.support.UserUtils;
 import org.slf4j.MDC;
 
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
 
-import org.openecomp.portalsdk.core.logging.format.AlarmSeverityEnum;
-import org.openecomp.portalsdk.core.logging.format.ErrorSeverityEnum;
-import org.openecomp.portalsdk.core.logging.logic.EELFLoggerDelegate;
-import org.openecomp.portalsdk.core.web.support.UserUtils;
-import org.openecomp.portalapp.portal.logging.format.EPAppMessagesEnum;
-
 public class EPLogUtil {
 
-	// This class has no logger.  It uses loggers passed to it.
-	
+	// This class has no logger of its own; it uses loggers passed to it.
+	private static EELFLogger errorLogger = EELFManager.getInstance().getErrorLogger();
+
 	/**
 	 * Formats and writes a message to the error log with the class name and the
 	 * specified parameters, using log level info, warn or error appropriate for
@@ -54,7 +54,7 @@ public class EPLogUtil {
 	public static void logEcompError(EELFLoggerDelegate classLogger, EPAppMessagesEnum epMessageEnum, String... param) {
 		logEcompError(classLogger, epMessageEnum, null, param);
 	}
-	
+
 	/**
 	 * Formats and writes a message to the error log with the class name and the
 	 * specified parameters, using log level info, warn or error appropriate for
@@ -68,26 +68,26 @@ public class EPLogUtil {
 	 * @param param
 	 *            Values used to build the message.
 	 */
-	private static EELFLogger errorLogger = EELFManager.getInstance().getErrorLogger();
 	public static void logEcompError(EPAppMessagesEnum epMessageEnum, String... param) {
 		try {
 			AlarmSeverityEnum alarmSeverityEnum = epMessageEnum.getAlarmSeverity();
 			ErrorSeverityEnum errorSeverityEnum = epMessageEnum.getErrorSeverity();
-			
+
 			MDC.put(MDC_ALERT_SEVERITY, alarmSeverityEnum.name());
 			MDC.put("ErrorCode", epMessageEnum.getErrorCode());
 			MDC.put("ErrorDescription", epMessageEnum.getErrorDescription());
 			MDC.put("ClassName", EPLogUtil.class.getName());
-			
-			String resolution = EPLogUtil.formatMessage(epMessageEnum.getDetails() + " " + epMessageEnum.getResolution(), (Object[]) param);
+
+			String resolution = EPLogUtil
+					.formatMessage(epMessageEnum.getDetails() + " " + epMessageEnum.getResolution(), (Object[]) param);
 			if (errorSeverityEnum == ErrorSeverityEnum.WARN) {
 				errorLogger.warn(resolution);
-			} else if(errorSeverityEnum == ErrorSeverityEnum.INFO) {
+			} else if (errorSeverityEnum == ErrorSeverityEnum.INFO) {
 				errorLogger.info(resolution);
 			} else {
 				errorLogger.error(resolution);
 			}
-		} catch(Exception e) {
+		} catch (Exception e) {
 			errorLogger.error("Failed to log the error code. Details: " + UserUtils.getStackTrace(e));
 		} finally {
 			MDC.remove("ErrorCode");
@@ -150,6 +150,7 @@ public class EPLogUtil {
 
 	/**
 	 * Builds a string using the format and parameters.
+	 * 
 	 * @param message
 	 * @param args
 	 * @return
@@ -169,10 +170,15 @@ public class EPLogUtil {
 	 * Builds a comma-separated string of values to document a user action.
 	 * 
 	 * @param action
+	 *            String
 	 * @param activity
+	 *            String
 	 * @param userId
+	 *            String
 	 * @param affectedId
+	 *            String
 	 * @param comment
+	 *            String
 	 * @return Value suitable for writing to the audit log file.
 	 */
 	public static String formatAuditLogMessage(String action, String activity, String userId, String affectedId,
@@ -212,23 +218,32 @@ public class EPLogUtil {
 	 * action.
 	 * 
 	 * @param orgUserId
+	 *            String
+	 * @param appName
+	 *            String
 	 * @param action
+	 *            String
 	 * @param activity
+	 *            String
 	 * @param actionLink
+	 *            String
 	 * @param page
+	 *            String
 	 * @param function
+	 *            String
 	 * @param type
-	 * @return Value suitable for writing to the audit log file.
+	 *            String
+	 * @return String value suitable for writing to the audit log file.
 	 */
-	public static String formatStoreAnalyticsAuditLogMessage(String orgUserId, String appName, String action, String activity,
-			String actionLink, String page, String function, String type) {
+	public static String formatStoreAnalyticsAuditLogMessage(String orgUserId, String appName, String action,
+			String activity, String actionLink, String page, String function, String type) {
 		StringBuilder auditLogStoreAnalyticsMsg = new StringBuilder();
 		auditLogStoreAnalyticsMsg.append("Click_Analytics:[");
 		if (orgUserId != null && !orgUserId.equals("")) {
 			auditLogStoreAnalyticsMsg.append(" Organization User ID: ");
 			auditLogStoreAnalyticsMsg.append(orgUserId);
 		}
-		
+
 		if (appName != null && !appName.equals("")) {
 			auditLogStoreAnalyticsMsg.append(",AppName: ");
 			auditLogStoreAnalyticsMsg.append(appName);

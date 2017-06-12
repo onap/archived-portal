@@ -19,7 +19,6 @@
  */
 package org.openecomp.portalapp.portal.test.service;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -29,60 +28,46 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.openecomp.portalapp.portal.service.FunctionalMenuService;
-import org.openecomp.portalapp.portal.test.framework.ApplicationCommonContextTestSuite;
 import org.openecomp.portalapp.portal.transport.BusinessCardApplicationRole;
 import org.openecomp.portalapp.portal.transport.FunctionalMenuRole;
+import org.openecomp.portalapp.test.framework.ApplicationCommonContextTestSuite;
 import org.springframework.beans.factory.annotation.Autowired;
 
+public class FunctionalMenuServiceImplTest extends ApplicationCommonContextTestSuite {
 
+	@Autowired
+	FunctionalMenuService functionalMenuService;
 
+	@Test
+	public void getAppListTestService() throws Exception {
 
-public class FunctionalMenuServiceImplTest extends ApplicationCommonContextTestSuite{
-
-	
-	 @Autowired
-	 FunctionalMenuService functionalMenuService;
-		
-	
-	
-	  @Test
-	  public void getAppListTestService() throws Exception {
-				
-		String userId ="guest";
+		String userId = "guestT";
 		List<BusinessCardApplicationRole> userAppRolesActualResult = null;
-		
+
 		List<BusinessCardApplicationRole> userAppRolesExpectedResult = new ArrayList<BusinessCardApplicationRole>();
-		BusinessCardApplicationRole businessCardApplicationRole= new BusinessCardApplicationRole();
+		BusinessCardApplicationRole businessCardApplicationRole = new BusinessCardApplicationRole();
 		businessCardApplicationRole.setAppName("ECOMP Portal");
-		businessCardApplicationRole.setRoleName("System Administrator");	
+		businessCardApplicationRole.setRoleName("System Administrator");
 		userAppRolesExpectedResult.add(businessCardApplicationRole);
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("userId", userId);
-		userAppRolesActualResult =functionalMenuService.getUserAppRolesList(userId);
+		userAppRolesActualResult = functionalMenuService.getUserAppRolesList(userId);
 		assertTrue(userAppRolesActualResult.contains(businessCardApplicationRole));
-	
-  
-	 }
-	
 
-	  @Test
-	  public void getFunctionalMenuRoleTest() throws Exception {
-		
+	}
+
+	@Test
+	public void getFunctionalMenuRoleTest() throws Exception {
+
 		FunctionalMenuRole expectedFunctionalMenuRole = new FunctionalMenuRole();
-		
-		expectedFunctionalMenuRole.setId(new Integer(99999999)) ;
+		expectedFunctionalMenuRole.setId(new Integer(-1));
+
 		expectedFunctionalMenuRole.setMenuId((long) 137);
 		expectedFunctionalMenuRole.setAppId(new Integer(456));
 		expectedFunctionalMenuRole.setRoleId(new Integer(6214));
 		List<FunctionalMenuRole> actualFunctionalMenuRoleList = null;
-		actualFunctionalMenuRoleList =  functionalMenuService.getFunctionalMenuRole();
-		assertEquals(expectedFunctionalMenuRole.getAppId(),actualFunctionalMenuRoleList.get(actualFunctionalMenuRoleList.size()-1).getAppId());
-		assertEquals(expectedFunctionalMenuRole.getMenuId(),actualFunctionalMenuRoleList.get(actualFunctionalMenuRoleList.size()-1).getMenuId());
-		assertEquals(expectedFunctionalMenuRole.getId(),actualFunctionalMenuRoleList.get(actualFunctionalMenuRoleList.size()-1).getId());
-		assertEquals(expectedFunctionalMenuRole.getRoleId(),actualFunctionalMenuRoleList.get(actualFunctionalMenuRoleList.size()-1).getRoleId());
-		
+		actualFunctionalMenuRoleList = functionalMenuService.getFunctionalMenuRole();
+		assertTrue(actualFunctionalMenuRoleList.contains(expectedFunctionalMenuRole));
+
 	}
-	
 }
-
-

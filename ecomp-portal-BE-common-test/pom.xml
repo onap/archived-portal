@@ -6,9 +6,7 @@
 	<artifactId>ecomp-portal-BE-common-test</artifactId>
 	<version>1.1.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
-
-	<name>ecomp-portal-BE-common-test</name>
-	<url>http://maven.apache.org</url>
+	<name>ecompportal-be-common-test</name>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

@@ -48,12 +48,12 @@
 							<div class="gridster-box" style="{{!item.access?' color:lightgray !important':''}}">
 								<div class="gridster-box-header"
 									ng-show="(item.select && radioValue=='Selected') || (item.access && radioValue=='Accessible') || (radioValue == 'All')">
-									<i class="icon-content-gridguide"></i>
+									<i id="gridster-{{item.headerText.split(' ').join('-')}}-icon" class="icon-content-gridguide"></i>
 									<h3 style="cursor: context-menu">{{item.headerText |
 										elipsis: 13}}</h3>
 								            <div class="form-row" ng-show="item.access || isAdminPortalAdmin">
 								                <label class="checkbox">
-								                    <input type="checkbox" ng-model="item.select" ng-change="catalog.storeSelection(item)">
+								                    <input id="gridster-{{item.headerText.split(' ').join('-')}}-icon-checkbox" type="checkbox" ng-model="item.select" ng-change="catalog.storeSelection(item)">
 								                    <i class="skin"></i> 
 								                </label> 
 								                <i ng-show="item.pending" class="icon-tickets-contested"></i>							                      								                
@@ -80,7 +80,7 @@
 
 			<div style="text-align: right;">
 				To request access to an application, please visit the <a
-					ng-href="getAccess">Get Access</a> page.
+				id="get-access-page-link" ng-href="getAccess">Get Access</a> page.
 			</div>
 
 			<br>

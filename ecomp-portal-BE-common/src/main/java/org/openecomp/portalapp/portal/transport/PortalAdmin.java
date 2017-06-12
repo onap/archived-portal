@@ -32,22 +32,54 @@ import javax.persistence.Table;
  * This is to handle portal admins
  */
 @Entity
-@Table(name="fn_user")
-public class PortalAdmin implements Serializable{
+@Table(name = "fn_user")
+public class PortalAdmin implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "user_id")
 	public Long userId;
-	
+
 	@Column(name = "login_id")
-	public String loginId;		
-	
+	public String loginId;
+
 	@Column(name = "first_name")
 	public String firstName;
-	
+
 	@Column(name = "last_name")
 	public String lastName;
-	
+
+	public Long getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Long userId) {
+		this.userId = userId;
+	}
+
+	public String getLoginId() {
+		return loginId;
+	}
+
+	public void setLoginId(String loginId) {
+		this.loginId = loginId;
+	}
+
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public String getLastName() {
+		return lastName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+
 }

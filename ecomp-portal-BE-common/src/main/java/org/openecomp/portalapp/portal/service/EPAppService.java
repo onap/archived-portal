@@ -42,8 +42,8 @@ public interface EPAppService {
 	/**
 	 * Get all applications adminId is an admin
 	 * 
-	 * @param adminId
-	 *            - the admin
+	 * @param user
+	 *            the admin user
 	 * @return the admin's applications
 	 */
 	List<EPApp> getUserAsAdminApps(EPUser user);

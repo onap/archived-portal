@@ -17,6 +17,7 @@
  * limitations under the License.
  * ================================================================================
  */
+
 package org.openecomp.portalapp.portal.service;
 
 import java.util.List;
@@ -29,39 +30,62 @@ import org.openecomp.portalapp.portal.domain.EPUserApp;
 import org.openecomp.portalapp.portal.domain.EPUserAppCatalogRoles;
 import org.openecomp.portalapp.portal.domain.ExternalSystemAccess;
 import org.openecomp.portalapp.portal.transport.AppWithRolesForUser;
+import org.openecomp.portalapp.portal.transport.ExternalRequestFieldsValidator;
 import org.openecomp.portalapp.portal.transport.FieldsValidator;
 import org.openecomp.portalapp.portal.transport.RoleInAppForUser;
 import org.openecomp.portalapp.portal.transport.UserApplicationRoles;
 
 public interface UserRolesService {
 
-	public List<RoleInAppForUser> getAppRolesForUser(Long appId, String userId);
+	/**
+	 * Returns list of app roles of a single app
+	 * 
+	 * @param appId
+	 *            ID of row in fn_app
+	 * @param userId
+	 *            ID of row in fn_user
+	 * @param extRequestValue
+	 *            set to false if request is from users page otherwise true
+	 * @return List<RoleInAppForUser>
+	 */
+	public List<RoleInAppForUser> getAppRolesForUser(Long appId, String userId, Boolean extRequestValue);
 
 	public boolean setAppWithUserRoleStateForUser(EPUser user, AppWithRolesForUser newAppRolesForUser);
 
 	public List<UserApplicationRoles> getUsersFromAppEndpoint(Long appId) throws HTTPException;
 
 	public List<EPRole> importRolesFromRemoteApplication(Long appId) throws HTTPException;
-	
+
 	/**
 	 * Gets entries from the local fn_user_role table for the specified user and
 	 * app.
 	 * 
 	 * @param appId
 	 *            ID of row in fn_app
-	 * @param userid
+	 * @param userId
 	 *            ID of row in fn_user
 	 * @return List of EPRole; empty if none found.
 	 */
 	public List<EPUserApp> getCachedAppRolesForUser(Long appId, Long userId);
-	
+
 	public FieldsValidator putUserAppRolesRequest(AppWithRolesForUser userAppRolesData, EPUser user);
 
-	String setAppWithUserRoleStateForUser(ExternalSystemUser newAppRolesForUser);
+	/**
+	 * Save user app roles in the database from the external request
+	 * 
+	 * @param newAppRolesForUser
+	 * 
+	 *            contains login id, app name, request id, and list of role
+	 *            names
+	 * @param reqType
+	 * @return if any exceptions, returns detail message and true or false
+	 */
+	ExternalRequestFieldsValidator setExternalRequestUserAppRole(ExternalSystemUser newAppRolesForUser, String reqType);
 
 	public List<EPUserAppCatalogRoles> getUserAppCatalogRoles(EPUser user, String appName);
-	
+
 	public String updateRemoteUserProfile(String orgUserId, Long appId);
-	
+
 	public ExternalSystemAccess getExternalRequestAccess();
+
 }

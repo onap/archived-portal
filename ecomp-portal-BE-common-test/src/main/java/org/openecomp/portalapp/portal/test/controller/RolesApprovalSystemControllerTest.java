@@ -1,0 +1,336 @@
+package org.openecomp.portalapp.portal.test.controller;
+
+import static org.junit.Assert.assertEquals;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.openecomp.portalapp.externalsystemapproval.model.ExternalSystemRoleApproval;
+import org.openecomp.portalapp.externalsystemapproval.model.ExternalSystemUser;
+import org.openecomp.portalapp.portal.controller.RolesApprovalSystemController;
+import org.openecomp.portalapp.portal.ecomp.model.PortalRestResponse;
+import org.openecomp.portalapp.portal.ecomp.model.PortalRestStatusEnum;
+import org.openecomp.portalapp.portal.service.UserRolesService;
+import org.openecomp.portalapp.portal.transport.ExternalRequestFieldsValidator;
+import org.openecomp.portalapp.test.framework.MockitoTestSuite;
+
+public class RolesApprovalSystemControllerTest extends MockitoTestSuite {
+
+	@Mock
+	UserRolesService userRolesService;
+
+	@InjectMocks
+	RolesApprovalSystemController rolesApprovalSystemController = new RolesApprovalSystemController();
+
+	MockitoTestSuite mockitoTestSuite = new MockitoTestSuite();
+
+	HttpServletRequest mockedRequest = mockitoTestSuite.getMockedRequest();
+	HttpServletResponse mockedResponse = mockitoTestSuite.getMockedResponse();
+	NullPointerException nullPointerException = new NullPointerException();
+
+	@Before
+	public void setup() {
+		MockitoAnnotations.initMocks(this);
+	}
+
+	@Test
+	public void postUserProfileIfRolesNullTest() {
+		PortalRestResponse<String> expectedportalRestResponse = new PortalRestResponse<String>();
+		expectedportalRestResponse.setMessage("Request has no roles");
+		expectedportalRestResponse.setResponse("save user profile failed");
+		PortalRestStatusEnum portalRestStatusEnum = null;
+		expectedportalRestResponse.setStatus(portalRestStatusEnum.ERROR);
+		ExternalSystemUser extSysUser = new ExternalSystemUser();
+		extSysUser.setApplicationName("Test_App");
+		extSysUser.setLoginId("1");
+		extSysUser.setMyloginrequestId("Test");
+		List<ExternalSystemRoleApproval> externalSystemRoleApprovalList = null;
+		extSysUser.setRoles(externalSystemRoleApprovalList);
+
+		PortalRestResponse<String> actualportalRestResponse = rolesApprovalSystemController
+				.postUserProfile(mockedRequest, extSysUser, mockedResponse);
+		assertEquals(expectedportalRestResponse, actualportalRestResponse);
+	}
+
+	@Test
+	public void postUserProfileTest() {
+		PortalRestResponse<String> expectedportalRestResponse = new PortalRestResponse<String>();
+		expectedportalRestResponse.setMessage("Saved Successfully");
+		expectedportalRestResponse.setResponse("Success");
+		PortalRestStatusEnum portalRestStatusEnum = null;
+		expectedportalRestResponse.setStatus(portalRestStatusEnum.OK);
+		ExternalSystemUser extSysUser = new ExternalSystemUser();
+		extSysUser.setApplicationName("Test_App");
+		extSysUser.setLoginId("1");
+		extSysUser.setMyloginrequestId("Test");
+		List<ExternalSystemRoleApproval> externalSystemRoleApprovalList = new ArrayList<ExternalSystemRoleApproval>();
+		ExternalSystemRoleApproval externalSystemRoleApproval = new ExternalSystemRoleApproval();
+		externalSystemRoleApprovalList.add(externalSystemRoleApproval);
+		extSysUser.setRoles(externalSystemRoleApprovalList);
+		ExternalRequestFieldsValidator externalRequestFieldsValidator = new ExternalRequestFieldsValidator(true,
+				"Saved Successfully");
+
+		Mockito.when(userRolesService.setExternalRequestUserAppRole(extSysUser, "POST"))
+				.thenReturn(externalRequestFieldsValidator);
+		PortalRestResponse<String> actualportalRestResponse = rolesApprovalSystemController
+				.postUserProfile(mockedRequest, extSysUser, mockedResponse);
+		assertEquals(expectedportalRestResponse, actualportalRestResponse);
+	}
+
+	@Test
+	public void postUserProfileFailureTest() {
+		PortalRestResponse<String> expectedportalRestResponse = new PortalRestResponse<String>();
+		expectedportalRestResponse.setMessage("Received Bad String");
+		expectedportalRestResponse.setResponse("save user profile failed");
+		PortalRestStatusEnum portalRestStatusEnum = null;
+		expectedportalRestResponse.setStatus(portalRestStatusEnum.ERROR);
+		ExternalSystemUser extSysUser = new ExternalSystemUser();
+		extSysUser.setApplicationName("Test_App");
+		extSysUser.setLoginId("1");
+		extSysUser.setMyloginrequestId("Test");
+		List<ExternalSystemRoleApproval> externalSystemRoleApprovalList = new ArrayList<ExternalSystemRoleApproval>();
+		ExternalSystemRoleApproval externalSystemRoleApproval = new ExternalSystemRoleApproval();
+		externalSystemRoleApprovalList.add(externalSystemRoleApproval);
+		extSysUser.setRoles(externalSystemRoleApprovalList);
+		ExternalRequestFieldsValidator externalRequestFieldsValidator = new ExternalRequestFieldsValidator(false,
+				"Received Bad String");
+		Mockito.when(userRolesService.setExternalRequestUserAppRole(extSysUser, "POST"))
+				.thenReturn(externalRequestFieldsValidator);
+
+		PortalRestResponse<String> actualportalRestResponse = rolesApprovalSystemController
+				.postUserProfile(mockedRequest, extSysUser, mockedResponse);
+		assertEquals(expectedportalRestResponse, actualportalRestResponse);
+	}
+
+	@Test
+	public void postUserProfileExceptionTest() {
+		PortalRestResponse<String> expectedportalRestResponse = new PortalRestResponse<String>();
+		expectedportalRestResponse.setMessage(null);
+		expectedportalRestResponse.setResponse("save user profile failed");
+		PortalRestStatusEnum portalRestStatusEnum = null;
+		expectedportalRestResponse.setStatus(portalRestStatusEnum.ERROR);
+		ExternalSystemUser extSysUser = new ExternalSystemUser();
+		extSysUser.setApplicationName("Test_App");
+		extSysUser.setLoginId("1");
+		extSysUser.setMyloginrequestId("Test");
+		List<ExternalSystemRoleApproval> externalSystemRoleApprovalList = new ArrayList<ExternalSystemRoleApproval>();
+		ExternalSystemRoleApproval externalSystemRoleApproval = new ExternalSystemRoleApproval();
+		externalSystemRoleApprovalList.add(externalSystemRoleApproval);
+		extSysUser.setRoles(externalSystemRoleApprovalList);
+		Mockito.when(userRolesService.setExternalRequestUserAppRole(extSysUser, "POST")).thenThrow(nullPointerException);
+		PortalRestResponse<String> actualportalRestResponse = rolesApprovalSystemController
+				.postUserProfile(mockedRequest, extSysUser, mockedResponse);
+		assertEquals(expectedportalRestResponse, actualportalRestResponse);
+	}
+
+	@Test
+	public void putUserProfileIfLoginIdNullTest() {
+		PortalRestResponse<String> expectedportalRestResponse = new PortalRestResponse<String>();
+		expectedportalRestResponse.setMessage("Request has no login ID");
+		expectedportalRestResponse.setResponse("save user profile failed");
+		PortalRestStatusEnum portalRestStatusEnum = null;
+		expectedportalRestResponse.setStatus(portalRestStatusEnum.ERROR);
+		ExternalSystemUser extSysUser = new ExternalSystemUser();
+		extSysUser.setApplicationName("Test_App");
+		extSysUser.setLoginId(null);
+		extSysUser.setMyloginrequestId("Test");
+		List<ExternalSystemRoleApproval> externalSystemRoleApprovalList = new ArrayList<ExternalSystemRoleApproval>();
+		extSysUser.setRoles(externalSystemRoleApprovalList);
+		PortalRestResponse<String> actualportalRestResponse = rolesApprovalSystemController
+				.putUserProfile(mockedRequest, extSysUser, mockedResponse);
+		assertEquals(expectedportalRestResponse, actualportalRestResponse);
+	}
+
+	@Test
+	public void putUserProfileTest() {
+		PortalRestResponse<String> expectedportalRestResponse = new PortalRestResponse<String>();
+		expectedportalRestResponse.setMessage("Updated Successfully");
+		expectedportalRestResponse.setResponse("Success");
+		PortalRestStatusEnum portalRestStatusEnum = null;
+		expectedportalRestResponse.setStatus(portalRestStatusEnum.OK);
+		ExternalSystemUser extSysUser = new ExternalSystemUser();
+		extSysUser.setApplicationName("Test_App");
+		extSysUser.setLoginId("1");
+		extSysUser.setMyloginrequestId("Test");
+		List<ExternalSystemRoleApproval> externalSystemRoleApprovalList = new ArrayList<ExternalSystemRoleApproval>();
+		ExternalSystemRoleApproval externalSystemRoleApproval = new ExternalSystemRoleApproval();
+		externalSystemRoleApprovalList.add(externalSystemRoleApproval);
+		extSysUser.setRoles(externalSystemRoleApprovalList);
+		ExternalRequestFieldsValidator externalRequestFieldsValidator = new ExternalRequestFieldsValidator(true,
+				"Updated Successfully");
+
+		Mockito.when(userRolesService.setExternalRequestUserAppRole(extSysUser, "PUT"))
+				.thenReturn(externalRequestFieldsValidator);
+		PortalRestResponse<String> actualportalRestResponse = rolesApprovalSystemController
+				.putUserProfile(mockedRequest, extSysUser, mockedResponse);
+		assertEquals(expectedportalRestResponse, actualportalRestResponse);
+	}
+
+	@Test
+	public void putUserProfileFailureTest() {
+		PortalRestResponse<String> expectedportalRestResponse = new PortalRestResponse<String>();
+		expectedportalRestResponse.setMessage("Received Bad String");
+		expectedportalRestResponse.setResponse("save user profile failed");
+		PortalRestStatusEnum portalRestStatusEnum = null;
+		expectedportalRestResponse.setStatus(portalRestStatusEnum.ERROR);
+		ExternalSystemUser extSysUser = new ExternalSystemUser();
+		extSysUser.setApplicationName("Test_App");
+		extSysUser.setLoginId("1");
+		extSysUser.setMyloginrequestId("Test");
+		List<ExternalSystemRoleApproval> externalSystemRoleApprovalList = new ArrayList<ExternalSystemRoleApproval>();
+		ExternalSystemRoleApproval externalSystemRoleApproval = new ExternalSystemRoleApproval();
+		externalSystemRoleApprovalList.add(externalSystemRoleApproval);
+		extSysUser.setRoles(externalSystemRoleApprovalList);
+		ExternalRequestFieldsValidator externalRequestFieldsValidator = new ExternalRequestFieldsValidator(false,
+				"Received Bad String");
+
+		Mockito.when(userRolesService.setExternalRequestUserAppRole(extSysUser, "PUT"))
+				.thenReturn(externalRequestFieldsValidator);
+		PortalRestResponse<String> actualportalRestResponse = rolesApprovalSystemController
+				.putUserProfile(mockedRequest, extSysUser, mockedResponse);
+
+		assertEquals(expectedportalRestResponse, actualportalRestResponse);
+	}
+
+	@Test
+	public void putUserProfileExceptionTest() {
+		PortalRestResponse<String> expectedportalRestResponse = new PortalRestResponse<String>();
+		expectedportalRestResponse.setMessage(null);
+		expectedportalRestResponse.setResponse("save user profile failed");
+		PortalRestStatusEnum portalRestStatusEnum = null;
+		expectedportalRestResponse.setStatus(portalRestStatusEnum.ERROR);
+		ExternalSystemUser extSysUser = new ExternalSystemUser();
+		extSysUser.setApplicationName("Test_App");
+		extSysUser.setLoginId("1");
+		extSysUser.setMyloginrequestId("Test");
+		List<ExternalSystemRoleApproval> externalSystemRoleApprovalList = new ArrayList<ExternalSystemRoleApproval>();
+		ExternalSystemRoleApproval externalSystemRoleApproval = new ExternalSystemRoleApproval();
+		externalSystemRoleApprovalList.add(externalSystemRoleApproval);
+		extSysUser.setRoles(externalSystemRoleApprovalList);
+		Mockito.when(userRolesService.setExternalRequestUserAppRole(extSysUser, "PUT")).thenThrow(nullPointerException);
+		PortalRestResponse<String> actualportalRestResponse = rolesApprovalSystemController
+				.putUserProfile(mockedRequest, extSysUser, mockedResponse);
+
+		assertEquals(expectedportalRestResponse, actualportalRestResponse);
+	}
+
+	@Test
+	public void deleteUserProfileIfApplicationNameNullTest() {
+		PortalRestResponse<String> expectedportalRestResponse = new PortalRestResponse<String>();
+		expectedportalRestResponse.setMessage("Request has no application name");
+		expectedportalRestResponse.setResponse("delete user profile failed");
+		PortalRestStatusEnum portalRestStatusEnum = null;
+		expectedportalRestResponse.setStatus(portalRestStatusEnum.ERROR);
+		ExternalSystemUser extSysUser = new ExternalSystemUser();
+		extSysUser.setApplicationName(null);
+		extSysUser.setLoginId("1");
+		extSysUser.setMyloginrequestId("Test");
+		List<ExternalSystemRoleApproval> externalSystemRoleApprovalList = new ArrayList<ExternalSystemRoleApproval>();
+		extSysUser.setRoles(externalSystemRoleApprovalList);
+		PortalRestResponse<String> actualportalRestResponse = rolesApprovalSystemController
+				.deleteUserProfile(mockedRequest, extSysUser, mockedResponse);
+
+		assertEquals(expectedportalRestResponse, actualportalRestResponse);
+	}
+
+	@Test
+	public void deleteUserProfileIfMyloginrequestIdNullTest() {
+		PortalRestResponse<String> expectedportalRestResponse = new PortalRestResponse<String>();
+		expectedportalRestResponse.setMessage("Request has no request ID");
+		expectedportalRestResponse.setResponse("delete user profile failed");
+		PortalRestStatusEnum portalRestStatusEnum = null;
+		expectedportalRestResponse.setStatus(portalRestStatusEnum.ERROR);
+		ExternalSystemUser extSysUser = new ExternalSystemUser();
+		extSysUser.setApplicationName("Test");
+		extSysUser.setLoginId("1");
+		extSysUser.setMyloginrequestId(null);
+		List<ExternalSystemRoleApproval> externalSystemRoleApprovalList = new ArrayList<ExternalSystemRoleApproval>();
+		extSysUser.setRoles(externalSystemRoleApprovalList);
+		PortalRestResponse<String> actualportalRestResponse = rolesApprovalSystemController
+				.deleteUserProfile(mockedRequest, extSysUser, mockedResponse);
+		assertEquals(expectedportalRestResponse, actualportalRestResponse);
+	}
+
+	@Test
+	public void deleteUserProfileTest() {
+		PortalRestResponse<String> expectedportalRestResponse = new PortalRestResponse<String>();
+		expectedportalRestResponse.setMessage("Deleted Successfully");
+		expectedportalRestResponse.setResponse("Success");
+		PortalRestStatusEnum portalRestStatusEnum = null;
+		expectedportalRestResponse.setStatus(portalRestStatusEnum.OK);
+		ExternalSystemUser extSysUser = new ExternalSystemUser();
+		extSysUser.setApplicationName("Test_App");
+		extSysUser.setLoginId("1");
+		extSysUser.setMyloginrequestId("Test");
+		List<ExternalSystemRoleApproval> externalSystemRoleApprovalList = new ArrayList<ExternalSystemRoleApproval>();
+		ExternalSystemRoleApproval externalSystemRoleApproval = new ExternalSystemRoleApproval();
+		externalSystemRoleApprovalList.add(externalSystemRoleApproval);
+		extSysUser.setRoles(externalSystemRoleApprovalList);
+		ExternalRequestFieldsValidator externalRequestFieldsValidator = new ExternalRequestFieldsValidator(true,
+				"Success");
+
+		Mockito.when(userRolesService.setExternalRequestUserAppRole(extSysUser, "DELETE"))
+				.thenReturn(externalRequestFieldsValidator);
+		PortalRestResponse<String> actualportalRestResponse = rolesApprovalSystemController
+				.deleteUserProfile(mockedRequest, extSysUser, mockedResponse);
+
+		assertEquals(expectedportalRestResponse, actualportalRestResponse);
+	}
+
+	@Test
+	public void deleteUserProfileFailureTest() {
+		PortalRestResponse<String> expectedportalRestResponse = new PortalRestResponse<String>();
+		expectedportalRestResponse.setMessage("failed");
+		expectedportalRestResponse.setResponse("delete user profile failed");
+		PortalRestStatusEnum portalRestStatusEnum = null;
+		expectedportalRestResponse.setStatus(portalRestStatusEnum.ERROR);
+		ExternalSystemUser extSysUser = new ExternalSystemUser();
+		extSysUser.setApplicationName("Test_App");
+		extSysUser.setLoginId("1");
+		extSysUser.setMyloginrequestId("Test");
+		List<ExternalSystemRoleApproval> externalSystemRoleApprovalList = new ArrayList<ExternalSystemRoleApproval>();
+		ExternalSystemRoleApproval externalSystemRoleApproval = new ExternalSystemRoleApproval();
+		externalSystemRoleApprovalList.add(externalSystemRoleApproval);
+		extSysUser.setRoles(externalSystemRoleApprovalList);
+		ExternalRequestFieldsValidator externalRequestFieldsValidator = new ExternalRequestFieldsValidator(false,
+				"failed");
+
+		Mockito.when(userRolesService.setExternalRequestUserAppRole(extSysUser, "DELETE"))
+				.thenReturn(externalRequestFieldsValidator);
+		PortalRestResponse<String> actualportalRestResponse = rolesApprovalSystemController
+				.deleteUserProfile(mockedRequest, extSysUser, mockedResponse);
+
+		assertEquals(expectedportalRestResponse, actualportalRestResponse);
+	}
+
+	@Test
+	public void deleteUserProfileExceptionTest() {
+		PortalRestResponse<String> expectedportalRestResponse = new PortalRestResponse<String>();
+		expectedportalRestResponse.setMessage(null);
+		expectedportalRestResponse.setResponse("delete user profile failed");
+		PortalRestStatusEnum portalRestStatusEnum = null;
+		expectedportalRestResponse.setStatus(portalRestStatusEnum.ERROR);
+		ExternalSystemUser extSysUser = new ExternalSystemUser();
+		extSysUser.setApplicationName("Test_App");
+		extSysUser.setLoginId("1");
+		extSysUser.setMyloginrequestId("Test");
+		List<ExternalSystemRoleApproval> externalSystemRoleApprovalList = new ArrayList<ExternalSystemRoleApproval>();
+		ExternalSystemRoleApproval externalSystemRoleApproval = new ExternalSystemRoleApproval();
+		externalSystemRoleApprovalList.add(externalSystemRoleApproval);
+		extSysUser.setRoles(externalSystemRoleApprovalList);
+		Mockito.when(userRolesService.setExternalRequestUserAppRole(extSysUser, "DELETE")).thenThrow(nullPointerException);
+		PortalRestResponse<String> actualportalRestResponse = rolesApprovalSystemController
+				.deleteUserProfile(mockedRequest, extSysUser, mockedResponse);
+
+		assertEquals(expectedportalRestResponse, actualportalRestResponse);
+	}
+}

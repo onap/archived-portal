@@ -22,7 +22,6 @@ package org.openecomp.portalapp.portal.test.controller;
 import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -39,18 +38,18 @@ import org.openecomp.portalapp.portal.controller.UserRolesController;
 import org.openecomp.portalapp.portal.domain.EPUser;
 import org.openecomp.portalapp.portal.service.UserRolesService;
 import org.openecomp.portalapp.portal.test.core.MockEPUser;
-import org.openecomp.portalapp.portal.test.framework.MockitoTestSuite;
 import org.openecomp.portalapp.portal.transport.AppWithRolesForUser;
 import org.openecomp.portalapp.portal.transport.FieldsValidator;
 import org.openecomp.portalapp.portal.transport.FieldsValidator.FieldName;
 import org.openecomp.portalapp.portal.transport.RoleInAppForUser;
+import org.openecomp.portalapp.test.framework.MockitoTestSuite;
 import org.openecomp.portalapp.util.EPUserUtils;
 import org.openecomp.portalsdk.core.service.DataAccessService;
 import org.openecomp.portalsdk.core.util.SystemProperties;
 
 public class UserRolesControllerTest extends MockitoTestSuite {
 
-	String userid = "sk434m";
+	String userid = "ab1234";
 
 	@Mock
 	UserRolesService userRolesService;

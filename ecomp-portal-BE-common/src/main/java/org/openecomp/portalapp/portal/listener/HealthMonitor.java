@@ -19,6 +19,7 @@
  */
 package org.openecomp.portalapp.portal.listener;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -27,9 +28,11 @@ import javax.annotation.PreDestroy;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.openecomp.portalapp.portal.domain.SharedContext;
 import org.openecomp.portalapp.portal.logging.aop.EPMetricsLog;
 import org.openecomp.portalapp.portal.logging.format.EPAppMessagesEnum;
 import org.openecomp.portalapp.portal.logging.logic.EPLogUtil;
+import org.openecomp.portalapp.portal.service.SharedContextService;
 import org.openecomp.portalapp.portal.ueb.EPUebHelper;
 import org.openecomp.portalapp.portal.utils.EPCommonSystemProperties;
 import org.openecomp.portalsdk.core.logging.logic.EELFLoggerDelegate;
@@ -50,6 +53,9 @@ public class HealthMonitor {
 	@Autowired
 	private EPUebHelper epUebHelper;
 
+	@Autowired
+	private SharedContextService sharedContextService;
+
 	private static boolean databaseUp;
 	private static boolean uebUp;
 	private static boolean frontEndUp;
@@ -58,9 +64,9 @@ public class HealthMonitor {
 	private static boolean dbPermissionsOk;
 	public static boolean isSuspended = false;
 
-	Thread healthMonitorThread;
+	private Thread healthMonitorThread;
 
-	EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(HealthMonitor.class);
+	private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(HealthMonitor.class);
 
 	public HealthMonitor() {
 
@@ -97,14 +103,14 @@ public class HealthMonitor {
 		int numIntervalsDatabasePermissionsIncorrect = 0;
 		int numIntervalsUebHasBeenDown = 0;
 
-		logger.debug(EELFLoggerDelegate.debugLogger, "==> Health Monitor thread started");
+		logger.debug(EELFLoggerDelegate.debugLogger, "monitorEPHealth started");
 
 		long sleepInterval = (Long
 				.valueOf(SystemProperties.getProperty(EPCommonSystemProperties.HEALTH_POLL_INTERVAL_SECONDS)) * 1000);
 		long numIntervalsBetweenAlerts = Long
 				.valueOf(SystemProperties.getProperty(EPCommonSystemProperties.HEALTHFAIL_ALERT_EVERY_X_INTERVALS));
 		logger.debug(EELFLoggerDelegate.debugLogger,
-				"Polling health every " + sleepInterval + " milliseconds. Alerting every "
+				"monitorEPHealth: Polling health every " + sleepInterval + " milliseconds. Alerting every "
 						+ (sleepInterval * numIntervalsBetweenAlerts) / 1000 + " seconds when component remains down.");
 
 		while (true) {
@@ -113,12 +119,11 @@ public class HealthMonitor {
 			//
 			databaseUp = this.checkIfDatabaseUp();
 			if (databaseUp == false) {
-
 				if ((numIntervalsDatabaseHasBeenDown % numIntervalsBetweenAlerts) == 0) {
+					logger.debug(EELFLoggerDelegate.debugLogger,
+							"monitorEPHealth: database down, logging to error log to trigger alert.");
 					// Write a Log entry that will generate an alert
 					EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeHealthCheckMySqlError);
-					logger.debug(EELFLoggerDelegate.debugLogger,
-							"Database down, logging to error log to trigger alert.");
 					numIntervalsDatabaseHasBeenDown++;
 				} else {
 					numIntervalsDatabaseHasBeenDown = 0;
@@ -127,24 +132,22 @@ public class HealthMonitor {
 
 			dbClusterStatusOk = this.checkClusterStatus();
 			if (dbClusterStatusOk == false) {
-
 				if ((numIntervalsClusterNotHealthy % numIntervalsBetweenAlerts) == 0) {
-					EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeHealthCheckMySqlError);
 					logger.debug(EELFLoggerDelegate.debugLogger,
-							"Cluster nodes appear to be down, logging to error log to trigger alert.");
+							"monitorEPHealth: cluster nodes down, logging to error log to trigger alert.");
+					EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeHealthCheckMySqlError);
 					numIntervalsClusterNotHealthy++;
 				} else {
 					numIntervalsClusterNotHealthy = 0;
 				}
 			}
 
-			dbPermissionsOk = this.checkDatabaseAndPermissions();
+			dbPermissionsOk = this.checkDatabasePermissions();
 			if (dbPermissionsOk == false) {
-
 				if ((numIntervalsDatabasePermissionsIncorrect % numIntervalsBetweenAlerts) == 0) {
-					EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeHealthCheckMySqlError);
 					logger.debug(EELFLoggerDelegate.debugLogger,
-							"Database permissions don't seem correct, logging to error log to trigger alert.");
+							"monitorEPHealth: database permissions not correct, logging to error log to trigger alert.");
+					EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeHealthCheckMySqlError);
 					numIntervalsDatabasePermissionsIncorrect++;
 				} else {
 					numIntervalsDatabasePermissionsIncorrect = 0;
@@ -159,11 +162,10 @@ public class HealthMonitor {
 			//
 			uebUp = this.checkIfUebUp();
 			if (uebUp == false) {
-
 				if ((numIntervalsUebHasBeenDown % numIntervalsBetweenAlerts) == 0) {
+					logger.debug(EELFLoggerDelegate.debugLogger, "UEB down, logging to error log to trigger alert");
 					// Write a Log entry that will generate an alert
 					EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeHealthCheckUebClusterError);
-					logger.debug(EELFLoggerDelegate.debugLogger, "UEB down, logging to error log to trigger alert");
 					numIntervalsUebHasBeenDown++;
 				} else {
 					numIntervalsUebHasBeenDown = 0;
@@ -187,11 +189,8 @@ public class HealthMonitor {
 			// could return information in the json content of a health check.
 			//
 
-			//
-			// Get DB status. If down, signal alert once every X intervals.
-			//
 			if (Thread.interrupted()) {
-				logger.info(EELFLoggerDelegate.errorLogger, "==> UebMainHandler exiting");
+				logger.debug(EELFLoggerDelegate.debugLogger, "monitorEPHealth: interrupted, leaving loop");
 				break;
 			}
 
@@ -228,40 +227,36 @@ public class HealthMonitor {
 		this.healthMonitorThread.interrupt();
 	}
 
+	/**
+	 * Writes and reads the database; cleans up when finished.
+	 * 
+	 * @return True on success; false otherwise.
+	 */
 	private boolean checkIfDatabaseUp() {
-
 		boolean isUp = false;
-
-		Session localSession = null;
-
 		try {
-			localSession = sessionFactory.openSession();
-
-			if (localSession != null) {
-
-				String sql = "select app_name from fn_app where app_id=1";
-				Query query = localSession.createSQLQuery(sql);
-				@SuppressWarnings("unchecked")
-				List<String> queryList = query.list();
-				if (queryList != null) {
-					isUp = true;
-				}
-				localSession.close();
-			}
+			final Date now = new Date();
+			final String contextId = "checkIfDatabaseUp-" + Long.toString(now.getTime());
+			final String key = "checkIfDatabaseUp-key";
+			final String value = "checkIfDatabaseUp-value";
+			sharedContextService.addSharedContext(contextId, key, value);
+			SharedContext sc = sharedContextService.getSharedContext(contextId, key);
+			if (sc == null || sc.getCvalue() == null || !value.equals(sc.getCvalue()))
+				throw new Exception("Failed to retrieve shared context");
+			int removed = sharedContextService.deleteSharedContexts(contextId);
+			if (removed != 1)
+				throw new Exception("Failed to delete shared context");
+			isUp = true;
 		} catch (Exception e) {
-			logger.debug(EELFLoggerDelegate.debugLogger, "checkIfDatabaseUp failed", e);
+			logger.error(EELFLoggerDelegate.errorLogger, "checkIfDatabaseUp failed", e);
 			isUp = false;
 		}
-
 		return isUp;
 	}
 
 	private boolean checkClusterStatus() {
-
 		boolean isUp = false;
-
 		Session localSession = null;
-
 		try {
 			localSession = sessionFactory.openSession();
 			if (localSession != null) {
@@ -279,7 +274,7 @@ public class HealthMonitor {
 			logger.error(EELFLoggerDelegate.errorLogger, "checkClusterStatus failed", e);
 			if ((e.getCause() != null) && (e.getCause().getMessage() != null)) {
 				logger.error(EELFLoggerDelegate.errorLogger,
-						"checkClusterStatus() exception msg = " + e.getCause().getMessage());
+						"checkClusterStatus() exception cause", e.getCause());
 			}
 			isUp = false;
 		} finally {
@@ -287,17 +282,12 @@ public class HealthMonitor {
 				localSession.close();
 			}
 		}
-
 		return isUp;
-
 	}
 
-	private boolean checkDatabaseAndPermissions() {
-
+	private boolean checkDatabasePermissions() {
 		boolean isUp = false;
-
 		Session localSession = null;
-
 		try {
 			localSession = sessionFactory.openSession();
 			if (localSession != null) {
@@ -322,10 +312,10 @@ public class HealthMonitor {
 				}
 			}
 		} catch (Exception e) {
-			logger.error(EELFLoggerDelegate.errorLogger, "checkDatabaseAndPermissions failed", e);
+			logger.error(EELFLoggerDelegate.errorLogger, "checkDatabasePermissions failed", e);
 			if ((e.getCause() != null) && (e.getCause().getMessage() != null)) {
 				logger.error(EELFLoggerDelegate.errorLogger,
-						"checkDatabaseAndPermissions() exception msg = " + e.getCause().getMessage());
+						"checkDatabasePermissions() exception msg = ", e.getCause());
 			}
 			isUp = false;
 		} finally {
@@ -333,9 +323,7 @@ public class HealthMonitor {
 				localSession.close();
 			}
 		}
-
 		return isUp;
-
 	}
 
 	private boolean checkIfUebUp() {
@@ -347,9 +335,7 @@ public class HealthMonitor {
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "checkIfUebUp failed", e);
 		}
-
 		return uebUp;
-
 	}
 
 }

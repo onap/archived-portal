@@ -21,13 +21,11 @@ package org.openecomp.portalapp.externalsystemapproval.model;
 
 import java.io.Serializable;
 
-
-public class ExternalSystemRoleApproval implements Serializable{
-	
+public class ExternalSystemRoleApproval implements Serializable {
 
 	private static final long serialVersionUID = 6048830318039958615L;
-	
-	private String roleName ;
+
+	private String roleName;
 
 	public String getRoleName() {
 		return roleName;
@@ -36,6 +34,5 @@ public class ExternalSystemRoleApproval implements Serializable{
 	public void setRoleName(String roleName) {
 		this.roleName = roleName;
 	}
-
 
 }

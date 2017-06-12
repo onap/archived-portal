@@ -76,6 +76,10 @@ cd dbca-os/target
 
 mv  dmaap-bc-app-os-1.1.0-SNAPSHOT ep-dbc-app
 
+# Build complete database script in the "OS" script area
+cd ../db-scripts
+cat dbca-create-mysql-1707-os.sql ../../dbca-common/db-scripts/dbca-ddl-mysql-1707-common.sql dbca-dml-mysql-1707-os.sql > dbca-complete-mysql-1707-os.sql
+
 
 # install into docker
 cd $CURRENTDIR

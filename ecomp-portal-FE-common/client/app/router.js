@@ -69,15 +69,6 @@ angular.module('ecompApp')
                     controllerAs: 'catalog'
                 }
             }
-        }).state('root.accountOnboarding', {
-            url: '/accountOnboarding',
-            views: {
-                'content@': {
-		            templateUrl: 'app/views/account-onboarding/account-onboarding.tpl.html',
-		            controller: 'AccountOnboardingCtrl',
-		            controllerAs: 'accountOnboarding'
-                }
-            }
         }).state('root.widgetCatalog', {
             url: '/widgetCatalog',
             views: {
@@ -106,7 +97,10 @@ angular.module('ecompApp')
                 }
             }
         }).state('root.role', {
-            url: '/role/:roleId',
+            url: '/role',
+            params: {
+            	roleId: 0,
+            },
             views: {
                 'content@': { 
                     templateUrl: 'app/views/role/role.html',
@@ -141,6 +135,15 @@ angular.module('ecompApp')
                     controllerAs: 'apps'
                 }
             }
+        }).state('root.microserviceOnboarding', {
+            url: '/microserviceOnboarding',
+            views: {
+                'content@': {
+		            templateUrl: 'app/views/microservice-onboarding/microservice-onboarding.tpl.html',
+		            controller: 'MicroserviceOnboardingCtrl',
+		            controllerAs: 'microserviceOnboarding'
+                }
+            }
         }).state('root.widgetOnboarding', {
             url: '/widgetOnboarding',
             views: {
@@ -148,6 +151,15 @@ angular.module('ecompApp')
                 	templateUrl: 'app/views/widget-onboarding/widget-onboarding.tpl.html',
                 	controller: 'WidgetOnboardingCtrl',
                 	controllerAs: 'widgetOnboarding'
+                }
+            }
+        }).state('root.accountOnboarding', {
+            url: '/accountOnboarding',
+            views: {
+                'content@': {
+		            templateUrl: 'app/views/account-onboarding/account-onboarding.tpl.html',
+		            controller: 'AccountOnboardingCtrl',
+		            controllerAs: 'accountOnboarding'
                 }
             }
         }).state('root.functionalMenu', {
@@ -205,6 +217,24 @@ angular.module('ecompApp')
                     templateUrl: 'app/views/portal-admin/portal-admin.tpl.html',
                     controller: 'PortalAdminsCtrl',
                     controllerAs: 'portalAdmin'
+                }
+            }
+        }).state('root.webAnalytics', {
+            url: '/webAnalytics',
+            views: {
+                'content@': {
+                    templateUrl: 'app/views/webAnalytics/webAnalytics.tpl.html',
+                    controller: 'WebAnalyticsCtrl',
+                    controllerAs: 'webAnalytics'
+                }
+            }
+        }).state('root.webAnlayticsSource', {
+            url: '/addWebAnalyticsSource',
+            views: {
+                'content@': {
+                    templateUrl: 'app/views/webAnalytics/webAnalyticsList.tpl.html',
+                    controller: 'WebAnalyticsCtrl',
+                    controllerAs: 'webAnalytics'
                 }
             }
         }).state('root.error404', {

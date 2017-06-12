@@ -31,8 +31,7 @@
             <button id="search-users-button-cancel" class="btn btn-alt btn-small" ng-click="closeThisDialog()">Cancel</button>
         </div>
     </div>
-
-
+ <br>
     <div id="div-admin-app-roles" class="admin-app-roles" ng-show="newAdmin.dialogState===2">
         <div class="title" id="title"
              ng-bind="newAdmin.selectedUser.firstName + ' ' + newAdmin.selectedUser.lastName + ' (' + newAdmin.selectedUser.orgUserId + ')'"></div>
@@ -43,16 +42,14 @@
             </div>
 
 
-            <div class="select-input custom-select-wrap">
-                <select class="new-administrated-app" id="dropdown-select-app"
-                        ui-select2 ng-model="newAdmin.selectedNewApp"
-                        data-placeholder="Select application"
-                        ng-options="app as app.appName for app in (filteredApps = (newAdmin.adminAppsRoles | filter:{isAdmin:'false'})) track by app.id "
-                        ng-disabled="!filteredApps.length">
-                    <option id="option-select-app" value="" disabled style="display: none;">Select application</option>
-                </select>
+            <div class="adminAppsRoles_dropdown">
+                 <select id="dropdown1" name="dropdown1" b2b-dropdown
+									placeholder-text="Select application"
+									ng-model="newAdmin.selectedNewApp.value">
+							<option b2b-dropdown-list option-repeat="app in (filteredApps = (newAdmin.adminAppsRoles | filter:{isAdmin:'false'})) track by app.id " ng-disabled="!filteredApps.length"  value="{{app}}">{{app.appName}}</option>
+					 </select>
             </div>
-
+               <br>
 
             <div class="admin-roles-list">
                 <div ng-repeat="app in (newAdmin.adminAppsRoles | orderBy:newAdmin.orderFilter) track by app.id" ng-show="app.isAdmin">
@@ -75,3 +72,9 @@
     </div>
 
 </div>
+
+<script>
+$(document).ready(function(){
+    $(".ngdialog-close").attr('id','dialog-close');
+});
+</script>

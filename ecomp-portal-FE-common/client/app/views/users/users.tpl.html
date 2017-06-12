@@ -65,13 +65,13 @@
 					<table>
 						<thead b2b-table-row type="header">
 							<tr >
-								<th b2b-table-header key="firstName" sortable="true" id="col1">First Name</th>
+								<th b2b-table-header key="firstName" sortable="true" id="col1" default-sort="a">First Name</th>
 								<th b2b-table-header key="lastName" sortable="true" id="col2">Last Name</th>
 								<th b2b-table-header key="orgUserId" sortable="true" id="col3">User ID</th>
 								<th b2b-table-header key="" sortable="falses" id="col4">Roles</th>
 							</tr>
 						</thead>
-						<tbody b2b-table-row type="body" 	row-repeat="rowData in users.accountUsers">
+						<tbody b2b-table-row type="body" 	row-repeat="rowData in users.accountUsers" class="table-users-div">
 							<tr ng-click="users.openAddNewUserModal(rowData)">
 								<td b2b-table-body id="rowheader_t1_{{$index}}" headers="col1" ng-bind="rowData.firstName"></td>
 								<td b2b-table-body headers="rowheader_t1_{{$index}} col2" ng-bind="rowData.lastName"></td>

@@ -1,0 +1,69 @@
+<!--
+  ================================================================================
+  eCOMP Portal
+  ================================================================================
+  Copyright (C) 2017 AT&T Intellectual Property
+  ================================================================================
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  ================================================================================
+  -->
+<div class="profile-detail-modal">
+	<div id="div-profile-detail" class="prodile-detail">
+		<div class="title" id="title">Profile Detail</div>
+		<span class="ecomp-spinner" ng-show="profileDetail.isLoading"></span>
+		
+		<div class="app-roles-main" ng-hide="profileDetail.isLoading">
+			<div id="profile-div">
+				<div>
+					<div class="profile-edit-div">
+						<div class="">*First Name</div>
+						<input type="text" ng-model="profileDetail.firstName" />
+					</div>
+					<div class="profile-edit-div">
+						<div class="">Middle Name</div>
+						<input type="text" ng-model="profileDetail.middleName" />
+					</div>
+					<div class="profile-edit-div">
+						<div class="">*Last Name</div>
+						<input type="text" ng-model="profileDetail.lastName" />
+					</div>
+					<div class="profile-edit-div">
+						<div class="">*Email Address ID</div>
+						<input type="text" ng-model="profileDetail.email"  readonly="readonly" />
+					</div>
+					<div class="profile-edit-div">
+						<div class="">*Login ID</div>
+						<input type="text" ng-model="profileDetail.loginId"  readonly="readonly" />
+					</div>
+					<div class="profile-edit-div">
+						<div class="">*Login Password</div>
+						<input type="password" ng-model="profileDetail.loginPwd" />
+					</div>
+					<div class="profile-edit-div">
+						<div class="">*Confirm Login Password</div>
+						<input type="password"
+							ng-model="profileDetail.confirmLoginPwd" />
+					</div>
+				</div>
+			</div>
+			<div class="dialog-control">
+				<span class="ecomp-save-spinner" ng-show="newAdmin.isSaving"></span>
+				<button id="div-updateAdminAppsRoles" class="btn btn-alt btn-small"
+					ng-click="profileDetail.save()"
+					ng-class="{disabled: false}">Save</button>
+				<button id="div-cancel-button" class="btn btn-alt btn-small"
+					ng-click="closeThisDialog()">Cancel</button>
+			</div>
+		</div>
+	</div>
+</div>

@@ -1,38 +1,101 @@
 .functionalMenu-details-modal {
-  height: 430px;
+  height: 520px;
   
-  input:not([type="button"]) {
-    height: 13px;
-	} 
-
+ 
   .title {
     //.n18r;
-    .dGray18r;  //AT&T Dark Gray
+    .dGray18r;  //ECOMP Dark Gray
     border-bottom: @blue-active 3px solid;
+ }
 
-  }
+ .span6{
+padding-top: 10px;
+ }
+ .right-item{
+ padding-top: 10px;
+ 
+ }
+ 
+ .item{
+  padding-top: 10px;
+ 
+ }
+.functionalMenu-height{
+height:35px;
+width:140%;
+
+}
+
+ select {
+    max-width: 150%;
+    width: 380px;
+		}
+.btn{
+font-family: clearview_att_regular;
+    font-size: 14px !important;
+}
+.btn-group.open .dropdown-toggle {
+    -webkit-box-shadow: inset 0 3px 5px rgba(0,0,0,.125);
+    box-shadow: inset 0 0px 0px rgba(0,0,0,.125);
+}
 .btn-group {
-    display: table-cell;
-    max-width: 250px;
-  min-width: 290px;
-   background-color: #f2f2f2;
-  }
+    cursor: pointer;
+    position: relative;
+    border: 1px solid #5a5a5a;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    line-height: 30px;
+       height: 40px;
+    padding-left: 10px;
+    padding-right: 10px;
+    width: 70%;
+    min-width:50%;
+    background-color: #f2f2f2;
+    }
+    
+    .btn-group>.btn+.dropdown-toggle{
+       
+    margin-left: 80px;
+    padding-top: 10px;
+    }
   .btn-medium{
     width:168px;
+    margin-right: 86px;
   }
-  
-
+   .caret {
+    margin-left: 75px;
+}
+.custom-select-wrap {
+    width: 86%;
+   }
+   .custom-select-wrap::after {
+       right: 101px;
+   }
     
   .dropdown-menu-medium{
-    width:236px;
-    max-height: 200px;
+    max-height: 123px;
     overflow-y: auto;
+    z-index: 99999;
+    padding-left: 8px;
+    padding-right: 8px;
+    position: absolute;
+    top: 39px;
+    width: 100%;
+    background: #fff;
+    border: 1px #d2d2d2 solid;
+    left: 0px;
   }
 
   .functionalMenu-properties-main {
     padding: 16px;
     height: 306px;
     overflow-y: visible;
+    input[type=checkbox][disabled]{
+    height:13px;
+    }
+	input[type=checkbox] {
+	    height: 13px !important;
+	}
 
     .item{
       position: relative;

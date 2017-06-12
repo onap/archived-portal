@@ -21,32 +21,36 @@ package org.openecomp.portalapp.portal.domain;
 
 import org.openecomp.portalsdk.core.domain.support.DomainVo;
 
-public class EPUserAppRolesRequestDetail extends DomainVo{
+public class EPUserAppRolesRequestDetail extends DomainVo {
 
 	private static final long serialVersionUID = -4908856671135348157L;
-	
+
 	private Long reqRoleId;
 	private String reqType;
 	private EPUserAppRolesRequest epRequestIdData;
-	
-	public final EPUserAppRolesRequest getEpRequestIdData() {
+
+	public EPUserAppRolesRequest getEpRequestIdData() {
 		return epRequestIdData;
 	}
-	public final void setEpRequestIdData(EPUserAppRolesRequest epRequestIdData) {
+
+	public void setEpRequestIdData(EPUserAppRolesRequest epRequestIdData) {
 		this.epRequestIdData = epRequestIdData;
 	}
-	public final Long getReqRoleId() {
+
+	public Long getReqRoleId() {
 		return reqRoleId;
 	}
-	public final void setReqRoleId(Long reqRoleId) {
+
+	public void setReqRoleId(Long reqRoleId) {
 		this.reqRoleId = reqRoleId;
 	}
-	public final String getReqType() {
+
+	public String getReqType() {
 		return reqType;
 	}
-	public final void setReqType(String reqType) {
+
+	public void setReqType(String reqType) {
 		this.reqType = reqType;
 	}
 
 }
-

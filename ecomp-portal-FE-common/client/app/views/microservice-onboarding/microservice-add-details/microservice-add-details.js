@@ -77,6 +77,7 @@
             let init = () => {
             	$log.info('MicroserviceAddDetailsCtrl::init');
                 this.service = [];
+                this.availableApps=[];
                 this.service.parameterList = [];
                 this.service.active = true;
                 this.emptyServiceName = false;
@@ -91,7 +92,7 @@
                     this.isEditMode = true;
                     this.service = _.clone($scope.ngDialogData.service);
                     
-                    console.log(this.service);
+                    this.originalName  = this.service.name;
                     if(this.service.active == 'Y')
                     	this.service.active = true;
                     else
@@ -173,6 +174,8 @@
             	this.dupliateName = false;
             	for(var i = 0; i < this.serviceList.length; i++){
             		if(this.serviceList[i].name == this.service.name){
+            			if(this.isEditMode && this.service.name == this.originalName)
+            				continue;
             			this.dupliateName = true;
             			return;
             		}
@@ -220,7 +223,6 @@
             };
             
             this.testServiceURL = () =>{
-            	//console.log(this.service.id);
             	widgetsCatalogService.getServiceJSON(this.service.id).then(res => {
             		document.getElementById("microservice-details-input-json").innerHTML = (JSON.stringify(res));
 				});
@@ -238,8 +240,7 @@
             		isValid = false;
             	}
             	
-            	if(this.dupliateName == true
-            	&& this.isEditMode == false){
+            	if(this.dupliateName == true){
             		isValid = false;
             	}
             		

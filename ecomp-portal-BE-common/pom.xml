@@ -19,7 +19,6 @@
 		<nexusproxy>https://nexus.onap.org</nexusproxy>
 		<snapshotNexusPath>/content/repositories/snapshots/</snapshotNexusPath>
 		<releaseNexusPath>/content/repositories/releases/</releaseNexusPath>
-		<stagingNexusPath>/content/repositories/staging/</stagingNexusPath>
 	</properties>
 
 	<repositories>
@@ -34,12 +33,6 @@
 		        <id>ecomp-snapshots</id>
 		        <name>OpenECOMP - Snapshot Repository</name>
 		        <url>${nexusproxy}/${snapshotNexusPath}</url>
-		</repository>
-		<repository>
-		        <!-- Staging repository has ECOMP staging artifacts -->
-		        <id>ecomp-staging</id>
-		        <name>OpenECOMP - Staging Repository</name>
-		        <url>${nexusproxy}/${stagingNexusPath}</url>
 		</repository>
 	</repositories>
 

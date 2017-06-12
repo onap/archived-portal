@@ -77,10 +77,8 @@
 							<span id="appId{{$index}}" ng-bind="rowData.app_name" style="position:relative; top:20px"></span>
 							
 							<span style="float: right; margin-right: 30px; margin-top:20px;">
-						 		<img ng-hide="rowData.showFlag"	src="assets/images/chevron_down.png"
-									alt="Expand app contact section"	title="Expand app contact section" /> 
-								<img ng-show="rowData.showFlag" src="assets/images/chevron_up.png"
-									alt="App contact section" title="Collapse app contact section" />
+						 		<span ng-show="rowData.showFlag" title="Collapse app contact section" class="icon-controls-upPRIMARY"></span>
+								<span ng-hide="rowData.showFlag" title="Expand app contact section" class="icon-controls-down"></span>
 							</span>
 						</div>
 				

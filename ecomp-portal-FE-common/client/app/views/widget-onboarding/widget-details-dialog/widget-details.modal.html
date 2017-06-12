@@ -46,7 +46,7 @@
 							class="err-message" ng-message="required">Widget Name is
 							required</small> <small id="widgets-details-input-name-pattern"
 							class="err-message" ng-message="pattern">Widget Name must
-							be letters, numbers, or underscore</small>
+							be letters, numbers, space, dash or underscore</small>
 					</div>
 				</div>
 			</div>
@@ -59,27 +59,27 @@
 					name="desc" maxlength="200" />
 			</div>
 
-			<div class="widget-property">
-				<input id="widgets-checkbox-app-is-enabled" type="checkbox"
-					class="checkbox-field"
-					ng-model="widgetOnboardingDetails.widget.allUser" />
-				<div class="property-label checkbox-label">Allow all user
-					access</div>
-			</div>
-
-
-			<div class="item" ng-show="!widgetOnboardingDetails.isEditMode">
+			<div class="item">
 				<div class="item-label">Service Endpoint</div>
 				<div>
 					<select id="widgets-details-input-endpoint-url" name="url"
 						class="input-field"
 						ng-model="widgetOnboardingDetails.widget.serviceURL"
 						ng-options="service as service.option
-						  for service in widgetOnboardingDetails.availableServices">
+						  for service in widgetOnboardingDetails.availableServices"
+						  ng-disabled="widgetOnboardingDetails.isEditMode">
 						<option value="" selected="selected">Select Microservice
 							Endpoint</option>
 					</select>
 				</div>
+			</div>
+
+			<div class="widget-property">
+				<input id="widgets-checkbox-app-is-enabled" type="checkbox"
+					class="checkbox-field"
+					ng-model="widgetOnboardingDetails.widget.allUser" />
+				<div class="property-label checkbox-label">Allow all user
+					access</div>
 			</div>
 
 			<div class="item required"

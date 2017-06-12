@@ -54,7 +54,9 @@ public class UserNotificationServiceImpl implements UserNotificationService {
 
 	/*
 	 * (non-Javadoc)
-	 * @see org.openecomp.portalapp.portal.service.UserNotificationService#getNotifications(java.lang.Long)
+	 * 
+	 * @see org.openecomp.portalapp.portal.service.UserNotificationService#
+	 * getNotifications(java.lang.Long)
 	 */
 	@Override
 	public List<EpNotificationItem> getNotifications(Long userId) {
@@ -72,7 +74,9 @@ public class UserNotificationServiceImpl implements UserNotificationService {
 
 	/*
 	 * (non-Javadoc)
-	 * @see org.openecomp.portalapp.portal.service.UserNotificationService#getNotificationHistoryVO(java.lang.Long)
+	 * 
+	 * @see org.openecomp.portalapp.portal.service.UserNotificationService#
+	 * getNotificationHistoryVO(java.lang.Long)
 	 */
 	@Override
 	public List<EpNotificationItemVO> getNotificationHistoryVO(Long userId) {
@@ -86,11 +90,14 @@ public class UserNotificationServiceImpl implements UserNotificationService {
 
 	/*
 	 * (non-Javadoc)
-	 * @see org.openecomp.portalapp.portal.service.UserNotificationService#getAdminNotificationVOS()
+	 * 
+	 * @see org.openecomp.portalapp.portal.service.UserNotificationService#
+	 * getAdminNotificationVOS()
 	 */
 	@Override
-	public List<EpNotificationItemVO> getAdminNotificationVOS() {
+	public List<EpNotificationItemVO> getAdminNotificationVOS(Long userId) {
 		Map<String, String> params = new HashMap<String, String>();
+		params.put("user_id", userId.toString());
 		@SuppressWarnings("unchecked")
 		List<EpNotificationItemVO> notificationList = dataAccessService
 				.executeNamedQuery("getAdminNotificationHistoryVO", params, null);
@@ -99,7 +106,9 @@ public class UserNotificationServiceImpl implements UserNotificationService {
 
 	/*
 	 * (non-Javadoc)
-	 * @see org.openecomp.portalapp.portal.service.UserNotificationService#getNotificationRoles(java.lang.Long)
+	 * 
+	 * @see org.openecomp.portalapp.portal.service.UserNotificationService#
+	 * getNotificationRoles(java.lang.Long)
 	 */
 	@Override
 	public List<EpRoleNotificationItem> getNotificationRoles(Long notificationId) {
@@ -113,15 +122,18 @@ public class UserNotificationServiceImpl implements UserNotificationService {
 
 	/*
 	 * (non-Javadoc)
-	 * @see org.openecomp.portalapp.portal.service.UserNotificationService#getAppRoleList()
+	 * 
+	 * @see org.openecomp.portalapp.portal.service.UserNotificationService#
+	 * getAppRoleList()
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<EcompAppRole> getAppRoleList() {
-		List<EcompAppRole> appRoleList = (List<EcompAppRole>) dataAccessService.executeNamedQuery("getEpNotificationAppRoles", null, null);		
-		return appRoleList;		
-	}	
-	
+		List<EcompAppRole> appRoleList = (List<EcompAppRole>) dataAccessService
+				.executeNamedQuery("getEpNotificationAppRoles", null, null);
+		return appRoleList;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -140,7 +152,10 @@ public class UserNotificationServiceImpl implements UserNotificationService {
 
 	/*
 	 * (non-Javadoc)
-	 * @see org.openecomp.portalapp.portal.service.UserNotificationService#saveNotification(org.openecomp.portalapp.portal.transport.EpNotificationItem)
+	 * 
+	 * @see org.openecomp.portalapp.portal.service.UserNotificationService#
+	 * saveNotification(org.openecomp.portalapp.portal.transport.
+	 * EpNotificationItem)
 	 */
 	@Override
 	public String saveNotification(EpNotificationItem notificationItem) throws Exception {
@@ -159,38 +174,37 @@ public class UserNotificationServiceImpl implements UserNotificationService {
 			}
 		}
 
-		
-			// for updates fetch roles and then save
-			if (notificationItem.getNotificationId() != null) {
-				EpNotificationItem updateNotificationItem = (EpNotificationItem) getDataAccessService()
-						.getDomainObject(EpNotificationItem.class, notificationItem.getNotificationId(), null);
-				notificationItem.setRoles(updateNotificationItem.getRoles());
-			}
-			 if(notificationItem.msgSource == null)
-	            {
-	                notificationItem.setMsgSource("EP");
-	            }
-			getDataAccessService().saveDomainObject(notificationItem, null);
-			 return "" ;
+		// for updates fetch roles and then save
+		if (notificationItem.getNotificationId() != null) {
+			EpNotificationItem updateNotificationItem = (EpNotificationItem) getDataAccessService()
+					.getDomainObject(EpNotificationItem.class, notificationItem.getNotificationId(), null);
+			notificationItem.setRoles(updateNotificationItem.getRoles());
+		}
+		if (notificationItem.msgSource == null) {
+			notificationItem.setMsgSource("EP");
+		}
+		getDataAccessService().saveDomainObject(notificationItem, null);
+		return "";
 
-		} 
-	  @Override
-	    public List<EPUser> getUsersByOrgIds(List<String> OrgIds) {
-	        Map<String, Object> params = new HashMap<String, Object>();
-	        params.put("OrgIds", OrgIds);
-	        @SuppressWarnings("unchecked")
-	        List<EPUser> userList = dataAccessService.executeNamedQuery("getUsersByOrgIdsNotifications", params,    null);
-	        return userList;
-	    }
-	  
-	  @Override
-			public List<String> getMessageRecipients(Long notificationId) {
-				Map<String, String> params = new HashMap<>();
-				params.put("notificationId", Long.toString(notificationId));
-				@SuppressWarnings("unchecked")
-				List<String> activeUsers = dataAccessService.executeNamedQuery("messageRecipients", params, null);
-				return activeUsers;
-			}
+	}
+
+	@Override
+	public List<EPUser> getUsersByOrgIds(List<String> OrgIds) {
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("OrgIds", OrgIds);
+		@SuppressWarnings("unchecked")
+		List<EPUser> userList = dataAccessService.executeNamedQuery("getUsersByOrgIdsNotifications", params, null);
+		return userList;
+	}
+
+	@Override
+	public List<String> getMessageRecipients(Long notificationId) {
+		Map<String, String> params = new HashMap<>();
+		params.put("notificationId", Long.toString(notificationId));
+		@SuppressWarnings("unchecked")
+		List<String> activeUsers = dataAccessService.executeNamedQuery("messageRecipients", params, null);
+		return activeUsers;
+	}
 
 	public DataAccessService getDataAccessService() {
 		return dataAccessService;
@@ -206,6 +220,25 @@ public class UserNotificationServiceImpl implements UserNotificationService {
 
 	public void setSessionFactory(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
+	}
+
+	@Override
+	public void deleteNotificationsFromEpNotificationTable() {
+		Map<String, String> params = new HashMap<String, String>();
+		dataAccessService.executeNamedUpdateQuery("deleteNotificationsFromEpNotificationTable", params, null);
+	}
+
+	@Override
+	public void deleteNotificationsFromEpUserNotificationTable() {
+		Map<String, String> params = new HashMap<String, String>();
+		dataAccessService.executeNamedUpdateQuery("deleteNotificationsFromEpUserNotificationTable", params, null);
+
+	}
+
+	@Override
+	public void deleteNotificationsFromEpRoleNotificationTable() {
+		Map<String, String> params = new HashMap<String, String>();
+		dataAccessService.executeNamedUpdateQuery("deleteNotificationsFromEpRoleNotificationTable", params, null);
 	}
 
 }

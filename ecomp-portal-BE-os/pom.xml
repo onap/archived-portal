@@ -20,7 +20,6 @@
 		<nexusproxy>https://nexus.onap.org</nexusproxy>
 		<snapshotNexusPath>content/repositories/snapshots/</snapshotNexusPath>
 		<releaseNexusPath>content/repositories/releases/</releaseNexusPath>
-		<stagingNexusPath>content/repositories/staging/</stagingNexusPath>
 	</properties>
 
 	<reporting>
@@ -41,7 +40,6 @@
 					<useStandardDocletOptions>true</useStandardDocletOptions>
 				</configuration>
 			</plugin>
-		
 		</plugins>
 	</reporting>
 	<distributionManagement>
@@ -51,29 +49,20 @@
 		</site>
 	</distributionManagement>
 	<repositories>
-				<repository>
-			<!-- Snapshots repository has ECOMP snapshot artifacts -->
+		<repository>
 			<id>ecomp-releases</id>
 			<name>OpenECOMP - Release Repository</name>
 			<url>${nexusproxy}/${releaseNexusPath}</url>
 		</repository>
 		<repository>
-		        <!-- Snapshots repository has ECOMP snapshot artifacts -->
-		        <id>ecomp-snapshots</id>
-		        <name>OpenECOMP - Snapshot Repository</name>
-		        <url>${nexusproxy}/${snapshotNexusPath}</url>
+			<id>ecomp-snapshots</id>
+			<name>OpenECOMP - Snapshot Repository</name>
+			<url>${nexusproxy}/${snapshotNexusPath}</url>
 		</repository>
 		<repository>
-		        <!-- Staging repository has ECOMP staging artifacts -->
-		        <id>ecomp-staging</id>
-		        <name>OpenECOMP - Staging Repository</name>
-		        <url>${nexusproxy}/${stagingNexusPath}</url>
-		</repository>
-		<repository>
-		        <!-- Snapshots repository has ECOMP snapshot artifacts -->
- 					<id>ecomp-public</id>
-	                <name>ecomp onap public Repository</name>
-	                <url>https://nexus.onap.org/content/groups/public</url>
+			<id>ecomp-public</id>
+			<name>ecomp onap public Repository</name>
+			<url>https://nexus.onap.org/content/groups/public</url>
 		</repository>
 	</repositories>
 
@@ -702,6 +691,16 @@
 			</exclusions>
 		</dependency>
 
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjrt</artifactId>
+			<version>1.8.9</version>
+		</dependency>
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjweaver</artifactId>
+			<version>1.8.9</version>
+		</dependency>
 
 	</dependencies>
 </project>

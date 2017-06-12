@@ -33,7 +33,7 @@
 				<tr>
 					<td b2b-table-body id="rowheader_t1_{{$index}}" headers="col1">
 						<label class="btn-switch-label" tabindex="0" role="option">
-							<input type="checkbox" b2b-switches ng-model="rowData.selected" ng-click="toggleRoleFunction(rowData.selected,rowData);">
+							<input id="row-input-{{$index}}" type="checkbox" b2b-switches ng-model="rowData.selected" ng-click="toggleRoleFunction(rowData.selected,rowData);">
 					    </label> 
 					</td>
 					<td b2b-table-body headers="rowheader_t1_{{$index}} col2" ng-bind="rowData.name"></td>
@@ -47,3 +47,9 @@
         <button id="button-app-cancel" class="btn btn-alt btn-small" ng-click="closeThisDialog()">Close</button>
     </div>
 </div>
+
+<script>
+$(document).ready(function(){
+    $(".ngdialog-close").attr('id','dialog-close');
+});
+</script>

@@ -19,17 +19,16 @@
  */
 package org.openecomp.portalapp.portal.test.controller;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import javax.validation.constraints.AssertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -51,7 +50,6 @@ import org.openecomp.portalapp.portal.transport.BusinessCardApplicationRole;
 import org.openecomp.portalapp.portal.transport.BusinessCardApplicationRolesList;
 import org.openecomp.portalapp.portal.transport.FieldsValidator;
 import org.openecomp.portalapp.portal.transport.FieldsValidator.FieldName;
-import org.openecomp.portalapp.portal.utils.EcompPortalUtils;
 import org.openecomp.portalapp.util.EPUserUtils;
 import org.openecomp.portalsdk.core.service.DataAccessService;
 import org.openecomp.portalsdk.core.util.SystemProperties;
@@ -59,7 +57,7 @@ import org.openecomp.portalsdk.core.util.SystemProperties;
 @RunWith(MockitoJUnitRunner.class)
 public class FunctionalMenuControllerTest extends MockitoTestSuite {
 
-	String userid = "sk434m";
+	String userid = "ab1234";
 
 	@Mock
 	FunctionalMenuService functionalMenuService = new FunctionalMenuServiceImpl();

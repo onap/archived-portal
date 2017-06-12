@@ -75,11 +75,12 @@ public interface MicroserviceService {
 	 * @throws Exception
 	 */
 	void updateMicroservice(long serviceId, MicroserviceData newService) throws Exception;
-	
+
 	/**
 	 * Gets the Service parameters by the service Id
+	 * 
 	 * @param serviceId
-	 * @return
+	 * @return List<MicroserviceParameter>
 	 */
 	List<MicroserviceParameter> getParametersById(long serviceId);
 

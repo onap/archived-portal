@@ -24,6 +24,7 @@
 (function () {
     class NewUserModalCtrl {
         constructor($scope, $log, usersService, applicationsService, confirmBoxService) {
+            var extRequestValue = false;
             let init = () => {
                 //$log.info('NewUserModalCtrl::init');
                 this.isSaving = false;
@@ -104,7 +105,7 @@
                         app.isErrorUpdating = false;
                         app.isDoneUpdating = false;
                         app.errorMessage = "";
-                        usersService.getUserAppRoles(app.id, this.selectedUser.orgUserId).promise().then((userAppRolesResult) => {
+                        usersService.getUserAppRoles(app.id, this.selectedUser.orgUserId, extRequestValue).promise().then((userAppRolesResult) => {
                             //$log.debug('NewUserModalCtrl::getUserAppsRoles: got a result for app: ',app.id,': ',app.name,': ',userAppRolesResult);
                             app.appRoles = userAppRolesResult;
                             app.isLoading = false;

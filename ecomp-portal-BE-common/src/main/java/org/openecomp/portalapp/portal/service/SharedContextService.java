@@ -25,13 +25,15 @@ import org.openecomp.portalapp.portal.domain.SharedContext;
 
 /**
  * Defines the methods exposed by the service that manages shared context
- * objects in the database via Hibernate.
+ * objects in the database.
  */
 public interface SharedContextService {
 
 	/**
 	 * Gets all shared context objects for the specified context ID.
 	 * 
+	 * @param contextId
+	 *            SharedContext ID
 	 * @return List of SharedContext objects
 	 */
 	List<SharedContext> getSharedContexts(String contextId);
@@ -49,11 +51,11 @@ public interface SharedContextService {
 	SharedContext getSharedContext(String contextId, String key);
 
 	/**
-	 * Creates a new shared context in the database with the specified context
-	 * ID, key and value.
+	 * Creates a new shared context entry with the specified context ID, key and
+	 * value.
 	 * 
-	 * @param context
-	 *            SharedContext object to save.
+	 * @param contextId
+	 *            SharedContext ID
 	 * @param key
 	 *            Key for the key-value pair.
 	 * @param value
@@ -62,7 +64,7 @@ public interface SharedContextService {
 	void addSharedContext(String contextId, String key, String value);
 
 	/**
-	 * Saves the specified shared context to the database.
+	 * Saves the specified shared context.
 	 * 
 	 * @param context
 	 *            SharedContext object to save.
@@ -70,7 +72,7 @@ public interface SharedContextService {
 	void saveSharedContext(SharedContext context);
 
 	/**
-	 * Deletes the specified shared context from the database.
+	 * Deletes the specified shared context.
 	 * 
 	 * @param context
 	 *            SharedContext object to delete.

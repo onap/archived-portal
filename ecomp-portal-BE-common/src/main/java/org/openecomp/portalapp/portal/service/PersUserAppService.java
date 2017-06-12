@@ -34,7 +34,7 @@ public interface PersUserAppService {
 	 *            EP Application
 	 * @param select
 	 *            True or false
-	 * @param select
+	 * @param pending
 	 *            True or false
 	 */
 	void setPersUserAppValue(EPUser user, EPApp app, boolean select, boolean pending);

@@ -80,7 +80,11 @@ public class AppsController extends EPRestrictedBaseController {
 	 * RESTful service method to fetch all Applications available to current
 	 * user
 	 * 
-	 * @return
+	 * @param request
+	 *            HttpServletRequest
+	 * @param response
+	 *            HttpServletResponse
+	 * @return List<EcompApp>
 	 */
 	@RequestMapping(value = { "/portalApi/userApps" }, method = RequestMethod.GET, produces = "application/json")
 	public List<EcompApp> getUserApps(HttpServletRequest request, HttpServletResponse response) {
@@ -105,7 +109,13 @@ public class AppsController extends EPRestrictedBaseController {
 	 * RESTful service method to fetch all applications accessible to the
 	 * current user, with personalizations.
 	 * 
-	 * @return
+	 * @param request
+	 *            HttpServletRequest
+	 * @param response
+	 *            HttpServletResponse
+	 * @return List<EcompApp>
+	 * @throws IOException
+	 *             if sendError fails
 	 */
 	@RequestMapping(value = { "/portalApi/persUserApps" }, method = RequestMethod.GET, produces = "application/json")
 	public List<EcompApp> getPersUserApps(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -134,7 +144,11 @@ public class AppsController extends EPRestrictedBaseController {
 	 * RESTful service method to fetch applications for which the current user
 	 * is an Administrator
 	 * 
-	 * @return
+	 * @param request
+	 *            HttpServletRequest
+	 * @param response
+	 *            HttpServletResponse
+	 * @return List<AppIdAndNameTransportModel>
 	 */
 	@RequestMapping(value = { "/portalApi/adminApps" }, method = RequestMethod.GET, produces = "application/json")
 	public List<AppIdAndNameTransportModel> getAdminApps(HttpServletRequest request, HttpServletResponse response) {
@@ -159,7 +173,11 @@ public class AppsController extends EPRestrictedBaseController {
 	 * RESTful service method to fetch Applications for user who is super admin
 	 * and/or app admin.
 	 * 
-	 * @return
+	 * @param request
+	 *            HttpServletRequest
+	 * @param response
+	 *            HttpServletResponse
+	 * @return List<AppIdAndNameTransportModel>
 	 */
 	@RequestMapping(value = {
 			"/portalApi/appsForSuperAdminAndAccountAdmin" }, method = RequestMethod.GET, produces = "application/json")
@@ -186,6 +204,10 @@ public class AppsController extends EPRestrictedBaseController {
 	/**
 	 * RESTful service method to fetch left menu items from the user's session.
 	 * 
+	 * @param request
+	 *            HttpServletRequest
+	 * @param response
+	 *            HttpServletResponse
 	 * @return JSON with left menu
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -254,18 +276,21 @@ public class AppsController extends EPRestrictedBaseController {
 		return ecompApps;
 	}
 
-	/*
-	 * This method sends the user apps manual sort preference Data to service
+	/**
+	 * Sets the user apps manual sort preference
 	 * 
-	 * @request: HTTP servlet request
-	 * 
-	 * @response: HTTP servlet response
+	 * @param request
+	 *            HTTP servlet request
+	 * @param response
+	 *            HTTP servlet response
+	 * @param epAppsManualPref
+	 *            sort pref
+	 * @return FieldsValidator
 	 */
 	@RequestMapping(value = {
 			"/portalApi/saveUserAppsSortingManual" }, method = RequestMethod.PUT, produces = "application/json")
 	public FieldsValidator putUserAppsSortingManual(HttpServletRequest request,
-			@RequestBody List<EPAppsManualPreference> epAppsManualPref, HttpServletResponse response)
-			throws IOException {
+			@RequestBody List<EPAppsManualPreference> epAppsManualPref, HttpServletResponse response) {
 		FieldsValidator fieldsValidator = null;
 		try {
 			EPUser user = EPUserUtils.getUserSession(request);
@@ -316,13 +341,16 @@ public class AppsController extends EPRestrictedBaseController {
 		return fieldsValidator;
 	}
 
-	/*
-	 * This method is being called to delete the user app manual sort preference
-	 * record
+	/**
+	 * Deletes the user app manual sort preference record
 	 * 
-	 * @request: HTTP servlet request
-	 * 
-	 * @response: HTTP servlet response
+	 * @param request
+	 *            HTTP servlet request
+	 * @param response
+	 *            HTTP servlet response
+	 * @param delManualAppData
+	 *            data to delete
+	 * @return FieldsValidator
 	 */
 	@RequestMapping(value = {
 			"/portalApi/UpdateUserAppsSortManual" }, method = RequestMethod.PUT, produces = "application/json")
@@ -389,7 +417,11 @@ public class AppsController extends EPRestrictedBaseController {
 	 * Administrator user. Attention: Users which have Super Administrator roles
 	 * only are not included!
 	 * 
-	 * @return
+	 * @param request
+	 *            HTTP servlet request
+	 * @param response
+	 *            HTTP servlet response
+	 * @return List<AdminUserApplications>
 	 */
 	@RequestMapping(value = { "/portalApi/accountAdmins" }, method = RequestMethod.GET, produces = "application/json")
 	public List<AdminUserApplications> getAppsAdministrators(HttpServletRequest request, HttpServletResponse response) {
@@ -432,10 +464,11 @@ public class AppsController extends EPRestrictedBaseController {
 	 * regardless of enabled status.
 	 * 
 	 * @param request
+	 *            HTTP servlet request
 	 * @param response
+	 *            HTTP servlet response
 	 * @return List of applications
 	 */
-	// This API returns
 	@RequestMapping(value = {
 			"/portalApi/allAvailableApps" }, method = RequestMethod.GET, produces = "application/json")
 	public List<AppsResponse> getAllApps(HttpServletRequest request, HttpServletResponse response) {
@@ -458,8 +491,10 @@ public class AppsController extends EPRestrictedBaseController {
 	/**
 	 * 
 	 * @param request
+	 *            HTTP servlet request
 	 * @param response
-	 * @return
+	 *            HTTP servlet response
+	 * @return List of applications
 	 */
 	@RequestMapping(value = { "/portalApi/appsFullList" }, method = RequestMethod.GET, produces = "application/json")
 	public List<EcompApp> getAppsFullList(HttpServletRequest request, HttpServletResponse response) {
@@ -477,8 +512,10 @@ public class AppsController extends EPRestrictedBaseController {
 	/**
 	 * 
 	 * @param request
+	 *            HTTP servlet request
 	 * @param response
-	 * @return
+	 *            HTTP servlet response
+	 * @return UserRoles
 	 */
 	@RequestMapping(value = { "/portalApi/userProfile" }, method = RequestMethod.GET, produces = "application/json")
 	public UserRoles getUserProfile(HttpServletRequest request, HttpServletResponse response) {
@@ -502,8 +539,10 @@ public class AppsController extends EPRestrictedBaseController {
 	/**
 	 * 
 	 * @param request
+	 *            HTTP servlet request
 	 * @param appId
-	 * @return
+	 *            application ID
+	 * @return List<LocalRole>
 	 */
 	@RequestMapping(value = { "/portalApi/appRoles/{appId}" }, method = {
 			RequestMethod.GET }, produces = "application/json")
@@ -522,8 +561,10 @@ public class AppsController extends EPRestrictedBaseController {
 	/**
 	 * 
 	 * @param request
+	 *            HTTP servlet request
 	 * @param response
-	 * @return
+	 *            HTTP servlet response
+	 * @return List<OnboardingApp>
 	 */
 	@RequestMapping(value = { "/portalApi/onboardingApps" }, method = RequestMethod.GET, produces = "application/json")
 	public List<OnboardingApp> getOnboardingApps(HttpServletRequest request, HttpServletResponse response) {
@@ -547,9 +588,12 @@ public class AppsController extends EPRestrictedBaseController {
 	/**
 	 * 
 	 * @param request
-	 * @param modifiedOnboardingApp
+	 *            HTTP servlet request
 	 * @param response
-	 * @return
+	 *            HTTP servlet response
+	 * @param modifiedOnboardingApp
+	 *            app to update
+	 * @return FieldsValidator
 	 */
 	@RequestMapping(value = { "/portalApi/onboardingApps" }, method = RequestMethod.PUT, produces = "application/json")
 	public FieldsValidator putOnboardingApp(HttpServletRequest request,
@@ -576,9 +620,12 @@ public class AppsController extends EPRestrictedBaseController {
 	/**
 	 * 
 	 * @param request
-	 * @param newOnboardingApp
+	 *            HTTP servlet request
 	 * @param response
-	 * @return
+	 *            HTTP servlet response
+	 * @param newOnboardingApp
+	 *            app to add
+	 * @return FieldsValidator
 	 */
 	@RequestMapping(value = { "/portalApi/onboardingApps" }, method = RequestMethod.POST, produces = "application/json")
 	public FieldsValidator postOnboardingApp(HttpServletRequest request, @RequestBody OnboardingApp newOnboardingApp,
@@ -606,9 +653,12 @@ public class AppsController extends EPRestrictedBaseController {
 	 * REST endpoint to process a request to delete an on-boarded application.
 	 * 
 	 * @param request
-	 * @param appId
+	 *            HTTP servlet request
 	 * @param response
-	 * @return
+	 *            HTTP servlet response
+	 * @param appId
+	 *            ID of app to delete
+	 * @return FieldsValidator
 	 */
 	@RequestMapping(value = { "/portalApi/onboardingApps/{appId}" }, method = {
 			RequestMethod.DELETE }, produces = "application/json")
@@ -637,7 +687,9 @@ public class AppsController extends EPRestrictedBaseController {
 	 * Gets the application thumbnail image; sets status 404 if none exists.
 	 * 
 	 * @param request
-	 *            HttpServletRequest
+	 *            HTTP servlet request
+	 * @param response
+	 *            HTTP servlet response
 	 * @param appId
 	 *            Application ID
 	 * @return Bytes with the app thumbnail image; null if not available.

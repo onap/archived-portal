@@ -27,7 +27,6 @@ import org.apache.commons.codec.binary.Base64;
 import org.openecomp.portalapp.portal.domain.EPUser;
 import org.openecomp.portalapp.portal.domain.MicroserviceData;
 import org.openecomp.portalapp.portal.domain.MicroserviceParameter;
-import org.openecomp.portalapp.portal.domain.WidgetCatalog;
 import org.openecomp.portalapp.portal.domain.WidgetCatalogParameter;
 import org.openecomp.portalapp.portal.domain.WidgetServiceHeaders;
 import org.openecomp.portalapp.portal.logging.aop.EPMetricsLog;
@@ -61,7 +60,7 @@ public class MicroserviceProxyServiceImpl implements MicroserviceProxyService {
 
 	@Autowired
 	private ConsulHealthService consulHealthService;
-	
+
 	@Autowired
 	MicroserviceService microserviceService;
 
@@ -74,7 +73,7 @@ public class MicroserviceProxyServiceImpl implements MicroserviceProxyService {
 	public String proxyToDestination(long serviceId, EPUser user, HttpServletRequest request) throws Exception {
 
 		String response = null;
-		
+
 		// get the microservice object by the id
 		MicroserviceData data = microserviceService.getMicroserviceDataById(serviceId);
 
@@ -83,13 +82,20 @@ public class MicroserviceProxyServiceImpl implements MicroserviceProxyService {
 			return response;
 		}
 		List<MicroserviceParameter> params = data.getParameterList();
+		MicroserviceParameter userId_param = new MicroserviceParameter();
+		userId_param.setPara_key("userId");
+		userId_param.setPara_value(user.getOrgUserId());
+		params.add(userId_param);
+
 		if (data.getSecurityType().equals(NO_AUTH)) {
 			HttpHeaders headers = new HttpHeaders();
 			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<String> entity = new HttpEntity<String>(headers);
 
 			String url = microserviceUrlConverter(data, params);
+			logger.debug(EELFLoggerDelegate.debugLogger, "Before making no authentication call: {}", url);
 			response = template.exchange(url, HttpMethod.GET, entity, String.class).getBody();
+			logger.debug(EELFLoggerDelegate.debugLogger, "No authentication call response: {}", response);
 
 		} else if (data.getSecurityType().equals(BASIC_AUTH)) {
 			// encoding the username and password
@@ -104,7 +110,10 @@ public class MicroserviceProxyServiceImpl implements MicroserviceProxyService {
 			HttpEntity<String> entity = new HttpEntity<String>(headers);
 
 			String url = microserviceUrlConverter(data, params);
+			logger.debug(EELFLoggerDelegate.debugLogger, "Before making basic authentication call: {}", url);
 			response = template.exchange(url, HttpMethod.GET, entity, String.class).getBody();
+			logger.debug(EELFLoggerDelegate.debugLogger, "Basic authentication call response: {}", response);
+
 		} else if (data.getSecurityType().equals(COOKIE_AUTH)) {
 			HttpHeaders headers = new HttpHeaders();
 			headers.setContentType(MediaType.APPLICATION_JSON);
@@ -113,22 +122,28 @@ public class MicroserviceProxyServiceImpl implements MicroserviceProxyService {
 			HttpEntity<String> entity = new HttpEntity<String>(headers);
 
 			String url = microserviceUrlConverter(data, params);
+			logger.debug(EELFLoggerDelegate.debugLogger, "Before making cookie-based authentication call: {}", url);
 			response = template.exchange(url, HttpMethod.GET, entity, String.class).getBody();
+			logger.debug(EELFLoggerDelegate.debugLogger, "Cookie-based authentication call response: {}", response);
 		}
 		return response;
 	}
-	
+
 	@Override
-	public String proxyToDestinationByWidgetId(long widgetId, EPUser user, HttpServletRequest request) throws Exception {
+	public String proxyToDestinationByWidgetId(long widgetId, EPUser user, HttpServletRequest request)
+			throws Exception {
 
 		String response = null;
-		
+
+		@SuppressWarnings({ "rawtypes", "unchecked" })
 		ResponseEntity<Long> ans = (ResponseEntity<Long>) template.exchange(
-				"https://" + consulHealthService.getServiceLocation(whatService)
+				"https://"
+						+ consulHealthService.getServiceLocation(whatService,
+								SystemProperties.getProperty("microservices.widget.local.port"))
 						+ "/widget/microservices/widgetCatalog/parameters/" + widgetId,
 				HttpMethod.GET, new HttpEntity(WidgetServiceHeaders.getInstance()), Long.class);
 		Long serviceId = ans.getBody();
-		
+
 		// get the microservice object by the id
 		MicroserviceData data = microserviceService.getMicroserviceDataById(serviceId);
 
@@ -138,9 +153,14 @@ public class MicroserviceProxyServiceImpl implements MicroserviceProxyService {
 		}
 
 		List<MicroserviceParameter> params = data.getParameterList();
+		MicroserviceParameter userId_param = new MicroserviceParameter();
+		userId_param.setPara_key("userId");
+		userId_param.setPara_value(user.getOrgUserId());
+		params.add(userId_param);
 
 		for (MicroserviceParameter p : params) {
-			WidgetCatalogParameter userValue = widgetParameterService.getUserParamById(widgetId, user.getId(), p.getId());
+			WidgetCatalogParameter userValue = widgetParameterService.getUserParamById(widgetId, user.getId(),
+					p.getId());
 			if (userValue != null)
 				p.setPara_value(userValue.getUser_value());
 		}

@@ -113,7 +113,7 @@ public class UserServiceImpl implements UserService {
 					in.close();
 					con.disconnect();
 				} catch (IOException e) {
-					logger.error(EELFLoggerDelegate.errorLogger,"getUserByUserId failed to close", e);
+					logger.error(EELFLoggerDelegate.errorLogger, "getUserByUserId failed to close", e);
 				}
 			}
 
@@ -256,5 +256,10 @@ public class UserServiceImpl implements UserService {
 		}
 		return "success";
 	};
+
+	@Override
+	public void saveUser(EPUser user) throws Exception {
+		getDataAccessService().saveDomainObject(user, null);
+	}
 
 }

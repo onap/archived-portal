@@ -41,9 +41,9 @@ public interface EPLoginService {
 
 	/**
 	 * Searches the fn_user table for a row that matches information in the
-	 * bean. Uses the bean's Organization User ID property if present; if not, uses the bean's
-	 * LoginId property and (optionally, depending on matchPassword parameter)
-	 * loginPwd property.
+	 * bean. Uses the bean's Organization User ID property if present; if not,
+	 * uses the bean's LoginId property and (optionally, depending on
+	 * matchPassword parameter) loginPwd property.
 	 * 
 	 * @param bean
 	 *            EPLoginBean
@@ -54,9 +54,10 @@ public interface EPLoginService {
 	 * @param matchPassword
 	 *            If true, the search must match the password
 	 * @return EPUser object; null on error or if no match.
+	 * @throws Exception
 	 */
 	@SuppressWarnings("rawtypes")
-	EPLoginBean findUser(EPLoginBean bean, String menuPropertiesFilename, HashMap additionalParams,
+	EPLoginBean findUser(EPLoginBean bean, String menuPropertiesFileName, HashMap additionalParams,
 			boolean matchPassword) throws Exception;
 
 	/**
@@ -64,6 +65,7 @@ public interface EPLoginService {
 	 * matches the specified value.
 	 * 
 	 * @param loginId
+	 *            Login name
 	 * @return EPUser object; null on error or if no match.
 	 */
 	public EPUser findUserWithoutPwd(String loginId);

@@ -59,6 +59,13 @@ public class SharedContext extends DomainVo {
 	/**
 	 * Convenience constructor. The database ID and creation timestamp are
 	 * populated when the object is added to the database.
+	 * 
+	 * @param contextId
+	 *            context ID
+	 * @param key
+	 *            context key
+	 * @param value
+	 *            context value
 	 */
 	public SharedContext(final String contextId, final String key, final String value) {
 		this.context_id = contextId;
@@ -79,6 +86,7 @@ public class SharedContext extends DomainVo {
 	 * Sets the database row ID.
 	 * 
 	 * @param id
+	 *            database row ID
 	 */
 	public void setId(final Long id) {
 		this.id = id;
@@ -97,6 +105,7 @@ public class SharedContext extends DomainVo {
 	 * Sets the creation time
 	 * 
 	 * @param create_time
+	 *            Date
 	 */
 	public void setCreate_time(final Date create_time) {
 		this.create_time = create_time;
@@ -115,6 +124,7 @@ public class SharedContext extends DomainVo {
 	 * Sets the context ID
 	 * 
 	 * @param context_id
+	 *            String
 	 */
 	public void setContext_id(final String context_id) {
 		this.context_id = context_id;
@@ -134,6 +144,7 @@ public class SharedContext extends DomainVo {
 	 * Sets the key of the key-value pair.
 	 * 
 	 * @param ckey
+	 *            String
 	 */
 	public void setCkey(final String ckey) {
 		this.ckey = ckey;
@@ -143,7 +154,7 @@ public class SharedContext extends DomainVo {
 	 * Gets the value of the key-value pair. Called cvalue because "value" is a
 	 * reserved word in Mysql.
 	 * 
-	 * @return
+	 * @return value
 	 */
 	public String getCvalue() {
 		return cvalue;
@@ -153,6 +164,7 @@ public class SharedContext extends DomainVo {
 	 * Sets the value of the key-value pair.
 	 * 
 	 * @param cvalue
+	 *            value
 	 */
 	public void setCvalue(final String cvalue) {
 		this.cvalue = cvalue;

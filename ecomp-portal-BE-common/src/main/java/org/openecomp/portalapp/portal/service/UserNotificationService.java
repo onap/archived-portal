@@ -29,11 +29,33 @@ import org.openecomp.portalapp.portal.transport.EpRoleNotificationItem;
 
 public interface UserNotificationService {
 
+	/**
+	 * Gets the specified notifications with userId from ep_notification
+	 * 
+	 * @param userId
+	 * 
+	 * @return the notifications with the specified userId
+	 */
+
 	List<EpNotificationItem> getNotifications(Long userId);
+
+	/**
+	 * Gets the specified roles from ep_role_notification
+	 * 
+	 * @param notificationId
+	 * 
+	 * @return the roles for a specified notification
+	 */
 
 	List<EpRoleNotificationItem> getNotificationRoles(Long notificationId);
 
+	/**
+	 * Get all app role list from the fn_app and fn_role table
+	 * 
+	 * @return list of all roles associated with the applications
+	 */
 	List<EcompAppRole> getAppRoleList();
+
 	/**
 	 * Marks the notification as viewed by the specified user.
 	 * 
@@ -42,14 +64,77 @@ public interface UserNotificationService {
 	 */
 	void setNotificationRead(Long notificationId, int userId);
 
+	/**
+	 * Saves the specified notification to the table ep_notification
+	 * 
+	 * @param notificationItem
+	 * @throws Exception
+	 */
+
 	String saveNotification(EpNotificationItem notificationItem) throws Exception;
+
+	/**
+	 * Gets the specified notification with the userId for view all recent
+	 * notifications
+	 * 
+	 * @param userId
+	 * 
+	 * @return the notification list
+	 */
 
 	List<EpNotificationItemVO> getNotificationHistoryVO(Long userId);
 
-	List<EpNotificationItemVO> getAdminNotificationVOS();
-	
+	/**
+	 * Gets the notifications with the userId for user notifications
+	 * 
+	 * @param userId
+	 * 
+	 * @return the notification list
+	 */
+
+	List<EpNotificationItemVO> getAdminNotificationVOS(Long userId);
+
+	/**
+	 * Gets the user list from fn_user
+	 * 
+	 * @param OrgIds
+	 * 
+	 * @return the users list
+	 */
+
 	List<EPUser> getUsersByOrgIds(List<String> OrgIds);
 
+	/**
+	 * Gets the received recipient to whom the notification is delivered from
+	 * external system
+	 * 
+	 * @param notificationId
+	 * 
+	 * @return the active users
+	 */
+
 	List<String> getMessageRecipients(Long notificationId);
+
+	/**
+	 * delete the records from ep_notification table when the endtime is more
+	 * than 3 months
+	 * 
+	 */
+
+	void deleteNotificationsFromEpNotificationTable();
+
+	/**
+	 * delete the records from ep_user_notification table when the endtime is
+	 * more than 3 months
+	 * 
+	 */
+	void deleteNotificationsFromEpUserNotificationTable();
+
+	/**
+	 * delete the records from ep_role_notification table when the endtime is
+	 * more than 3 months
+	 * 
+	 */
+	void deleteNotificationsFromEpRoleNotificationTable();
 
 }

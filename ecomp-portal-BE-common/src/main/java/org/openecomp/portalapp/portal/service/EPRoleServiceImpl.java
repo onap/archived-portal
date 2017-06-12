@@ -36,123 +36,134 @@ import org.openecomp.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.openecomp.portalsdk.core.service.DataAccessService;
 import org.openecomp.portalapp.portal.domain.EPRole;
 import org.openecomp.portalapp.portal.logging.aop.EPMetricsLog;
+import org.openecomp.portalapp.portal.utils.PortalConstants;
 
 @Service("epRoleService")
 @Transactional
 @org.springframework.context.annotation.Configuration
 @EnableAspectJAutoProxy
 @EPMetricsLog
-public class EPRoleServiceImpl implements EPRoleService{
+public class EPRoleServiceImpl implements EPRoleService {
 	EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(EPRoleServiceImpl.class);
 
 	@Autowired
-	private DataAccessService  dataAccessService;
-	
-	@SuppressWarnings("unchecked")	
+	private DataAccessService dataAccessService;
+
+	@SuppressWarnings("unchecked")
 	public List<RoleFunction> getRoleFunctions() {
-		//List msgDB = getDataAccessService().getList(Profile.class, null);
+		// List msgDB = getDataAccessService().getList(Profile.class, null);
 		return getDataAccessService().getList(RoleFunction.class, null);
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public List<EPRole> getAvailableChildRoles(Long roleId) {
-		List<EPRole> availableChildRoles = (List<EPRole>)getDataAccessService().getList(EPRole.class,null);
-		if(roleId==null || roleId==0){
+		List<EPRole> availableChildRoles = (List<EPRole>) getDataAccessService().getList(EPRole.class, null);
+		if (roleId == null || roleId == 0) {
 			return availableChildRoles;
 		}
-		
-		EPRole currentRole = (EPRole)getDataAccessService().getDomainObject(EPRole.class,roleId,null);
+
+		EPRole currentRole = (EPRole) getDataAccessService().getDomainObject(EPRole.class, roleId, null);
 		Set<EPRole> allParentRoles = new TreeSet<EPRole>();
 		allParentRoles = getAllParentRolesAsList(currentRole, allParentRoles);
 
-		
 		Iterator<EPRole> availableChildRolesIterator = availableChildRoles.iterator();
 		while (availableChildRolesIterator.hasNext()) {
-			EPRole role = availableChildRolesIterator.next(); 
-			if(!role.getActive() || allParentRoles.contains(role) || role.getId().equals(roleId)){
+			EPRole role = availableChildRolesIterator.next();
+			if (!role.getActive() || allParentRoles.contains(role) || role.getId().equals(roleId)) {
 				availableChildRolesIterator.remove();
 			}
 		}
 		return availableChildRoles;
 	}
-	
+
 	private Set<EPRole> getAllParentRolesAsList(EPRole role, Set<EPRole> allParentRoles) {
 		Set<EPRole> parentRoles = role.getParentRoles();
 		allParentRoles.addAll(parentRoles);
 		Iterator<EPRole> parentRolesIterator = parentRoles.iterator();
 		while (parentRolesIterator.hasNext()) {
-			getAllParentRolesAsList(parentRolesIterator.next(),allParentRoles);
+			getAllParentRolesAsList(parentRolesIterator.next(), allParentRoles);
 		}
 		return allParentRoles;
 	}
-	
+
 	public RoleFunction getRoleFunction(String code) {
-		return (RoleFunction)getDataAccessService().getDomainObject(RoleFunction.class, code, null);
+		return (RoleFunction) getDataAccessService().getDomainObject(RoleFunction.class, code, null);
 	}
-	
+
 	public void saveRoleFunction(RoleFunction domainRoleFunction) {
 		getDataAccessService().saveDomainObject(domainRoleFunction, null);
 	}
-	
+
 	public void deleteRoleFunction(RoleFunction domainRoleFunction) {
 		getDataAccessService().deleteDomainObject(domainRoleFunction, null);
 	}
-	
+
 	public EPRole getRole(Long id) {
-		return (EPRole)getDataAccessService().getDomainObject(EPRole.class, id, null);
+		return (EPRole) getDataAccessService().getDomainObject(EPRole.class, id, null);
 	}
-	
+
 	// TODO: refactor
-	private static final String getAppRoleSqlFormat ="SELECT * FROM fn_role where APP_ID = %s AND APP_ROLE_ID = %s";
-	
+	private static final String getAppRoleSqlFormat = "SELECT * FROM fn_role where APP_ID = %s AND APP_ROLE_ID = %s";
+
 	@SuppressWarnings("unchecked")
 	public EPRole getRole(Long appId, Long appRoleid) {
-		if(appId == null || appRoleid == null){
-			logger.error(EELFLoggerDelegate.errorLogger, String.format("getRole does not support null appId or roleId. appRoleid=%s, appRoleid=%s", appId, appRoleid));
+		if (appId == null || appRoleid == null) {
+			logger.error(EELFLoggerDelegate.errorLogger, String.format(
+					"getRole does not support null appId or roleId. appRoleid=%s, appRoleid=%s", appId, appRoleid));
 			return null;
 		}
-		
+
 		String sql = String.format(getAppRoleSqlFormat, appId, appRoleid);
-		
-		List<EPRole> roles = (List<EPRole>)dataAccessService.executeSQLQuery(sql, EPRole.class, null);
+
+		List<EPRole> roles = (List<EPRole>) dataAccessService.executeSQLQuery(sql, EPRole.class, null);
 		int resultsCount = roles.size();
-		if(resultsCount > 1){
-			logger.error(EELFLoggerDelegate.errorLogger, String.format("search by appId=%s, appRoleid=%s should have returned 0 or 1 results. Got %d. This is an internal server error.", appId, appRoleid, resultsCount));
-			logger.error(EELFLoggerDelegate.errorLogger, "Trying to recover from duplicates by returning the first search result. This issue should be treated, it is probably not critical because duplicate roles should be similar.");
+		if (resultsCount > 1) {
+			logger.error(EELFLoggerDelegate.errorLogger,
+					String.format(
+							"search by appId=%s, appRoleid=%s should have returned 0 or 1 results. Got %d. This is an internal server error.",
+							appId, appRoleid, resultsCount));
+			logger.error(EELFLoggerDelegate.errorLogger,
+					"Trying to recover from duplicates by returning the first search result. This issue should be treated, it is probably not critical because duplicate roles should be similar.");
 			return roles.get(0);
-		} else if(resultsCount == 1){
+		} else if (resultsCount == 1) {
 			return roles.get(0);
 		}
 		return null;
 	}
-		
+
 	@SuppressWarnings("unchecked")
 	public EPRole getAppRole(String roleName, Long appId) {
-			
+
 		final Map<String, String> params = new HashMap<String, String>();
+		final Map<String, String> portalParams = new HashMap<String, String>();
+		List<EPRole> roles = null;
 		params.put("appId", appId.toString());
 		params.put("roleName", roleName);
-		
-		List<EPRole> roles = (List<EPRole>)dataAccessService.executeNamedQuery("getAppRoles", params, null);
+		portalParams.put("appRoleName", roleName);
+		if (appId == 1 || roleName.equals(PortalConstants.ADMIN_ROLE)) {
+			roles = (List<EPRole>) dataAccessService.executeNamedQuery("getPortalAppRoles", portalParams, null);
+		} else if (appId != 1 && !roleName.equals(PortalConstants.ADMIN_ROLE)) {
+			roles = (List<EPRole>) dataAccessService.executeNamedQuery("getAppRoles", params, null);
+		}
 		int resultsCount = roles.size();
-		if(resultsCount > 1){
-			logger.error(EELFLoggerDelegate.errorLogger, "Trying to recover from duplicates by returning the first search result. This issue should be treated, it is probably not critical because duplicate roles should be similar.");
+		if (resultsCount > 1) {
+			logger.error(EELFLoggerDelegate.errorLogger,
+					"Trying to recover from duplicates by returning the first search result. This issue should be treated, it is probably not critical because duplicate roles should be similar.");
 			return roles.get(0);
-		} else if(resultsCount == 1){
+		} else if (resultsCount == 1) {
 			return roles.get(0);
 		}
 		return null;
 	}
-	
-	
+
 	public void saveRole(EPRole domainRole) {
 		getDataAccessService().saveDomainObject(domainRole, null);
 	}
-	
+
 	public void deleteRole(EPRole domainRole) {
 		getDataAccessService().deleteDomainObject(domainRole, null);
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public List<EPRole> getAvailableRoles() {
 		return getDataAccessService().getList(EPRole.class, null);
@@ -162,10 +173,7 @@ public class EPRoleServiceImpl implements EPRoleService{
 		return dataAccessService;
 	}
 
-
 	public void setDataAccessService(DataAccessService dataAccessService) {
 		this.dataAccessService = dataAccessService;
 	}
 }
-
-

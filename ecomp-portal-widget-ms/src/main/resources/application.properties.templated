@@ -1,0 +1,35 @@
+## General App Properties
+server.contextPath=/widget
+server.port=8082
+spring.http.multipart.max-file-size=128MB
+spring.http.multipart.max-request-size=128MB
+
+## App DB Properties
+spring.datasource.url=jdbc:mariadb:failover://{db_host:db_port/{portal_db}
+spring.datasource.username={username}
+spring.datasource.password=ENC({encrypted_password})
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
+spring.database.driver.classname=org.mariadb.jdbc.Driver
+spring.jpa.show-sql=false
+spring.jpa.properties.hibernate.format_sql=false
+
+## Basic Authentication Properties
+security.user.name={basic_auth_username}
+security.user.password=ENC({encrypted_basic_auth_password})
+
+## Initalization setting
+initialization.default.widgets=true
+initialization.widgetData.url={widgetData_url}
+
+## Account Basic Authentication Properties
+account.user.name=portal
+account.user.password=6APqvG4AU2rfLgCvMdySwQ==
+
+## Certificate Properties
+#server.ssl.key-store=classpath:widget-keystore.p12
+#server.ssl.key-store-password=ENC(DiIYnAMab4u7rEW2yKhF9zBL00uU55q8)
+#server.ssl.keyStoreType=PKCS12
+#server.ssl.keyAlias=widget-microservice
+
+## Jasypt Properties
+jasypt.encryptor.password=EncryptionKey

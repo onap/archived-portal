@@ -192,7 +192,8 @@
              * each time new app is selected in the drop down,
              * add it to the user administrated apps list
              */
-            $scope.$watch('newAdmin.selectedNewApp', (newVal) => {
+            $scope.$watch('newAdmin.selectedNewApp.value', (newVal) => {
+                var newVal= JSON.parse(newVal);
                 if (!newVal || newVal.isAdmin === undefined) {
                     return;
                 }

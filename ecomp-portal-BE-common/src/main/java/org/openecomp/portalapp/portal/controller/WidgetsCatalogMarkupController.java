@@ -18,9 +18,16 @@
  * ================================================================================
  */
 package org.openecomp.portalapp.portal.controller;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.openecomp.portalapp.controller.EPUnRestrictedBaseController;
+import org.openecomp.portalapp.portal.domain.WidgetServiceHeaders;
+import org.openecomp.portalapp.portal.logging.aop.EPAuditLog;
+import org.openecomp.portalapp.portal.service.ConsulHealthService;
+import org.openecomp.portalsdk.core.logging.logic.EELFLoggerDelegate;
+import org.openecomp.portalsdk.core.util.SystemProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
@@ -32,24 +39,18 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
-import org.openecomp.portalsdk.core.logging.logic.EELFLoggerDelegate;
-import org.openecomp.portalapp.controller.EPUnRestrictedBaseController;
-import org.openecomp.portalapp.portal.domain.WidgetServiceHeaders;
-import org.openecomp.portalapp.portal.logging.aop.EPAuditLog;
-import org.openecomp.portalapp.portal.service.ConsulHealthService;
-
-@SuppressWarnings("unchecked")
 @RestController
 @org.springframework.context.annotation.Configuration
 @EnableAspectJAutoProxy
 @EPAuditLog
 public class WidgetsCatalogMarkupController extends EPUnRestrictedBaseController {
-	
-	EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(WidgetsCatalogMarkupController.class);
-	RestTemplate template = new RestTemplate();
-	String whatService = "widgets-service";
 
-	
+	private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(WidgetsCatalogMarkupController.class);
+
+	private RestTemplate template = new RestTemplate();
+
+	private final String whatService = "widgets-service";
+
 	@Autowired
 	private ConsulHealthService consulHealthService;
 
@@ -57,27 +58,29 @@ public class WidgetsCatalogMarkupController extends EPUnRestrictedBaseController
 	public CommonsMultipartResolver multipartResolver() {
 		return new CommonsMultipartResolver();
 	}
-	
+
 	static {
-	    //for localhost testing only
-	    javax.net.ssl.HttpsURLConnection.setDefaultHostnameVerifier(
-	    new javax.net.ssl.HostnameVerifier(){
+		// for localhost testing only
+		javax.net.ssl.HttpsURLConnection.setDefaultHostnameVerifier(new javax.net.ssl.HostnameVerifier() {
 
-	        public boolean verify(String hostname,
-	                javax.net.ssl.SSLSession sslSession) {
-	            if (hostname.equals("localhost")) {
-	                return true;
-	            }
-	            return false;
-	        }
-	    });
-	}	
-
+			public boolean verify(String hostname, javax.net.ssl.SSLSession sslSession) {
+				if (hostname.equals("localhost")) {
+					return true;
+				}
+				return false;
+			}
+		});
+	}
 
 	@RequestMapping(value = "/portalApi/microservices/markup/{widgetId}", method = RequestMethod.GET)
 	public String getWidgetMarkup(HttpServletRequest request, HttpServletResponse response,
 			@PathVariable("widgetId") long widgetId) throws RestClientException, Exception {
-		return template.getForObject("https://" + consulHealthService.getServiceLocation(whatService) + "/widget/microservices/markup/" + widgetId, String.class,
-				WidgetServiceHeaders.getInstance());
+		return template
+				.getForObject(
+						"https://"
+								+ consulHealthService.getServiceLocation(whatService,
+										SystemProperties.getProperty("microservices.widget.local.port"))
+								+ "/widget/microservices/markup/" + widgetId,
+						String.class, WidgetServiceHeaders.getInstance());
 	}
 }

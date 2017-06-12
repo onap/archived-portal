@@ -63,8 +63,8 @@ public class AppContactUsController extends EPRestrictedBaseController {
 	 * Answers a JSON object with three items from the system.properties file:
 	 * user self-help ticket URL, email for feedback, and Portal info link.
 	 * 
-	 * @param request
-	 * @return
+	 * @param request HttpServletRequest
+	 * @return PortalRestResponse
 	 */
 	@RequestMapping(value = "/feedback", method = RequestMethod.GET, produces = "application/json")
 	public PortalRestResponse<String> getPortalDetails(HttpServletRequest request) {
@@ -91,8 +91,8 @@ public class AppContactUsController extends EPRestrictedBaseController {
 	 * Answers the contents of the contact-us table, extended with the
 	 * application name.
 	 * 
-	 * @param request
-	 * @return
+	 * @param request HttpServletRequest
+	 * @return PortalRestResponse<List<AppContactUsItem>>
 	 */
 	@RequestMapping(value = "/list", method = RequestMethod.GET, produces = "application/json")
 	public PortalRestResponse<List<AppContactUsItem>> getAppContactUsList(HttpServletRequest request) {
@@ -113,8 +113,8 @@ public class AppContactUsController extends EPRestrictedBaseController {
 	 * Answers a list of objects, one per application, extended with available
 	 * data on how to contact that app's organization (possibly none).
 	 * 
-	 * @param request
-	 * @return
+	 * @param request HttpServletRequest
+	 * @return PortalRestResponse<List<AppContactUsItem>>
 	 */
 	@RequestMapping(value = "/allapps", method = RequestMethod.GET, produces = "application/json")
 	public PortalRestResponse<List<AppContactUsItem>> getAppsAndContacts(HttpServletRequest request) {
@@ -145,8 +145,8 @@ public class AppContactUsController extends EPRestrictedBaseController {
 	 * Answers a list of objects with category-application-function details. Not
 	 * all applications participate in the functional menu.
 	 * 
-	 * @param request
-	 * @return
+	 * @param request HttpServletRequest
+	 * @return PortalRestResponse<List<AppCategoryFunctionsItem>>
 	 */
 	@RequestMapping(value = "/functions", method = RequestMethod.GET, produces = "application/json")
 	public PortalRestResponse<List<AppCategoryFunctionsItem>> getAppCategoryFunctions(HttpServletRequest request) {
@@ -171,8 +171,8 @@ public class AppContactUsController extends EPRestrictedBaseController {
 	/**
 	 * Accepts a new application's contact us details.
 	 * 
-	 * @param contactUs
-	 * @return
+	 * @param contactUs AppContactUsItem
+	 * @return PortalRestResponse<String>
 	 */
 	@RequestMapping(value = "/save", method = RequestMethod.POST, produces = "application/json")
 	public PortalRestResponse<String> save(@RequestBody AppContactUsItem contactUs) {
@@ -206,8 +206,8 @@ public class AppContactUsController extends EPRestrictedBaseController {
 	 * Deletes the specified application's contact-us details entry from the
 	 * table.
 	 * 
-	 * @param id
-	 * @return
+	 * @param id app ID
+	 * @return PortalRestResponse<String>
 	 */
 	@RequestMapping(value = "/delete/{appid}", method = RequestMethod.POST, produces = "application/json")
 	public PortalRestResponse<String> delete(@PathVariable("appid") Long id) {

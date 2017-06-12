@@ -22,8 +22,8 @@
         <ul class="header__items" role="navigation">
 <!-- Menu Icon and name -->
             <li class="header__item icon__item" onclick="window.location = 'applicationsHome'">
-                <span id="logo-image"  class="icon-primary-att-globe"></span>
-                <span id="portal-title" class="portal-title" >OpenECOMP Portal</span>           	
+                <div ng-include class="profile-detail-extension" src="'app/views/header/header-logo.html'"></div>             
+                <span id="portal-title" class="portal-title" ng-bind="ecompTitle"></span>           	
             </li>
 <!-- First Level menu -->
             <li b2b-header-menu 
@@ -34,11 +34,11 @@
             	role="presentation">
             	
                 <a href="javascript:void(0);" 
-                id="parentmenu-tabs"
+                id="parentmenu-{{item.text.split(' ').join('-')}}-tabs"
                 class="menu__item" 
                 role="menuitem">{{item.text}}</a>
                 
-                <div class="header-secondary-wrapper" ng-if="item.active_yn=='Y'">
+                <div class="header-secondary-wrapper" ng-if="item.active_yn=='Y'" ng-hide="hideMenus">
                     <ul class="header-secondary" role="menu">
 <!-- Second Level menu -->
                         <li class="header-subitem" 
@@ -58,7 +58,7 @@
 			                                	<div                                                   
                                                      ng-repeat="subItem in favoritesMenuItems"
                                                      ng-show="showFavorites"
-                                                     ng-hide="hideMenus"
+                                                     
                                                      id="favoritesMenuItems-{{subItem.text.split(' ').join('-')}}">
                                                     <div class="fav-links">
                                                         <i id="favorite-selector-favorites-list"
@@ -84,7 +84,7 @@
                         	</div>
             <!-- Support or Help -->
                         	<div ng-if="item.text=='Support' || item.text=='Help'" id="second-level-menus-help">                      	
-                        		<a href="javascript:void(0);" ng-click="goToUrl(i);auditLog(i,'Support')" class="menu__item" role="menuitem">{{i.text| elipsis: 50}}</a>         	
+                        		<a id="second-level-menus-{{i.text.split(' ').join('-')}}-help" href="javascript:void(0);" ng-click="goToUrl(i);auditLog(i,'Support')" class="menu__item" role="menuitem">{{i.text| elipsis: 50}}</a>         	
                         	</div>
        		<!-- Others -->
                         	<div ng-if="i.text!='Favorites' && (item.text!='Support' && item.text!='Help')" >
@@ -177,9 +177,9 @@
 						                <li>&nbsp;</li>
 					 					<li>
 					               			<div class="display-userAppRoles-label">
-					                			<a href="javascript:void(0);"  ng-click="getUserApplicationRoles()"  class="icon-controls-add-maximize" ><span>Applications and Roles</span></a>
+					                			<a href="javascript:void(0);"  ng-click="getUserApplicationRoles()"  class="icon-primary-accordion-plus" ng-class="{true: 'icon-primary-accordion-plus', false: 'icon-primary-accordion-minus'}[ !displayUserAppRoles]" >Applications and Roles</a>
 					                 		</div>
-					                        
+					                 		<br>
 					                        <div class="display-userAppRoles-label" ng-show="displayUserAppRoles" style="height:200px; overflow-y:auto;">
 					                             <div ng-repeat="ua in userapproles track by  $index">
 				                                    <div class="reg-userApp-value">
@@ -188,12 +188,14 @@
 					                                <div ng-repeat="role in ua.Roles track by  $index" class="reg-userAppRoles-value" >
 					                                	<span class="reg-userAppRoles-value-spn">{{role}}</span>
 					                                </div>
+					                                <br>
 					                        	</div>
 					                     	</div>
 					                	</li>
 									</ul>
-					                <div id="reg-logout-div" style="padding-top: 8px">
-					                      <button href="javascript:void(0)" id="allLogout" ng-click="allAppsLogout()" class="btn btn-alt btn-small">
+					                <div ng-include class="profile-detail-extension" src="'app/views/header/header-extension.tpl.html'"></div>				                							
+					                <div id="reg-logout-div" class="logout-btn-div">
+					                     <button href="javascript:void(0)" id="allLogout" ng-click="allAppsLogout()" class="btn btn-alt btn-small">
 											Log out
 										</button>
 					                </div>
@@ -208,14 +210,14 @@
             	<b2b-flyout>
             		<div b2b-flyout-toggler class="notification-div">
 	            		<div class="notifications-count" ng-hide="notificationCount.count==0" ng-bind="notificationCount.count"></div>      	
-						<div  class="icon-content-flag megamenu-notification-overrides" class="b2b-flyout-icon" tabindex="0" b2b-accessibility-click="13,32" aria-label="notifications" aria-haspopup="true" aria-expanded="{{flyoutOpened}}" role="button"></div>
+						<div id="megamenu-notification-button" class="icon-content-flag megamenu-notification-overrides" class="b2b-flyout-icon" tabindex="0" b2b-accessibility-click="13,32" aria-label="notifications" aria-haspopup="true" aria-expanded="{{flyoutOpened}}" role="button"></div>
 		            </div>
 		            <b2b-flyout-content horizontal-placement="center" vertical-placement="below">
 						<div class="notification-content" ng-controller="notificationCtrl" >
 							<div class="ng-scope">
 								<div id="notification" class="notificationBox ">
 									<div align ="right">
-					 					 <a ui-sref="root.notificationHistory" style="font-size: 14px"> View All Recent Notifications </a>
+					 					 <a id="notification-history-link" ui-sref="root.notificationHistory" style="font-size: 14px"> View All Recent Notifications </a>
 									</div>
 									<div class="notification-header">
 										<div style="float:left;">
@@ -241,14 +243,76 @@
 											<span class="important" ng-show="item.priority==2"/>
 											<span class="normal" ng-show="item.priority==1"/>
 										</div>
-										<div class="details">
-											<span class="title" ng-bind="item.title"></span>
-											<span class="message-body" ng-bind="item.message"></span>
-											<!-- <span class="date" ng-bind="item.time" ></span> -->
-											<mydate>{{item.time | date:'MM/dd/yyyy hh:mm:ss a Z'}}</mydate>			
-										</div>
+										<div class="details" ng-click="showDetailedJsonMessage(item)">
+												<span class="title" ng-bind="item.source"></span> <span
+													class="title" ng-bind="item.title"></span> <span
+													class="message-body" ng-if="item.source==='EP'"
+													ng-bind="item.message"></span> <span class="message-body"
+													ng-if="item.source!=='EP'"
+													ng-bind="item.message| elipsis: 27"> </span>
+												<!-- <span class="date" ng-bind="item.time" ></span> -->
+												<mydate>{{item.time | date:'MM/dd/yyyy hh:mm:ss a Z'}}</mydate>
+
+											</div>
 										<button type="button" ng-click="deleteNotification($index)" class="button-default button-dismiss js-dismiss">x</button>
 									</li>
+								</ul>
+							</div>
+							<div class="notification-footer">
+								<div class="notification-links">
+									<div style="clear:both;"></div>
+								</div>
+							</div>
+						</div>					
+		            </b2b-flyout-content>
+		        </b2b-flyout>
+            </li>
+            
+                             <!-- Recommendation Bulb -->
+            
+               <li class="header__item recommendation" aria-haspopup="true" class="recommendation-li">
+            	<b2b-flyout>
+            		<div b2b-flyout-toggler class="recommendation-div">
+	            		<div class="recommendations-count" ng-hide="recommendationCount.count==0" ng-bind="recommendationCount.count"></div>      	
+<div  class="icon-misc-bulbL megamenu-recommendation-overrides" id="recommendation-bulb" tabindex="0" b2b-accessibility-click="13,32" aria-label="recommendation" aria-haspopup="true" aria-expanded="{{flyoutOpened}}" style="font-size: 22px;"role="button"></div>		            </div>
+		            <b2b-flyout-content horizontal-placement="center" vertical-placement="below">
+						<div class="recommendation-content" ng-controller="recommendationCtrl" >
+							<div class="ng-scope">
+								<div id="recommendation" class="notificationBox ">
+									<!-- <div align ="right">
+					 					 <a ui-sref="root.recommendationsHistory" style="font-size: 14px"> View All Recent Notifications </a>
+									</div> -->
+									<div class="notification-header">
+										<div style="float:left;">
+											<p class="notification-heading">Recommendations</p>
+										</div>
+										<div style="clear:both;"></div>
+									</div>
+									<div ng-show="recommendations.length==0">
+										<div class="notification-main">
+											<div style="height:113px;">
+												<div align="center" class="icon-information notification-info-icon"></div>
+											</div>
+										<div>
+										<p class="notification-text">No New Recommendations</p>
+									</div>
+									
+								</div>
+							</div>
+							<div class="notification-main" ng-show="recommendations.length>0">
+								<ul class="notifications-list">
+									<li class="item" data-id="5" ng-repeat="item in recommendations">
+									<div class="icon">
+											<span class="normal" ng-show="item.recommendation"/>
+										</div>
+										<div class="details">
+																			
+										<span class="message-body" ng-bind="item.recommendation"></span>
+											
+											
+										</div>
+ 										<button type="button" ng-click="deleteRecommendation($index)" class="button-default button-dismiss js-dismiss">x</button>
+ 									</li>
 								</ul>
 							</div>
 							<div class="notification-footer">

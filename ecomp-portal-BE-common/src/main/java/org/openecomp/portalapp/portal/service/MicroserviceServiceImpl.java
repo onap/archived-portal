@@ -24,32 +24,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
-import org.openecomp.portalapp.portal.domain.BasicAuthCredentials;
-import org.openecomp.portalapp.portal.domain.EPUserAppRolesRequestDetail;
 import org.openecomp.portalapp.portal.domain.MicroserviceData;
 import org.openecomp.portalapp.portal.domain.MicroserviceParameter;
-import org.openecomp.portalapp.portal.domain.WidgetCatalog;
-import org.openecomp.portalapp.portal.domain.WidgetServiceHeaders;
-import org.openecomp.portalapp.portal.ecomp.model.PortalRestResponse;
 import org.openecomp.portalapp.portal.logging.aop.EPMetricsLog;
-import org.openecomp.portalapp.portal.transport.CommonWidgetMeta;
 import org.openecomp.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.openecomp.portalsdk.core.onboarding.util.CipherUtil;
 import org.openecomp.portalsdk.core.service.DataAccessService;
 import org.openecomp.portalsdk.core.util.SystemProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 @Service("microserviceService")
 @EnableAspectJAutoProxy
@@ -58,12 +44,8 @@ public class MicroserviceServiceImpl implements MicroserviceService {
 
 	EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(MicroserviceServiceImpl.class);
 
-
 	@Autowired
 	private DataAccessService dataAccessService;
-
-	@Autowired
-	private SessionFactory sessionFactory;
 
 	public Long saveMicroservice(MicroserviceData newService) throws Exception {
 		if (newService.getPassword() != null)
@@ -143,19 +125,20 @@ public class MicroserviceServiceImpl implements MicroserviceService {
 			for (int i = 0; i < oldService.size(); i++) {
 				foundParam = false;
 				for (int n = 0; n < newService.getParameterList().size(); n++) {
-					if (newService.getParameterList().get(n).getId() == oldService.get(i).getId()) {
+					if (newService.getParameterList().get(n).getId().equals(oldService.get(i).getId())) {
 						foundParam = true;
 						break;
 					}
 				}
 				if (foundParam == false) {
 					MicroserviceParameter pd = oldService.get(i);
-					Session localSession = sessionFactory.openSession();
-					localSession.delete(pd);
-					localSession.flush();
-					localSession.clear();
+					getDataAccessService().deleteDomainObject(pd, null);
 				}
-
+			}
+			for (int i = 0; i < newService.getParameterList().size(); i++) {
+				MicroserviceParameter param = newService.getParameterList().get(i);
+				param.setServiceId(serviceId);
+				getDataAccessService().saveDomainObject(param, null);
 			}
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "updateMicroservice failed", e);

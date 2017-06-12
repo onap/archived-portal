@@ -621,7 +621,8 @@
 				select user_id, notification_id, is_for_online_users, is_for_all_roles, msg_header, msg_description,msg_source,start_Time, end_time, priority, created_date, creator_ID,active_YN
 				from
 				(
-				select a.*, b.role_id,b.recv_user_id 
+				select a.notification_ID,a.is_for_online_users,a.is_for_all_roles,a.active_YN,
+					a.msg_header,a.msg_description,a.msg_source,a.start_time,a.end_time,a.priority,a.creator_ID,a.created_date,b.role_id,b.recv_user_id 
 				from ep_notification a, ep_role_notification b
 				where a.notification_id = b.notification_id
 				and (end_time is null ||  SYSDATE() <= end_time )
@@ -639,7 +640,23 @@
 				)b
 				where
 				(
-				a.role_id = b.role_id||a.recv_user_id=:user_id
+				a.role_id = b.role_id
+				)
+				union
+				select :user_id, notification_id, is_for_online_users, is_for_all_roles, msg_header, msg_description,msg_source,start_Time, end_time, priority, created_date, creator_ID,active_YN
+				from
+				(
+				select a.notification_ID,a.is_for_online_users,a.is_for_all_roles,a.active_YN,
+					a.msg_header,a.msg_description,a.msg_source,a.start_time,a.end_time,a.priority,a.creator_ID,a.created_date, b.role_id,b.recv_user_id 
+				from ep_notification a, ep_role_notification b
+				where a.notification_id = b.notification_id
+				and (end_time is null ||  SYSDATE() <= end_time )
+				and (start_time is null ||  SYSDATE() >= start_time)
+				and a.is_for_all_roles = 'N'
+				) a
+				where
+				(
+				a.recv_user_id=:user_id
 				)
 				union
 				(
@@ -656,9 +673,9 @@
 				and
 					not exists
 				(
-				select * from ep_user_notification m where user_id = :user_id and m.notification_id = a.notification_id and is_viewed = 'Y'
+				select ID,User_ID,notification_ID,is_viewed,updated_time from ep_user_notification m where user_id = :user_id and m.notification_id = a.notification_id and is_viewed = 'Y'
 				)
-				order by priority desc, start_Time desc,created_date desc
+				order by priority desc, created_date desc,start_Time desc
 			
 			
 			 ) t,
@@ -682,7 +699,8 @@
 		<return alias="adminNotificationHistoryVOResult"
 			class="org.openecomp.portalapp.portal.transport.EpNotificationItemVO" /> 
 		<![CDATA[
-		SELECT 
+		SELECT * from (
+SELECT 
 			n.notification_ID AS notificationId, 
 			n.is_for_online_users AS isForOnlineUsers, 
 			n.is_for_all_roles AS isForAllRoles,
@@ -701,7 +719,33 @@
 		LEFT JOIN
 			fn_user u on u.user_id = n.creator_id 
 		WHERE
-			n.active_YN='Y' order by n.start_time desc
+			n.active_YN='Y' and msg_source='EP' 
+      
+      UNION
+      
+      SELECT 
+			n.notification_ID AS notificationId, 
+			n.is_for_online_users AS isForOnlineUsers, 
+			n.is_for_all_roles AS isForAllRoles,
+			n.active_YN AS activeYn,			
+			n.msg_header AS msgHeader, 
+			n.msg_description AS msgDescription, 
+			n.msg_source AS msgSource, 
+			n.start_Time AS startTime, 
+			n.end_time AS endTime, 
+			n.priority,
+			n.creator_ID AS creatorId,
+			n.created_date AS createdDate, 
+			u.org_user_id AS loginId
+		FROM 
+			ep_notification n 
+		LEFT JOIN
+			fn_user u on u.user_id = n.creator_id 
+    JOIN
+			ep_role_notification r on r.notification_ID=n.notification_ID 
+		WHERE
+			n.active_YN='Y' and r.recv_user_id = :user_id and msg_source!='EP'
+      )n order by n.startTime desc
 		]]>
 	</sql-query>
 
@@ -757,7 +801,9 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' order by app_name
 					creator_ID,active_YN
 				from
 				(
-					select a.*, b.role_id,CASE WHEN a.creator_ID IS NOT NULL THEN u.org_user_id
+					select a.notification_ID,a.is_for_online_users,a.is_for_all_roles,a.active_YN,
+					a.msg_header,a.msg_description,a.msg_source,a.start_time,a.end_time,a.priority,a.creator_ID,a.created_date, 
+					 b.role_id,CASE WHEN a.creator_ID IS NOT NULL THEN u.org_user_id
                    
                    ELSE NULL
               END  AS login_id,b.recv_user_id 
@@ -785,8 +831,38 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' order by app_name
 				) b
 				where
 				(
-				a.role_id = b.role_id||a.recv_user_id=:user_id
+				a.role_id = b.role_id
 				)
+				   UNION
+        		select 
+					:user_id, login_id,notification_id, is_for_online_users, is_for_all_roles, 
+					msg_header, msg_description,msg_source, start_Time, end_time, priority, created_date, 
+					creator_ID,active_YN
+				from
+				(
+					select a.notification_ID,a.is_for_online_users,a.is_for_all_roles,a.active_YN,
+					a.msg_header,a.msg_description,a.msg_source,a.start_time,a.end_time,a.priority,a.creator_ID,a.created_date, 
+					 b.role_id,CASE WHEN a.creator_ID IS NOT NULL THEN u.org_user_id
+                   
+                   ELSE NULL
+              END  AS login_id,b.recv_user_id 
+				from ep_notification a, ep_role_notification b,fn_user u
+				where a.notification_id = b.notification_id and  (u.user_id=a.creator_ID OR a.creator_ID IS NULL)
+				and a.is_for_all_roles = 'N'
+				and (
+				(start_time is null and end_time is null and a.created_date >= DATE_ADD(curdate(),INTERVAL-31 DAY))
+				or
+				(start_time is not null and end_time is null and start_time >= DATE_ADD(curdate(),INTERVAL  -31 DAY))
+				or
+				(start_time is null and end_time is not null and end_time >= DATE_ADD(curdate(),INTERVAL  -31 DAY))
+				or
+				(start_time is not null and end_time is not null and end_time >= DATE_ADD(curdate(),INTERVAL  -31 DAY))
+				)
+				) a
+		        where
+		        (
+		        a.recv_user_id=:user_id
+		        )
 				union
 				(
 				select 
@@ -973,6 +1049,20 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' order by app_name
 		]]>
 	</sql-query>
 
+	<sql-query name="getAppsAdmins">
+		<return alias="adminUserApp" class="org.openecomp.portalapp.portal.domain.AdminUserApp" />   
+	<![CDATA[
+    	SELECT apps.APP_NAME, apps.APP_ID, user.USER_ID, user.FIRST_NAME, user.LAST_NAME, user.org_user_id FROM fn_user_role userrole INNER JOIN fn_user user ON user.USER_ID = userrole.USER_ID INNER JOIN fn_app apps ON apps.APP_ID = userrole.APP_ID  WHERE user.active_yn='Y' AND userrole.ROLE_ID = :accountAdminRoleId AND (apps.ENABLED = 'Y' OR apps.APP_ID=1)      
+	]]>
+	</sql-query>
+	
+	<sql-query name="getPortalAdmins">
+		<return alias="portalAdmin" class="org.openecomp.portalapp.portal.transport.PortalAdmin" />   
+	<![CDATA[
+		SELECT u.user_id, u.first_name, u.last_name, u.login_id FROM fn_user u, fn_user_role ur WHERE u.active_yn = 'Y' AND u.user_id = ur.user_id AND ur.role_id= :adminRoleId
+	]]>
+	</sql-query>
+	
 	<!-- Gets personalized list of enabled and accessible apps for regular user -->
 	<sql-query name="getPersUserApps">
 		<return alias="persUserApps" class="org.openecomp.portalapp.portal.domain.EPApp" />
@@ -1322,7 +1412,7 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' order by app_name
 		<![CDATA[
 						select 
 				distinct  -- multiple roles yield multiple rows
-			    a.APP_ID as id, a.APP_NAME as name, a.APP_IMAGE_URL as imageUrl,
+			    a.APP_ID as id, a.APP_NAME as name, a.ML_APP_NAME as mlAppName, a.APP_IMAGE_URL as imageUrl,
 			    a.APP_DESCRIPTION as description, a.APP_NOTES as notes,
 			    a.APP_URL as url, a.APP_ALTERNATE_URL as alternateUrl,
 				IF(a.app_type = '2', TRUE, FALSE) as restricted,
@@ -1361,12 +1451,11 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' order by app_name
 		]]>
 	</sql-query>
 
-	<sql-query name="getAppDetails">
-		<return alias="appDetails" class="org.openecomp.portalapp.portal.domain.EPApp" />
+	<sql-query name="getMyloginAppDetails">
+		<return alias="myloginAppDetails" class="org.openecomp.portalapp.portal.domain.EPApp" />
 		
 		<![CDATA[ 
-				
-		SELECT * FROM fn_app  where app_name =:appName
+		SELECT * FROM fn_app  where ml_app_name =:appName
 		;		
 		]]>
 	</sql-query>
@@ -1374,7 +1463,6 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' order by app_name
 	
 	<sql-query name="deleteAccountEndpoint">
 		<![CDATA[ 
-				
 		DELETE FROM ep_endpoints_basic_auth_account WHERE account_id =:accountId
 		;		
 		]]>
@@ -1382,7 +1470,6 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' order by app_name
 	
 	<sql-query name="deleteAccountEndpointRecord">
 		<![CDATA[ 
-				
 		DELETE FROM ep_endpoints_basic_auth_account WHERE account_id =:accountId AND ep_id =:epId
 		;		
 		]]>
@@ -1390,7 +1477,6 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' order by app_name
 	
 	<sql-query name="deleteEPEndpoint">
 		<![CDATA[ 
-				
 		DELETE FROM ep_endpoints WHERE id =:epId
 		;		
 		]]>
@@ -1398,7 +1484,6 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' order by app_name
 	
 	<sql-query name="deleteBasicAuthAccount">
 		<![CDATA[ 
-				
 		DELETE FROM ep_basic_auth_account WHERE id =:accountId
 		;		
 		]]>
@@ -1408,12 +1493,20 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' order by app_name
 		<return alias="appRoles" class="org.openecomp.portalapp.portal.domain.EPRole" />
 		
 		<![CDATA[ 
-				
 		SELECT * FROM fn_role where role_name =:roleName and app_id =:appId
 		;		
 		]]>
 	</sql-query>
-
+	
+	<sql-query name="getPortalAppRoles">
+		<return alias="appRoles" class="org.openecomp.portalapp.portal.domain.EPRole" />
+		
+		<![CDATA[ 
+				
+		SELECT * FROM fn_role where role_name =:appRoleName and app_id is null
+		;		
+		]]>
+	</sql-query>
 
 	<sql-query name="deleteMicroserviceParameter">
 		<![CDATA[ 
@@ -1523,7 +1616,7 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' order by app_name
 		<![CDATA[
 			select 
 				distinct  -- multiple roles yield multiple rows
-			    a.APP_ID as id, a.APP_NAME as name, a.APP_IMAGE_URL as imageUrl,
+			    a.APP_ID as id, a.APP_NAME as name, a.ML_APP_NAME as mlAppName, a.APP_IMAGE_URL as imageUrl,
 			    a.APP_DESCRIPTION as description, a.APP_NOTES as notes,
 			    a.APP_URL as url, a.APP_ALTERNATE_URL as alternateUrl,
 				IF(a.app_type = '2', TRUE, FALSE) as restricted,
@@ -1540,6 +1633,8 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' order by app_name
                 case
 					-- regular app, user has a role, no personalization
 					when a.OPEN = 'N' and r.ROLE_ID is not null and p.STATUS_CD is null then TRUE
+					-- regular app, user has role, admin forced a personalization
+					when a.OPEN = 'N' and r.ROLE_ID is not null and p.STATUS_CD = 'S' then TRUE
 					-- regular app, user has no role, admin forced a personalization
 					when a.OPEN = 'N' and r.ROLE_ID is null and p.STATUS_CD = 'S' then TRUE
                     -- open app and has personalization
@@ -1590,6 +1685,31 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' order by app_name
           ;
  
  		]]>
+	</sql-query>
+     
+    <!--delete the records from ep_notification table when the endtime is more than 3 months-->
+	<sql-query name="deleteNotificationsFromEpNotificationTable">
+		
+		<![CDATA[
+		delete from ep_notification where  curdate() >= DATE_ADD(end_time,INTERVAL 3 MONTH)
+		]]>
+	</sql-query>
+
+
+	 	<!-- delete the records from ep_role_notification table when the endtime is more than 3 months -->
+	<sql-query name="deleteNotificationsFromEpRoleNotificationTable">
+		
+		<![CDATA[
+	delete from ep_role_notification where  notification_id in (select notification_id from ep_notification where  curdate() >= DATE_ADD(end_time,INTERVAL 3 MONTH))
+		]]>
+	</sql-query> 
+	
+	<!-- delete the records from ep_user_notification table when the endtime is more than 3 months-->
+	<sql-query name="deleteNotificationsFromEpUserNotificationTable">
+		
+		<![CDATA[
+	delete from ep_user_notification where  notification_id in (select notification_id from ep_notification where  curdate() >= DATE_ADD(end_time,INTERVAL 3 MONTH))
+		]]>
 	</sql-query>
 
 </hibernate-mapping>

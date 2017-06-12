@@ -20,6 +20,7 @@
 package org.openecomp.portalapp.portal.test.core;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -28,10 +29,9 @@ import java.util.ArrayList;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openecomp.portalapp.portal.domain.EPUser;
-import org.openecomp.portalapp.portal.test.core.MockEPUser;
-import org.openecomp.portalapp.portal.test.framework.ApplicationCommonContextTestSuite;
 import org.openecomp.portalapp.portal.transport.AppNameIdIsAdmin;
 import org.openecomp.portalapp.portal.transport.AppsListWithAdminRole;
+import org.openecomp.portalapp.test.framework.ApplicationCommonContextTestSuite;
 import org.openecomp.portalsdk.core.util.SystemProperties;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
@@ -43,7 +43,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * 
- * @author sk434m Use RestURLsTestSuite to test Rest API URL's
+ * Use RestURLsTestSuite to test Rest API URL's
  */
 public class RestURLsTestSuite extends ApplicationCommonContextTestSuite {
 
@@ -77,7 +77,6 @@ public class RestURLsTestSuite extends ApplicationCommonContextTestSuite {
 
 	@Test
 	public void getMenuItemsTest() throws Exception {
-
 		url = "/portalApi/functionalMenu";
 		requestBuilder(url);
 	}
@@ -90,21 +89,18 @@ public class RestURLsTestSuite extends ApplicationCommonContextTestSuite {
 
 	@Test
 	public void getUserAppsTestnew() throws Exception {
-
 		url = "/portalApi/userApps";
 		requestBuilder(url);
 	}
 
 	@Test
 	public void getPersUserAppsTest() throws Exception {
-
 		url = "/portalApi/persUserApps";
 		requestBuilder(url);
 	}
 
 	@Test
 	public void getAppCatalogTest() throws Exception {
-
 		url = "/portalApi/appCatalog";
 		requestBuilder(url);
 	}
@@ -326,4 +322,12 @@ public class RestURLsTestSuite extends ApplicationCommonContextTestSuite {
 		assertData(ra);
 	}
 
+	@Test
+	public void ticketEventControllerForExternalSystem() throws Exception {
+		String ticketEventJson = "{\"application\": \"cbus\",\"event\": {\"body\": {\"ticketStatePhrase\": \"We recently detected a problem with the equipment at your site. The event is in queue for immediate work.\", \"ivrNotificationFlag\": \"1\",\"expectedRestoreDate\": 0,\"bridgeTransport\": \"AOTS\",  \"reptRequestType\": 0,\"ticketNum\": \"000002000857405\",\"assetID\": \"CISCO_1921C1_ISR_G2\", \"eventDate\": 1490545134601,\"eventAbstract\": \"ospfIfConfigError trap received from Cisco_1921c1_ISR_G2 with arguments: ospfRouterId=Cisco_1921c1_ISR_G2; ospfIfIpAddress=1921c1_288266; ospfAddressLessIf=0; ospfPacketSrc=172.17.0.11; ospfConfigErrorType=2; ospfPacketType=1\",\"severity\": \"2 - Major\",\"ticketPriority\": \"3\",\"reportedCustomerImpact\": 0,\"testAutoIndicator\": 0,\"supportGroupName\": \"US-TEST-ORT\",\"lastModifiedDate\": \"1487687703\",\"messageGroup\": \"SNMP\",\"csi\": 0,\"mfabRestoredTime\": 0},\"header\": {\"timestamp\": \"2017-02-21T14:35:05.219+0000\",\"eventSource\": \"aotstm\",\"entityId\": \"000002000857405\",      \"sequenceNumber\": 2 },\"blinkMsgId\": \"f38c071e-1a47-4b55-9e72-1db830100a61\",\"sourceIP\": \"130.4.165.158\"},\"SubscriberInfo\": {\"UserList\": [\"hk8777\"] }}";
+		MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post("/auxapi/ticketevent")
+				.contentType(APPLICATION_JSON_UTF8).content(ticketEventJson);
+		ResultActions ra = getMockMvc().perform(requestBuilder);
+		assertTrue(ra.andReturn().getResponse().getContentType().contains("application/json"));
+	}
 }

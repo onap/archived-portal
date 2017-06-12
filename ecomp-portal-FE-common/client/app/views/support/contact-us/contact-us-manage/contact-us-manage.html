@@ -113,14 +113,16 @@
 						<div>
 							<div id="add-contact-us-field-appname"
 								class="add-contact-us-field">
-								<div id="mots-property-label" class="property-label">App
-									Name</div>
+								<div id="mots-property-label" class="property-label"><span ID="required" style="color: Red;"visible="false"> *</span>App	Name</div>
 								<select id="dropdown1" name="dropdown1" b2b-dropdown
 									placeholder-text="Select an App"
 									ng-model="newContactUs.app.value">
 									<option b2b-dropdown-list
 										option-repeat="d in contactUsAllAppList" value="{{d.value}}">{{d.title}}</option>
 								</select>
+								<div id="mots-property-label-required" ng-show="newContactUs.app.title==null || newContactUs.app.title=='' ">
+							<small class="mandatory-categories">App Name is Required</small>
+							</div>
 							</div>
 							<br>
 							<div id="add-contact-us-field-contactname"
@@ -152,7 +154,7 @@
 						</div>
 						<div style="height: 50px;">
 							<a style="float: right; margin-top: 20px"
-								class="btn btn-alt btn-small" ng-click="newContactUsFun()">Add
+								class="btn btn-alt btn-small" ng-click="newContactUsFun()" ng-disabled="newContactUs.app.title==null || newContactUs.app.title=='' ">Add
 								New</a>
 						</div>
 						<div id="divider-line-bottom"></div>
@@ -172,9 +174,8 @@
 </div>
 
 <script type="application/javascript">
-	
     $(document).ready(function(){
-        $(".ngdialog-content").css("width","85%")
+        $(".ngdialog-content").css("width","85%");
+        $(".ngdialog-close").attr('id','dialog-close');
     });
-
 </script>

@@ -111,8 +111,8 @@ public class PersUserAppServiceImpl implements PersUserAppService {
 				}
 
 				if (select) {
-					if (isPortalAdmin && !adminUserHasAppRole) {
-						// The special case: portal admin, no role
+					if (isPortalAdmin) {
+						// The special case: portal admin
 						persRow.setStatusCode("S"); // show
 						dataAccessService.saveDomainObject(persRow, null);
 					} else {

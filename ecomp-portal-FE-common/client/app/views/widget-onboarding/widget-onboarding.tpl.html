@@ -78,12 +78,14 @@
 									<tr>
 										<td b2b-table-body
 											ng-repeat="header in widgetOnboarding.widgetsTableHeaders"
+											id="widgets-catalog-widget-name-{{rowData.id}}-body"
 											ng-click="widgetOnboarding.openWidgetCatalogDetailsModal(rowData)">
 											<div id="widgets-catalog-widget-name-{{rowData.id}}"
 												ng-bind="rowData[header.value]"></div>
 										</td>
 
 										<td b2b-table-body
+											id="widget-catalog-widget-application-{{rowData.id}}-body"
 											ng-click="widgetOnboarding.openWidgetCatalogDetailsModal(rowData)">
 											<div ng-repeat="row in rowData.appContent">
 												<div id="widget-catalog-widget-application-{{rowData.id}}"
@@ -92,12 +94,12 @@
 										</td>
 
 										<td b2b-table-body>
-											<div class="icon-download"
+											<div id="widget-onboarding-div-download-widget-{{$index}}" class="icon-arrows-download"
 												ng-click="widgetOnboarding.downloadWidget(rowData)"></div>
 										</td>
 
 										<td b2b-table-body>
-											<div id="widget-onboarding-div-delete-widget-{{$index}}" class="delete-widget"
+											<div id="widget-onboarding-div-delete-widget-{{$index}}" class="icon-misc-trash"
 												ng-click="widgetOnboarding.deleteWidget(rowData)"></div>
 										</td>
 									</tr>

@@ -197,6 +197,21 @@
     width: 16px;
   }
   
+  .recommendations-count
+  {
+    .border-radius(50%);
+    background:#db3434;
+    color: @colorWhite;
+    font-size: 10px;
+    padding-top: 2px;
+    height: 16px;   
+    position: absolute;
+    right: -7px;
+    text-align: center;
+    top: -8px;
+    width: 16px;
+  }
+  
   .notification-header{
     border-bottom: 1px solid #b4b4b4;
     padding: 10px 40px 0px 40px;
@@ -291,7 +306,7 @@
       	.normal
       	{
         	.border-radius(50%);
-        	background: @colorPeterRiver;
+        	background: steelblue;
         	content: '';
         	height: 8px;
         	width: 8px;
@@ -324,7 +339,7 @@
       
       .button-dismiss
       {
-        color: @colorSilver;
+        color: black;
         font-size: 15px;
         
         &:hover,
@@ -399,12 +414,18 @@
 }
 
 .b2b-header-tabs .header__items{
-	width:90%;
+	width:98%;
 }
 
 .b2b-header-tabs .header-secondary, .b2b-header-tabs .header-tertiary{
 	width:100%;
 	
+}
+
+.b2b-header-tabs .header__item.profile{
+	margin-right:70px;
+	float:right;
+	position: static;
 }
 
 .third-level-menu{
@@ -426,10 +447,11 @@ column-count: 4;
 
 .b2b-header-tabs .third-level-menu li a {
     color: #333;
-    display: inline-grid;
+    display: inline-flex;
     padding: 7px 15px;
-    max-width: 228px;
     font-family:"Omnes-ECOMP-W02", Arial;
+    margin-top:5px;
+	margin-bottom:5px;
 }
 
 .b2b-header-tabs .third-level-menu li{
@@ -491,6 +513,24 @@ column-count: 4;
 	width:100%;
 }
 
-.display-userAppRoles-label span{
+.display-userAppRoles-label{
 	font-family:"Omnes-ECOMP-W02", Arial;
+	white-space:nowrap;
+}
+
+.profile-detail-extension{
+	display:inline-block;
+}
+
+.logout-btn-div{
+	display:inline-block;
+	padding-top: 8px;
+	
+}
+
+.onap-title-logo{
+    position: relative;
+    top: 7px;
+	width: 126.8px;
+    height: 28px;
 }

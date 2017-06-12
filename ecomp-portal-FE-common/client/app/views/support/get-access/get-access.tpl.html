@@ -50,7 +50,7 @@
 								</tr>
 							</thead>
 							<tbody b2b-table-row type="body"
-								row-repeat="rowData in access.appTable | limitTo:access.viewPerPage:access.startIndex | orderBy:'ecomp_function'"  track-by="$index">
+								row-repeat="rowData in access.appTable | filter:access.searchString | limitTo:access.viewPerPage:access.startIndex | orderBy:'ecomp_function'"  track-by="$index">
 								<tr id="tr-rowData" ng-click="openAppRoleModal(rowData)">
 									<td b2b-table-body>
 										<div id="access-page-function"
@@ -72,7 +72,7 @@
 									<td b2b-table-body>
 										<div id="access-page-currentRole"
 											ng-if="rowData.current_role === 'Y'">
-											<i class="icon-included-checkmark"></i>
+											<i class="icon-controls-check"></i>
 										</div>
 									</td>
 									<td b2b-table-body>
