@@ -84,5 +84,14 @@ cat dbca-create-mysql-1707-os.sql ../../dbca-common/db-scripts/dbca-ddl-mysql-17
 # install into docker
 cd $CURRENTDIR
 
-echo "running: docker build -t ${IMGNAME}  --build-arg VERSION=${VERSION} --build-arg PORTAL_SDK_DIR=${PORTAL_SDK_DIR}  --build-arg SDK_DIR=${SDK_DIR} --build-arg FE_DIR=${FE_DIR}  --build-arg PORTAL_DBC_DIR=${PORTAL_DBC_DIR} -f ./os_Dockerfile ."
-docker build -t ${IMGNAME}  --build-arg VERSION=${VERSION} --build-arg PORTAL_SDK_DIR=${PORTAL_SDK_DIR}  --build-arg SDK_DIR=${SDK_DIR} --build-arg FE_DIR=${FE_DIR}  --build-arg PORTAL_DBC_DIR=${PORTAL_DBC_DIR} -f ./os_Dockerfile .
+PROXY_ARGS=""
+if [ $HTTP_PROXY ]; then
+    PROXY_ARGS+="--build-arg HTTP_PROXY=${HTTP_PROXY}"
+fi
+if [ $HTTPS_PROXY ]; then
+    PROXY_ARGS+=" --build-arg HTTPS_PROXY=${HTTPS_PROXY}"
+fi
+
+EXEC_CMD="docker build -t ${IMGNAME} ${PROXY_ARGS} --build-arg VERSION=${VERSION} --build-arg PORTAL_SDK_DIR=${PORTAL_SDK_DIR}  --build-arg SDK_DIR=${SDK_DIR} --build-arg FE_DIR=${FE_DIR}  --build-arg PORTAL_DBC_DIR=${PORTAL_DBC_DIR} -f ./os_Dockerfile ."
+echo $EXEC_CMD
+$EXEC_CMD
