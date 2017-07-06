@@ -1,3 +1,5 @@
+#!/bin/bash
+
 IMGNAME=ep:1610-1
 VERSION=1.1.0-SNAPSHOT
 ETCDIR=etc
