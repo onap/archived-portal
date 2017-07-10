@@ -189,9 +189,16 @@
 	        		}
 	        		var a = document.createElement('a');
 	        		var blob = new Blob([data], {type: 'application/octet-stream'});
-	        		a.href = URL.createObjectURL(blob);
+	        		var url = window.URL.createObjectURL(blob);
+	        		a.href = url;
 	        		a.download = filename;
+	        		document.body.appendChild(a);
 	        		a.click();
+	        		
+	        		setTimeout(function(){
+	        	        document.body.removeChild(a);
+	        	        window.URL.revokeObjectURL(url);  
+	        	    }, 100);  
 	        	});
             };
             

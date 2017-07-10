@@ -58,18 +58,8 @@
 								                </label> 
 								                <i ng-show="item.pending" class="icon-tickets-contested"></i>							                      								                
 									</div>
-								</div>
-								<div class="gridster-box-content"
-									ng-style="{'cursor':'pointer',
-										'background-image': 'url('+(item.imageLink)+')',
-										'order': item.order, 
-										'background-color':'white',
-										'background-repeat': 'no-repeat',
-										'background-size': '170px 130px'}"
-									ng-click="catalog.openAddRoleModal(item)"
-									ng-hide="users.isLoadingTable && !users.getAppCatalogIsDone"
-									>
-								</div>
+								</div>								
+								<div ng-include src="'app/views/catalog/get-accessswitch.html'"></div>
 							</div>
 						</li>
 					</ul>

@@ -195,7 +195,7 @@
 
             return deferred.promise;
         }
-        
+ 
     }
     UserProfileService.$inject = ['$q', '$log', '$http', 'conf', 'uuid4', 'utilsService'];
     angular.module('ecompApp').service('userProfileService', UserProfileService)

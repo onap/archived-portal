@@ -1,0 +1,10 @@
+<div class="gridster-box-content"
+	ng-style="{'cursor':'pointer',
+			'background-image': 'url('+(item.imageLink)+')',
+			'order': item.order, 
+			'background-color':'white',
+			'background-repeat': 'no-repeat',
+			'background-size': '170px 130px'}"
+	ng-click="catalog.getAccess(item)"
+	ng-hide="users.isLoadingTable && !users.getAppCatalogIsDone">
+</div>

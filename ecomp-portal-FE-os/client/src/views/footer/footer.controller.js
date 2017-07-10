@@ -20,18 +20,24 @@
 'use strict';
 (function () {
     class FooterCtrl {
-        constructor($scope, $rootScope, manifestService, $log) {
+        constructor($scope, $rootScope, manifestService, $log, menusService) {
             this.manifestService = manifestService;
             this.$log = $log;
             this.$scope = $scope;
             this.$rootScope = $rootScope;
-
             $scope.buildinfo = null;
 
             $rootScope.showFooter = true;
             $scope.date = new Date();
-
-                   
+            $scope.ecompTitle='';
+           
+        	menusService.getEcompPortalTitle()
+        	.then(title=> {
+        		$scope.ecompTitle = title.response;
+        	}).catch(err=> {
+        		$log.error('FooterCtrl.getEcompPortalTitle:: Error retrieving ECMOP portal title: ' + err);
+        	});
+     
             manifestService.getManifest().then( jsonObj => {
                 // $log.debug('FooterCtrl.getManifest: ', JSON.stringify(jsonObj));
                 $scope.buildInfo = jsonObj;
@@ -43,6 +49,6 @@
 
         }
 
-    FooterCtrl.$inject = ['$scope', '$rootScope', 'manifestService', '$log'];
+    FooterCtrl.$inject = ['$scope', '$rootScope', 'manifestService', '$log', 'menusService'];
     angular.module('ecompApp').controller('FooterCtrl', FooterCtrl);
 })();

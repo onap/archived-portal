@@ -5,10 +5,10 @@ SET FOREIGN_KEY_CHECKS=1;
   
 
 INSERT INTO `fn_app` (`app_id`, `app_name`, `app_image_url`, `app_description`, `app_notes`, `app_url`, `app_alternate_url`, `app_rest_endpoint`, `ml_app_name`, `ml_app_admin_id`, `mots_id`, `app_password`, `open`, `enabled`, `thumbnail`, `app_username`, `ueb_key`, `ueb_secret`, `ueb_topic_name`, `app_type`) VALUES 
-(2, 'xDemo App', 'images/cache/portal-222865671_37476.png', NULL, NULL, 'http://portal.api.simpledemo.openecomp.org:8989/ECOMPSDKAPP/welcome.htm', NULL, 'http://portal.api.simpledemo.openecomp.org:8989/ECOMPSDKAPP/api', '', '', NULL, 'okYTaDrhzibcbGVq5mjkVQ==', 'N', 'Y', NULL, 'Default', 'ueb_key', 'ueb_secret', 'ECOMP-PORTAL-OUTBOX', 1),
-(3, 'DMaaP Bus Ctrl', 'images/cache/portal944583064_80711.png', NULL, NULL, 'http://portal.api.simpledemo.openecomp.org:8989/ECOMPDBCAPP/dbc#/dmaap', NULL, 'http://portal.api.simpledemo.openecomp.org:8989/ECOMPDBCAPP/api', '', '', NULL, 'okYTaDrhzibcbGVq5mjkVQ==', 'N', 'Y', NULL, 'Default', 'ueb_key', 'ueb_secret', 'ECOMP-PORTAL-OUTBOX', 1),
-(4, 'SDC', 'images/cache/portal956868231_53879.png', NULL, NULL, 'http://sdc.api.simpledemo.openecomp.org:8181/sdc1/portal', NULL, 'http://sdc.api.simpledemo.openecomp.org:8080/api/', '', '', NULL, '78ot0W94rpB0o4FYzVoIOg==', 'N', 'Y', NULL, 'Default', 'ueb_key', 'ueb_secret', 'ECOMP-PORTAL-OUTBOX', 1), 
-(5, 'Policy', 'images/cache/portal1470452815_67021.png', NULL, NULL, 'http://policy.api.simpledemo.openecomp.org:8443/ecomp/policy#/Editor', NULL, 'http://policy.api.simpledemo.openecomp.org:8443/ecomp/api', '', '', NULL, 'okYTaDrhzibcbGVq5mjkVQ==', 'N', 'Y', NULL, 'Default', 'ueb_key', 'ueb_secret', 'ECOMP-PORTAL-OUTBOX', 1),
+(2, 'xDemo App', 'images/cache/portal-222865671_37476.png', NULL, NULL, 'http://portal.api.simpledemo.openecomp.org:8989/ECOMPSDKAPP/welcome.htm', NULL, 'http://portal.api.simpledemo.openecomp.org:8989/ECOMPSDKAPP/api/v2', '', '', NULL, 'okYTaDrhzibcbGVq5mjkVQ==', 'N', 'Y', NULL, 'Default', 'ueb_key', 'ueb_secret', 'ECOMP-PORTAL-OUTBOX', 1),
+(3, 'DMaaP Bus Ctrl', 'images/cache/portal944583064_80711.png', NULL, NULL, 'http://portal.api.simpledemo.openecomp.org:8989/ECOMPDBCAPP/dbc#/dmaap', NULL, 'http://portal.api.simpledemo.openecomp.org:8989/ECOMPDBCAPP/api/v2', '', '', NULL, 'okYTaDrhzibcbGVq5mjkVQ==', 'N', 'Y', NULL, 'Default', 'ueb_key', 'ueb_secret', 'ECOMP-PORTAL-OUTBOX', 1),
+(4, 'SDC', 'images/cache/portal956868231_53879.png', NULL, NULL, 'http://sdc.api.simpledemo.openecomp.org:8181/sdc1/portal', NULL, 'http://sdc.api.simpledemo.openecomp.org:8080/api/v2', '', '', NULL, '78ot0W94rpB0o4FYzVoIOg==', 'N', 'Y', NULL, 'Default', 'ueb_key', 'ueb_secret', 'ECOMP-PORTAL-OUTBOX', 1), 
+(5, 'Policy', 'images/cache/portal1470452815_67021.png', NULL, NULL, 'http://policy.api.simpledemo.openecomp.org:8443/ecomp/policy#/Editor', NULL, 'http://policy.api.simpledemo.openecomp.org:8443/ecomp/api/v2', '', '', NULL, 'okYTaDrhzibcbGVq5mjkVQ==', 'N', 'Y', NULL, 'Default', 'ueb_key', 'ueb_secret', 'ECOMP-PORTAL-OUTBOX', 1),
 (6, 'Virtual Infrastructure Deployment', 'images/cache/portal-345993588_92550.png', NULL, NULL, 'http://vid.api.simpledemo.openecomp.org:8080/vid/welcome.htm', NULL, 'http://vid.api.simpledemo.openecomp.org:8080/vid/api/v2', '', '', NULL, 'okYTaDrhzibcbGVq5mjkVQ==', 'N', 'Y', NULL, 'Default', 'ueb_key', 'ueb_secret', 'ECOMP-PORTAL-OUTBOX', 1),
 (7, 'A&AI UI', 'images/cache/portal-345993588_92550.png', NULL, NULL, 'http://aai.ui.simpledemo.openecomp.org:9517/services/aai/webapp/index.html#/viewInspect', NULL, 'http://aai.ui.simpledemo.openecomp.org:9517/api/v2', '', '', NULL, 'okYTaDrhzibcbGVq5mjkVQ==', 'N', 'Y', NULL, 'Default', 'ueb_key', 'ueb_secret', 'ECOMP-PORTAL-OUTBOX', 1);
 
@@ -345,4 +345,14 @@ select * from fn_role where app_id = (select app_id from fn_app where app_name =
 ) b 
 );
 -- end new
+INSERT INTO `fn_common_widget_data` (`id`,`CATEGORY`,`HREF`,`TITLE`,`content`,`event_date`,`SORT_ORDER`) VALUES (6,'NEWS','http://about.att.com/innovationblog/next_att_labs','What\s Next at AT&T Labs? AI Set to Revolutionize the Network',NULL,NULL,10);
+INSERT INTO `fn_common_widget_data` (`id`,`CATEGORY`,`HREF`,`TITLE`,`content`,`event_date`,`SORT_ORDER`) VALUES (7,'NEWS','http://about.att.com/innovationblog/ecomp_code','Code, Community and Commitment – the 3 Cs of Open Source',NULL,NULL,20);
+INSERT INTO `fn_common_widget_data` (`id`,`CATEGORY`,`HREF`,`TITLE`,`content`,`event_date`,`SORT_ORDER`) VALUES (8,'NEWS','http://about.att.com/story/orange_testing_att_open_source_ecomp_platform.html','Orange Testing AT&Ts Open Source ECOMP Platform for Building Software-Defined Network Capabilities',NULL,NULL,30);
+INSERT INTO `fn_common_widget_data` (`id`,`CATEGORY`,`HREF`,`TITLE`,`content`,`event_date`,`SORT_ORDER`) VALUES (9,'NEWS', 'http://about.att.com/innovationblog/linux_foundation','Opening up ECOMP: Our Network Operating System for SDN',NULL,NULL,40);
+INSERT INTO `fn_common_widget_data` (`id`,`CATEGORY`,`HREF`,`TITLE`,`content`,`event_date`,`SORT_ORDER`) VALUES (10,'EVENTS',NULL,'OpenECOMP Launches into Open Source',NULL,'2017-02-14',1);
+INSERT INTO `fn_common_widget_data` (`id`,`CATEGORY`,`HREF`,`TITLE`,`content`,`event_date`,`SORT_ORDER`) VALUES (11,'IMPORTANTRESOURCES','http://about.att.com/content/dam/snrdocs/ecomp.pdf','ECOMP White Paper',NULL,NULL,1);
+INSERT INTO `fn_common_widget_data` (`id`,`CATEGORY`,`HREF`,`TITLE`,`content`,`event_date`,`SORT_ORDER`) VALUES (12,'IMPORTANTRESOURCES','https://wiki.onap.org/','ONAP Wiki',NULL,NULL,2);
+INSERT INTO `fn_common_widget_data` (`id`,`CATEGORY`,`HREF`,`TITLE`,`content`,`event_date`,`SORT_ORDER`) VALUES (13,'IMPORTANTRESOURCES','https://wiki.onap.org/display/DW/Portal','ONAP Wiki, Portal',NULL,NULL,3);
+INSERT INTO `fn_common_widget_data` (`id`,`CATEGORY`,`HREF`,`TITLE`,`content`,`event_date`,`SORT_ORDER`) VALUES (14,'IMPORTANTRESOURCES','https://wiki.onap.org/display/DW/Development+Guides','ONAP User Guide',NULL,NULL,4);
+
 commit;

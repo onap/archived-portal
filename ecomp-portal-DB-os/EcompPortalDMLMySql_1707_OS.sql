@@ -17,16 +17,9 @@ Insert into fn_user_role (USER_ID,ROLE_ID,PRIORITY,APP_ID) values (1,1,NULL,1);
 Insert into fn_user_role (USER_ID,ROLE_ID,PRIORITY,APP_ID) values (1,950,NULL,1);
 Insert into fn_user_role (USER_ID,ROLE_ID,PRIORITY,APP_ID) values (1,999,NULL,1);
 
-
-INSERT INTO fn_common_widget_data (id,CATEGORY,HREF,TITLE,content,event_date,SORT_ORDER) values (6,'NEWS','http://about.att.com/innovationblog/next_att_labs','What\s Next at AT&T Labs? AI Set to Revolutionize the Network',NULL,NULL,10);
-INSERT INTO fn_common_widget_data (id,CATEGORY,HREF,TITLE,content,event_date,SORT_ORDER) values (7,'NEWS','http://about.att.com/innovationblog/ecomp_code','Code, Community and Commitment - the 3 Cs of Open Source',NULL,NULL,20);
-INSERT INTO fn_common_widget_data (id,CATEGORY,HREF,TITLE,content,event_date,SORT_ORDER) values (8,'NEWS','http://about.att.com/story/orange_testing_att_open_source_ecomp_platform.html','Orange Testing AT&Ts Open Source ECOMP Platform for Building Software-Defined Network Capabilities',NULL,NULL,30);
-INSERT INTO fn_common_widget_data (id,CATEGORY,HREF,TITLE,content,event_date,SORT_ORDER) values (9,'NEWS', 'http://about.att.com/innovationblog/linux_foundation','Opening up ECOMP: Our Network Operating System for SDN',NULL,NULL,40);
-INSERT INTO fn_common_widget_data (id,CATEGORY,HREF,TITLE,content,event_date,SORT_ORDER) values (10,'EVENTS',NULL,'OpenECOMP Launches into Open Source',NULL,'2017-02-14',1);
-INSERT INTO fn_common_widget_data (id,CATEGORY,HREF,TITLE,content,event_date,SORT_ORDER) values (11,'IMPORTANTRESOURCES','http://about.att.com/content/dam/snrdocs/ecomp.pdf','ECOMP White Paper',NULL,NULL,1);
-INSERT INTO fn_common_widget_data (id,CATEGORY,HREF,TITLE,content,event_date,SORT_ORDER) values (12,'IMPORTANTRESOURCES','https://openecomp.atlassian.net/wiki/display/DW/Developer+Wiki+for+OpenECOMP','OpenECOMP Wiki',NULL,NULL,2);
-INSERT INTO fn_common_widget_data (id,CATEGORY,HREF,TITLE,content,event_date,SORT_ORDER) values (13,'IMPORTANTRESOURCES','https://openecomp.atlassian.net/wiki/display/DW/Portal+and+Dashboard','OpenECOMP Wiki, Portal',NULL,NULL,3);
-INSERT INTO fn_common_widget_data (id,CATEGORY,HREF,TITLE,content,event_date,SORT_ORDER) values (14,'IMPORTANTRESOURCES','https://openecomp.atlassian.net/wiki/display/DW/Portal+and+Dashboard','OpenECOMP User Guide',NULL,NULL,4);
+-- change to inactive for following menu
+update fn_menu set active_yn='N' where menu_id=14; /* web analytics */
+update fn_menu set active_yn='N' where menu_id=16; /* web analytics onboarding*/
 
 INSERT INTO cr_report 
 	(rep_id, title, descr, public_yn, report_xml, create_id, create_date, maint_id, maint_date, menu_id, menu_approved_yn, owner_id, folder_id, dashboard_type_yn, dashboard_yn) 

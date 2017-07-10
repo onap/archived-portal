@@ -50,12 +50,11 @@
 								</tr>
 							</thead>
 							<tbody b2b-table-row type="body"
-								row-repeat="rowData in access.appTable | filter:access.searchString | limitTo:access.viewPerPage:access.startIndex | orderBy:'ecomp_function'"  track-by="$index">
+								row-repeat="rowData in access.appTable | filter:access.searchString | startFrom:(access.currentPage-1)*access.viewPerPage | limitTo:access.viewPerPage | orderBy:'ecomp_function'"  track-by="$index">
 								<tr id="tr-rowData" ng-click="openAppRoleModal(rowData)">
 									<td b2b-table-body>
 										<div id="access-page-function"
 											ng-if="rowData.ecomp_function !== 'Ecomp Function Not Available'"
-											ng-show="$index == 0 || access.appTable[$index-1].ecomp_function != rowData.ecomp_function"
 											ng-bind="rowData.ecomp_function"></div>
 										<div id="access-page-function"
 											ng-if="rowData.ecomp_function === 'Ecomp Function Not Available'"
@@ -63,7 +62,6 @@
 									</td>
 									<td b2b-table-body>
 										<div id="access-page-appName"
-											ng-show="$index == 0 || access.appTable[$index-1].app_name != rowData.app_name"
 											ng-bind="rowData.app_name"></div>
 									</td>
 									<td b2b-table-body>

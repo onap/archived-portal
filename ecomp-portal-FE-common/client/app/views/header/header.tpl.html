@@ -267,63 +267,10 @@
 		            </b2b-flyout-content>
 		        </b2b-flyout>
             </li>
-            
-                             <!-- Recommendation Bulb -->
-            
-               <li class="header__item recommendation" aria-haspopup="true" class="recommendation-li">
-            	<b2b-flyout>
-            		<div b2b-flyout-toggler class="recommendation-div">
-	            		<div class="recommendations-count" ng-hide="recommendationCount.count==0" ng-bind="recommendationCount.count"></div>      	
-<div  class="icon-misc-bulbL megamenu-recommendation-overrides" id="recommendation-bulb" tabindex="0" b2b-accessibility-click="13,32" aria-label="recommendation" aria-haspopup="true" aria-expanded="{{flyoutOpened}}" style="font-size: 22px;"role="button"></div>		            </div>
-		            <b2b-flyout-content horizontal-placement="center" vertical-placement="below">
-						<div class="recommendation-content" ng-controller="recommendationCtrl" >
-							<div class="ng-scope">
-								<div id="recommendation" class="notificationBox ">
-									<!-- <div align ="right">
-					 					 <a ui-sref="root.recommendationsHistory" style="font-size: 14px"> View All Recent Notifications </a>
-									</div> -->
-									<div class="notification-header">
-										<div style="float:left;">
-											<p class="notification-heading">Recommendations</p>
-										</div>
-										<div style="clear:both;"></div>
-									</div>
-									<div ng-show="recommendations.length==0">
-										<div class="notification-main">
-											<div style="height:113px;">
-												<div align="center" class="icon-information notification-info-icon"></div>
-											</div>
-										<div>
-										<p class="notification-text">No New Recommendations</p>
-									</div>
-									
-								</div>
-							</div>
-							<div class="notification-main" ng-show="recommendations.length>0">
-								<ul class="notifications-list">
-									<li class="item" data-id="5" ng-repeat="item in recommendations">
-									<div class="icon">
-											<span class="normal" ng-show="item.recommendation"/>
-										</div>
-										<div class="details">
-																			
-										<span class="message-body" ng-bind="item.recommendation"></span>
-											
-											
-										</div>
- 										<button type="button" ng-click="deleteRecommendation($index)" class="button-default button-dismiss js-dismiss">x</button>
- 									</li>
-								</ul>
-							</div>
-							<div class="notification-footer">
-								<div class="notification-links">
-									<div style="clear:both;"></div>
-								</div>
-							</div>
-						</div>					
-		            </b2b-flyout-content>
-		        </b2b-flyout>
-            </li>
+            <li class="header__item recommendation" aria-haspopup="true"
+							class="recommendation-li">
+            <div ng-include class="recommendation-detail-extension" src="'app/views/headerRecommendation/headerRecommendations.tpl.html'"></div> 
+            </li>            
             </div>
         </ul>
 	</header>

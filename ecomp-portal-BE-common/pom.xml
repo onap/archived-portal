@@ -5,14 +5,14 @@
 	<artifactId>ecompportal-be-common</artifactId>
 	<packaging>war</packaging>
 	<!-- Version number is managed manually; no Jenkins build.number -->
-	<version>1.1.0-SNAPSHOT</version>
+	<version>1.1.0</version>
 
 	<properties>
 		<springframework.version>4.2.0.RELEASE</springframework.version>
 		<hibernate.version>4.3.11.Final</hibernate.version>
 		<eelf.version>1.0.0</eelf.version>
 		<fasterxml.version>2.7.4</fasterxml.version>
-		<epsdk.version>1.1.0-SNAPSHOT</epsdk.version>
+		<epsdk.version>1.1.0</epsdk.version>
 		<encoding>UTF-8</encoding>
 		<!-- Tests usually require some setup that maven cannot do, so skip. -->
 		<skipTests>true</skipTests>
@@ -365,13 +365,6 @@
 			<groupId>postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 			<version>9.1-901-1.jdbc4</version>
-		</dependency>
-
-		<!-- Use Mariadb connector/j for failover -->
-		<dependency>
-			<groupId>org.mariadb.jdbc</groupId>
-			<artifactId>mariadb-java-client</artifactId>
-			<version>1.5.8</version>
 		</dependency>
 
 		<!-- Elastic Search -->

@@ -20,36 +20,42 @@
 'use strict';
 (function () {
     class GetAccessCtrl {
-        constructor($log, $scope,  $stateParams, getAccessService, userProfileService, ExternalRequestAccessService, applicationsService, ngDialog) {
+        constructor($log, $scope,  $stateParams, filterFilter, getAccessService, userProfileService, ExternalRequestAccessService, applicationsService, ngDialog) {
         	// $log.debug('GetAccessCtrl: appService param is: ' + applicationsService.goGetAccessAppName);
         	var resultAccessValue = null;
-        	var externalRequest = true;
-        	
+       	
         	$scope.openAppRoleModal = (itemData) => {    	
         		if(resultAccessValue){
         		let data = null;
                     data = {
                         dialogState: 2,
                         selectedUser:{
-                            attuid: $scope.attuid,
+                            orgUserId: $scope.orgUserId,
                             firstName: $scope.firstName,
                             lastName: $scope.lastName,
                             headerText: itemData.app_name,
-                            extReqValue : externalRequest
                         }
                     }
                 ngDialog.open({
-                    templateUrl: 'app/views/catalog/add-catalog-dialogs/new-catalog.modal.html',
-                    controller: 'NewCatalogModalCtrl',
+                    templateUrl: 'app/views/catalog/request-access-catalog-dialogs/request-access-catalog.modal.html',
+                    controller: 'ExternalRequestAccessCtrl',
                     controllerAs: 'userInfo',
                     data: data
                 });
         		}
             }
         	
+            $scope.$watch('access.searchString', function (searchKey) {
+                var search = searchKey;               
+                this.totalPage = filterFilter($scope.access.appTable, search);
+                var resultLen = this.totalPage.length;
+                $scope.access.totalPage = Math.ceil(resultLen/$scope.access.viewPerPage);
+                $scope.access.currentPage = 1;
+            });
+        	
             userProfileService.getUserProfile().then(
         			function(profile) {
-        				$scope.attuid = profile.orgUserId;
+        				$scope.orgUserId = profile.orgUserId;
         				$scope.firstName = profile.firstName;
         				$scope.lastName = profile.lastName;
         	  });
@@ -120,6 +126,6 @@
             init();
         }
     }
-    GetAccessCtrl.$inject = ['$log', '$scope', '$stateParams', 'getAccessService', 'userProfileService', 'ExternalRequestAccessService','applicationsService', 'ngDialog'];
+    GetAccessCtrl.$inject = ['$log', '$scope', '$stateParams', 'filterFilter', 'getAccessService', 'userProfileService', 'ExternalRequestAccessService','applicationsService', 'ngDialog'];
     angular.module('ecompApp').controller('GetAccessCtrl', GetAccessCtrl);
 })();

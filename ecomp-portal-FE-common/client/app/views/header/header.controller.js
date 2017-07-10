@@ -20,7 +20,7 @@
 'use strict';
 (function () {
 	class HeaderCtrl {
-        constructor($log, $window, userProfileService, menusService, $scope, ECOMP_URL_REGEX, $cookies, $state,auditLogService,notificationService,recommendationService,ngDialog) {
+        constructor($log, $window, userProfileService, menusService, $scope, ECOMP_URL_REGEX, $cookies, $state,auditLogService,notificationService,ngDialog) {
             this.firstName = '';
             this.lastName = '';
             this.$log = $log;
@@ -33,7 +33,6 @@
             $scope.emptyFavorites = false;
             $scope.favoritesWindow = false;
             $scope.notificationCount=0;
-            $scope.recommendationCount=0;
             $scope.showNotification = true;
 
             $scope.hideMenus = false;
@@ -47,7 +46,6 @@
             };
             $scope.megaMenuDataObject =[];
             $scope.notificationCount= notificationService.notificationCount;
-            $scope.recommendationCount= recommendationService.recommendationCount;
             this.isLoading = true;
             this.ECOMP_URL_REGEX = ECOMP_URL_REGEX;
             
@@ -474,85 +472,10 @@
     	}
     }
     
-    class RecommendationCtrl{
-    	constructor($log, $scope, $cookies, $timeout, sessionService,recommendationService,notificationService,$interval,ngDialog) {
-    		 $scope.recommendations=[];   
-    		 var intervalPromise = null;
-             $scope.recommendationCount=  recommendationService.recommendationCount;
-             console.log("$",$);
-            $scope.getRecommendations = function(){ 
-            	$("#recommendation-bulb").removeClass('icon-misc-bulbL').addClass('icon-misc-bulb')
-            	 recommendationService.getRecommendations()
-            	 
-                 .then(res=> {
-                	 	$("#recommendation-bulb").removeClass('icon-misc-bulb').addClass('icon-misc-bulbL')
-                	recommendationService.decrementRefreshCount();
-                	var count = recommendationService.getRefreshCount();
-                 	if ( res.data==null) {
-                 		$log.error('RecommendationCtrl::update Recommendation: failed to get recommendation');
-                 		if (intervalPromise != null)
-                 			$interval.cancel(intervalPromise);
-                 	} else if(count>=0){
-                 		if (intervalPromise != null)
-                 			$interval.cancel(intervalPromise);
-                 	} else {
-                 		$scope.recommendations = [];
-                 		recommendationService.setRecommendationCount(res.data.recommendations.length);
-                 		for(var i=0;i<res.data.recommendations.length;i++){
-                 			var data = res.data.recommendations[i];                			
-			            	var recommendations ={
-			            				            			
-			            			recommendation:data
-			            	};
-			            	$scope.recommendations.push(recommendations);       
-			             }  
-                 	}   	
-                 }).catch(err=> {
-                 	$log.error('RecommendationCtrl::gatRecommendations: caught exception: ' + err);
-                 	if (intervalPromise != null)
-                 		$interval.cancel(intervalPromise);
-                 });      
-             }
-             $scope.getRecommendations();
-             
-             function updateRecommendations() {
-            	 $scope.getRecommendations();
-             }
-             
-             notificationService.getNotificationRate().then(res=> {
-              	if (res == null || res.response == null) {
-              		$log.error('NotificationCtrl: failed to notification update rate or duration, check system.properties file.');
-              	} else {
-              		var rate = parseInt(res.response.updateRate);
-  					var duration = parseInt(res.response.updateDuration);
-  					notificationService.setMaxRefreshCount(parseInt(duration/rate)+1);
-  					notificationService.setRefreshCount(notificationService.maxCount);
-             			if (rate != NaN && duration != NaN) {
-  						$scope.updateRate=rate;
-  			            setInterval(function(){$scope.getRecommendations();},rate);
-
-             			}            			
-              	}
-              }).catch(err=> {
-              	$log.error('NotificationCtrl: getNotificationRate() failed: ' + err);
-              });             
-             $scope.deleteRecommendation = function(index){
-            	 if ($scope.recommendations[index] == null || $scope.recommendations[index] == '') {
-             		$log.error('RecommendationCtrl: failed to delete Recommendation.');
-             		return;
-            	 }
-            	 $scope.recommendations.splice(index,1);
-            	 recommendationService.setRecommendationCount($scope.recommendations.length);     	 
-             }
-    	}
-    }
     NotificationCtrl.$inject = ['$log', '$scope', '$cookies', '$timeout', 'sessionService','notificationService','$interval','ngDialog'];
-    RecommendationCtrl.$inject = ['$log', '$scope', '$cookies', '$timeout', 'sessionService','recommendationService','notificationService','$interval','ngDialog'];
     LoginSnippetCtrl.$inject = ['$log', '$scope', '$cookies', '$timeout','userProfileService', 'sessionService'];
-    HeaderCtrl.$inject = ['$log', '$window', 'userProfileService', 'menusService', '$scope', 'ECOMP_URL_REGEX','$cookies','$state','auditLogService','notificationService','recommendationService','ngDialog'];
+    HeaderCtrl.$inject = ['$log', '$window', 'userProfileService', 'menusService', '$scope', 'ECOMP_URL_REGEX','$cookies','$state','auditLogService','notificationService','ngDialog'];
     angular.module('ecompApp').controller('HeaderCtrl', HeaderCtrl);
     angular.module('ecompApp').controller('loginSnippetCtrl', LoginSnippetCtrl);
     angular.module('ecompApp').controller('notificationCtrl', NotificationCtrl);
-    angular.module('ecompApp').controller('recommendationCtrl', RecommendationCtrl);
-
 })();

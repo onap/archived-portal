@@ -11,11 +11,13 @@
 		<springframework.version>4.2.0.RELEASE</springframework.version>
 		<hibernate.version>4.3.11.Final</hibernate.version>
 		<eelf.version>1.0.0</eelf.version>
-		<epsdk.version>1.1.0-SNAPSHOT</epsdk.version>
-		<portal.version>1.1.0-SNAPSHOT</portal.version>
+		<epsdk.version>1.1.0</epsdk.version>
+		<portal.version>1.1.0</portal.version>
 		<encoding>UTF-8</encoding>
 		<!-- Tests usually require some setup that maven cannot do, so skip. -->
 		<skiptests>false</skiptests>
+		<!-- Jenkins invokes mvn with argument -Dbuild.number=${BUILD_NUMBER} -->
+		<build.number>0</build.number>
 		<sonar.exclusions>**.js</sonar.exclusions>
 		<nexusproxy>https://nexus.onap.org</nexusproxy>
 		<snapshotNexusPath>content/repositories/snapshots/</snapshotNexusPath>
@@ -109,7 +111,7 @@
 							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
 						</manifest>
 						<manifestEntries>
-							<Build-Number>${build.number}</Build-Number>
+							<Build-Number>${project.version}.${build.number}</Build-Number>
 							<Build-Time>${maven.build.timestamp}</Build-Time>
 						</manifestEntries>
 					</archive>

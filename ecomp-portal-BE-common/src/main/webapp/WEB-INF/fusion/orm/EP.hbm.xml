@@ -630,13 +630,13 @@
 				and a.is_for_all_roles = 'N'
 				) a,
 				(
-				select a.user_id, c.role_id, c.app_id, d.APP_NAME
+				select distinct a.user_id, c.role_id, c.app_id, d.APP_NAME
 				from fn_user a, fn_user_role b, fn_role c, fn_app d
-				where a.user_id = b.user_id
+				where COALESCE(c.app_id,1) = d.app_id
+       			and a.user_id = b.user_id
 				and a.user_id = :user_id
 				and b.role_id = c.role_id
-				and c.app_id = d.app_id
-				and d.enabled='Y'
+      			and (d.enabled='Y' or d.app_id=1)
 				)b
 				where
 				(
@@ -821,13 +821,13 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' order by app_name
 				)
 				) a,
 				(
-				select a.user_id, c.role_id, c.app_id, d.APP_NAME
+				select distinct a.user_id, c.role_id, c.app_id, d.APP_NAME
 				from fn_user a, fn_user_role b, fn_role c, fn_app d
-				where a.user_id = b.user_id
+				where COALESCE(c.app_id,1) = d.app_id
+        		and a.user_id = b.user_id
 				and a.user_id = :user_id
 				and b.role_id = c.role_id
-				and c.app_id = d.app_id
-				and d.enabled='Y'
+      			and (d.enabled='Y' or d.app_id=1)
 				) b
 				where
 				(

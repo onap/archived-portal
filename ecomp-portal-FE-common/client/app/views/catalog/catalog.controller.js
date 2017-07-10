@@ -60,6 +60,13 @@ function _classCallCheck(instance, Constructor) {
             getExternalAccess();
         };
         
+		this.getAccess = function(item) {
+			if(!item.access)
+				confirmBoxService.showDynamicInformation(item,
+					'app/views/catalog/information-box.tpl.html','CatalogConfirmationBoxCtrl'
+				).then(isConfirmed => {});  
+		};
+		
         var getExternalAccess = () => {
     		ExternalRequestAccessService.getExternalRequestAccessServiceInfo().then(
     				function(property) {
@@ -125,19 +132,18 @@ function _classCallCheck(instance, Constructor) {
                 data = {
                     dialogState: 2,
                     selectedUser:{
-                        attuid: $scope.attuid,
+                    	orgUserId: $scope.orgUserId,
                         firstName: $scope.firstName,
                         lastName: $scope.lastName,
                         headerText: item.headerText,
                         haloAppName : item.mlAppName,
                     	item: item,
-                    	extReqValue : externalRequest
                         
                     }
                 }
             ngDialog.open({
-                templateUrl: 'app/views/catalog/add-catalog-dialogs/new-catalog.modal.html',
-                controller: 'NewCatalogModalCtrl',
+                templateUrl: 'app/views/catalog/request-access-catalog-dialogs/request-access-catalog.modal.html',
+                controller: 'ExternalRequestAccessCtrl',
                 controllerAs: 'userInfo',
                 data: data
             }).closePromise.then(needUpdate => {
@@ -183,7 +189,7 @@ function _classCallCheck(instance, Constructor) {
 				.getUserProfile()
 				.then(
 						function(profile) {
-							$scope.attuid = profile.orgUserId;
+							$scope.orgUserId = profile.orgUserId;
 							$scope.firstName = profile.firstName;
 							$scope.lastName = profile.lastName;
 							$scope.appCatalog = [];
