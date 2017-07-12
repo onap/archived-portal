@@ -2,8 +2,8 @@
 
 source $(dirname $0)/os_settings.sh
 
-export MVN="${MVN} -gs ${GLOBAL_SETTINGS_FILE} -s ${SETTINGS_FILE}"
-#export MVN="mvn"
+# Use -B for batch operation to skip download progress output
+export MVN="${MVN} -gs ${GLOBAL_SETTINGS_FILE} -s ${SETTINGS_FILE} -B"
 
 CURRENTDIR="$(pwd)"
 
@@ -56,7 +56,7 @@ cd $PROJECTDIR/ecomp-portal-FE-os/
 
 ${MVN} install
 
-mv target/epsdk-app-os-1.1.0 target/ep-sdk-app
+mv target/epsdk-app-os target/ep-sdk-app
 
 # now install DBC app
 cd $SOURCEDIR
