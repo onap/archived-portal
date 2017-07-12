@@ -1,12 +1,13 @@
 #!/bin/bash
+# Stop on error; show output
+set -e -x
 
 source $(dirname $0)/os_settings.sh
 
 # Use -B for batch operation to skip download progress output
 export MVN="${MVN} -gs ${GLOBAL_SETTINGS_FILE} -s ${SETTINGS_FILE} -B"
-
+#MVN=mvn
 CURRENTDIR="$(pwd)"
-
 
 # install ecomp portal
 rm -rf $CURRENTDIR/$WORKINGDIR
@@ -24,63 +25,41 @@ cd $CURRENTDIR
 cd ..
 
 cp -r ecomp-portal-FE-common $PROJECTDIR/ecomp-portal-FE-common
-cp -r ecomp-portal-FE-os $PROJECTDIR/ecomp-portal-FE-os
+cp -r ecomp-portal-FE-os     $PROJECTDIR/ecomp-portal-FE-os
 cp -r ecomp-portal-BE-common $PROJECTDIR/ecomp-portal-BE-common
-cp -r ecomp-portal-BE-os $PROJECTDIR/ecomp-portal-BE-os
+cp -r ecomp-portal-BE-os     $PROJECTDIR/ecomp-portal-BE-os
 cp -r ecomp-portal-DB-common $PROJECTDIR/ecomp-portal-DB-common
-cp -r ecomp-portal-DB-os $PROJECTDIR/ecomp-portal-DB-os
-
-cp -r ecompsdkos/ecomp-sdk $PROJECTDIR/ecomp-sdk
-
-#!/bin/bash
-shopt -s expand_aliases
-source ~/.bashrc
-
+cp -r ecomp-portal-DB-os     $PROJECTDIR/ecomp-portal-DB-os
+cp -r ecompsdkos/ecomp-sdk   $PROJECTDIR/ecomp-sdk
 
 cd $PROJECTDIR/ecomp-portal-BE-common
-
 ${MVN} install
-
 
 cd $PROJECTDIR/ecomp-portal-BE-os
-
-${MVN} install
-
-
-# now install sdk app
-cd $PROJECTDIR/ecomp-sdk/epsdk-app-os
-
 ${MVN} install
 
 cd $PROJECTDIR/ecomp-portal-FE-os/
-
 ${MVN} install
 
-mv target/epsdk-app-os target/ep-sdk-app
+cd $PROJECTDIR/ecomp-sdk/epsdk-app-os
+${MVN} install
 
 # now install DBC app
 cd $SOURCEDIR
 DBCDIR=$SOURCEDIR/ST_DBPA 
 mkdir $DBCDIR
-
 #copy DBC project
 cd $CURRENTDIR
 cd ..
-
 cp -r dmaapbc/dcae_dmaapbc_webapp $DBCDIR/dcae_dmaapbc_webapp
-
 cd $DBCDIR/dcae_dmaapbc_webapp
-
 ${MVN} install
-
 cd dbca-os/target
-
 mv  dmaap-bc-app-os-1.1.0-SNAPSHOT ep-dbc-app
 
 # Build complete database script in the "OS" script area
 cd ../db-scripts
 cat dbca-create-mysql-1707-os.sql ../../dbca-common/db-scripts/dbca-ddl-mysql-1707-common.sql dbca-dml-mysql-1707-os.sql > dbca-complete-mysql-1707-os.sql
-
 
 # install into docker
 cd $CURRENTDIR

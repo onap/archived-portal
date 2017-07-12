@@ -427,11 +427,6 @@
 			<artifactId>commons-lang</artifactId>
 			<version>2.6</version>
 		</dependency>
-		<dependency>
-			<groupId>jfree</groupId>
-			<artifactId>jfreechart</artifactId>
-			<version>1.0.13</version>
-		</dependency>
 		<!-- for generating excel/csv/excelx -->
 		<dependency>
 			<groupId>org.apache.poi</groupId>

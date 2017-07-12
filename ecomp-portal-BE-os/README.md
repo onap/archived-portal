@@ -17,6 +17,8 @@ https://www.eclipse.org/m2e-wtp/
 Version 1.1.0, July 2017
 - [Portal-7] Improvements added as part of the rebasing process
 - [Portal-6] Updates to License and Trademark in the PORTAL Source Code
+- [PORTAL-17] Remove jfree related items
+
 
 Version 1.0.0, February 2017
 - Initial release

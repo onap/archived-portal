@@ -12,5 +12,5 @@ SDK_COMMON_SCRIPT_DIR=PROJECT/Source/ecomp-portal-core/ecomp-sdk/epsdk-app-commo
 SDK_SCRIPT_DIR=PROJECT/Source/ecomp-portal-core/ecomp-sdk/epsdk-app-os/db-scripts
 DBC_COMMON_SCRIPT_DIR=PROJECT/Source/ST_DBPA/dcae_dmaapbc_webapp/dbca-common/db-scripts
 DBC_SCRIPT_DIR=PROJECT/Source/ST_DBPA/dcae_dmaapbc_webapp/dbca-os/db-scripts
-PORTAL_SDK_DIR=PROJECT/Source/ecomp-portal-core/ecomp-sdk/epsdk-app-os/target/ep-sdk-app
+PORTAL_SDK_DIR=PROJECT/Source/ecomp-portal-core/ecomp-sdk/epsdk-app-os/target/epsdk-app-os
 PORTAL_DBC_DIR=PROJECT/Source/ST_DBPA/dcae_dmaapbc_webapp/dbca-os/target/ep-dbc-app

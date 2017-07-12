@@ -3,21 +3,32 @@
 	<modelVersion>4.0.0</modelVersion>
 	
 	<groupId>org.openecomp.portal</groupId>
-	<artifactId>ecompportal</artifactId>
+	<artifactId>ecompportal-parent-project</artifactId>
 	<version>0</version>
 	<packaging>pom</packaging>
-	<name>ECOMP Portal maven parent project</name>
 	
 	<modules>
 		<!-- Child modules do NOT name this parent. -->
 		<!-- Defined for build convenience only! -->
 
-		<!-- BE -->	
+		<!-- This POM names only ONAP projects -->	
 		<module>ecomp-portal-BE-common</module>
 		<module>ecomp-portal-BE-os</module>	
 		<module>ecomp-portal-BE-common-test</module>
 		<module>ecomp-portal-FE-os</module>
-		
 	</modules>
 
+	<build>
+		<plugins>
+			<!-- No deployment step for this project -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-deploy-plugin</artifactId>
+				<version>2.8</version>
+				<configuration>
+					<skip>true</skip>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>
