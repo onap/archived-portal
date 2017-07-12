@@ -36,9 +36,6 @@ cp -r ecompsdkos/ecomp-sdk $PROJECTDIR/ecomp-sdk
 shopt -s expand_aliases
 source ~/.bashrc
 
-cd $PROJECTDIR/ecomp-portal-FE-os/
-
-${MVN} clean install
 
 cd $PROJECTDIR/ecomp-portal-BE-common
 
@@ -55,7 +52,11 @@ cd $PROJECTDIR/ecomp-sdk/epsdk-app-os
 
 ${MVN} install
 
-mv target/epsdk-app-os-1.1.0-SNAPSHOT target/ep-sdk-app
+cd $PROJECTDIR/ecomp-portal-FE-os/
+
+${MVN} install
+
+mv target/epsdk-app-os-1.1.0 target/ep-sdk-app
 
 # now install DBC app
 cd $SOURCEDIR
