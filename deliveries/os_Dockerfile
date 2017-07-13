@@ -78,7 +78,7 @@ COPY configure-and-run.sh /PROJECT/OpenSource/UbuntuEP/
 
 #RUN cp -r ${FE_DIR}/dist/public  ${PORTALHOME}/public
 
-COPY ${FE_DIR}/dist/public ${PORTALHOME}
+COPY ${FE_DIR}/dist/public ${PORTALHOME}/public
 # Define default command.
 #CMD ["bash"]
 CMD ["/PROJECT/OpenSource/UbuntuEP/configure-and-run.sh"]

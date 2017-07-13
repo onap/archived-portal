@@ -4,9 +4,15 @@ set -e -x
 
 source $(dirname $0)/os_settings.sh
 
+# Work standalone and in Jenkins.
+# Pick up Jenkins settings for this script.
 # Use -B for batch operation to skip download progress output
-export MVN="${MVN} -gs ${GLOBAL_SETTINGS_FILE} -s ${SETTINGS_FILE} -B"
-#MVN=mvn
+if [ -n "$MVN" ]; then
+    export MVN="${MVN} -gs ${GLOBAL_SETTINGS_FILE} -s ${SETTINGS_FILE} -B"
+else
+    MVN=mvn
+fi
+
 CURRENTDIR="$(pwd)"
 
 # install ecomp portal
@@ -55,7 +61,7 @@ cp -r dmaapbc/dcae_dmaapbc_webapp $DBCDIR/dcae_dmaapbc_webapp
 cd $DBCDIR/dcae_dmaapbc_webapp
 ${MVN} install
 cd dbca-os/target
-mv  dmaap-bc-app-os-1.1.0-SNAPSHOT ep-dbc-app
+mv dmaap-bc-app-os ep-dbc-app
 
 # Build complete database script in the "OS" script area
 cd ../db-scripts
