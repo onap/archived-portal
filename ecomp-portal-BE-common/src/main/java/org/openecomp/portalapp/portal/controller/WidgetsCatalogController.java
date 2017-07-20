@@ -44,6 +44,8 @@ import org.openecomp.portalapp.portal.logging.aop.EPAuditLog;
 import org.openecomp.portalapp.portal.service.ConsulHealthService;
 import org.openecomp.portalapp.portal.service.MicroserviceService;
 import org.openecomp.portalapp.portal.service.WidgetParameterService;
+import org.openecomp.portalapp.portal.utils.CustomLoggingFilter;
+import org.openecomp.portalapp.portal.utils.EcompPortalUtils;
 import org.openecomp.portalapp.util.EPUserUtils;
 import org.openecomp.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.openecomp.portalsdk.core.util.SystemProperties;
@@ -76,8 +78,6 @@ import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 @EPAuditLog
 public class WidgetsCatalogController extends EPRestrictedBaseController {
 
-	private static final String HTTPS = "https://";
-
 	EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(WidgetsCatalogController.class);
 	RestTemplate template = new RestTemplate();
 	String whatService = "widgets-service";
@@ -106,16 +106,16 @@ public class WidgetsCatalogController extends EPRestrictedBaseController {
 				}
 				return false;
 			}
-		});
+		});		
 	}
 
 	@RequestMapping(value = { "/portalApi/microservices/widgetCatalog/{loginName}" }, method = RequestMethod.GET)
 	public List<WidgetCatalog> getUserWidgetCatalog(HttpServletRequest request, HttpServletResponse response,
 			@PathVariable("loginName") String loginName) throws RestClientException, Exception {
 		List<WidgetCatalog> widgets = new ArrayList<>();
-		try {
+		try {CustomLoggingFilter d;
 			ResponseEntity<ArrayList> ans = template.exchange(
-					HTTPS + consulHealthService.getServiceLocation(whatService,
+					EcompPortalUtils.widgetMsProtocol() + "://" + consulHealthService.getServiceLocation(whatService,
 							SystemProperties.getProperty("microservices.widget.local.port"))
 							+ "/widget/microservices/widgetCatalog/" + loginName,
 					HttpMethod.GET, new HttpEntity(WidgetServiceHeaders.getInstance()), ArrayList.class);
@@ -133,9 +133,11 @@ public class WidgetsCatalogController extends EPRestrictedBaseController {
 	public List<WidgetCatalog> getWidgetCatalog(HttpServletRequest request, HttpServletResponse response)
 			throws RestClientException, Exception {
 		List<WidgetCatalog> widgets = new ArrayList<>();
+		
+		String p = EcompPortalUtils.widgetMsProtocol();
 		try {
 			ResponseEntity<ArrayList> ans = template.exchange(
-					HTTPS + consulHealthService.getServiceLocation(whatService,
+					EcompPortalUtils.widgetMsProtocol() + "://" + consulHealthService.getServiceLocation(whatService,
 							SystemProperties.getProperty("microservices.widget.local.port"))
 							+ "/widget/microservices/widgetCatalog",
 					HttpMethod.GET, new HttpEntity(WidgetServiceHeaders.getInstance()), ArrayList.class);
@@ -155,7 +157,7 @@ public class WidgetsCatalogController extends EPRestrictedBaseController {
 			@RequestBody WidgetCatalog newWidgetCatalog, @PathVariable("widgetId") long widgetId)
 			throws RestClientException, Exception {
 		template.exchange(
-				HTTPS + consulHealthService.getServiceLocation(whatService,
+				EcompPortalUtils.widgetMsProtocol() + "://" + consulHealthService.getServiceLocation(whatService,
 						SystemProperties.getProperty("microservices.widget.local.port"))
 						+ "/widget/microservices/widgetCatalog/" + widgetId,
 				HttpMethod.PUT, new HttpEntity(newWidgetCatalog, WidgetServiceHeaders.getInstance()), String.class);
@@ -165,7 +167,7 @@ public class WidgetsCatalogController extends EPRestrictedBaseController {
 	public void deleteOnboardingWidget(HttpServletRequest request, HttpServletResponse response,
 			@PathVariable("widgetId") long widgetId) throws RestClientException, Exception {
 		template.exchange(
-				HTTPS + consulHealthService.getServiceLocation(whatService,
+				EcompPortalUtils.widgetMsProtocol() + "://" + consulHealthService.getServiceLocation(whatService,
 						SystemProperties.getProperty("microservices.widget.local.port"))
 						+ "/widget/microservices/widgetCatalog/" + widgetId,
 				HttpMethod.DELETE, new HttpEntity(WidgetServiceHeaders.getInstance()), String.class);
@@ -192,7 +194,7 @@ public class WidgetsCatalogController extends EPRestrictedBaseController {
 			multipartRequest.add("file", new FileSystemResource(tmp_folder + fileName));
 			multipartRequest.add("widget", request.getParameter("newWidget"));
 			respond = template.postForObject(
-					HTTPS + consulHealthService.getServiceLocation(whatService,
+					EcompPortalUtils.widgetMsProtocol() + "://" + consulHealthService.getServiceLocation(whatService,
 							SystemProperties.getProperty("microservices.widget.local.port"))
 							+ "/widget/microservices/widgetCatalog/" + widgetId,
 					new HttpEntity<>(multipartRequest, WidgetServiceHeaders.getInstance()), String.class);
@@ -233,7 +235,7 @@ public class WidgetsCatalogController extends EPRestrictedBaseController {
 			multipartRequest.add("widget", request.getParameter("newWidget"));
 
 			respond = template.postForObject(
-					HTTPS + consulHealthService.getServiceLocation(whatService,
+					EcompPortalUtils.widgetMsProtocol() + "://" + consulHealthService.getServiceLocation(whatService,
 							SystemProperties.getProperty("microservices.widget.local.port"))
 							+ "/widget/microservices/widgetCatalog",
 					new HttpEntity<>(multipartRequest, WidgetServiceHeaders.getInstance()), String.class);
@@ -255,7 +257,7 @@ public class WidgetsCatalogController extends EPRestrictedBaseController {
 	@RequestMapping(value = "/portalApi/microservices/{widgetId}/framework.js", method = RequestMethod.GET)
 	public String getWidgetFramework(HttpServletRequest request, HttpServletResponse response,
 			@PathVariable("widgetId") long widgetId) throws RestClientException, Exception {
-		return template.getForObject(HTTPS
+		return template.getForObject(EcompPortalUtils.widgetMsProtocol() + "://"
 				+ consulHealthService.getServiceLocation(whatService,
 						SystemProperties.getProperty("microservices.widget.local.port"))
 				+ "/widget/microservices/" + widgetId + "/framework.js", String.class,
@@ -265,7 +267,7 @@ public class WidgetsCatalogController extends EPRestrictedBaseController {
 	@RequestMapping(value = "/portalApi/microservices/{widgetId}/controller.js", method = RequestMethod.GET)
 	public String getWidgetController(HttpServletRequest request, HttpServletResponse response,
 			@PathVariable("widgetId") long widgetId) throws RestClientException, Exception {
-		return template.getForObject(HTTPS
+		return template.getForObject(EcompPortalUtils.widgetMsProtocol() + "://"
 				+ consulHealthService.getServiceLocation(whatService,
 						SystemProperties.getProperty("microservices.widget.local.port"))
 				+ "/widget/microservices/" + widgetId + "/controller.js", String.class,
@@ -275,7 +277,7 @@ public class WidgetsCatalogController extends EPRestrictedBaseController {
 	@RequestMapping(value = "/portalApi/microservices/{widgetId}/style.css", method = RequestMethod.GET)
 	public String getWidgetCSS(HttpServletRequest request, HttpServletResponse response,
 			@PathVariable("widgetId") long widgetId) throws RestClientException, Exception {
-		return template.getForObject(HTTPS
+		return template.getForObject(EcompPortalUtils.widgetMsProtocol() + "://"
 				+ consulHealthService.getServiceLocation(whatService,
 						SystemProperties.getProperty("microservices.widget.local.port"))
 				+ "/widget/microservices/" + widgetId + "/styles.css", String.class,
@@ -289,7 +291,7 @@ public class WidgetsCatalogController extends EPRestrictedBaseController {
 
 		List<WidgetParameterResult> list = new ArrayList<>();
 		Long serviceId = template.exchange(
-				HTTPS + consulHealthService.getServiceLocation(whatService,
+				EcompPortalUtils.widgetMsProtocol() + "://" + consulHealthService.getServiceLocation(whatService,
 						SystemProperties.getProperty("microservices.widget.local.port"))
 						+ "/widget/microservices/widgetCatalog/parameters/" + widgetId,
 				HttpMethod.GET, new HttpEntity(WidgetServiceHeaders.getInstance()), Long.class).getBody();
@@ -336,7 +338,7 @@ public class WidgetsCatalogController extends EPRestrictedBaseController {
 
 		ServletContext context = request.getServletContext();
 		byte[] byteFile = template.exchange(
-				HTTPS + consulHealthService.getServiceLocation(whatService,
+				EcompPortalUtils.widgetMsProtocol() + "://" + consulHealthService.getServiceLocation(whatService,
 						SystemProperties.getProperty("microservices.widget.local.port"))
 						+ "/widget/microservices/download/" + widgetId,
 				HttpMethod.GET, new HttpEntity(WidgetServiceHeaders.getInstance()), byte[].class).getBody();
@@ -388,5 +390,4 @@ public class WidgetsCatalogController extends EPRestrictedBaseController {
 		}
 		return new PortalRestResponse<String>(PortalRestStatusEnum.OK, "SUCCESS", "");
 	}
-
 }

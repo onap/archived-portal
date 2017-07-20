@@ -26,6 +26,7 @@ import org.openecomp.portalapp.controller.EPUnRestrictedBaseController;
 import org.openecomp.portalapp.portal.domain.WidgetServiceHeaders;
 import org.openecomp.portalapp.portal.logging.aop.EPAuditLog;
 import org.openecomp.portalapp.portal.service.ConsulHealthService;
+import org.openecomp.portalapp.portal.utils.EcompPortalUtils;
 import org.openecomp.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.openecomp.portalsdk.core.util.SystemProperties;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,9 +47,7 @@ import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 public class WidgetsCatalogMarkupController extends EPUnRestrictedBaseController {
 
 	private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(WidgetsCatalogMarkupController.class);
-
 	private RestTemplate template = new RestTemplate();
-
 	private final String whatService = "widgets-service";
 
 	@Autowired
@@ -77,7 +76,7 @@ public class WidgetsCatalogMarkupController extends EPUnRestrictedBaseController
 			@PathVariable("widgetId") long widgetId) throws RestClientException, Exception {
 		return template
 				.getForObject(
-						"https://"
+						EcompPortalUtils.widgetMsProtocol() + "://"
 								+ consulHealthService.getServiceLocation(whatService,
 										SystemProperties.getProperty("microservices.widget.local.port"))
 								+ "/widget/microservices/markup/" + widgetId,

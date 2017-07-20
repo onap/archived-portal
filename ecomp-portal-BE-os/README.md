@@ -14,6 +14,9 @@ https://www.eclipse.org/m2e-wtp/
 
 ## Release Notes
 
+Version 1.1.?, July 2017
+- [Portal-30] Failed to communicate with the widget microservice: Fixed
+
 Version 1.1.0, July 2017
 - [Portal-7] Improvements added as part of the rebasing process
 - [Portal-6] Updates to License and Trademark in the PORTAL Source Code

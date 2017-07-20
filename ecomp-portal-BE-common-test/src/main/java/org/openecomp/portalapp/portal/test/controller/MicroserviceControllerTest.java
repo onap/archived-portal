@@ -165,7 +165,7 @@ public class MicroserviceControllerTest extends MockitoTestSuite{
 		PortalRestResponse<String> expectedportalRestResponse = new PortalRestResponse<String>();
 		expectedportalRestResponse.setMessage("FAILURE");
 		expectedportalRestResponse.setResponse(
-				"I/O error on GET request for \"https://null/widget/microservices/widgetCatalog/service/1\":null; nested exception is java.net.UnknownHostException: null");
+				"I/O error on GET request for \""  + EcompPortalUtils.widgetMsProtocol() + "://null/widget/microservices/widgetCatalog/service/1\":null; nested exception is java.net.UnknownHostException: null");
 		PortalRestStatusEnum portalRestStatusEnum = null;
 		expectedportalRestResponse.setStatus(portalRestStatusEnum.ERROR);
 		PowerMockito.mockStatic(WidgetServiceHeaders.class);
@@ -209,7 +209,6 @@ public class MicroserviceControllerTest extends MockitoTestSuite{
 	@SuppressWarnings("unchecked")
 	@Test
 	public void deleteMicroserviceWhenNoWidgetsAssociatedTest() throws Exception {
-		String HTTPS = "https://";
 		PortalRestResponse<String> expectedportalRestResponse = new PortalRestResponse<String>();
 		expectedportalRestResponse.setMessage("SUCCESS");
 		expectedportalRestResponse.setResponse("");
@@ -223,7 +222,7 @@ public class MicroserviceControllerTest extends MockitoTestSuite{
 		ParameterizedTypeReference<List<WidgetCatalog>> typeRef = new ParameterizedTypeReference<List<WidgetCatalog>>() {
 		};
 		Mockito.when(template.exchange(
-				HTTPS + consulHealthService.getServiceLocation(whatService, SystemProperties.getProperty("microservices.widget.local.port"))
+				EcompPortalUtils.widgetMsProtocol() + "://" + consulHealthService.getServiceLocation(whatService, SystemProperties.getProperty("microservices.widget.local.port"))
 						+ "/widget/microservices/widgetCatalog/service/" + 1,
 				HttpMethod.GET, new HttpEntity(WidgetServiceHeaders.getInstance()), typeRef)).thenReturn(ans);
 		PortalRestResponse<String> actuaPportalRestResponse = microserviceController.deleteMicroservice(mockedRequest,

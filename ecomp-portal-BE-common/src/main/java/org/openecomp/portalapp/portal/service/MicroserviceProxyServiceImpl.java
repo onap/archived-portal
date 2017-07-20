@@ -30,6 +30,7 @@ import org.openecomp.portalapp.portal.domain.MicroserviceParameter;
 import org.openecomp.portalapp.portal.domain.WidgetCatalogParameter;
 import org.openecomp.portalapp.portal.domain.WidgetServiceHeaders;
 import org.openecomp.portalapp.portal.logging.aop.EPMetricsLog;
+import org.openecomp.portalapp.portal.utils.EcompPortalUtils;
 import org.openecomp.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.openecomp.portalsdk.core.onboarding.util.CipherUtil;
 import org.openecomp.portalsdk.core.util.SystemProperties;
@@ -137,7 +138,7 @@ public class MicroserviceProxyServiceImpl implements MicroserviceProxyService {
 
 		@SuppressWarnings({ "rawtypes", "unchecked" })
 		ResponseEntity<Long> ans = (ResponseEntity<Long>) template.exchange(
-				"https://"
+				EcompPortalUtils.widgetMsProtocol() + "://"
 						+ consulHealthService.getServiceLocation(whatService,
 								SystemProperties.getProperty("microservices.widget.local.port"))
 						+ "/widget/microservices/widgetCatalog/parameters/" + widgetId,

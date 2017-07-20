@@ -61,5 +61,6 @@ public class EPCommonSystemProperties extends SystemProperties {
 	
 	public static final String AUTH_USER_SERVER 					= "auth_user_server";
 	public static final String EXTERNAL_ACCESS_ENABLE 				= "external_access_enable";
+	public static final String WIDGET_MS_PROTOCOL 					= "microservices.widget.protocol";
 
 }

@@ -340,5 +340,19 @@ public class EcompPortalUtils {
 			}
 		}
 	}
+	
+	public static String widgetMsProtocol(){
+		final String protocol;
+		try{
+			protocol = SystemProperties.getProperty(EPCommonSystemProperties.WIDGET_MS_PROTOCOL);
+			return (protocol == null || protocol.trim().equals("")) ? "https" : protocol ;
+		}
+		catch(IllegalStateException ese){
+			//looks like SystemProperties.getProperty throws IllegalStateException if it cannot find a property you are looking for
+			//In order to not break the code if a non-required property is missing from system.properties, returning https as default
+			//when this exception is caught.
+			return "https";
+		}		
+	}
 
 }

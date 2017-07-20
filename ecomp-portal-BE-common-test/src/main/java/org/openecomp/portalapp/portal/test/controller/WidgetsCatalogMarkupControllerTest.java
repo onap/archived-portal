@@ -19,6 +19,7 @@ import org.openecomp.portalapp.portal.service.ConsulHealthServiceImpl;
 import org.openecomp.portalapp.portal.utils.EcompPortalUtils;
 import org.openecomp.portalapp.test.framework.MockitoTestSuite;
 import org.openecomp.portalsdk.core.onboarding.util.CipherUtil;
+import org.openecomp.portalsdk.core.util.SystemProperties;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -62,7 +63,7 @@ public class WidgetsCatalogMarkupControllerTest extends MockitoTestSuite {
 	{
 		String whatService = "widgets-service";
 		PowerMockito.mockStatic(WidgetServiceHeaders.class);
-		Mockito.when(template.getForObject("https://" + consulHealthService.getServiceLocation(whatService, null) + "/widget/microservices/markup/" + 1, String.class,
+		Mockito.when(template.getForObject(EcompPortalUtils.widgetMsProtocol() + "://" + consulHealthService.getServiceLocation(whatService, null) + "/widget/microservices/markup/" + 1, String.class,
 				WidgetServiceHeaders.getInstance())).thenReturn("Success");
 		String response = widgetsCatalogMarkupController.getWidgetMarkup(mockedRequest, mockedResponse, 1);
 		assertTrue(response.equals("Success"));	

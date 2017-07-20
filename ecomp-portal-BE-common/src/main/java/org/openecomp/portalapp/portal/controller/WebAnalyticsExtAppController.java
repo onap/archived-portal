@@ -77,18 +77,16 @@ public class WebAnalyticsExtAppController extends EPRestrictedRESTfulBaseControl
 	private static final String MACHINE_LEARNING_SERVICE_CTX = "/ml_api";
 	private static final String REGISTER_ACTION = MACHINE_LEARNING_SERVICE_CTX + "/" + "registerAction";
 	private static final String CONSUL_ML_SERVICE_ID = "machine-learning";
-	private static final String SERVICE_PROTOCOL = "http";
 	private static final String APP_KEY = "uebkey";
+	private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(WebAnalyticsExtAppController.class);
+	private AsyncRestTemplate restTemplate = new AsyncRestTemplate();
+
 
 	@Autowired
 	AuditService auditService;
 
 	@Autowired
 	AppsCacheService appCacheService;
-
-	private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(WebAnalyticsExtAppController.class);
-
-	private AsyncRestTemplate restTemplate = new AsyncRestTemplate();
 
 	SuccessCallback<ResponseEntity<String>> successCallback = new SuccessCallback<ResponseEntity<String>>() {
 		@Override
@@ -230,7 +228,7 @@ public class WebAnalyticsExtAppController extends EPRestrictedRESTfulBaseControl
 
 		// send it!
 		ListenableFuture<ResponseEntity<String>> out = restTemplate.exchange(
-				SERVICE_PROTOCOL + "://"
+				EcompPortalUtils.widgetMsProtocol() + "://"
 						+ consulHealthService.getServiceLocation(CONSUL_ML_SERVICE_ID,
 								SystemProperties.getProperty("microservices.m-learn.local.port"))
 						+ REGISTER_ACTION,

@@ -1,4 +1,5 @@
 #!/bin/bash
+# Builds docker with three webapps: portal app, portal-sdk app, dbc app
 # Stop on error; show output
 set -e -x
 
@@ -36,7 +37,7 @@ cp -r ecomp-portal-BE-common $PROJECTDIR/ecomp-portal-BE-common
 cp -r ecomp-portal-BE-os     $PROJECTDIR/ecomp-portal-BE-os
 cp -r ecomp-portal-DB-common $PROJECTDIR/ecomp-portal-DB-common
 cp -r ecomp-portal-DB-os     $PROJECTDIR/ecomp-portal-DB-os
-cp -r ecompsdkos/ecomp-sdk   $PROJECTDIR/ecomp-sdk
+cp -r sdk/ecomp-sdk          $PROJECTDIR/ecomp-sdk
 
 cd $PROJECTDIR/ecomp-portal-BE-common
 ${MVN} install
