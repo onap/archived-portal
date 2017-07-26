@@ -21,6 +21,7 @@ package org.openecomp.portalapp.portal.service;
 
 import java.util.List;
 
+import org.openecomp.portalapp.portal.utils.EcompPortalUtils;
 import org.openecomp.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.springframework.stereotype.Component;
 
@@ -44,7 +45,7 @@ public class ConsulHealthServiceImpl implements ConsulHealthService {
 			HealthClient healthClient = consul.healthClient();
 			nodes = healthClient.getHealthyServiceInstances(service).getResponse();
 		} catch (Exception e) {
-			String localFallbackServiceLocation = "localhost:" + fallbackPortOnLocalHost;
+			String localFallbackServiceLocation = EcompPortalUtils.localOrDockerHost() + ":" + fallbackPortOnLocalHost;
 			logger.debug(EELFLoggerDelegate.debugLogger,
 					" problem getting nodes for service {1}. Defaulting to {2}. Exception: {3}", service,
 					localFallbackServiceLocation, e.getMessage());
@@ -57,7 +58,7 @@ public class ConsulHealthServiceImpl implements ConsulHealthService {
 		if (nodes == null || nodes.size() == 0) {
 			logger.debug(EELFLoggerDelegate.debugLogger, "No healthy node found in the consul cluster running service " + service
 					+ ". Defaulting to localhost");
-			return "localhost:" + fallbackPortOnLocalHost;
+			return EcompPortalUtils.localOrDockerHost() + ":" + fallbackPortOnLocalHost;
 		} else {
 			String locationFromConsul;
 			ServiceHealth node = nodes.get(0);

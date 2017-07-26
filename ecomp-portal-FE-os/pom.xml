@@ -187,47 +187,6 @@
 					<skip>true</skip>
 				</configuration>
 			</plugin>
-			 <!-- 	 
-			<plugin>
-			    <groupId>org.codehaus.mojo</groupId>
-			    <artifactId>license-maven-plugin</artifactId>
-			    <version>1.10</version>
-			    <configuration>
-		              <encoding>UTF-8</encoding>
-			        <licenseName>my_license</licenseName>
-			        <licenseResolver>${project.baseUri}/license</licenseResolver>
-			        <inceptionYear>2017</inceptionYear>
-				<organizationName>AT&amp;T Intellectual Property</organizationName>
-				<projectName>ECOMP Portal</projectName> 
-				<addJavaLicenseAfterPackage>false</addJavaLicenseAfterPackage> 
-     				<processStartTag>================================================================================</processStartTag>
-     				<sectionDelimiter>================================================================================</sectionDelimiter>
-     				<processEndTag>================================================================================</processEndTag> 
-			    	<roots>
-					<root>client/src</root>
-				</roots>
-				<excludes>
-					<exclude>*.png</exclude>
-					<exclude>*.drl</exclude>
-					<exclude>*.gif</exclude>
-					<exclude>*.jpeg</exclude>
-					<exclude>*.jpg</exclude>
-					<exclude>*.bmp</exclude>
-					<exclude>*.ico</exclude>
-					<exclude>*.svg</exclude>
-				</excludes>
-			    </configuration>
-			    <executions>
-			        <execution>
-			            <id>first</id>
-			            <goals>
-			                <goal>update-file-header</goal>
-			            </goals>
-			            <phase>process-sources</phase>
-			        </execution>
-			    </executions>
-			</plugin>
-			-->
 		</plugins>
 	</build>
 </project>

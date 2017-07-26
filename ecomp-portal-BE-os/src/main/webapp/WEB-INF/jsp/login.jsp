@@ -75,23 +75,25 @@
 		<div class="centered style="-webkit-transform: translateZ(0);background:white, z-index:0;">
 			<div align="center" id="errorInfo" style="display:none;float:left;font-size:12px;margin-left:5px"><span style="color:red">Invaild username or password, Please try again</span></div>
 			<br/>
-			<div align="center" style="margin-left:auto;margin-right:auto;width:40%;padding:6px;opacity:0.7;background-color:white">
-          		<img src="static/fusion/images/ecomp-login.jpg" height="250"/>
+			<div align="center" style="margin-left:auto;margin-right:auto;width:40%;padding:6px;background-color:white">
+          		<img src="static/fusion/images/onap-portal-logo.png" height="250"/>
 				<br>
-				<label>
-					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="form-field__label">Login ID:</label>
-				</label>
-				<input  type="text" class="fn-ebz-text" ng-model="loginId" style="width: 140px;height:25px;border-radius:7px;font-size:18px;padding-left:5px;"
-					maxlength="30" />
-				<br/>
-				<br/>
-				<label >&nbsp;Password:</label>
-				<input type="password" class="span3" ng-model="password" style="width: 140px;height:25px;border-radius:7px;font-size:18px;padding-left:5px;"
-					maxlength="30" onkeydown="if (event.keyCode == 13) document.getElementById('loginBtn').click()"/> 
-				<br />
-				<br />
-				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-				<a class="login-btn" id="loginBtn" ng-click="loginExternal();">LOGIN</a>
+				<div style="opacity: 0.7;">
+					<label>
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="form-field__label">Login ID:</label>
+					</label>
+					<input  type="text" class="fn-ebz-text" ng-model="loginId" style="width: 140px;height:25px;border-radius:7px;font-size:18px;padding-left:5px;"
+						maxlength="30" />
+					<br/>
+					<br/>
+					<label >&nbsp;Password:</label>
+					<input type="password" class="span3" ng-model="password" style="width: 140px;height:25px;border-radius:7px;font-size:18px;padding-left:5px;"
+						maxlength="30" onkeydown="if (event.keyCode == 13) document.getElementById('loginBtn').click()"/> 
+					<br />
+					<br />
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+					<a class="login-btn" id="loginBtn" ng-click="loginExternal();">LOGIN</a>
+				</div>
 				<br>
 			</div>
 		</div>

@@ -354,5 +354,20 @@ public class EcompPortalUtils {
 			return "https";
 		}		
 	}
+	
+	public static String localOrDockerHost(){
+		final String effectiveHost;
+		try{
+			effectiveHost = SystemProperties.getProperty(EPCommonSystemProperties.WIDGET_MS_HOSTNAME);
+			return (effectiveHost == null || effectiveHost.trim().equals("")) ? "localhost" : effectiveHost ;
+		}
+		catch(IllegalStateException ese){
+			//looks like SystemProperties.getProperty throws IllegalStateException if it cannot find a property you are looking for
+			//In order to not break the code if a non-required property is missing from system.properties, returning https as default
+			//when this exception is caught.
+			return "localhost";
+		}		
+	}
+
 
 }

@@ -9,20 +9,26 @@ ARG SDK_SCRIPT_DIR=${SDK_SCRIPT_DIR}
 ARG SDK_COMMON_SCRIPT_DIR=${SDK_COMMON_SCRIPT_DIR}
 ARG DBC_COMMON_SCRIPT_DIR=${DBC_COMMON_SCRIPT_DIR}
 ARG DBC_SCRIPT_DIR=${DBC_SCRIPT_DIR}
+
+# constant
 #Add config file
 ADD my.cnf /etc/mysql/my.cnf
 #ADD cluster.cnf /etc/mysql/conf.d
 
-#Add DDL and DML SQL files
-ADD ${SCRIPT_COMMON_DIR}/EcompPortalDDLMySql_1707_Common.sql docker-entrypoint-initdb.d/EcompPortalDDLMySql_1707_Common.sql
-ADD ${SCRIPT_DIR}/EcompPortalDDLMySql_1707_OS.sql docker-entrypoint-initdb.d/EcompPortalDDLMySql_1707_OS.sql
-ADD ${SCRIPT_COMMON_DIR}/EcompPortalDMLMySql_1707_Common.sql docker-entrypoint-initdb.d/EcompPortalDMLMySql_1707_Common.sql
-ADD ${SCRIPT_DIR}/EcompPortalDMLMySql_1707_OS.sql docker-entrypoint-initdb.d/EcompPortalDMLMySql_1707_OS.sql
+# Scripts are executed in alphabetical order
 
-ADD ${SDK_COMMON_SCRIPT_DIR}/EcompSdkDDLMySql_1707_Common.sql docker-entrypoint-initdb.d/EcompSdkDDLMySql_1707_Common.sql
-ADD ${SDK_SCRIPT_DIR}/EcompSdkDDLMySql_1707_OS.sql docker-entrypoint-initdb.d/EcompSdkDDLMySql_1707_OS.sql
-ADD ${SDK_COMMON_SCRIPT_DIR}/EcompSdkDMLMySql_1707_Common.sql docker-entrypoint-initdb.d/EcompSdkDMLMySql_1707_Common.sql
-ADD ${SDK_SCRIPT_DIR}/EcompSdkDMLMySql_1707_OS.sql docker-entrypoint-initdb.d/EcompSdkDMLMySql_1707_OS.sql
+# Portal DDL and DML
+ADD ${SCRIPT_COMMON_DIR}/EcompPortalDDLMySql_1707_Common.sql docker-entrypoint-initdb.d
+ADD ${SCRIPT_DIR}/EcompPortalDDLMySql_1707_OS.sql            docker-entrypoint-initdb.d
+ADD ${SCRIPT_COMMON_DIR}/EcompPortalDMLMySql_1707_Common.sql docker-entrypoint-initdb.d
+ADD ${SCRIPT_DIR}/EcompPortalDMLMySql_1707_OS.sql            docker-entrypoint-initdb.d
+ADD Apps_Users_OnBoarding_Script.sql                         docker-entrypoint-initdb.d/EcompPortalDMLMySql_1707_z_apps_users.sql
 
-# This file was built by os_build_febe.sh
-ADD ${DBC_SCRIPT_DIR}/dbca-complete-mysql-1707-os.sql docker-entrypoint-initdb.d/dbca-complete-mysql-1707-os.sql
+# SDK App DDL and DML
+ADD ${SDK_COMMON_SCRIPT_DIR}/EcompSdkDDLMySql_1707_Common.sql docker-entrypoint-initdb.d
+ADD ${SDK_SCRIPT_DIR}/EcompSdkDDLMySql_1707_OS.sql            docker-entrypoint-initdb.d
+ADD ${SDK_COMMON_SCRIPT_DIR}/EcompSdkDMLMySql_1707_Common.sql docker-entrypoint-initdb.d
+ADD ${SDK_SCRIPT_DIR}/EcompSdkDMLMySql_1707_OS.sql            docker-entrypoint-initdb.d
+
+# DBC App combined DDL/DML, built by os_build_febe.sh
+ADD ${DBC_SCRIPT_DIR}/dbca-complete-mysql-1707-os.sql docker-entrypoint-initdb.d

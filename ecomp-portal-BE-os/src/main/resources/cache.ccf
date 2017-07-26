@@ -20,7 +20,7 @@ jcs.default.elementattributes.IsSpool=true
 # AUXILLARY CACHE CONFIGURATION
 jcs.auxiliary.DC=org.apache.jcs.auxiliary.disk.indexed.IndexedDiskCacheFactory
 jcs.auxiliary.DC.attributes=org.apache.jcs.auxiliary.disk.indexed.IndexedDiskCacheAttributes
-jcs.auxiliary.DC.attributes.DiskPath=c:/projects/fusion/war/WEB-INF/cache
+jcs.auxiliary.DC.attributes.DiskPath=/tmp
 
 
 # PRE-DEFINED REGION FOR LOOKUP DATA

@@ -31,6 +31,6 @@ public interface LoginService {
 	
 	public @ResponseBody String loginValidate(HttpServletRequest request, HttpServletResponse response) throws Exception;
 	
-	public ModelAndView processSingelSignOn(HttpServletRequest request, HttpServletResponse response) throws Exception;
+	public ModelAndView processSingleSignOn(HttpServletRequest request, HttpServletResponse response) throws Exception;
 
 }

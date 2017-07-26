@@ -174,8 +174,15 @@ public class LoginController extends EPUnRestrictedBaseController implements Log
 	
 	}
 	
+	/* Work around a bug in ecompsdkos version 1.1.0 which hard-codes this endpoint. */
+	@RequestMapping(value = {"/process_csp" }, method = RequestMethod.GET)
+	public ModelAndView processCsp(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		return processSingleSignOn(request, response);
+	}
+	/* Remove this method after epsdk-app-common/.../SingleSignOnController.java is repaired. */
+
 	@RequestMapping(value = {"/processSingleSignOn" }, method = RequestMethod.GET)
-	public ModelAndView processSingelSignOn(HttpServletRequest request, HttpServletResponse response) throws Exception{
+	public ModelAndView processSingleSignOn(HttpServletRequest request, HttpServletResponse response) throws Exception{
 		
 		Map<Object, Object>             model = new HashMap<Object, Object>();
 		HashMap<Object, Object> additionalParamsMap = new HashMap<Object, Object>();

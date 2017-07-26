@@ -1,7 +1,9 @@
 #!/bin/bash
 
-IMGNAME=ep:1610-1
-VERSION=1.1.0-SNAPSHOT
+#IMGNAME=ep:1610-1
+IMGNAME=onap-portal:1.1.0
+CONTNAME=ep-1.1.0
+VERSION=1.1.0
 ETCDIR=etc
 WORKINGDIR=PROJECT
 SDK_DIR=PROJECT/Source/ecomp-portal-core/ecomp-portal-BE-os/target/ecompportal-be-os

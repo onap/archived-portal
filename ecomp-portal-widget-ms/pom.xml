@@ -29,10 +29,6 @@
 
 	</properties>
 
-	<!-- <repositories> <repository> SWM repository has EELF jars <id>att-swm-repo</id> 
-		<name>ATT SWM Repository</name> <url>http://mavencentral.it.att.com:8084/nexus/content/repositories/swm-releases</url> 
-		</repository> </repositories> -->
-
 	<dependencies>
 		<dependency>
 			<!-- Setup Spring Data JPA Repository support -->
