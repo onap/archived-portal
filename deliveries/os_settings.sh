@@ -1,8 +1,13 @@
 #!/bin/bash
 
-#IMGNAME=ep:1610-1
-IMGNAME=onap-portal:1.1.0
-CONTNAME=ep-1.1.0
+# This docker image name is hardcoded at the ONAP demo repository,
+# so changing it is nontrivial.
+EP_IMG_NAME=ep:1610-1
+EP_CONT_NAME=onap_portal
+DB_IMG_NAME=ecompdb:portal
+DB_CONT_NAME=ecompdb_portal
+WMS_IMG_NAME=widget-ms
+WMS_CONT_NAME=ecomp-portal-widget-ms
 VERSION=1.1.0
 ETCDIR=etc
 WORKINGDIR=PROJECT

@@ -3,7 +3,7 @@
 # Establish environment variables
 source $(dirname $0)/os_settings.sh
 
-echo "Stopping docker container named ${CONTNAME}"
-docker stop ${CONTNAME}
-echo "Removing docker container named ${CONTNAME}"
-docker  rm ${CONTNAME}
+echo "Stopping docker container named ${EP_CONT_NAME}"
+docker stop ${EP_CONT_NAME}
+echo "Removing docker container named ${EP_CONT_NAME}"
+docker  rm ${EP_CONT_NAME}

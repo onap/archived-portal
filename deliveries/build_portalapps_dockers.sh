@@ -101,7 +101,7 @@ fi
 # build portal docker
 cd $DELIV
 PORTAL_DOCKER_CMD="
-	docker build -t ${IMGNAME} ${PROXY_ARGS}
+	docker build -t ${EP_IMG_NAME} ${PROXY_ARGS}
 	--build-arg FE_DIR=$BUILD/public
 	--build-arg PORTAL_WAR=$BUILD/ecompportal-be-os.war
 	--build-arg SDK_WAR=$BUILD/epsdk-app-os.war

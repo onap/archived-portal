@@ -1,5 +1,9 @@
-echo "Stopping ecomp-portal-widget-ms container !!!"
-docker stop ecomp-portal-widget-ms
-echo "Removing docker image portal-widget-ms !!!"
-docker rm ecomp-portal-widget-ms
+#!/bin/bash
 
+# Establish environment variables
+source $(dirname $0)/os_settings.sh
+
+echo "Stopping docker container ${WMS_CONT_NAME}"
+docker stop ${WMS_CONT_NAME}
+echo "Removing docker image ${WMS_CONT_NAME}"
+docker rm ${WMS_CONT_NAME}

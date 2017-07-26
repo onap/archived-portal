@@ -11,8 +11,8 @@ PORTALPROPDIR=ECOMPPORTALAPP
 SDKAPPPROPDIR=ECOMPSDKAPP
 DBCAPPPROPDIR=ECOMPDBCAPP
 #docker rm ep_1610
-echo "Running docker image ${IMGNAME} as name ${CONTNAME}"
-docker run -d --name ${CONTNAME}  \
+echo "Running docker image ${EP_IMG_NAME} as name ${EP_CONT_NAME}"
+docker run -d --name ${EP_CONT_NAME}  \
 -p 8989:8080 -p 8010:8009 -p 8006:8005 \
 -v ${BASEDIR}/etc/${PORTALPROPDIR}/system.properties:${PORTALDIR}/WEB-INF/conf/system.properties \
 -v ${BASEDIR}/etc/${PORTALPROPDIR}/fusion.properties:${PORTALDIR}/WEB-INF/fusion/conf/fusion.properties \
@@ -26,4 +26,4 @@ docker run -d --name ${CONTNAME}  \
 -v ${BASEDIR}/etc/${DBCAPPPROPDIR}/dbcapp.properties:${DBCAPPDIR}/WEB-INF/dbcapp/dbcapp.properties \
 -v ${BASEDIR}/etc/${DBCAPPPROPDIR}/fusion.properties:${DBCAPPDIR}/WEB-INF/fusion/conf/fusion.properties \
 -v ${BASEDIR}/log:/opt/apache-tomcat-8.0.37/logs  \
-${IMGNAME}
+${EP_IMG_NAME}
