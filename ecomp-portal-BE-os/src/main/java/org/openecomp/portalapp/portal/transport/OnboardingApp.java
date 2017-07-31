@@ -26,6 +26,8 @@ public class OnboardingApp {
 	public String name;
 
 	public String imageUrl;
+	
+	public String imageLink;
 
 	public String description;
 

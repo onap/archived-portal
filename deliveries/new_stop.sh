@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Establish environment variables
 source $(dirname $0)/os_settings.sh

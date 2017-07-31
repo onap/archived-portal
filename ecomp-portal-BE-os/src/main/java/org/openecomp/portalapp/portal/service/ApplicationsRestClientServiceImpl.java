@@ -48,6 +48,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializationContext;
@@ -70,6 +71,8 @@ public class ApplicationsRestClientServiceImpl implements ApplicationsRestClient
 	@Autowired
 	private AppsCacheService appsCacheService;
 	Gson gson = null;
+	
+	private final ObjectMapper mapper = new ObjectMapper();
 	
 	@PostConstruct
 	private void init(){
@@ -185,7 +188,9 @@ public class ApplicationsRestClientServiceImpl implements ApplicationsRestClient
 			verifyResponse(response);
 			String str = response.readEntity(String.class);
 			EcompPortalUtils.logAndSerializeObject(restPath, "GET result =", str);
-		    try { t = gson.fromJson(str, clazz); } catch(Exception e) {
+		    try { 
+		    	t = mapper.readValue(str, clazz); 
+		    } catch(Exception e) {
 		    	logger.error(EELFLoggerDelegate.errorLogger, EcompPortalUtils.getStackTrace(e));
 		    	EPLogUtil.logEcompError(EPAppMessagesEnum.BeInvalidJsonInput); 
 		    	}

@@ -24,6 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.crypto.BadPaddingException;
+
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 import org.openecomp.portalapp.portal.domain.MicroserviceData;
@@ -82,7 +84,11 @@ public class MicroserviceServiceImpl implements MicroserviceService {
 		List<MicroserviceData> list = (List<MicroserviceData>) dataAccessService.getList(MicroserviceData.class, null);
 		for (int i = 0; i < list.size(); i++) {
 			if (list.get(i).getPassword() != null)
-				list.get(i).setPassword(decryptedPassword(list.get(i).getPassword()));
+				try{
+					list.get(i).setPassword(decryptedPassword(list.get(i).getPassword()));
+				} catch(BadPaddingException bpe){
+					logger.error(EELFLoggerDelegate.errorLogger, "Couldn't decrypt - Check decryption key in system.properties - looks wrong. Still going ahead with list population though", bpe);
+				}
 			list.get(i).setParameterList(getServiceParameters(list.get(i).getId()));
 		}
 		return list;

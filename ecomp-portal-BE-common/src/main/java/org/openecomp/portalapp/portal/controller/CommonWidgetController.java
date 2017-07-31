@@ -20,6 +20,8 @@
 package org.openecomp.portalapp.portal.controller;
 
 import javax.servlet.http.HttpServletRequest;
+
+import org.openecomp.portalapp.controller.EPRestrictedBaseController;
 import org.openecomp.portalapp.portal.controller.DashboardController.WidgetCategory;
 import org.openecomp.portalapp.portal.ecomp.model.PortalRestResponse;
 import org.openecomp.portalapp.portal.ecomp.model.PortalRestStatusEnum;
@@ -33,7 +35,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class CommonWidgetController implements BasicAuthenticationController{
+public class CommonWidgetController extends EPRestrictedBaseController implements BasicAuthenticationController{
 	
 	
 	private static EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(CommonWidgetController.class);
@@ -63,7 +65,7 @@ public class CommonWidgetController implements BasicAuthenticationController{
 	 *            Request parameter.
 	 * @return Rest response wrapped around a CommonWidgetMeta object.
 	 */
-	@RequestMapping(value = "/widgetData", method = RequestMethod.GET, produces = "application/json")
+	@RequestMapping(value = "/commonWidgets", method = RequestMethod.GET, produces = "application/json")
 	public PortalRestResponse<CommonWidgetMeta> getWidgetData(HttpServletRequest request,
 			@RequestParam String resourceType) {
 		if (!isValidResourceType(resourceType)){

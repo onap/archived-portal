@@ -116,14 +116,14 @@
 						</manifestEntries>
 					</archive>
 					<overlays>
-						<!-- specify the order in which these should be applied -->
-						<overlay>
-							<groupId>org.openecomp.ecompsdkos</groupId>
-							<artifactId>epsdk-app-overlay</artifactId>
-						</overlay>
+						<!-- specify the order in which these should be applied -->						
 						<overlay>
 							<groupId>org.openecomp.portal</groupId>
 							<artifactId>ecompportal-be-common</artifactId>
+						</overlay>
+						<overlay>
+							<groupId>org.openecomp.ecompsdkos</groupId>
+							<artifactId>epsdk-app-overlay</artifactId>
 						</overlay>
 					</overlays>
 				</configuration>

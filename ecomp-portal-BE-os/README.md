@@ -17,6 +17,9 @@ https://www.eclipse.org/m2e-wtp/
 Version 1.1.?, July 2017
 - [Portal-30] Failed to communicate with the widget microservice: Fixed
 - [Portal-35] Replaced the portal logo with onap logo on the login screen.
+- [Portal-40] Fix to add user roles 
+- [Portal-47] Fix to eliminate duplicate roles on Users page
+- [Portal-45] Fix to save on an application Onboarding
 
 Version 1.1.0, July 2017
 - [Portal-7] Improvements added as part of the rebasing process

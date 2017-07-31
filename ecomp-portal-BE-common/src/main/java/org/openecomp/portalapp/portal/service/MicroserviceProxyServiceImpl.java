@@ -108,6 +108,8 @@ public class MicroserviceProxyServiceImpl implements MicroserviceProxyService {
 			HttpHeaders headers = new HttpHeaders();
 			headers.add("Authorization", "Basic " + base64Creds);
 			headers.setContentType(MediaType.APPLICATION_JSON);
+			String rawCookie = request.getHeader("Cookie");
+			headers.add("Cookie", rawCookie);
 			HttpEntity<String> entity = new HttpEntity<String>(headers);
 
 			String url = microserviceUrlConverter(data, params);
