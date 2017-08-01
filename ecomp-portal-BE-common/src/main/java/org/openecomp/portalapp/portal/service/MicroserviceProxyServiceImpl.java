@@ -22,7 +22,6 @@ package org.openecomp.portalapp.portal.service;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.codec.binary.Base64;
 import org.openecomp.portalapp.portal.domain.EPUser;
 import org.openecomp.portalapp.portal.domain.MicroserviceData;
@@ -73,65 +72,18 @@ public class MicroserviceProxyServiceImpl implements MicroserviceProxyService {
 	@Override
 	public String proxyToDestination(long serviceId, EPUser user, HttpServletRequest request) throws Exception {
 
-		String response = null;
-
-		// get the microservice object by the id
+		//get the microservice object by the id
 		MicroserviceData data = microserviceService.getMicroserviceDataById(serviceId);
 
 		// No such microservice available
 		if (data == null) {
-			return response;
+			//can we return a better response than null?
+			return null;
 		}
-		List<MicroserviceParameter> params = data.getParameterList();
-		MicroserviceParameter userId_param = new MicroserviceParameter();
-		userId_param.setPara_key("userId");
-		userId_param.setPara_value(user.getOrgUserId());
-		params.add(userId_param);
-
-		if (data.getSecurityType().equals(NO_AUTH)) {
-			HttpHeaders headers = new HttpHeaders();
-			headers.setContentType(MediaType.APPLICATION_JSON);
-			HttpEntity<String> entity = new HttpEntity<String>(headers);
-
-			String url = microserviceUrlConverter(data, params);
-			logger.debug(EELFLoggerDelegate.debugLogger, "Before making no authentication call: {}", url);
-			response = template.exchange(url, HttpMethod.GET, entity, String.class).getBody();
-			logger.debug(EELFLoggerDelegate.debugLogger, "No authentication call response: {}", response);
-
-		} else if (data.getSecurityType().equals(BASIC_AUTH)) {
-			// encoding the username and password
-			String plainCreds = data.getUsername() + ":" + decryptedPassword(data.getPassword());
-			byte[] plainCredsBytes = plainCreds.getBytes();
-			byte[] base64CredsBytes = Base64.encodeBase64(plainCredsBytes);
-			String base64Creds = new String(base64CredsBytes);
-
-			HttpHeaders headers = new HttpHeaders();
-			headers.add("Authorization", "Basic " + base64Creds);
-			headers.setContentType(MediaType.APPLICATION_JSON);
-			String rawCookie = request.getHeader("Cookie");
-			headers.add("Cookie", rawCookie);
-			HttpEntity<String> entity = new HttpEntity<String>(headers);
-
-			String url = microserviceUrlConverter(data, params);
-			logger.debug(EELFLoggerDelegate.debugLogger, "Before making basic authentication call: {}", url);
-			response = template.exchange(url, HttpMethod.GET, entity, String.class).getBody();
-			logger.debug(EELFLoggerDelegate.debugLogger, "Basic authentication call response: {}", response);
-
-		} else if (data.getSecurityType().equals(COOKIE_AUTH)) {
-			HttpHeaders headers = new HttpHeaders();
-			headers.setContentType(MediaType.APPLICATION_JSON);
-			String rawCookie = request.getHeader("Cookie");
-			headers.add("Cookie", rawCookie);
-			HttpEntity<String> entity = new HttpEntity<String>(headers);
-
-			String url = microserviceUrlConverter(data, params);
-			logger.debug(EELFLoggerDelegate.debugLogger, "Before making cookie-based authentication call: {}", url);
-			response = template.exchange(url, HttpMethod.GET, entity, String.class).getBody();
-			logger.debug(EELFLoggerDelegate.debugLogger, "Cookie-based authentication call response: {}", response);
-		}
-		return response;
+	
+		return authenticateAndRespond(data, request, composeParams(data, user));
 	}
-
+	
 	@Override
 	public String proxyToDestinationByWidgetId(long widgetId, EPUser user, HttpServletRequest request)
 			throws Exception {
@@ -155,55 +107,58 @@ public class MicroserviceProxyServiceImpl implements MicroserviceProxyService {
 			return response;
 		}
 
-		List<MicroserviceParameter> params = data.getParameterList();
-		MicroserviceParameter userId_param = new MicroserviceParameter();
-		userId_param.setPara_key("userId");
-		userId_param.setPara_value(user.getOrgUserId());
-		params.add(userId_param);
-
+		List<MicroserviceParameter> params = composeParams(data, user);
 		for (MicroserviceParameter p : params) {
 			WidgetCatalogParameter userValue = widgetParameterService.getUserParamById(widgetId, user.getId(),
 					p.getId());
 			if (userValue != null)
 				p.setPara_value(userValue.getUser_value());
 		}
+		
+		return authenticateAndRespond(data, request, params);
 
+	}
+
+	private String authenticateAndRespond(MicroserviceData data, HttpServletRequest request, List<MicroserviceParameter> params){
+		
+		String response = null;
+		
 		if (data.getSecurityType().equals(NO_AUTH)) {
-			HttpHeaders headers = new HttpHeaders();
-			headers.setContentType(MediaType.APPLICATION_JSON);
-			HttpEntity<String> entity = new HttpEntity<String>(headers);
+			HttpEntity<String> entity = new HttpEntity<String>(headersForNoAuth());
 
 			String url = microserviceUrlConverter(data, params);
 			try {
+				logger.debug(EELFLoggerDelegate.debugLogger, "Before making no authentication call: {}", url);
 				response = template.exchange(url, HttpMethod.GET, entity, String.class).getBody();
+				logger.debug(EELFLoggerDelegate.debugLogger, "No authentication call response: {}", response);
+
 			} catch (HttpClientErrorException e) {
 				throw e;
 			}
 		} else if (data.getSecurityType().equals(BASIC_AUTH)) {
 			// encoding the username and password
-			String plainCreds = data.getUsername() + ":" + decryptedPassword(data.getPassword());
+			String plainCreds = null;
+			try{
+				plainCreds = data.getUsername() + ":" + decryptedPassword(data.getPassword());
+			}
+			catch(Exception e){
+				logger.error("problem decrypting password ... check if decryption key is correct in system.properties: ", e);
+			}
 			byte[] plainCredsBytes = plainCreds.getBytes();
 			byte[] base64CredsBytes = Base64.encodeBase64(plainCredsBytes);
 			String base64Creds = new String(base64CredsBytes);
 
-			HttpHeaders headers = new HttpHeaders();
-			headers.add("Authorization", "Basic " + base64Creds);
-			headers.setContentType(MediaType.APPLICATION_JSON);
-			HttpEntity<String> entity = new HttpEntity<String>(headers);
+			HttpEntity<String> entity = new HttpEntity<String>(headersForBasicAuth(request, base64Creds));
 
 			String url = microserviceUrlConverter(data, params);
 			try {
 				response = template.exchange(url, HttpMethod.GET, entity, String.class).getBody();
 			} catch (HttpClientErrorException e) {
+				logger.error("Problem while talking to {1} - message: {2} ", url, e.getMessage());
 				throw e;
 			}
 		} else if (data.getSecurityType().equals(COOKIE_AUTH)) {
-			HttpHeaders headers = new HttpHeaders();
-			headers.setContentType(MediaType.APPLICATION_JSON);
-			String rawCookie = request.getHeader("Cookie");
-			headers.add("Cookie", rawCookie);
-			HttpEntity<String> entity = new HttpEntity<String>(headers);
-
+			HttpEntity<String> entity = new HttpEntity<String>(headersForCookieAuth(request));
 			String url = microserviceUrlConverter(data, params);
 			try {
 				response = template.exchange(url, HttpMethod.GET, entity, String.class).getBody();
@@ -211,9 +166,10 @@ public class MicroserviceProxyServiceImpl implements MicroserviceProxyService {
 				throw e;
 			}
 		}
+		
 		return response;
 	}
-
+	
 	private String decryptedPassword(String encryptedPwd) throws Exception {
 		String result = "";
 		if (encryptedPwd != null & encryptedPwd.length() > 0) {
@@ -225,6 +181,7 @@ public class MicroserviceProxyServiceImpl implements MicroserviceProxyService {
 				throw e;
 			}
 		}
+		
 		return result;
 	}
 
@@ -239,7 +196,43 @@ public class MicroserviceProxyServiceImpl implements MicroserviceProxyService {
 				url += ADD_MARK;
 			}
 		}
+
 		return url;
 	}
+	
+	private HttpHeaders headersForNoAuth(){
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
 
+		return headers;
+	}
+	
+	private HttpHeaders headersForBasicAuth(HttpServletRequest request, String base64Creds){
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Authorization", "Basic " + base64Creds);
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		String rawCookie = request.getHeader("Cookie");
+		headers.add("Cookie", rawCookie);
+		
+		return headers;
+	}
+
+	private HttpHeaders headersForCookieAuth(HttpServletRequest request){
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		String rawCookie = request.getHeader("Cookie");
+		headers.add("Cookie", rawCookie);
+		
+		return headers;
+	}
+	
+	private List<MicroserviceParameter> composeParams(MicroserviceData data, EPUser user){
+		List<MicroserviceParameter> params = data.getParameterList();
+		MicroserviceParameter userId_param = new MicroserviceParameter();
+		userId_param.setPara_key("userId");
+		userId_param.setPara_value(user.getOrgUserId());
+		params.add(userId_param);
+		
+		return params;
+	}
 }

@@ -96,7 +96,7 @@ public class EPAppCommonServiceImpl implements EPAppService {
 	@Autowired
 	private AdminRolesService adminRolesService;
 	@Autowired
-	private SessionFactory sessionFactory;
+	protected SessionFactory sessionFactory;
 	@Autowired
 	private DataAccessService dataAccessService;
 	@Autowired
@@ -839,7 +839,7 @@ public class EPAppCommonServiceImpl implements EPAppService {
 
 	// An app has been enabled/disabled. Must enable/disable all associated
 	// functional menu items.
-	private void setFunctionalMenuItemsEnabled(Session localSession, Boolean enabled, Long appId) {
+	protected void setFunctionalMenuItemsEnabled(Session localSession, Boolean enabled, Long appId) {
 		String active_yn = enabled ? "Y" : "N";
 		String sql = "SELECT m.menu_id, m.column_num, m.text, m.parent_menu_id, m.url, m.active_yn "
 				+ "FROM fn_menu_functional m, fn_menu_functional_roles r " + "WHERE m.menu_id = r.menu_id "
@@ -857,7 +857,7 @@ public class EPAppCommonServiceImpl implements EPAppService {
 
 	// Attention! If (appId == null) we use this function to create application
 	// otherwise we use it to modify existing application
-	private void updateApp(Long appId, OnboardingApp onboardingApp, FieldsValidator fieldsValidator, EPUser user) {
+	protected void updateApp(Long appId, OnboardingApp onboardingApp, FieldsValidator fieldsValidator, EPUser user) {
 		logger.debug(EELFLoggerDelegate.debugLogger, "LR: entering updateApp");
 		// Separate out the code for a restricted app, since it doesn't need any
 		// of the UEB code.
@@ -898,190 +898,197 @@ public class EPAppCommonServiceImpl implements EPAppService {
 			}
 
 		} else {
-			synchronized (syncRests) {
-				boolean result = false;
-				Session localSession = null;
-				Transaction transaction = null;
-				try {
-					localSession = sessionFactory.openSession();
-					transaction = localSession.beginTransaction();
-					EPApp app;
-					if (appId == null) {
-						app = new EPApp();
-						// -------------------------------------------------------------------------------------------
-						// Register this App with the UEB communication server.
-						// Save
-						// the App's unique mailbox/topic
-						// name and keys to the FN_APP table. The App's mailbox
-						// and
-						// keys will be visible to the
-						// admin on the ECOMP portal.
-						// -------------------------------------------------------------------------------------------
-						TopicManager topicManager = new TopicManager() {
+			updateRestrictedApp(appId, onboardingApp, fieldsValidator, user);
+			
+		}
+	}
 
-							EPAppCommonServiceImpl service;
+	protected void updateRestrictedApp(Long appId, OnboardingApp onboardingApp, FieldsValidator fieldsValidator,
+			EPUser user) {
+		synchronized (syncRests) {
+			boolean result = false;
+			Session localSession = null;
+			Transaction transaction = null;
+			try {
+				localSession = sessionFactory.openSession();
+				transaction = localSession.beginTransaction();
+				EPApp app;
+				if (appId == null) {
+					app = new EPApp();
+					// -------------------------------------------------------------------------------------------
+					// Register this App with the UEB communication server.
+					// Save
+					// the App's unique mailbox/topic
+					// name and keys to the FN_APP table. The App's mailbox
+					// and
+					// keys will be visible to the
+					// admin on the ECOMP portal.
+					// -------------------------------------------------------------------------------------------
+					TopicManager topicManager = new TopicManager() {
 
-							public void init(EPAppCommonServiceImpl _service) {
-								service = _service;
-							}
+						EPAppCommonServiceImpl service;
 
-							public void createTopic(String key, String secret, String topicName,
-									String topicDescription) throws HttpException, CambriaApiException, IOException {
-
-								init(EPAppCommonServiceImpl.this);
-								final LinkedList<String> urlList = Helper.uebUrlList();
-								if (logger.isInfoEnabled()) {
-									logger.info("==> createTopic");
-									logger.info("topicName: " + topicName);
-									logger.info("topicDescription: " + topicDescription);
-								}
-								CambriaTopicManager tm = null;
-								try {
-									tm = service.getTopicManager(urlList, key, secret);
-								} catch (Exception e) {
-									logger.error("pub.build Exception ", e);
-									throw new CambriaApiException(topicName);
-								}
-								tm.createTopic(topicName, topicDescription, 1, 1);
-							}
-
-							public void addPublisher(String topicOwnerKey, String topicOwnerSecret, String publisherKey,
-									String topicName) throws HttpException, CambriaApiException, IOException {
-								logger.info("==> addPublisher to topic " + topicName);
-								final LinkedList<String> urlList = Helper.uebUrlList();
-								CambriaTopicManager tm = null;
-								try {
-									tm = service.getTopicManager(urlList, topicOwnerKey, topicOwnerSecret);
-								} catch (Exception e) {
-									logger.error("pub.build Exception ", e);
-									throw new CambriaApiException(topicName);
-								}
-								tm.allowProducer(topicName, publisherKey);
-							}
-
-						};
-						final CambriaIdentityManager im = new CambriaClientBuilders.IdentityManagerBuilder()
-								.usingHosts(Helper.uebUrlList()).build();
-						com.att.nsa.apiClient.credentials.ApiCredential credential = im.createApiKey(user.getEmail(),
-								"ECOMP Portal Owner");
-						String appKey = credential.getApiKey();
-						String appSecret = credential.getApiSecret();
-						String appMailboxName = null;
-
-						int maxNumAttemptsToCreateATopic = 3;
-						boolean successfullyCreatedMailbox = false;
-						for (int i = 0; i < maxNumAttemptsToCreateATopic; i++) {
-							appMailboxName = "ECOMP-PORTAL-OUTBOX-" + (int) (Math.random() * 100000.0);
-
-							try {
-								topicManager.createTopic(
-										PortalApiProperties.getProperty(PortalApiConstants.UEB_APP_KEY),
-										PortalApiProperties.getProperty(PortalApiConstants.UEB_APP_SECRET),
-										appMailboxName, "ECOMP outbox for app" + onboardingApp.name);
-								successfullyCreatedMailbox = true;
-								logger.debug(EELFLoggerDelegate.debugLogger,
-										"Successfully created " + appMailboxName + " for App " + onboardingApp.name);
-								logger.debug(EELFLoggerDelegate.debugLogger, "    Key = " + appKey + " Secret = "
-										+ appSecret + " generated using = " + user.getEmail());
-								break;
-							} catch (HttpException e) {
-								EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeUebConnectionError, e);
-								if (e.getStatusCode() == 409) {
-									logger.error(EELFLoggerDelegate.errorLogger, "Topic/mailbox " + appMailboxName
-											+ " already exists. Will try using a different name", e);
-								} else {
-									logger.error(EELFLoggerDelegate.errorLogger, "HttpException when onboarding App: ",
-											e);
-								}
-							}
+						public void init(EPAppCommonServiceImpl _service) {
+							service = _service;
 						}
 
-						if (successfullyCreatedMailbox) {
-							onboardingApp.setUebTopicName(appMailboxName);
-							onboardingApp.setUebKey(appKey);
-							onboardingApp.setUebSecret(appSecret);
+						public void createTopic(String key, String secret, String topicName,
+								String topicDescription) throws HttpException, CambriaApiException, IOException {
 
-							try {
-								/*
-								 * EP is a publisher to this App's new mailbox
-								 */
-								topicManager.addPublisher(
-										PortalApiProperties.getProperty(PortalApiConstants.UEB_APP_KEY),
-										PortalApiProperties.getProperty(PortalApiConstants.UEB_APP_SECRET),
-										PortalApiProperties.getProperty(PortalApiConstants.UEB_APP_KEY),
-										appMailboxName);
-
-								/*
-								 * This App is a subscriber of its own mailbox
-								 */
-								topicManager.addSubscriber(
-										PortalApiProperties.getProperty(PortalApiConstants.UEB_APP_KEY),
-										PortalApiProperties.getProperty(PortalApiConstants.UEB_APP_SECRET), appKey,
-										appMailboxName);
-
-								/*
-								 * This App is a publisher to EP
-								 */
-								topicManager.addPublisher(
-										PortalApiProperties.getProperty(PortalApiConstants.UEB_APP_KEY),
-										PortalApiProperties.getProperty(PortalApiConstants.UEB_APP_SECRET), appKey,
-										PortalApiProperties.getProperty(PortalApiConstants.ECOMP_PORTAL_INBOX_NAME));
-							} catch (HttpException | CambriaApiException | IOException e) {
-								EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeUebRegisterOnboardingAppError, e);
-								logger.error(EELFLoggerDelegate.errorLogger,
-										"Error when configuring Publisher/Subscriber for App's new mailbox", e);
-								transaction.commit();
-								localSession.close();
-								fieldsValidator.httpStatusCode = new Long(HttpServletResponse.SC_CONFLICT);
-								return;
+							init(EPAppCommonServiceImpl.this);
+							final LinkedList<String> urlList = Helper.uebUrlList();
+							if (logger.isInfoEnabled()) {
+								logger.info("==> createTopic");
+								logger.info("topicName: " + topicName);
+								logger.info("topicDescription: " + topicDescription);
 							}
-						} else {
+							CambriaTopicManager tm = null;
+							try {
+								tm = service.getTopicManager(urlList, key, secret);
+							} catch (Exception e) {
+								logger.error("pub.build Exception ", e);
+								throw new CambriaApiException(topicName);
+							}
+							tm.createTopic(topicName, topicDescription, 1, 1);
+						}
+
+						public void addPublisher(String topicOwnerKey, String topicOwnerSecret, String publisherKey,
+								String topicName) throws HttpException, CambriaApiException, IOException {
+							logger.info("==> addPublisher to topic " + topicName);
+							final LinkedList<String> urlList = Helper.uebUrlList();
+							CambriaTopicManager tm = null;
+							try {
+								tm = service.getTopicManager(urlList, topicOwnerKey, topicOwnerSecret);
+							} catch (Exception e) {
+								logger.error("pub.build Exception ", e);
+								throw new CambriaApiException(topicName);
+							}
+							tm.allowProducer(topicName, publisherKey);
+						}
+
+					};
+					final CambriaIdentityManager im = new CambriaClientBuilders.IdentityManagerBuilder()
+							.usingHosts(Helper.uebUrlList()).build();
+					com.att.nsa.apiClient.credentials.ApiCredential credential = im.createApiKey(user.getEmail(),
+							"ECOMP Portal Owner");
+					String appKey = credential.getApiKey();
+					String appSecret = credential.getApiSecret();
+					String appMailboxName = null;
+
+					int maxNumAttemptsToCreateATopic = 3;
+					boolean successfullyCreatedMailbox = false;
+					for (int i = 0; i < maxNumAttemptsToCreateATopic; i++) {
+						appMailboxName = "ECOMP-PORTAL-OUTBOX-" + (int) (Math.random() * 100000.0);
+
+						try {
+							topicManager.createTopic(
+									PortalApiProperties.getProperty(PortalApiConstants.UEB_APP_KEY),
+									PortalApiProperties.getProperty(PortalApiConstants.UEB_APP_SECRET),
+									appMailboxName, "ECOMP outbox for app" + onboardingApp.name);
+							successfullyCreatedMailbox = true;
+							logger.debug(EELFLoggerDelegate.debugLogger,
+									"Successfully created " + appMailboxName + " for App " + onboardingApp.name);
+							logger.debug(EELFLoggerDelegate.debugLogger, "    Key = " + appKey + " Secret = "
+									+ appSecret + " generated using = " + user.getEmail());
+							break;
+						} catch (HttpException e) {
+							EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeUebConnectionError, e);
+							if (e.getStatusCode() == 409) {
+								logger.error(EELFLoggerDelegate.errorLogger, "Topic/mailbox " + appMailboxName
+										+ " already exists. Will try using a different name", e);
+							} else {
+								logger.error(EELFLoggerDelegate.errorLogger, "HttpException when onboarding App: ",
+										e);
+							}
+						}
+					}
+
+					if (successfullyCreatedMailbox) {
+						onboardingApp.setUebTopicName(appMailboxName);
+						onboardingApp.setUebKey(appKey);
+						onboardingApp.setUebSecret(appSecret);
+
+						try {
+							/*
+							 * EP is a publisher to this App's new mailbox
+							 */
+							topicManager.addPublisher(
+									PortalApiProperties.getProperty(PortalApiConstants.UEB_APP_KEY),
+									PortalApiProperties.getProperty(PortalApiConstants.UEB_APP_SECRET),
+									PortalApiProperties.getProperty(PortalApiConstants.UEB_APP_KEY),
+									appMailboxName);
+
+							/*
+							 * This App is a subscriber of its own mailbox
+							 */
+							topicManager.addSubscriber(
+									PortalApiProperties.getProperty(PortalApiConstants.UEB_APP_KEY),
+									PortalApiProperties.getProperty(PortalApiConstants.UEB_APP_SECRET), appKey,
+									appMailboxName);
+
+							/*
+							 * This App is a publisher to EP
+							 */
+							topicManager.addPublisher(
+									PortalApiProperties.getProperty(PortalApiConstants.UEB_APP_KEY),
+									PortalApiProperties.getProperty(PortalApiConstants.UEB_APP_SECRET), appKey,
+									PortalApiProperties.getProperty(PortalApiConstants.ECOMP_PORTAL_INBOX_NAME));
+						} catch (HttpException | CambriaApiException | IOException e) {
+							EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeUebRegisterOnboardingAppError, e);
+							logger.error(EELFLoggerDelegate.errorLogger,
+									"Error when configuring Publisher/Subscriber for App's new mailbox", e);
 							transaction.commit();
 							localSession.close();
 							fieldsValidator.httpStatusCode = new Long(HttpServletResponse.SC_CONFLICT);
 							return;
 						}
 					} else {
-						app = (EPApp) localSession.get(EPApp.class, appId);
-						if (app == null || app.getId() == null) {
-							// App is already deleted!
-							transaction.commit();
-							localSession.close();
-							fieldsValidator.httpStatusCode = new Long(HttpServletResponse.SC_NOT_FOUND);
-							return;
-						}
+						transaction.commit();
+						localSession.close();
+						fieldsValidator.httpStatusCode = new Long(HttpServletResponse.SC_CONFLICT);
+						return;
 					}
-					logger.debug(EELFLoggerDelegate.debugLogger, "LR: about to call createAppFromOnboarding");
-					createAppFromOnboarding(app, onboardingApp, localSession);
-					logger.debug(EELFLoggerDelegate.debugLogger,
-							"LR: updateApp: finished calling createAppFromOnboarding");
-					localSession.saveOrUpdate(app);
-					logger.debug(EELFLoggerDelegate.debugLogger,
-							"LR: updateApp: finished calling localSession.saveOrUpdate");
-					// Enable or disable all menu items associated with this app
-					setFunctionalMenuItemsEnabled(localSession, onboardingApp.isEnabled, appId);
-					logger.debug(EELFLoggerDelegate.debugLogger,
-							"LR: updateApp: finished calling setFunctionalMenuItemsEnabled");
-					transaction.commit();
-					logger.debug(EELFLoggerDelegate.debugLogger, "LR: updateApp: finished calling transaction.commit");
-					epUebHelper.addPublisher(app);
-					logger.debug(EELFLoggerDelegate.debugLogger,
-							"LR: updateApp: finished calling epUebHelper.addPublisher");
-					result = true;
-				} catch (Exception e) {
-					logger.error(EELFLoggerDelegate.errorLogger, "updateApp failed", e);
-					EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeUebRegisterOnboardingAppError, e);
-					EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeDaoSystemError, e);
-					EcompPortalUtils.rollbackTransaction(transaction,
-							"updateApp rollback, exception = " + EcompPortalUtils.getStackTrace(e));
-				} finally {
-					EcompPortalUtils.closeLocalSession(localSession, "updateApp");
+				} else {
+					app = (EPApp) localSession.get(EPApp.class, appId);
+					if (app == null || app.getId() == null) {
+						// App is already deleted!
+						transaction.commit();
+						localSession.close();
+						fieldsValidator.httpStatusCode = new Long(HttpServletResponse.SC_NOT_FOUND);
+						return;
+					}
 				}
-				if (!result) {
-					fieldsValidator.httpStatusCode = new Long(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-				}
+				logger.debug(EELFLoggerDelegate.debugLogger, "LR: about to call createAppFromOnboarding");
+				createAppFromOnboarding(app, onboardingApp, localSession);
+				logger.debug(EELFLoggerDelegate.debugLogger,
+						"LR: updateApp: finished calling createAppFromOnboarding");
+				localSession.saveOrUpdate(app);
+				logger.debug(EELFLoggerDelegate.debugLogger,
+						"LR: updateApp: finished calling localSession.saveOrUpdate");
+				// Enable or disable all menu items associated with this app
+				setFunctionalMenuItemsEnabled(localSession, onboardingApp.isEnabled, appId);
+				logger.debug(EELFLoggerDelegate.debugLogger,
+						"LR: updateApp: finished calling setFunctionalMenuItemsEnabled");
+				transaction.commit();
+				logger.debug(EELFLoggerDelegate.debugLogger, "LR: updateApp: finished calling transaction.commit");
+				epUebHelper.addPublisher(app);
+				logger.debug(EELFLoggerDelegate.debugLogger,
+						"LR: updateApp: finished calling epUebHelper.addPublisher");
+				result = true;
+			} catch (Exception e) {
+				logger.error(EELFLoggerDelegate.errorLogger, "updateApp failed", e);
+				EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeUebRegisterOnboardingAppError, e);
+				EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeDaoSystemError, e);
+				EcompPortalUtils.rollbackTransaction(transaction,
+						"updateApp rollback, exception = " + EcompPortalUtils.getStackTrace(e));
+			} finally {
+				EcompPortalUtils.closeLocalSession(localSession, "updateApp");
+			}
+			if (!result) {
+				fieldsValidator.httpStatusCode = new Long(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			}
 		}
+
 	}
 
 	public CambriaTopicManager getTopicManager(LinkedList<String> urlList, String key, String secret)

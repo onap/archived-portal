@@ -19,7 +19,9 @@ Version 1.1.?, July 2017
 - [Portal-35] Replaced the portal logo with onap logo on the login screen.
 - [Portal-40] Fix to add user roles 
 - [Portal-47] Fix to eliminate duplicate roles on Users page
-- [Portal-45] Fix to save on an application Onboarding
+- [Portal-45] Fix to update an existing app on Application Onboarding
+- [Portal-48] Fix to save a new app on Application onboarding
+
 
 Version 1.1.0, July 2017
 - [Portal-7] Improvements added as part of the rebasing process

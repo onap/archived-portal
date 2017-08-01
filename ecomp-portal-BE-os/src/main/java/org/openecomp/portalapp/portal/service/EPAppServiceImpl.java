@@ -25,9 +25,20 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeSet;
+import java.util.UUID;
 
+import javax.servlet.http.HttpServletResponse;
+
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 import org.openecomp.portalapp.portal.domain.EPApp;
+import org.openecomp.portalapp.portal.domain.EPUser;
 import org.openecomp.portalapp.portal.logging.aop.EPMetricsLog;
+import org.openecomp.portalapp.portal.logging.format.EPAppMessagesEnum;
+import org.openecomp.portalapp.portal.logging.logic.EPLogUtil;
+import org.openecomp.portalapp.portal.transport.FieldsValidator;
+import org.openecomp.portalapp.portal.transport.OnboardingApp;
+import org.openecomp.portalapp.portal.utils.EcompPortalUtils;
 import org.openecomp.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.openecomp.portalsdk.core.service.DataAccessService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +58,8 @@ public class EPAppServiceImpl extends EPAppCommonServiceImpl implements EPAppSer
 
 	private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(EPAppServiceImpl.class);
 
+	private static Object syncRests = new Object();
+	
 	@Autowired
 	private DataAccessService dataAccessService;
 	
@@ -72,6 +85,71 @@ public class EPAppServiceImpl extends EPAppCommonServiceImpl implements EPAppSer
 			userApps.addAll(distinctApps);
 			return userApps;
 	
+	}
+	
+	protected void updateRestrictedApp(Long appId, OnboardingApp onboardingApp, FieldsValidator fieldsValidator,
+			EPUser user) {
+		synchronized (syncRests) {
+			boolean result = false;
+			Session localSession = null;
+			Transaction transaction = null;
+			try {
+				localSession = sessionFactory.openSession();
+				transaction = localSession.beginTransaction();
+				EPApp app;
+				if (appId == null) {
+					app = new EPApp();
+					
+					// In the parent class, the UEB code is responsible for generating the keys/secret/mailbox but UEB Messaging 
+					// is not actually being used currently; may be used in future at which point we can just remove this method and
+					// depend on parent class's method
+					// So, using UUID generator to generate the unique key instead.
+					String uuidStr = UUID.randomUUID().toString();
+					String appKey = uuidStr;
+					String appSecret = uuidStr;
+					String appMailboxName = "ECOMP-PORTAL-OUTBOX";
+					onboardingApp.setUebTopicName(appMailboxName);
+					onboardingApp.setUebKey(appKey);
+					onboardingApp.setUebSecret(appSecret);
+					
+				}else {
+					app = (EPApp) localSession.get(EPApp.class, appId);
+					if (app == null || app.getId() == null) {
+						// App is already deleted!
+						transaction.commit();
+						localSession.close();
+						fieldsValidator.httpStatusCode = new Long(HttpServletResponse.SC_NOT_FOUND);
+						return;
+					}
+				}
+				logger.debug(EELFLoggerDelegate.debugLogger, "LR: about to call createAppFromOnboarding");
+				createAppFromOnboarding(app, onboardingApp, localSession);
+				logger.debug(EELFLoggerDelegate.debugLogger,
+						"LR: updateApp: finished calling createAppFromOnboarding");
+				localSession.saveOrUpdate(app);
+				logger.debug(EELFLoggerDelegate.debugLogger,
+						"LR: updateApp: finished calling localSession.saveOrUpdate");
+				// Enable or disable all menu items associated with this app
+				setFunctionalMenuItemsEnabled(localSession, onboardingApp.isEnabled, appId);
+				logger.debug(EELFLoggerDelegate.debugLogger,
+						"LR: updateApp: finished calling setFunctionalMenuItemsEnabled");
+				transaction.commit();
+				logger.debug(EELFLoggerDelegate.debugLogger, "LR: updateApp: finished calling transaction.commit");
+				result = true;
+			} catch (Exception e) {
+				logger.error(EELFLoggerDelegate.errorLogger, "updateApp failed", e);
+				EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeUebRegisterOnboardingAppError, e);
+				EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeDaoSystemError, e);
+				EcompPortalUtils.rollbackTransaction(transaction,
+						"updateApp rollback, exception = " + EcompPortalUtils.getStackTrace(e));
+			} finally {
+				EcompPortalUtils.closeLocalSession(localSession, "updateApp");
+			}
+			if (!result) {
+				fieldsValidator.httpStatusCode = new Long(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			}
+		}
+
 	}
 	
 	public CambriaTopicManager getTopicManager(LinkedList<String> urlList, String key, String secret) throws GeneralSecurityException, Exception{
