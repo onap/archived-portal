@@ -25,6 +25,7 @@ Version 1.1.0, July 2017
 - [Portal-47] Fix to eliminate duplicate roles on Users page
 - [Portal-48] Fix to save a new app on Application onboarding
 - [Portal-49] image icon is missing on Widget corner
+- [Portal-63] remove att_abs_tpls*.js and greensock url
 
 Version 1.0.0, February 2017
 - Initial release
