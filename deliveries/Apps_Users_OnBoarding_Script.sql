@@ -10,7 +10,7 @@ INSERT INTO `fn_app` (`app_id`, `app_name`, `app_image_url`, `app_description`, 
 (4, 'SDC', 'images/cache/portal956868231_53879.png', NULL, NULL, 'http://sdc.api.simpledemo.openecomp.org:8181/sdc1/portal', NULL, 'http://sdc.api.simpledemo.openecomp.org:8080/api/v2', '', '', NULL, '78ot0W94rpB0o4FYzVoIOg==', 'N', 'Y', NULL, 'Default', 'ueb_key', 'ueb_secret', 'ECOMP-PORTAL-OUTBOX', 1), 
 (5, 'Policy', 'images/cache/portal1470452815_67021.png', NULL, NULL, 'http://policy.api.simpledemo.openecomp.org:8443/ecomp/policy#/Editor', NULL, 'http://policy.api.simpledemo.openecomp.org:8443/ecomp/api/v2', '', '', NULL, 'okYTaDrhzibcbGVq5mjkVQ==', 'N', 'Y', NULL, 'Default', 'ueb_key', 'ueb_secret', 'ECOMP-PORTAL-OUTBOX', 1),
 (6, 'Virtual Infrastructure Deployment', 'images/cache/portal-345993588_92550.png', NULL, NULL, 'http://vid.api.simpledemo.openecomp.org:8080/vid/welcome.htm', NULL, 'http://vid.api.simpledemo.openecomp.org:8080/vid/api/v2', '', '', NULL, 'okYTaDrhzibcbGVq5mjkVQ==', 'N', 'Y', NULL, 'Default', '2Re7Pvdkgw5aeAUD', 'S31PrbOzGgL4hg4owgtx47Da', 'ECOMP-PORTAL-OUTBOX-90', 1),
-(7, 'A&AI UI', 'images/cache/portal-345993588_92550.png', NULL, NULL, 'http://aai.ui.simpledemo.openecomp.org:9517/services/aai/webapp/index.html#/viewInspect', NULL, 'http://aai.ui.simpledemo.openecomp.org:9517/api/v2', '', '', NULL, 'okYTaDrhzibcbGVq5mjkVQ==', 'N', 'Y', NULL, 'Default', 'ueb_key', 'ueb_secret', 'ECOMP-PORTAL-OUTBOX', 1);
+(7, 'A&AI UI', 'images/cache/portal-345993588_92550.png', NULL, NULL, 'http://aai.api.simpledemo.openecomp.org:9517/services/aai/webapp/index.html#/viewInspect', NULL, 'http://aai.api.simpledemo.openecomp.org:9517/api/v2', '', '', NULL, 'okYTaDrhzibcbGVq5mjkVQ==', 'N', 'Y', NULL, 'Default', 'ueb_key', 'ueb_secret', 'ECOMP-PORTAL-OUTBOX', 1);
 
 -- insert ASDC users user id2-8
 
@@ -63,18 +63,18 @@ Insert into fn_user (USER_ID, ORG_ID, MANAGER_ID,FIRST_NAME,MIDDLE_NAME,LAST_NAM
 Insert into fn_user_role (USER_ID,ROLE_ID,PRIORITY,APP_ID) values (12,16,null,7);
 
 -- insert fn_roles for the on boarded apps 
-insert into fn_role values(1000,'System Administrator','Y',1,2,999); -- SDK
+insert into fn_role values(1000,'System Administrator','Y',1,2,1); -- SDK from 999 to 1
 insert into fn_role values(1001,'Standard User','Y',1,2,16); -- SDK
-insert into fn_role values(1002,'System Administrator','Y',1,3,999); -- DMaap
+insert into fn_role values(1002,'System Administrator','Y',1,3,1); -- DMaap from 999 to 1
 insert into fn_role values(1003,'Standard User','Y',1,3,16); -- DMaap
-insert into fn_role values(1004,'System Administrator','Y',1,4,999); -- SDC
+insert into fn_role values(1004,'System Administrator','Y',1,4,1); -- SDC from 999 to 1
 insert into fn_role values(1005,'Standard User','Y',1,4,16); -- SDC
-insert into fn_role values(1006,'Policy Super Admin','Y',1,5,999); -- Policy
+insert into fn_role values(1006,'System Administrator','Y',1,5,1); -- Policy from 999 to 1
 insert into fn_role values(1007,'Standard User','Y',1,5,16); -- Policy 
-insert into fn_role values(1008,'System Administrator','Y',1,6,999); -- VID
+insert into fn_role values(1008,'System Administrator','Y',1,6,1); -- VID from 999 to 1
 insert into fn_role values(1009,'Standard User','Y',1,6,16); -- VID
 
-insert into fn_role values(1011,'System Administrator','Y',1,7,999); -- AAI UI
+insert into fn_role values(1011,'View','Y',1,7,1); -- AAI UI from 999 to 1
 insert into fn_role values(1012,'Standard User','Y',1,7,16); -- AAI UI
 
 
