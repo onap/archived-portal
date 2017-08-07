@@ -11,13 +11,13 @@ TIMESTAMP=$(date +%C%y%m%dT%H%M%S)
 VERSION="1.1.0-STAGING-${TIMESTAMP}"
 LATEST="1.1-STAGING-latest"
 
-APPS_VERSION="${REPO}/openecomp/portalapps:${VERSION}"
-DB_VERSION="${REPO}/openecomp/portaldb:${VERSION}"
-WMS_VERSION="${REPO}/openecomp/portalwms:${VERSION}"
+APPS_VERSION="${REPO}/openecomp/${EP_TAG_NAME}:${VERSION}"
+DB_VERSION="${REPO}/openecomp/${DB_TAG_NAME}:${VERSION}"
+WMS_VERSION="${REPO}/openecomp/${WMS_TAG_NAME}:${VERSION}"
 
-APPS_LATEST="${REPO}/openecomp/portalapps:${LATEST}"
-DB_LATEST="${REPO}/openecomp/portaldb:${LATEST}"
-WMS_LATEST="${REPO}/openecomp/portalwms:${LATEST}"
+APPS_LATEST="${REPO}/openecomp/${EP_TAG_NAME}:${LATEST}"
+DB_LATEST="${REPO}/openecomp/${DB_TAG_NAME}:${LATEST}"
+WMS_LATEST="${REPO}/openecomp/${WMS_TAG_NAME}:${LATEST}"
 
 # tag version
 docker tag ${EP_IMG_NAME} ${APPS_VERSION}

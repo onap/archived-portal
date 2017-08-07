@@ -1,13 +1,20 @@
 #!/bin/bash
+# Establish constants for the management shell scripts.
+# These variables are ALSO used in demo/boot/portal_vm_init.sh
 
-# This docker image name is hardcoded at the ONAP demo repository,
-# so changing it is nontrivial.
+EP_TAG_NAME=portalapps
 EP_IMG_NAME=ep:1610-1
 EP_CONT_NAME=onap_portal
+
+DB_TAG_NAME=portaldb
 DB_IMG_NAME=ecompdb:portal
 DB_CONT_NAME=ecompdb_portal
+DB_VOL_NAME=data_vol_portal
+
+WMS_TAG_NAME=portalwms
 WMS_IMG_NAME=widget-ms
 WMS_CONT_NAME=ecomp-portal-widget-ms
+
 VERSION=1.1.0
 ETCDIR=etc
 WORKINGDIR=PROJECT
