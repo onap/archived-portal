@@ -3,7 +3,7 @@
 # These variables are ALSO used in demo/boot/portal_vm_init.sh
 
 EP_TAG_NAME=portalapps
-EP_IMG_NAME=ep:1610-1
+EP_IMG_NAME=ep:latest
 EP_CONT_NAME=onap_portal
 
 DB_TAG_NAME=portaldb
