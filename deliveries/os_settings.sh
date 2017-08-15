@@ -3,17 +3,17 @@
 # These variables are ALSO used in demo/boot/portal_vm_init.sh
 
 EP_TAG_NAME=portalapps
-EP_IMG_NAME=ep:latest
+EP_IMG_NAME=portalapps:latest
 EP_CONT_NAME=onap_portal
 
 DB_TAG_NAME=portaldb
-DB_IMG_NAME=ecompdb:portal
-DB_CONT_NAME=ecompdb_portal
+DB_IMG_NAME=portaldb:latest
+DB_CONT_NAME=onap_portal_db
 DB_VOL_NAME=data_vol_portal
 
 WMS_TAG_NAME=portalwms
 WMS_IMG_NAME=widget-ms
-WMS_CONT_NAME=ecomp-portal-widget-ms
+WMS_CONT_NAME=onap_portal_widget_ms
 
 VERSION=1.1.0
 ETCDIR=etc

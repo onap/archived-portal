@@ -46,8 +46,8 @@
 	</reporting>
 	<distributionManagement>
 		<site>
-			<id>nexus</id>
-			<url>dav:https://ecomp-nexus:8443/repository/portal-javadoc/${epsdk.version}</url>
+			<id>ecomp-site</id>
+			<url>dav:${nexusproxy}/content/sites/site/org/onap/portal/${project.version}</url>
 		</site>
 	</distributionManagement>
 	<repositories>
