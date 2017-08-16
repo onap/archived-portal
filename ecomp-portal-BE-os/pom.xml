@@ -4,7 +4,6 @@
 	<groupId>org.openecomp.portal</groupId>
 	<artifactId>ecompportal-be-os</artifactId>
 	<packaging>war</packaging>
-	<!-- Jenkins is not used to build the o/s version -->
 	<version>1.1</version>
 
 	<properties>
@@ -22,6 +21,7 @@
 		<nexusproxy>https://nexus.onap.org</nexusproxy>
 		<snapshotNexusPath>content/repositories/snapshots/</snapshotNexusPath>
 		<releaseNexusPath>content/repositories/releases/</releaseNexusPath>
+		<sitePath>/content/sites/site/org/onap/portal/${project.version}</sitePath>
 	</properties>
 
 	<reporting>
@@ -47,7 +47,7 @@
 	<distributionManagement>
 		<site>
 			<id>ecomp-site</id>
-			<url>dav:${nexusproxy}/content/sites/site/org/onap/portal/${project.version}</url>
+			<url>dav:${nexusproxy}${sitePath}</url>
 		</site>
 	</distributionManagement>
 	<repositories>
