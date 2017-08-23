@@ -84,7 +84,8 @@ fi
 
 cd $BASE/sdk/ecomp-sdk/epsdk-app-os
 ${MVN} clean package
-cp target/epsdk-app-os.war $OUT
+# Version was part of the final name in 1.1.0
+cp target/epsdk-app-os-1.1.0.war $OUT/epsdk-app-os.war
 
 cd $BASE/dmaapbc/dcae_dmaapbc_webapp
 ${MVN} clean package
