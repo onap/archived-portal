@@ -170,6 +170,8 @@ public class EPEELFLoggerAdvice {
 
 		EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(className);
 		logger.debug(EELFLoggerDelegate.debugLogger, "EPEELFLoggerAdvice#after: finished {}", methodName);
+		// add the metrics log
+		logger.info(EELFLoggerDelegate.metricsLogger,  methodName + " operation is completed.");
 
 		// Log security message, if necessary
 		if (securityEventType != null) {

@@ -17,7 +17,7 @@
   limitations under the License.
   ================================================================================
   -->
-<div class="w-ecomp-contactUs-home" style=" overflow:auto;''">
+<div class="w-ecomp-contactUs-home">
 	<div class="contactUs-home-container" id="page-content">
 		<div class="admins-page-main">
 			<div id="title" class="w-ecomp-main-view-title">
@@ -28,7 +28,7 @@
 			
 		<br/> 
 		<!-- Function Categories -->		
-		<div id="appFunctionInfo" style="font-size: 20px;" class="w-ecomp-main-view-title"> Application Functions
+		<div id="appFunctionInfo" class="w-ecomp-main-view-title"> Application Functions
 				<div b2b-table table-data="contact.functionalTableData" class="b2b-table-div">
 						<table>
 							<thead b2b-table-row type="header">
@@ -66,17 +66,17 @@
 		<br/>
 		<!-- Display applicationInfo panels -->
 		<div id="allAppInfo">
-			<div style="font-size: 20px;" class="w-ecomp-main-view-title"> All Applications		
+			<div class="w-ecomp-main-view-title"> All Applications		
 			</div>		
 			<div class="contactUs-general-div">
 				<div class="contact-us-table">
-				<div style="height:auto;" class="c-ecomp-portal-abs-table default">
+				<div class="c-ecomp-portal-abs-table default contactUs-table-ht">
 					<div ng-repeat="rowData in contact.appTable"
 						class="contactUs-collapsible-panel">
-						<div id="{{rowData.app_Id}}" style="height:60px; " class="contactUs-panel-header" ng-click="rowData.showFlag = !rowData.showFlag" >
-							<span id="appId{{$index}}" ng-bind="rowData.app_name" style="position:relative; top:20px"></span>
+						<div id="{{rowData.app_Id}}" class="contactUs-table-ht" class="contactUs-panel-header" ng-click="rowData.showFlag = !rowData.showFlag" >
+							<span id="appId{{$index}}" ng-bind="rowData.app_name" class="contactUs-table-spn"></span>
 							
-							<span style="float: right; margin-right: 30px; margin-top:20px;">
+							<span class="contactUs-table-title-sp">
 						 		<span ng-show="rowData.showFlag" title="Collapse app contact section" class="icon-controls-upPRIMARY"></span>
 								<span ng-hide="rowData.showFlag" title="Expand app contact section" class="icon-controls-down"></span>
 							</span>
@@ -85,13 +85,13 @@
 						<div id="collapse{{$index}}" ng-show="rowData.showFlag"
 							class="contactUs-collapsible-panel">
 							<div class="contactUs-txt" ng-hide="rowData.contact_name || rowData.contact_email || rowData.url_Info || rowData.desc"> 
-								<span style="margin-bottom: 20px;"> No application information is available. Please use the links above to contact the ECOMP Portal team. </span>
+								<span class="contactUs-collapsible-panel-spn"> No application information is available. Please use the links above to contact the ECOMP Portal team. </span>
 							</div>
 		 					<div class="contactUs-txt" ng-show="rowData.contact_name || rowData.contact_email || rowData.url_Info || rowData.desc"> 
-							  <table style="border-spacing: 10px 5px; max-width:950px; margin:10px;">
+							  <table class="contactUs-main-table">
 								<tr>
-									<td class="contactUs-panel-labels" style="width: 120px;">Contact:</td>
-									<td class="contactUs-panel-labels" style="width: 830px;">{{rowData.contact_name}}</td>
+									<td class="contactUs-panel-labels contactUs-main-panel-labels">Contact:</td>
+									<td class="contactUs-panel-labels contactUs-main-panel-value">{{rowData.contact_name}}</td>
 								</tr>
 								<tr>
 									<td class="contactUs-panel-labels">Email:</td>

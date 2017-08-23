@@ -1,9 +1,18 @@
 <div class="functionalMenu-details-modal">
-    <div class="title">{{ngDialogData.title}}</div>
 
+		<div class="b2b-modal-header">
+			<h2 class="titles" id="microservice-add-details-title">{{ngDialogData.title}}</h2>
 
-    <div class="functionalMenu-properties-main" scroll-top="functionalMenuDetails.scrollApi">
-        <form name="functionalMenuForm">
+			<div class="corner-button in">
+				<button type="button" class="close" aria-label="Close"
+					ng-click="$dismiss('cancel')"></button>
+			</div>
+		</div>
+
+		<div class="b2b-modal-body">
+		    <div class="functionalMenu-properties-main" scroll-top="functionalMenuDetails.scrollApi">
+
+		   <form name="functionalMenuForm">
 
             <div class="span6" >
 					<div class="item-label">Parent</div>
@@ -26,43 +35,50 @@
                    <div class="item-label">URL</div>
                     <input id="input-url" ddh-reset ng-readonly="!functionalMenuDetails.formEditable ? 'checked':'' " class="functionalMenu-height" placeholder="http://" class="input-field" ng-model="functionalMenuDetails.menuItem.menu.url" type="url" name="url"/>
 					<div id="error-url-conflict" ng-show="functionalMenuForm.url.$error.url">
-					<small class="err-message"	style="color: Red; font-size: 11px;">Not valid URL!</small>
+					<small class="err-message error-msg-txt">Not valid URL!</small>
 				</div>                
 				</div>
                 </div>
                  <div class="right-item">
                     <div class="item-label">App</div>
-                    <div class="custom-select-wraps" ng-readonly="checked">
+                 <div class="custom-select-wraps" ng-readonly="checked">
                     				<div id='ecomp-small-spinner' class="ecomp-small-spinner"
                     									ng-if="isAllApplications"></div>
                     				<div ng-if="!isAllApplications">
-                                            <select id="select-app" class="select-field"
-                                ng-model="functionalMenuDetails.selectedApp"
-                                ng-change="functionalMenuDetails.updateSelectedApp(functionalMenuDetails.selectedApp);"
-                                ng-options="app.title for app in functionalMenuDetails.availableApps track by app.index"
-                               
-                                required>
-                            <option value="" >No Application</option>
-                        </select>
+                                                
+                         <div class="table-dropdown" >
+							<select id="select-app" b2b-dropdown placeholder-text="Select Application" ng-model="functionalMenuDetails.selectedAppIndex" ng-change="functionalMenuDetails.updateSelectedApp(functionalMenuDetails.selectedAppIndex);">
+				            	<option b2b-dropdown-list option-repeat="app in functionalMenuDetails.availableApps track by app.index" value="{{app.index}}">{{app.title}}</option>
+				            </select>
+						</div>
                     </div>
                     </div>
+                    
+                   
                     <!--<span class="err-message" ng-show="functionalMenuForm.app.$dirty && functionalMenuForm.app.$error.required"> Please select App!</span>-->
                  <!--   <pre>{{functionalMenuDetails.menuItem | json}}</pre> -->
                 </div>
-           
-                    
-            <div class="item" ng-show="functionalMenuDetails.displayRoles==true">
-                <div class="item-label">Roles</div>
-                    <dropdown-multiselect id="dropdown-roles" dropdown-title="Select Roles" pre-selected="functionalMenuDetails.preSelectedRoles.roles"
-                                          model="functionalMenuDetails.selectedRole"
-                                          options="functionalMenuDetails.availableRoles" source="ngDialogData.source" >
-                    </dropdown-multiselect>
-            </div>
+                
+                <div class="item"
+				ng-show="functionalMenuDetails.displayRoles==true">
+				<div class="item-label">Roles</div>
+				<div>
+					<multiple-select id="dropdown-roles" unique-data="{{$index}}"
+						placeholder="Select Roles"
+						on-change="functionalMenuDetails.preSelectedRoles.roles"
+						ng-model="functionalMenuDetails.availableRoles" name-attr="rolename"
+						value-attr="isApplied"> </multiple-select>
+				</div>
+				</div>
             <div ng-show="functionalMenuDetails.selectedApp && functionalMenuDetails.selectedApp.isDisabled" class="err-message">Application is disabled</div>
-             </div>
+           
         </form>
-    </div>
-    <div class="dialog-control">
+		  </div>
+	
+			</div>
+			<br>
+			<div class="b2b-modal-footer">
+				 <div class="dialog-control">
         <div ng-if="ngDialogData.source!='view'">
             <span class="ecomp-save-spinner" ng-show="functionalMenuDetails.isSaving"></span>
             <span ng-if="ngDialogData.source=='edit' && functionalMenuDetails.isLeafMenuItem()">
@@ -82,16 +98,21 @@
             <span ng-if="ngDialogData.source=='add' || (ngDialogData.source=='edit' && !functionalMenuDetails.isLeafMenuItem())">
                 <button id="button-save-add"
                         class="btn btn-alt btn-small" ng-show="!functionalMenuDetails.menuItem.menu.url || !(functionalMenuDetails.selectedApp.index>0)
-                || functionalMenuDetails.selectedRole.length>0 || !functionalMenuDetails.menutitle" ng-disabled="!functionalMenuForm.text.$valid || !functionalMenuDetails.menutitle"
+                || functionalMenuDetails.isRoleSelected() || !functionalMenuDetails.menutitle" ng-disabled="!functionalMenuForm.text.$valid || !functionalMenuDetails.menutitle"
                         ng-click="functionalMenuDetails.saveChanges()">Save</button>
-                <button id="button-save-continue" class="save-button" ng-show="!!functionalMenuDetails.menuItem.menu.url && functionalMenuDetails.selectedApp.index>0 && functionalMenuDetails.menutitle
-                && !functionalMenuDetails.selectedRole.length>0" ng-disabled="!functionalMenuForm.url.$valid"
+                <button id="button-save-continue" class="btn btn-alt btn-small" ng-show="!!functionalMenuDetails.menuItem.menu.url && functionalMenuDetails.selectedApp.index>0 && functionalMenuDetails.menutitle
+                && !functionalMenuDetails.isRoleSelected()" ng-disabled="!functionalMenuForm.url.$valid"
                         ng-click="functionalMenuDetails.continue()">Continue</button>
             </span>
-            <button id="button-cancel-close-dialog" class="btn btn-alt btn-small" ng-click="closeThisDialog()">Cancel</button>
+            <button id="button-cancel-close-dialog" class="btn btn-alt btn-small" ng-click="$dismiss('cancel')">Cancel</button>
         </div>
         <div ng-if="ngDialogData.source=='view'">
-            <div  id="div-close-dialog"  class="btn btn-alt btn-small" ng-click="closeThisDialog()">Close</div>
+            <div  id="div-close-dialog"  class="btn btn-alt btn-small" ng-click="$dismiss('cancel')">Close</div>
         </div>
     </div>
+			</div>
+			
+			
+			
+
 </div>

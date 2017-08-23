@@ -1,0 +1,21 @@
+<div  id="widget-news" ng-controller="NewsCtrl" class="widget-news-main">
+		<div att-gridster-item-body class="information-section-gridsterContent">
+			<div class="resources">
+				<ul ng-show="newsData.length!=0">
+					<li ng-repeat="item in newsData"><a id="resource-widget-{{item.id}}"
+												href="{{item.href}}" target="_blank" ng-bind="item.title"></a></li>
+				</ul>
+							<div ng-hide="newsData.length!=0">
+								<div class="activity-error-container"
+									style="background: rgb(255, 255, 255); overflow: hidden !important; width: 100%;">
+									<div class="activity-error-block">
+										<i class="icon-information full-linear-icon-information"
+										   style="margin-left: 125px; font-size: 90px"></i> <br>
+										<div class="activity-error-msg1">There's currently no
+														news available.</div>
+									</div>
+								</div>
+					</div>
+			</div>
+		</div>
+</div>

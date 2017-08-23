@@ -18,20 +18,32 @@
   ================================================================================
   -->
 <div class="application-details-modal">
-    <div id="title" class="title">Application Details</div>
 
+		<div class="b2b-modal-header">
+			<h2 class="account-details-title" id="application-details-title">Application Details</h2>
+
+			<div class="corner-button in">
+				<button type="button" class="close" aria-label="Closhhhe"
+					ng-click="$dismiss('cancel')"></button>
+			</div>
+		</div>
+
+		<div class="b2b-modal-body">
     <div class="app-properties-main" scroll-top="appDetails.scrollApi">
         <form name="appForm" novalidate autocomplete="off">
-            <!-- We can remove this script once we get to AT&T Corporate Firefox version 47
+            <!-- We can remove this script once we get to Firefox version 47
                   autocomplete="off" won't work until v47 -->
-            <script type="text/javascript">
+           <!--  <script type="text/javascript">
                 document.getElementById("appForm").reset();
-            </script>
+            </script> -->
             <div id="app-left-container" class="left-container">
-                <div class="property">
-                    <input id="checkbox-app-is-restricted" type="checkbox" class="checkbox-field checkbox-field-openSRC" ng-disabled="appDetails.isEditMode" ng-model="appDetails.app.restrictedApp" ng-checked="appDetails.app.restrictedApp"/>
-                    <div class="property-label checkbox-label">Hyperlink only application</div>
-                </div>
+                <div class="property-label checkbox-label"> 
+					<label for="checkbox-app-is-restricted" class="checkbox"> 
+		                <input type="checkbox" ng-model="appDetails.app.restrictedApp" id="checkbox-app-is-restricted" ng-disabled="appDetails.isEditMode" ng-checked="appDetails.app.restrictedApp"/> 
+		                <i class="skin"></i> 
+		                <span>Hyperlink only application</span> 
+		            </label> 
+				</div>       
                 <div class="property required">
                     <div class="property-label">Application Name</div>
                     <input id="input-app-name"  type="text"
@@ -123,6 +135,14 @@
                             <small id="error-mylogins-password-reqd" class="err-message" ng-message="required">My Logins App Password is required</small>
                         </div>
                     </div>
+
+	                <div class="property" ng-show="!appDetails.app.restrictedApp">
+	                    <div id="pwd-property-label"  class="property-label">Name Space</div>
+	                    <input  type="text"  id="input-mylogins-auth-namespace"
+	                           ng-model="appDetails.app.nameSpace" 
+	                           name="appAuthNameSpace"
+	                           maxlength="256"/>
+	                </div>                                    
                 </div>
             </div>
             <div class="right-container">
@@ -173,12 +193,25 @@
                     </div>
 
                     <div id="property-guest-access" class="property">
-                        <input id="checkbox-app-is-open" type="checkbox" class="checkbox-field checkbox-field-openSRC" ng-model="appDetails.app.isOpen" ng-checked="appDetails.app.isOpen || appDetails.app.restrictedApp" ng-disabled="appDetails.app.restrictedApp"/>
-                        <div id="property-guest-checkbox-label" class="property-label checkbox-label">Allow guest access</div>
+                        <label for="checkbox-app-is-open" class="checkbox"> 
+		                <input type="checkbox" ng-model="appDetails.app.isOpen" id="checkbox-app-is-open" ng-checked="appDetails.app.isOpen || appDetails.app.restrictedApp" ng-disabled="appDetails.app.restrictedApp"/> 
+		                <i class="skin"></i> 
+		                <span>Allow guest access</span> 
+		            </label> 
                     </div>
                     <div id="property-active" class="property">
-                        <input id="checkbox-app-is-enabled" type="checkbox" class=" checkbox-field checkbox-field-openSRC " ng-model="appDetails.app.isEnabled"/>
-                        <div id="property-active-checkbox-label" class="property-label checkbox-label">Active</div>
+                     <label for="checkbox-app-is-enabled" class="checkbox"> 
+		                <input type="checkbox" ng-model="appDetails.app.isEnabled" id="checkbox-app-is-enabled"/> 
+		                <i class="skin"></i> 
+		                <span>Active</span> 
+		            </label>    
+                    </div> <br/>
+                    <div id="property-is-central-auth" class="property" ng-show="!appDetails.app.restrictedApp">
+                     <label for="checkbox-app-is-central-auth" class="checkbox"> 
+		                <input type="checkbox" ng-model="appDetails.app.isCentralAuth" id="checkbox-app-is-central-auth"/> 
+		                <i class="skin"></i> 
+		                <span>Centralized</span> 
+		            </label>    
                     </div>
 
                 </div>
@@ -186,13 +219,24 @@
             </div>
         </form>
     </div>
+	</div>
+		
+			<br>
+			<div class="b2b-modal-footer">
+				<div class="dialog-control">
+				<span class="ecomp-save-spinner" ng-show="appDetails.isSaving"></span> 
+				<button id="button-save-app" class="btn btn-alt btn-small" ng-class="{disabled: appForm.$invalid}" ng-click="appDetails.saveChanges()">Save</button> 	
+						<button id="button-notification-cancel" class="btn btn-alt btn-small" ng-click="$dismiss('cancel')"role="button" tabindex="0">Cancel</button>
+						
+						
+					</div>
+			</div>
+			
+			
+			
 
-    <div class="dialog-control">
-        <span class="ecomp-save-spinner" ng-show="appDetails.isSaving"></span> 
-         <button id="button-save-app" class="btn btn-alt btn-small" ng-class="{disabled: appForm.$invalid}" ng-click="appDetails.saveChanges()">Save</button>
-        <button id="button-app-cancel" class="btn btn-alt btn-small" ng-click="closeThisDialog()">Cancel</button>
-    </div>
 </div>
+
 
 <script type="application/javascript">
     $(document).ready(function(){

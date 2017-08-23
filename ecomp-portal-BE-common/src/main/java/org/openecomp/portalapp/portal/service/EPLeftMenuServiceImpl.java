@@ -73,7 +73,7 @@ public class EPLeftMenuServiceImpl implements EPLeftMenuService {
 		// be revised as Account Administrator may become obsolete
 		try {
 			if (user != null) {
-				UserRoles uRoles = appService.getUserProfileNormalized(user);
+				UserRoles uRoles = appService.getUserProfileNormalizedForLeftMenu(user);
 				if (uRoles.getRoles().contains("Account Administrator"))
 					loadAccAdminNavMap(defaultNavMap);
 			}

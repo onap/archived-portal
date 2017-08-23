@@ -1,0 +1,39 @@
+.classpath
+.project
+/bin/
+target/
+logs/
+DEV_HOME_IS_UNDEFINED/
+!.mvn/wrapper/maven-wrapper.jar
+
+### STS ###
+.apt_generated
+.factorypath
+.settings
+.springBeans
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+nbproject/private/
+build/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+
+/target/
+/catalina.base_IS_UNDEFINED/
+.mvn
+.settings/
+.springBeans
+bin/
+debug-logs/	
+logs/
+/application.properties
+mvnw
+mvnw.cmd

@@ -1,0 +1,49 @@
+<div  id="widget-events" ng-controller="EventsCtrl" class="widget-news-main">
+		<div att-gridster-item-body
+			class="information-section-gridsterContent">
+			<div class="events">
+				<ul ng-show="eventData.length!=0">
+					<li ng-repeat="event in eventData">
+						<div ng-click="event_content_show=!event_content_show">
+							<div class="events-date">{{event.mon}}/{{event.day}}/{{event.year}}
+							</div>
+							<div>
+								<div class="event-title-div">
+									<p ng-bind="event.title"></p>
+								</div>
+								<div>
+									<span class="icon-chevron-up" ng-if="event_content_show"
+										style="color: #888; font-size: 22px;"></span> <span
+										class="icon-chevron-down" ng-if="!event_content_show"
+										style="color: #888; font-size: 22px;"></span>
+
+								</div>
+								<div style="clear: both;"></div>
+							</div>
+						</div>
+						<div class="events-content" ng-show="event_content_show">
+							<div class="events-content-body">
+								<a id="event-widget-{{event.id}}" class="events-link" ng-href="{{event.href}}"
+									target="_blank"> <span ng-bind="event.content"></span>
+								</a>
+							</div>
+							<div></div>
+						</div>
+					</li>
+
+
+				</ul>
+				<div ng-hide="eventData.length!=0">
+					<div class="activity-error-container"
+						style="background: rgb(255, 255, 255); overflow: hidden !important; width: 100%;">
+						<div class="activity-error-block">
+							<i class="icon-information full-linear-icon-information"
+								style="margin-left: 125px; font-size: 90px"></i> <br>
+							<div class="activity-error-msg1">There's currently no
+								event available.</div>
+						</div>
+					</div>
+				</div>
+			</div>
+	  </div>
+</div>

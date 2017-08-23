@@ -23,7 +23,7 @@
 'use strict';
 (function () {
     class NewUserModalCtrl {
-        constructor($scope, $log, usersService, applicationsService, confirmBoxService) {
+        constructor($scope, $log, usersService, applicationsService, confirmBoxService, items) {
             var extRequestValue = false;
             let init = () => {
                 //$log.info('NewUserModalCtrl::init');
@@ -31,9 +31,9 @@
                 this.anyChanges = false;
                 this.adminApps = [];
                 this.isGettingAdminApps = false;
-                if($scope.ngDialogData && $scope.ngDialogData.selectedUser && $scope.ngDialogData.dialogState){
-                    this.selectedUser = $scope.ngDialogData.selectedUser;
-                    this.dialogState = $scope.ngDialogData.dialogState;
+                if(items && items.selectedUser && items.dialogState){
+                    this.selectedUser = items.selectedUser;
+                    this.dialogState = items.dialogState;
                     this.isShowBack = false;
                     if(this.dialogState === 3){
                         this.getUserAppsRoles();
@@ -109,6 +109,13 @@
                             //$log.debug('NewUserModalCtrl::getUserAppsRoles: got a result for app: ',app.id,': ',app.name,': ',userAppRolesResult);
                             app.appRoles = userAppRolesResult;
                             app.isLoading = false;
+                            for(var i=0;i<app.appRoles.length;i++){
+                                
+                            	if(app.appRoles[i].roleName.indexOf('global_')!=-1){
+                            		app.appRoles[i].roleName='*'+app.appRoles[i].roleName;
+            						
+            					}
+                                }
 
                         }).catch(err => {
                             $log.error(err);
@@ -148,6 +155,12 @@
                     if (app.isChanged) {
                         //$log.debug('NewUserModalCtrl::updateUserAppsRoles: app roles have changed; going to update: id: ', app.id, '; name: ', app.name);
                         app.isUpdating = true;
+                        for(var i=0;i<app.appRoles.length;i++){
+                          if(app.appRoles[i].roleName.indexOf('*global_')!=-1){
+                        		app.appRoles[i].roleName=app.appRoles[i].roleName.replace('*','');
+        						
+        					}
+                            }
                         var newUserAppRoles = {
                         	orgUserId: this.selectedUser.orgUserId,
                         	appId: app.id, 
@@ -172,7 +185,7 @@
                                 this.isSaving = false; // hide the spinner
                             }
                             if (this.numberAppsSucceeded === this.adminApps.length) {
-                                $scope.closeThisDialog(true);//close and resolve dialog promise with true (to update the table)
+                            	$scope.$dismiss('cancel');//close and resolve dialog promise with true (to update the table)
                             }
                         })
                     } else {
@@ -185,7 +198,7 @@
                             this.isSaving = false; // hide the spinner
                         }
                         if (this.numberAppsSucceeded === this.adminApps.length) {
-                            $scope.closeThisDialog(true);//close and resolve dialog promise with true (to update the table)
+                        	$scope.$dismiss('cancel');//close and resolve dialog promise with true (to update the table)
                         }
                     }
                 });
@@ -212,6 +225,6 @@
             });
         }
     }
-    NewUserModalCtrl.$inject = ['$scope', '$log', 'usersService', 'applicationsService', 'confirmBoxService'];
+    NewUserModalCtrl.$inject = ['$scope', '$log', 'usersService', 'applicationsService', 'confirmBoxService', 'items'];
     angular.module('ecompApp').controller('NewUserModalCtrl', NewUserModalCtrl);
 })();

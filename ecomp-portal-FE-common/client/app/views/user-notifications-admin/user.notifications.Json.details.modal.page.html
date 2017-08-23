@@ -17,32 +17,58 @@
   limitations under the License.
   ================================================================================
   -->
-<div class="w-ecomp-user-json-notification-details-admin"
-	ng-style="{bottom: tabBottom}">
-	 <div class="w-ecomp-main-container" >
-	<div class="user-notification" >
-		<div id="'widgets-details-title" class="w-ecomp-main-json-view-title"> Message Notification Details </div>
-	
-	
-<div class="notifications-properties-main">
-		
-		<div ng-bind-html="messageData"></div>
-		</div>
-		
-            <div class="dialog-control-close">
-               
-                <button id="div-cancel-button" class="btn btn-alt btn-small" ng-click="closeThisDialog()">Close</button>
-            </div>
-		
+
+<div class="b2b-modal-header">
+			<h2 class="w-ecomp-main-json-view-title" id="notification-details-title">Message Notification Details</h2>
+
+			<div class="corner-button in">
+				<button type="button" class="close" aria-label="Close" id="user-notification-button-cancel"
+					ng-click="$dismiss('cancel')"></button>
 			</div>
+		</div>
 
-</div>
-</div>
+		<div class="b2b-modal-body">
+		<div class="notifications-properties-main">
 
-<script type="application/javascript">
-    $(document).ready(function(){
-        $(".ngdialog-content").css("width","40%")
-        $(".ngdialog-content").css("height","450px")
+				<div>
 
-    });
-</script>
+					<p>Message Source :{{selectedAdminNotification.msgSource}}</p>
+					<p>Message Title :{{selectedAdminNotification.msgHeader}}</p>
+					<p>Message Recipient :{{messageRecipients}}</p>
+					Notification Hyperlink :<a
+						ng-click="notifiHyperlink('{{selectedAdminNotification.notificationHyperlink}}')">{{selectedAdminNotification.notificationHyperlink}}</a>
+
+					<div ng-repeat="(key, data) in messageObject">
+
+						<div ng-switch on="key">
+							<div ng-switch-when="ticketNum">
+								{{key}} : <a
+									ng-click="notifiHyperlink('{{selectedAdminNotification.notificationHyperlink}}')">{{data}}
+								</a>
+							</div>
+							<div ng-switch-when="eventDate">
+								<p>{{key}} : {{data | date:'yyyy-MM-dd HH:mm:ss Z'}}</p>
+							</div>
+							<div ng-switch-when="lastModifiedDate">
+								<p>{{key}} : {{data | date:'yyyy-MM-dd HH:mm:ss Z'}}</p>
+							</div>
+							<div ng-switch-default>
+								<p>{{key}} :{{data}}</p>
+							</div>
+						</div>
+					</div>
+
+
+				</div>
+			</div>
+			</div>
+			<br>
+			<div class="b2b-modal-footer">
+				<div class="dialog-control">
+				<button id="div-cancel-button" class="btn btn-alt btn-small" ng-click="$dismiss('cancel')"role="button" tabindex="0">Close</button>
+						
+					</div>
+			</div>
+			
+			
+			

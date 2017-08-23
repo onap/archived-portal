@@ -20,7 +20,7 @@
 'use strict';
 (function () {
     class FunctionalMenuCtrl {
-        constructor($log, functionalMenuService, $scope,ngDialog, confirmBoxService) {
+        constructor($log, functionalMenuService, $scope,ngDialog, confirmBoxService,$modal) {
             $log.info('FunctionalMenuCtrl init');
 
             $scope.invokeDialog = () => {
@@ -145,19 +145,26 @@
                                 title: getDialogTitle(source)
                             };
                         }
-                        ngDialog.open({
+                          var modalInstance = $modal.open({
                             templateUrl: 'app/views/functionalMenu/functionalMenu-dialog/menu-details.modal.html',
-                            controller: 'MenuDetailsModalCtrl',
-                            controllerAs: 'functionalMenuDetails',
-                            data: data
-                        }).closePromise.then(needUpdate => {
-                            if(needUpdate.value === true){
-                                $log.debug('FunctionalMenuCtrl::openMenuDetailsModal: updating table data...');
+                            controller: 'MenuDetailsModalCtrl as functionalMenuDetails',
+                            sizeClass: 'modal-large', 
+                            resolve: {
+            					items: function () {
+                	        	  return data;
+            			        	}
+            		        }
+                        })
+                        
+                        modalInstance.result.finally(function (needUpdate){
+                        	if(needUpdate.value === true){
+                        		$log.debug('FunctionalMenuCtrl::openMenuDetailsModal: updating table data...');
                                 if(source==="edit") {
                                     init();
                                 }
-                            }
-                        });
+
+                          }
+             	        });
                     });
             };
 
@@ -191,18 +198,25 @@
                                 };
                             }
 
-                            ngDialog.open({
+                          	var modalInstance = $modal.open({
                                 templateUrl: 'app/views/functionalMenu/functionalMenu-dialog/menu-details.modal.html',
-                                controller: 'MenuDetailsModalCtrl',
-                                controllerAs: 'functionalMenuDetails',
-                                data: data
-                            }).closePromise.then(needUpdate => {
-                                if(needUpdate.value === true){
+                                controller: 'MenuDetailsModalCtrl as functionalMenuDetails',
+                                sizeClass: 'modal-large', 
+                                resolve: {
+                					items: function () {
+                    	        	  return data;
+                			        	}
+                		        }
+                            })
+                            
+                            modalInstance.result.finally(function (needUpdate){
+                            	if(needUpdate.value === true){
                                     $log.debug('FunctionalMenuCtrl::getMenuDetails: updating table data...');
                                     init();
                                     //getOnboardingWidgets();
-                                }
-                            });
+
+                              }
+                 	        });
                         }
                     });
             };
@@ -238,7 +252,7 @@
             init();
         }
     }
-    FunctionalMenuCtrl.$inject = ['$log', 'functionalMenuService','$scope', 'ngDialog', 'confirmBoxService'];
+    FunctionalMenuCtrl.$inject = ['$log', 'functionalMenuService','$scope', 'ngDialog', 'confirmBoxService','$modal'];
     angular.module('ecompApp').controller('FunctionalMenuCtrl', FunctionalMenuCtrl);
 
     angular.module('ecompApp').directive('jqTree', ['functionalMenuService','$log','confirmBoxService',function(functionalMenuService,$log,confirmBoxService){

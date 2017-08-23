@@ -17,7 +17,7 @@
   limitations under the License.
   ================================================================================
   -->
-<div style="position:fixed;width: 100%;top: 0px;left: 0;background-color: #222;z-index:9999">
+<div class="header-position">
     <header class="b2b-header-tabs" b2b-header-responsive>
         <ul class="header__items" role="navigation">
 <!-- Menu Icon and name -->
@@ -160,17 +160,17 @@
 					                            </div>
 					                        </div>
 					                    </li>
-										<li><div class="reg-userEmail-label"><span class="reg-userEmail-label-spn" style=font-weight:bold>Email<span class="visuallyhidden">:
+										<li><div class="reg-userEmail-label"><span class="reg-userEmail-label-spn reg-common-label-spn-txt" >Email<span class="visuallyhidden">:
 					                    </span></span></div></li>
 										<li><div class="reg-userEmail-value"><span class="reg-userEmail-value-spn">
 					                        {{loginSnippetEmail}}</span></div></li>
 					                    <li>&nbsp;</li>
-										<li><div class="reg-userRole-label"><span class="reg-userRole-label-spn" style=font-weight:bold>
+										<li><div class="reg-userRole-label"><span class="reg-userRole-label-spn reg-common-label-spn-txt">
 					                        User Id<span class="visuallyhidden">:</span></span></div></li>
 										<li><div class="reg-userRole-value"><span class="reg-userRole-value-spn">
 					                        {{loginSnippetUserid}}<span class="visuallyhidden"></span></span></div></li>
 					                    <li>&nbsp;</li>
-										<li><div class="reg-userLastLogin-label"><span class="reg-userLastLogin-label-spn" style=font-weight:bold>
+										<li><div class="reg-userLastLogin-label"><span class="reg-userLastLogin-label-spn reg-common-label-spn-txt">
 					                        Last login<span class="visuallyhidden">:</span></span></div></li>
 										<li><div class="reg-userLastLogin-value"><span class="reg-userLastLogin-value-spn">
 					                        {{lastLogin}}<span class="visuallyhidden"></span></span></div></li>
@@ -180,13 +180,14 @@
 					                			<a href="javascript:void(0);"  ng-click="getUserApplicationRoles()"  class="icon-primary-accordion-plus" ng-class="{true: 'icon-primary-accordion-plus', false: 'icon-primary-accordion-minus'}[ !displayUserAppRoles]" >Applications and Roles</a>
 					                 		</div>
 					                 		<br>
-					                        <div class="display-userAppRoles-label" ng-show="displayUserAppRoles" style="height:200px; overflow-y:auto;">
+					                        <div class="display-userAppRoles-label display-userAppRoles-label-txt" ng-show="displayUserAppRoles">
 					                             <div ng-repeat="ua in userapproles track by  $index">
 				                                    <div class="reg-userApp-value">
-				                                    	<span class="reg-userApp-value-spn" style=font-weight:bold>{{ua.App}}<span class="visuallyhidden">:</span></span>
+				                                    	<span class="reg-userApp-value-spn reg-common-label-spn-txt">{{ua.App}}<span class="visuallyhidden">:</span></span>
 													</div>							           
 					                                <div ng-repeat="role in ua.Roles track by  $index" class="reg-userAppRoles-value" >
-					                                	<span class="reg-userAppRoles-value-spn">{{role}}</span>
+					              				 <span  ng-if="role.indexOf('global_')!=-1" id="required" style="color: Red;" visible="false"> *</span>
+					                           	<span class="reg-userAppRoles-value-spn">{{role}}</span>
 					                                </div>
 					                                <br>
 					                        	</div>
@@ -217,17 +218,17 @@
 							<div class="ng-scope">
 								<div id="notification" class="notificationBox ">
 									<div align ="right">
-					 					 <a id="notification-history-link" ui-sref="root.notificationHistory" style="font-size: 14px"> View All Recent Notifications </a>
+					 					 <a id="notification-history-link" ui-sref="root.notificationHistory" class="notification-history-link-txt"> View All Recent Notifications </a>
 									</div>
 									<div class="notification-header">
-										<div style="float:left;">
+										<div class="notification-common-position">
 											<p class="notification-heading">Notifications</p>
 										</div>
-										<div style="clear:both;"></div>
+										<div class="notification-common-space"></div>
 									</div>
 									<div ng-show="notifications.length==0">
 										<div class="notification-main">
-											<div style="height:113px;">
+											<div class="notification-main-ht">
 												<div align="center" class="icon-information notification-info-icon"></div>
 											</div>
 										<div>
@@ -243,12 +244,12 @@
 											<span class="important" ng-show="item.priority==2"/>
 											<span class="normal" ng-show="item.priority==1"/>
 										</div>
-										<div class="details" ng-click="showDetailedJsonMessage(item)">
-												<span class="title" ng-bind="item.source"></span> <span
-													class="title" ng-bind="item.title"></span> <span
-													class="message-body" ng-if="item.source==='EP'"
+											<div class="details" ng-click="showDetailedJsonMessage(item)">
+												<span class="title" ng-bind="item.msgSource"></span> <span
+													class="title" ng-bind="item.msgHeader"></span> <span
+													class="message-body" ng-if="item.msgSource==='EP'"
 													ng-bind="item.message"></span> <span class="message-body"
-													ng-if="item.source!=='EP'"
+													ng-if="item.msgSource!=='EP'"
 													ng-bind="item.message| elipsis: 27"> </span>
 												<!-- <span class="date" ng-bind="item.time" ></span> -->
 												<mydate>{{item.time | date:'MM/dd/yyyy hh:mm:ss a Z'}}</mydate>
@@ -260,13 +261,14 @@
 							</div>
 							<div class="notification-footer">
 								<div class="notification-links">
-									<div style="clear:both;"></div>
+									<div class="notification-common-space"></div>
 								</div>
 							</div>
 						</div>					
 		            </b2b-flyout-content>
 		        </b2b-flyout>
             </li>
+
             <li class="header__item recommendation" aria-haspopup="true"
 							class="recommendation-li">
             <div ng-include class="recommendation-detail-extension" src="'app/views/headerRecommendation/headerRecommendations.tpl.html'"></div> 

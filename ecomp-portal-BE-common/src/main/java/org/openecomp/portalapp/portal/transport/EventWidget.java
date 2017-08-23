@@ -31,7 +31,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 
 *//**
  * This is to handle portal admins
- * @author aw3218
  *//*
 @Entity 
 @Table(name="fn_event_widget_data")

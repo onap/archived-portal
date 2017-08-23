@@ -23,7 +23,7 @@
 'use strict';
 (function () {
     class BulkUserModalCtrl {
-    	constructor($scope, $log, $filter, $q, usersService, applicationsService, confirmBoxService, functionalMenuService, ngDialog) {
+    	constructor($scope, $log, $filter, $q, usersService, applicationsService, confirmBoxService, functionalMenuService, ngDialog,$modal) {
     		
     		// Set to true for copious console output
     		var debug = false;
@@ -486,10 +486,13 @@
             	// Start the process
             	$scope.readValidateFile();
             	// Dialog shows progress
-            	ngDialog.open({
-            		templateUrl: 'app/views/users/new-user-dialogs/bulk-user.confirm.html',
-            		scope: $scope
-            	});
+            	$modal.open({
+                	templateUrl: 'app/views/users/new-user-dialogs/bulk-user.confirm.html',
+                    controller: '',
+                    sizeClass: 'modal-medium', 
+                    resolve:'',
+                    scope: $scope
+                })
              };
 
              // Invoked by the Cancel button on the confirmation dialog.
@@ -500,7 +503,7 @@
              init();
     	} // constructor
     } // class
-    BulkUserModalCtrl.$inject = ['$scope', '$log', '$filter', '$q', 'usersService', 'applicationsService', 'confirmBoxService', 'functionalMenuService', 'ngDialog'];    
+    BulkUserModalCtrl.$inject = ['$scope', '$log', '$filter', '$q', 'usersService', 'applicationsService', 'confirmBoxService', 'functionalMenuService', 'ngDialog','$modal'];    
     angular.module('ecompApp').controller('BulkUserModalCtrl', BulkUserModalCtrl);
 
     angular.module('ecompApp').directive('fileChange', ['$parse', function($parse){

@@ -17,17 +17,23 @@
   limitations under the License.
   ================================================================================
   -->
-<div style="margin-top: 10px; margin-bottom: 10psx;">
-	<h1 class="heading1"></h1>
-</div>
-<br />
+ 
 
-<div style="margin-top: 25px;">
-	<div id="title" class="manage-contactUs-home-manageWidgets-title">Manage {{widgetTypeDisplay}} Widgets</div>
-		<div class="widgets-popup-margin">         
+<div class="manage-widget-txt">
+
+		<div class="b2b-modal-header">
+			<h2 class="title" id="manage-contactUs-home-manageWidgets-title">Manage {{widgetTypeDisplay}} Widgets</h2>
+
+			<div class="corner-button in">
+				<button type="button" class="close" aria-label="Close"
+					ng-click="$dismiss('cancel')"></button>
+			</div>
+		</div>
+
+<div class="b2b-modal-body" tabindex="0" role="region" aria-label="Modal header text content"	>
             <div class="get-access-table">
-                <div class="table-control" style="margin:30px;">
-				  	<div class="c-ecomp-portal-abs-table" style="height:300px"">
+                <div class="table-control widget-table-control">
+				  	<div class="c-ecomp-portal-abs-table widget-table" >
                     <table b2b-table id="table-main" 
                     	table-data="ignoredTableData"
                         current-page="ignoredCurrentPage">
@@ -70,7 +76,7 @@
                                 		<span class="icon-edit"></span>
                                 	</div>
                                 	<span ng-show="rowData.showEdit">
-                                		<a id="save-button" att-button btn-type="primary" ng-click="modify($index);" class="button button--primary" size="small" >Save</a>
+                                		<a id="save-button"  ng-click="modify($index);" class="btn btn-alt btn-small" size="small" >Save</a>
                                		</span>
 	                            </td>
 	                            <td b2b-table-body>
@@ -83,11 +89,10 @@
                     </table>
                 </div>
                 
-                <div att-divider-lines></div>
-					<div style="margin-top: 15px; margin-left: -80px;" >
+					<div class="widget-field" >
 					<form name = "widgetForm" novalidate>				
 						<div id="addWidgetHeader" class="contact-us-margin">				
-							<h1 style="font-size:18px;">Add</h1>
+							<h1 class="widget-add">Add</h1>
 							<div class="errMsg">{{errMsg}}</div>
 							<div class="sucessMsg" ng-bind="successMsg"></div>
 						</div>								  
@@ -107,44 +112,43 @@
 							            <input id="widget-input-add-order" class="input-text-area" type="text" ng-model="newWidgetObject.sortOrder"/>
 							        </div>
 						        </div>
-						         <div  class="add-widget-field"  ng-controller="DatePickerController" ng-show="{{widgetType=='EVENTS'}}">
-								    <h4>Event Date</h4>
-								    <div>
-								      <div>
-								        <p class="input-group">
-								          <input id="widget-input-add-date" type="text" name = "eventDate" datetime="yyyy-MM-dd" class="input-text-area" uib-datepicker-popup="{{format}}" 
-								          		ng-model="newWidgetObject.eventDate" is-open="popup1.opened" datepicker-options="dateOptions" close-text="Close" alt-input-formats="altInputFormats" 
-								           ng-focus="open1()"
-								           ng-required = "widgetType =='EVENTS'" />
-								        </p>
-								      </div>
-									</div>
-								</div>	
+						        <div  class="add-widget-field">
+							        <h4>Event Date</h4>
+							        <input class="notif-input-calendar" type="text" id="datepicker-end" 
+									ng-model="newWidgetObject.eventDate" b2b-datepicker min="minDate" max="maxDate" 
+									required />
+								</div>
 								
 						        <div class="add-contact-us-field-des"  ng-show="{{widgetType=='EVENTS'}}">
 						            <div  class="property-label">Content</div>
-						            <textarea style="margin-top: 0px; margin-bottom: 0px; height: 150px" ng-model="newWidgetObject.content" name="content" ng-required = "widgetType =='EVENTS'">
+						            <textarea class="widget-type-txt-area" ng-model="newWidgetObject.content" name="content" ng-required = "widgetType =='EVENTS'">
 						            </textarea>						            
 						        </div>
 					        </div>
-							<div style="height:50px;">
-								        <a id="add-button" style="float:right; margin-top:20px;" att-button btn-type="primary" class="button button--primary" size="small" ng-click="saveNew()">Add New</a>
-					
-							</div>
 							
-							<div att-divider-lines></div>
+							
 					
 						</div>
 					</form>
 					</div>
-				    <div style="height:50px;">
-						<a id="close-button" style="float:right;" att-button btn-type="primary" class="button button--primary" size="small" ng-click="closeDialog()">Close</a>
-					</div>           
+				        
             </div>
-        </div>
     </div>
-</div>
 	
+			</div>
+			<br>
+			<div class="b2b-modal-footer">
+			<div class="dialog-control">
+					<a id="add-button" class="btn btn-alt btn-small"  ng-click="saveNew()">Add New</a>
+					
+						<a id="close-button"  class="btn btn-alt btn-small"  ng-click="$dismiss('cancel')">Close</a>
+  
+    </div>
+			
+		</div>
+
+</div>
+
 <script type="application/javascript">
     $(document).ready(function(){
         $(".ngdialog-content").css("width","85%");

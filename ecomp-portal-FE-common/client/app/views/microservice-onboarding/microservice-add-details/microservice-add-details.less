@@ -1,9 +1,9 @@
 .microservice-add-details-model{
-	height: 550px;
-	overflow-y: auto;
+	//height: 550px;
+	//overflow-y: auto;
 	.title {
-		.dGray18r;  //AT&T Dark Gray
-		border-bottom: @blue-active 3px solid;
+		.dGray18r; 
+		//border-bottom: @blue-active 3px solid;
 	}
 	.microservice-details-title {
 	    color: #191919;
@@ -39,6 +39,10 @@
 	        position: relative;
 	        top: -1px;
 	      } 
+	      .checkbox .skin {
+  				left: 0px;
+  				top: 0px;
+			}  
 	    }
 		.add-para-item{
 			position: relative;
@@ -129,15 +133,18 @@
 			  .dGray14r;
        	  }
           .para-label-item-right{
-	          line-height: 30px;
-	          height: 30px;
-	          display:inline-block;
-	          width: 45%;
-	          background: @portalWhite;
-	          vertical-align: middle;
-	          white-space: nowrap;
-	          .dGray14r;
+				margin-left: 248px !important;
+			    position: absolute !important;
+			    margin-top: -19px !important;
+			    width: 50% !important;
           }
+          
+       .table-search-fields{   
+         	 margin-left: 248px;
+		    position: absolute;
+		    margin-top: -36px;
+    
+    		}
            .para-item-left{
 	          line-height: 30px;
 	          height: 36px;
@@ -187,11 +194,9 @@
    			  .btn-blue;
   	  	  }
           .para-item-right{
-          	  margin-top: 10px;
-	          height: 14px;
-	          width: 14px;
-	          float: right;
-	          display:inline-block;
+		    margin-top: -27px;
+		    position: absolute;
+		    margin-left: 500px;
           }
 	      .input-field{
 	        .custom-input-field;
@@ -210,7 +215,9 @@
 	   		.btn-blue;
 	  	  }
 	  	  
-	  	 
+	  	 .modal.fade.in{
+	  	 overflow:hidden;
+	  	 }
 	  	  
 	  	  .add-para-button{
 			height: 14px;
@@ -224,10 +231,11 @@
 	}
 }
 .microservice-scrolling-table{
-	width: 548px;
+//	width: 548px;
     margin-left: 16px;
-    height: 430px;
+    height: 450px;
     overflow: auto;
+    margin-right: -29px;
 }
 #microservice-scroll-end{
 	height: 20px;

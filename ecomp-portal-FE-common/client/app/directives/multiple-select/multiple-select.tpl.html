@@ -27,9 +27,9 @@
 
     <div class="checkboxes" ng-show="isExpanded">
         <div ng-repeat="item in ngModel" id="{{item[nameAttr].split(' ').join('-')}}-checkbox-div">
-            <label id="{{item[nameAttr].split(' ').join('-')}}-checkbox-label">
+            <label id="{{item[nameAttr].split(' ').join('-')}}-checkbox-label"  class="checkbox">
                 <input type="checkbox" id="{{item[nameAttr].split(' ').join('-')}}-checkbox" ng-model="item[valueAttr]" ng-change="onCheckboxClicked()">
-                {{item[nameAttr]}}
+                <i class="skin"></i><span>{{item[nameAttr]}}</span>              
             </label>
         </div>
     </div>

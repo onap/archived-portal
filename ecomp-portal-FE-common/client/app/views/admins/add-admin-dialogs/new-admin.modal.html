@@ -17,59 +17,102 @@
   limitations under the License.
   ================================================================================
   -->
-<div class="new-admin-modal">
+ <style>
+	.title{
+		border-bottom: none !important;  
+	  }
+	  
+	.b2b-modal-footer .cta-button-group {
+     border-top: 0px solid #d2d2d2;
+	}
+	
+</style>
 
-    <div class="search-users" ng-show="newAdmin.dialogState===1">
+<div>
+	<div ng-if="newAdmin.dialogState===1">
 
-        <search-users search-title="New Admin"
-                      selected-user="newAdmin.selectedUser"></search-users>
+		<div class="b2b-modal-header">
+			<h2 class="heading-medium" id="newAdmin">New Admin</h2>
 
-        <div class="dialog-control">
-              <button id="search-users-button-next" class="btn btn-alt btn-small" ng-click="newAdmin.selectedUser && newAdmin.getAdminAppsRoles()"
-                 ng-class="{disabled: !newAdmin.selectedUser}">Next
-            </button>
-            <button id="search-users-button-cancel" class="btn btn-alt btn-small" ng-click="closeThisDialog()">Cancel</button>
-        </div>
-    </div>
- <br>
-    <div id="div-admin-app-roles" class="admin-app-roles" ng-show="newAdmin.dialogState===2">
-        <div class="title" id="title"
-             ng-bind="newAdmin.selectedUser.firstName + ' ' + newAdmin.selectedUser.lastName + ' (' + newAdmin.selectedUser.orgUserId + ')'"></div>
-        <div class="app-roles-main">
-            <div id="div-app-roles-main-title" class="app-roles-main-title">
-                <span class="left">Administrates:</span>
-                <!--<span class="right" ng-click="newAdmin.addAdministratedApp()">+Add</span>-->
-            </div>
+			<div class="corner-button in">
+				<button type="button" class="close" aria-label="Close" id="admin-button-cancel" 
+					ng-click="$dismiss('cancel')"></button>
+			</div>
+		</div>
+
+		<div class="b2b-modal-body" tabindex="0"
+			aria-label="Modal header text content" role="region">
+			<search-users search-title="" selected-user="newAdmin.selectedUser"></search-users>
+		</div>
+
+		<div class="b2b-modal-footer">
+			<div class="cta-button-group in">
+				<button id="search-users-button-next" class="btn btn-alt btn-small"
+					ng-click="newAdmin.selectedUser && newAdmin.getAdminAppsRoles()"
+					ng-class="{disabled: !newAdmin.selectedUser}">Next</button>
+				<button id="search-users-button-cancel"
+					class="btn btn-alt btn-small" id="div-cancel-button" ng-click="$dismiss('cancel')">Cancel</button>
+			</div>
+		</div>
+
+	</div>
+	
+	<div id="div-admin-app-roles" class="app-roles-main" ng-if="newAdmin.dialogState===2">
+			<div class="b2b-modal-header">
+				<div class="title" id="title"
+					ng-bind="newAdmin.selectedUser.firstName + ' ' + newAdmin.selectedUser.lastName + ' (' + newAdmin.selectedUser.orgUserId + ')'">
+				</div>
+
+				<div class="corner-button in">
+					<button type="button" class="close" aria-label="Close"
+						ng-click="$dismiss('cancel')"></button>
+				</div>
+			</div>
 
 
-            <div class="adminAppsRoles_dropdown">
-                 <select id="dropdown1" name="dropdown1" b2b-dropdown
-									placeholder-text="Select application"
-									ng-model="newAdmin.selectedNewApp.value">
-							<option b2b-dropdown-list option-repeat="app in (filteredApps = (newAdmin.adminAppsRoles | filter:{isAdmin:'false'})) track by app.id " ng-disabled="!filteredApps.length"  value="{{app}}">{{app.appName}}</option>
-					 </select>
-            </div>
-               <br>
+			<div class="b2b-modal-body">
+				<div id="div-app-roles-main-title" class="app-roles-main-title">
+					<span class="left">Administrates:</span>
+					<!--<span class="right" ng-click="newAdmin.addAdministratedApp()">+Add</span>-->
+				</div>
+				<div class="adminAppsRoles_dropdown">
+					<select id="dropdown1" name="dropdown1" b2b-dropdown
+						placeholder-text="Select application"
+						ng-model="newAdmin.selectedNewApp.value">
+						<option b2b-dropdown-list
+							option-repeat="app in (filteredApps = (newAdmin.adminAppsRoles | filter:{isAdmin:'false'})) track by app.id "
+							ng-disabled="!filteredApps.length" value="{{app}}">{{app.appName}}</option>
+					</select>
+				</div>
+				<br>
+				<div class="admin-roles-list">
+					<div
+						ng-repeat="app in (newAdmin.adminAppsRoles | orderBy:newAdmin.orderFilter) track by app.id"
+						ng-show="app.isAdmin">
+						<span id="select-app-{{app.appName.split(' ').join('-')}}"
+							class="administrated-application"
+							ng-bind="app.appName | elipsis: 57"></span> <i
+							id="i-delete-application" class="icon-misc-trash"
+							ng-click="newAdmin.unadminApp(app)"> </i>
+					</div>
+				</div>
+			</div>
+			<br>
+			<div class="b2b-modal-footer">
+				<div class="cta-button-group in">
 
-            <div class="admin-roles-list">
-                <div ng-repeat="app in (newAdmin.adminAppsRoles | orderBy:newAdmin.orderFilter) track by app.id" ng-show="app.isAdmin">
-                    <div id="select-app-{{app.appName.split(' ').join('-')}}" class="administrated-application" ng-bind="app.appName | elipsis: 57"></div>
-                    <i id="i-delete-application" class="icon-misc-trash" ng-click="newAdmin.unadminApp(app)"> </i>
-                </div>
-            </div>
+					<span class="ecomp-save-spinner" ng-show="newAdmin.isSaving"></span>
+					<button id="button-back" ng-show="newAdmin.isShowBack"
+						class="btn btn-alt btn-small" ng-click="newAdmin.navigateBack()">Back</button>
+					<button id="div-updateAdminAppsRoles" class="btn btn-alt btn-small"
+						ng-click="newAdmin.updateAdminAppsRoles()"
+						ng-class="{disabled: false}">Save</button>
+					<button id="div-cancel-button" class="btn btn-alt btn-small"
+						ng-click="$dismiss('cancel')">Cancel</button>
 
-            <div class="dialog-control">
-                <span class="ecomp-save-spinner" ng-show="newAdmin.isSaving"></span>              
-                 <button id="button-back" ng-show="newAdmin.isShowBack" class="btn btn-alt btn-small" ng-click="newAdmin.navigateBack()">Back</button>
-                <button id="div-updateAdminAppsRoles" class="btn btn-alt btn-small" ng-click="newAdmin.updateAdminAppsRoles()"
-                     ng-class="{disabled: false}">Save
-                </button>
-                <button id="div-cancel-button" class="btn btn-alt btn-small" ng-click="closeThisDialog()">Cancel</button>
-            </div>
-
-        </div>
-
-    </div>
+				</div>
+			</div>
+	</div>
 
 </div>
 

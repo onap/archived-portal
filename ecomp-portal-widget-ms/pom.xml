@@ -3,164 +3,30 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.openecomp.portal</groupId>
-	<artifactId>widget-ms</artifactId>
-	<version>1.2</version>
-	<packaging>jar</packaging>
-        <name>ecompportal-widget-microservice</name>
+	<artifactId>widget-ms-parent</artifactId>
+	<version>1.3.0-SNAPSHOT</version>
+	<packaging>pom</packaging>
 
-	<parent>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>1.4.2.RELEASE</version>
-		<relativePath /> <!-- lookup parent from repository -->
-	</parent>
+        <modules>
+                <!-- Child modules do NOT name this parent. -->
+                <!-- Defined for build convenience only! -->
+                <!-- This POM names only ONAP projects -->      
+                <module>common-widgets</module>
+                <module>widget-ms</module>     
+        </modules>
 
-	<properties>
-		<docker.imagename>widget-ms</docker.imagename>
-		<docker.host>zlp11313.vci.att.com</docker.host>
-		<docker.port>5100</docker.port>
-		<docker.namespace>com.att.ecompportal</docker.namespace>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<java.version>1.8</java.version>
-		<hibernate.version>4.3.11.Final</hibernate.version>
-		<!-- docker.image.prefix>${docker.host}:${docker.port}/${docker.namespace}</docker.image.prefix -->
-                <docker.image.prefix>${docker.host}:${docker.port}/${docker.namespace}</docker.image.prefix>
-
-	</properties>
-
-	<dependencies>
-		<dependency>
-			<!-- Setup Spring Data JPA Repository support -->
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-jpa</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-security</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-thymeleaf</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-devtools</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-configuration-processor</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-core</artifactId>
-			<version>${hibernate.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>commons-codec</groupId>
-			<artifactId>commons-codec</artifactId>
-			<version>1.10</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.mariadb.jdbc</groupId>
-			<artifactId>mariadb-java-client</artifactId>
-			<version>1.5.8</version>
-		</dependency>
-		<dependency>
-			<groupId>com.github.ulisesbocchio</groupId>
-			<artifactId>jasypt-spring-boot-starter</artifactId>
-			<version>1.9</version>
-		</dependency>
-
-		<!-- 
-			hibernate-core depends on dom4j, which has optional dependencies.  
-			On jenkins, contrary to doc, mvn 3.0.5 packages the optional 
-			dependencies in the war.  Workaround: exclude them explicitly.
-		-->
-		<dependency>
-			<groupId>dom4j</groupId>
-			<artifactId>dom4j</artifactId>
-			<version>1.6.1</version>
-			<exclusions>
-				<exclusion>
-					<groupId>jaxme</groupId>
-					<artifactId>jaxme-api</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>jaxen</groupId>
-					<artifactId>jaxen</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>msv</groupId>
-					<artifactId>xsdlib</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>msv</groupId>
-					<artifactId>relaxngDatatype</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>pull-parser</groupId>
-					<artifactId>pull-parser</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>xpp3</groupId>
-					<artifactId>xpp3</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>stax</groupId>
-					<artifactId>stax-api</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-
-	</dependencies>
-
-	<build>
-	
-		<finalName>${project.artifactId}</finalName>
-	
-		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
-			
-			<plugin>
-				<groupId>com.spotify</groupId>
-				<artifactId>docker-maven-plugin</artifactId>
-				<version>0.4.11</version>
-				<configuration>
-					<imageName>${project.artifactId}</imageName>
-					<dockerDirectory>${project.basedir}/src/main/docker</dockerDirectory>
-					<resources>
-							<resource>
-								<targetPath>/</targetPath>
-								<directory>${project.build.directory}</directory>
-								<include>${project.build.finalName}.jar</include>
-							</resource>
-					</resources>
-				</configuration>
-        	</plugin>			
-		</plugins>
-	</build>
-
+        <build>
+                <plugins>
+                        <!-- No deployment step for this project -->
+                        <plugin>
+                                <groupId>org.apache.maven.plugins</groupId>
+                                <artifactId>maven-deploy-plugin</artifactId>
+                                <version>2.8</version>
+                                <configuration>
+                                        <skip>true</skip>
+                                </configuration>
+                        </plugin>
+                </plugins>
+        </build>
 
 </project>

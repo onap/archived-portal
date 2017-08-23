@@ -26,14 +26,14 @@
                 <div class="table-control">
                 	 <div class="table-control-fields">		
 						<div class="table-dropdown">
-							<select id="dropdown1" name="dropdown1" b2b-dropdown placeholder-text="All application" ng-model="admins.filterByApp.value">
+							<select id="dropdown1" name="dropdown1" b2b-dropdown ng-model="admins.filterByApp.value">
 				                <option b2b-dropdown-list option-repeat="d in admins.availableApps" value="{{d.value}}">{{d.title}}</option>
 				            </select>
 						</div>
 						<div >
 							<input id="input-table-search" placeholder="Search in entire table" class="table-search-field" type="text" data-ng-model="admins.searchString">
 						</div>
-						<button class="btn btn-alt btn-small" ng-click="admins.openAddNewAdminModal()"><i class="icon-people-userbookmark" aria-hidden="true"></i>&nbsp;Add Admin</button> 
+						<button class="btn btn-alt btn-small" id="admin-button-add"  ng-click="admins.openAddNewAdminModal()"><i class="icon-people-userbookmark" aria-hidden="true"></i>&nbsp;Add Admin</button> 
 					</div>                  
             	</div>
                 <span class="ecomp-spinner" ng-show="admins.isLoadingTable"></span>

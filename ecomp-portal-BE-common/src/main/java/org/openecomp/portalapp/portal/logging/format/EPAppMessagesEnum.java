@@ -25,7 +25,6 @@ import org.openecomp.portalsdk.core.logging.format.ErrorTypeEnum;
 
 /**
  * 
- * @author rc580q
  * Add ECOMP Portal Specific Error Code Enums here, for generic
  * ones (ones you think are useful not only Portal but also SDK), add it
  * to the enum class AppMessagesEnum defined in SDK.

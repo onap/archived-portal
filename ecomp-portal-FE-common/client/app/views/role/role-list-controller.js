@@ -17,7 +17,7 @@
  * limitations under the License.
  * ================================================================================
  */
-app.controller('roleListController', function ($scope,RoleService,confirmBoxService,conf,$state,$http){
+app.controller('roleListController', function ($scope,RoleService,confirmBoxService,conf,$state,$http,$log){
 	$scope.showSpinner = true;
 	
 	RoleService.getRoles().then(function(data){
@@ -26,20 +26,16 @@ app.controller('roleListController', function ($scope,RoleService,confirmBoxServ
   		$scope.data = JSON.parse(j.data);
   		$scope.availableRoles =JSON.parse($scope.data.availableRoles);
   		$scope.showSpinner = false;
-  		//$scope.resetMenu();
 	
 	},function(error){
-		console.log("failed");
-		//reloadPageOnce();
+		$log.debug('failed');
 	});
 	
 	
-		$scope.goToUrl = function(roleIdVal) {
+	$scope.goToUrl = function(roleIdVal) {
 			$state.go("root.role", {"roleId":roleIdVal});
-		}	
-	//console.log($scope.availableRoles);
+		}
 		$scope.toggleRole = function(selected,availableRole) {
-				//alert('toggleRole: '+selected);
 				var toggleType = null;
 				if(selected) {
 					toggleType = "activate";
@@ -48,57 +44,34 @@ app.controller('roleListController', function ($scope,RoleService,confirmBoxServ
 				}
 				
 				confirmBoxService.confirm("You are about to "+toggleType+" the role "+availableRole.name+". Do you want to continue?").then(
-		    			function(confirmed){
+		    		function(confirmed){
 		    				
-		    				 if(confirmed) {
-			                    var uuu = conf.api.toggleRole;
+		    			if(confirmed) {
+			            	var uuu = conf.api.toggleRole;
 								
 								var postData={role:availableRole};
 								$http.post(uuu, postData).then(function(response) {
 									var data = response.data;
 									if (typeof data === 'object') {
-										console.log(data);
+										$log.debug('data:'+data);
 							  			$scope.availableRoles=data.availableRoles; 
-							  			console.log($scope.availableRoles);
+							  			$log.debug('role::availableRoles:'+$scope.availableRoles);
 									} else {
 										//
 									}
 
 								}, function(response) {
-									console.log(response.data);
+									debug.log('response:'+response);
 									availableRole.active=!availableRole.active;
 									confirmBoxService.showInformation("Error while saving.");
 								});
 								
-								/*
-							  	  $.ajax({
-							  		 type : 'POST',
-							  		 url : uuu,
-							  		 dataType: 'json',
-							  		 contentType: 'application/json',
-							  		 data: JSON.stringify(postData),
-							  		 success : function(data){
-							  			console.log(data);
-							  			$scope.$apply(function(){$scope.availableRoles=data.availableRoles;}); 
-							  			console.log($scope.availableRoles);
-									 },
-									 error : function(data){
-										 console.log(data);
-										 availableRole.active=!availableRole.active;
-										 confirmBoxService.showInformation("Error while saving.");
-									 }
-							  	  });
-							  	  */
 		    				 }
-		    				 else {
-		    					 availableRole.active=!availableRole.active;
-		    				 }
-					
+
+		    	}) .catch(function(err) {
+		    		$log.error('roleListController::confirmBoxService.confirm error:', err);
+		    		availableRole.active=!availableRole.active;					
 		    	});
-		    	//,
-		    	//function(){
-		    //		availableRole.active=!availableRole.active;
-		    	//})
 				
 				  
 		};
@@ -109,20 +82,7 @@ app.controller('roleListController', function ($scope,RoleService,confirmBoxServ
 	    			function(confirmed){
 							var uuu = conf.api.removeRole;
 							  var postData={role:role};
-						  /*	  $.ajax({
-						  		 type : 'POST',
-						  		 url : uuu,
-						  		 dataType: 'json',
-						  		 contentType: 'application/json',
-						  		 data: JSON.stringify(postData),
-						  		 success : function(data){
-						  			$scope.$apply(function(){$scope.availableRoles=data.availableRoles;});  
-								 },
-								 error : function(data){
-									 console.log(data);
-									 confirmBoxService.showInformation("Error while deleting: "+ data.responseText);
-								 }
-						  	  }); */
+
 							  
 							  
 							  $http.post(uuu, postData).then(function(response) {
@@ -134,7 +94,7 @@ app.controller('roleListController', function ($scope,RoleService,confirmBoxServ
 									}
 
 								}, function(response) {
-									console.log(response.data);
+									$log.debug('response:'+response.data);
 									confirmBoxService.showInformation("Error while deleting: "+ data.responseText);
 								});
 				

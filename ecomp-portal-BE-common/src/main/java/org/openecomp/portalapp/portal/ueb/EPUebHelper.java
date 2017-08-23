@@ -155,7 +155,7 @@ public class EPUebHelper {
 		//
 		//  Test existence of topic at UEB url
 		//
-		//  (ie http://uebsb91kcdc.it.att.com:3904/topics/ECOMP-PORTAL-INBOX)
+		//  (ie http://uebsb91kcdc.it.com:3904/topics/ECOMP-PORTAL-INBOX)
 		//
 		boolean available = true;
 		LinkedList<String> urlList = Helper.uebUrlList();

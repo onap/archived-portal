@@ -21,7 +21,7 @@
     <form name="searchUsersForm" novalidate>
         <div class="title" ng-bind="searchUsers.searchTitle"></div>
         <div class="main">
-           <div ng-if="searchUsers.showSearch">
+           <div ng-show="searchUsers.showSearch">
 	            <div class="search-instructions">Enter first name, last name or User ID</div>
 	            <div class="search">
 	                <input id="input-user-search"
@@ -86,7 +86,7 @@
             </div>
 
             
-            <div id="addWidget" class="add-user-section" ng-if="searchUsers.showAddUser">
+            <div id="addWidget" class="add-user-section" ng-show="searchUsers.showAddUser">
 				<div>	        
 					<div class="input-new-user-div" >
 						  <div  class="">*First Name</div>

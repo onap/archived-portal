@@ -1,0 +1,43 @@
+
+.portal-widget-panel-container {
+	margin-left:150px;
+	width:1500px;
+}
+
+
+.portal-widget-panel-fixed-panel {
+  min-height: 300px;
+  max-height: 1300px;
+  overflow: auto;
+}
+
+.portal-widget-panel-double-middle {
+  min-height: 660px;
+  max-height: 660px;
+  overflow: auto;
+}
+
+.portal-widget-panel-row {
+    margin-right: 0px;
+    margin-left:  0px;
+    width: 2800px;
+}
+
+/*Increases the width of the card/panel */
+.portal-widget-panel-panel-default {
+	width:450px
+}
+
+/*Controls the spacing between the cards */
+.portal-widget-panel-col-sm-3 {
+	width:20.5%
+}
+
+.portal-widget-panel-top {
+    top: 15px;
+	left: 15px;
+}
+
+#stork-css-ready {
+color: #bada55 !important;
+}

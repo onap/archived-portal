@@ -16,6 +16,7 @@
 		<module>ecomp-portal-BE-os</module>	
 		<module>ecomp-portal-BE-common-test</module>
 		<module>ecomp-portal-FE-os</module>
+		<module>ecomp-portal-widget-ms</module>
 	</modules>
 
 	<build>

@@ -51,6 +51,8 @@
 	                            <th b2b-table-header id="app-header-Topic" sortable="false">Communication Topic</th>
 	                            <th b2b-table-header id="app-header-CommKey" sortable="false">Communication Key</th>
 	                            <th b2b-table-header id="app-header-Secret" sortable="false">Communication Secret</th>
+	                            <th b2b-table-header id="app-header-namespace" sortable="false">Application Namespace</th>
+	                            <th b2b-table-header id="app-header-central-auth" sortable="false">Central Auth Access</th>	 
 	                            <th b2b-table-header id="app-header-delete" sortable="false">Delete</th>	                            	                            
 							</tr>
 						</thead>
@@ -68,7 +70,9 @@
         						<td b2b-table-body headers="rowheader_t1_{{$index}} col11" ng-click="apps.openAddNewAppModal(rowData)"ng-bind="rowData.uebTopicName"></td>	
                                	<td b2b-table-body headers="rowheader_t1_{{$index}} col12" ng-click="apps.openAddNewAppModal(rowData)"ng-bind="rowData.uebKey"></td>	
             					<td b2b-table-body headers="rowheader_t1_{{$index}} col13" ng-click="apps.openAddNewAppModal(rowData)"ng-bind="rowData.uebSecret"></td>	
-        						<td b2b-table-body headers="rowheader_t1_{{$index}} col14" >
+        						<td b2b-table-body headers="rowheader_t1_{{$index}} col14" ng-click="apps.openAddNewAppModal(rowData)"ng-bind="rowData.nameSpace"></td>	
+            					<td b2b-table-body headers="rowheader_t1_{{$index}} col15" ng-click="apps.openAddNewAppModal(rowData)">{{(rowData.isCentralAuth) ? 'yes' : 'no'}}</td>	
+        						<td b2b-table-body headers="rowheader_t1_{{$index}} col16" >
         							<span class="icon-misc-trash" ng-click="apps.deleteApp(rowData)"></span>
         						</td>		
 							</tr>

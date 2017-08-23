@@ -64,7 +64,7 @@ public class OpenIdConnectLoginStrategy extends org.openecomp.portalsdk.core.aut
 			user.setLastName(userInfo.getFamilyName());
 			
 			//store the currently logged in user's information in the session
-			EPUserUtils.setUserSession(request, user,  new HashSet(), new HashSet(), SystemProperties.getProperty(SystemProperties.AUTHENTICATION_MECHANISM), null);
+			EPUserUtils.setUserSession(request, user,  new HashSet(), new HashSet(), SystemProperties.getProperty(SystemProperties.AUTHENTICATION_MECHANISM),null);
 
 			logger.info(EELFLoggerDelegate.errorLogger, request.getContextPath());
 			SessionCookieUtil.preSetUp(request, response);	

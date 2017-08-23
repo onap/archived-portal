@@ -49,8 +49,8 @@ public class WidgetParameterServiceImpl implements WidgetParameterService{
 		List<Criterion> restrictionsList = new ArrayList<Criterion>();
 		Criterion widgetIdCrit = Restrictions.eq("widgetId", widgetId);
 		restrictionsList.add(widgetIdCrit);
-		Criterion attIdCrit = Restrictions.eq("userId", userId);
-		restrictionsList.add(attIdCrit);
+		Criterion userIdCrit = Restrictions.eq("userId", userId);
+		restrictionsList.add(userIdCrit);
 		Criterion paramIdCrit = Restrictions.eq("paramId", paramId);
 		restrictionsList.add(paramIdCrit);
 		

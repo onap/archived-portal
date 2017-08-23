@@ -54,9 +54,10 @@ function _classCallCheck(instance, Constructor) {
         $scope.editWidgetModalPopup = function(availableData, resourceType) {
             $scope.editData = JSON.stringify(availableData);
             $scope.availableDataTemp = $scope.availableData;
-            ngDialog.open({
+            var modalInstance = $modal.open({
                 templateUrl: 'app/views/dashboard/dashboard-widget-manage.html',
                 controller: 'CommonWidgetController',
+                windowClass: 'modal-docked',
                 resolve: {
                     message: function message() {
                         var message = {
@@ -66,29 +67,40 @@ function _classCallCheck(instance, Constructor) {
                         return message;
                     }
                 }
-            }).closePromise.then(needUpdate => {
-                if (resourceType == 'NEWS') {
-                    $scope.updateNews();
-                } else if (resourceType == 'EVENTS') {
-                    $scope.updateEvents();
-                } else if (resourceType == 'IMPORTANTRESOURCES') {
-                    $scope.updateImportRes();
-                }
-            });
+            })
+            
+            modalInstance.result.finally(function (needUpdate){
+            	   if (resourceType == 'NEWS') {
+                       $scope.updateNews();
+                   } else if (resourceType == 'EVENTS') {
+                       $scope.updateEvents();
+                   } else if (resourceType == 'IMPORTANTRESOURCES') {
+                       $scope.updateImportRes();
+                   }
+ 	        });
         };
 
         $scope.editWidgetParameters = function(widgetId) {
             let data = {
                 widgetId: widgetId
             }
-            ngDialog.open({
+            var modalInstance = $modal.open({
                 templateUrl: 'app/views/dashboard/dashboard-widget-parameter-manage.html',
                 controller: 'WidgetParameterController',
-                data: data
-            }).closePromise.then(needUpdate => {
+                windowClass: 'modal-docked',
 
-            });
+                resolve: {
+					items: function () {
+    	        	  return data;
+			        	}
+		        }
+            })
+            
+            modalInstance.result.then(function (needUpdate) {
+              });
         };
+
+    
 
         $scope.sort_options = [{
                 index: 0,
@@ -488,7 +500,8 @@ function _classCallCheck(instance, Constructor) {
             }
 
 
-                };
+        
+        };
 
         this.auditLog = function(app) {
             console.log(app);

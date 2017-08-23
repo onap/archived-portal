@@ -88,9 +88,6 @@ app.controller('rolepopupController',  function ($scope, role, roleId, confirmBo
 									
 									
 								}
-		    					 else {
-		    						 availableRoleFunction.selected=!availableRoleFunction.selected;
-			    				 }
 								/*
 							  	  $.ajax({
 							  		 type : 'POST',
@@ -106,7 +103,11 @@ app.controller('rolepopupController',  function ($scope, role, roleId, confirmBo
 									 }
 							  	  });
 							  	  */
-		    			});
+		    			}).catch(function(err) {
+							  availableRoleFunction.selected=!availableRoleFunction.selected;
+					    		$log.error('roleListController::confirmBoxService.confirm error:', err);
+
+				    	});
 	
 			} else {
 				//add role function
@@ -127,10 +128,7 @@ app.controller('rolepopupController',  function ($scope, role, roleId, confirmBo
 									  function(data) {
 										  confirmBoxService.showInformation("Error while saving.");
 									  });
-							} else {
-									  availableRoleFunction.selected=!availableRoleFunction.selected;
-							}
-									/*		  
+							}	/*		  
 								  	  $.ajax({
 								  		 type : 'POST',
 								  		 url : uuu,
@@ -150,7 +148,10 @@ app.controller('rolepopupController',  function ($scope, role, roleId, confirmBo
 						    	function(){
 						    		availableRoleFunction.selected=!availableRoleFunction.selected;
 						    	})*/
-			});
+			}).catch(function(err) {
+				  availableRoleFunction.selected=!availableRoleFunction.selected;
+		    		$log.error('roleListController::confirmBoxService.confirm error:', err);
+	    	});
 			
 			  
 	}
@@ -180,10 +181,11 @@ app.controller('rolepopupController',  function ($scope, role, roleId, confirmBo
 							  function(data) {
 								  confirmBoxService.showInformation("Error while saving.");
 							  });
-						  } else {
-							  availableRole.selected=false;
 						  }
-	    			});
+	    			}).catch(function(err) {
+	    				availableRole.selected=!availableRole.selected;
+			    		$log.error('roleListController::confirmBoxService.confirm error:', err);
+		    	});
 					  	 /* $.ajax({
 					  		 type : 'POST',
 					  		 url : uuu,
@@ -219,8 +221,6 @@ app.controller('rolepopupController',  function ($scope, role, roleId, confirmBo
 							  function(data) {
 								  confirmBoxService.showInformation("Error while saving.");
 							  });
-						  } else {
-							  availableRole.selected=false;
 						  }
 			  	 /* $.ajax({
 			  		 type : 'POST',
@@ -236,7 +236,10 @@ app.controller('rolepopupController',  function ($scope, role, roleId, confirmBo
 					 }
 			  	});*/
 				
-	    	});
+	    	}).catch(function(err) {
+				availableRole.selected=!availableRole.selected;
+	    		$log.error('roleListController::confirmBoxService.confirm error:', err);
+    	});
 		
 		  
 	}

@@ -22,7 +22,7 @@
     class ApplicationsCtrl {
 
     	constructor($log, $cookies, conf, ngDialog,
-        			applicationsService, confirmBoxService, userProfileService, utilsService) {
+        			applicationsService, confirmBoxService, userProfileService, utilsService,$modal) {
             this.emptyImgForPreview = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
             let getOnboardingApps = () => {
                 this.isLoadingTable = true;
@@ -31,8 +31,10 @@
                     	// Use proper back-end URL to load image
                     	for (var i = 0; i < appsList.length; i++) {
                     		appsList[i].imageLink = '';
-                    		if (appsList[i].imageUrl)
+                    		if (appsList[i].imageUrl){
                     			appsList[i].imageLink = conf.api.appThumbnail.replace(':appId', appsList[i].id);
+                        		appsList[i].imageLink = appsList[i].imageLink+'?' + new Date().getTime();
+                    		}
                     	}
                     	this.appsList = appsList;
                     }).catch(err => {
@@ -58,6 +60,8 @@
                     {name: 'Communication Topic', value: 'uebTopicName', isSortable: true},
                     {name: 'Communication Key', value: 'uebKey', isSortable: true},
                     {name: 'Communication Secret', value: 'uebSecret', isSortable: true},
+                    {name: 'Application Namespace', value: 'nameSpace', isSortable: true},
+                    {name: 'Central Access Type', value: 'isCentralAuth', isSortable: true}
                 ];
                 this.appsList = [];
             };
@@ -75,18 +79,20 @@
                         app: selectedApp
                     }
                 }
-                ngDialog.open({
+                var modalInstance = $modal.open({
                     templateUrl: 'app/views/applications/application-details-dialog/application-details.modal.html',
-                    controller: 'AppDetailsModalCtrl',
-                    controllerAs: 'appDetails',
-                    data: data
-                }).closePromise.then(needUpdate => {
-                    if (needUpdate.value === true) {
-                        $log.debug('ApplicationsCtrl:openAddNewAppModal: updating table data...');
-                        getOnboardingApps();
-                    }
-                });
-
+                    controller: 'AppDetailsModalCtrl as appDetails',
+                    sizeClass: 'modal-large', 
+                    resolve: {
+    					items: function () {
+        	        	  return data;
+    			        	}
+    		        }
+                })
+                
+                modalInstance.result.finally(function (){
+                		getOnboardingApps();
+     	        });
 
             };
 
@@ -118,6 +124,6 @@
         }
     }
     ApplicationsCtrl.$inject = ['$log', '$cookies', 'conf', 'ngDialog',
-    				'applicationsService', 'confirmBoxService', 'userProfileService', 'utilsService'];
+    				'applicationsService', 'confirmBoxService', 'userProfileService', 'utilsService','$modal'];
     angular.module('ecompApp').controller('ApplicationsCtrl', ApplicationsCtrl);
 })();

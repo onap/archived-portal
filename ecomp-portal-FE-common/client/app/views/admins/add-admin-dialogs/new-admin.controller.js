@@ -21,15 +21,14 @@
 'use strict';
 (function () {
     class NewAdminModalCtrl {
-        constructor($log, adminsService, $scope, confirmBoxService, utilsService, $location) {
-
+        constructor($log, adminsService, $scope, confirmBoxService, utilsService, $location, items) {
             let init = () => {
                 this.isSaving = false;
                 this.originalApps = [];
                 /* istanbul ignore if */
-                if ($scope.ngDialogData && $scope.ngDialogData.selectedUser && $scope.ngDialogData.dialogState) {
-                    this.selectedUser = $scope.ngDialogData.selectedUser;
-                    this.dialogState = $scope.ngDialogData.dialogState;
+                if (items && items.selectedUser && items.dialogState) {
+                    this.selectedUser = items.selectedUser;
+                    this.dialogState = items.dialogState;
                     this.isShowBack = false;
                     if (this.dialogState === 2) {
                         this.getAdminAppsRoles();
@@ -162,7 +161,7 @@
                                 $log.debug('Admin apps roles updated successfully!', res);
                                 //close and resolve dialog promise with true (to update the table)
                                 this.remindToAddUserIfNecessary();
-                                $scope.closeThisDialog(true);
+                                $scope.$dismiss('cancel');
                             }).catch(err => {
                             $log.error('NewAdminModalCtrl.updateAdminAppsRoles:: Failed - ' + err);
                         }).finally(()=> {
@@ -193,7 +192,7 @@
              * add it to the user administrated apps list
              */
             $scope.$watch('newAdmin.selectedNewApp.value', (newVal) => {
-                var newVal= JSON.parse(newVal);
+            	if(newVal) var newVal= JSON.parse(newVal);
                 if (!newVal || newVal.isAdmin === undefined) {
                     return;
                 }
@@ -248,6 +247,6 @@
 
         }
     }
-    NewAdminModalCtrl.$inject = ['$log', 'adminsService', '$scope', 'confirmBoxService', 'utilsService', '$location'];
+    NewAdminModalCtrl.$inject = ['$log', 'adminsService', '$scope', 'confirmBoxService', 'utilsService', '$location', 'items'];
     angular.module('ecompApp').controller('NewAdminModalCtrl', NewAdminModalCtrl);
 })();

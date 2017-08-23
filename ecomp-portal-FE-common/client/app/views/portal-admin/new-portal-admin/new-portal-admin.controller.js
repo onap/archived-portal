@@ -51,22 +51,22 @@
                             portalAdminsService.addPortalAdmin(this.selectedUser.orgUserId)
                                 .then(() => {
                                     $log.debug("NewPortalAdminModalCtrl::addNewPortalAdmin: portal admin added successfully");
-                                    $scope.closeThisDialog(true);
+                                     $scope.$dismiss('cancel');
                                 }).catch(err => {
                                     if(err.status === 409) {    //Conflict
                                         confirmBoxService.showInformation('This user already exists as a portal admin!').then(function (isConfirmed) {
-                                            $scope.closeThisDialog(true);
+                                             $scope.$dismiss('cancel');
                                         });
                                     } else {
                                         confirmBoxService.showInformation('There was a unknown problem adding the portal admin. ' + 'Please try again later. Error Status: '+ err.status).then(function (isConfirmed)  {
-                                            $scope.closeThisDialog(true);
+                                             $scope.$dismiss('cancel');
                                         });
                                     }
                             });
                         }
                     }).catch(err => {
                         confirmBoxService.showInformation('There was a unknown problem adding the portal admin. ' + 'Please try again later. Error Status: '+ err.status).then(function (isConfirmed)  {
-                            $scope.closeThisDialog(true);
+                             $scope.$dismiss('cancel');
                         });
                         $log.error('portalAdminsService.addPortalAdmin error status: '+ err.status);
                 });

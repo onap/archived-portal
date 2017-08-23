@@ -17,165 +17,112 @@
   limitations under the License.
   ================================================================================
   -->
-<div style="margin-top: 10px; margin-bottom: 10px;"></div>
-<br />
+<div class="b2b-modal-header" >
+	<h2 id="myModalLabel" b2b-modal-title="" tabindex="-1">Manage Contact Us</h2>
+	<div class="corner-button">
+		<button type="button" class="close" aria-label="Close"	ng-click="$dismiss('cancel')"></button>
+	</div>
+</div>
+<div class="b2b-modal-body" tabindex="0" role="region" aria-label="Modal header text content"	>
+	<div class="c-ecomp-portal-abs-table contactus-manage-table">
+		<table b2b-table id="table-main" table-data="contactUsList"	current-page="ignoredCurrentPage">
+			<thead b2b-table-row type="header">
+				<tr>
+					<th id="th-users-0" b2b-table-header key="ecomp_function" default-sort="a">App Name</th>
+					<th id="th-users-1" b2b-table-header key="app_name" sortable="true">Contact	Name</th>
+					<th id="th-users-2" b2b-table-header key="app_name" sortable="true">Contact	Email</th>
+					<th id="th-users-3" b2b-table-header key="role_name" sortable="true">Contact URL</th>
+					<th id="th-users-4" b2b-table-header key="role_name" sortable="true">Description</th>
+					<th id="th-users-5" b2b-table-header key="role_name" sortable="true">Edit</th>
+					<th id="th-users-6" b2b-table-header key="role_name" sortable="true">Delete</th>
+				</tr>
+			</thead>
+			<!-- Use track-by="UNIQUE KEY HERE" or leave out if no unique keys in data -->
+			<tbody b2b-table-row type="body" class="table-body" track-by="$index" row-repeat="rowData in contactUsList">
+				<tr id="tr-rowData" ng-click="">
+					<td b2b-table-body>
+						<div id="users-page-td-appName" ng-bind="rowData.appName"></div>
+					</td>
+					<td b2b-table-body>
+						<div id="users-page-td-name" ng-hide="rowData.showEdit" ng-bind="rowData.contactName"></div> 
+						<input	class="input-inline-edit-text" type="text"	ng-show="rowData.showEdit"	ng-model="contactUsList[$index].contactName" />
+					</td>
+					<td b2b-table-body>
+						<div id="users-page-td-email" ng-hide="rowData.showEdit"	ng-bind="rowData.contactEmail"></div> 
+						<input	class="input-inline-edit-text" type="text"	ng-show="rowData.showEdit"	ng-model="contactUsList[$index].contactEmail" />
+					</td>
+					<td b2b-table-body>
+						<div id="users-page-td-url" ng-hide="rowData.showEdit"	ng-bind="rowData.url"></div> 
+						<input		class="input-inline-edit-text" type="text"	ng-show="rowData.showEdit" ng-model="contactUsList[$index].url" />
+					</td>
+					<td b2b-table-body>
+						<div id="users-page-td-descr" ng-hide="rowData.showEdit"		ng-bind=" rowData.description"></div> 
+						<input	class="input-inline-edit-text" type="text"	ng-show="rowData.showEdit"	ng-model="contactUsList[$index].description" />
+					</td>
+					<td b2b-table-body>
+						<div class="delete-contact-us" ng-hide="rowData.showEdit"	ng-click="rowData.showEdit=true">
+							<span class="icon-edit"></span>
+						</div> 
+						<span ng-show="rowData.showEdit"> 
+							<a btn-type="primary"	ng-click="editContactUsFun(rowData); rowData.showEdit=false"	class="btn btn-alt btn-small" size="small">Save</a>
+					</span>
+					</td>
+					<td b2b-table-body>
+						<div class="delete-contact-us" ng-click="delContactUsFun(rowData)">
+							<span class="icon-misc-trash"></span>
+						</div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
 
-<div style="margin-top: 25px;">
-	<div id="title" class="manage-contactUs-home-title">Manage
-		Contact Us</div>
-	<div class="contact-us-margin">
-		<div class="get-access-table">
-			<div class="table-control">
-				<div class="c-ecomp-portal-abs-table" style="height: 300px">
-					<table b2b-table id="table-main" table-data="contactUsList"
-						current-page="ignoredCurrentPage">
-						<thead b2b-table-row type="header">
-							<tr>
-								<th id="th-users-0" b2b-table-header key="ecomp_function"
-									default-sort="a">App Name</th>
-								<th id="th-users-1" b2b-table-header key="app_name"
-									sortable="true">Contact Name</th>
-								<th id="th-users-2" b2b-table-header key="app_name"
-									sortable="true">Contact Email</th>
-								<th id="th-users-3" b2b-table-header key="role_name"
-									sortable="true">Contact URL</th>
-								<th id="th-users-4" b2b-table-header key="role_name"
-									sortable="true">Description</th>
-								<th id="th-users-5" b2b-table-header key="role_name"
-									sortable="true">Edit</th>
-								<th id="th-users-6" b2b-table-header key="role_name"
-									sortable="true">Delete</th>
-							</tr>
-						</thead>
-						<!-- Use track-by="UNIQUE KEY HERE" or leave out if no unique keys in data -->
-						<tbody b2b-table-row type="body" class="table-body"
-							track-by="$index" row-repeat="rowData in contactUsList">
-							<tr id="tr-rowData" ng-click="">
-								<td b2b-table-body>
-									<div id="users-page-td-appName" ng-bind="rowData.appName"></div>
-								</td>
-								<td b2b-table-body>
-									<div id="users-page-td-name" ng-hide="rowData.showEdit"
-										ng-bind="rowData.contactName"></div> <input
-									class="input-inline-edit-text" type="text"
-									ng-show="rowData.showEdit"
-									ng-model="contactUsList[$index].contactName" />
-								</td>
-								<td b2b-table-body>
-									<div id="users-page-td-email" ng-hide="rowData.showEdit"
-										ng-bind="rowData.contactEmail"></div> <input
-									class="input-inline-edit-text" type="text"
-									ng-show="rowData.showEdit"
-									ng-model="contactUsList[$index].contactEmail" />
-								</td>
-								<td b2b-table-body>
-									<div id="users-page-td-url" ng-hide="rowData.showEdit"
-										ng-bind="rowData.url"></div> <input
-									class="input-inline-edit-text" type="text"
-									ng-show="rowData.showEdit" ng-model="contactUsList[$index].url" />
-								</td>
-								<td b2b-table-body>
-									<div id="users-page-td-descr" ng-hide="rowData.showEdit"
-										ng-bind=" rowData.description"></div> <input
-									class="input-inline-edit-text" type="text"
-									ng-show="rowData.showEdit"
-									ng-model="contactUsList[$index].description" />
-								</td>
-								<td b2b-table-body>
-									<div class="delete-contact-us" ng-hide="rowData.showEdit"
-										ng-click="rowData.showEdit=true">
-										<span class="icon-edit"></span>
-									</div> <span ng-show="rowData.showEdit"> <a
-										btn-type="primary"
-										ng-click="editContactUsFun(rowData); rowData.showEdit=false"
-										class="btn btn-alt btn-small" size="small">Save</a>
-								</span>
-								</td>
-								<td b2b-table-body>
-									<div class="delete-contact-us"
-										ng-click="delContactUsFun(rowData)">
-										<span class="icon-misc-trash"></span>
-									</div>
-								</td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
+	<div id="divider-line"></div>
 
-				<div id="divider-line"></div>
-				<div style="margin-top: 15px; margin-left: -78px;">
-					<div id="addWidgetHeader" class="contact-us-margin">
-						<h1 style="font-size: 18px;">Add Application Contact
-							Information</h1>
-						<!-- <div class="errMsg">{{errMsg}}</div> -->
+
+	<div class="contactus-addWidgetHeader">
+		<div id="addWidgetHeader" class="contact-us-margin">
+			<h1 class="contactus-addWidgetHeader-txt">Add Application Contact Information</h1>
+		</div>
+		<div id="addWidget" class="contact-us-margin">
+			<div>
+				<div id="add-contact-us-field-appname" class="add-contact-us-field">
+					<div id="mots-property-label" class="property-label">
+						<span ID="required" class="mots-property-label-spn"	visible="false"> *</span>App Name
 					</div>
-					<div id="addWidget" class="contact-us-margin">
-						<div>
-							<div id="add-contact-us-field-appname"
-								class="add-contact-us-field">
-								<div id="mots-property-label" class="property-label"><span ID="required" style="color: Red;"visible="false"> *</span>App	Name</div>
-								<select id="dropdown1" name="dropdown1" b2b-dropdown
-									placeholder-text="Select an App"
-									ng-model="newContactUs.app.value">
-									<option b2b-dropdown-list
-										option-repeat="d in contactUsAllAppList" value="{{d.value}}">{{d.title}}</option>
-								</select>
-								<div id="mots-property-label-required" ng-show="newContactUs.app.title==null || newContactUs.app.title=='' ">
-							<small class="mandatory-categories">App Name is Required</small>
-							</div>
-							</div>
-							<br>
-							<div id="add-contact-us-field-contactname"
-								class="add-contact-us-field">
-								<div id="property-label-name" class="property-label">Contact
-									Name</div>
-								<input id="property-input-name" class="input-text-area"
-									type="text" ng-model="newContactUs.name" />
-							</div>
-							<div id="add-contact-us-field-email" class="add-contact-us-field">
-								<div id="property-label-email" class="property-label">Contact
-									Email</div>
-								<input id="property-input-email" class="input-text-area"
-									type="text" ng-model="newContactUs.email" />
-							</div>
-							<div id="add-contact-us-field-url" class="add-contact-us-field">
-								<div id="property-label-url" class="property-label">Contact
-									URL</div>
-								<input id="property-input-url" class="input-text-area"
-									type="text" ng-model="newContactUs.url" />
-							</div>
-							<div id="add-contact-us-field-desc"
-								class="add-contact-us-field-des">
-								<div id="property-label-desc" class="property-label">Description</div>
-								<textarea id="property-input-desc"
-									style="margin-top: 0px; margin-bottom: 0px; height: 100px"
-									ng-model="newContactUs.desc"></textarea>
-							</div>
-						</div>
-						<div style="height: 50px;">
-							<a style="float: right; margin-top: 20px"
-								class="btn btn-alt btn-small" ng-click="newContactUsFun()" ng-disabled="newContactUs.app.title==null || newContactUs.app.title=='' ">Add
-								New</a>
-						</div>
-						<div id="divider-line-bottom"></div>
-
-						<div style="height: 50px;">
-							<a style="float: right; margin-right: -230px !important;"
-								class="btn btn-alt btn-small" ng-click="closeDialog()">Close</a>
-						</div>
-
+					<select id="dropdown1" name="dropdown1" b2b-dropdown	placeholder-text="Select an App" ng-model="newContactUs.app.value">
+						<option b2b-dropdown-list option-repeat="d in contactUsAllAppList"	value="{{d.value}}">{{d.title}}</option>
+					</select>
+					<div id="mots-property-label-required"	ng-show="newContactUs.app.title==null || newContactUs.app.title=='' ">
+						<small class="mandatory-categories">App Name is Required</small>
 					</div>
-
 				</div>
-
-			</div>
+				<br>
+				<div id="add-contact-us-field-contactname"	class="add-contact-us-field">
+					<div id="property-label-name" class="property-label">Contact Name</div>
+					<input id="property-input-name" class="input-text-area" type="text"	ng-model="newContactUs.name" />
+				</div>
+				<div id="add-contact-us-field-email" class="add-contact-us-field">
+					<div id="property-label-email" class="property-label">Contact Email</div>
+					<input id="property-input-email" class="input-text-area" type="text" ng-model="newContactUs.email" />
+				</div>
+				<div id="add-contact-us-field-url" class="add-contact-us-field">
+					<div id="property-label-url" class="property-label">Contact	URL</div>
+					<input id="property-input-url" class="input-text-area" type="text" ng-model="newContactUs.url" />
+				</div>
+				<div id="add-contact-us-field-desc" class="add-contact-us-field-des">
+					<div id="property-label-desc" class="property-label">Description</div>
+					<textarea id="property-input-desc"	class="property-label-desc-txtarea" ng-model="newContactUs.desc"></textarea>
+				</div>
+			</div>		
 		</div>
 	</div>
 </div>
-
-<script type="application/javascript">
-    $(document).ready(function(){
-        $(".ngdialog-content").css("width","85%");
-        $(".ngdialog-close").attr('id','dialog-close');
-    });
-</script>
+<div class="b2b-modal-footer ng-scope ng-isolate-scope">
+	<div class="cta-button-group cta-modal-footer-flex">
+		<div>
+			<button class="btn btn-clear btn-medium pull-left" type="button" ng-click="$dismiss('cancel')">Close</button>
+			<button class="btn btn-alt btn-medium" type="button" ng-click="newContactUsFun()" ng-disabled="newContactUs.app.title==null || newContactUs.app.title=='' ">Add New</button>
+		</div>
+	</div>
+</div>

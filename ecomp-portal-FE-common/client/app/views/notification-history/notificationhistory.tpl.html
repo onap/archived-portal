@@ -46,7 +46,7 @@
 					<thead b2b-table-row type="header">
 						<tr>
 							<th id="th-notif-0" b2b-table-header key="msgSource"
-								sortable="true" style=" width: 10px;">Message Source</th>
+								sortable="true" class="table-th-txt">Message Source</th>
 							<th id="th-notif-1" b2b-table-header key="msgHeader"
 								sortable="true">Message</th>
 							<th id="th-notif-2" b2b-table-header key="startTime"
@@ -72,8 +72,8 @@
 								<div id="{{$index}}-msgSource">{{rowData.msgSource}}</div>
 							</td>
 								<td class="td-first" b2b-table-body style="{{rowData.expired?'color:lightgray !important':''}}"  ng-click="rowData.msgSource=='EP'||showDetailedJsonMessage(rowData)">
-								<div id="{{$index}}-title" style="font-weight: bold;" ng-bind="rowData.msgHeader"></div>
-								<div id="{{$index}}-message" ng-if="rowData.msgSource==='EP'"  style="width:500px" ng-bind="rowData.msgDescription"></div>
+								<div id="{{$index}}-title" class="table-td-txt" ng-bind="rowData.msgHeader"></div>
+								<div id="{{$index}}-message" ng-if="rowData.msgSource==='EP'"  class="table-td-msg" ng-bind="rowData.msgDescription"></div>
 								<div id="{{$index}}-message" ng-if="rowData.msgSource!=='EP'"  ng-bind="rowData.msgDescription| elipsis: 27"></div>
 							</td>
 							<td b2b-table-body style="{{rowData.expired?'color:lightgray !important':''}}">

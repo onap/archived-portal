@@ -36,8 +36,10 @@ import org.openecomp.portalapp.portal.logging.aop.EPAuditLog;
 import org.openecomp.portalapp.portal.service.UserNotificationService;
 import org.openecomp.portalapp.portal.transport.EpNotificationItem;
 import org.openecomp.portalapp.portal.transport.EpRoleNotificationItem;
+import org.openecomp.portalapp.portal.utils.EPCommonSystemProperties;
 import org.openecomp.portalapp.portal.utils.PortalConstants;
 import org.openecomp.portalsdk.core.logging.logic.EELFLoggerDelegate;
+import org.openecomp.portalsdk.core.util.SystemProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
@@ -62,6 +64,7 @@ import io.swagger.annotations.ApiOperation;
 @EPAuditLog
 public class TicketEventController implements BasicAuthenticationController {
 
+
 	@Autowired
 	private UserNotificationService userNotificationService;
 
@@ -72,6 +75,8 @@ public class TicketEventController implements BasicAuthenticationController {
 	}
 
 	private final ObjectMapper mapper = new ObjectMapper();
+
+
 
 	@ApiOperation(value = "Accepts messages from external ticketing systems and creates notifications for Portal users.", response = PortalRestResponse.class)
 	@RequestMapping(value = { "/ticketevent" }, method = RequestMethod.POST)
@@ -108,6 +113,12 @@ public class TicketEventController implements BasicAuthenticationController {
 			}
 			String eventSource = header.get("eventSource").asText();
 			epItem.setMsgSource(eventSource);
+			String ticket = body.get("ticketNum").asText();
+			String hyperlink = SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_SYSTEM_NOTIFICATION_URL)+eventSource+"num="+ticket;
+			if(body.get("notificationHyperlink")!=null){
+				hyperlink=body.get("notificationHyperlink").asText();
+			}
+			epItem.setNotificationHyperlink(hyperlink);
 			epItem.setStartTime(new Date(eventDate));
 			Calendar calendar = Calendar.getInstance();
 			calendar.setTime(epItem.getStartTime());
@@ -171,14 +182,26 @@ public class TicketEventController implements BasicAuthenticationController {
 		JsonNode header = event.get("header");
 		JsonNode body = event.get("body");
 		JsonNode SubscriberInfo = ticketEventNotif.get("SubscriberInfo");
+		JsonNode userList = SubscriberInfo.get("UserList");
+
 		if (application == null)
-			return "application is mandatory";
+			return "Application is mandatory";
 		if (body == null)
 			return "body is mandatory";
 		if (header.get("eventSource") == null)
 			return "Message Source is mandatory";
-		if (SubscriberInfo.get("UserList") == null)
+		if (userList == null)
 			return "At least one user Id is mandatory";
+		JsonNode eventDate=body.get("eventDate");
+		
+		if(eventDate!=null&&eventDate.asText().length()==8)
+			return "EventDate is invalid";
+		String UserIds[] = userList.toString().replace("[", "").replace("]", "").trim().replace("\"", "")
+				.split(",");		
+		List<EPUser> users = userNotificationService.getUsersByOrgIds(Arrays.asList(UserIds));
+		if(users==null||users.size()==0)
+			return "Invalid Attuid";
 		return null;
 	}
+	
 }

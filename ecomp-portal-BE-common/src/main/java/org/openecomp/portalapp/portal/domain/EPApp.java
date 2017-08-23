@@ -51,8 +51,9 @@ public class EPApp extends DomainVo {
 	private String uebKey;
 	private String uebSecret;
 	private Integer appType;
-
 	private AppContactUs contactUs;
+	private Boolean centralAuth;
+	private String	nameSpace;
 
 	public EPApp() {
 		// Attention!!!
@@ -281,6 +282,28 @@ public class EPApp extends DomainVo {
 
 	public void setContactUs(AppContactUs contactUs) {
 		this.contactUs = contactUs;
+	}
+	
+	public Boolean getCentralAuth() {
+		return centralAuth;
+	}
+
+	public void setCentralAuth(Boolean centralAuth) {
+		if (centralAuth == null) {
+			centralAuth = new Boolean(false);
+		}
+		this.centralAuth = centralAuth;
+	}
+	
+	public String getNameSpace() {
+		return nameSpace;
+	}
+
+	public void setNameSpace(String nameSpace) {
+		if (StringUtils.isEmpty(nameSpace)) {
+			nameSpace = null;
+		}
+		this.nameSpace = nameSpace;
 	}
 
 	@Override

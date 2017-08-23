@@ -150,6 +150,15 @@ angular.module('ecompApp')
                 	controllerAs: 'widgetOnboarding'
                 }
             }
+        }).state('root.accountOnboarding', {
+            url: '/accountOnboarding',
+            views: {
+                'content@': {
+		            templateUrl: 'app/views/account-onboarding/account-onboarding.tpl.html',
+		            controller: 'AccountOnboardingCtrl',
+		            controllerAs: 'accountOnboarding'
+                }
+            }
         }).state('root.functionalMenu', {
             url: '/functionalMenu',
             views: {

@@ -200,7 +200,7 @@ public class ExternalAppConfig extends AppConfig implements Configurable {
 		registry.addInterceptor(sessionTimeoutInterceptor()).excludePathPatterns("/oid-login", "/portalApi/healthCheck",
 				"/portalApi/healthCheck/", "/portalApi/healthCheckSuspend", "/portalApi/healthCheckSuspend/",
 				"/portalApi/healthCheckResume", "/portalApi/healthCheckResume/", "/login_external",
-				"/login_external.htm*", "login", "/login.htm*", "/auxapi/*", "/context/*", "/api*",
+				"/login_external.htm*", "login", "/login.htm*","/auxapi/*","/context/*", "/api*",
 				"/single_signon.htm", "/single_signon", "/dashboard", "/OpenSourceLogin.htm");
 
 		registry.addInterceptor(portalResourceInterceptor());

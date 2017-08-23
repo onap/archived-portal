@@ -20,7 +20,7 @@
 'use strict';
 (function () {
     class UsersCtrl {
-        constructor($log, applicationsService, usersService, confirmBoxService, $scope, ngDialog) {
+        constructor($log, applicationsService, usersService, confirmBoxService, $scope, ngDialog,$modal) {
             this.$log = $log;
             $scope.adminAppsIsNull = false;
             $scope.appsIsDown = false;
@@ -114,7 +114,7 @@
                 }
             }
 
-            this.updateUsersList = () => {
+             let updateUsersList = () => {
                 $scope.appsIsDown = false;
                 $scope.noUsersInApp = false;
                 // $log.debug('UsersCtrl::updateUsersList: Starting updateUsersList');
@@ -185,19 +185,24 @@
                         }
                     }
                 }
-                ngDialog.open({
+                
+                var modalInstance = $modal.open({
                     templateUrl: 'app/views/users/new-user-dialogs/new-user.modal.html',
-                    controller: 'NewUserModalCtrl',
-                    controllerAs: 'newUser',
-                    data: data
-                }).closePromise.then(needUpdate => {
-                    if (needUpdate.value === true) {
-                        $log.debug('UsersCtrl::openAddNewUserModal updating table data...');
-                        this.updateUsersList();
-                    }
-                });
+                    controller: 'NewUserModalCtrl as newUser',
+                    sizeClass: 'modal-medium', 
+                    resolve: {
+    					items: function () {
+    						return data;
+    			        }                
+    		        }
+                })
+                
+                modalInstance.result.finally(function () {
+                    $log.debug('UsersCtrl::openAddNewUserModal updating table data...');
+                    updateUsersList();                 
+     	        });
             };
-            
+                            
             this.openBulkUserUploadModal = (adminApps) => {
                 let data = null;
                 if (adminApps) {
@@ -209,14 +214,21 @@
                         }
                     }
                 }
-                ngDialog.open({
-                    templateUrl: 'app/views/users/new-user-dialogs/bulk-user.modal.html',
-                    controller: 'BulkUserModalCtrl',
-                    controllerAs: 'bulkUser',
-                    data: data
-                }).closePromise.then(needUpdate => {
-                	this.updateUsersList();
+                var modalInstance = $modal.open({
+                	templateUrl: 'app/views/users/new-user-dialogs/bulk-user.modal.html',
+                    controller: 'BulkUserModalCtrl as bulkUser',
+                    sizeClass: 'modal-medium', 
+                    resolve: {
+                    	items: function () {
+                    		return data;
+    			        }
+    		        }
                 });
+                
+                modalInstance.result.finally(function () {
+                        $log.debug('UsersCtrl::openAddNewUserModal updating table data...');
+                        updateUsersList();
+     	        });
             };
 
 
@@ -226,7 +238,7 @@
                 }
                 $log.debug('UsersCtrl::openAddNewUserModal:$watch selectedApp -> Fire with: ', newVal);
                 this.accountUsers = []; //reset table and show swirl here
-                this.updateUsersList();
+                updateUsersList();
             });
 
             $scope.$on('$destroy', () => {
@@ -239,6 +251,6 @@
             init();
         }
     }
-    UsersCtrl.$inject = ['$log', 'applicationsService', 'usersService', 'confirmBoxService', '$scope', 'ngDialog'];
+    UsersCtrl.$inject = ['$log', 'applicationsService', 'usersService', 'confirmBoxService', '$scope', 'ngDialog','$modal'];
     angular.module('ecompApp').controller('UsersCtrl', UsersCtrl);
 })();

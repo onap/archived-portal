@@ -78,7 +78,7 @@ public class RolesApprovalSystemController implements BasicAuthenticationControl
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "postUserProfile: failed for app {}, user {}",
 					extSysUser.getApplicationName(), extSysUser.getLoginId(), e);
-			if(reqResult == null || (!reqResult.isResult()  && !e.getMessage().contains("404"))){
+			if(reqResult == null || (!reqResult.isResult()  && !e.getMessage().contains("404") && !e.getMessage().contains("405"))){
 				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 				return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR,
 						e.getMessage(), "save user profile failed"); 
@@ -86,10 +86,14 @@ public class RolesApprovalSystemController implements BasicAuthenticationControl
 				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
 				return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR,
 						e.getMessage(), "save user profile failed");
-			} else{
+			} else if (e.getMessage().contains("405")) {
+				response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+				return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, e.getMessage(),
+						"save user profile failed");
+			} else {
 				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-				return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR,
-						e.getMessage(), "save user profile failed");
+				return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, e.getMessage(),
+						"save user profile failed");
 			}
 		}
 		return new PortalRestResponse<String>(PortalRestStatusEnum.OK, reqResult.getDetailMessage(), "Success");
@@ -117,7 +121,7 @@ public class RolesApprovalSystemController implements BasicAuthenticationControl
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "putUserProfile: failed for app {}, user {}",
 					extSysUser.getApplicationName(), extSysUser.getLoginId(), e);
-			if(reqResult == null || (!reqResult.isResult()  && !e.getMessage().contains("404"))){
+			if(reqResult == null || (!reqResult.isResult()  && !e.getMessage().contains("404") && !e.getMessage().contains("405"))){
 				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 				return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR,
 						e.getMessage(), "save user profile failed"); 
@@ -125,6 +129,9 @@ public class RolesApprovalSystemController implements BasicAuthenticationControl
 				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
 				return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR,
 						e.getMessage(), "save user profile failed");
+			} else if (e.getMessage().contains("405")) {
+				response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+				return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, e.getMessage(), "save user profile failed");
 			} else{
 				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 				return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR,

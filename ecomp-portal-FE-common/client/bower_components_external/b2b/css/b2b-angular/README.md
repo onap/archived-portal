@@ -11,4 +11,9 @@ Replace "ATT" with "ECOMP" in font-family in b2b-angular.css file
 
 15 March 2017: Revert the change back to original for input:not([type="button"])
  - height: 14px; 
- + height: 36px; 
+ + height: 36px;
+ 
+22 June 2017: Fix the missing icons by doing the mapping with ionicons
+Removed the "!important" tag for the "font family: icoPrimary"
+ - font family: 'icoPrimary' !important;
+ + font family: 'icoPrimary';

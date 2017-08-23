@@ -1,7 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.openecomp.portal</groupId>
+	<groupId>org.onap.portal</groupId>
 	<artifactId>ecompportal-be-os</artifactId>
 	<packaging>war</packaging>
 	<version>1.1</version>
@@ -10,18 +10,17 @@
 		<springframework.version>4.2.0.RELEASE</springframework.version>
 		<hibernate.version>4.3.11.Final</hibernate.version>
 		<eelf.version>1.0.0</eelf.version>
-		<epsdk.version>1.1.0</epsdk.version>
-		<portal.version>1.1.0</portal.version>
+		<epsdk.version>1.3.0-SNAPSHOT</epsdk.version>
+		<portal.version>1.3.0-SNAPSHOT</portal.version>
 		<encoding>UTF-8</encoding>
 		<!-- Tests usually require some setup that maven cannot do, so skip. -->
-		<skiptests>false</skiptests>
-		<!-- Jenkins invokes mvn with argument -Dbuild.number=${BUILD_NUMBER} -->
+		<skipTests>true</skipTests>
+		<!-- Jenkins SHOULD invoke mvn with argument -Dbuild.number=${BUILD_NUMBER} -->
 		<build.number>0</build.number>
 		<sonar.exclusions>**.js</sonar.exclusions>
 		<nexusproxy>https://nexus.onap.org</nexusproxy>
 		<snapshotNexusPath>content/repositories/snapshots/</snapshotNexusPath>
 		<releaseNexusPath>content/repositories/releases/</releaseNexusPath>
-		<sitePath>/content/sites/site/org/onap/portal/${project.version}</sitePath>
 	</properties>
 
 	<reporting>
@@ -42,28 +41,26 @@
 					<useStandardDocletOptions>true</useStandardDocletOptions>
 				</configuration>
 			</plugin>
+			
 		</plugins>
 	</reporting>
 	<distributionManagement>
 		<site>
 			<id>ecomp-site</id>
-			<url>dav:${nexusproxy}${sitePath}</url>
+			<url>dav:${nexusproxy}/content/sites/site/org/onap/portal/${project.version}</url>
 		</site>
 	</distributionManagement>
 	<repositories>
 		<repository>
-			<id>ecomp-releases</id>
-			<name>OpenECOMP - Release Repository</name>
+			<id>onap-releases</id>
 			<url>${nexusproxy}/${releaseNexusPath}</url>
 		</repository>
 		<repository>
-			<id>ecomp-snapshots</id>
-			<name>OpenECOMP - Snapshot Repository</name>
+			<id>onap-snapshots</id>
 			<url>${nexusproxy}/${snapshotNexusPath}</url>
 		</repository>
 		<repository>
-			<id>ecomp-public</id>
-			<name>ecomp onap public Repository</name>
+			<id>onap-public</id>
 			<url>https://nexus.onap.org/content/groups/public</url>
 		</repository>
 	</repositories>
@@ -99,6 +96,121 @@
 					<target>1.8</target>
 				</configuration>
 			</plugin>
+            <plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.7.5.201505241946</version>
+				<executions>
+
+					<!-- Prepares the property pointing to the JaCoCo runtime agent which 
+						is passed as VM argument when Maven the Surefire plugin is executed. -->
+					<execution>
+						<id>pre-unit-test</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+						<configuration>
+							<!-- Sets the path to the file which contains the execution data. -->
+							<destFile>${basedir}/target/coverage-reports/jacoco-ut.exec</destFile>
+							<!-- Sets the name of the property containing the settings for JaCoCo 
+								runtime agent. -->
+							<propertyName>surefireArgLine</propertyName>
+							<skip>${skipTests}</skip>
+						</configuration>
+
+					</execution>
+					<!-- Ensures that the code coverage report for unit tests is created 
+						after unit tests have been run. -->
+					<execution>
+						<id>post-unit-test</id>
+						<phase>test</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+						<configuration>
+							<!-- Sets the path to the file which contains the execution data. -->
+							<dataFile>${project.build.directory}/coverage-reports/jacoco-ut.exec</dataFile>
+							<!-- Sets the output directory for the code coverage report. -->
+							<outputDirectory>${project.reporting.outputDirectory}/jacoco-ut</outputDirectory>
+							<skip>${skipTests}</skip>
+
+						</configuration>
+					</execution>
+					<!-- Will see build errors while running the test cases because of dual 
+						instrumentation -->
+					<execution>
+						<id>default-instrument</id>
+						<goals>
+							<goal>instrument</goal>
+						</goals>
+						<configuration>
+							<skip>${skipTests}</skip>
+						</configuration>
+					</execution>
+					<execution>
+						<id>default-restore-instrumented-classes</id>
+						<goals>
+							<goal>restore-instrumented-classes</goal>
+						</goals>
+						<configuration>
+							<skip>${skipTests}</skip>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>3.0.2</version>
+				<executions>
+					<execution>
+						<id>copy-src</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${basedir}/target/classes</outputDirectory>
+							<overwrite>false</overwrite>
+							<skip>${skipTests}</skip>
+							<resources>
+								<resource>
+									<directory>${basedir}/../ecomp-portal-BE-common/target/classes</directory>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+
+				</executions>
+			</plugin>
+
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.19.1</version>
+				<configuration>
+					<skipTests>${skipTests}</skipTests>
+					<includes>
+						<include>**/*Test.java</include>
+						<include>**/*TestCase.java</include>
+						<inlcude>**/*TestSuite.java</inlcude>
+					</includes>
+					<!-- Intentionally Excluding TestFromSuite -->
+					<excludes>
+						<exclude>**/*TestFromSuite.java</exclude>
+					</excludes>
+					<additionalClasspathElements>
+						<additionalClasspathElement>${basedir}/src/main/webapp</additionalClasspathElement>
+						<additionalClasspathElement>../ecomp-portal-BE-common/src/main/webapp</additionalClasspathElement>
+						<additionalClasspathElement>../ecomp-portal-BE-common</additionalClasspathElement>
+					</additionalClasspathElements>
+					<systemPropertyVariables>
+						<container.classpath>classpath:</container.classpath>
+					</systemPropertyVariables>
+				</configuration>
+			</plugin>
 
 			<plugin>
 				<artifactId>maven-war-plugin</artifactId>
@@ -118,13 +230,13 @@
 					<overlays>
 						<!-- specify the order in which these should be applied -->						
 						<overlay>
-							<groupId>org.openecomp.portal</groupId>
+							<groupId>org.onap.portal</groupId>
 							<artifactId>ecompportal-be-common</artifactId>
 						</overlay>
 						<overlay>
-							<groupId>org.openecomp.ecompsdkos</groupId>
+							<groupId>org.onap.portal.sdk</groupId>
 							<artifactId>epsdk-app-overlay</artifactId>
-						</overlay>
+						</overlay>						
 					</overlays>
 				</configuration>
 			</plugin>
@@ -249,17 +361,29 @@
 	</build>
 
 	<dependencies>
+	<!--  
 		<dependency>
 			<groupId>com.att.eelf</groupId>
 			<artifactId>eelf-core</artifactId>
 			<version>${eelf.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.mockito</groupId>
+					<artifactId>mockito-core</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.powermock</groupId>
+					<artifactId>powermock-module-junit4</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
+	
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
 			<version>2.5</version>
 		</dependency>
-
+	-->
 		<!-- Spring -->
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -412,7 +536,6 @@
 					<artifactId>*</artifactId>
 				</exclusion>
 			</exclusions>
-			<!-- -->
 		</dependency>
 
 		<dependency>
@@ -540,14 +663,14 @@
 
 		<!-- SDK overlay war -->
 		<dependency>
-			<groupId>org.openecomp.ecompsdkos</groupId>
+			<groupId>org.onap.portal.sdk</groupId>
 			<artifactId>epsdk-app-overlay</artifactId>
 			<version>${epsdk.version}</version>
 			<type>war</type>
 		</dependency>
 
 		<dependency>
-			<groupId>org.openecomp.ecompsdkos</groupId>
+			<groupId>org.onap.portal.sdk</groupId>
 			<artifactId>epsdk-app-common</artifactId>
 			<version>${epsdk.version}</version>
 			<type>jar</type>
@@ -555,14 +678,14 @@
 
 		<!-- EcompPortal common overlay -->
 		<dependency>
-			<groupId>org.openecomp.portal</groupId>
+			<groupId>org.onap.portal</groupId>
 			<artifactId>ecompportal-be-common</artifactId>
 			<version>${portal.version}</version>
 			<type>war</type>
 		</dependency>
 
 		<dependency>
-			<groupId>org.openecomp.portal</groupId>
+			<groupId>org.onap.portal</groupId>
 			<artifactId>ecompportal-be-common</artifactId>
 			<version>${portal.version}</version>
 			<type>jar</type>
@@ -570,7 +693,7 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.openecomp.ecompsdkos</groupId>
+			<groupId>org.onap.portal.sdk</groupId>
 			<artifactId>epsdk-fw</artifactId>
 			<version>${epsdk.version}</version>
 			<exclusions>
@@ -594,13 +717,13 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.openecomp.ecompsdkos</groupId>
+			<groupId>org.onap.portal.sdk</groupId>
 			<artifactId>epsdk-core</artifactId>
 			<version>${epsdk.version}</version>
 		</dependency>
 
 		<dependency>
-			<groupId>org.openecomp.ecompsdkos</groupId>
+			<groupId>org.onap.portal.sdk</groupId>
 			<artifactId>epsdk-workflow</artifactId>
 			<version>${epsdk.version}</version>
 		</dependency>
@@ -608,7 +731,7 @@
 		<!-- Raptor required Libraries -->
 		<!-- for static charts -->
 		<dependency>
-			<groupId>org.openecomp.ecompsdkos</groupId>
+			<groupId>org.onap.portal.sdk</groupId>
 			<artifactId>epsdk-analytics</artifactId>
 			<version>${epsdk.version}</version>
 		</dependency>
@@ -628,13 +751,26 @@
 			<version>4.11</version>
 			<scope>test</scope>
 		</dependency>
-
 		<dependency>
+			<groupId>org.onap.portal</groupId>
+			<artifactId>ecomp-portal-BE-common-test</artifactId>
+			<version>${portal.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<version>1.8.5</version>
+			<scope>test</scope>
+		</dependency>
+        <dependency>
 			<groupId>commons-beanutils</groupId>
 			<artifactId>commons-beanutils</artifactId>
 			<version>1.9.2</version>
 		</dependency>
-
+         
+         
+		
 		<!-- OpenID Connect Dependencies -->
 		<dependency>
 			<groupId>org.mitre</groupId>

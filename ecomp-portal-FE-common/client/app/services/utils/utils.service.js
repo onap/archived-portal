@@ -48,6 +48,14 @@
             }
             return false;
         }
+        
+        showLoadingLayer() {
+        	$("#loadLayer").css('display','inline');
+        }
+        
+        hideLoadingLayer() {
+        	$("#loadLayer").css('display','none');
+        }
 
     }
     UtilsService.$inject = ['$log'];

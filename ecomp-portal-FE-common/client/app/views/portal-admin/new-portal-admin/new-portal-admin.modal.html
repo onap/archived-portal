@@ -17,23 +17,37 @@
   limitations under the License.
   ================================================================================
   -->
-<div class="new-admin-modal">
+  
+<style>
+  .title{
+		border-bottom: none !important;  
+	  }
+</style>
+<div>
+		<div class="b2b-modal-header">
+			<h2 class="heading-medium" id="newAdmin">Add New Portal Admin</h2>
 
-    <div class="search-users">
+			<div class="corner-button in">
+				<button type="button" class="close" aria-label="Close" id="pa-div-close-button"
+					ng-click="$dismiss('cancel')"></button>
+			</div>
+		</div>
 
-        <search-users search-title="Add New Portal Admin"
-                      selected-user="newPortalAdmin.selectedUser"></search-users>
+		<div class="b2b-modal-body">
+			<search-users search-title="" selected-user="newPortalAdmin.selectedUser"></search-users>
+		</div>
 
-        <div class="dialog-control">
-            
-               <button id="pa-search-users-button-save" class="btn btn-alt btn-small"
-                 ng-click="newPortalAdmin.selectedUser && newPortalAdmin.addNewPortalAdmin()"
-                 ng-class="{disabled: !newPortalAdmin.selectedUser}">Save
-            </button>
-            <button id="pa-search-users-button-cancel" class="btn btn-alt btn-small" ng-click="closeThisDialog()">Cancel</button>
-        </div>
-    </div>
-</div>
+		<div class="b2b-modal-footer">
+			<div class="cta-button-group in">
+				<button id="pa-search-users-button-save" class="btn btn-alt btn-small"
+					ng-click="newPortalAdmin.selectedUser && newPortalAdmin.addNewPortalAdmin()"
+					ng-class="{disabled: !newPortalAdmin.selectedUser}">Save</button>
+				<button id="pa-search-users-button-cancel"
+					class="btn btn-alt btn-small" ng-click="$dismiss('cancel')">Cancel</button>
+			</div>
+		</div>
+
+	</div>
 
 <script>
 $(document).ready(function(){

@@ -14,10 +14,11 @@ https://www.eclipse.org/m2e-wtp/
 
 ## Release Notes
 
-Version 1.1.0, July 2017
+Version 1.1.0 (Amsterdam), November 2017
 - [Portal-6] Updates to License and Trademark in the PORTAL Source Code
 - [Portal-7] Improvements added as part of the rebasing process
 - [Portal-17] Remove jfree related items
+- [PORTAL-21] FE changes to OS for AAF centralization and name space field; DB script updates for EcompPortalDDLMySql_1710_Common.sql under ecomp-portal-DB-common, EcompPortalDMLMySql_1710_OS.sql under ecomp-portal-DB-os;
 - [Portal-30] Failed to communicate with the widget microservice: Fixed
 - [Portal-35] Replaced the portal logo with onap logo on the login screen.
 - [Portal-40] Fix to add user roles 
@@ -26,6 +27,12 @@ Version 1.1.0, July 2017
 - [Portal-48] Fix to save a new app on Application onboarding
 - [Portal-49] image icon is missing on Widget corner
 - [Portal-63] remove att_abs_tpls*.js and greensock url
+- [Portal-69] unable to pick role in Functional Menu Update
+- [Portal-73] unable to onboard new Application fix
+- [Portal-50] Enabled the junit coverage in ONAP
+- [Portal-76] Edit functional menu modal doesn't show
+- [Portal-61] Fixed the routing problem, loaded data and changed the notification hyperlink 
+- [Portal-77] Changes to remove preview image and update the new image automatically on App onbarding page
 
 Version 1.0.0, February 2017
 - Initial release

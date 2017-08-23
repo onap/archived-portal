@@ -18,70 +18,80 @@
  * ================================================================================
  */
 
-app.controller('roleController', function ($scope, $http, confirmBoxService, ngDialog, RoleService, conf, $stateParams){
+
+app.controller('roleController', function ($scope, $http, confirmBoxService, ngDialog, RoleService, conf, $stateParams,$modal,utilsService){
 	//$scope.role=${role};
 		
 	$( "#dialogRoleFunction" ).hide();
 	$( "#dialogChildRole" ).hide();
-	
-	//$scope.ociavailableRoleFunctions=${availableRoleFunctions};
-	$scope.fetchRoles = function() {
-	
-	RoleService.getRole($stateParams.roleId).then(function(data){
-		
-		var j = data;
-  		$scope.data = JSON.parse(j.data);
-  		
-  		$scope.role =JSON.parse($scope.data.role);
-  		
-  		$scope.ociavailableRoleFunctions =JSON.parse($scope.data.availableRoleFunctions);
-  		$scope.availableRoleFunctions=[];
-  		
-  		if($scope.ociavailableRoleFunctions)
-  			$.each($scope.ociavailableRoleFunctions, function(i, a){ 
-  				var availableRoleFunction = a;
-  				availableRoleFunction.selected = false;
-  			    $.each($scope.role.roleFunctions, function(j, b){ 
-  			    	if(a.code === b.code) {
-  			    		availableRoleFunction.selected = true;
-  			    	}
-  			    });
-  			    $scope.availableRoleFunctions.push(availableRoleFunction);	    
-  		});	
-  		
+	$scope.routeRoleId = $stateParams.roleId;
 
-  		$scope.ociavailableRoles=JSON.parse($scope.data.availableRoles);
-  		$scope.availableRoles=[];
-  		
-  		if($scope.ociavailableRoles)
-  			$.each($scope.ociavailableRoles, function(i, a){ 
-  				var availableRole = a;
-  				availableRole.selected = false;
-  				if($scope.role.childRoles){
-  			    $.each($scope.role.childRoles, function(j, b){ 
-  			    	if(a.id === b.id) {
-  			    		availableRole.selected = true;
-  			    	}
-  			    });
-  				};
-  			    $scope.availableRoles.push(availableRole);	    
-  		});
-  			
-	
-	},function(error){
-		console.log("RoleService.getRole failed", error);
-		//reloadPageOnce();
-	});
+	// $scope.ociavailableRoleFunctions=${availableRoleFunctions};
+	$scope.fetchRoles = function() {
+		$scope.isLoadingRoleFunctions = true;
+		utilsService.showLoadingLayer(); // show the loading layer
+		RoleService.getRole($stateParams.roleId).then(function(data){
+			if(data==null || data ==''){
+				var msg={
+						content:'Something is wrong. Please contact the administrator for more information'
+				};
+				confirmBoxService.reloadPageConfirm(msg);
+			}else{
+				var j = data;
+				$scope.data = JSON.parse(j.data);
+				$scope.role =JSON.parse($scope.data.role);
+				$scope.routeRoleId = $stateParams.roleId;
+				$scope.ociavailableRoleFunctions =JSON.parse($scope.data.availableRoleFunctions);
+				$scope.isGlobalRoleChecked=($scope.role.name.indexOf('global_')==-1)?false:true;
+
+				$scope.availableRoleFunctions=[];
+
+				if($scope.ociavailableRoleFunctions)
+					$.each($scope.ociavailableRoleFunctions, function(i, a){ 
+						var availableRoleFunction = a;
+						availableRoleFunction.selected = false;
+						$.each($scope.role.roleFunctions, function(j, b){ 
+							if(a.code === b.code) {
+								availableRoleFunction.selected = true;
+							}
+						});
+						$scope.availableRoleFunctions.push(availableRoleFunction);	    
+					});	
+				$scope.ociavailableRoles=JSON.parse($scope.data.availableRoles);
+				$scope.availableRoles=[];
+
+				if($scope.ociavailableRoles)
+					$.each($scope.ociavailableRoles, function(i, a){ 
+						var availableRole = a;
+						availableRole.selected = false;
+						if($scope.role.childRoles){
+							$.each($scope.role.childRoles, function(j, b){ 
+								if(a.id === b.id) {
+									availableRole.selected = true;
+								}
+							});
+						};
+						$scope.availableRoles.push(availableRole);	    
+					});
+			}
+		},function(error){
+			console.log("RoleService.getRole failed", error);
+		}).finally(function(){
+			utilsService.hideLoadingLayer();
+			$scope.isLoadingRoleFunctions = false;
+		});
 	}
 	
 	$scope.fetchRoles();
+
+	$scope.isGlobalRoleChecked;
 
 	$scope.saveRole = function() {
 				var exists = false,x;	
 				for(x in $scope.availableRoles){
 					if($scope.availableRoles[x].name==$scope.role.name){
 						exists = true;
-						//$modalInstance.close({availableRoleFunctions:message.availableRoleFunctions});
+						// $modalInstance.close({availableRoleFunctions:message.availableRoleFunctions});
 					}
 				}
 				if (exists) {
@@ -89,17 +99,30 @@ app.controller('roleController', function ($scope, $http, confirmBoxService, ngD
 				}
 				else {
 					var uuu = conf.api.saveRole + "?role_id="+$stateParams.roleId;
+					if($scope.isGlobalRoleChecked ){
+						$scope.role.name = ($scope.role.name.indexOf('global_')==-1)?('global_'+$scope.role.name):($scope.role.name);
+						
+					}else{
+						$scope.role.name=$scope.role.name.replace('global_','');
+					}
 					var postData = {
 							role: $scope.role, 
 							childRoles: $scope.role.childRoles,
 							roleFunctions : $scope.role.roleFunctions
 					};
-					$http.post(uuu, JSON.stringify(postData)).then(function(res) {
-						// console.log('roleController::saveRole: ' + JSON.stringify(res));
-						if (res && res.data && res.data.role)
+					$http.post(uuu, JSON.stringify(postData,$stateParams.roleId)).then(function(res) {
+						// console.log('roleController::saveRole: ' +
+						// JSON.stringify(res));
+						if (res && res.data && res.data.role){
 							confirmBoxService.showInformation("Update Successful.");
-						else
+							$scope.routeRoleId = res.role;
+					  		$scope.isSaveClicked=true;
+					  		$scope.role='';
+						}
+						
+						else{
 							confirmBoxService.showInformation('Failed to create role: ' + res.data.error)
+						}
 					},
 					function(res){
 						console.log('post failed', res.data);
@@ -110,42 +133,42 @@ app.controller('roleController', function ($scope, $http, confirmBoxService, ngD
 			};
 		
 	$scope.addNewRoleFunctionModalPopup = function() {
-			var modalInstance = ngDialog.open({
-			    templateUrl: 'app/views/role/role_functions_popup.html',
-			    controller: 'rolepopupController',
-			    
-			    resolve: {
-			    	roleId: function () {
-				          return $stateParams.roleId;
-				        },
-			    	role: function () {
-			          return $scope.role;
+		var modalInstance = $modal.open({
+            templateUrl: 'app/views/role/role_functions_popup.html',
+            controller: 'rolepopupController',
+            sizeClass: 'modal-medium',
+            resolve: {
+            	roleId: function () {
+			          return $stateParams.roleId;
 			        },
-			        availableRoles: function () {
-				          return $scope.ociavailableRoles;
-				    },
-				    availableRoleFunctions: function () {
-				          return $scope.ociavailableRoleFunctions;
-				    },
-			      }
-			  });
-			 modalInstance.closePromise.then(response => {
-					if($stateParams.roleId === '0'){
-						return $scope.role;
-					}else{
-						$scope.fetchRoles();
-					}
-	           // $scope.role=response.role;
-	        });
+		    	role: function () {
+		          return $scope.role;
+		        },
+		        availableRoles: function () {
+			          return $scope.ociavailableRoles;
+			    },
+			    availableRoleFunctions: function () {
+			          return $scope.ociavailableRoleFunctions;
+			    }
+            }
+        });
+    	
+    	modalInstance.result.finally(function () {
+    		if($stateParams.roleId === '0'){
+				return $scope.role;
+			}else{
+				$scope.fetchRoles();
+			}
+	    });
 	};
 		
 	 $scope.addNewChildRoleModalPopup = function() {
-			var modalInstance = ngDialog.open({
-			    templateUrl: 'app/views/role/role_childrole_popup.html',
-			    controller: 'rolepopupController',
-			  
-			    resolve: {
-			    	roleId: function () {
+		   var modalInstance = $modal.open({
+	            templateUrl: 'app/views/role/role_childrole_popup.html',
+	            controller: 'rolepopupController',
+	            sizeClass: 'modal-medium',
+	            resolve: {
+	            	roleId: function () {
 				          return $stateParams.roleId;
 				        },
 			    	role: function () {
@@ -156,16 +179,17 @@ app.controller('roleController', function ($scope, $http, confirmBoxService, ngD
 				    },
 				    availableRoleFunctions: function () {
 				          return $scope.ociavailableRoleFunctions;
-				    },
-			      }
-			  }).closePromise.then(function(response){
-					if($stateParams.roleId === '0'){
-						 return $scope.role;
-					}else{
-			            $scope.fetchRoles();
-					}
-	            //$scope.role=response.role;
+				    }
+	            }
 	        });
+	    	
+	    	modalInstance.result.finally(function () {
+	    		if($stateParams.roleId === '0'){
+					return $scope.role;
+				}else{
+					$scope.fetchRoles();
+				}
+		    });
 		};
 		
 		$scope.removeRoleFunction = function(roleFunction) {

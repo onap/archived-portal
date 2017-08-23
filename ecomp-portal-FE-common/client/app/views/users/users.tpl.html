@@ -34,8 +34,8 @@
 						<div>
 							<input id="input-table-search" placeholder="Search" class="table-search-field" type="text" data-ng-model="users.searchString">
 						</div>
-						<button class="btn btn-alt btn-small" ng-click="users.openAddNewUserModal()"><i class="icon-people-userbookmark" aria-hidden="true"></i>&nbsp;Add User</button> 
-	                   	<button class="btn btn-alt btn-small" ng-click="users.openBulkUserUploadModal()"><i class="icon-arrows-upload" aria-hidden="true"></i>&nbsp;Bulk Upload</button>
+						<button class="btn btn-alt btn-small" id="users-button-add"  ng-click="users.openAddNewUserModal()"><i class="icon-people-userbookmark" aria-hidden="true"></i>&nbsp;Add User</button> 
+	                   	<button class="btn btn-alt btn-small" id="users-bulk-upload-button-add"  ng-click="users.openBulkUserUploadModal()"><i class="icon-arrows-upload" aria-hidden="true"></i>&nbsp;Bulk Upload</button>
 					</div>
                 </div>
                 <div ng-hide="users.isLoadingTable">
@@ -73,11 +73,11 @@
 						</thead>
 						<tbody b2b-table-row type="body" 	row-repeat="rowData in users.accountUsers" class="table-users-div">
 							<tr ng-click="users.openAddNewUserModal(rowData)">
-								<td b2b-table-body id="rowheader_t1_{{$index}}" headers="col1" ng-bind="rowData.firstName"></td>
-								<td b2b-table-body headers="rowheader_t1_{{$index}} col2" ng-bind="rowData.lastName"></td>
-								<td b2b-table-body headers="rowheader_t1_{{$index}} col3" ng-bind="rowData.orgUserId"></td>
-								<td b2b-table-body headers="rowheader_t1_{{$index}} col4">
-									<div class="ecomp-table-repeat" ng-repeat="role in rowData.roles" ng-bind="role.name"></div>
+								<td b2b-table-body id="rowheader_t1_{{$index}}-firstName" headers="col1" ng-bind="rowData.firstName"></td>
+								<td b2b-table-body  id="rowheader_t1_{{$index}}-lastName"  headers="col2" ng-bind="rowData.lastName"></td>
+								<td b2b-table-body  id="rowheader_t1_{{$index}}-orgUserId"  headers="col3" ng-bind="rowData.orgUserId"></td>
+								<td b2b-table-body   id="rowheader_t1_{{$index}}"  headers="col4">
+									<div class="ecomp-table-repeat"  id="rowheader_t1_{{$index}}"  ng-repeat="role in rowData.roles" ng-bind="role.name"></div>
 								</td>							
 							</tr>
 						</tbody>

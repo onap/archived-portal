@@ -21,7 +21,7 @@
 (function () {
     class WidgetOnboardingCtrl {
         constructor($log, applicationsService, widgetsCatalogService, ngDialog, confirmBoxService,
-                    userProfileService, $cookies, $scope) {
+                    userProfileService, $cookies, $scope,$modal) {
             $scope.infoMessage = true;
 
             let populateAvailableApps = widgets => {
@@ -145,16 +145,20 @@
                         widget: selectedWidget
                     }
                 }
-                ngDialog.open({
+                var modalInstance = $modal.open({
                     templateUrl: 'app/views/widget-onboarding/widget-details-dialog/widget-details.modal.html',
-                    controller: 'WidgetOnboardingDetailsModalCtrl',
-                    controllerAs: 'widgetOnboardingDetails',
-                    data: data
-                }).closePromise.then(needUpdate => {
-                	if(needUpdate.value === true){
-                        getOnboardingWidgets();
-                    }
-                });
+                    controller: 'WidgetOnboardingDetailsModalCtrl as widgetOnboardingDetails',
+                    sizeClass: 'modal-medium', 
+                    resolve: {
+    					items: function () {
+        	        	  return data;
+    			        	}
+    		        }
+                })
+                
+                modalInstance.result.finally(function () {
+                		getOnboardingWidgets();
+     	        });
             };
 
             this.deleteWidget = widget => { 
@@ -199,6 +203,7 @@
 	        	        document.body.removeChild(a);
 	        	        window.URL.revokeObjectURL(url);  
 	        	    }, 100);  
+	        	    
 	        	});
             };
             
@@ -206,6 +211,6 @@
         }
     }
     WidgetOnboardingCtrl.$inject = ['$log', 'applicationsService', 'widgetsCatalogService', 'ngDialog', 'confirmBoxService',
-        'userProfileService','$cookies', '$scope'];
+        'userProfileService','$cookies', '$scope','$modal'];
     angular.module('ecompApp').controller('WidgetOnboardingCtrl', WidgetOnboardingCtrl);
 })();

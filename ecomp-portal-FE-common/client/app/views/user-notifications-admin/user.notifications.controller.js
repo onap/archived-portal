@@ -22,7 +22,7 @@
 (function () {
 
     class userNotificationsCtrl {
-        constructor($scope, $log, notificationService, confirmBoxService, $modal, ngDialog, $state) {
+        constructor($scope, $log, notificationService, filterFilter,confirmBoxService, $modal, ngDialog, $state) {
 
         	var priorityItems={"1":"Normal","2":"Important"};
         	$scope.priorityItems=priorityItems;
@@ -33,7 +33,8 @@
         	$scope.totalPages1 = 0;
         	$scope.viewPerPage1 = 15;
         	$scope.currentPage1 = 1;
-        	$scope.showLoader = false;
+            $scope.startIndex=0;
+            $scope.showLoader = false;
         	$scope.firstPlay = true;
         	// Start with empty list to silence error in console
         	$scope.tableData = [];
@@ -44,33 +45,35 @@
                 $scope.adminNotifications = res.data;
                 $scope.isLoadingTable = false;
                 $scope.tableData = res.data;
-    			var totalItems = $scope.tableData.length;
+                var totalItems = $scope.tableData.length;
     			$scope.totalPages1  = Math.ceil(totalItems / $scope.viewPerPage1);
     			$scope.showLoader = false;
     			$scope.currentPage1=1;
-    			var endIndex = 1 * $scope.viewPerPage1;
-    			var startIndex = endIndex - $scope.viewPerPage1;
-    			$scope.tableAdminNotifItems = $scope.tableData.slice(startIndex, endIndex); 
+    			$scope.tableAdminNotifItems = $scope.tableData; 
             	}).catch(err => {
                 $log.error('userNotificationsCtrl:getAdminNotifications:: error ', err);
                 $scope.isLoadingTable = false;
             });
              }
         	 
+        	
       	   getAdminNotifications();           
-
-        	$scope.customPageHandler = function(num) {
-        		$scope.currentPage1=num;
-        		var endIndex = num * $scope.viewPerPage1;
-        		var startIndex = endIndex - $scope.viewPerPage1;
-        		$scope.tableAdminNotifItems = $scope.tableData.slice(startIndex, endIndex);
-        	};
-        	  
-
+      	   
+        	
+        	  $scope.$watch('searchString', function (searchKey) {
+                  var search = searchKey;               
+                  this.totalPage1 = filterFilter($scope.tableData, search);
+                  var resultLen = this.totalPage1.length;
+                  $scope.totalPage1 = Math.ceil(resultLen/$scope.viewPerPage1);
+                  $scope.currentPage1 = 1;
+              });
           
-
+        	  $scope.updateTable = (num) => {
+                  this.startIndex=this.viewPerPage1*(num-1);
+                  this.currentPage1 = num;
+              };
            	
-           $scope.removeUserNotification = function (selectedAdminNotification) {
+           this.removeUserNotification = (selectedAdminNotification) => {
                 selectedAdminNotification.activeYn = 'N';
                 confirmBoxService.deleteItem(selectedAdminNotification.msgHeader)
                     .then(isConfirmed => {
@@ -114,41 +117,27 @@
            
 
           
-        	 $scope.showDetailedJsonMessage=function (selectedAdminNotification) {
+           this.showDetailedJsonMessage = (selectedAdminNotification) => {
         		 notificationService.getMessageRecipients(selectedAdminNotification.notificationId).then(res =>{
                      $scope.messageRecipients = res;
 				 var messageObject=JSON.parse(selectedAdminNotification.msgDescription);
-				 var html="";
-				 html+='<p>'+'Message Source'+' : '+selectedAdminNotification.msgSource+'</p>';
-				 html+='<p>'+'Message Title'+' : '+selectedAdminNotification.msgHeader+'</p>';
-				 html+='<p>'+'Message Recipient'+' : '+$scope.messageRecipients+'</p>';
-
-				 for(var field in  messageObject){
-					 if(field=='eventDate'||field=='lastModifiedDate'){
-						 html+='<p>'+field+' : '+new Date(+messageObject[field])+'</p>';
-						  
-					 }else{
-					 html+='<p>'+field+' : '+messageObject[field]+'</p>';
-					 
-					 }
-				 }
-
- 		     var modalInstance = ngDialog.open({
- 				    templateUrl: 'app/views/user-notifications-admin/user.notifications.Json.details.modal.page.html',
- 				    controller: 'userNotificationCtrl',
- 				    resolve: {
- 				    	message: function () {
- 				    		var message = {
- 				    			   title:    '',
- 		                       		text:    html
- 		                       		
- 		                           	};
- 				          return message;
- 				        },
- 				     
- 				      }
- 				  }); 
- 		     
+				  var modalInstance = $modal.open({
+	                    templateUrl: 'app/views/user-notifications-admin/user.notifications.json.details.modal.page.html',
+	                    controller: 'userNotificationCtrl',
+	                    sizeClass: 'modal-large', 
+	                    resolve: {
+	    					items: function () {
+	    						var items = {
+	  				    			   title:    '',
+	 	                       		    selectedAdminNotification:selectedAdminNotification,messageObject:messageObject,messageRecipients:$scope.messageRecipients
+	  		                       		
+	  		                           	};
+	  				          return items;
+	    			        	}
+	    		        }
+	                })
+		     
+      	 
         	 }).catch(err => {
                  $log.error('userNotificationsCtrl:getMessageRecipients:: error ', err);
                  $scope.isLoadingTable = false;
@@ -157,7 +146,7 @@
  			 };
     
 			 
-            $scope.editUserNotificationModal = function (selectedAdminNotification) {
+            this.editUserNotificationModal = (selectedAdminNotification) => {
 
                 // retrieve roleIds here
                 selectedAdminNotification.roleIds = null;
@@ -165,32 +154,44 @@
                     .then(res => {
                         selectedAdminNotification.roleIds = res.data;
 
-                        $scope.openUserNotificationModal(selectedAdminNotification);
+                        this.openUserNotificationModal(selectedAdminNotification);
                     }).catch(err => {
                         $log.error('UserNotifCtlr:getNotificationRoles:: error ', err);
 
                     });
             }
 
-            $scope.openUserNotificationModal = function (selectedAdminNotification) {
+            this.openUserNotificationModal = (selectedAdminNotification) => {
                 let data = null;
                 if (selectedAdminNotification) {
                     data = {
                         notif: selectedAdminNotification
                     }
                 }
-                ngDialog.open({
+             
+                
+                var modalInstance = $modal.open({
                     templateUrl: 'app/views/user-notifications-admin/user.notifications.modal.page.html',
-                    controller: 'userNotificationsModalCtrl',
-                    controllerAs: 'userNotifModal',
-                    data: data
-                }).closePromise.then(function (needUpdate) {
-                    getAdminNotifications();
-                });
+                    controller: 'userNotificationsModalCtrl as userNotifModal',
+                    sizeClass: 'modal-large', 
+                    resolve: {
+    					items: function () {
+        	        	  return data;
+    			        	}
+    		        }
+                })
+                
+                modalInstance.result.finally(function () {
+                		getAdminNotifications();
+     	        });
             }
-
+            $scope.customPageHandler = function(num) {
+        		$scope.currentPage1=num;
+        		this.startIndex=$scope.viewPerPage1*(num-1);
+        	};
+        	  
         }
     }
-    userNotificationsCtrl.$inject = ['$scope', '$log', 'notificationService', 'confirmBoxService', '$modal', 'ngDialog', '$state'];
+    userNotificationsCtrl.$inject = ['$scope', '$log', 'notificationService','filterFilter', 'confirmBoxService', '$modal', 'ngDialog', '$state'];
     angular.module('ecompApp').controller('userNotificationsCtrl', userNotificationsCtrl);
 })();

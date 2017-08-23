@@ -17,69 +17,100 @@
   limitations under the License.
   ================================================================================
   -->
-<div class="new-user-modal">
+<style>
+	.title {
+		border-bottom: none !important;
+	}
+	
+	.b2b-modal-footer .cta-button-group {
+		border-top: 0px solid #d2d2d2;
+	}
+	
+	.multiple-select {
+		width: 250px;
+	}
+</style>
 
-    <div class="search-users" ng-show="newUser.dialogState===1">
+ <div >
+ 
+<div ng-if="newUser.dialogState===1">
 
-        <search-users search-title="New User"
-                      selected-user="newUser.selectedUser"></search-users>
+		<div class="b2b-modal-header">
+			<h2 class="heading-medium" id="newAdmin">New User</h2>
 
-        <div class="dialog-control">   
-            <button class="btn btn-alt btn-small" id="next-button"  ng-click="newUser.selectedUser && newUser.getUserAppsRoles()"
-                 ng-class="{disabled: !newUser.selectedUser}">Next
-            </button>
-             <button class="btn btn-alt btn-small" id="cancel-button" ng-click="closeThisDialog()">Cancel</button>
-            
-        </div>
-    </div>
+			<div class="corner-button in">
+				<button type="button" class="close" aria-label="Close" id="user-button-close" 
+					ng-click="$dismiss('cancel')"></button>
+			</div>
+		</div>
 
-    <div class="user-apps-roles" ng-show="newUser.dialogState===3">
-        <div class="title"
+		<div class="b2b-modal-body" tabindex="0"
+			aria-label="Modal header text content" role="region">
+			<search-users search-title="" selected-user="newUser.selectedUser"></search-users>
+		</div>
+
+		<div class="b2b-modal-footer">
+			<div class="cta-button-group in">
+				<button class="btn btn-alt btn-small" id="next-button"  ng-click="newUser.selectedUser && newUser.getUserAppsRoles()"
+	                 ng-class="{disabled: !newUser.selectedUser}">Next
+	            	</button>
+				<button id="search-users-button-cancel"
+					class="btn btn-alt btn-small" ng-click="$dismiss('cancel')">Cancel</button>
+			</div>
+		</div>
+
+	</div>
+		<div ng-if="newUser.dialogState===3">
+	
+			<div class="b2b-modal-header">
+				<div class="title"
              ng-bind="newUser.selectedUser.firstName + ' ' + newUser.selectedUser.lastName + ' (' + newUser.selectedUser.orgUserId + ')'"></div>
 
-
-        <div class="app-roles-main">
-            <div class="app-roles-main-title">
-                <span class="left">Access and roles:</span>
-            </div>
-
-            <div class="app-roles-list">
-                <div class="app-item" ng-repeat="app in (newUser.adminApps) track by app.id"  id="app-name-{{app.name.split(' ').join('-')}}" ng-show="!app.isDeleted">
-                    <div class="app-item-left" id="div-app-name-{{app.name.split(' ').join('-')}}">{{app.name | elipsis: 27}}</div>
-                    <div class="app-item-right" id="div-app-name-dropdown-{{app.name.split(' ').join('-')}}" ng-show="!app.isError && !app.isLoading && !app.noChanges && !app.isUpdating && !app.isDoneUpdating && !app.isErrorUpdating">
-                        <multiple-select id="app-roles"
-                                         unique-data="{{$index}}"
-                                         placeholder="Select roles"
-                                         ng-model="app.appRoles"
-                                         on-change="newUser.appChanged($index)"
-                                         name-attr="roleName"
-                                         value-attr="isApplied"></multiple-select>
-                    </div>
-                    <div id="app-item-no-contact" class="app-item-right-error" ng-show="app.isError">{{app.errorMessage}}</div>
-                    <div id="app-item-contacting" class="app-item-right-contacting" ng-show="app.isLoading">Contacting application...</div>
-                    <div id="app-item-no-changes" class="app-item-right-contacting" ng-show="app.noChanges">No changes</div>
-                    <div id="app-item-no-updating" class="app-item-right-contacting" ng-show="app.isUpdating">Updating application...</div>
-                    <div id="app-item-done-updating" class="app-item-right-contacting" ng-show="app.isDoneUpdating">Finished updating application</div>
-                    <div id="app-item-cannot-update" class="app-item-right-error" ng-show="app.isErrorUpdating">Could not update application...</div>
-                    <div id="app-item-delete" class="app-item-delete" ng-click="newUser.deleteApp(app)" ng-show="!app.isLoading && !app.isError"></div>
-                    <div id='ecomp-small-spinner' class="ecomp-small-spinner" ng-show="app.isLoading"></div>
-                </div>
-            </div>
-            
-             <div class="dialog-control">
-                <span id="ecomp-save-spinner" class="ecomp-save-spinner" ng-show="newUser.isSaving || newUser.isGettingAdminApps"></span>
-                <button id="new-user-back-button" class="btn btn-alt btn-small"  ng-show="newUser.isShowBack" ng-click="newUser.navigateBack()">Back</button>
-                <button id="new-user-save-button" class="btn btn-alt btn-small" ng-click="newUser.updateUserAppsRoles()"
-                      ng-disabled="(newUser.anyChanges == false)">Save
-                </button>
-                <button id="new-user-cancel-button" class="btn btn-alt btn-small" ng-click="closeThisDialog()">Cancel</button>
-            </div>
-
-        </div>
-
-    </div>
-
-
+	
+				<div class="corner-button in">
+					<button type="button" class="close" aria-label="Close" id="div-cancel-button"
+						ng-click="$dismiss('cancel')"></button>
+				</div>
+			</div>
+	
+			<div class="b2b-modal-body">
+				<div class="app-roles-main-title">
+					<span class="left">Access and roles:</span>
+				</div>
+				<br/>
+				<table  class="app-roles-list">
+					<tr class="app-item" ng-repeat="app in (newUser.adminApps) track by app.id" id="app-name-{{app.name.split(' ').join('-')}}" ng-show="!app.isDeleted">
+						<td class="app-item-left" id="div-app-name-{{app.name.split(' ').join('-')}}">{{app.name | elipsis: 27}}</td>
+						<td class="app-item-right" id="div-app-name-dropdown-{{app.name.split(' ').join('-')}}" ng-show="!app.isError && !app.isLoading && !app.noChanges && !app.isUpdating && !app.isDoneUpdating && !app.isErrorUpdating">
+							<multiple-select id="app-roles-{{app.name}}" unique-data="{{$index}}" placeholder="Select roles"
+										ng-model="app.appRoles" on-change="newUser.appChanged($index)" name-attr="roleName"
+										value-attr="isApplied"></multiple-select>
+						</td>
+						<td id="app-item-no-contact" class="app-item-right-error" ng-show="app.isError">{{app.errorMessage}}</td>
+						<td id="app-item-contacting" class="app-item-right-contacting" ng-show="app.isLoading">Contacting application...</td>
+						<td id="app-item-no-changes" class="app-item-right-contacting" ng-show="app.noChanges">No changes</td>
+						<td id="app-item-no-updating" class="app-item-right-contacting" ng-show="app.isUpdating">Updating application...</td>
+						<td id="app-item-done-updating" class="app-item-right-contacting" ng-show="app.isDoneUpdating">Finished updating application</td>
+						<td id="app-item-cannot-update" class="app-item-right-error" ng-show="app.isErrorUpdating">Could not update application...</td>
+						<td id="app-item-delete" ng-click="newUser.deleteApp(app)" ng-show="!app.isLoading && !app.isError" >
+							<i class="icon-misc-trash"></i>
+						</td> 
+						<td id='ecomp-small-spinner' class="ecomp-small-spinner" ng-show="app.isLoading"></td>
+					</tr>
+				</table >
+			</div>
+	
+			<div class="b2b-modal-footer">
+				<div class="cta-button-group in">
+					<span id="ecomp-save-spinner" class="ecomp-save-spinner" ng-show="newUser.isSaving || newUser.isGettingAdminApps"></span>
+					<button id="new-user-back-button" class="btn btn-alt btn-small" ng-show="newUser.isShowBack" ng-click="newUser.navigateBack()">Back</button>
+					<button id="new-user-save-button" class="btn btn-alt btn-small" ng-click="newUser.updateUserAppsRoles()"
+							ng-disabled="(newUser.anyChanges == false)">Save
+					</button>
+					<button id="new-user-cancel-button" class="btn btn-alt btn-small" ng-click="$dismiss('cancel')">Cancel</button>
+				</div>
+			</div>
+	</div>
 
 </div>
 

@@ -1,13 +1,16 @@
 
 .user-notification-details-modal {
-    width: 595px;
+   // width: 595px;
     margin:auto;
     background-color:white;
   .title {
-    .dGray18r;  //AT&T Dark Gray
+    .dGray18r; 
     border-bottom: @blue-active 3px solid;
 
   }    
+  .btn-calendar-icon{
+  	z-index:1;
+  }
     input:not([type="button"]) {
     height: 13px;
 } 
@@ -41,6 +44,11 @@
     width: 80px;
 }
 
+.radio {
+   
+    margin-bottom: 12px;
+}
+
     .left-container{
       display: inline-block;
       width: 48%;
@@ -59,7 +67,8 @@
 	position:absolute;
 	
 	}
-      
+
+
       .notif-input{
       width:302px;
       height:50px;
@@ -148,10 +157,15 @@
      }
       }
       
-   #datepicker{
-      z-index: 10000 !important;
-      width: 302px;
-      padding-left: 6px;
-  }     
-        
       
+ .radio input:checked + .skin:after{ 
+	width:22px; 
+	height:22px; 
+}          
+
+.btn-calendar-icon{
+    width: 10px;
+    position: absolute;
+    right: 25px;
+    top: 8px;
+}     

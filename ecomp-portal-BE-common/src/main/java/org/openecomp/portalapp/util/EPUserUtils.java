@@ -19,11 +19,13 @@
  */
 package org.openecomp.portalapp.util;
 
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -31,15 +33,24 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
+import org.hibernate.transform.Transformers;
+import org.openecomp.portalapp.portal.domain.CentralRoleFunction;
 import org.openecomp.portalapp.portal.domain.EPRole;
 import org.openecomp.portalapp.portal.domain.EPUser;
 import org.openecomp.portalapp.portal.domain.EPUserApp;
+import org.openecomp.portalapp.portal.service.EPRoleFunctionService;
 import org.openecomp.portalapp.portal.utils.EcompPortalUtils;
 import org.openecomp.portalsdk.core.domain.RoleFunction;
 import org.openecomp.portalsdk.core.exception.SessionExpiredException;
 import org.openecomp.portalsdk.core.lm.FusionLicenseManager;
 import org.openecomp.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.openecomp.portalsdk.core.menu.MenuBuilder;
+import org.openecomp.portalsdk.core.onboarding.util.PortalApiConstants;
+import org.openecomp.portalsdk.core.onboarding.util.PortalApiProperties;
 import org.openecomp.portalsdk.core.service.DataAccessService;
 import org.openecomp.portalsdk.core.util.SystemProperties;
 import org.openecomp.portalsdk.core.web.support.AppUtils;
@@ -54,6 +65,9 @@ public class EPUserUtils {
 	public static final String ALL_ROLE_FUNCTIONS = "allRoleFunctions";
 
 	private static DataAccessService dataAccessService;
+	
+	@Autowired
+	private static SessionFactory sessionFactory;
 
 	/**
 	 * Gets the EPUser object from the session.
@@ -89,17 +103,17 @@ public class EPUserUtils {
 	 */
 	@SuppressWarnings("rawtypes")
 	public static void setUserSession(HttpServletRequest request, EPUser user, Set applicationMenuData,
-			Set businessDirectMenuData, String loginMethod_ignored, List<RoleFunction> allRoleFunctions) {
+			Set businessDirectMenuData, String loginMethod_ignored, EPRoleFunctionService ePRoleFunctionService) {
 		HttpSession session = request.getSession(true);
 
 		// clear the current user session to avoid any conflicts
 		EPUserUtils.clearUserSession(request);
 		session.setAttribute(SystemProperties.getProperty(SystemProperties.USER_ATTRIBUTE_NAME), user);
 
-		getAllRoleFunctions(allRoleFunctions, session);
-
-		getRoleFunctions(request);
-
+		setAllRoleFunctions(ePRoleFunctionService.getRoleFunctions(), session);
+		
+		ePRoleFunctionService.getRoleFunctions(request,user);
+			
 		// truncate the role (and therefore the role function) data to save
 		// memory in the session
 		user.setEPRoles(null);
@@ -146,7 +160,7 @@ public class EPUserUtils {
 	 * @param session
 	 *            HttpSession
 	 */
-	private static void getAllRoleFunctions(List<RoleFunction> allRoleFunctions, HttpSession session) {
+	private static void setAllRoleFunctions(List<RoleFunction> allRoleFunctions, HttpSession session) {
 		if (allRoleFunctions == null)
 			return;
 		Set<String> roleFnSet = new HashSet<String>();
@@ -176,45 +190,6 @@ public class EPUserUtils {
 		session.removeAttribute(SystemProperties.getProperty(SystemProperties.ROLE_FUNCTIONS_ATTRIBUTE_NAME));
 	}
 
-	/**
-	 * Builds a set of role functions and sets a session attribute with it.
-	 * 
-	 * @param request
-	 *            HttpServletRequest
-	 * @return Set of role functions that was built.
-	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private static Set getRoleFunctions(HttpServletRequest request) {
-		HashSet roleFunctions = null;
-
-		HttpSession session = request.getSession();
-		roleFunctions = (HashSet) session
-				.getAttribute(SystemProperties.getProperty(SystemProperties.ROLE_FUNCTIONS_ATTRIBUTE_NAME));
-
-		if (roleFunctions == null) {
-			HashMap roles = getRoles(request);
-			roleFunctions = new HashSet();
-
-			Iterator i = roles.keySet().iterator();
-
-			while (i.hasNext()) {
-				Long roleKey = (Long) i.next();
-				EPRole role = (EPRole) roles.get(roleKey);
-
-				Iterator j = role.getRoleFunctions().iterator();
-
-				while (j.hasNext()) {
-					RoleFunction function = (RoleFunction) j.next();
-					roleFunctions.add(function.getCode());
-				}
-			}
-
-			session.setAttribute(SystemProperties.getProperty(SystemProperties.ROLE_FUNCTIONS_ATTRIBUTE_NAME),
-					roleFunctions);
-		}
-
-		return roleFunctions;
-	}
 
 	/**
 	 * Gets role information from the user session, in the cached user object.
@@ -225,7 +200,7 @@ public class EPUserUtils {
 	 * @return Map of role ID to role object
 	 */
 	@SuppressWarnings("rawtypes")
-	private static HashMap getRoles(HttpServletRequest request) {
+	public static HashMap getRoles(HttpServletRequest request) {
 		HashMap roles = null;
 
 		HttpSession session = AppUtils.getSession(request);

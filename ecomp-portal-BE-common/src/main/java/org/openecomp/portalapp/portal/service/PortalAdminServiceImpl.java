@@ -29,25 +29,34 @@ import javax.servlet.http.HttpServletResponse;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.openecomp.portalapp.portal.domain.EPApp;
 import org.openecomp.portalapp.portal.domain.EPUser;
 import org.openecomp.portalapp.portal.logging.aop.EPMetricsLog;
+import org.openecomp.portalapp.portal.transport.ExternalAccessUser;
 import org.openecomp.portalapp.portal.transport.FieldsValidator;
 import org.openecomp.portalapp.portal.transport.PortalAdmin;
 import org.openecomp.portalapp.portal.transport.PortalAdminUserRole;
 import org.openecomp.portalapp.portal.utils.EPCommonSystemProperties;
 import org.openecomp.portalapp.portal.utils.EcompPortalUtils;
+import org.openecomp.portalapp.portal.utils.PortalConstants;
 import org.openecomp.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.openecomp.portalsdk.core.service.DataAccessService;
 import org.openecomp.portalsdk.core.util.SystemProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service("portalAdminService")
 @org.springframework.context.annotation.Configuration
 @EnableAspectJAutoProxy
 @EPMetricsLog
-public class PortalAdminServiceImpl implements PortalAdminService {
+public class PortalAdminServiceImpl implements PortalAdminService {	
 
 	private String SYS_ADMIN_ROLE_ID = "1";
 	private String ECOMP_APP_ID = "1";
@@ -60,7 +69,11 @@ public class PortalAdminServiceImpl implements PortalAdminService {
 	private DataAccessService dataAccessService;
 	@Autowired
 	SearchService searchService;
-
+	@Autowired
+	private EPAppService epAppService;
+	
+	RestTemplate template = new RestTemplate();
+	
 	@PostConstruct
 	private void init() {
 		SYS_ADMIN_ROLE_ID = SystemProperties.getProperty(SystemProperties.SYS_ADMIN_ROLE_ID);
@@ -130,7 +143,8 @@ public class PortalAdminServiceImpl implements PortalAdminService {
 				}
 
 				transaction.commit();
-				result = true;
+				// Add role in the external central auth system
+				result = addPortalAdminInExternalCentralAuth(user.getOrgUserId(), PortalConstants.PORTAL_ADMIN_ROLE);
 			} catch (Exception e) {
 				EcompPortalUtils.rollbackTransaction(transaction, "createPortalAdmin rollback, exception = " + e);
 				logger.error(EELFLoggerDelegate.errorLogger, EcompPortalUtils.getStackTrace(e));
@@ -147,6 +161,42 @@ public class PortalAdminServiceImpl implements PortalAdminService {
 		}
 		return fieldsValidator;
 	}
+	
+	private boolean addPortalAdminInExternalCentralAuth(String loginId, String portalAdminRole){
+		boolean result = false;
+		try{
+			String name = "";
+			if (EPCommonSystemProperties.containsProperty(
+					EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_USER_DOMAIN)) {
+				name = loginId + SystemProperties
+						.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_USER_DOMAIN);
+			}
+			EPApp app = epAppService.getApp(PortalConstants.PORTAL_APP_ID);
+			String extRole = app.getNameSpace()+"."+portalAdminRole.replaceAll(" ", "_");
+			ObjectMapper addUserRoleMapper = new ObjectMapper();
+			ExternalAccessUser extUser = new ExternalAccessUser(name, extRole);
+			String userRole = addUserRoleMapper.writeValueAsString(extUser);
+			HttpHeaders headers = EcompPortalUtils.base64encodeKeyForAAFBasicAuth();
+
+			HttpEntity<String> addUserRole = new HttpEntity<>(userRole, headers);
+			template.exchange(
+					SystemProperties.getProperty(
+							EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_URL)
+							+ "userRole",
+					HttpMethod.POST, addUserRole, String.class);
+			result = true;
+		} catch (Exception e) {
+			// This happens only if role already exists in external central access system but not in local DB thats where we logging here
+			if (e.getMessage().equalsIgnoreCase("409 Conflict")) {
+				result = true;
+				logger.debug(EELFLoggerDelegate.debugLogger, "Portal Admin role already exists", e.getMessage());
+			} else{
+				logger.error(EELFLoggerDelegate.errorLogger, "Failed to add Portal Admin role ", e);
+				result = false;
+			}
+		}
+		return result;
+	}
 
 	public FieldsValidator deletePortalAdmin(Long userId) {
 		FieldsValidator fieldsValidator = new FieldsValidator();
@@ -161,7 +211,7 @@ public class PortalAdminServiceImpl implements PortalAdminService {
 			dataAccessService.deleteDomainObjects(PortalAdminUserRole.class,
 					"user_id='" + userId + "' AND role_id='" + SYS_ADMIN_ROLE_ID + "'", null);
 			transaction.commit();
-			result = true;
+			result = deletePortalAdminInExternalCentralAuth(userId, PortalConstants.PORTAL_ADMIN_ROLE);
 		} catch (Exception e) {
 			EcompPortalUtils.rollbackTransaction(transaction, "deletePortalAdmin rollback, exception = " + e);
 			logger.error(EELFLoggerDelegate.errorLogger, EcompPortalUtils.getStackTrace(e));
@@ -177,6 +227,40 @@ public class PortalAdminServiceImpl implements PortalAdminService {
 		return fieldsValidator;
 	}
 
+	
+	@SuppressWarnings("unchecked")
+	private boolean deletePortalAdminInExternalCentralAuth(Long userId, String portalAdminRole){
+		boolean result = false;
+		try{									
+			String name = "";
+			List<EPUser> localUserList = dataAccessService.getList(EPUser.class, " where user_id = " + userId,
+					null, null);
+			if (EPCommonSystemProperties.containsProperty(
+					EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_USER_DOMAIN)) {
+				name = localUserList.get(0).getOrgUserId() + SystemProperties
+						.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_USER_DOMAIN);
+			}
+			EPApp app = epAppService.getApp(PortalConstants.PORTAL_APP_ID);
+			String extRole = app.getNameSpace()+"."+portalAdminRole.replaceAll(" ", "_");
+			HttpHeaders headers = EcompPortalUtils.base64encodeKeyForAAFBasicAuth();
+			HttpEntity<String> addUserRole = new HttpEntity<>(headers);
+			template.exchange(
+					SystemProperties.getProperty(
+							EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_URL)
+							+ "userRole/"+name+"/"+extRole,
+					HttpMethod.DELETE, addUserRole, String.class);
+			result = true;
+		} catch (Exception e) {
+			if (e.getMessage().equalsIgnoreCase("404 Not Found")) {
+				logger.debug(EELFLoggerDelegate.debugLogger, "Portal Admin role already deleted or may not be found", e.getMessage());
+			} else{
+				logger.error(EELFLoggerDelegate.errorLogger, "Failed to add Portal Admin role ", e);
+				result = false;
+			}
+		}
+		return result;
+	}
+	
 	private void logQuery(String sql) {
 		logger.debug(EELFLoggerDelegate.debugLogger, "Executing query: " + sql);
 	}

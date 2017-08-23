@@ -2,7 +2,7 @@
 (function () {
     class MicroserviceOnboardingCtrl {
         constructor($log, applicationsService, microserviceService, ngDialog, confirmBoxService,
-                    userProfileService, $cookies, $scope) {
+                    userProfileService, $cookies, $scope,$modal) {
         	
         	
             let getOnboardingServices = () => {
@@ -42,16 +42,21 @@
 					}
 				}
 				
-                ngDialog.open({
+				var modalInstance = $modal.open({
                     templateUrl: 'app/views/microservice-onboarding/microservice-add-details/microservice-add-details.html',
-                    controller: 'MicroserviceAddDetailsCtrl',
-                    controllerAs: 'microserviceAddDetails',
-                    data: data
-                }).closePromise.then(needUpdate => {
-                	if(needUpdate.value === true){
+                    controller: 'MicroserviceAddDetailsCtrl as microserviceAddDetails',
+                    sizeClass: 'modal-large', 
+                    resolve: {
+    					items: function () {
+        	        	  return data;
+    			        	}
+    		        }
+                })
+                
+                modalInstance.result.finally(function (){
                 		getOnboardingServices();
-                    }
-                });
+     	        });
+
             };
                         
             this.deleteService = service => { 
@@ -82,6 +87,6 @@
         }
     }
     MicroserviceOnboardingCtrl.$inject = ['$log', 'applicationsService', 'microserviceService', 'ngDialog', 'confirmBoxService',
-        'userProfileService','$cookies', '$scope'];
+        'userProfileService','$cookies', '$scope','$modal'];
     angular.module('ecompApp').controller('MicroserviceOnboardingCtrl', MicroserviceOnboardingCtrl);
 })();

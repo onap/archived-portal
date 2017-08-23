@@ -20,7 +20,7 @@
 'use strict';
 (function () {
     class AdminsCtrl {
-        constructor($log, adminsService, applicationsService, ngDialog) {
+        constructor($log, adminsService, applicationsService, ngDialog, $modal) {
 
             let allPortalsFilterObject = {index: 0, title: 'All applications', value: ''};
 
@@ -119,43 +119,23 @@
                         }
                     }
                 }
-                ngDialog.open({
+                var modalInstance = $modal.open({
                     templateUrl: 'app/views/admins/add-admin-dialogs/new-admin.modal.html',
-                    controller: 'NewAdminModalCtrl',
-                    controllerAs: 'newAdmin',
-                    data: data
-                }).closePromise.then(needUpdate => {
-                    if(needUpdate.value === true){
-                        // $log.debug('AdminsCtrl:openAddNewAdminModal:: updating table data...');
-                        updateTableData();
-                    }
-                });
-            };
-            
-            this.openEditUserModal = (loginId) => {
-            	var data = {
-            			loginId : loginId,
-            	        updateRemoteApp : false,
-            	        appId : this.selectedApp!=null?this.selectedApp.id:''
-            	}
-            	var modalInstance = ngDialog.open({
-                    templateUrl: 'app/views/header/user-edit/edit-user.tpl.html',
-                    controller: 'editUserController',
-                    data: data,
+                    controller: 'NewAdminModalCtrl as newAdmin',
+                    sizeClass: 'modal-medium', 
                     resolve: {
-                        message: function message() {
-                            var message = {
-                                type: 'Contact',
-                            };
-                            return message;
-                        }
-                    }
-                }).closePromise.then(needUpdate => {	              	 
-                	updateTableData();
-	            });       
-            }
+    					items: function () {
+    						return data;
+    			        }
+    		        }
+                });
+                
+                modalInstance.result.finally(function () {
+                	updateTableData();  
+     	        });
+            };
         }
     }
-    AdminsCtrl.$inject = ['$log', 'adminsService', 'applicationsService', 'ngDialog'];
+    AdminsCtrl.$inject = ['$log', 'adminsService', 'applicationsService', 'ngDialog', '$modal'];
     angular.module('ecompApp').controller('AdminsCtrl', AdminsCtrl);
 })();

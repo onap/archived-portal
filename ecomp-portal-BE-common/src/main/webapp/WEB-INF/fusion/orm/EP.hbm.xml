@@ -321,7 +321,12 @@
 		<property name="appType" type="integer">
 			<column name="app_type"></column>
 		</property>
-
+		<property name="centralAuth" type="yes_no">
+			<column name="auth_central"></column>
+		</property>
+		<property name="nameSpace" type="string">
+			<column name="auth_namespace"></column>
+		</property>
 		<one-to-one name="contactUs" class="AppContactUs" cascade="save-update"></one-to-one>
 
 	</class>
@@ -431,6 +436,29 @@
 		<property name="userId" column="user_id" />
 		<property name="appId" column="app_id" />
 		<property name="statusCode" column="status_cd" />
+	</class>
+
+	<!-- EPAppRoleFunction class mapping details -->
+	<class name="EPAppRoleFunction" table="ep_app_role_function">
+		<id name="id" column="id">
+			<generator class="native">
+				<param name="property">seq_epp_app_role_func</param>
+			</generator>
+		</id>
+		<property name="roleId" column="role_id"></property>
+		<property name="appId" column="app_id"></property>
+		<property name="code" column="function_cd"></property>
+	</class>
+
+	<!-- CentralRoleFunction class mapping details -->
+	<class name="CentralRoleFunction" table="ep_app_function">
+		<composite-id>
+			<key-property name="appId" 
+				column="app_id" />
+			<key-property name="code" 
+				column="function_cd" />
+		</composite-id>
+		<property name="name" column="function_name" />
 	</class>
 
 	<class name="PersUserWidgetSelection" table="ep_pers_user_widget_sel">
@@ -612,17 +640,17 @@
 		<return alias="notificationResult"
 			class="org.openecomp.portalapp.portal.transport.EpNotificationItem" />
 		<![CDATA[
-			select @rn /*'*/:=/*'*/ @rn+1 AS rowId, notification_ID, is_for_online_users,is_for_all_roles, msg_header, msg_description,msg_source, start_Time, end_time, priority, created_date, creator_ID, active_YN from
+			select @rn /*'*/:=/*'*/ @rn+1 AS rowId, notification_ID, is_for_online_users,is_for_all_roles, msg_header, msg_description,msg_source, start_Time, end_time, priority, created_date, creator_ID,notification_hyperlink, active_YN from
 			( 
 			
-			select notification_ID, is_for_online_users, is_for_all_roles, msg_header, msg_description, msg_source,start_Time, end_time, priority,created_date, creator_ID,active_YN
+			select notification_ID, is_for_online_users, is_for_all_roles, msg_header, msg_description, msg_source,start_Time, end_time, priority,created_date, creator_ID,notification_hyperlink,active_YN
 			from
 				(
-				select user_id, notification_id, is_for_online_users, is_for_all_roles, msg_header, msg_description,msg_source,start_Time, end_time, priority, created_date, creator_ID,active_YN
+				select user_id, notification_id, is_for_online_users, is_for_all_roles, msg_header, msg_description,msg_source,start_Time, end_time, priority, created_date,notification_hyperlink, creator_ID,active_YN
 				from
 				(
 				select a.notification_ID,a.is_for_online_users,a.is_for_all_roles,a.active_YN,
-					a.msg_header,a.msg_description,a.msg_source,a.start_time,a.end_time,a.priority,a.creator_ID,a.created_date,b.role_id,b.recv_user_id 
+					a.msg_header,a.msg_description,a.msg_source,a.start_time,a.end_time,a.priority,a.creator_ID,a.notification_hyperlink,a.created_date,b.role_id,b.recv_user_id 
 				from ep_notification a, ep_role_notification b
 				where a.notification_id = b.notification_id
 				and (end_time is null ||  SYSDATE() <= end_time )
@@ -643,11 +671,11 @@
 				a.role_id = b.role_id
 				)
 				union
-				select :user_id, notification_id, is_for_online_users, is_for_all_roles, msg_header, msg_description,msg_source,start_Time, end_time, priority, created_date, creator_ID,active_YN
+				select :user_id, notification_id, is_for_online_users, is_for_all_roles, msg_header, msg_description,msg_source,start_Time, end_time, priority, created_date,notification_hyperlink, creator_ID,active_YN
 				from
 				(
 				select a.notification_ID,a.is_for_online_users,a.is_for_all_roles,a.active_YN,
-					a.msg_header,a.msg_description,a.msg_source,a.start_time,a.end_time,a.priority,a.creator_ID,a.created_date, b.role_id,b.recv_user_id 
+					a.msg_header,a.msg_description,a.msg_source,a.start_time,a.end_time,a.priority,a.creator_ID,a.created_date, a.notification_hyperlink,b.role_id,b.recv_user_id 
 				from ep_notification a, ep_role_notification b
 				where a.notification_id = b.notification_id
 				and (end_time is null ||  SYSDATE() <= end_time )
@@ -660,7 +688,7 @@
 				)
 				union
 				(
-				select :user_id user_id, notification_id, is_for_online_users, is_for_all_roles, msg_header, msg_description, msg_source,start_Time, end_time, priority, created_date, creator_ID,active_YN
+				select :user_id user_id, notification_id, is_for_online_users, is_for_all_roles, msg_header, msg_description, msg_source,start_Time, end_time, priority, created_date,notification_hyperlink, creator_ID,active_YN
 				from ep_notification a
 				where a.notification_id
 				and (end_time is null ||  SYSDATE() <= end_time )
@@ -713,6 +741,7 @@ SELECT
 			n.priority,
 			n.creator_ID AS creatorId,
 			n.created_date AS createdDate, 
+			n.notification_hyperlink AS notificationHyperlink,
 			u.org_user_id AS loginId
 		FROM 
 			ep_notification n 
@@ -736,6 +765,7 @@ SELECT
 			n.priority,
 			n.creator_ID AS creatorId,
 			n.created_date AS createdDate, 
+			n.notification_hyperlink AS notificationHyperlink,
 			u.org_user_id AS loginId
 		FROM 
 			ep_notification n 
@@ -761,7 +791,7 @@ select  a.app_id, a.app_name, b.role_id, b.role_name from
 union
 select fn_role.app_id,fn_app.app_name, fn_role.role_id ,fn_role.role_name
 from fn_app, fn_role
-where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' order by app_name
+where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_yn='Y' order by app_name
 
 
 
@@ -775,7 +805,7 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' order by app_name
 		<![CDATA[
 		SELECT
 			notificationId, isForOnlineUsers, isForAllRoles, msgHeader,	msgDescription,msgSource,
-			startTime, endTime, priority, createdDate,	creatorId, loginId,	activeYn 
+			startTime, endTime, priority, createdDate,notificationHyperlink,creatorId, loginId,	activeYn 
 		FROM
 			(
 					select distinct 
@@ -790,6 +820,7 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' order by app_name
 					priority,
 					created_date AS createdDate, 
 					creator_ID AS creatorId,
+					notification_hyperlink AS notificationHyperlink,
 					login_id AS loginId,
 					active_YN AS activeYn, 
 					if (is_viewed is null, 'N', is_viewed)
@@ -798,11 +829,11 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' order by app_name
 				select 
 					user_id, login_id,notification_id, is_for_online_users, is_for_all_roles, 
 					msg_header, msg_description,msg_source, start_Time, end_time, priority, created_date, 
-					creator_ID,active_YN
+					creator_ID,notification_hyperlink,active_YN
 				from
 				(
 					select a.notification_ID,a.is_for_online_users,a.is_for_all_roles,a.active_YN,
-					a.msg_header,a.msg_description,a.msg_source,a.start_time,a.end_time,a.priority,a.creator_ID,a.created_date, 
+					a.msg_header,a.msg_description,a.msg_source,a.start_time,a.end_time,a.priority,a.creator_ID,a.notification_hyperlink,a.created_date, 
 					 b.role_id,CASE WHEN a.creator_ID IS NOT NULL THEN u.org_user_id
                    
                    ELSE NULL
@@ -837,11 +868,11 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' order by app_name
         		select 
 					:user_id, login_id,notification_id, is_for_online_users, is_for_all_roles, 
 					msg_header, msg_description,msg_source, start_Time, end_time, priority, created_date, 
-					creator_ID,active_YN
+					creator_ID,notification_hyperlink,active_YN
 				from
 				(
 					select a.notification_ID,a.is_for_online_users,a.is_for_all_roles,a.active_YN,
-					a.msg_header,a.msg_description,a.msg_source,a.start_time,a.end_time,a.priority,a.creator_ID,a.created_date, 
+					a.msg_header,a.msg_description,a.msg_source,a.start_time,a.end_time,a.priority,a.creator_ID,a.created_date,a.notification_hyperlink, 
 					 b.role_id,CASE WHEN a.creator_ID IS NOT NULL THEN u.org_user_id
                    
                    ELSE NULL
@@ -868,7 +899,7 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' order by app_name
 				select 
 					:user_id user_id, b.login_id,notification_id, is_for_online_users, is_for_all_roles,
 					msg_header, msg_description,msg_source, start_Time, end_time, priority, a.created_date, 
-					creator_ID, a.active_YN
+					creator_ID, a.notification_hyperlink,a.active_YN
 				from ep_notification a  JOIN fn_user b on b.user_id=a.creator_ID
 				where a.notification_id
 				and a.is_for_all_roles = 'Y'
@@ -1048,6 +1079,13 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' order by app_name
 			select audit_date from fn_audit_log where affected_record_id =:userId order by audit_date desc limit 2;
 		]]>
 	</sql-query>
+	
+	<sql-query name="getActiveUsers">
+		<return alias="EPUser" class="org.openecomp.portalapp.portal.domain.EPUser" />   
+		<![CDATA[
+    		SELECT * FROM FN_USER WHERE active_yn='Y' 
+		]]>
+	</sql-query>
 
 	<sql-query name="getAppsAdmins">
 		<return alias="adminUserApp" class="org.openecomp.portalapp.portal.domain.AdminUserApp" />   
@@ -1074,7 +1112,7 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' order by app_name
 	    		a.APP_NOTES 		, a.APP_URL 		, a.APP_ALTERNATE_URL 	, a.APP_REST_ENDPOINT ,
 				a.ML_APP_NAME 		, a.ML_APP_ADMIN_ID , a.MOTS_ID 			, a.APP_PASSWORD ,
     			a.THUMBNAIL 		, a.APP_USERNAME	, a.OPEN 				, a.ENABLED , 
-				a.UEB_TOPIC_NAME 	, a.UEB_KEY 		, a.UEB_SECRET 			, a.APP_TYPE     
+				a.UEB_TOPIC_NAME 	, a.UEB_KEY 		, a.UEB_SECRET 			, a.APP_TYPE        , a.AUTH_CENTRAL
 		    from FN_APP a
 		    -- Portal assigns role 999 to app administrator		    
 			left outer join	FN_USER_ROLE         r ON a.APP_ID = r.APP_ID and r.USER_ID = :userId and r.ROLE_ID != 999
@@ -1102,7 +1140,8 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' order by app_name
 	    		a.APP_NOTES 		, a.APP_URL 		, a.APP_ALTERNATE_URL 	, a.APP_REST_ENDPOINT ,
 				a.ML_APP_NAME 		, a.ML_APP_ADMIN_ID , a.MOTS_ID 			, a.APP_PASSWORD ,
     			a.THUMBNAIL 		, a.APP_USERNAME	, a.OPEN 				, a.ENABLED , 
-				a.UEB_TOPIC_NAME 	, a.UEB_KEY 		, a.UEB_SECRET 			, a.APP_TYPE     
+				a.UEB_TOPIC_NAME 	, a.UEB_KEY 		, a.UEB_SECRET 			, a.APP_TYPE      , a.AUTH_CENTRAL ,
+				a.AUTH_NAMESPACE
 		    from FN_APP a
 		    -- Portal assigns role 999 to app administrator		    
 			left outer join	FN_USER_ROLE         r ON a.APP_ID = r.APP_ID and r.USER_ID = :userId and r.ROLE_ID != 999
@@ -1131,7 +1170,8 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' order by app_name
 	    		a.APP_NOTES 		, a.APP_URL 		, a.APP_ALTERNATE_URL 	, a.APP_REST_ENDPOINT ,
 				a.ML_APP_NAME 		, a.ML_APP_ADMIN_ID , a.MOTS_ID 			, a.APP_PASSWORD ,
     			a.THUMBNAIL 		, a.APP_USERNAME	, a.OPEN 				, a.ENABLED , 
-				a.UEB_TOPIC_NAME 	, a.UEB_KEY 		, a.UEB_SECRET 			, a.APP_TYPE     
+				a.UEB_TOPIC_NAME 	, a.UEB_KEY 		, a.UEB_SECRET 			, a.APP_TYPE          , a.AUTH_CENTRAL ,
+				a.AUTH_NAMESPACE
 		    from FN_APP a
 		    -- Portal assigns role 999 to app administrator		    
 			left outer join	FN_USER_ROLE         r ON a.APP_ID = r.APP_ID and r.USER_ID = :userId and r.ROLE_ID != 999
@@ -1161,7 +1201,8 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' order by app_name
 	    		a.APP_NOTES 		, a.APP_URL 		, a.APP_ALTERNATE_URL 	, a.APP_REST_ENDPOINT ,
 				a.ML_APP_NAME 		, a.ML_APP_ADMIN_ID , a.MOTS_ID 			, a.APP_PASSWORD ,
     			a.THUMBNAIL 		, a.APP_USERNAME	, a.OPEN 				, a.ENABLED , 
-				a.UEB_TOPIC_NAME 	, a.UEB_KEY 		, a.UEB_SECRET 			, a.APP_TYPE     
+				a.UEB_TOPIC_NAME 	, a.UEB_KEY 		, a.UEB_SECRET 			, a.APP_TYPE         , a.AUTH_CENTRAL ,
+				a.AUTH_NAMESPACE
 		    from FN_APP a
 		    -- Portal assigns role 999 to app administrator		    
 			left outer join	FN_USER_ROLE         r ON a.APP_ID = r.APP_ID and r.USER_ID = :userId and r.ROLE_ID != 999
@@ -1193,7 +1234,8 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' order by app_name
 	    		a.APP_NOTES 		, a.APP_URL 		, a.APP_ALTERNATE_URL 	, a.APP_REST_ENDPOINT ,
 				a.ML_APP_NAME 		, a.ML_APP_ADMIN_ID , a.MOTS_ID 			, a.APP_PASSWORD ,
     			a.THUMBNAIL 		, a.APP_USERNAME	, a.OPEN 				, a.ENABLED , 
-				a.UEB_TOPIC_NAME 	, a.UEB_KEY 		, a.UEB_SECRET 			, a.APP_TYPE     
+				a.UEB_TOPIC_NAME 	, a.UEB_KEY 		, a.UEB_SECRET 			, a.APP_TYPE          , a.AUTH_CENTRAL ,
+				a.AUTH_NAMESPACE
 		    from FN_APP a
 		    -- Portal assigns role 999 to app administrator		    
 			left outer join	FN_USER_ROLE         r ON a.APP_ID = r.APP_ID and r.USER_ID = :userId and r.ROLE_ID != 999
@@ -1228,7 +1270,8 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' order by app_name
 	    		a.APP_NOTES 		, a.APP_URL 		, a.APP_ALTERNATE_URL 	, a.APP_REST_ENDPOINT ,
 				a.ML_APP_NAME 		, a.ML_APP_ADMIN_ID , a.MOTS_ID 			, a.APP_PASSWORD ,
     			a.THUMBNAIL 		, a.APP_USERNAME	, a.OPEN 				, a.ENABLED , 
-				a.UEB_TOPIC_NAME 	, a.UEB_KEY 		, a.UEB_SECRET 			, a.APP_TYPE     
+				a.UEB_TOPIC_NAME 	, a.UEB_KEY 		, a.UEB_SECRET 			, a.APP_TYPE         , a.AUTH_CENTRAL ,
+				a.AUTH_NAMESPACE
 		    from FN_APP a
 		    -- Portal assigns role 999 to app administrator		    
 			left outer join	FN_USER_ROLE         r ON a.APP_ID = r.APP_ID and r.USER_ID = :userId and r.ROLE_ID != 999
@@ -1266,7 +1309,8 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' order by app_name
 	    		a.APP_NOTES 		, a.APP_URL 		, a.APP_ALTERNATE_URL 	, a.APP_REST_ENDPOINT ,
 				a.ML_APP_NAME 		, a.ML_APP_ADMIN_ID , a.MOTS_ID 			, a.APP_PASSWORD ,
     			a.THUMBNAIL 		, a.APP_USERNAME	, a.OPEN 				, a.ENABLED , 
-				a.UEB_TOPIC_NAME 	, a.UEB_KEY 		, a.UEB_SECRET 			, a.APP_TYPE     
+				a.UEB_TOPIC_NAME 	, a.UEB_KEY 		, a.UEB_SECRET 			, a.APP_TYPE         , a.AUTH_CENTRAL ,
+				a.AUTH_NAMESPACE
 		    from FN_APP a
 		    -- Portal assigns role 999 to app administrator		    
 			left outer join	FN_USER_ROLE         r ON a.APP_ID = r.APP_ID and r.USER_ID = :userId and r.ROLE_ID != 999
@@ -1307,7 +1351,8 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' order by app_name
 	    		a.APP_NOTES 		, a.APP_URL 		, a.APP_ALTERNATE_URL 	, a.APP_REST_ENDPOINT ,
 				a.ML_APP_NAME 		, a.ML_APP_ADMIN_ID , a.MOTS_ID 			, a.APP_PASSWORD ,
     			a.THUMBNAIL 		, a.APP_USERNAME	, a.OPEN 				, a.ENABLED , 
-				a.UEB_TOPIC_NAME 	, a.UEB_KEY 		, a.UEB_SECRET 			, a.APP_TYPE     
+				a.UEB_TOPIC_NAME 	, a.UEB_KEY 		, a.UEB_SECRET 			, a.APP_TYPE     	 , a.AUTH_CENTRAL ,
+				a.AUTH_NAMESPACE
 		    from FN_APP a
 		    -- Portal assigns role 999 to app administrator		    
 			left outer join	FN_USER_ROLE         r ON a.APP_ID = r.APP_ID and r.USER_ID = :userId and r.ROLE_ID != 999
@@ -1344,7 +1389,8 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' order by app_name
 	    		a.APP_NOTES 		, a.APP_URL 		, a.APP_ALTERNATE_URL 	, a.APP_REST_ENDPOINT ,
 				a.ML_APP_NAME 		, a.ML_APP_ADMIN_ID , a.MOTS_ID 			, a.APP_PASSWORD ,
     			a.THUMBNAIL 		, a.APP_USERNAME	, a.OPEN 				, a.ENABLED , 
-				a.UEB_TOPIC_NAME 	, a.UEB_KEY 		, a.UEB_SECRET 			, a.APP_TYPE     
+				a.UEB_TOPIC_NAME 	, a.UEB_KEY 		, a.UEB_SECRET 			, a.APP_TYPE        , a.AUTH_CENTRAL ,
+				a.AUTH_NAMESPACE
 		    from FN_APP a
 		    -- Portal assigns role 999 to app administrator		    
 			left outer join	FN_USER_ROLE         r ON a.APP_ID = r.APP_ID and r.USER_ID = :userId and r.ROLE_ID != 999
@@ -1381,7 +1427,8 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' order by app_name
 	    		a.APP_NOTES 		, a.APP_URL 		, a.APP_ALTERNATE_URL 	, a.APP_REST_ENDPOINT ,
 				a.ML_APP_NAME 		, a.ML_APP_ADMIN_ID , a.MOTS_ID 			, a.APP_PASSWORD ,
     			a.THUMBNAIL 		, a.APP_USERNAME	, a.OPEN 				, a.ENABLED , 
-				a.UEB_TOPIC_NAME 	, a.UEB_KEY 		, a.UEB_SECRET 			, a.APP_TYPE     
+				a.UEB_TOPIC_NAME 	, a.UEB_KEY 		, a.UEB_SECRET 			, a.APP_TYPE        , a.AUTH_CENTRAL ,
+				a.AUTH_NAMESPACE
 		    from FN_APP a
 		    -- Portal assigns role 999 to app administrator		    
 			left outer join	FN_USER_ROLE         r ON a.APP_ID = r.APP_ID and r.USER_ID = :userId and r.ROLE_ID != 999
@@ -1456,6 +1503,16 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' order by app_name
 		
 		<![CDATA[ 
 		SELECT * FROM fn_app  where ml_app_name =:appName
+		;		
+		]]>
+	</sql-query>
+	
+		<sql-query name="getMyAppDetailsByUebKey">
+		<return alias="myAppDetailsByUebKey" class="org.openecomp.portalapp.portal.domain.EPApp" />
+		
+		<![CDATA[ 
+				
+		SELECT * FROM fn_app  where ueb_key =:appKey
 		;		
 		]]>
 	</sql-query>
@@ -1582,9 +1639,9 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' order by app_name
 
 	<sql-query name="appRoles">
 		<return alias="rolesForApp"
-			class="org.openecomp.portalapp.portal.domain.EpUserAppRoles" />
+			class="org.openecomp.portalapp.portal.domain.EPUserAppRoles" />
 		<![CDATA[ 
-			SELECT ROLE_ID, APP_ID from  FN_ROLE where APP_ROLE_ID =:appRoleId and app_id =:appId
+			SELECT ROLE_ID, APP_ID from FN_ROLE where APP_ROLE_ID = :appRoleId and app_id = :appId
 			;
 		]]>
 	</sql-query>
@@ -1681,7 +1738,7 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' order by app_name
  		select   fr.role_name, fa.app_name 
           from   
         fn_role fr, fn_user_role fur, fn_app fa, fn_user fu  
-          Where  fu.user_id =  fur.user_id and fur.role_id = fr.role_id and fa.app_id = fur.app_id and fu.org_user_id = :userId 
+          Where  fu.user_id =  fur.user_id and fur.role_id = fr.role_id and fa.app_id = fur.app_id and fu.org_user_id = :userId and fr.active_yn='Y' and (fa.enabled = 'Y' or fa.app_id=1)
           ;
  
  		]]>
@@ -1711,5 +1768,173 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' order by app_name
 	delete from ep_user_notification where  notification_id in (select notification_id from ep_notification where  curdate() >= DATE_ADD(end_time,INTERVAL 3 MONTH))
 		]]>
 	</sql-query>
+	
+	<!-- Gets list of role functions and it requires two parameters appId and roleId-->
+	<sql-query name="getAppRoleFunctionList">
+		<return alias="appRoleFunctionList"
+			class="org.openecomp.portalapp.portal.domain.CentralRoleFunction" />
+		<![CDATA[ 
+			
+			SELECT DISTINCT f.app_id , f.function_cd, f.function_name from ep_app_role_function rf, ep_app_function f  
+			where rf.role_id =:roleId and rf.app_id =:appId and rf.app_id = f.app_id and rf.function_cd = f.function_cd
+			;
+				
+		]]>
+	</sql-query> 
+	
+	<!-- Gets list of all role functions -->
+	<sql-query name="getAllRoleFunctions">
+		<return alias="allRoleFunctions"
+			class="org.openecomp.portalapp.portal.domain.CentralRoleFunction" />
+		<![CDATA[ 
+			
+			SELECT * from ep_app_function where app_id =:appId
+			;
+				
+		]]>
+	</sql-query>
+	
+	<!-- Get ep_app_function records provided by single parameter -->
+	<sql-query name="getRoleFunction">
+		<return alias="RoleFunction"
+			class="org.openecomp.portalapp.portal.domain.CentralRoleFunction" />
+			<![CDATA[
+			
+			SELECT * from ep_app_function where function_cd = :functionCode and app_id =:appId
+			;
+			
+			]]>
+	</sql-query>
+	
+	<!-- Gets the record from ep_app_function table and requires two parameters  -->
+	<sql-query name="getAppFunctionDetails">
+		<return alias="appFunctionDetails"
+			class="org.openecomp.portalapp.portal.domain.CentralRoleFunction" />
+			<![CDATA[
+			
+					select * from ep_app_function where app_id =:appId and function_cd =:functionCd
+			;		
+			]]>
+	</sql-query>
+		
+	<!-- Gets the current user app roles records and requires two parameters  -->
+	<sql-query name="getUserAppCurrentRoles">
+		<return alias="userAppCurrentRoles"
+			class="org.openecomp.portalapp.portal.transport.EPUserAppCurrentRoles" />
+			<![CDATA[
+			
+			select distinct fu.role_id, fr.user_id, fu.role_name, fu.priority from fn_role fu left outer join fn_user_role fr ON fu.role_id = fr.role_id and fu.app_id = fr.app_id and fr.role_id != 999 where fu.app_id =:appId and fr.user_id =:userId
+			;		
+			]]>
+	</sql-query>
+	
+	<!-- Gets the current user app roles along with account administrator and requires two parameters  -->
+	<sql-query name="getUserAppExistingRoles">
+		<return alias="userAppExistingRoles"
+			class="org.openecomp.portalapp.portal.transport.EcompUserAppRoles" />
+			<![CDATA[
+			select fr.role_name, fu.app_id, fu.user_id, fu.priority, fu.role_id from fn_user_role fu 
+			left outer join fn_role fr on fu.role_id = fr.role_id 
+			where fu.user_id =:userId and fu.app_id =:appId
+			;			
+			]]>
+	</sql-query>
+	
+	<!-- Gets the current user app roles records and requires two parameters  -->
+	<sql-query name="getAllFunctions">
+		<return alias="allFunctions"
+			class="org.openecomp.portalsdk.core.domain.RoleFunction" />
+			<![CDATA[	
+			select * from fn_function
+			;		
+			]]>
+	</sql-query>
 
+	<!-- Gets the  all role functions and requires one parameters -->
+	<sql-query name="uploadAllRoleFunctions">
+		<return alias="allRoleFunctions"
+			class="org.openecomp.portalapp.portal.transport.BulkUploadRoleFunction" />
+			<![CDATA[	
+				select fr.function_cd, fn.function_name from fn_role_function fr left outer join fn_function fn on fr.function_cd = fn.function_cd where role_id =:roleId
+				;		
+			]]>
+	</sql-query>
+
+	<sql-query name="getRoletoUpdateAAF">
+		<return alias="getRoletoUpdateAAF" class="org.openecomp.portalapp.portal.domain.EPRole" />
+			<![CDATA[
+					SELECT * FROM fn_role where role_name =:appRoleName and app_id =:appId
+			;		
+			]]>
+	</sql-query>
+
+	<sql-query name="getBulkUserRoles">
+		<return alias="bulkUserRoles" class="org.openecomp.portalapp.portal.transport.BulkUploadUserRoles" />
+			<![CDATA[
+			select fr.role_name, fu.org_user_id, fa.auth_namespace from fn_user_role fur 
+			left outer join fn_role fr on fr.role_id = fur.role_id 
+			left outer join fn_app fa on fa.app_id = fur.app_id
+			left outer join fn_user fu on fu.user_id = fur.user_id where fa.ueb_key =:uebKey and fu.org_user_id != 'su1234'	
+			;	
+			]]>
+	</sql-query>
+	
+	<sql-query name="getCentralizedApps">
+		<return alias="centralizedApps" class="org.openecomp.portalapp.portal.domain.EPApp" />
+			<![CDATA[
+			select * from fn_app where auth_central = 'Y' and open = 'N';
+			;	
+			]]>
+	</sql-query>
+	
+	<sql-query name="getUserRoles">
+			<return alias="getUserRolesList" class="org.openecomp.portalapp.portal.domain.UserRole" />
+	
+		<![CDATA[ 
+				
+        SELECT DISTINCT user.USER_ID, role.ROLE_ID, user.org_user_id, user.FIRST_NAME, user.LAST_NAME, role.ROLE_NAME  FROM fn_user_role userrole INNER JOIN fn_user user ON user.USER_ID = userrole.USER_ID INNER JOIN fn_role role ON role.ROLE_ID = userrole.ROLE_ID WHERE user.org_user_id =:org_user_id and userrole.app_id = 1 
+         ;
+		]]>
+	</sql-query>
+		<sql-query name="getRoleFunctionsOfUser">
+			<![CDATA[
+			select distinct ep.function_cd from fn_user_role fu, ep_app_role_function ep, ep_app_function ea
+			where fu.role_id = ep.role_id 
+			and fu.app_id = ep.app_id
+			and fu.user_id =:userId and ep.app_id = 1
+			and ea.function_cd = ep.function_cd
+			;	
+			]]>
+	</sql-query>
+	
+	<sql-query name="getUserRolesForLeftMenu">
+			<return alias="getUserRolesListForLeftMenu" class="org.openecomp.portalapp.portal.domain.UserRole" />
+	
+		<![CDATA[ 
+				
+        SELECT DISTINCT user.USER_ID, role.ROLE_ID, user.org_user_id, user.FIRST_NAME, user.LAST_NAME, role.ROLE_NAME  FROM fn_user_role userrole INNER JOIN fn_user user ON user.USER_ID = userrole.USER_ID INNER JOIN fn_role role ON role.ROLE_ID = userrole.ROLE_ID WHERE user.org_user_id =:org_user_id and (userrole.app_id = 1 or role.role_id =   999)   
+         ;
+		]]>
+	</sql-query>
+	
+	<!-- Gets all functions for an application along with global functions and requires single parameter -->
+	<sql-query name="getMenuFunctions">
+		<![CDATA[ 
+			select f.function_cd from ep_app_function f
+			where f.app_id =:appId
+			UNION
+			select epa.function_cd from fn_role fnr, ep_app_role_function epr, ep_app_function epa where epr.role_id = fnr.role_id
+			and epa.function_cd = epr.function_cd and fnr.role_name like 'global%'
+		 ;
+		]]>
+	</sql-query>
+	
+	<sql-query name="getRequestIdsForApp">
+	<return alias="getRequestIdsForApp" class="org.openecomp.portalapp.portal.domain.EPUserAppRolesRequest" />
+		<![CDATA[ 
+		select * from ep_user_roles_request where app_id =:app_id
+		;
+		]]>
+	</sql-query>
+	
 </hibernate-mapping>

@@ -88,6 +88,9 @@ public class EpNotificationItem extends DomainVo {
 	
 	@Column(name = "created_date")
 	public Date createdDate;
+	
+	@Column(name = "notification_hyperlink")
+	public String notificationHyperlink;
 		
 	
 	@OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL}, orphanRemoval = true)
@@ -211,6 +214,14 @@ public class EpNotificationItem extends DomainVo {
 
 	public void setMsgSource(String msgSource) {
 		this.msgSource = msgSource;
+	}
+	
+	public String getNotificationHyperlink() {
+		return notificationHyperlink;
+	}
+
+	public void setNotificationHyperlink(String notificationHyperlink) {
+		this.notificationHyperlink = notificationHyperlink;
 	}
 
 	@Override

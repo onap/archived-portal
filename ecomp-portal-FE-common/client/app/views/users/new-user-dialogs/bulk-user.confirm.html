@@ -17,9 +17,15 @@
   limitations under the License.
   ================================================================================
   -->
-<div class="bulk-user-modal">
-	<div class="title">Bulk User Upload Confirmation</div>
-		<div class="main">
+<div>
+	<div class="b2b-modal-header">
+		<h2 class="heading-medium" id="newAdmin">Bulk User Upload Confirmation</h2>
+		<div class="corner-button in">
+			<button type="button" class="close" aria-label="Close" id="bulk-user-button-close"
+				ng-click="$dismiss('cancel')"></button>
+		</div>
+	</div>
+		<div class="b2b-modal-body">
 
 			<!-- progress indicator -->
 			<div class="upload-instructions"
@@ -73,11 +79,13 @@
 				</div>
 
 			</div>
-			<div class="dialog-control">		
-					<button id="bulk-user-ok-button" class="btn btn-alt btn-small" ng-class="{disabled: isValidating}"
+			
+		</div>
+		<div class="b2b-modal-footer">	
+			<div class="cta-button-group in">	
+				<button id="bulk-user-ok-button" class="btn btn-alt btn-small" ng-class="{disabled: isValidating}"
 					ng-click="updateDB()">Ok</button>
-					<button id="bulk-user-cancel-button" class="btn btn-alt btn-small" ng-click="cancelUpload()">Cancel</button>
-					
+				<button id="bulk-user-cancel-button" class="btn btn-alt btn-small" ng-click="$dismiss('cancel')">Cancel</button>		
 			</div>
 		</div>
 </div>

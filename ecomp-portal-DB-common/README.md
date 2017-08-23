@@ -11,9 +11,11 @@ Directions:
 DDL
 
 EcompPortalDDLMySql_1707_Common.sql  - this is the DDL entries that both Opensource and AT&T have in common
+EcompPortalDDLMySql_1710_Common.sql  - this is the DDL entries that both Opensource and AT&T have in common
 
 DML
 
 EcompPortalDMLMySql_1707_Common.sql  - this is the DML entries that both Opensource and AT&T have in common
+EcompPortalDMLMySql_1710_Common.sql  - this is the DML entries that both Opensource and AT&T have in common
 
 ***************************************************************************************************************************************

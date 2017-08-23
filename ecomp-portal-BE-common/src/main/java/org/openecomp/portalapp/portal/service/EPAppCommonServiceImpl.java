@@ -44,6 +44,8 @@ import org.openecomp.portalapp.portal.domain.AppIdAndNameTransportModel;
 import org.openecomp.portalapp.portal.domain.AppsResponse;
 import org.openecomp.portalapp.portal.domain.EPApp;
 import org.openecomp.portalapp.portal.domain.EPUser;
+import org.openecomp.portalapp.portal.domain.EPUserAppRolesRequest;
+import org.openecomp.portalapp.portal.domain.EPUserAppRolesRequestDetail;
 import org.openecomp.portalapp.portal.domain.EPUserAppsManualSortPreference;
 import org.openecomp.portalapp.portal.domain.EPUserAppsSortPreference;
 import org.openecomp.portalapp.portal.domain.EPWidgetsManualSortPreference;
@@ -180,6 +182,8 @@ public class EPAppCommonServiceImpl implements EPAppService {
 			ecompApp.setUebKey(app.getUebKey());
 			ecompApp.setUebSecret(app.getUebSecret());
 			ecompApp.setEnabled(app.getEnabled());
+			ecompApp.setCentralAuth(app.getCentralAuth());
+			ecompApp.setNameSpace(app.getNameSpace());
 			ecompApp.setRestrictedApp(app.isRestrictedApp());
 			ecompAppList.add(ecompApp);
 		}
@@ -322,15 +326,10 @@ public class EPAppCommonServiceImpl implements EPAppService {
 
 	@Override
 	public UserRoles getUserProfile(String loginId) {
-		String format = "SELECT DISTINCT user.USER_ID, role.ROLE_ID, user.org_user_id, user.FIRST_NAME, user.LAST_NAME, role.ROLE_NAME  FROM fn_user_role userrole "
-				+ "INNER JOIN fn_user user ON user.USER_ID = userrole.USER_ID "
-				+ "INNER JOIN fn_role role ON role.ROLE_ID = userrole.ROLE_ID "
-				+ "WHERE user.org_user_id = \"%s\" and (userrole.app_id = 1 or role.role_id = " + ACCOUNT_ADMIN_ROLE_ID
-				+ ") ";
-		String sql = String.format(format, loginId);
-		logQuery(sql);
+		final Map<String, String> params = new HashMap<>();
+		params.put("org_user_id", loginId);
 		@SuppressWarnings("unchecked")
-		List<UserRole> userRoleList = dataAccessService.executeSQLQuery(sql, UserRole.class, null);
+		List<UserRole> userRoleList = dataAccessService.executeNamedQuery( "getUserRoles", params, null);
 		ArrayList<UserRoles> usersRolesList = aggregateUserProfileRowsResultsByRole(userRoleList);
 		if (usersRolesList == null || usersRolesList.size() < 1)
 			return null;
@@ -382,9 +381,11 @@ public class EPAppCommonServiceImpl implements EPAppService {
 	public List<LocalRole> getAppRoles(Long appId) {
 		String sql = "";
 		if (isRestrictedApp(appId)) {
-			sql = "SELECT ROLE_ID, ROLE_NAME from FN_ROLE where ROLE_ID = '" + RESTRICTED_APP_ROLE_ID + "'";
-		} else {
-			sql = "SELECT ROLE_ID, ROLE_NAME from FN_ROLE where APP_ID = '" + appId + "'";
+			sql = "SELECT ROLE_ID, ROLE_NAME from FN_ROLE where UPPER(ACTIVE_YN) = 'Y' AND ROLE_ID = '" + RESTRICTED_APP_ROLE_ID + "'";
+		}else if(appId == 1){
+			sql = "SELECT ROLE_ID, ROLE_NAME from FN_ROLE where UPPER(ACTIVE_YN) = 'Y' AND APP_ID IS NULL";
+		}else{
+			sql = "SELECT ROLE_ID, ROLE_NAME from FN_ROLE where UPPER(ACTIVE_YN) = 'Y' AND APP_ID = '" + appId + "'";
 		}
 		logQuery(sql);
 		@SuppressWarnings("unchecked")
@@ -475,8 +476,8 @@ public class EPAppCommonServiceImpl implements EPAppService {
 	 * (non-Javadoc)
 	 *
 	 * @see
-	 * org.openecomp.portalapp.portal.service.EPAppService#getAppCatalog(com.att
-	 * .fusionapp.ecomp.portal.domain.EPUser)
+	 * org.openecomp.portalapp.portal.service.EPAppService#getAppCatalog(
+	 * org.openecomp.portalapp.portal.domain.EPUser)
 	 */
 	@Override
 	public List<AppCatalogItem> getUserAppCatalog(EPUser user) {
@@ -721,6 +722,7 @@ public class EPAppCommonServiceImpl implements EPAppService {
 		return fieldsValidator;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public FieldsValidator deleteOnboardingApp(EPUser user, Long appid) {
 		FieldsValidator fieldsValidator = new FieldsValidator();
@@ -728,6 +730,16 @@ public class EPAppCommonServiceImpl implements EPAppService {
 			fieldsValidator.httpStatusCode = new Long(HttpServletResponse.SC_FORBIDDEN);
 			return fieldsValidator;
 		}
+		final Map<String, Long> params = new HashMap<>();
+		params.put("app_id", appid);
+		List<EPUserAppRolesRequest> EPUserAppRolesRequestList= new ArrayList<>();
+		EPUserAppRolesRequestList = dataAccessService.executeNamedQuery( "getRequestIdsForApp", params, null);
+	    for(int i=0;i<EPUserAppRolesRequestList.size();i++)
+	    {
+	     dataAccessService.deleteDomainObjects(EPUserAppRolesRequestDetail.class , "req_id=" + EPUserAppRolesRequestList.get(i).getId(),null);
+	    	
+	    }
+		
 		Boolean result = false;
 		Session localSession = null;
 		Transaction transaction = null;
@@ -1123,6 +1135,8 @@ public class EPAppCommonServiceImpl implements EPAppService {
 		onboardingApp.uebTopicName = app.getUebTopicName();
 		onboardingApp.uebKey = app.getUebKey();
 		onboardingApp.uebSecret = app.getUebSecret();
+		onboardingApp.isCentralAuth = app.getCentralAuth();
+		onboardingApp.nameSpace = app.getNameSpace();
 		onboardingApp.setRestrictedApp(app.isRestrictedApp());
 		// if (app.getThumbnail() != null)
 		// onboardingApp.thumbnail = new
@@ -1152,6 +1166,8 @@ public class EPAppCommonServiceImpl implements EPAppService {
 		app.setUebTopicName(onboardingApp.uebTopicName);
 		app.setUebKey(onboardingApp.uebKey);
 		app.setUebSecret(onboardingApp.uebSecret);
+		app.setCentralAuth(onboardingApp.isCentralAuth);
+		app.setNameSpace(onboardingApp.nameSpace);
 		app.setRestrictedApp(onboardingApp.restrictedApp);
 		if (!StringUtils.isEmpty(onboardingApp.thumbnail)) {
 			logger.debug(EELFLoggerDelegate.debugLogger, "createAppFromOnboarding: onboarding thumbnail is NOT empty");
@@ -1424,5 +1440,42 @@ public class EPAppCommonServiceImpl implements EPAppService {
 	public List<EPApp> getUserRemoteApps(String id) {
 		throw new RuntimeException(" Cannot be called from parent class");
 	}
+	
+	@Override
+	public UserRoles getUserProfileForLeftMenu(String loginId) {
+		final Map<String, String> params = new HashMap<>();
+		params.put("org_user_id", loginId);
+		@SuppressWarnings("unchecked")
+		List<UserRole> userRoleList = dataAccessService.executeNamedQuery( "getUserRolesForLeftMenu", params, null);
+		ArrayList<UserRoles> usersRolesList = aggregateUserProfileRowsResultsByRole(userRoleList);
+		if (usersRolesList == null || usersRolesList.size() < 1)
+			return null;
+
+		return usersRolesList.get(0);
+	}
+	
+	
+	@Override
+	public UserRoles getUserProfileNormalizedForLeftMenu(EPUser user) {
+		// Check database.
+		UserRoles userAndRoles = getUserProfileForLeftMenu(user.getLoginId());
+		// If no roles are defined, treat this user as a guest.
+		if (user.isGuest() || userAndRoles == null) {
+			logger.debug(EELFLoggerDelegate.debugLogger, "getUserProfileForLeftMenu: treating user {} as guest",
+					user.getLoginId());
+			UserRole userRole = new UserRole();
+			userRole.setUser_Id(user.getId());
+			userRole.setOrgUserId(user.getLoginId());
+			userRole.setFirstName(user.getFirstName());
+			userRole.setLastName(user.getLastName());
+			userRole.setRoleId(-1L);
+			userRole.setRoleName("Guest");
+			userRole.setUser_Id(-1L);
+			userAndRoles = new UserRoles(userRole);
+		}
+
+		return userAndRoles;
+	}
+	
 
 }

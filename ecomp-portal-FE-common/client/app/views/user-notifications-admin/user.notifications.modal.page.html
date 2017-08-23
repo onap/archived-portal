@@ -18,38 +18,64 @@
   ================================================================================
   -->
 <div class="user-notification-details-modal">
-	<!--<div class="functional-menu-container">-->
-	<div id="app-title" class="title">{{modalPgTitle}}</div>
-	<div class="user-notification-details-contents">
+
+		<div class="b2b-modal-header">
+			<h2 class="account-details-title" id="account-add-details-title">{{modalPgTitle}}</h2>
+
+			<div class="corner-button in">
+				<button type="button" class="close" aria-label="Close" id="user-notification-button-close"
+					ng-click="$dismiss('cancel')"></button>
+			</div>
+		</div>
+
+		<div class="b2b-modal-body">
+					<div class="user-notification-details-contents">
 		<div class="left-container">
 			<div class="add-widget-field" style="{{isEditMode? 'opacity : 0.6; pointer-events: none;':' '}} ">
 				<div class="user-notif-label">Broadcast to All Categories</div>
-				<label id="label-yes" class="simulateCatGridHeaderRadioButton"> <input
-					id="radio-button-yes" type="radio" ng-model="isForAllRoles" value="Y"> Yes
-				</label> <label id="label-no" class="simulateCatGridHeaderRadioButton"> <input
-					id="radio-button-no" type="radio" ng-model="isForAllRoles" value="N"> No
-				</label>
+				<div class="user-notif-label">
+					<label for="radio-button-yes" class="radio"> 
+		                <input type="radio" ng-model="newNotifModel.isForAllRoles" id="radio-button-yes" name="YES" value="Y" > 
+		                <i class="skin"></i> 
+		                <span>Yes</span> 
+		            </label>
+				</div>
+				<div class="user-notif-label">
+		            <label for="radio-button-no" class="radio"> 
+		                <input type="radio" ng-model="newNotifModel.isForAllRoles" id="radio-button-no" name="NO" value="N" > 
+		                <i class="skin"></i> 
+		                <span>No</span> 
+		            </label>
+		        </div> 
 			</div>
 			<div 
-				style="padding-left: 10px; {{(! isForAllRoles ||isForAllRoles=='Y')? 'opacity : 0.6; pointer-events: none;':' '}} {{isEditMode? 'opacity : 0.6;':' '}} "
+				style="padding-left: 10px; {{(! newNotifModel.isForAllRoles ||newNotifModel.isForAllRoles=='Y')? 'opacity : 0.6; pointer-events: none;':' '}} {{isEditMode? 'opacity : 0.6;':' '}} "
 				class="user-notif-label">
 				<div id="notifcation-label-user" class="user-notif-label">
-					<span ng-show="isForAllRoles=='N'" runat="server" ID="required" style="color: Red;">*</span>
+					<span ng-show="newNotifModel.isForAllRoles=='N'" runat="server" ID="required" class="notifcation-label-user-requiredId">*</span>
 					Categories
 				</div>
 				<div>
 
 				<div id="notifcation-label-user-div" class="user-notif-label"></div>
-				<label id="funcMenu-label-yes" > <input id="radio-button-funcMenu"
-				type="radio" ng-model="isFunctionalMenu" ng-click="getFunctionalMenu()" value="Y"> Functional Menu
-				<br/>
-				</label> <label id="approles-label-no" > <input id="radio-button-approles"
-				type="radio" ng-model="isFunctionalMenu" ng-click="getAppRoleIds()" value="N"> Application Roles
-				</label>
+				<div class="user-notif-label">
+		            <label for="funcMenu-label-yes" class="radio"> 
+		                <input type="radio" ng-model="newNotifModel.isFunctionalMenu" ng-click="getFunctionalMenu()" id="funcMenu-label-yes" name="FUNCTIONAL MENU" value="Y" > 
+		                <i class="skin"></i> 
+		                <span>Functional Menu</span> 
+		            </label>
+		        </div>
+				<div class="user-notif-label">
+		            <label for="approles-label-no" class="radio"> 
+		                <input type="radio"ng-model="newNotifModel.isFunctionalMenu" ng-click="getAppRoleIds()" id="approles-label-no" name="APPLICATION ROLES" value="N" > 
+		                <i class="skin"></i> 
+		                <span>Application Roles</span> 
+		            </label>
+		        </div>
 
-				<div id="approles-checkbox" ng-show="!checkBoxObj.isAnyRoleSelected&&(isForAllRoles=='N')&&(!isEditMode)">
+				<div id="approles-checkbox" ng-show="!newNotifModel.anyTreeItemSelected&&(newNotifModel.isForAllRoles=='N')&&(!newNotifModel.isEditMode)">
 					
-					<div id="approles-checkbox-required" ng-show="!checkBoxObj.isAnyRoleSelected" >
+					<div id="approles-checkbox-required" ng-show="!newNotifModel.anyTreeItemSelected" >
 						
 
 						<small class="checkbox-categories">At least
@@ -60,64 +86,74 @@
 				
 				</div>
 				
-				<div  id="tree1">
-					<div id="Service_Creation"></div>
-				</div>
-				<div 
-					
-					id="jq-tree-div" jq-tree-user-notif ></div>
-
-					
-
-				<script type="text/ng-template" id="jq-tree-tmpl-user-notif.html">
-            	<div  id="jqTreeUserNotif" class="tree"></div>
-        	</script>
+				
+        	
+        	<br>
+        		 <div id="user-notif-tree-div" class="tree-div" >
+	        		 <div id="user-notif-tree" class="b2b-tree-checkbox" style="{{isEditMode? 'pointer-events: none;':' '}}">
+	                    <b2b-tree-node-checkbox  id="jqTreeUserNotif" collection="treedata" set-role="tree" group-it="false" ></b2b-tree-node-checkbox>
+	                </div>
+        		 </div>  
 			</div>
 			<div>
 
-				<div id="add-user-notif-priority" class="add-widget-field" style="{{isEditMode? 'opacity : 0.6; pointer-events: none;':' '}} ">
-					<div id="user-notification-priority-label" class="user-notif-label">Priority</div>
-					<label id="label-important" class="simulateCatGridHeaderRadioButton"> <input
-						id="radio-button-normal" type="radio" ng-model="selectedPriority" value="1"> Normal
-					</label> <label id="label-normal" class="simulateCatGridHeaderRadioButton"> <input
-						id="radio-button-important" type="radio" ng-model="selectedPriority" value="2">
-						Important
-					</label>
-				</div>
+				
 			</div>
 		</div>
 		<div id="app-conatiner-right" class="right-container">
+		<div id="add-user-notif-priority" class="add-widget-field" style="{{isEditMode? 'opacity : 0.6; pointer-events: none;':' '}} ">
+					<div id="user-notification-priority-label" class="user-notif-label">Priority</div>
+					<div class="user-notification-priority-label">
+		            <label for="label-important" class="radio"> 
+		                <input type="radio" ng-model="newNotifModel.selectedPriority" id="label-important" name="NORMAL" value="1" > 
+		                <i class="skin"></i> 
+		                <span>Normal</span> 
+		            </label>
+		            </div>
+					<div class="user-notification-priority-label">
+		            <label for="label-normal" class="radio"> 
+		                <input type="radio" ng-model="newNotifModel.selectedPriority" id="label-normal" name="IMPORTANT" value="2" > 
+		                <i class="skin"></i> 
+		                <span>Important</span> 
+		            </label>
+		            </div>
+				</div>
 
 			<div id="add-user-notif-startdate" class="add-widget-field"
 				style="padding-bottom: 12px; width: 301px !important;{{( isEditMode )? 'opacity : 0.6; pointer-events: none;':' '}}">
 				<div id="user-notification-startdate-label" class="user-notif-label">
 					<div class="user-notif-label">
-						<span runat="server" ID="required" style="color: Red;">*</span>
+						<span runat="server" ID="required" class="notifcation-label-user-requiredId">*</span>
 						Start Date (Local Time)
 					</div>
-					<input class="notif-input-calendar" id="datepicker-start" type="text" 
-						ng-model="startTime" b2b-datepicker min="minDate" max="maxDate" 
-						required />
-					<div id="user-startdate-required" ng-show="!startTime">
-						<small class="mandatory-categories">Start Date is Required</small>
+					<div class="datepicker-container">
+						<input class="notif-input-calendar" id="datepicker-start" type="text" 
+							ng-model="newNotifModel.startTime" b2b-datepicker min="minDate" max="maxDate" 
+							required />
 					</div>
+					<div id="user-startdate-required" ng-show="!isDateValid(newNotifModel.startTime)">
+						<small class="mandatory-categories">Please enter valid date in MM/DD/YYYY format!</small>
+					</div>
+					
 				</div>
 				<div ng-show="!isEditMode" ng-init="formatStartDate()"></div> 
 			</div>			
 
 			<div id="add-user-notif-enddate" class="add-widget-field"
-				style="padding-bottom: 12px;     width: 301px !important; {{( isEditMode )? 'opacity : 0.6; pointer-events: none;':' '}}">
+				style="padding-bottom: 12px; width: 301px !important; {{( isEditMode )? 'opacity : 0.6; pointer-events: none;':' '}}">
 				<div id="user-notification-enddate-label" class="user-notif-label">
-					<span runat="server" ID="required" style="color: Red;">*</span> End	Date (Local Time)
+					<span runat="server" ID="required" class="notifcation-label-user-requiredId">*</span> End	Date (Local Time)
 				</div>
-				<input class="notif-input-calendar" type="text" id="datepicker-end" 
-					ng-model="endTime" b2b-datepicker min="minDate" max="maxDate" 
-					required />
-				<div id="user-enddate-required" ng-show="!endTime" >
-					<small class="mandatory-categories">End Date is Required</small>
+				<div class="datepicker-container">
+					<input class="notif-input-calendar" type="text" id="datepicker-end" 
+						ng-model="newNotifModel.endTime" b2b-datepicker min="minDate" max="maxDate" 
+						required />
 				</div>
-				<div id="user-enddate-error" ng-show="endTime&&startTime&&startTime.getTime()>=endTime.getTime()" style="color: #cf2a2a; font-size: 10px;">
-					<small style="position: absolute;">End Date must be greater than start Date</small>
+				<div id="user-endDate-required" ng-show="!isDateValid(newNotifModel.endTime)">
+						<small class="mandatory-categories">Please enter valid date in MM/DD/YYYY format!</small>
+					</div>
+				<div id="user-enddate-error" ng-show="newNotifModel.endTime&&newNotifModel.startTime&&newNotifModel.startTime.getTime()>=newNotifModel.endTime.getTime()" class="user-enddate-error-txt">
+					<small class="mandatory-categories">End Date must be greater than start Date</small>
 				</div>
 				<div ng-show="!isEditMode" ng-init="formatEndDate()" ></div> 
 			</div>
@@ -125,12 +161,12 @@
 			<div id="add-user-notif-title" class="add-widget-field"
 				style="padding-bottom: 12px; {{( isEditMode )? 'opacity : 0.6; pointer-events: none;':' '}}">
 				<div id="user-notification-title-label" class="user-notif-label">
-					<span runat="server" ID="required" style="color: Red;"
+					<span runat="server" ID="required" class="notifcation-label-user-requiredId"
 						visible="false"> *</span> Title
 				</div>
-				<textarea id="add-notification-input-title" class="notif-input" ng-model="msgHeader" name="content" style="height: 50px;">
+				<textarea id="add-notification-input-title" class="notif-input" ng-model="newNotifModel.msgHeader" name="content" class="add-notification-input-title-ht">
                 </textarea>
-				<div id="user-title-required" ng-show="msgHeader.length == 0">
+				<div id="user-title-required" ng-show="newNotifModel.msgHeader.length == 0">
 					<small class="mandatory-categories">Title is Required</small>
 				</div>
 			</div>
@@ -138,26 +174,35 @@
 			<div id="add-user-notif-message" class="add-widget-field"
 				style="padding-bottom: 12px; {{( isEditMode )? 'opacity : 0.6; pointer-events: none;':' '}}">
 				<div id="user-notif-message-label" class="user-notif-label">
-					<span runat="server" ID="required" style="color: Red;"
+					<span runat="server" ID="required" class="notifcation-label-user-requiredId"
 						visible="false"> *</span> Message
 				</div>
-				<textarea id="user-notif-input-message" class="notif-input" style="height: 150px"
-					ng-model="msgDescription" name="content">
+				<textarea id="user-notif-input-message" class="notif-input" class="add-notification-input-title-ht"
+					ng-model="newNotifModel.msgDescription" name="content">
 				</textarea>
-				<div id="user-notif-message-required" ng-show="msgDescription.length ==0 ">
+				<div id="user-notif-message-required" ng-show="newNotifModel.msgDescription.length ==0 ">
 				<small class="mandatory-categories">Message is Required</small>
 				</div>
 			</div>
 
-			<div class="dialog-control">
-				<a ng-show="!isEditMode">
-				<button id="button-notification-save" class="btn btn-alt btn-small" size="small" ng-disabled="addUserNotificationValidation()"
-					ng-click="addUserNotification()">Save</button></a> 						
-				<button id="button-notification-cancel" class="btn btn-alt btn-small" ng-click="closeThisDialog()" role="button" tabindex="0">Cancel</button>
-			</div>
+		
 			
 		</div>
 	</div>
+			</div>
+			<br>
+			<div class="b2b-modal-footer">
+				<div class="dialog-control">
+				<a ng-show="!isEditMode">
+				<button id="button-notification-save" class="btn btn-alt btn-small" size="small" ng-disabled="addUserNotificationValidation()" ng-click="addUserNotification()">Save</button></a> 	
+						<button id="button-notification-cancel" class="btn btn-alt btn-small" ng-click="$dismiss('cancel')"role="button" tabindex="0">Cancel</button>
+						
+					</div>
+			</div>
+			
+			
+			
+
 </div>
 
 <script>

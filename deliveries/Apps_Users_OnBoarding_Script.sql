@@ -345,14 +345,14 @@ select * from fn_role where app_id = (select app_id from fn_app where app_name =
 ) b 
 );
 -- end new
-INSERT INTO `fn_common_widget_data` (`id`,`CATEGORY`,`HREF`,`TITLE`,`content`,`event_date`,`SORT_ORDER`) VALUES (6,'NEWS','http://about.att.com/innovationblog/next_att_labs','What\s Next at AT&T Labs? AI Set to Revolutionize the Network',NULL,NULL,10);
-INSERT INTO `fn_common_widget_data` (`id`,`CATEGORY`,`HREF`,`TITLE`,`content`,`event_date`,`SORT_ORDER`) VALUES (7,'NEWS','http://about.att.com/innovationblog/ecomp_code','Code, Community and Commitment – the 3 Cs of Open Source',NULL,NULL,20);
+INSERT INTO `fn_common_widget_data` (`id`,`CATEGORY`,`HREF`,`TITLE`,`content`,`event_date`,`SORT_ORDER`) VALUES (6,'NEWS','http://about.att.com/innovationblog/next_att_labs','What\'s Next at AT&T Labs? AI Set to Revolutionize the Network',NULL,NULL,10);
+INSERT INTO `fn_common_widget_data` (`id`,`CATEGORY`,`HREF`,`TITLE`,`content`,`event_date`,`SORT_ORDER`) VALUES (7,'NEWS','http://about.att.com/innovationblog/ecomp_code','Code, Community and Commitment - the 3 Cs of Open Source',NULL,NULL,20);
 INSERT INTO `fn_common_widget_data` (`id`,`CATEGORY`,`HREF`,`TITLE`,`content`,`event_date`,`SORT_ORDER`) VALUES (8,'NEWS','http://about.att.com/story/orange_testing_att_open_source_ecomp_platform.html','Orange Testing AT&Ts Open Source ECOMP Platform for Building Software-Defined Network Capabilities',NULL,NULL,30);
 INSERT INTO `fn_common_widget_data` (`id`,`CATEGORY`,`HREF`,`TITLE`,`content`,`event_date`,`SORT_ORDER`) VALUES (9,'NEWS', 'http://about.att.com/innovationblog/linux_foundation','Opening up ECOMP: Our Network Operating System for SDN',NULL,NULL,40);
 INSERT INTO `fn_common_widget_data` (`id`,`CATEGORY`,`HREF`,`TITLE`,`content`,`event_date`,`SORT_ORDER`) VALUES (10,'EVENTS',NULL,'OpenECOMP Launches into Open Source',NULL,'2017-02-14',1);
 INSERT INTO `fn_common_widget_data` (`id`,`CATEGORY`,`HREF`,`TITLE`,`content`,`event_date`,`SORT_ORDER`) VALUES (11,'IMPORTANTRESOURCES','http://about.att.com/content/dam/snrdocs/ecomp.pdf','ECOMP White Paper',NULL,NULL,1);
 INSERT INTO `fn_common_widget_data` (`id`,`CATEGORY`,`HREF`,`TITLE`,`content`,`event_date`,`SORT_ORDER`) VALUES (12,'IMPORTANTRESOURCES','https://wiki.onap.org/','ONAP Wiki',NULL,NULL,2);
-INSERT INTO `fn_common_widget_data` (`id`,`CATEGORY`,`HREF`,`TITLE`,`content`,`event_date`,`SORT_ORDER`) VALUES (13,'IMPORTANTRESOURCES','https://wiki.onap.org/display/DW/Portal','ONAP Wiki, Portal',NULL,NULL,3);
+INSERT INTO `fn_common_widget_data` (`id`,`CATEGORY`,`HREF`,`TITLE`,`content`,`event_date`,`SORT_ORDER`) VALUES (13,'IMPORTANTRESOURCES','https://wiki.onap.org/display/DW/Portal','ONAP Wiki for Portal',NULL,NULL,3);
 INSERT INTO `fn_common_widget_data` (`id`,`CATEGORY`,`HREF`,`TITLE`,`content`,`event_date`,`SORT_ORDER`) VALUES (14,'IMPORTANTRESOURCES','https://wiki.onap.org/display/DW/Development+Guides','ONAP User Guide',NULL,NULL,4);
 
 

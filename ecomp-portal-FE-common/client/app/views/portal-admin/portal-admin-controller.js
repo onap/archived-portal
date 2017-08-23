@@ -20,7 +20,7 @@
 'use strict';
 (function () {
     class PortalAdminsCtrl {
-        constructor($log, portalAdminsService, ngDialog, confirmBoxService) {
+        constructor($log, portalAdminsService, ngDialog, confirmBoxService, $modal) {
 
             let updateTableData = () => {
                 this.isLoadingTable = true;
@@ -91,20 +91,22 @@
                         }
                     }
                 }
-                ngDialog.open({
+                
+                var modalInstance = $modal.open({
                     templateUrl: 'app/views/portal-admin/new-portal-admin/new-portal-admin.modal.html',
-                    controller: 'NewPortalAdminModalCtrl',
-                    controllerAs: 'newPortalAdmin',
+                    controller: 'NewPortalAdminModalCtrl as newPortalAdmin',
+                    sizeClass: 'modal-medium',
                     data: data
-                }).closePromise.then(needUpdate => {
-                    if(needUpdate.value === true){
-                        $log.debug('PortalAdminsCtrl::openAddNewPortalAdminModal: updating Portal Admin table data...');
-                        updateTableData();
-                    }
-                });
+                })
+                
+                modalInstance.result.finally(function () {
+                	$log.debug('PortalAdminsCtrl::openAddNewPortalAdminModal: updating Portal Admin table data...');         
+                    updateTableData();
+     	        });
+                
             };
         }
     }
-    PortalAdminsCtrl.$inject = ['$log', 'portalAdminsService', 'ngDialog', 'confirmBoxService'];
+    PortalAdminsCtrl.$inject = ['$log', 'portalAdminsService', 'ngDialog', 'confirmBoxService', '$modal'];
     angular.module('ecompApp').controller('PortalAdminsCtrl', PortalAdminsCtrl);
 })();

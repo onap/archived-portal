@@ -22,7 +22,7 @@
 
     <div class="widget-properties-main" scroll-top="widgetDetails.scrollApi">
         <form id="widgets-details-form" name="widgetForm" novalidate autocomplete="off">
-            <!-- We can remove this script once we get to AT&T Corporate Firefox version 47
+            <!-- We can remove this script once we get to Firefox version 47
                  autocomplete="off" won't work until v47 -->
             <script type="text/javascript">
                 document.getElementById("appForm").reset();
@@ -38,7 +38,7 @@
                             ng-disabled="!widgetDetails.availableApps || !widgetDetails.availableApps.length"
                             name="app"
                             required>
-                        <option id="widgets-details-select-app-disabled" value="" disabled style="display: none;">Select application</option>
+                        <option id="widgets-details-select-app-disabled" value="" disabled class="widgets-details-select-app-disabled">Select application</option>
                     </select>
                 </div>
                 <div class="error-container" ng-show="widgetForm.app.$dirty">

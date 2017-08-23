@@ -19,7 +19,14 @@
   -->
 <link rel="stylesheet" href="role.css">
 <div class="application-details-modal">
-    <div id="title" class="title">Select Role Functions</div>
+    <div class="b2b-modal-header ng-scope in">
+		<h2 id="myModalLabel" modal-title="">Select Role Functions</h2>
+		<div class="corner-button in">
+			<button type="button" class="close" aria-label="Close" id="div-childrole-cancel-button"
+				ng-click="$dismiss('cancel')"></button>
+		</div>
+	</div>
+<div class="b2b-modal-body">
 <div class="scrolling-table">
 
 	<div b2b-table table-data="availableRoles"   class="b2b-table-div">
@@ -44,9 +51,13 @@
 		</table>
 	</div>
 </div>
-    <div class="dialog-control">
-        <button id="button-app-cancel" class="btn btn-alt btn-small" ng-click="closeThisDialog()">Close</button>      
-    </div>
+</div>
+	<div class="b2b-modal-footer ng-scope ng-isolate-scope in">
+		<div class="cta-button-group in">
+			<button class="btn btn-alt btn-small" type="button" id="div-childrole-close-button"
+				ng-click="$dismiss('cancel')">Close</button>
+		</div>
+	</div>
 </div>
 <script>
 $(document).ready(function(){

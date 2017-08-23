@@ -18,16 +18,25 @@
   ================================================================================
   -->
 <div class="widget-details-modal">
-	<div id="'widgets-details-title" class="title">Widget Details</div>
 
-	<div class="widget-properties-main"
+		<div class="b2b-modal-header">
+			<h2 class="widget-title" id="widgets-details-title">Widget Details</h2>
+
+			<div class="corner-button in">
+				<button type="button" class="close" aria-label="Close"
+					ng-click="$dismiss('cancel')"></button>
+			</div>
+		</div>
+
+		<div class="b2b-modal-body">
+		<div class="widget-properties-main"
 		scroll-top="widgetOnboardingDetails.scrollApi">
 		<form id="widgets-details-form" name="widgetForm" novalidate
 			autocomplete="off">
 
 			<div class="item required">
 				<div class="item-label">Widget Name</div>
-				<input id="widgets-details-input-name" class="input-field"
+				<input id="widgets-details-input-name" class="table-search-field"
 					type="text" ng-model="widgetOnboardingDetails.widget.name"
 					ng-change="widgetOnboardingDetails.updateWidgetName()" name="name"
 					ng-pattern="/^[\w -]*$/" maxlength="100"
@@ -51,35 +60,32 @@
 				</div>
 			</div>
 
-
 			<div class="item">
 				<div class="item-label">Widget Description</div>
-				<input id="widgets-details-input-name" class="input-field"
+				<!-- <input id="widgets-details-input-description" class="input-field"
 					type="text" ng-model="widgetOnboardingDetails.widget.desc"
-					name="desc" maxlength="200" />
+					name="desc" maxlength="200" /> -->
+					<textarea b2b-reset b2b-reset-textarea id="widgets-details-input-desc"
+						name="desc" type="text" ng-model="widgetOnboardingDetails.widget.desc"  maxlength="200" 	></textarea>
 			</div>
 
 			<div class="item">
 				<div class="item-label">Service Endpoint</div>
-				<div>
-					<select id="widgets-details-input-endpoint-url" name="url"
-						class="input-field"
-						ng-model="widgetOnboardingDetails.widget.serviceURL"
-						ng-options="service as service.option
-						  for service in widgetOnboardingDetails.availableServices"
-						  ng-disabled="widgetOnboardingDetails.isEditMode">
-						<option value="" selected="selected">Select Microservice
-							Endpoint</option>
-					</select>
-				</div>
+				<div class="table-dropdown" >
+							<select id="widgets-details-input-endpoint-url" name="url" b2b-dropdown placeholder-text="Select Microservice Endpoint" ng-model="widgetOnboardingDetails.widget.serviceURL" ng-disabled="widgetOnboardingDetails.isEditMode" >
+				            	<option b2b-dropdown-list option-repeat="service in widgetOnboardingDetails.availableServices" value="{{service.id}}">{{service.option}}</option>
+				            </select>
+						</div>
 			</div>
 
 			<div class="widget-property">
-				<input id="widgets-checkbox-app-is-enabled" type="checkbox"
-					class="checkbox-field"
-					ng-model="widgetOnboardingDetails.widget.allUser" />
-				<div class="property-label checkbox-label">Allow all user
-					access</div>
+				<label for="widget-checkbox-app-is-enabled" class="checkbox">
+					<input type="checkbox"
+					ng-model="widgetOnboardingDetails.widget.allUser"
+					id="widget-checkbox-app-is-enabled"> <i class="skin"></i>
+					<span class="property-label checkbox-label">Allow all user
+						access</span>
+				</label>
 			</div>
 
 			<div class="item required"
@@ -126,7 +132,7 @@
 				<div>
 					<input id="widget-onboarding-details-upload-file"
 						file-model="widgetOnboardingDetails.widget.file" type="file"
-						style="height: 24px;" />
+						class="widget-onboarding-details-upload-file ht" />
 
 
 					<div class="error-container"
@@ -137,20 +143,21 @@
 			</div>
 		</form>
 	</div>
-
-	<div class="dialog-control">
-		<span class="ecomp-save-spinner"
-			ng-show="widgetOnboardingDetails.isSaving"></span>
-		<button id="widgets-details-save-button" class="btn btn-alt btn-small"
-			ng-class="{disabled: widgetOnboardingDetails.widget.name == undefined || !widgetOnboardingDetails.duplicatedName 
-			|| (!widgetOnboardingDetails.widget.allUser && widgetOnboardingDetails.appCounter == 0) || (widgetOnboardingDetails.widget.file == undefined && !widgetOnboardingDetails.isEditMode)
-			|| (!widgetOnboardingDetails.widget.allUser && !widgetOnboardingDetails.allRoleSelected) || (widgetOnboardingDetails.widget.saving)}"
-			ng-click="widgetOnboardingDetails.saveChanges()">Save</button>
-		<button id="widgets-details-cancel-button"
-			class="btn btn-alt btn-small" ng-click="closeThisDialog()">Cancel</button>
-
-	</div>
-
-
+			</div>
+			<br>
+			<div class="b2b-modal-footer">
+				<div class="cta-button-group cta-modal-footer-flex">						
+					<span class="ecomp-save-spinner" ng-show="widgetOnboardingDetails.isSaving"></span>
+					<button id="widgets-details-save-button" class="btn btn-alt btn-small" 	ng-class="{disabled: widgetOnboardingDetails.widget.name == undefined || !widgetOnboardingDetails.duplicatedName 
+					|| (!widgetOnboardingDetails.widget.allUser && widgetOnboardingDetails.appCounter == 0) || (widgetOnboardingDetails.widget.file == undefined && !widgetOnboardingDetails.isEditMode)
+					|| (!widgetOnboardingDetails.widget.allUser && !widgetOnboardingDetails.allRoleSelected) || (widgetOnboardingDetails.widget.saving)}"
+					ng-click="widgetOnboardingDetails.saveChanges()">Save</button>				
+					<button class="btn btn-alt btn-small" id="widgets-details-cancel-button" ng-click="$dismiss('cancel')">Cancel</button>	
+				</div>
+			</div>
+			
+			
+			
+			
 
 </div>

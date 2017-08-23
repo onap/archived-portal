@@ -21,7 +21,8 @@
 
 (function () {
     class WidgetParameterController {
-        constructor($scope, widgetsCatalogService, userProfileService) {
+        constructor($scope, widgetsCatalogService, userProfileService, $state,items) {
+        	$scope.ngDialogData=items;
         	let widgetId = $scope.ngDialogData.widgetId;
         	$scope.modflag = false;
         	$scope.isLoadingTable = false;
@@ -70,12 +71,13 @@
          			if(res.status == 'OK'){
          				$scope.modflag = false;
          				$scope.widgetParam[index].showEdit = false;
+         				$state.reload();
          			}
          		});
          		
          	};	
         }           
     }
-    WidgetParameterController.$inject = ['$scope', 'widgetsCatalogService', 'userProfileService'];
+    WidgetParameterController.$inject = ['$scope', 'widgetsCatalogService', 'userProfileService', '$state','items'];
     angular.module('ecompApp').controller('WidgetParameterController', WidgetParameterController); 
 })();

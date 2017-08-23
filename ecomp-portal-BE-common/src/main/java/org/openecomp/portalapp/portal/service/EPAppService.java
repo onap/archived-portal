@@ -97,7 +97,7 @@ public interface EPAppService {
 	 * the user has a defined role for that app.
 	 * 
 	 * @param user
-	 *            EPUser object with the user's ATT UID
+	 *            EPUser object with the user's Org User ID
 	 * @return the user's list of applications, which may be empty.
 	 */
 	List<EPApp> getUserApps(EPUser user);
@@ -109,7 +109,7 @@ public interface EPAppService {
 	 * applications which the user has chosen to show.
 	 * 
 	 * @param user
-	 *            EPUser object with the user's ATT UID
+	 *            EPUser object with the user's Org User ID
 	 * @return the user's personalized list of applications, which may be empty.
 	 */
 	List<EPApp> getPersAdminApps(EPUser user);
@@ -122,7 +122,7 @@ public interface EPAppService {
 	 * result.
 	 * 
 	 * @param user
-	 *            EPUser object with the user's ATT UID
+	 *            EPUser object with the user's Org User ID
 	 * @return the user's personalized list of applications, which may be empty.
 	 */
 	List<EPApp> getPersUserApps(EPUser user);
@@ -209,5 +209,9 @@ public interface EPAppService {
 	List<EPApp> getUserRemoteApps(String id);
 
 	void createOnboardingFromApp(EPApp app, OnboardingApp onboardingApp);
+
+	UserRoles getUserProfileNormalizedForLeftMenu(EPUser user);
+
+	UserRoles getUserProfileForLeftMenu(String loginId);
 
 }

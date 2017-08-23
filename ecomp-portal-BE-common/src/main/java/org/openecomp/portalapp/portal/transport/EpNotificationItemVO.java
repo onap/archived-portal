@@ -65,7 +65,10 @@ public class EpNotificationItemVO extends DomainVo {
 	private Date createdDate;
 
 	private String loginId;
+	
+	private String notificationHyperlink;
 
+	
 	/**
 	 * Answers whether the notification is expired.
 	 * 
@@ -188,4 +191,13 @@ public class EpNotificationItemVO extends DomainVo {
 	public void setMsgSource(String msgSource) {
 		this.msgSource = msgSource;
 	}
+	
+	public String getNotificationHyperlink() {
+		return notificationHyperlink;
+	}
+
+	public void setNotificationHyperlink(String notificationHyperlink) {
+		this.notificationHyperlink = notificationHyperlink;
+	}
+
 }

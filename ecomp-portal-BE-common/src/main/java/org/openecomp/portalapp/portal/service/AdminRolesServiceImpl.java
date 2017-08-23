@@ -22,6 +22,7 @@ package org.openecomp.portalapp.portal.service;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
@@ -29,14 +30,8 @@ import org.apache.cxf.common.util.StringUtils;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import org.openecomp.portalsdk.core.logging.logic.EELFLoggerDelegate;
-import org.openecomp.portalsdk.core.service.DataAccessService;
-import org.openecomp.portalsdk.core.util.SystemProperties;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.openecomp.portalapp.portal.domain.EPApp;
 import org.openecomp.portalapp.portal.domain.EPRole;
 import org.openecomp.portalapp.portal.domain.EPUser;
@@ -48,8 +43,24 @@ import org.openecomp.portalapp.portal.logging.format.EPAppMessagesEnum;
 import org.openecomp.portalapp.portal.logging.logic.EPLogUtil;
 import org.openecomp.portalapp.portal.transport.AppNameIdIsAdmin;
 import org.openecomp.portalapp.portal.transport.AppsListWithAdminRole;
+import org.openecomp.portalapp.portal.transport.ExternalAccessUser;
 import org.openecomp.portalapp.portal.utils.EPCommonSystemProperties;
 import org.openecomp.portalapp.portal.utils.EcompPortalUtils;
+import org.openecomp.portalapp.portal.utils.PortalConstants;
+import org.openecomp.portalsdk.core.logging.logic.EELFLoggerDelegate;
+import org.openecomp.portalsdk.core.service.DataAccessService;
+import org.openecomp.portalsdk.core.util.SystemProperties;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service("adminRolesService")
 @Transactional
@@ -72,7 +83,9 @@ public class AdminRolesServiceImpl implements AdminRolesService {
 	SearchService searchService;
 	@Autowired
 	EPAppService appsService;
-
+	
+	RestTemplate template = new RestTemplate();
+	
 	@PostConstruct
 	private void init() {
 		try {
@@ -208,7 +221,9 @@ public class AdminRolesServiceImpl implements AdminRolesService {
 							localSession.save(EPUserApp.class.getName(), newUserApp);
 						}
 						transaction.commit();
-						result = true;
+						
+						// Add user admin role for list of centralized applications in external system 
+						result = addAdminRoleInExternalSystem(user, localSession, newAppsWhereUserIsAdmin);
 					} catch (Exception e) {
 						EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeDaoSystemError, e);
 						logger.error(EELFLoggerDelegate.errorLogger, "setAppsWithAdminRoleStateForUser: exception in point 2", e);
@@ -230,6 +245,129 @@ public class AdminRolesServiceImpl implements AdminRolesService {
 			}
 		}
 
+		return result;
+	}
+
+	@SuppressWarnings("unchecked")
+	private boolean addAdminRoleInExternalSystem(EPUser user, Session localSession, List<AppNameIdIsAdmin> newAppsWhereUserIsAdmin) {
+		boolean result = false;
+		try {
+			// Reset All admin role for centralized applications
+			List<EPApp> appList = dataAccessService.executeNamedQuery("getCentralizedApps", null, null);
+			HttpHeaders headers = EcompPortalUtils.base64encodeKeyForAAFBasicAuth();
+			for (EPApp app : appList) {
+				String name = "";
+				if (EPCommonSystemProperties
+						.containsProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_USER_DOMAIN)) {
+					name = user.getOrgUserId() + SystemProperties
+							.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_USER_DOMAIN);
+				}
+				String extRole = app.getNameSpace() + "." + PortalConstants.ADMIN_ROLE.replaceAll(" ", "_");
+				HttpEntity<String> entity = new HttpEntity<>(headers);
+				logger.debug(EELFLoggerDelegate.debugLogger, "Connecting to External Access system");
+				try {
+					ResponseEntity<String> getResponse = template
+							.exchange(SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_URL)
+									+ "roles/" + extRole, HttpMethod.GET, entity, String.class);
+
+					if (getResponse.getBody().equals("{}")) {
+						String addDesc = "{\"name\":\"" + extRole + "\"}";
+						HttpEntity<String> roleEntity = new HttpEntity<>(addDesc, headers);
+						template.exchange(
+								SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_URL)
+										+ "role",
+								HttpMethod.POST, roleEntity, String.class);
+					} else {
+						try {
+							HttpEntity<String> deleteUserRole = new HttpEntity<>(headers);
+							template.exchange(
+									SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_URL)
+											+ "userRole/" + name + "/" + extRole,
+									HttpMethod.DELETE, deleteUserRole, String.class);
+						} catch (Exception e) {
+							logger.error(EELFLoggerDelegate.errorLogger,
+									" Role not found for this user may be it gets deleted before", e);
+						}
+					}
+				} catch (Exception e) {
+					if (e.getMessage().equalsIgnoreCase("404 Not Found")) {
+						logger.debug(EELFLoggerDelegate.debugLogger, "Application Not found for app {}",
+								app.getNameSpace(), e.getMessage());
+					} else{
+						logger.error(EELFLoggerDelegate.errorLogger, "Application Not found for app {}",
+								app.getNameSpace(), e);
+					}
+				}
+			}
+			// Add admin role in external application
+			// application
+			for (AppNameIdIsAdmin appNameIdIsAdmin : newAppsWhereUserIsAdmin) {
+				EPApp app = (EPApp) localSession.get(EPApp.class, appNameIdIsAdmin.id);
+				try {
+					if (app.getCentralAuth()) {
+						String extRole = app.getNameSpace() + "." + PortalConstants.ADMIN_ROLE.replaceAll(" ", "_");
+						HttpEntity<String> entity = new HttpEntity<>(headers);
+						String name = "";
+						if (EPCommonSystemProperties
+								.containsProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_USER_DOMAIN)) {
+							name = user.getOrgUserId() + SystemProperties
+									.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_USER_DOMAIN);
+						}
+						logger.debug(EELFLoggerDelegate.debugLogger, "Connecting to External Access system");
+						ResponseEntity<String> getUserRolesResponse = template.exchange(
+								SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_URL)
+										+ "userRoles/user/" + name,
+								HttpMethod.GET, entity, String.class);
+						logger.debug(EELFLoggerDelegate.debugLogger, "Connected to External Access system");
+						if (!getUserRolesResponse.getBody().equals("{}")) {
+							JSONObject jsonObj = new JSONObject(getUserRolesResponse.getBody());
+							JSONArray extRoles = jsonObj.getJSONArray("userRole");
+							final Map<String, JSONObject> extUserRoles = new HashMap<>();
+							for (int i = 0; i < extRoles.length(); i++) {
+								String userRole = extRoles.getJSONObject(i).getString("role");
+								if (userRole.startsWith(app.getNameSpace() + ".")
+										&& !userRole.equals(app.getNameSpace() + ".admin")
+										&& !userRole.equals(app.getNameSpace() + ".owner")) {
+
+									extUserRoles.put(userRole, extRoles.getJSONObject(i));
+								}
+							}
+							if (!extUserRoles.containsKey(extRole)) {
+								// Assign with new apps user admin
+								try {
+									ExternalAccessUser extUser = new ExternalAccessUser(name, extRole);
+									// Assign user role for an application in external access system
+									ObjectMapper addUserRoleMapper = new ObjectMapper();
+									String userRole = addUserRoleMapper.writeValueAsString(extUser);
+									HttpEntity<String> addUserRole = new HttpEntity<>(userRole, headers);
+									template.exchange(
+											SystemProperties.getProperty(
+													EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_URL) + "userRole",
+											HttpMethod.POST, addUserRole, String.class);
+								} catch (Exception e) {
+									logger.error(EELFLoggerDelegate.errorLogger, "Failed to add user admin role", e);
+								}
+
+							}
+						}
+					}
+					result = true;
+				} catch (Exception e) {
+					if (e.getMessage().equalsIgnoreCase("404 Not Found")) {
+						logger.debug(EELFLoggerDelegate.errorLogger,
+								"Application name space not found in External system for app {} due to bad rquest name space ", app.getNameSpace(),
+								e.getMessage());
+					} else {
+						logger.error(EELFLoggerDelegate.errorLogger, "Failed to assign admin role for application {}",
+								app.getNameSpace(), e);
+						result = false;
+					}
+				}
+			}
+		} catch (Exception e) {
+			result = false;
+			logger.error(EELFLoggerDelegate.errorLogger, "Failed to assign admin roles operation", e);
+		}
 		return result;
 	}
 
@@ -318,7 +456,7 @@ public class AdminRolesServiceImpl implements AdminRolesService {
 	@EPMetricsLog
 	public List<EPRole> getRolesByApp(EPUser user, Long appId) {
 		List<EPRole> list = new ArrayList<>();
-		String sql = "SELECT * FROM FN_ROLE WHERE APP_ID = " + appId;
+		String sql = "SELECT * FROM FN_ROLE WHERE UPPER(ACTIVE_YN) = 'Y' AND APP_ID = " + appId;
 		@SuppressWarnings("unchecked")
 		List<EPRole> roles = dataAccessService.executeSQLQuery(sql, EPRole.class, null);
 		for (EPRole role: roles) {

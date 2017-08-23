@@ -19,12 +19,11 @@
   -->
 <div class="w-ecomp-dashboard-home" id="widgets">
 	<div class="dashboard-home-container" id="page-content">
-		<div align="center" id="errorInfo"
-			style="display: none; font-size: 12px; margin-left: 5px">
-			<span style="color: red">You don't have a user account in that
+		<div align="center" id="errorInfo" class="error-info-txt">
+			<span class="">You don't have a user account in that
 				application. Please ask the system administrator. </span>
 		</div>
-		<div class="portals-list" style="margin-bottom: 0px;">
+		<div class="portals-list">
 			<div>
 				<div class="simulateGridHeader">
 					<span class="simulateGridHeaderTitle">Applications <span
@@ -43,7 +42,7 @@
 						<div ng-if="appsViewData.length==0">
 							<div class="app-error-block">
 								<i class="icon-information full-linear-icon-information"
-									style="margin-left: 50%; font-size: 90px; color: black"></i> <br>
+									class="icon-info"></i> <br>
 								<div class="activity-error-msg1">
 									You do not have access to any application or function in ECOMP
 									Portal.
@@ -68,13 +67,13 @@
 											'background-image': 'url('+(item.imageLink)+')',
 											'background-color':'white',
 											'background-repeat': 'no-repeat',
-											'background-size': '170px 130px'}"
+											'background-size': '168px 118px'}"
 											ng-click="dashboard.goToPortal(item);dashboard.auditLog(item)"
 											ng-hide="users.isLoadingTable && !users.getUserAppsIsDone">
 										</div>
 									</div>
 									<div class="gridster-box" ng-if="item.addRemoveApps">
-										<div class="gridster-box-header" style="cursor: pointer;"
+										<div class="gridster-box-header gridster-box-pointer"
 											ng-click="dashboard.goToCatalog()">
 											<i class="icon-content-gridguide"></i>
 											<h3>Select applications...</h3>
@@ -91,10 +90,10 @@
 										'padding': '4px',
 										'opacity': '1'}"
 											ng-click="dashboard.goToCatalog()" class="gridsterContent">
-											<label id="add-icon-label"  style="font-size: 12px;">Click
+											<label id="add-icon-label"  class="gridster-txt">Click
 												here to personalize <br> this applications page
 											</label> <i  id="add-icon" class="icon-controls-add-maximize"
-												style="font-size: 80px; color: #067ab4"></i>
+												class="gridster-icon"></i>
 										</div>
 									</div>
 								</li>
@@ -108,7 +107,10 @@
 
 			<br> <br>
 
-
+			<div class="simulateGridHeader">
+				<span class="simulateGridHeaderTitle">Widgets </span>
+			</div>
+			
 			<div 
 				ng-show=dashboard.isCommError>Failed to communicate with the
 				widget microservice.</div>
@@ -118,7 +120,7 @@
 					<li gridster-item="widget" ng-repeat="widget in widgetsViewData">
 						<div class="box">
 							<div class="box-header">
-							<i id="widget-gridster-{{widget.headerText.split(' ').join('-')}}-icon" style="cursor:move;" class="icon-content-gridguide"></i>
+							<i id="widget-gridster-{{widget.headerText.split(' ').join('-')}}-icon" class="icon-content-gridguide widget-gridster"></i>
 								<h3>{{ widget.headerText}}</h3>
 								<div class="box-header-btns pull-right"
 									ng-if="isAdminPortalAdmin == true" class="ng-scope">
@@ -128,10 +130,13 @@
 											ng-mousedown="showImpResOption=!showImpResOption"
 											ng-mouseleave="showImpResOption=false" title="Settings"
 											ddh-accessibility-click="13,32" tabindex="0"><span
-											class="icon-controls-moreapplications"></span></a>
+											class="widgetHeaderBtns-span"><img
+											ng-src="assets/images/generic.png"
+											class="widgetHeaderBtns-img" alt="..."
+											aria-label="Tap or Click to move"
+											src="assets/images/generic.png"></span></a>
 
-										<ul class="optionsMenu"
-											style="display: block"
+										<ul class="optionsMenu widget-menu-options"											
 											ng-show="showImpResOption"
 											ng-mouseenter="showImpResOption=true"
 											ng-mouseleave="showImpResOption=false">

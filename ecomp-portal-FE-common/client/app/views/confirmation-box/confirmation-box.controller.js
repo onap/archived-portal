@@ -23,13 +23,13 @@
 'use strict';
 (function () {
     class ConfirmationBoxCtrl {
-        constructor($scope,$state) {
-
-            let init = () => {
-                let item = ($scope.ngDialogData && $scope.ngDialogData.item) || 'this';
-                this.message = $scope.ngDialogData.message ? $scope.ngDialogData.message : `Are you sure you want to delete "${item}"?`;
-                this.title = $scope.ngDialogData.title ? $scope.ngDialogData.title : '';
-            };
+        constructor($scope,$state,message,$modalInstance) {
+        	$scope.message = message;
+        	/*let init = () => {
+                let item = ($scope.message && $scope.message.item) || 'this';
+                message = $scope.message.content ? $scope.message.content : `Are you sure you want to delete "${message.item}"?`;
+                this.title = $scope.message.title ? $scope.message.title : '';
+            };*/
 
             this.closeBox = isConfirmed => {
                 $scope.closeThisDialog(isConfirmed);
@@ -40,10 +40,14 @@
             	$state.go(state,params);
             	
             };
+            
+            $scope.ok =function(confirm){
+            	$modalInstance.close(confirm);
+            }
 
-            init();
+          //  init();
         }
     }
-    ConfirmationBoxCtrl.$inject = ['$scope','$state'];
+    ConfirmationBoxCtrl.$inject = ['$scope','$state','message','$modalInstance'];
     angular.module('ecompApp').controller('ConfirmationBoxCtrl', ConfirmationBoxCtrl);
 })();

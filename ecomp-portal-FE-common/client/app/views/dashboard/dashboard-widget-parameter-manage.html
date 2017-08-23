@@ -17,10 +17,19 @@
   limitations under the License.
   ================================================================================
   -->
-<div class="manage-widget-parameters-header"></div>
-<div id="title" class="manage-widget-parameters-title">Manage
-	Widgets Parameters Page</div>
-<div class="widgets-popup-margin">
+<div class="manage-widget-parameter-header">
+
+		<div class="b2b-modal-header">
+			<h2 class="title" id="manage-widget-parameters-title">Manage Widgets Parameters Page</h2>
+
+			<div class="corner-button in">
+				<button type="button" class="close" aria-label="Close"
+					ng-click="$dismiss('cancel')"></button>
+			</div>
+		</div>
+
+		<div class="b2b-modal-body">
+		   	<div class="widgets-popup-margin">
 	<div class="get-access-table">
 		<div class="table-control manage-widget-parameters-table">
 			<div class="c-ecomp-att-abs-table manage-widget-parameters-table-details">
@@ -60,9 +69,8 @@
 							<td b2b-table-body>
 								<div ng-hide="rowData.showEdit" ng-click="setEdit($index);">
 									<span class="icon-edit"></span>
-								</div> <span ng-show="rowData.showEdit"> <a att-button
-									btn-type="primary" ng-click="modify($index);"
-									class="button button--primary" size="small">Save</a>
+								</div> <span ng-show="rowData.showEdit"> 
+									<button class="btn btn-alt btn-small" id="admin-button-add"  ng-click="modify($index);">Save</button> 
 							</span>
 							</td>
 							<td b2b-table-body>
@@ -84,6 +92,10 @@
 		</div>
 	</div>
 </div>
+	
+			</div>
+			<br>
+			</div>
 
 <script>
 $(document).ready(function(){

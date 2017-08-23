@@ -20,7 +20,7 @@
 'use strict';
 (function () {
     class WidgetOnboardingDetailsModalCtrl {
-        constructor($scope, $log, $interval, applicationsService, adminsService, microserviceService, widgetsCatalogService, errorMessageByCode, ECOMP_URL_REGEX, $window,userProfileService, confirmBoxService, $cookies) {
+        constructor($scope, $log, $interval, applicationsService, adminsService, microserviceService, widgetsCatalogService, errorMessageByCode, ECOMP_URL_REGEX, $window,userProfileService, confirmBoxService, $cookies,items) {
      	    
     	    this.appUpdate = function(){
     	    	this.hasSelectedApp = false;
@@ -206,10 +206,10 @@
             	this.allUser = false;
             	this.emptyWidgetName = false;
             	
-                if ($scope.ngDialogData && $scope.ngDialogData.widget) {
+                if (items && items.widget) {
                     this.isEditMode = true;
             		this.allRoleSelected = true;
-                    this.widget = _.clone($scope.ngDialogData.widget);
+                    this.widget = _.clone(items.widget);
                 } else {
                     this.isEditMode = false;
                     this.widget = _.clone(newWidgetModel);
@@ -316,7 +316,7 @@
             	var serviceId = null;
             	if(this.widget.serviceURL != null &&
             	this.widget.serviceURL != undefined){
-            		serviceId = this.widget.serviceURL.id;
+            		serviceId = parseInt(this.widget.serviceURL);
             	}
             	
             	
@@ -344,14 +344,15 @@
             					this.widget.saving = false;
             					return;
             				}
-            				$scope.closeThisDialog(true);
+            				$scope.$dismiss('cancel');
     	            		this.widget.saving = false;
             			});	
             		}
             		else{
             			widgetsCatalogService.updateWidget(this.widget.id, newWidget)
 	            		.then(() => {
-	            			$scope.closeThisDialog(true); 
+            				$scope.$dismiss('cancel');
+
 	                    });
             		}
             	}
@@ -365,7 +366,8 @@
 	        				this.widget.saving = false;
 	        				return;
 	        			}
-	            		$scope.closeThisDialog(true);
+        				$scope.$dismiss('cancel');
+
 	            		this.widget.saving = false;
             		});
             	}
@@ -376,6 +378,6 @@
             });
         }
     }
-    WidgetOnboardingDetailsModalCtrl.$inject = ['$scope', '$log', '$interval', 'applicationsService', 'adminsService', 'microserviceService', 'widgetsCatalogService', 'errorMessageByCode', 'ECOMP_URL_REGEX', '$window','userProfileService', 'confirmBoxService', '$cookies'];
+    WidgetOnboardingDetailsModalCtrl.$inject = ['$scope', '$log', '$interval', 'applicationsService', 'adminsService', 'microserviceService', 'widgetsCatalogService', 'errorMessageByCode', 'ECOMP_URL_REGEX', '$window','userProfileService', 'confirmBoxService', '$cookies','items'];
     angular.module('ecompApp').controller('WidgetOnboardingDetailsModalCtrl', WidgetOnboardingDetailsModalCtrl);
 })(); 

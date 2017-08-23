@@ -56,6 +56,10 @@ public class OnboardingApp {
 	public String uebSecret;
 	
 	public Boolean restrictedApp;
+	
+	public Boolean isCentralAuth;
+	
+	public String nameSpace;
 
 	public void normalize() {
 		this.name = (this.name == null) ? "" : this.name.trim();

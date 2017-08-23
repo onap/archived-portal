@@ -21,12 +21,12 @@
 (function () {
     class AppDetailsModalCtrl {
         constructor($scope, $log, applicationsService, errorMessageByCode,
-                    ECOMP_URL_REGEX,userProfileService, $cookies, confirmBoxService) {
+                    ECOMP_URL_REGEX,userProfileService, $cookies, confirmBoxService,items) {
 //            let emptyImg = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
             // empty image should really be empty, or it causes problems for the back end
             let emptyImg = null;
             this.emptyImgForPreview = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
-
+            $scope.ngDialogData=items;
             let newAppModel = {
                 'id': null,
                 'name': null,
@@ -41,7 +41,9 @@
                 'appPassword': null,
                 'thumbnail': emptyImg,
                 'isEnabled': true,
-                'restrictedApp': false
+                'restrictedApp': false,
+                'nameSpace': null,
+                'isCentralAuth': false                
             };
 
             let init = () => {
@@ -71,6 +73,7 @@
                         this.app.thumbnail = emptyImg;
                         this.originalImage = null;
                         this.app.imageUrl = null;
+                        this.app.imageLink = null;
                     }
                 }).catch(err => {
                     $log.error('AppDetailsModalCtrl:removeImage error:: ',err);
@@ -152,9 +155,14 @@
 
             this.saveChanges = () => {
                 //if valid..
-                if($scope.appForm.$invalid){
-                    return;
-                }
+            	 if(((angular.isUndefined(this.app.name) || !this.app.name)&&(angular.isUndefined(this.app.url) || !this.app.url)
+            			 &&(angular.isUndefined(this.app.username) || !this.app.username)&&(angular.isUndefined(this.app.appPassword) || !this.app.appPassword))) {
+            		 confirmBoxService.showInformation('Please fill in all required fields').then(isConfirmed => {});
+                     return;
+                 }else if(!((angular.isUndefined(this.app.name) || !!this.app.name)&&(angular.isUndefined(this.app.url) || !!this.app.url))){
+                     confirmBoxService.showInformation('Please fill in all required fields').then(isConfirmed => {});
+                     return;
+                 }
                 this.isSaving = true;
                 // For a restricted app, null out all irrelevant fields
                 if (this.app.restrictedApp) {
@@ -167,10 +175,12 @@
                     this.app.uebSecret = null;
                 }
                 if(this.isEditMode){
+                    if (this.app.nameSpace=="") {this.app.nameSpace = null;}
                     applicationsService.updateOnboardingApp(this.app)
                         .then(() => {
                             $log.debug('AppDetailsModalCtrl:updateOnboardingApp:: App update succeeded!');
-                            $scope.closeThisDialog(true);
+                          //  $scope.closeThisDialog(true);
+                            $scope.$dismiss('cancel');
                             emptyCookies();
                         }).catch(err => {
                             switch (err.status) {
@@ -204,7 +214,8 @@
                     applicationsService.addOnboardingApp(this.app)
                         .then(() => {
                             $log.debug('App creation succeeded!');
-                            $scope.closeThisDialog(true);
+                            //$scope.closeThisDialog(true);
+                            $scope.$dismiss('cancel');
                             emptyCookies();
                         }).catch(err => {
                             switch (err.status) {
@@ -232,6 +243,7 @@
                             // for bug in IE 11
                         });
                 }
+            	
             };
 
 
@@ -252,6 +264,7 @@
                 if(!(_.isEqual(newVal, oldVal))){
                     $log.debug('applicationsService:$scope.$watch:: thumbnail updated!');
                     this.app.imageUrl = null;
+                    this.app.imageLink = null;
                     this.app.thumbnail = newVal.resized.dataURL;
                 }
             });
@@ -263,6 +276,6 @@
         }
     }
     AppDetailsModalCtrl.$inject = ['$scope', '$log', 'applicationsService', 'errorMessageByCode',
-        'ECOMP_URL_REGEX','userProfileService','$cookies', 'confirmBoxService'];
+        'ECOMP_URL_REGEX','userProfileService','$cookies', 'confirmBoxService','items'];
     angular.module('ecompApp').controller('AppDetailsModalCtrl', AppDetailsModalCtrl);
 })();

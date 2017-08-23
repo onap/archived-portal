@@ -36,6 +36,7 @@ import org.json.JSONObject;
 import org.openecomp.portalapp.command.EPLoginBean;
 import org.openecomp.portalapp.portal.domain.SharedContext;
 import org.openecomp.portalapp.portal.service.EPLoginService;
+import org.openecomp.portalapp.portal.service.EPRoleFunctionService;
 import org.openecomp.portalapp.portal.service.EPRoleService;
 import org.openecomp.portalapp.portal.service.SharedContextService;
 import org.openecomp.portalapp.portal.utils.EPSystemProperties;
@@ -83,6 +84,9 @@ public class LoginController extends EPUnRestrictedBaseController implements Log
 	
 	@Autowired
 	private EPRoleService roleService;
+	
+	@Autowired
+	private EPRoleFunctionService ePRoleFunctionService;
 	
 	String viewName = "login";
 	private String welcomeView;
@@ -142,8 +146,7 @@ public class LoginController extends EPUnRestrictedBaseController implements Log
 	      }
 	      else {
 	        // store the currently logged in user's information in the session
-	        EPUserUtils.setUserSession(request, commandBean.getUser(), commandBean.getMenu(), commandBean.getBusinessDirectMenu(), SystemProperties.getProperty(SystemProperties.AUTHENTICATION_MECHANISM), 
-	        		roleService.getRoleFunctions());
+	        EPUserUtils.setUserSession(request, commandBean.getUser(), commandBean.getMenu(), commandBean.getBusinessDirectMenu(), SystemProperties.getProperty(SystemProperties.AUTHENTICATION_MECHANISM),ePRoleFunctionService);
 	        
 	        try{
 		    	logger.info(EELFLoggerDelegate.debugLogger, "******************* store user info into share context begins");
@@ -249,7 +252,7 @@ public class LoginController extends EPUnRestrictedBaseController implements Log
 			    sbAdditionalInfo.append(String.format("Login-Id: %s, Login-Method: %s, Request-URL: %s", orgUserId, "", fullURL));
 				logger.info(EELFLoggerDelegate.debugLogger, "*********************** now set up user session for " + orgUserId);
 
-			    EPUserUtils.setUserSession(request, commandBean.getUser(), commandBean.getMenu(), commandBean.getBusinessDirectMenu(), SystemProperties.getProperty(SystemProperties.AUTHENTICATION_MECHANISM), roleService.getRoleFunctions());
+			    EPUserUtils.setUserSession(request, commandBean.getUser(), commandBean.getMenu(), commandBean.getBusinessDirectMenu(), SystemProperties.getProperty(SystemProperties.AUTHENTICATION_MECHANISM),ePRoleFunctionService);
 				logger.info(EELFLoggerDelegate.debugLogger, "*********************** now set up user session for " + orgUserId + " finished");
 
 			    //Store user's information into share context	

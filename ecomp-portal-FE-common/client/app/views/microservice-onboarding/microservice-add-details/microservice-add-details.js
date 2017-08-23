@@ -20,9 +20,9 @@
 'use strict';
 (function () {
     class MicroserviceAddDetailsCtrl {
-        constructor($scope, $log, $interval, widgetsCatalogService, applicationsService, adminsService, microserviceService, errorMessageByCode, ECOMP_URL_REGEX, $window,userProfileService, confirmBoxService, $cookies) {
+        constructor($scope, $log, $interval, widgetsCatalogService, applicationsService, adminsService, microserviceService, errorMessageByCode, ECOMP_URL_REGEX, $window,userProfileService, confirmBoxService, $cookies,items) {
      	    
-          
+        	$scope.ngDialogData=items;
             let getAvailableApps = () => {       
             	applicationsService.getAppsForSuperAdminAndAccountAdmin().then(apps => {
             		this.availableApps=[];
@@ -130,7 +130,6 @@
             };
 
             this.addParameter = () => {
-            	document.getElementById('microservice-scroll-end').scrollIntoView();
             	this.service.parameterList.push({}); 
             }
             
@@ -314,14 +313,16 @@
 	            		if(isConfirmed){
 		            		microserviceService.updateService(this.service.id, newService).then(() => {
 		            			// TODO: result validation check
-		            			this.closeThisDialog(); 
+		            			//this.closeThisDialog(); 
+		            			$scope.$dismiss('cancel');
 		            		});
             			}
             		});
             	}else{
             		microserviceService.createService(newService).then(() => {
             			// TODO: result validation check
-            			$scope.closeThisDialog(true);
+            			//$scope.closeThisDialog(true);
+            			$scope.$dismiss('cancel');
             		});
             	}
              	
@@ -332,6 +333,6 @@
             });
         }
     }
-    MicroserviceAddDetailsCtrl.$inject = ['$scope', '$log', '$interval', 'widgetsCatalogService', 'applicationsService', 'adminsService', 'microserviceService', 'errorMessageByCode', 'ECOMP_URL_REGEX', '$window','userProfileService', 'confirmBoxService', '$cookies'];
+    MicroserviceAddDetailsCtrl.$inject = ['$scope', '$log', '$interval', 'widgetsCatalogService', 'applicationsService', 'adminsService', 'microserviceService', 'errorMessageByCode', 'ECOMP_URL_REGEX', '$window','userProfileService', 'confirmBoxService', '$cookies','items'];
     angular.module('ecompApp').controller('MicroserviceAddDetailsCtrl', MicroserviceAddDetailsCtrl);
 })(); 

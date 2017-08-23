@@ -29,6 +29,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.bind.DatatypeConverter;
 
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -36,8 +37,11 @@ import org.openecomp.portalapp.portal.domain.EPUser;
 import org.openecomp.portalapp.portal.logging.format.EPAppMessagesEnum;
 import org.openecomp.portalapp.portal.logging.logic.EPLogUtil;
 import org.openecomp.portalsdk.core.logging.logic.EELFLoggerDelegate;
+import org.openecomp.portalsdk.core.onboarding.util.CipherUtil;
 import org.openecomp.portalsdk.core.util.SystemProperties;
 import org.slf4j.MDC;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -369,5 +373,45 @@ public class EcompPortalUtils {
 		}		
 	}
 
+	/**
+	 * It returns headers where username and password of external central auth
+	 * is encoded to base64
+	 * 
+	 * @return header which contains external central auth username and password
+	 *         base64 encoded
+	 * @throws Exception
+	 *             if unable to decrypt the password
+	 */
+	public static HttpHeaders base64encodeKeyForAAFBasicAuth() throws Exception {
+		
+		String userName = "";
+		String decryptedPass = "";
+		if (EPCommonSystemProperties
+				.containsProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_AUTH_USER_NAME) && EPCommonSystemProperties
+				.containsProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_AUTH_PASSWORD)) {
+			decryptedPass = SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_AUTH_PASSWORD);
+			userName = SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_AUTH_USER_NAME);
+		}
+		String decPass = decrypted(decryptedPass);
+		String usernamePass = userName + ":" + decPass;
+		String encToBase64 = String.valueOf((DatatypeConverter.printBase64Binary(usernamePass.getBytes())));
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Authorization", "Basic " + encToBase64);
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		return headers;
+	}
+	
+	private static String decrypted(String encrypted) throws Exception {
+		String result = "";
+		if (encrypted != null && encrypted.length() > 0) {
+			try {
+				result = CipherUtil.decrypt(encrypted, SystemProperties.getProperty(SystemProperties.Decryption_Key));
+			} catch (Exception e) {
+				logger.error(EELFLoggerDelegate.errorLogger, "decryptedPassword failed", e);
+				throw e;
+			}
+		}
+		return result;
+	}
 
 }

@@ -17,39 +17,85 @@
   limitations under the License.
   ================================================================================
   -->
+  <style>
+  .dialog-control {
+    position: relative;
+    bottom: -13px;
+    right: 0px;
+}
+  </style>
+<style>
+  .dialog-control {
+    position: relative;
+    bottom: -13px;
+    right: 0px;
+}
+  </style>
 
-<div class="new-admin-modal" style="height: 350px;">
-	<form name="adminForm" novalidate>
-		<div class="title" ng-bind="label" style="color: #5a5a5a;font-size: 18px;border-bottom: #067ab4 3px solid;margin-left:0px"></div>
+<!-- <link rel="stylesheet" href="role.css">
+ --><div class="new-admin-modal">
+		<div class="b2b-modal-header">
+			
 
-		<div id="name-property-title" class="property required">
-			<div id="name-property-label" class="property-label" style="margin-bottom: 5px;    color: #5a5a5a;       font-size: 14px;    font-weight: bold;    padding-top: 20px;">
-				<sup><b style="color: Red;">*</b></sup>Name:</div>
-			<input id="name-property-input" type="text" class="input-field" style=" display: inline-block; width: 396px; height: 40px;"ng-model="editRoleFunction.name" maxlength="30" />
-			<div id="name-property-required" ng-show="!editRoleFunction.name||editRoleFunction.name.length==0" style="color: #cf2a2a; font-size: 10px;"><small style="position: absolute;">Name is Required</small>
-				</div>
-		</div>
-		<br />
-		<div id="code-property-title" class="property required">
-			<div id="code-property-label" class="property-label" style="    margin-bottom: 5px;    color: #5a5a5a;       font-size: 14px;    font-weight: bold;    padding-top: 20px;">
-				<sup><b style="color: Red;">*</b></sup>Code:
+			<div class="corner-button in">
+				<button type="button" class="close" aria-label="Close" id="button-cancel-role"
+					ng-click="$dismiss('cancel')"></button>
 			</div>
-		   <input id="code-property-input" type="text" class="input-field" style=" display: inline-block; width: 396px; height: 40px;"
-				ng-model="editRoleFunction.code" ng-disabled="disableCd"
-				maxlength="30" />
-				<div id="code-property-required" ng-show="!editRoleFunction.code||editRoleFunction.code.length==0" style="color: #cf2a2a; font-size: 10px;"><small style="position: absolute;">Code is Required</small>
+		</div>
+
+		<div class="b2b-modal-body">
+		<form id="admin-details-form" name="adminForm" novalidate>
+		<div class="title" ng-bind="label" class="adminForm-title"></div>
+<br>
+		<div >
+					<div class="item-label"> <span ID="required" style="color: Red;"
+						visible="false"> *</span>Name:</div>
+					<input id="name-property-input"
+						class="adminForm-name-property-input" ng-model="editRoleFunction.name"
+						type="text" maxlength="30"
+						 />
+
+					<div class="error-container"
+						ng-show="!editRoleFunction.name||editRoleFunction.name.length==0">
+						<small id="microservices-details-input-url-required"
+							class="err-message">Name is Required</small>
+					</div>
 				</div>
+			<br>	
+				<div >
+					<div class="item-label"> <span ID="required" style="color: Red;"
+						visible="false"> *</span>Code:</div>
+					<input id="code-property-input"
+						class="adminForm-code-property-input" ng-model="editRoleFunction.code" ng-disabled="disableCd"
+						type="text" maxlength="30"
+						 />
+
+					<div class="error-container"
+						ng-show="!editRoleFunction.code||editRoleFunction.code.length==0">
+						<small id="code-property-required"
+							class="err-message">Code is Required</small>
+					</div>
+				</div>
+		
+		</form>
+	</div>
+		
+			<div class="b2b-modal-footer">
+				<div class="dialog-control">
+				
+<button id="button-app-save" class="btn btn-alt btn-small" size="small" ng-disabled="(!editRoleFunction.name||editRoleFunction.name.length==0)||(!editRoleFunction.code||editRoleFunction.code.length==0 )" ng-click="!saveRoleFunction(editRoleFunction)";herf="javascript:void(0)">Save</button>
+						
+						<div id="button-app-cancel" class="btn btn-alt btn-small" ng-click="$dismiss('cancel')" role="button" tabindex="0" herf="javascript:void(0)">Cancel</div>
 		</div>
 		
+		<!-- <div class="dialog-control">
 
+<button id="button-app-save" class="btn btn-alt btn-small" size="small" ng-disabled="(!editRoleFunction.name||editRoleFunction.name.length==0)||(!editRoleFunction.code||editRoleFunction.code.length==0 )" ng-click="!saveRoleFunction(editRoleFunction)";herf="javascript:void(0)">Save</button>
 
-	<div class="dialog-control">
-				
-					<button id="button-app-save" class="save-button" size="small" ng-disabled="(!editRoleFunction.name||editRoleFunction.name.length==0)||(!editRoleFunction.code||editRoleFunction.code.length==0 )" ng-click="!saveRoleFunction(editRoleFunction)";herf="javascript:void(0)">Save</button>
-						
-						<div id="button-app-cancel" class="cancel-button" ng-click="closeThisDialog()" role="button" tabindex="0" herf="javascript:void(0)">Cancel</div>
-		</div>
-	</form>
+<div id="button-app-cancel" class="btn btn-alt btn-small" ng-click="closeThisDialog()" role="button" tabindex="0" herf="javascript:void(0)">Cancel</div>
+</div> -->
+			</div>
+			
 </div>
 
 <script>
@@ -57,3 +103,4 @@ $(document).ready(function(){
     $(".ngdialog-close").attr('id','dialog-close');
 });
 </script>
+

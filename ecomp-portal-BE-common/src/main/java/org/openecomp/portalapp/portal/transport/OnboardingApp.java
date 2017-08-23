@@ -66,6 +66,10 @@ public class OnboardingApp {
 	public String uebSecret;
 
 	public Boolean restrictedApp;
+	
+	public Boolean isCentralAuth;
+	
+	public String nameSpace;
 
 	/**
 	 * Sets the name, myLoginsAppName, myLoginsAppOwner, username and

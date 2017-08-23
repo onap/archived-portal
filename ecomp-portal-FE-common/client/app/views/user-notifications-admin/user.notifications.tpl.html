@@ -31,16 +31,15 @@
 						placeholder="Search in entire table" ng-model="searchString" />
 					</div>
 			  <div class="table-control-buttons" ng-controller="userNotificationsCtrl">
-						<button class="btn btn-alt btn-small"id="button-openAddNewApp"   ng-click="openUserNotificationModal()" >
+						<button class="btn btn-alt btn-small"id="button-openAddNewApp"   ng-click="userNotifications.openUserNotificationModal()" >
 		                	<i class="icon-people-userbookmark" aria-hidden="true"></i>&nbsp;Add Notification
 		                </button> 
 					</div>
 		
 			<span class="ecomp-spinner" ng-show="isLoadingTable"></span>
-			<div class="b2b-table-div"
-				ng-hide="isLoadingTable" id="table-main">
-				<table b2b-table id="table-main" table-data="adminNotifications" search-string="searchString"
-					current-page="ignoredCurrentPage">
+			<div class="b2b-table-div" b2b-table table-data="adminNotifications"
+				ng-hide="isLoadingTable" id="table-main" search-string="searchString">
+				<table  id="table-main" >
 					<thead b2b-table-row type="header">
 						<tr>
 							<th id="th-notif-0" b2b-table-header key="msgSource"
@@ -63,7 +62,7 @@
 						</tr>
 					</thead>
 					<tbody b2b-table-row type="body" class="table-body"
-						row-repeat="rowData in tableAdminNotifItems">
+				row-repeat="rowData in tableAdminNotifItems | filter:searchString | startFrom:(currentPage1-1)*viewPerPage1 | limitTo:viewPerPage1 "track-by="$index">
 						<tr>
 							<td b2b-table-body style="{{rowData.expired?'color:lightgray !important':''}}">
 								<div  id="{{$index}}-msgSource">{{rowData.msgSource}}</div>
@@ -96,9 +95,9 @@
 							</td>
 							<td b2b-table-body style="{{rowData.expired?' color:lightgray !important':''}}">
 							
-							<p id="{{$index}}-notification-edit" ng-if="rowData.msgSource==='EP'" ng-click="editUserNotificationModal(rowData)"class="icon-overview"  >  /</p> 
-							<p id="{{$index}}-notification-edit" ng-if="rowData.msgSource!=='EP'" ng-click="showDetailedJsonMessage(rowData)"class="icon-overview"  >/ </p> 
-							<p id="{{$index}}-notification-delete" ng-click="removeUserNotification(rowData)" class="icon-misc-trash"></p> 
+							<p id="{{$index}}-notification-edit" ng-if="rowData.msgSource==='EP'" ng-click="userNotifications.editUserNotificationModal(rowData)"class="icon-overview"  >  /</p> 
+							<p id="{{$index}}-notification-edit" ng-if="rowData.msgSource!=='EP'" ng-click="userNotifications.showDetailedJsonMessage(rowData)"class="icon-overview"  >/ </p> 
+							<p id="{{$index}}-notification-delete" ng-click="userNotifications.removeUserNotification(rowData)" class="icon-misc-trash"></p> 
 							
 						
 							</td>

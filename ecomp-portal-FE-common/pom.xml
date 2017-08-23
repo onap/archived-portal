@@ -2,6 +2,6 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.openecomp.portal</groupId>
   <artifactId>ecompportal-FE-common</artifactId>
-  <version>1.1</version>
-  <!-- This file exists primarily to allow easy import of this project into Eclipse. -->
+  <version>0</version>
+  <!-- This file exists only to allow easy import of this project into Eclipse. -->
 </project>

@@ -1,6 +1,7 @@
 @charset "UTF-8";
 
 @font-face { font-family: "Ionicons"; src: url("../fonts/ionicons.eot?v=2.0.0"); src: url("../fonts/ionicons.eot?v=2.0.0#iefix") format("embedded-opentype"), url("../fonts/ionicons.ttf?v=2.0.0") format("truetype"), url("../fonts/ionicons.woff?v=2.0.0") format("woff"), url("../fonts/ionicons.svg?v=2.0.0#Ionicons") format("svg"); font-weight: normal; font-style: normal; }
+
 .ionicons,
 .icon-controls-upPRIMARY, 
 .icon-arrows-download:before, 
@@ -56,7 +57,14 @@
 .icon-misc-trash:before, 
 .icon-misc-pen:before,
 .ion-navicon:before, 
-.icon-primary-close:before, .close:before, .reset-field:before,
+.icon-primary-down:before, 
+.icon-primary-left:before,
+.icon-primary-right:before,
+.icon-primary-check:before,
+.icon-primary-calendar:before,
+.icon-primary-close:before, 
+.close:before,
+.reset-field:before,
 .icon-datanetwork-softwareasaservice:before,
 .icon-datanetwork-messaging2:before,
 .icon-controls-moreapplications:before,
@@ -73,7 +81,6 @@
 	-webkit-font-smoothing: antialiased; 
 	-moz-osx-font-smoothing: grayscale; 
 	}
-
 
 
 .icoSecurityalerts-alert:before { content: "\f100"; }
@@ -178,13 +185,23 @@
 
 .icon-misc-pen:before { content: "\f2bf"; }
 
+.icon-primary-down:before { content: "\f123" !important;}
+
+.icon-primary-left:before { content: "\f124" !important; transform: rotate(0deg) !important;}
+
+.icon-primary-right:before { content: "\f125" !important; transform: rotate(0deg) !important; }
+
+.icon-primary-check:before, .checkbox input:checked + .skin:after {content: "\f121" !important; font-family: "Ionicons" !important;}
+
+.icon-primary-calendar:before {content: "\f3f4" !important;}
+
+.icon-primary-close:before, .close:before, .reset-field:before {content: "\f2d7" !important; font-family: "Ionicons" !important;}
+
 .ion-navicon:before { content: "\f20e"; }
 
 .icon-building-home:before { content: "\f144"; }
 
 .icon-content-star:before { content: "\f24e"; }
-
-.icon-primary-close:before, .close:before, .reset-field:before { content: "\f129"; }
 
 .icon-datanetwork-softwareasaservice:before { content: "\f40c"; }
 

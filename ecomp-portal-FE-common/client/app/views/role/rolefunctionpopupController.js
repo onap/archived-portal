@@ -17,79 +17,85 @@
  * limitations under the License.
  * ================================================================================
  */
-app.controller('rolefunctionpopupController', function ($scope, confirmBoxService, message, $http,RoleService, conf, isEditing){
-				if(message.availableRoleFunction==null) {
-					$scope.label='Add Role Function';
-					var tempText = "";
-				}
-				else{
-					$scope.label='Edit Role Function'
-					$scope.disableCd=true;
-					var tempText = new String(message.availableRoleFunction.name);
-					$scope.editRoleFunction = angular.copy(message.availableRoleFunction);
-				}
-				
-				$scope.tempText = tempText;
-				$scope.isEditing = isEditing;
-				
-				$scope.saveRoleFunction = function(availableRoleFunction) {
-					  var uuu = conf.api.saveRoleFunction;
-					  var postData={availableRoleFunction: availableRoleFunction};
+app.controller('rolefunctionpopupController',function($scope, confirmBoxService, message, $http,RoleService, conf, isEditing) {
+					if (message.availableRoleFunction == null) {
+						$scope.label = 'Add Role Function';
+						var tempText = "";
+					} else {
+						$scope.label = 'Edit Role Function'
+						$scope.disableCd = true;
+						var tempText = new String(message.availableRoleFunction.name);
+						$scope.editRoleFunction = angular.copy(message.availableRoleFunction);
+					}
 
-					  if(availableRoleFunction==null){
-						  confirmBoxService.showInformation("Please enter valid role function details.");
-					  }
-					  var exists = false,x;
-					  for(x in message.availableRoleFunctions){
-						  console.log(message.availableRoleFunctions[x].name);
-							if(message.availableRoleFunctions[x].name==availableRoleFunction.name){
-								confirmBoxService.showInformation("Role Function already exists.");
-								exists = true;
-								availableRoleFunction.name = $scope.tempText;
-								break;
-							} 
-							if(!isEditing){
-								if (message.availableRoleFunctions[x].code == availableRoleFunction.code) {
-									confirmBoxService.showInformation("Code already exists. Please create a role function with a different code to proceed.");
-									exists = true;
-									availableRoleFunction.name = $scope.tempText;
-									break;
-								}
-							}
-					  }
-					  
-					  if(!exists && availableRoleFunction.name.trim() != '' && availableRoleFunction.code.trim() != ''){
-			              $http.post(uuu, JSON.stringify(postData)).then(function(res){
-			            	  console.log("data");
-//			            	  console.log(res.data);
-//			            	  $scope.availableRoleFunctionsTemp = res.data.availableRoleFunctions;
-			            	  RoleService.getRoleFunctionList().then(function(data){
-			            			
-			            			var j = data;
-			            	  		$scope.data = JSON.parse(j.data);
-			            	  		$scope.availableRoleFunctions =JSON.parse($scope.data.availableRoleFunctions);
-			            	  		
-			            	  		//$scope.resetMenu();
-			            	  		$scope.closeThisDialog({result: true, availableRoleFunctions: $scope.availableRoleFunctions });
-			            		},function(error){
-			            			console.log("failed");
-			            			//reloadPageOnce();
-			            			$scope.closeThisDialog(true);		            			
-			            		});
-			            	  
-			            	  
-			              });						  
-						  
-						  
-						  
-						  
-						}
-				};
-					  
-				  	  
-					
-				$scope.close = function() { 
-					this.closeThisDialog(true);
-				};
-}
-);
+					$scope.tempText = tempText;
+					$scope.isEditing = isEditing;
+
+					$scope.saveRoleFunction = function(availableRoleFunction) {
+						confirmBoxService.confirm(
+										"You are about to Create the role function "+ availableRoleFunction.name+ ". Do you want to continue?")
+								.then(function(confirmed) {
+											if (confirmed) {
+
+												var uuu = conf.api.saveRoleFunction;
+												var postData = availableRoleFunction;
+
+												if (availableRoleFunction == null) {
+													confirmBoxService.showInformation("Please enter valid role function details.");
+												}
+												var exists = false, x;
+												for (x in message.availableRoleFunctions) {
+													console.log(message.availableRoleFunctions[x].name);
+													if (message.availableRoleFunctions[x].name == availableRoleFunction.name) {
+														confirmBoxService.showInformation("Role Function already exists.");
+														exists = true;
+														availableRoleFunction.name = $scope.tempText;
+														break;
+													}
+													if (!isEditing) {
+														if (message.availableRoleFunctions[x].code == availableRoleFunction.code) {
+															confirmBoxService.showInformation("Code already exists. Please create a role function with a different code to proceed.");
+															exists = true;
+															availableRoleFunction.name = $scope.tempText;
+															break;
+														}
+													}
+												}
+
+												if (!exists&& availableRoleFunction.name.trim() != ''&& availableRoleFunction.code.trim() != '') {
+													$http.post(uuu,JSON.stringify(postData)).then(function(res) {
+																		$scope.availableRoleFunctionsTemp = res.data.availableRoleFunctions;
+																		RoleService.getRoleFunctionList().then(
+																						function(data) {
+
+																							var j = data;
+																							$scope.data = JSON.parse(j.data);
+																							$scope.availableRoleFunctions = JSON.parse($scope.data.availableRoleFunctions);
+
+																							// $scope.resetMenu();
+																							/*$scope.closeThisDialog({
+																										result : true,
+																										availableRoleFunctions : $scope.availableRoleFunctions
+																									});*/
+																							$scope.$dismiss({result : true,availableRoleFunctions : $scope.availableRoleFunctions});
+																						},
+																						function(error) {
+																							console.log("failed");
+																							// reloadPageOnce();
+																							//$scope.closeThisDialog(true);
+																							$scope.$dismiss('cancel');
+																						});
+
+																	});
+
+												}
+											};
+
+											$scope.close = function() {
+												this.closeThisDialog(true);
+											};
+										}
+
+								);
+					}
+				});

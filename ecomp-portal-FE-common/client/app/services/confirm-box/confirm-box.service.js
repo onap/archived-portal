@@ -24,213 +24,288 @@
 
 (function () {
     class ConfirmBoxService {
-        constructor($q, $log, ngDialog) {
+        constructor($q, $log, ngDialog,$modal) {
             this.$q = $q;
             this.$log = $log;
             this.ngDialog = ngDialog;
+            this.$modal = $modal;
         }
-
-        showInformation(message) {
+        reloadPageConfirm(msg){
+        	let deferred = this.$q.defer();
+          	var modalInstance = this.$modal.open({
+                  templateUrl: 'app/views/confirmation-box/reload-page-confirm.html',
+                  controller: 'ConfirmationBoxCtrl',
+                  sizeClass:'modal-small',
+                  resolve: {
+                      message: function message() {
+                          var message = {
+                              title:msg.title,
+                              content: msg.content
+                          };
+                          return message;
+                     }
+                  }
+              });
+          	modalInstance.result.then(function () {
+          		deferred.resolve();
+          	});  
+          	return deferred.promise;
+        }
+        showInformation(msg) {
             let deferred = this.$q.defer();
-            this.ngDialog.open({
+        	var modalInstance = this.$modal.open({
                 templateUrl: 'app/views/confirmation-box/information-box.tpl.html',
                 controller: 'ConfirmationBoxCtrl',
-                controllerAs: 'confirmBox',
-                className: 'confirm-box ngdialog-theme-default',
-                showClose: false,
-                data: {
-                    message: message
+                sizeClass:'modal-small',
+                resolve: {
+                    message: function message() {
+                        var message = {
+                            title:'',
+                            content: msg
+                        };
+                        return message;
+                    }
                 }
-            }).closePromise.then(confirmed => {
-                deferred.resolve(confirmed.value);
-            }).catch(err => {
-                deferred.reject(err);
             });
-            return deferred.promise;
+        	modalInstance.result.then(function () {
+        		deferred.resolve();
+        	});  
+        	return deferred.promise;
         };
         
-        editItem(message) {
-            let deferred = this.$q.defer();
-            this.ngDialog.open({
+        editItem(msg) {
+        	let deferred = this.$q.defer();
+       	 	var modalInstance = this.$modal.open({
                 templateUrl: 'app/views/confirmation-box/confirmation-box.tpl.html',
                 controller: 'ConfirmationBoxCtrl',
-                controllerAs: 'confirmBox',
-                className: 'confirm-box ngdialog-theme-default',
-                showClose: false,
-                data: {
-                    message: message
+                sizeClass:'modal-small',
+                resolve: {
+                    message: function message() {
+                        var message = {
+                            title:'',
+                            content: msg
+                        };
+                        return message;
+                    }
                 }
-            }).closePromise.then(confirmed => {
-                deferred.resolve(confirmed.value);
-            }).catch(err => {
-                deferred.reject(err);
             });
-            return deferred.promise;
+            modalInstance.result.then(function (confirm) {
+        		if(confirm)
+        			deferred.resolve(confirm);
+        		else
+        			deferred.reject(confirm);
+        	});      	
+        	return deferred.promise;
         };
        
         
-        showDynamicInformation(message, templatePath, controller) {
-            let deferred = this.$q.defer();
-            this.ngDialog.open({
-            	templateUrl: templatePath,
+        showDynamicInformation(msg, templatePath, controller) {
+        	let deferred = this.$q.defer();
+        	var modalInstance = this.$modal.open({
+                templateUrl: templatePath,
                 controller: controller,
-                controllerAs: 'confirmBox',
-                className: 'confirm-box ngdialog-theme-default',
-                showClose: false,
-                data: {
-                    message: message
+                sizeClass:'modal-small',
+                resolve: {
+                    message: function message() {
+                        var message = {
+                            title:'',
+                            content: msg
+                        };
+                        return message;
+                    }
                 }
-            }).closePromise.then(confirmed => {
-                deferred.resolve(confirmed.value);
-            }).catch(err => {
-                deferred.reject(err);
             });
-            return deferred.promise;
+        	modalInstance.result.then(function () {
+        		deferred.resolve();
+        	});  
+        	return deferred.promise;
         };
         
-        confirm(message) {
-            let deferred = this.$q.defer();
-            this.ngDialog.open({
+        confirm(msg) {
+        	let deferred = this.$q.defer();
+       	 	var modalInstance = this.$modal.open({
                 templateUrl: 'app/views/confirmation-box/confirmation-box.tpl.html',
                 controller: 'ConfirmationBoxCtrl',
-                controllerAs: 'confirmBox',
-                className: 'confirm-box ngdialog-theme-default',
-                showClose: false,
-                data: {
-                    message: message
+                sizeClass:'modal-small',
+                resolve: {
+                    message: function message() {
+                        var message = {
+                            title:'',
+                            content: msg
+                        };
+                        return message;
+                    }
                 }
-            }).closePromise.then(confirmed => {
-                deferred.resolve(confirmed.value);
-            }).catch(err => {
-                deferred.reject(err);
             });
-            return deferred.promise;
+            modalInstance.result.then(function (confirm) {
+        		if(confirm)
+        			deferred.resolve(confirm);
+        		else
+        			deferred.reject(confirm);
+        	});      	
+        	return deferred.promise;
         };
 
         deleteItem(item) {
-            let deferred = this.$q.defer();
-            this.ngDialog.open({
+        	let deferred = this.$q.defer();
+        	 var modalInstance = this.$modal.open({
                 templateUrl: 'app/views/confirmation-box/confirmation-box.tpl.html',
                 controller: 'ConfirmationBoxCtrl',
-                controllerAs: 'confirmBox',
-                className: 'confirm-box ngdialog-theme-default',
-                showClose: false,
-                data: {
-                    item: item,
-                    title: 'Functional Menu - Delete'
+                sizeClass:'modal-small',
+                resolve: {
+                    message: function message() {
+                        var message = {
+                        	item:'',                     
+                            title:'Confirmation',
+                            content: 'Are you sure you want to delete ' +item+ ' ?'
+                        };
+                        return message;
+                    }
                 }
-            }).closePromise.then(confirmed => {
-                deferred.resolve(confirmed.value);
-            }).catch(err => {
-                deferred.reject(err);
-            });
-            return deferred.promise;
+            });    	 
+        	modalInstance.result.then(function (confirm) {
+        		if(confirm)
+        			deferred.resolve(confirm);
+        		else
+        			deferred.reject(confirm);
+        	});      	
+        	return deferred.promise;
         };
 
-        moveMenuItem(message) {
+        moveMenuItem(msg) {
             let deferred = this.$q.defer();
-            this.ngDialog.open({
-                templateUrl: 'app/views/confirmation-box/dragdrop-confirmation-box.tpl.html',
-                controller: 'ConfirmationBoxCtrl',
-                controllerAs: 'confirmBox',
-                className: 'confirm-box ngdialog-theme-default',
-                showClose: false,
-                data: {
-                    message: message,
-                    title:'Functional Menu - Move'
-                }
-            }).closePromise.then(confirmed => {
-                deferred.resolve(confirmed.value);
-            }).catch(err => {
-                deferred.reject(err);
-            });
-            return deferred.promise;
+	       	var modalInstance = this.$modal.open({
+	               templateUrl: 'app/views/confirmation-box/dragdrop-confirmation-box.tpl.html',
+	               controller: 'ConfirmationBoxCtrl',
+	               sizeClass:'modal-small',
+	               resolve: {
+	                   message: function message() {
+	                       var message = {
+	                       	item:'',                     
+	                           title:'Functional Menu - Move',
+	                           content: msg
+	                       };
+	                       return message;
+	                   }
+	               }
+	           });    	 
+	       	modalInstance.result.then(function (confirm) {
+	       		if(confirm)
+	       			deferred.resolve(confirm);
+	       		else
+	       			deferred.reject(confirm);
+	       	});      	
+	       	return deferred.promise;
         };
 
-        makeAdminChanges(message) {
-            let deferred = this.$q.defer();
-            this.ngDialog.open({
-                templateUrl: 'app/views/confirmation-box/admin-confirmation-box.tpl.html',
-                controller: 'ConfirmationBoxCtrl',
-                controllerAs: 'confirmBox',
-                className: 'confirm-box ngdialog-theme-default',
-                showClose: false,
-                data: {
-                    message: message,
-                    title: 'Admin Update'
-                }
-            }).closePromise.then(confirmed => {
-                deferred.resolve(confirmed.value);
-            }).catch(err => {
-                deferred.reject(err);
-            });
-            return deferred.promise;
+        makeAdminChanges(msg) {
+        	let deferred = this.$q.defer();
+	       	var modalInstance = this.$modal.open({
+	               templateUrl: 'app/views/confirmation-box/admin-confirmation-box.tpl.html',
+	               controller: 'ConfirmationBoxCtrl',
+	               sizeClass:'modal-small',
+	               resolve: {
+	                   message: function message() {
+	                       var message = {
+	                       	item:'',                     
+	                           title:'Admin Update',
+	                           content: msg
+	                       };
+	                       return message;
+	                   }
+	               }
+	           });    	 
+	       	modalInstance.result.then(function (confirm) {
+	       		if(confirm)
+	       			deferred.resolve(confirm);
+	       		else
+	       			deferred.reject(confirm);
+	       	});      	
+	       	return deferred.promise;
         };
         
         
-        makeUserAppRoleCatalogChanges(message) {
-            let deferred = this.$q.defer();
-            this.ngDialog.open({
-                templateUrl: 'app/views/confirmation-box/admin-confirmation-box.tpl.html',
-                controller: 'ConfirmationBoxCtrl',
-                controllerAs: 'confirmBox',
-                className: 'confirm-box ngdialog-theme-default',
-                showClose: false,
-                data: {
-                    message: message,
-                    title: 'UserRoles Update'
-                }
-            }).closePromise.then(confirmed => {
-                deferred.resolve(confirmed.value);
-            }).catch(err => {
-                deferred.reject(err);
-            });
-            return deferred.promise;
+        makeUserAppRoleCatalogChanges(msg) {
+        	let deferred = this.$q.defer();
+	       	var modalInstance = this.$modal.open({
+	               templateUrl: 'app/views/confirmation-box/admin-confirmation-box.tpl.html',
+	               controller: 'ConfirmationBoxCtrl',
+	               sizeClass:'modal-small',
+	               resolve: {
+	                   message: function message() {
+	                       var message = {
+	                       	item:'',                     
+	                           title:'UserRoles Update',
+	                           content: msg
+	                       };
+	                       return message;
+	                   }
+	               }
+	           });    	 
+	       	modalInstance.result.then(function (confirm) {
+	       		if(confirm)
+	       			deferred.resolve(confirm);
+	       		else
+	       			deferred.reject(confirm);
+	       	});      	
+	       	return deferred.promise;
         };
      
         
-        webAnalyticsChanges(message) {
-            let deferred = this.$q.defer();
-            this.ngDialog.open({
-                templateUrl: 'app/views/confirmation-box/admin-confirmation-box.tpl.html',
-                controller: 'ConfirmationBoxCtrl',
-                controllerAs: 'confirmBox',
-                className: 'confirm-box ngdialog-theme-default',
-                showClose: false,
-                data: {
-                    message: message,
-                    title: 'Add WebAnalytics Source'
-                }
-            }).closePromise.then(confirmed => {
-                deferred.resolve(confirmed.value);
-            }).catch(err => {
-                deferred.reject(err);
-            });
-            return deferred.promise;
+        webAnalyticsChanges(msg) {
+        	let deferred = this.$q.defer();
+	       	var modalInstance = this.$modal.open({
+	               templateUrl: 'app/views/confirmation-box/admin-confirmation-box.tpl.html',
+	               controller: 'ConfirmationBoxCtrl',
+	               sizeClass:'modal-small',
+	               resolve: {
+	                   message: function message() {
+	                       var message = {
+	                       	item:'',                     
+	                           title:'Add WebAnalytics Source',
+	                           content: msg
+	                       };
+	                       return message;
+	                   }
+	               }
+	           });    	 
+	       	modalInstance.result.then(function (confirm) {
+	       		if(confirm)
+	       			deferred.resolve(confirm);
+	       		else
+	       			deferred.reject(confirm);
+	       	});      	
+	       	return deferred.promise;
         };
 
         
-        updateWebAnalyticsReport(message) {
+        updateWebAnalyticsReport(msg) {
             let deferred = this.$q.defer();
-            this.ngDialog.open({
-                templateUrl: 'app/views/confirmation-box/admin-confirmation-box.tpl.html',
-                controller: 'ConfirmationBoxCtrl',
-                controllerAs: 'confirmBox',
-                className: 'confirm-box ngdialog-theme-default',
-                showClose: false,
-                data: {
-                    message: message,
-                    title: 'Update WebAnalytics Source'
-                }
-            }).closePromise.then(confirmed => {
-                deferred.resolve(confirmed.value);
-            }).catch(err => {
-                deferred.reject(err);
-            });
-            return deferred.promise;
+	       	var modalInstance = this.$modal.open({
+	               templateUrl: 'app/views/confirmation-box/admin-confirmation-box.tpl.html',
+	               controller: 'ConfirmationBoxCtrl',
+	               sizeClass:'modal-small',
+	               resolve: {
+	                   message: function message() {
+	                       var message = {
+	                       	item:'',                     
+	                           title:'Update WebAnalytics Source',
+	                           content: msg
+	                       };
+	                       return message;
+	                   }
+	               }
+	           });    	 
+	       	modalInstance.result.then(function (confirm) {
+	       		if(confirm)
+	       			deferred.resolve(confirm);
+	       		else
+	       			deferred.reject(confirm);
+	       	});      	
+	       	return deferred.promise;
         };
 
     }
-    ConfirmBoxService.$inject = ['$q', '$log', 'ngDialog'];
+    ConfirmBoxService.$inject = ['$q', '$log', 'ngDialog','$modal'];
     angular.module('ecompApp').service('confirmBoxService', ConfirmBoxService)
 })();

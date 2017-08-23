@@ -4,8 +4,8 @@
 'use strict';
 (function () {
     class MenuDetailsModalCtrl {
-        constructor($scope, $log, functionalMenuService, errorMessageByCode, ECOMP_URL_REGEX,$rootScope,confirmBoxService) {
-
+        constructor($scope, $log, functionalMenuService, errorMessageByCode, ECOMP_URL_REGEX,$rootScope,confirmBoxService,items) {
+        	$scope.ngDialogData=items;
         	$scope.isAllApplications = false;
             let newMenuModel = {
                 name: null,
@@ -21,6 +21,8 @@
                     functionalMenuService.getManagedRolesMenu(appid).then(rolesObj => {
                         $log.debug("MenuDetailsModalCtrl::getAvailableRoles: Roles returned = " + JSON.stringify(rolesObj))
                         this.availableRoles = rolesObj;
+                       
+                   
                         this.preSelectedRoles = {roles:[]};
 
                         if(($scope.ngDialogData.source==='edit') && this.isMidLevelMenuItem()){
@@ -42,8 +44,20 @@
                                     }
                             }
                         }
+                        
                         $rootScope.$broadcast('availableRolesReady');
                         this.isSaving = false;
+                        for(var i=0; i<rolesObj.length;i++){
+                        	this.availableRoles[i].isApplied = false;
+                        	for(var j=0;j<this.preSelectedRoles.roles.length;j++){
+                        		if(this.preSelectedRoles.roles[j].roleId==this.availableRoles[i].roleId){
+                        			this.availableRoles[i].isApplied=true;
+                        			break;
+                        		}
+                        	}
+                        	
+
+                        	}
                     }).catch(err => {
                         $log.error("MenuDetailsModalCtrl::getAvailableRoles: error: " + err);
                     });
@@ -89,6 +103,7 @@
                 this.formEditable = $scope.ngDialogData.source==='view' ? false : true;
                 this.selectedRole = [];
                 this.availableRoles = [];
+                this.selectedApp={};
                 this.menuItem = _.clone($scope.ngDialogData.menuItem);
                 $log.info('MenuDetailsModalCtrl::getAvailableApps: Within init, about to check menuDetails for defined');
                 if(!angular.isUndefined(this.menuItem.menuDetails) &&
@@ -98,7 +113,7 @@
                     $log.debug("MenuDetailsModalCtrl::init: menuItem: ");
                     $log.debug('MenuDetailsModalCtrl::init: ',this.menuItem);
                     this.menuItem.menu.url = this.menuItem.menuDetails.url;
-                    this.selectedApp={};
+                    this.selectedAppIndex=this.menuItem.menuDetails.appid;
                     this.selectedApp.index = this.menuItem.menuDetails.appid;
                     getAvailableRoles(this.selectedApp.index);
 
@@ -186,17 +201,40 @@
             this.isParentMenuItem = () => {
                 return this.menuItem.menu.parentMenuId!=null ? false : true;
             };
+            
+            this.isRoleSelected=()=>{
+                var selectedRoleIds=[];
+            	 for(var i=0;i<this.availableRoles.length;i++){
+                 	if(this.availableRoles[i].isApplied){
+                 	selectedRoleIds.push(this.availableRoles[i].roleId);
+                 	return true;
+                 	}
+                 }
+            	 return false;
+            	
+            };
 
             this.updateSelectedApp = (appItem) => {
+            	/*var appItemobj= JSON.parse(appItem);
+            	this.selectedApp=JSON.parse(this.selectedApp);*/
                 if (!appItem) {
                     return;
                 }
+                var appobj={};
+                for(var i=0;i<this.availableApps.length;i++ ){
+                	if(this.availableApps[i].index==appItem){
+                		appobj=this.availableApps[i];
+                		break;
+                	}
+                }
+                debugger;
                 $log.debug('MenuDetailsModalCtrl::updateSelectedApp: drop down app item = ' + JSON.stringify(appItem.index));
                 $log.debug("MenuDetailsModalCtrl::updateSelectedApp: appItem in updateSelectedApp: ");
                 $log.debug('MenuDetailsModalCtrl::updateSelectedApp: ',appItem);
-                this.selectedApp.isDisabled = ! appItem.enabled;
-                $log.debug("MenuDetailsModalCtrl::updateSelectedApp: isDisabled: "+this.selectedApp.isDisabled);
-                getAvailableRoles(appItem.index);
+                this.selectedApp.isDisabled = ! appobj.enabled;
+                this.selectedApp.index=appobj.index;
+                 $log.debug("MenuDetailsModalCtrl::updateSelectedApp: isDisabled: "+this.selectedApp.isDisabled);
+                getAvailableRoles(appobj.index);
             };
 
             this.continue = () => {
@@ -210,7 +248,6 @@
                 /*if($scope.functionalMenuForm.$invalid){
                  return;
                  }*/
-
                 if(!!this.menuItem.menu.url && (angular.isUndefined(this.selectedApp) || !this.selectedApp.index>0)) {
                     confirmBoxService.showInformation('Please select the appropriate app, or remove the url').then(isConfirmed => {});
                     return;
@@ -227,15 +264,25 @@
 
                 if ($scope.ngDialogData.source === 'edit') {     // Edit Menu Item
                     $log.debug('MenuDetailsModalCtrl::saveChanges: Will be saving an edit menu item');
+                    var selectedRoleIds=[];
+                    for(var i=0;i<this.availableRoles.length;i++){
+                    	if(this.availableRoles[i].isApplied){
+                    	selectedRoleIds.push(this.availableRoles[i].roleId);
+                    	}
+                    }
                     activeMenuItem = {
                         menuId:this.menuItem.menu.menuId,
                         column:this.menuItem.menu.column,
                         text:this.menutitle,
                         parentMenuId:this.menuItem.menu.parentMenuId,
                         url:this.menuItem.menu.url,
+                        
                         appid: angular.isUndefined(this.selectedApp) ? null:this.selectedApp.index,
-                        roles:this.selectedRole
+                        
+                        roles:selectedRoleIds
                     };
+                    
+                   // alert(activeMenuItem);
                     // If we have removed the url and appid, we must remove the roles
                     if (!activeMenuItem.appid && !activeMenuItem.url) {
                         activeMenuItem.roles = null;
@@ -243,7 +290,9 @@
                     functionalMenuService.saveEditedMenuItem(activeMenuItem)
                         .then(() => {
                             $log.debug('MenuDetailsModalCtrl::saveChanges:  Menu Item saved');
-                            $scope.closeThisDialog(true);
+                           // $scope.closeThisDialog(true);
+                            $scope.$dismiss('cancel');
+
                         }).catch(err => {
                         if(err.status === 409){//Conflict
                             handleConflictErrors(err);
@@ -259,6 +308,12 @@
                     $log.debug("MenuDetailsModalCtrl::saveChanges: Edit Menu output will be: " + JSON.stringify(activeMenuItem));
                 } else {   // New Menu Item
                     $log.debug('MenuDetailsModalCtrl::saveChanges: Will be saving a New menu item');
+                    var selectedRoleIds=[];
+                    for(var i=0;i<this.availableRoles.length;i++){
+                    	if(this.availableRoles[i].isApplied){
+                    	selectedRoleIds.push(this.availableRoles[i].roleId);
+                    	}
+                    }
                     var newMenuItem = {
                         menuId:null, // this is a new menu item
                         column:this.menuItem.menu.column,
@@ -267,14 +322,15 @@
                         parentMenuId:this.menuItem.menu.menuId,
                         url:this.menuItem.menu.url,
                         appid: angular.isUndefined(this.selectedApp) ? null:this.selectedApp.index,
-                        roles:this.selectedRole
+                        roles:selectedRoleIds
                     };
 
                     $log.debug("MenuDetailsModalCtrl::saveChanges:  New Menu output will be: " + JSON.stringify(newMenuItem));
                     functionalMenuService.saveMenuItem(newMenuItem)
                         .then(() => {
                             $log.debug('MenuDetailsModalCtrl::saveChanges:  Menu Item saved');
-                            $scope.closeThisDialog(true);
+                           // $scope.closeThisDialog(true);
+                            $scope.$dismiss('cancel');
                         }).catch(err => {
                         if(err.status === 409){//Conflict
                             handleConflictErrors(err);
@@ -298,103 +354,7 @@
             });
         }
     }
-    MenuDetailsModalCtrl.$inject = ['$scope', '$log', 'functionalMenuService', 'errorMessageByCode', 'ECOMP_URL_REGEX','$rootScope','confirmBoxService'];
+    MenuDetailsModalCtrl.$inject = ['$scope', '$log', 'functionalMenuService', 'errorMessageByCode', 'ECOMP_URL_REGEX','$rootScope','confirmBoxService','items'];
     angular.module('ecompApp').controller('MenuDetailsModalCtrl', MenuDetailsModalCtrl);
 
-    angular.module('ecompApp').directive('dropdownMultiselect', ['functionalMenuService',function(){
-        return {
-            restrict: 'E',
-            scope: {
-                model: '=',
-                options: '=',
-                populated_roles: '=preSelected',
-                dropdownTitle: '@',
-                source: '='
-            },
-            template: "<div class='btn-group' data-ng-class='{open: open}'>" +
-            "<button class='btn btn-medium'>{{dropdownTitle}}</button>" +
-            "<button class='btn dropdown-toggle' data-ng-click='open=!open;openDropDown()'><span class='caret'></span></button>" +
-            "<ul class='dropdown-menu dropdown-menu-medium' aria-labelledby='dropdownMenu'>" +
-            "<li data-ng-repeat='option in options'> <input ng-disabled='setDisable(source)'  type='checkbox' data-ng-change='setSelectedItem(option.roleId)' ng-model='selectedItems[option.roleId]'>{{option.rolename}}</li>" +
-            "</ul>" +
-            "</div>",
-            controller: function ($scope) {
-                $scope.selectedItems = {};
-                $scope.checkAll = false;
-                $scope.$on('availableRolesReady', function() {
-                    init();
-                });
-
-                function init() {
-                    console.log('dropdownMultiselect init');
-                    $scope.dropdownTitle = $scope.source ==='view' ? 'View Roles' : 'Select Roles';
-                    console.log('$scope.populated_roles = ' + $scope.populated_roles);
-                }
-
-                $scope.$watch('populated_roles', function(){
-                    if ($scope.populated_roles && $scope.populated_roles.length>0) {
-                        for (var i = 0; i < $scope.populated_roles.length; i++) {
-                            $scope.model.push($scope.populated_roles[i].roleId);
-                            $scope.selectedItems[$scope.populated_roles[i].roleId] = true;
-                        }
-                        if ($scope.populated_roles.length === $scope.options.length) {
-                            $scope.checkAll = true;
-                        }
-                    }else{
-                        deselectAll();
-                    }
-                });
-
-                $scope.openDropDown = function () {
-
-                };
-
-                $scope.checkAllClicked = function () {
-                    if ($scope.checkAll) {
-                        selectAll();
-                    } else {
-                        deselectAll();
-                    }
-                };
-
-                function selectAll() {
-                    $scope.model = [];
-                    $scope.selectedItems = {};
-                    angular.forEach($scope.options, function (option) {
-                        $scope.model.push(option.roleId);
-                    });
-                    angular.forEach($scope.model, function (id) {
-                        $scope.selectedItems[id] = true;
-                    });
-                    console.log($scope.model);
-                };
-
-                function deselectAll() {
-                    $scope.model = [];
-                    $scope.selectedItems = {};
-                    console.log($scope.model);
-                };
-
-                $scope.setSelectedItem = function (id) {
-                    var filteredArray = [];
-                    if ($scope.selectedItems[id] === true) {
-                        $scope.model.push(id);
-                    } else {
-                        filteredArray = $scope.model.filter(function (value) {
-                            return value != id;
-                        });
-                        $scope.model = filteredArray;
-                        $scope.checkAll = false;
-                    }
-                    console.log(filteredArray);
-                    return false;
-                };
-
-                $scope.setDisable = function(source){
-                    return source ==='view' ? true : false;
-                }
-            }
-        }
-    }]);
-
-})();
+  })();

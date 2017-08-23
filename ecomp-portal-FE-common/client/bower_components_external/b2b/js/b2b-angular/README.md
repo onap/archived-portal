@@ -1,5 +1,7 @@
 This file tracks patches to b2b-angular.js
 
+14 August 2017: fix b2b-tree de-select the parent node issue - code provided by b2b team
+
 24 April 2017: hide header menu when click on iframe in a new tab
 +
 $(window).blur(function() {

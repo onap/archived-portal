@@ -29,7 +29,7 @@
 						<input id="input-table-search" placeholder="Search in entire table" class="table-search-field" type="text" data-ng-model="portalAdmin.searchString">
 					</div>
 					<div class="table-control-buttons">
-						<button class="btn btn-alt btn-small" ng-click="portalAdmin.openAddNewPortalAdminModal()"><i class="icon-people-userbookmark" aria-hidden="true"></i>&nbsp;Add Portal Admin</button> 		
+						<button class="btn btn-alt btn-small" id="portal-admin-button-add" ng-click="portalAdmin.openAddNewPortalAdminModal()"><i class="icon-people-userbookmark" aria-hidden="true"></i>&nbsp;Add Portal Admin</button> 		
 					</div>      
                 </div>
 
@@ -47,11 +47,11 @@
 						</thead>
 						<tbody b2b-table-row type="body" 	row-repeat="rowData in portalAdmin.portalAdminsTableData">
 							<tr>
-								<td b2b-table-body id="rowheader_t1_{{$index}}" headers="col1" ng-bind="rowData.firstName"></td>
-								<td b2b-table-body headers="rowheader_t1_{{$index}} col2" ng-bind="rowData.lastName"></td>
-								<td b2b-table-body headers="rowheader_t1_{{$index}} col3" ng-bind="rowData.loginId"></td>
-								<td b2b-table-body headers="rowheader_t1_{{$index}} col4">
-									<span class="icon-misc-trash" ng-click="portalAdmin.removePortalAdmin(rowData)"></span>
+								<td b2b-table-body id="rowheader_t1_{{$index}}-firstName" headers="col1" ng-bind="rowData.firstName"></td>
+								<td b2b-table-body  id="rowheader_t1_{{$index}}-lastName" headers="rowheader_t1_{{$index}} col2" ng-bind="rowData.lastName"></td>
+								<td b2b-table-body  id="rowheader_t1_{{$index}}-loginId"  headers="rowheader_t1_{{$index}} col3" ng-bind="rowData.loginId"></td>
+								<td b2b-table-body  id="rowheader_t1_{{$index}}"  headers="rowheader_t1_{{$index}} col4">
+									<span id="{{$index}}-button-portal-admin-remove" class="icon-misc-trash" ng-click="portalAdmin.removePortalAdmin(rowData)"></span>
 								</td>							
 							</tr>
 						</tbody>

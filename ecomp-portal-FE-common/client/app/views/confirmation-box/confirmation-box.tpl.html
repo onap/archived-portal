@@ -17,12 +17,20 @@
   limitations under the License.
   ================================================================================
   -->
-<div class="confirmation-box-container">
-    <div class="confirmation-message-wrap">
-        <div id="confirmation-message" class="confirmation-message" ng-bind="confirmBox.message"></div>
-    </div>
-    <div class="dialog-control">
-        <div id="confirmation-button-next" class="btn btn-alt btn-small" ng-click="confirmBox.closeBox(true)">OK</div>
-        <div id="confirmation-button-cancel" class="btn btn-alt btn-small" ng-click="confirmBox.closeBox(false)">Cancel</div>
-    </div>
+<div>
+	<div class="b2b-modal-header ng-scope in">
+		<h2 id="myModalLabel" modal-title="">{{message.title}}</h2>
+		<div class="corner-button in">
+			<button type="button" class="close" id="div-confirm-close-button" aria-label="Close" ng-click="$dismiss('cancel')"></button>
+		</div>
+	</div>
+	<div class="b2b-modal-body" tabindex="0" role="region" aria-label="Modal header text content">
+		{{message.content}}
+	</div>
+	<div class="b2b-modal-footer ng-scope ng-isolate-scope in">
+		<div class="cta-button-group in">
+			<button class="btn btn-alt btn-small" id="div-confirm-ok-button" type="button"	ng-click="ok(true)">OK</button>
+			<button class="btn btn-alt btn-small" id="div-confirm-cancel-button" type="button"	ng-click="ok(false)">Cancel</button>
+		</div>
+	</div>
 </div>

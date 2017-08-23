@@ -24,6 +24,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.openecomp.portalapp.command.EPLoginBean;
 import org.openecomp.portalapp.portal.service.EPLoginService;
+import org.openecomp.portalapp.portal.service.EPRoleFunctionService;
 import org.openecomp.portalapp.portal.service.EPRoleService;
 import org.openecomp.portalapp.portal.utils.EPSystemProperties;
 import org.openecomp.portalapp.portal.utils.EcompPortalUtils;
@@ -45,6 +46,9 @@ public class SimpleLoginStrategy extends org.openecomp.portalsdk.core.auth.Login
 	@Autowired
 	private EPRoleService roleService;
 
+	@Autowired
+	private EPRoleFunctionService ePRoleFunctionService;
+	
 	private static final String GLOBAL_LOCATION_KEY = "Location";
 	
 	EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(SimpleLoginStrategy.class);
@@ -66,7 +70,7 @@ public class SimpleLoginStrategy extends org.openecomp.portalsdk.core.auth.Login
 			}
 			else {
 				// store the currently logged in user's information in the session
-				EPUserUtils.setUserSession(request, commandBean.getUser(), commandBean.getMenu(), commandBean.getBusinessDirectMenu(), "", roleService.getRoleFunctions());
+				EPUserUtils.setUserSession(request, commandBean.getUser(), commandBean.getMenu(), commandBean.getBusinessDirectMenu(), "", ePRoleFunctionService);
 				logger.info(EELFLoggerDelegate.debugLogger, commandBean.getUser().getOrgUserId() + " exists in the the system.");
 			}
 			

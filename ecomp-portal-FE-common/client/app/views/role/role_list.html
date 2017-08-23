@@ -17,16 +17,25 @@
   limitations under the License.
   ================================================================================
   -->
+  <style>
+  .property-label{
+  text-align: right;
+  }
+  </style>
 <div class="w-ecomp-admins-page-main">
 	<div class="admins-home-container" id="page-content">
 		<div id="title" class="w-ecomp-main-view-title">
 			<h1 class="heading-page" >Roles</h1>
 		</div>
 		<div class="admins-table">
-			<div id="button-create-role" align="left" style="marin-bottom: 50px;" >
-				<button ng-click="goToUrl(0)" class = "btn btn-alt btn-small">Create</button>
+			<div id="button-create-role" align="left" class="admins-table-btn-create" >
+				<button id="button-create-role" ng-click="goToUrl(0)" class = "btn btn-alt btn-small">Create</button>
 			</div>
+			<br>
+			  <div class="property-label">
+					<span ID="required" style="color: Red;font-size: 210%;"	visible="false"> *</span>-----Indicates Global Roles	</div>
 			<div b2b-table table-data="availableRoles"  search-string="searchString" class="b2b-table-div">
+			<span class="ecomp-spinner" ng-show="showSpinner"></span>
 		        <table>
 		            <thead b2b-table-row type="header">
 		                <tr>
@@ -38,20 +47,28 @@
 		            </thead>
 		            <tbody b2b-table-row type="body" row-repeat="rowData in availableRoles">
 		                <tr>
-		                    <td b2b-table-body id="rowheader_t1_{{$index}}" headers="col1" ng-bind="rowData['name']"></td>
+		                   <!--  <td b2b-table-body id="rowheader_t1_{{$index}}" headers="col1" ng-bind="rowData['name']"></td> -->
+		                   <td b2b-table-body>
+								<span  ng-if="rowData.name.indexOf('global_')!=-1" id="required" style="color: Red;font-size: 180%;" visible="false"> *</span>
+								<span>{{rowData.name}}</span>
+								</td>
 		                    <td b2b-table-body ng-bind="rowData['priority']"></td>
 		                    <td b2b-table-body headers="rowheader_t1_{{$index}} col3" >
 		                    	<div >
 						    		<label class="btn-switch-label" tabindex="0" role="option">
-										<input type="checkbox" b2b-switches ng-model="rowData.active" ng-click="toggleRole(rowData.active,rowData);">
+										<input type="checkbox" id="{{$index}}-button-toggle-role" b2b-switches ng-model="rowData.active" ng-click="toggleRole(rowData.active,rowData);">
 								    </label> 
 						    	</div>
 		                    </td>
-		                    <td b2b-table-body class="icon-misc-pen" ng-click="goToUrl(rowData.id)"></td>    
+		                    <td b2b-table-body id="{{$index}}-button-edit-role" class="icon-misc-pen" ng-click="goToUrl(rowData.id)"></td>    
 		                </tr>
 		            </tbody>
 		        </table>
+		        
+		      
 		    </div>
 		</div>
 	</div>
 </div>
+
+

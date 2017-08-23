@@ -1,9 +1,44 @@
-<div class="account-add-details-modal">
-	<div id="account-add-details-title" class="account-details-title">Account
-		Details</div>
+<style>
 
-	<div id="accounts">
-		<div class="account-properties-main"
+.checkbox .skin {
+    left: 0px;
+    top: 0px;
+}
+
+.add-label-right{
+    float: right;
+    margin-top: -17px;
+}
+
+.endpoint-item-left{
+width:75%;
+padding-bottom:10px;
+}
+.icon-circle-action-remove {
+ float: right;
+    margin-top: -27px;
+}
+.item{
+padding-bottom:15px;
+}
+.account-property{
+padding-top:10px;
+}
+</style>
+
+<div>
+
+		<div class="b2b-modal-header">
+			<h2 class="account-details-title" id="account-add-details-title">Account Details</h2>
+
+			<div class="corner-button in">
+				<button type="button" class="close" aria-label="Close" id="accountdetails-button-cancel"
+					ng-click="$dismiss('cancel')"></button>
+			</div>
+		</div>
+
+		<div class="b2b-modal-body">
+				<div class="account-properties-main"
 			scroll-top="accountAddDetails.scrollApi">
 			<form id="accounts-details-form" name="serviceForm" novalidate
 				autocomplete="off">
@@ -38,7 +73,7 @@
 					<input id="account-details-input-username" 
 						type="text" name="username" maxlength="100"
 						ng-model="accountAddDetails.account.username"
-						ng-change="accountAddDetails.updateUsername()" />
+						ng-change="accountAddDetails.updateUsername()" autocomplete="off" />
 
 					<div class="error-container"
 						ng-show="(accountAddDetails.emptyAccountUsername 
@@ -53,7 +88,7 @@
 					<div class="item-label">Password</div>
 					<input id="account-details-input-password"
 						type="password" name="password" maxlength="100"
-						ng-model="accountAddDetails.account.password" />
+						ng-model="accountAddDetails.account.password" autocomplete="off"/>
 				</div>
 
 				<div class="item">
@@ -74,7 +109,7 @@
 
 				<div class="add-endpoint-item">
 					<div class="item-label add-label-left">Add Endpoint</div>
-					<div class="icon-add add-label-right"
+					<div class="icon-add add-label-right" id="accountAddDetails-button-accordion"
 						ng-click="accountAddDetails.addEndpoint()"></div>
 				</div>
 				<div class="item">
@@ -104,24 +139,30 @@
 					</div>
 
 					<div class="account-property">
-						<input id="accounts-checkbox-app-is-enabled" type="checkbox"
-							class="checkbox-field"
-							ng-model="accountAddDetails.account.active" />
-						<div class="property-label checkbox-label">Active</div>
+						<div class="property-label checkbox-label"> 
+							<label for="accounts-checkbox-app-is-enabled" class="checkbox"> 
+		                		<input type="checkbox" ng-model="accountAddDetails.account.active" id="accounts-checkbox-app-is-enabled"/> 
+		                		<i class="skin"></i> 
+		                		<span>Active</span> 
+		            		</label> 
+						</div>	
 					</div>
-					<div class="item">
-						<div id="account-details-next-button" class="submit-button"
-							ng-click="accountAddDetails.closeThisDialog()">close</div>
-						<div id="account-details-next-button" class="submit-button"
-							ng-click="accountAddDetails.saveChanges()">Save</div>
-					</div>
+					
 				</div>
 
 			</form>
 		</div>
+			</div>
+			<br>
+			<div class="b2b-modal-footer">
+				<div class="cta-button-group cta-modal-footer-flex">		
+					<div class="item">
+						<div id="account-details-next-button" class="btn btn-alt btn-small" ng-click="$dismiss('cancel')">Close</div>
+						<div id="account-details-next-button" class="btn btn-alt btn-small" ng-click="accountAddDetails.saveChanges()">Save</div>
+					</div>
+				</div>
+			</div>
 
-
-	</div>
 </div>
 
 <script>

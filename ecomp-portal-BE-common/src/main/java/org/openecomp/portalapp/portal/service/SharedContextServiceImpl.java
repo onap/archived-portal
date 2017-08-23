@@ -108,7 +108,7 @@ public class SharedContextServiceImpl implements SharedContextService {
 	 * (non-Javadoc)
 	 * 
 	 * @see org.openecomp.portalsdk.core.service.SharedContextService#
-	 * saveSharedContext(com. att.fusion.core.domain.SharedContext)
+	 * saveSharedContext(org.openecomp.portalapp.portal.domain.SharedContext)
 	 */
 	@Override
 	public void saveSharedContext(SharedContext context) {
@@ -119,7 +119,7 @@ public class SharedContextServiceImpl implements SharedContextService {
 	 * (non-Javadoc)
 	 * 
 	 * @see org.openecomp.portalsdk.core.service.SharedContextService#
-	 * deleteSharedContext(com. att.fusion.core.domain.SharedContext)
+	 * deleteSharedContext(org.openecomp.portalapp.portal.domain.SharedContext)
 	 */
 	@Override
 	public void deleteSharedContext(SharedContext context) {

@@ -37,11 +37,9 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width, initial-scale=1"> 
 	<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-        <link rel="stylesheet" type="text/css" href="static/fusion/css/jquery-ui.css">
 		<script src="static/js/jquery-1.10.2.js" type="text/javascript"></script>
 		<script src= "static/ebz/angular_js/angular.js"></script> 
 		<script src= "static/ebz/angular_js/angular-sanitize.js"></script>
-		<script src= "static/ebz/angular_js/app.js"></script>
 		<script src= "static/ebz/angular_js/gestures.js"></script>
 		<style>
 			.terms {
@@ -126,6 +124,7 @@
     </div>
     </body>
 <script>
+var app=angular.module("abs", []);
 app.controller("externalLoginController", function ($scope) { 
 	// Table Data
 	

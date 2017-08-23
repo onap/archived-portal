@@ -47,42 +47,27 @@
        		 notificationService.getMessageRecipients(selectedAdminNotification.notificationId).then(res =>{
                     $scope.messageRecipients = res;
 				 var messageObject=JSON.parse(selectedAdminNotification.msgDescription);
-				 var html="";
-				 html+='<p>'+'Message Source'+' : '+selectedAdminNotification.msgSource+'</p>';
-				 html+='<p>'+'Message Title'+' : '+selectedAdminNotification.msgHeader+'</p>';
-				 html+='<p>'+'Message Recipient'+' : '+$scope.messageRecipients+'</p>';
-
-				 for(var field in  messageObject){
-					 if(field=='eventDate'||field=='lastModifiedDate'){
-						 html+='<p>'+field+' : '+new Date(+messageObject[field])+'</p>';
-						  
-					 }else{
-					 html+='<p>'+field+' : '+messageObject[field]+'</p>';
-					 
-					 }
-				 }
-
-		     var modalInstance = ngDialog.open({
-				    templateUrl: 'app/views/user-notifications-admin/user.notifications.Json.details.modal.page.html',
-				    controller: 'userNotificationCtrl',
-				    resolve: {
-				    	message: function () {
-				    		var message = {
-				    			   title:    '',
-		                       		text:    html
-		                       		
-		                           	};
-				          return message;
-				        },
-				     
-				      }
-				  }); 
+				  var modalInstance = $modal.open({
+	                    templateUrl: 'app/views/user-notifications-admin/user.notifications.json.details.modal.page.html',
+	                    controller: 'userNotificationCtrl',
+	                    sizeClass: 'modal-large', 
+	                    resolve: {
+	    					items: function () {
+	    						var items = {
+	  				    			   title:    '',
+	 	                       		    selectedAdminNotification:selectedAdminNotification,messageObject:messageObject,messageRecipients:$scope.messageRecipients
+	  		                       		
+	  		                           	};
+	  				          return items;
+	    			        	}
+	    		        }
+	                })
 		     
-       	 }).catch(err => {
-                $log.error('userNotificationsCtrl:getMessageRecipients:: error ', err);
-                $scope.isLoadingTable = false;
-            });
-
+    	 
+      	 }).catch(err => {
+               $log.error('userNotificationsCtrl:getMessageRecipients:: error ', err);
+               $scope.isLoadingTable = false;
+           });
 			 };
          }
     }

@@ -131,6 +131,7 @@
 <div ui-view="tabbar"></div>
 <div ng-show="ContentModel.IsVisible" class="slide">
 	<div ui-view="content"></div>
+	<div class="loadingLayer" id="loadLayer"></div>
 	<div ui-view="sidebar"></div>
 	<div ui-view="userbar" style="float:right"></div>
 </div>
@@ -204,6 +205,7 @@
   <script src="app/directives/search-users/search-users.controller.js"></script>
   <script src="app/directives/search-users/search-users.directive.js"></script>
   <script src="app/filters/elipsis/elipsis.filter.js"></script>
+  <script src="app/filters/pagination-start-from/start-from.filter.js"></script>
   <script src="app/filters/trusted-url/trusted-url.filter.js"></script>
   <script src="app/router.js"></script>
   <script src="app/services/admins/admins.service.js"></script>
@@ -241,7 +243,6 @@
   <script src="app/views/admins/admins.controller.js"></script>
   <script src="app/views/applications/application-details-dialog/application-details.controller.js"></script>
   <script src="app/views/applications/applications.controller.js"></script>
-  <script src="app/views/catalog/add-catalog-dialogs/new-catalog.controller.js"></script>
   <script src="app/views/catalog/catalog.controller.js"></script>
   <script src="app/views/catalog/catalogconfirmation.controller.js"></script>
   <script src="app/views/confirmation-box/confirmation-box.controller.js"></script>
@@ -255,6 +256,7 @@
   <script src="app/views/functionalMenu/jqTreeContextMenu.js"></script>
   <script src="app/views/header/header.controller.js"></script>
   <script src="app/views/header/profile-edit-dialogs/profile-edit.controller.js"></script>
+  <script src="app/views/headerRecommendation/headerRecommendations.controller.js"></script>
   <script src="app/views/microservice-onboarding/microservice-add-details/microservice-add-details.js"></script>
   <script src="app/views/microservice-onboarding/microservice-onboarding.controller.js"></script>
   <script src="app/views/notification-history/notificationhistory.controller.js"></script>
@@ -271,8 +273,8 @@
   <script src="app/views/support/contact-us/contact-us.controller.js"></script>
   <script src="app/views/support/get-access/get-access.controller.js"></script>
   <script src="app/views/tabs/tabs.controller.js"></script>
-  <script src="app/views/user-notifications-admin/user.notifications.Json.details.controller.js"></script>
   <script src="app/views/user-notifications-admin/user.notifications.controller.js"></script>
+  <script src="app/views/user-notifications-admin/user.notifications.json.details.controller.js"></script>
   <script src="app/views/user-notifications-admin/user.notifications.modal.controller.js"></script>
   <script src="app/views/userbar/userbar.controller.js"></script>
   <script src="app/views/users/new-user-dialogs/bulk-user.controller.js"></script>

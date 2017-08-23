@@ -17,10 +17,21 @@
   limitations under the License.
   ================================================================================
   -->
-<link rel="stylesheet" href="role.css">
+ 
+ 
+ <link rel="stylesheet" href="role.css">
 <div class="application-details-modal">
-    <div id="title" class="title">Select Role Functions</div>
-<div class="scrolling-table">
+		<div class="b2b-modal-header">
+			<h2 class="account-details-title" id="application-details-title">Select Role Functions</h2>
+
+			<div class="corner-button in">
+				<button type="button" class="close" aria-label="Close" id="div-notification-cancel--button"
+					ng-click="$dismiss('cancel')"></button>
+			</div>
+		</div>
+
+		<div class="b2b-modal-body">
+ <div class="scrolling-table">
 	<div b2b-table table-data="availableRoleFunctions"   class="b2b-table-div">
 		<table>
 			<thead b2b-table-row type="header">
@@ -43,13 +54,16 @@
 		</table>
 	</div>
 </div>
-    <div class="dialog-control">
-        <button id="button-app-cancel" class="btn btn-alt btn-small" ng-click="closeThisDialog()">Close</button>
-    </div>
-</div>
+	</div>
+		
+			<br>
+			<div class="b2b-modal-footer">
+				<div class="cta-button-group in">			
+						<button id="button-notification-cancel" class="btn btn-alt btn-small" ng-click="$dismiss('cancel')"role="button" tabindex="0">close</button>
+				</div>
+			</div>
+			
+			
+			
 
-<script>
-$(document).ready(function(){
-    $(".ngdialog-close").attr('id','dialog-close');
-});
-</script>
+</div>

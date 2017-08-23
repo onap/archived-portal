@@ -105,21 +105,24 @@
             
             updateContactUsTable();
             this.editContactUsModalPopup = () => {
-                 // $log.debug('ContactUsCtrl::editContactUsModalPopup updating table data...');               
-                 var modalInstance = ngDialog.open({
-                     templateUrl: 'app/views/support/contact-us/contact-us-manage/contact-us-manage.html',
-                     controller: 'ContactUsManageController',
-                     resolve: {
-                         message: function message() {
-                             var message = {
-                                 type: 'Contact',
-                             };
-                             return message;
-                         }
-                     }
-                 }).closePromise.then(needUpdate => {	              	 
-                	 updateContactUsTable();
-	             });       
+            	var modalInstance = $modal.open({
+                    templateUrl: 'app/views/support/contact-us/contact-us-manage/contact-us-manage.html',
+                    controller: 'ContactUsManageController',
+                    windowClass: 'modal-docked',
+                    resolve: {
+                        message: function message() {
+                            var message = {
+                                type: 'Contact',
+                            };
+                            return message;
+                        }
+                    }
+                });
+            	
+            	modalInstance.result.finally(function (needUpdate) {
+                 	updateContactUsTable();            
+      	        });
+                    
              };
              
              this.goToSection = (id) => {

@@ -23,22 +23,37 @@
 			<h1 class="heading-page">Application Catalog</h1>
 		</div>
 		<div class="app-catalog-list">
-			<div class="simulateCatGridHeader">
-				<span class="simulateCatGridHeaderDetails"> Click the check
-					boxes below to choose which applications are shown on the <a
-					href="applicationsHome">home page</a>.
-				</span> <br> <br> <label id="label-all"
-					class="simulateCatGridHeaderRadio"> Filter: <input
-					id="radio-button-all" type="radio" ng-model="radioValue"
-					value="All"> All
-				</label> <label id="label-accessible" class="simulateCatGridHeaderRadio">
-					<input id="radio-button-accessible" type="radio"
-					ng-model="radioValue" value="Accessible"> Accessible
-				</label> <label id="label-homepage" class="simulateCatGridHeaderRadio">
-					<input id="radio-button-homepage" type="radio"
-					ng-model="radioValue" value="Selected"> On Home Page
-				</label>
-
+			<div class="simulateCatGridHeader"> 
+				<span class="simulateCatGridHeaderDetails"> Click the check 
+					boxes below to choose which applications are shown on the <a 
+					href="applicationsHome">home page</a>. 
+				</span> <br> <br> 
+				<div class="catalog-radio-div"> 
+					<label for="radio-button-all" class="radio"> 
+						<span>Filter: </span> 
+					</label> 
+				</div> 
+				<div class="catalog-radio-div"> 
+					<label for="radio-button-all" class="radio"> 
+		                <input type="radio" ng-model="radioValue" id="radio-button-all" name="All" value="All" > 
+		                <i class="skin"></i> 
+		                <span>All</span> 
+		            </label> 
+				</div> 
+				<div class="catalog-radio-div"> 
+		            <label for="radio-button-accessible" class="radio"> 
+		                <input type="radio" ng-model="radioValue" id="radio-button-accessible" name="Accessible" value="Accessible" > 
+		                <i class="skin"></i> 
+		                <span>Accessible</span> 
+		            </label> 
+	            </div> 
+	            <div class="catalog-radio-div"> 
+		            <label for="radio-button-homepage" class="radio"> 
+		                <input type="radio" ng-model="radioValue" id="radio-button-homepage" name="Selected" value="Selected"> 
+		                <i class="skin"></i> 
+		                <span>On Home Page</span> 
+		            </label> 
+				</div> 
 			</div>
 			<div class="appCatalogue-boarder" >
 				<div gridster="catalog.gridsterOpts">	
@@ -54,12 +69,21 @@
 								            <div class="form-row" ng-show="item.access || isAdminPortalAdmin">
 								                <label class="checkbox">
 								                    <input id="gridster-{{item.headerText.split(' ').join('-')}}-icon-checkbox" type="checkbox" ng-model="item.select" ng-change="catalog.storeSelection(item)">
-								                    <i class="skin"></i> 
+								                    <i id="gridster-{{item.headerText.split(' ').join('-')}}-icon-checkbox" class="skin"></i> 
 								                </label> 
 								                <i ng-show="item.pending" class="icon-tickets-contested"></i>							                      								                
 									</div>
-								</div>								
-								<div ng-include src="'app/views/catalog/get-accessswitch.html'"></div>
+								</div>
+								<div class="gridster-box-content"
+									ng-style="{'cursor':'pointer',
+										'background-image': 'url('+(item.imageLink)+')',
+										'order': item.order, 
+										'background-color':'white',
+										'background-repeat': 'no-repeat',
+										'background-size': '168px 118px'}"
+									ng-click="catalog.openAddRoleModal(item)"
+									ng-hide="users.isLoadingTable && !users.getAppCatalogIsDone">
+								</div>
 							</div>
 						</li>
 					</ul>
@@ -68,9 +92,9 @@
 			
 			<br>
 
-			<div style="text-align: right;">
+			<div class="access-request-txt">
 				To request access to an application, please visit the <a
-				id="get-access-page-link" ng-href="getAccess">Get Access</a> page.
+					id="get-access-page-link" ng-href="getAccess">Get Access</a> page.
 			</div>
 
 			<br>

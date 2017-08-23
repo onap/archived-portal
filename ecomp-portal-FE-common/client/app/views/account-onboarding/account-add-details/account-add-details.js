@@ -1,14 +1,13 @@
 'use strict';
 (function () {
     class AccountAddDetailsCtrl {
-        constructor($scope, $log, $interval, basicAuthAccountService, errorMessageByCode, ECOMP_URL_REGEX, $window, confirmBoxService, $cookies) {
+        constructor($scope, $log, $interval, basicAuthAccountService, errorMessageByCode, ECOMP_URL_REGEX, $window, confirmBoxService, $cookies,items) {
          
            this.addEndpoint = () => {
            	  this.account.endpointList.push({
            		  valid: true
            	  }); 
            }
-        	
             let init = () => {
             	this.account = [];
                 this.account.endpointList = [];
@@ -16,11 +15,11 @@
                 this.dupliateName = false;
                 this.emptyAccountName = false;
                 this.emptyAccountUsername = false;
-                this.accountList = $scope.ngDialogData.list;
+                this.accountList = items.list;
                 
-                if ($scope.ngDialogData && $scope.ngDialogData.account) {
+                if (items&& items.account) {
                     this.isEditMode = true;
-                    this.account = _.clone($scope.ngDialogData.account);
+                    this.account = _.clone(items.account);
                     this.account.repassword = this.account.password;
                     this.account.endpointList = this.account.endpoints;
                     if(this.account.isActive == 'Y')
@@ -42,9 +41,9 @@
             };
 
             
-            this.closeThisDialog = () => {
+          /*  this.closeThisDialog = () => {
             	$scope.closeThisDialog(true);
-            }
+            }*/
             
             this.removeEndpointItem = (endpoint) => {
         		for(var i = 0; i < this.account.endpointList.length; i++){
@@ -53,10 +52,6 @@
         				return; 
         			}
         		}
-            }
-            
-            this.confirmPassword = () => {
-            	this.passwordMatched =  true;
             }
             
             this.updateUsername = () => {
@@ -144,13 +139,17 @@
             		confirmBoxService.editItem(message).then(isConfirmed => {
 	            		if(isConfirmed){
 	            			basicAuthAccountService.updateAccount(this.account.id, newAccount).then(() => {
-	                			$scope.closeThisDialog(true);
+                                $scope.$dismiss('cancel');
+                                $window.location.reload();
+
 	                		});
 	           			}
             		});
             	}else{
             		basicAuthAccountService.createAccount(newAccount).then(() => {
-            			$scope.closeThisDialog(true);
+                        $scope.$dismiss('cancel');
+                        $window.location.reload();
+
             		});
             	}
             }
@@ -161,6 +160,6 @@
             });
         }
     }
-    AccountAddDetailsCtrl.$inject = ['$scope', '$log', '$interval', 'basicAuthAccountService', 'errorMessageByCode', 'ECOMP_URL_REGEX', '$window', 'confirmBoxService', '$cookies'];
+    AccountAddDetailsCtrl.$inject = ['$scope', '$log', '$interval', 'basicAuthAccountService', 'errorMessageByCode', 'ECOMP_URL_REGEX', '$window', 'confirmBoxService', '$cookies','items'];
     angular.module('ecompApp').controller('AccountAddDetailsCtrl', AccountAddDetailsCtrl);
 })(); 

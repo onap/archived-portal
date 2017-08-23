@@ -1,7 +1,7 @@
 'use strict';
 (function () {
     class AccountOnboardingCtrl {
-        constructor($log, ngDialog, confirmBoxService, basicAuthAccountService, $cookies, $scope) {
+        constructor($log, ngDialog, confirmBoxService, basicAuthAccountService, $cookies, $scope,$modal) {
         	
         	
             let init = () => {
@@ -34,18 +34,24 @@
 						list: $scope.accountList	
 					}
 				}
-                ngDialog.open({
+          		var modalInstance = $modal.open({
                     templateUrl: 'app/views/account-onboarding/account-add-details/account-add-details.html',
-                    controller: 'AccountAddDetailsCtrl',
-                    controllerAs: 'accountAddDetails',
-                    data: data
-                }).closePromise.then(needUpdate => {
+                    controller: 'AccountAddDetailsCtrl as accountAddDetails',
+                    sizeClass: 'modal-medium', 
+                    resolve: {
+    					items: function () {
+        	        	  return data;
+    			        	}
+    		        }
+                })
+                
+                modalInstance.result.then(function (needUpdate) {
                 	if(needUpdate.value === true){
                 		if(needUpdate.value === true){
-                			 getOnboardingAccounts();
-                        }
-                    }
-                });
+               			 getOnboardingAccounts();
+                       }
+                  }
+     	        });
             };
             
             
@@ -67,6 +73,6 @@
             init();
         }
     }
-    AccountOnboardingCtrl.$inject = ['$log', 'ngDialog', 'confirmBoxService', 'basicAuthAccountService', '$cookies', '$scope'];
+    AccountOnboardingCtrl.$inject = ['$log', 'ngDialog', 'confirmBoxService', 'basicAuthAccountService', '$cookies', '$scope','$modal'];
     angular.module('ecompApp').controller('AccountOnboardingCtrl', AccountOnboardingCtrl);
 })();

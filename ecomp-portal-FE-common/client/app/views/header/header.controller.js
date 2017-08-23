@@ -20,7 +20,7 @@
 'use strict';
 (function () {
 	class HeaderCtrl {
-        constructor($log, $window, userProfileService, menusService, $scope, ECOMP_URL_REGEX, $cookies, $state,auditLogService,notificationService,ngDialog) {
+        constructor($log, $window, userProfileService, menusService, $scope, ECOMP_URL_REGEX, $cookies, $state,auditLogService,notificationService,ngDialog,$modal) {
             this.firstName = '';
             this.lastName = '';
             this.$log = $log;
@@ -348,7 +348,7 @@
         }        
     }
     class NotificationCtrl{
-    	constructor($log, $scope, $cookies, $timeout, sessionService,notificationService,$interval,ngDialog) {
+    	constructor($log, $scope, $cookies, $timeout, sessionService,notificationService,$interval,ngDialog,$modal) {
     		 $scope.notifications=[];   
     		 var intervalPromise = null;
              $scope.notificationCount= notificationService.notificationCount;
@@ -372,11 +372,12 @@
                  			var data = res.data.response[i];                			
 			            	var notification ={
 			            		id:data.notificationId,
-			            		title:data.msgHeader,
+			            		msgHeader:data.msgHeader,
 			            		message:data.msgDescription,
-			            		source:data.msgSource,
+			            		msgSource:data.msgSource,
 			            		time:data.createdDate,
-			            		priority:data.priority
+			            		priority:data.priority,
+			            		notificationHyperlink:data.notificationHyperlink
 			            	};
 			            	$scope.notifications.push(notification);       
 			             }  
@@ -406,41 +407,27 @@
         		 notificationService.getMessageRecipients(selectedAdminNotification.id).then(res =>{
                      $scope.messageRecipients = res;
 				 var messageObject=JSON.parse(selectedAdminNotification.message);
-				 var html="";
-				 html+='<p>'+'Message Source'+' : '+selectedAdminNotification.source+'</p>';
-				 html+='<p>'+'Message Title'+' : '+selectedAdminNotification.title+'</p>';
-				 html+='<p>'+'Message Recipient'+' : '+$scope.messageRecipients+'</p>';
-
-				 for(var field in  messageObject){
-					 if(field=='eventDate'||field=='lastModifiedDate'){
-						 html+='<p>'+field+' : '+new Date(+messageObject[field])+'</p>';
-						  
-					 }else{
-					 html+='<p>'+field+' : '+messageObject[field]+'</p>';
-					 
-					 }
-				 }
-
-				 var modalInstance = ngDialog.open({
- 				    templateUrl: 'app/views/user-notifications-admin/user.notifications.Json.details.modal.page.html',
- 				    controller: 'userNotificationCtrl',
- 				    resolve: {
- 				    	message: function () {
- 				    		var message = {
- 				    			   title:    '',
- 		                       		text:    html
- 		                       		
- 		                           	};
- 				          return message;
- 				        },
- 				     
- 				      }
- 				  }); 
- 		     
-        	 }).catch(err => {
-                 $log.error('userNotificationsCtrl:getMessageRecipients:: error ', err);
-                 $scope.isLoadingTable = false;
-             });
+				 var modalInstance = $modal.open({
+	                    templateUrl: 'app/views/user-notifications-admin/user.notifications.json.details.modal.page.html',
+	                    controller: 'userNotificationCtrl',
+	                    sizeClass: 'modal-large', 
+	                    resolve: {
+	    					items: function () {
+	    						var items = {
+	  				    			   title:    '',
+	 	                       		    selectedAdminNotification:selectedAdminNotification,messageObject:messageObject,messageRecipients:$scope.messageRecipients
+	  		                       		
+	  		                           	};
+	  				          return items;
+	    			        	}
+	    		        }
+	                })
+		     
+ 	 
+   	 }).catch(err => {
+            $log.error('userNotificationsCtrl:getMessageRecipients:: error ', err);
+            $scope.isLoadingTable = false;
+        });
         	 };
  			 
  			notificationService.getNotificationRate().then(res=> {
@@ -472,9 +459,9 @@
     	}
     }
     
-    NotificationCtrl.$inject = ['$log', '$scope', '$cookies', '$timeout', 'sessionService','notificationService','$interval','ngDialog'];
+    NotificationCtrl.$inject = ['$log', '$scope', '$cookies', '$timeout', 'sessionService','notificationService','$interval','ngDialog','$modal'];
     LoginSnippetCtrl.$inject = ['$log', '$scope', '$cookies', '$timeout','userProfileService', 'sessionService'];
-    HeaderCtrl.$inject = ['$log', '$window', 'userProfileService', 'menusService', '$scope', 'ECOMP_URL_REGEX','$cookies','$state','auditLogService','notificationService','ngDialog'];
+    HeaderCtrl.$inject = ['$log', '$window', 'userProfileService', 'menusService', '$scope', 'ECOMP_URL_REGEX','$cookies','$state','auditLogService','notificationService','ngDialog','$modal'];
     angular.module('ecompApp').controller('HeaderCtrl', HeaderCtrl);
     angular.module('ecompApp').controller('loginSnippetCtrl', LoginSnippetCtrl);
     angular.module('ecompApp').controller('notificationCtrl', NotificationCtrl);

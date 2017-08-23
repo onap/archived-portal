@@ -26,9 +26,13 @@ import org.openecomp.portalapp.controller.EPRestrictedBaseController;
 import org.openecomp.portalapp.controller.core.RoleController;
 import org.openecomp.portalapp.controller.core.RoleFunctionListController;
 import org.openecomp.portalapp.controller.core.RoleListController;
+import org.openecomp.portalapp.portal.domain.EPApp;
 import org.openecomp.portalapp.portal.ecomp.model.PortalRestResponse;
 import org.openecomp.portalapp.portal.ecomp.model.PortalRestStatusEnum;
 import org.openecomp.portalapp.portal.logging.aop.EPAuditLog;
+import org.openecomp.portalapp.portal.service.ExternalAccessRolesService;
+import org.openecomp.portalapp.portal.service.ExternalAccessRolesServiceImpl;
+import org.openecomp.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -47,6 +51,7 @@ import org.springframework.web.servlet.ModelAndView;
 @EnableAspectJAutoProxy
 @EPAuditLog
 public class RoleManageController extends EPRestrictedBaseController {
+	private static EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(RoleManageController.class);
 
 	@Autowired
 	private RoleController roleController;
@@ -57,6 +62,9 @@ public class RoleManageController extends EPRestrictedBaseController {
 	@Autowired
 	private RoleFunctionListController roleFunctionListController;
 
+
+	@Autowired
+	ExternalAccessRolesService externalAccessRolesService;
 	/**
 	 * Calls an SDK-Core library method that gets the available roles and writes
 	 * them to the request object. Portal specifies a Hibernate mappings from
@@ -120,7 +128,7 @@ public class RoleManageController extends EPRestrictedBaseController {
 	}
 
 	@RequestMapping(value = { "/portalApi/get_role" }, method = RequestMethod.GET)
-	public void getRole(HttpServletRequest request, HttpServletResponse response) {
+	public void getRole(HttpServletRequest request, HttpServletResponse response) throws Exception{
 		getRoleController().getRole(request, response);
 	}
 
@@ -163,4 +171,13 @@ public class RoleManageController extends EPRestrictedBaseController {
 		this.roleFunctionListController = roleFunctionListController;
 	}
 
+	@RequestMapping(value = { "/portalApi/syncRoles" }, method = RequestMethod.GET)
+	public void  syncRoles(EPApp app)
+	{
+		try {
+			externalAccessRolesService.SyncApplicationRolesWithEcompDB(app);
+		} catch (Exception e) {
+			logger.error(EELFLoggerDelegate.debugLogger, "failed syncRoles");
+		}
+	}
 }

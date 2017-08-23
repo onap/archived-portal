@@ -22,12 +22,17 @@
 (function () {
 
     class userNotificationCtrl {
-        constructor($scope,   message,  ngDialog) {
-    		$scope.messageData=message.text;
-   			//alert("message.text" + $scope.messageData);
+        constructor($scope,  ngDialog,items) {
+    		$scope.messageData=items.text;
+    		$scope.messageObject=items.messageObject;
+    		$scope.selectedAdminNotification=items.selectedAdminNotification;
+    		$scope.messageRecipients=items.messageRecipients;
+    		$scope.notifiHyperlink=function(ticket){
+     	    	window.open(ticket);
+    		}
          }
     }
-    userNotificationCtrl.$inject = ['$scope',  'message', 'ngDialog'];
+    userNotificationCtrl.$inject = ['$scope','ngDialog','items'];
     angular.module('ecompApp').controller('userNotificationCtrl', userNotificationCtrl);
 })();
 

@@ -17,9 +17,29 @@
   limitations under the License.
   ================================================================================
   -->
+  <style>
+  .table-search-fields{
+   margin-left: 248px !important;
+    position: absolute !important;
+    margin-top: -36px !important;
+    width:50% !important;
+  }
+   .table-search-field{
+    width:50% !important;
+  }
+  </style>
 <div class="microservice-add-details-model">
-	<div id="microservice-add-details-title" class="title">Microservice Details</div>
 
+		<div class="b2b-modal-header">
+			<h2 class="title" id="microservice-add-details-title">Microservice Details</h2>
+
+			<div class="corner-button in">
+				<button type="button" class="close" aria-label="Close" id="microservicedetails-button-cancel"
+					ng-click="$dismiss('cancel')"></button>
+			</div>
+		</div>
+
+		<div class="b2b-modal-body">
 	<div id="microservices" class="microservice-scrolling-table">
 		<div class="microservice-properties-main"
 			scroll-top="microserviceAddDetails.scrollApi">
@@ -112,7 +132,7 @@
 					<div class="item-label">Security Type</div>
 					<div class="service-select">					
 						<div class="table-dropdown">
-							<select id="microservice-details-input-security-type" name="microservice-details-input-security-type" b2b-dropdown placeholder-text="Select Application" ng-model="microserviceAddDetails.service.security.name" ng-change="microserviceAddDetails.updateApp()">
+							<select id="microservice-details-input-security-type" name="microservice-details-input-security-type" b2b-dropdown placeholder-text="Select Security Type" ng-model="microserviceAddDetails.service.security.name" ng-change="microserviceAddDetails.updateApp()">
 				            	<option b2b-dropdown-list option-repeat="d in microserviceAddDetails.availableSecurityTypes" value="{{d.name}}">{{d.name}}</option>				            	
 				            </select>
 						</div>
@@ -158,7 +178,7 @@
 						ng-click="microserviceAddDetails.addParameter()"></div>
 				</div>
 				<div class="item">
-					<div class="para-label-item-left"
+					<div class="param-label-item-left"
 						ng-show="microserviceAddDetails.service.parameterList.length > 0">
 						Parameter Key</div>
 					<div class="para-label-item-right"
@@ -168,14 +188,14 @@
 					<div id="microservice-details-user-paramters"
 						ng-repeat="parameter in microserviceAddDetails.service.parameterList">
 
-						<div class="para-item-left">
+						<div class="param-item-left">
 							<input id="microservice-details-input-user-parameter-key"
 								class="table-search-field" type="text" name="param-key" maxlength="200"
 								ng-model="parameter.para_key" />
 						</div>
-						<div class="para-item-middle">
+						<div class="param-item-middle">
 							<input id="microservice-details-input-user-parameter-value"
-								class="table-search-field" type="text" name="param-value"
+								class="table-search-fields" type="text" name="param-value"
 								maxlength="200" ng-model="parameter.para_value" />
 						</div>
 
@@ -184,24 +204,34 @@
 					</div>
 
 					<div class="microservice-property">
-						<input id="microservices-checkbox-app-is-enabled" type="checkbox"
-							class="checkbox-field"
-							ng-model="microserviceAddDetails.service.active" />
-						<div class="property-label checkbox-label">Active</div>
+						<label for="microservices-checkbox-app-is-enabled" class="checkbox"> 
+		                	<input type="checkbox" ng-model="microserviceAddDetails.service.active" id="microservices-checkbox-app-is-enabled" > 
+		                	<i class="skin"></i> 
+		                	<span class="property-label checkbox-label">Active</span> 
+		            	</label>	
 					</div>
 					
 				</div>
 					
 				<div id="microservice-scroll-end"></div>
-				<div class="dialog-control">
-					<button class="btn btn-alt btn-small" id="microservice-details-save-button" ng-click="microserviceAddDetails.saveChanges()">Save</button>				
-					<button class="btn btn-alt btn-small" id="microservice-details-close-button" ng-click="microserviceAddDetails.closeThisDialog()">Close</button>	
-				</div>
+				
 			</form>
 		</div>
 
 
 	</div>
+			</div>
+			<br>
+			<div class="b2b-modal-footer">
+				<div class="cta-button-group cta-modal-footer-flex">		
+					<button class="btn btn-alt btn-small" id="microservice-details-save-button" ng-click="microserviceAddDetails.saveChanges()">Save</button>				
+					<button class="btn btn-alt btn-small" id="microservice-details-close-button" ng-click="$dismiss('cancel')">Close</button>	
+				</div>
+			</div>
+			
+			
+			
+
 </div>
 
 <script>

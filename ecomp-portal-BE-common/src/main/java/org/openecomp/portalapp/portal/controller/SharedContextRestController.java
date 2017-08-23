@@ -151,7 +151,7 @@ public class SharedContextRestController extends EPRestrictedRESTfulBaseControll
 		SharedContext lastNameContext = contextService.getSharedContext(context_id,
 				EPCommonSystemProperties.USER_LAST_NAME);
 		SharedContext emailContext = contextService.getSharedContext(context_id, EPCommonSystemProperties.USER_EMAIL);
-		SharedContext attuidContext = contextService.getSharedContext(context_id,
+		SharedContext orgUserIdContext = contextService.getSharedContext(context_id,
 				EPCommonSystemProperties.USER_ORG_USERID);
 		if (firstNameContext != null)
 			listSharedContext.add(firstNameContext);
@@ -159,8 +159,8 @@ public class SharedContextRestController extends EPRestrictedRESTfulBaseControll
 			listSharedContext.add(lastNameContext);
 		if (emailContext != null)
 			listSharedContext.add(emailContext);
-		if (attuidContext != null)
-			listSharedContext.add(attuidContext);
+		if (orgUserIdContext != null)
+			listSharedContext.add(orgUserIdContext);
 		String jsonResponse = convertResponseToJSON(listSharedContext);
 		return jsonResponse;
 	}

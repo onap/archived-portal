@@ -40,6 +40,10 @@ Insert INTO fn_function (function_cd,function_name) values ('getAdminNotificatio
 Insert INTO fn_function (function_cd,function_name) values ('saveNotification', 'publish notifications');
 -- end new 1702
 
+-- new 1707
+INSERT INTO fn_function	(function_cd, function_name) VALUES ('menu_web_analytics', 'Web Analytics');
+-- end new 1707
+
 -- FN_LU_ACTIVITY
 Insert into fn_lu_activity (ACTIVITY_CD,ACTIVITY) values ('add_role','add_role');
 Insert into fn_lu_activity (ACTIVITY_CD,ACTIVITY) values ('remove_role','remove_role');
@@ -115,18 +119,12 @@ Insert into fn_menu(MENU_ID,LABEL,PARENT_ID,SORT_ORDER,ACTION,FUNCTION_CD,ACTIVE
                                
 Insert into fn_menu(MENU_ID,LABEL,PARENT_ID,SORT_ORDER,ACTION,FUNCTION_CD,ACTIVE_YN,MENU_SET_CD,SEPARATOR_YN,IMAGE_SRC)
 								values (13,'Microservice Onboarding', 1, 110, 'root.microserviceOnboarding', 'menu_admin', 'Y', 'APP', 'N', 'icon-add-widget');
--- for Web Analytics
-INSERT INTO fn_function	(function_cd, function_name) VALUES ('menu_web_analytics', 'Web Analytics');
-INSERT INTO fn_role (role_id, role_name, active_yn, priority) VALUES ('1010', 'Usage Analyst', 'Y', '1');
-INSERT INTO fn_role_function (role_id, function_cd) VALUES ('1010', 'menu_web_analytics');
-
 Insert into fn_menu(MENU_ID,LABEL,PARENT_ID,SORT_ORDER,ACTION,FUNCTION_CD,ACTIVE_YN,MENU_SET_CD,SEPARATOR_YN,IMAGE_SRC)
 								values(14,'Web Analytics',1,120,'root.webAnalytics','menu_web_analytics','Y','APP','N','icon-misc-piechart');
 Insert into fn_menu (menu_id, label, parent_id, sort_order, action, function_cd, active_yn, menu_set_cd, separator_yn, image_src)
 								values(15,'App Account Management', 1, 130, 'root.accountOnboarding', 'menu_admin', 'Y', 'App', 'N', 'icon-add-widget');                               
 Insert into fn_menu(MENU_ID,LABEL,PARENT_ID,SORT_ORDER,ACTION,FUNCTION_CD,ACTIVE_YN,MENU_SET_CD,SEPARATOR_YN,IMAGE_SRC)
-								values(16,'Web Analytics Onboarding',1,140,'root.webAnlayticsSource','menu_admin','Y','APP','N','icon-misc-piechart');
-						
+								values(16,'Web Analytics Onboarding',1,140,'root.webAnlayticsSource','menu_admin','Y','APP','N','icon-misc-piechart');						
 -- end new 1707
 
 -- FN_LU_ALERT_METHOD
@@ -210,6 +208,11 @@ Insert into fn_role (ROLE_ID, ROLE_NAME, ACTIVE_YN, PRIORITY, APP_ID, APP_ROLE_I
 Insert into fn_role (ROLE_ID, ROLE_NAME, ACTIVE_YN, PRIORITY, APP_ID, APP_ROLE_ID) values (950,'Portal Notification Admin','Y','1',NULL,NULL);
 -- end new 1702
 
+-- new 1707
+INSERT INTO fn_role (role_id, role_name, active_yn, priority) VALUES ('1010', 'Usage Analyst', 'Y', '1');
+INSERT INTO fn_role (role_id, role_name, active_yn, priority) VALUES ('2115', 'Portal Usage Analyst', 'Y', '6');
+-- end new 1707
+
 -- FN_ROLE_Composite
 Insert into fn_role_composite (PARENT_ROLE_ID,CHILD_ROLE_ID) values (1,16);
 
@@ -249,6 +252,11 @@ Insert into fn_role_function (ROLE_ID,FUNCTION_CD) values (950,'edit_notificatio
 Insert INTO fn_role_function (ROLE_ID,FUNCTION_CD) values (950, 'getAdminNotifications');
 Insert INTO fn_role_function (ROLE_ID,FUNCTION_CD) values (950, 'saveNotification');
 -- end new 1702
+
+-- new 1707
+INSERT INTO fn_role_function (role_id, function_cd) VALUES ('1010', 'menu_web_analytics');
+INSERT INTO fn_role_function (role_id, function_cd) VALUES ('2115', 'menu_web_analytics');
+-- end new 1707
 
 -- FN_TAB
 Insert into fn_tab (TAB_CD,TAB_NAME,TAB_DESCR,ACTION,FUNCTION_CD,ACTIVE_YN,SORT_ORDER,PARENT_TAB_CD,TAB_SET_CD) values ('TAB2_SUB1_S1','Left Tab 1','Sub - Sub Tab 1 Information','tab2_sub1.htm','menu_tab','Y',10,'TAB2_SUB1','APP');

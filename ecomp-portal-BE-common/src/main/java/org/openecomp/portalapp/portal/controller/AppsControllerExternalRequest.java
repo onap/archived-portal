@@ -209,7 +209,7 @@ public class AppsControllerExternalRequest implements BasicAuthenticationControl
 		"myLoginsAppOwner" : "abc123",
 		"name": "dashboard",
 		"url": "http://k8s/something",
-		"restUrl" : "http://aic.att.com",
+		"restUrl" : "http://targeturl.com",
 		"restrictedApp" : true,
 		"isOpen" : true,
 		"isEnabled": false
@@ -295,7 +295,7 @@ public class AppsControllerExternalRequest implements BasicAuthenticationControl
 		"myLoginsAppOwner" : "abc123",
 		"name": "dashboard",
 		"url": "http://k8s/something",
-		"restUrl" : "http://aic.att.com",
+		"restUrl" : "http://targeturl.com",
 		"restrictedApp" : true,
 		"isOpen" : true,
 		"isEnabled": false

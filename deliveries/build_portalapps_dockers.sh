@@ -8,16 +8,9 @@
 # Stop on error; show output
 set -e -x
 
-# For debugging only bcox the FE build takes a long time
-SKIPFE=N
-if [ $# -gt 0 -a "$1" == "skipfe" ] ; then
-    echo "Skipping Portal-FE build step"
-    SKIPFE=Y
-fi
-
-# Establish environment variables
-echo "Set variables"
-source $(dirname $0)/os_settings.sh
+# This reuses the docker-compose file
+echo "Set image tag name variables"
+source $(dirname $0)/.env
 
 # Work standalone AND in the ONAP Jenkins.
 # Pick up Jenkins settings for this script.
@@ -25,70 +18,91 @@ source $(dirname $0)/os_settings.sh
 if [ -n "$MVN" ]; then
     export MVN="${MVN} -B -gs ${GLOBAL_SETTINGS_FILE} -s ${SETTINGS_FILE}"
 else
-    MVN=mvn
+    # Force refresh of snapshots
+    MVN="mvn -B -U"
 fi
 
 # This expects to start in the deliveries folder; make sure
-DOCKERFILE=Dockerfile.portalapps
-if [ ! -f $DOCKERFILE ] ; then
-    echo "Failed to find expected file; must start in deliveries folder"
+PORTAL_DOCKERFILE=Dockerfile.portalapps
+if [ ! -f $PORTAL_DOCKERFILE ] ; then
+    echo "Failed to find file ${PORTAL_DOCKERFILE}; must start in deliveries folder; exiting"
     exit 1
 fi
 
-# Establish directories and variables
+# Store directory names as variables
+# This is the Docker Project area.
 DELIV="$(pwd)"
-# Relative path of temp directory
-BUILD="build"
-# Absolute path of temp directory
-OUT=$DELIV/$BUILD
-if [ $SKIPFE == "Y" ]; then
-    echo "Skipping clean/recreate of $OUT"
-else
-    rm -fr $OUT
-    mkdir $OUT
-fi
-# parent directory
+# parent directory, for finding source projects
 cd ..
 BASE="$(pwd)"
-
-# Copy DDL/DML to required directories (old scripts use long path /PROJECT/...)
 cd $DELIV
-rm -fr PROJECT
-# copy over DB scripts for the dockerfiles
-# forgive the ugly trick with the .. at end.
-mkdir -p ${SCRIPT_COMMON_DIR}     && cp -r $BASE/ecomp-portal-DB-common ${SCRIPT_COMMON_DIR}/..
-mkdir -p ${SCRIPT_DIR}            && cp -r $BASE/ecomp-portal-DB-os ${SCRIPT_DIR}/..
-mkdir -p ${SDK_COMMON_SCRIPT_DIR} && cp -r $BASE/sdk/ecomp-sdk/epsdk-app-common/db-scripts ${SDK_COMMON_SCRIPT_DIR}/..
-mkdir -p ${SDK_SCRIPT_DIR}        && cp -r $BASE/sdk/ecomp-sdk/epsdk-app-os/db-scripts ${SDK_SCRIPT_DIR}/..
-# Build complete database script for DBC
-DBCA_OPEN_SD=$BASE/dmaapbc/dcae_dmaapbc_webapp/dbca-os/db-scripts
-DBCA_COMM_SD=$BASE/dmaapbc/dcae_dmaapbc_webapp/dbca-common/db-scripts
-# Old scripts expect this path
-mkdir -p $DBC_SCRIPT_DIR
-cat $DBCA_OPEN_SD/dbca-create-mysql-1707-os.sql $DBCA_COMM_SD/dbca-ddl-mysql-1707-common.sql $DBCA_OPEN_SD/dbca-dml-mysql-1707-os.sql > $DBC_SCRIPT_DIR/dbca-complete-mysql-1707-os.sql
 
-cd $BASE/ecomp-portal-BE-common
+# Relative path of temp directory
+BUILD_REL="build"
+# Absolute path of temp directory
+BUILD_ABS=$DELIV/$BUILD_REL
+rm -fr $BUILD_REL
+mkdir $BUILD_REL
+
+# Copy DDL/DML to required directories
+
+# RELATIVE PATHS to local directories with database scripts
+# bcos Docker looks within this build area only
+SCR_BASE=$BUILD_REL/scripts
+PORTAL_SCRIPT_DIR=$SCR_BASE/ecomp-portal-DB-os
+SDK_SCRIPT_DIR=$SCR_BASE/epsdk-app-os
+DBC_SCRIPT_DIR=$SCR_BASE/dbca-os
+mkdir -p ${PORTAL_SCRIPT_DIR} ${SDK_SCRIPT_DIR} ${DBC_SCRIPT_DIR}
+
+# copy over DB scripts for the dockerfiles
+# Portal
+cp $BASE/ecomp-portal-DB-common/*.sql ${PORTAL_SCRIPT_DIR}
+cp $BASE/ecomp-portal-DB-os/*.sql ${PORTAL_SCRIPT_DIR}
+# SDK app
+cp $BASE/sdk/ecomp-sdk/epsdk-app-common/db-scripts/*.sql ${SDK_SCRIPT_DIR}
+cp $BASE/sdk/ecomp-sdk/epsdk-app-os/db-scripts/*.sql ${SDK_SCRIPT_DIR}
+# DBC app
+cp $BASE/dmaapbc/dcae_dmaapbc_webapp/dbca-common/db-scripts/*.sql ${DBC_SCRIPT_DIR}
+cp $BASE/dmaapbc/dcae_dmaapbc_webapp/dbca-os/db-scripts/*.sql ${DBC_SCRIPT_DIR}
+# Assemble a script with "use" at the top.
+cat $DBC_SCRIPT_DIR/dbca-create-mysql-1707-os.sql $DBC_SCRIPT_DIR/dbca-ddl-mysql-1707-common.sql $DBC_SCRIPT_DIR/dbca-dml-mysql-1707-os.sql > $DBC_SCRIPT_DIR/dbca-complete-mysql-1707-os.sql
+
+# build database docker
+DB_DOCKER_CMD="
+  docker build -t ${DB_IMG_NAME}:${PORTAL_TAG} ${PROXY_ARGS}
+    --build-arg PORTAL_SCRIPT_DIR=${PORTAL_SCRIPT_DIR}
+    --build-arg SDK_SCRIPT_DIR=${SDK_SCRIPT_DIR}
+    --build-arg DBC_SCRIPT_DIR=${DBC_SCRIPT_DIR}
+    -f Dockerfile.mariadb .
+"
+echo "Build mariadb docker image"
+$DB_DOCKER_CMD
+
+echo "Build all jar and war files in Portal"
+cd $BASE
 ${MVN} clean install
 
+echo "Copy Portal app BE"
 cd $BASE/ecomp-portal-BE-os
-${MVN} clean package
-cp target/ecompportal-be-os.war $OUT
+cp target/ecompportal-be-os.war $BUILD_ABS
 
+echo "Copy Portal app FE"
 cd $BASE/ecomp-portal-FE-os/
-if [ $SKIPFE == "Y" ]; then
-    echo "Skipping MVN in $(pwd)"
-else
-    ${MVN} clean package
-    cp -r dist/public $OUT
-fi
+cp -r dist/public $BUILD_ABS
 
+echo "Copy Portal widget-ms"
+cd $BASE/ecomp-portal-widget-ms
+cp widget-ms/target/widget-ms.jar $BUILD_ABS
+
+echo "Build and copy Portal-SDK app"
 cd $BASE/sdk/ecomp-sdk/epsdk-app-os
 ${MVN} clean package
-cp target/epsdk-app-os.war $OUT
+cp target/epsdk-app-os.war $BUILD_ABS
 
+echo "Build and copy Portal-DBC app"
 cd $BASE/dmaapbc/dcae_dmaapbc_webapp
 ${MVN} clean package
-cp dbca-os/target/dmaap-bc-app-os.war $OUT
+cp dbca-os/target/dmaap-bc-app-os.war $BUILD_ABS
 
 PROXY_ARGS=""
 if [ $HTTP_PROXY ]; then
@@ -98,19 +112,26 @@ if [ $HTTPS_PROXY ]; then
     PROXY_ARGS+=" --build-arg HTTPS_PROXY=${HTTPS_PROXY}"
 fi
 
-# build portal docker
+echo "Build portal docker image"
 cd $DELIV
 PORTAL_DOCKER_CMD="
-	docker build -t ${EP_IMG_NAME} ${PROXY_ARGS}
-	--build-arg FE_DIR=$BUILD/public
-	--build-arg PORTAL_WAR=$BUILD/ecompportal-be-os.war
-	--build-arg SDK_WAR=$BUILD/epsdk-app-os.war
-	--build-arg DBC_WAR=$BUILD/dmaap-bc-app-os.war
-	-f $DOCKERFILE .
+  docker build -t ${EP_IMG_NAME}:${PORTAL_TAG} ${PROXY_ARGS}
+    --build-arg FE_DIR=$BUILD_REL/public
+    --build-arg PORTAL_WAR=$BUILD_REL/ecompportal-be-os.war
+    --build-arg SDK_WAR=$BUILD_REL/epsdk-app-os.war
+    --build-arg DBC_WAR=$BUILD_REL/dmaap-bc-app-os.war
+    -f $PORTAL_DOCKERFILE .
 "
-echo "Invoking portal docker build"
 $PORTAL_DOCKER_CMD
 
-# Build widget-ms docker
-cd $BASE/ecomp-portal-widget-ms
-${MVN} package docker:build
+echo "Bbuild widget-ms docker image"
+WMS_DOCKER_CMD="
+  docker build -t ${WMS_IMG_NAME}:${PORTAL_TAG} ${PROXY_ARGS}
+    --build-arg WMS_JAR=$BUILD_REL/widget-ms.jar
+    -f Dockerfile.widgetms .
+"
+$WMS_DOCKER_CMD
+
+# For ease of debugging, leave the build dir
+# echo "Cleaning up"
+# rm -fr $BUILD_REL

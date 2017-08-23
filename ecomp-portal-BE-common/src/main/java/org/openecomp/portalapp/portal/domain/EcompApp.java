@@ -143,4 +143,26 @@ public class EcompApp {
 	public void setRestrictedApp(Boolean restrictedApp) {
 		this.restrictedApp = restrictedApp;
 	}
+
+	private Boolean centralAuth;
+
+	public Boolean getCentralAuth() {
+		return centralAuth;
+	}
+
+	public void setCentralAuth(Boolean centralAuth) {
+		this.centralAuth = centralAuth;
+	}
+
+	private String nameSpace;
+	
+	public String getNameSpace() {
+		return nameSpace;
+	}
+
+	public void setNameSpace(String nameSpace) {
+		this.nameSpace = nameSpace;
+	}
+
+	
 }
