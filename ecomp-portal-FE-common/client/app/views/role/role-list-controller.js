@@ -42,7 +42,12 @@ app.controller('roleListController', function ($scope,RoleService,confirmBoxServ
 				} else {
 					toggleType = "inactivate";
 				}
-				
+				if((availableRole.id == "1") || (availableRole.id =="999"))
+				{
+				 confirmBoxService.showInformation(availableRole.name+" role cannot be disabled");
+				 availableRole.active=!availableRole.active
+	             return;
+				}
 				confirmBoxService.confirm("You are about to "+toggleType+" the role "+availableRole.name+". Do you want to continue?").then(
 		    		function(confirmed){
 		    				

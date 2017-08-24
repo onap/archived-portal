@@ -1302,9 +1302,6 @@ CREATE TABLE `ep_app_role_function` (
 `function_cd` VARCHAR(50) NOT NULL,
 PRIMARY KEY (`id`),
 UNIQUE INDEX `UNIQUE KEY` (`app_id`, `role_id`, `function_cd`),
-INDEX `fk_ep_app_role_function_role_id` (`role_id`),
-INDEX `fk_ep_app_role_function_app_id` (`app_id`),
-INDEX `fk_ep_app_role_function_ep_app_func` (`function_cd`,`app_id`),
 CONSTRAINT `fk_ep_app_role_function_app_id` FOREIGN KEY (`app_id`) REFERENCES `fn_app` (`app_id`),
 CONSTRAINT `fk_ep_app_role_function_ep_app_func` FOREIGN KEY (`app_id`, `function_cd`) REFERENCES `ep_app_function` (`app_id`, `function_cd`),
 CONSTRAINT `fk_ep_app_role_function_role_id` FOREIGN KEY (`role_id`) REFERENCES `fn_role` (`role_id`)

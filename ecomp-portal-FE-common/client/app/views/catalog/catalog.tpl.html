@@ -60,7 +60,7 @@
 					<ul>	
 						<li gridster-item="item" ng-repeat="item in appCatalog"
 							ng-if="(item.select && radioValue=='Selected') || (item.access && radioValue=='Accessible') || (radioValue == 'All')">
-							<div class="gridster-box" style="{{!item.access?' color:lightgray !important':''}}">
+							<div class="gridster-box" ng-attr-style="{{!item.access?' color:lightgray !important':''}}">
 								<div class="gridster-box-header"
 									ng-show="(item.select && radioValue=='Selected') || (item.access && radioValue=='Accessible') || (radioValue == 'All')">
 									<i id="gridster-{{item.headerText.split(' ').join('-')}}-icon" class="icon-content-gridguide"></i>
