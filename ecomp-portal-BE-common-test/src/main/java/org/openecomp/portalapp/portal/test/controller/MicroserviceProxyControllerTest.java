@@ -49,7 +49,7 @@ public class MicroserviceProxyControllerTest extends MockitoTestSuite {
 		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
 		Mockito.when(microserviceProxyService.proxyToDestination(1, user, mockedRequest)).thenReturn("Success");
 		String acutualString = microserviceProxyController.getMicroserviceProxy(mockedRequest, getMockedResponse(), 1);
-		assertTrue(acutualString.equals("Success"));
+		assertTrue(acutualString.equals("{\"error\":\"Success\"}"));
 	}
 
 	@Test(expected = NullPointerException.class)
@@ -80,7 +80,7 @@ public class MicroserviceProxyControllerTest extends MockitoTestSuite {
 				.thenReturn("Success");
 		String acutualString = microserviceProxyController.getMicroserviceProxyByWidgetId(mockedRequest,
 				getMockedResponse(), 1);
-		assertTrue(acutualString.equals("Success"));
+		assertTrue(acutualString.equals("{\"error\":\"Success\"}"));
 	}
 
 	@Test(expected = NullPointerException.class)

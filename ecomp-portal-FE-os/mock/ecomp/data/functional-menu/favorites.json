@@ -7,21 +7,21 @@
   {
     "menuId": "99",
     "text": "3rd Level App1c R200",
-    "url": "https://ecomp.homer.att.com/ecompportal/applicationsHome"
+    "url": "https://www.portal.onap.org/ecompportal/applicationsHome"
   },
   {
     "menuId": "22",
     "text": "ECOMP Wasteland",
-    "url": "https://ecomp.homer.att.com/ecompportal/applicationsHome"
+    "url": "https://www.portal.onap.org/ecompportal/applicationsHome"
   },
   {
     "menuId": "1",
     "text": "Freaking great menu",
-    "url": "https://ecomp.homer.att.com/ecompportal/applicationsHome"
+    "url": "https://www.portal.onap.org/ecompportal/applicationsHome"
   },
   {
     "menuId": "91",
     "text": "Andy's test menu",
-    "url": "https://ecomp.homer.att.com/ecompportal/applicationsHome"
+    "url": "https://www.portal.onap.org/ecompportal/applicationsHome"
   }
 ]

@@ -15,7 +15,8 @@
 		<encoding>UTF-8</encoding>
 		<!-- If Skiptests is false use mvn clean jacoco:prepare-agent install jacoco:report 
 			to run jacoco report -->
-		<skipTests>true</skipTests>
+		<skipTests>false</skipTests>
+		<skipCoverage>true</skipCoverage>		
 		<!-- Jenkins SHOULD invoke mvn with argument -Dbuild.number=${BUILD_NUMBER} -->
 		<build.number>0</build.number>
 		<sonar.exclusions>**.js</sonar.exclusions>
@@ -116,7 +117,7 @@
 							<!-- Sets the name of the property containing the settings for JaCoCo 
 								runtime agent. -->
 							<propertyName>surefireArgLine</propertyName>
-							<skip>${skipTests}</skip>
+							<skip>${skipCoverage}</skip>
 						</configuration>
 
 					</execution>
@@ -133,7 +134,7 @@
 							<dataFile>${project.build.directory}/coverage-reports/jacoco-ut.exec</dataFile>
 							<!-- Sets the output directory for the code coverage report. -->
 							<outputDirectory>${project.reporting.outputDirectory}/jacoco-ut</outputDirectory>
-							<skip>${skipTests}</skip>
+							<skip>${skipCoverage}</skip>
 
 						</configuration>
 					</execution>
@@ -145,7 +146,7 @@
 							<goal>instrument</goal>
 						</goals>
 						<configuration>
-							<skip>${skipTests}</skip>
+							<skip>${skipCoverage}</skip>
 						</configuration>
 					</execution>
 					<execution>
@@ -154,7 +155,7 @@
 							<goal>restore-instrumented-classes</goal>
 						</goals>
 						<configuration>
-							<skip>${skipTests}</skip>
+							<skip>${skipCoverage}</skip>
 						</configuration>
 					</execution>
 				</executions>

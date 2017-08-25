@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.openecomp.portalapp.controller.EPRestrictedBaseController;
+import org.openecomp.portalapp.portal.domain.EPRole;
 import org.openecomp.portalapp.portal.domain.EPUser;
 import org.openecomp.portalapp.portal.logging.aop.EPAuditLog;
 import org.openecomp.portalapp.portal.service.AdminRolesService;
@@ -113,5 +114,24 @@ public class PortalAdminController extends EPRestrictedBaseController {
 		EcompPortalUtils.logAndSerializeObject("/portalAdmin", "DELETE result =", response.getStatus());
 
 		return fieldsValidator;
+	}
+	
+	@RequestMapping(value = { "/portalApi/adminAppsRoles/{appId}" }, method = RequestMethod.GET, produces = "application/json")
+	public List<EPRole> getRolesByApp(HttpServletRequest request, @PathVariable("appId") Long appId,
+			HttpServletResponse response) {
+		EPUser user = EPUserUtils.getUserSession(request);
+		List<EPRole> rolesByApp = null;
+
+		try {
+			if (user == null) {
+				EcompPortalUtils.setBadPermissions(user, response, "getUserApps");
+			} else {
+				rolesByApp = adminRolesService.getRolesByApp(user, appId);
+			}
+		} catch (Exception e) {
+			logger.error(EELFLoggerDelegate.errorLogger, "getRolesByApp failed", e);
+		}
+
+		return rolesByApp;
 	}
 }

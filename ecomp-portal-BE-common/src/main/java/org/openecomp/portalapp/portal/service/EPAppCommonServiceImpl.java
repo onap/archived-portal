@@ -770,6 +770,21 @@ public class EPAppCommonServiceImpl implements EPAppService {
 			logQuery(sql);
 			query = localSession.createSQLQuery(sql);
 			query.executeUpdate();
+			
+			
+			// Remove all roles, rolefunctions, appid records from ep_app_role_function
+			// that are associated with this app
+		    sql = "DELETE FROM ep_app_role_function WHERE app_id='" + appid + "'";
+			logger.debug(EELFLoggerDelegate.debugLogger, "Executing query: " + sql);
+			 query = localSession.createSQLQuery(sql);
+			query.executeUpdate();
+			
+			//Remove all rolefunctions, appid records from ep_app_function
+			// that are associated with this app
+			sql = "DELETE FROM ep_app_function WHERE app_id='" + appid + "'";
+			logger.debug(EELFLoggerDelegate.debugLogger, "Executing query: " + sql);
+			query = localSession.createSQLQuery(sql);
+			query.executeUpdate();
 
 			// Remove all records from fn_user_role associated with this app
 			sql = "delete from fn_user_role where app_id='" + appid + "'";

@@ -23,7 +23,7 @@ insert into fn_user_role values(-1,1, null,1);
 insert into fn_user_role values(-1,16, null,1);
 insert into fn_user_role values(-1,999, null,1);
 insert into fn_user_role values(-1,1010, null,1);
-insert into fn_menu_functional values(-1,3,'Network Analytics',5,'http://vm-d2novasdn3.client.research.att.com:8080/d2novasdn-1/welcome.htm','Y',null);
+insert into fn_menu_functional values(-1,3,'Network Analytics',5,'http://test.portal.onap.org:8080/welcome.htm','Y',null);
 insert into fn_menu_functional_roles values(-1, 137,456, 6214);
 insert into fn_menu_favorites values(-1, 141);
 insert into ep_web_analytics_source values(-1,1,'test_url','test');

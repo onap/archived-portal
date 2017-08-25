@@ -69,21 +69,16 @@
             
             userProfileService.getFunctionalMenuStaticInfo()
             .then(res=> {
-            	// $log.debug('HeaderCtrl::getFunctionalMenuStaticInfo: getting Functional Menu Static Info init');
             	if(res==null || res.firstName==null || res.firstName=='' || res.lastName==null || res.lastName=='' ){
-            		// $log.info('HeaderCtrl::getFunctionalMenuStaticInfo: failed getting userinfo from shared context.. ');
             		$log.info('HeaderCtrl: failed to get all required data, trying user profile');
             		userProfileService.getUserProfile()
                     .then(profile=> {
-                    	// $log.debug('HeaderCtrl:: getting userinfo from session success');
                         this.firstName = profile.firstName;
                         this.lastName = profile.lastName;                     
-                        // $log.debug('HeaderCtrl::getFunctionalMenuStaticInfo: user has the following roles: ' + profile.roles);
                     }).catch(err=> {
                         $log.error('Header Controller:: getUserProfile() failed: ' + err);
                     });
             	} else {
-            		// $log.debug('HeaderCtrl: fetched Functional Menu Static Info successfully',res);
             		this.firstName = res.firstName;
             		this.lastName = res.lastName;           	   	  	  
             	}
@@ -108,17 +103,12 @@
 
             $scope.loadFavorites = function () {
                 $scope.hideMenus = false;
-                // $log.debug('HeaderCtrl::loadFavorites: loadFavorites has happened.');
                 if ($scope.favoritesMenuItems == '') {
                     generateFavoriteItems();
-                    // $log.debug('HeaderCtrl::loadFavorites: loadFavorites is calling generateFavoriteItems()');
-                } else {
-                    // $log.debug('HeaderCtrl::loadFavorites: loadFavorites is NOT calling generateFavoriteItems()');
                 }
             }
 
             $scope.goToUrl = (item) =>  {
-               //  $log.error('HeaderCtrl::goToUrl has started',item);
                 let url = item.url;
                 let restrictedApp = item.restrictedApp;
                 if (!url) {
@@ -129,44 +119,24 @@
                     $window.open(url, '_blank');
                 } else {
                 	if(item.url=="getAccess" || item.url=="contactUs"){
-                	    // if (url = window.location.href)
                 		$state.go("root."+url);
                 	} else {
                     	var tabContent = { id: new Date(), title: item.text, url: item.url,appId:item.appid };
                     	$cookies.putObject('addTab', tabContent );
                     }
-                    // $log.debug('HeaderCtrl::goToUrl: url = ', url);
                 }
                 $scope.hideMenus = true;
             }
             
             
             
-            $scope.submenuLevelAction = function(index, column) {
-                if ($scope.favoritesMenuItems == '') {
-                    generateFavoriteItems();
-                    // $log.debug('HeaderCtrl::submenuLevelAction: submenuLevelAction is calling generateFavoriteItems()');
-                } else {
-                    // $log.debug('submenuLevelAction is NOT calling generateFavoriteItems()');
-                }
-                // $log.debug('item hovered: ' + index + '; column = ' + column);
-                // if (column == 2) {  // 2 is Design
-                //     // This is an admitted hack. See aw3218 for reasons why
-                //     $log.debug('submenuLevelAction column == 2');
-                //     $scope.favoritesWindow = false;
-                //     $scope.showFavorites = false;
-                //     $scope.emptyFavorites = false;
-                // }
+            $scope.submenuLevelAction = function(index, column) {           
                 if (index=='Favorites' && $scope.favoriteItemsCount != 0) {
-                    // $log.debug('HeaderCtrl::submenuLevelAction: Showing Favorites window');
-                    // generateFavoriteItems();
                     $scope.favoritesWindow = true;
                     $scope.showFavorites = true;
                     $scope.emptyFavorites = false;
                 }
                 if (index=='Favorites' && $scope.favoriteItemsCount == 0) {
-                    // $log.debug('HeaderCtrl::submenuLevelAction: Hiding Favorites window in favor of No Favorites Window');
-                    // generateFavoriteItems();
                     $scope.favoritesWindow = true;
                     $scope.showFavorites = false;
                     $scope.emptyFavorites = true;
@@ -176,27 +146,21 @@
                     $scope.showFavorites = false;
                     $scope.emptyFavorites = false;
                 }
-
             };
             
             $scope.hideFavoritesWindow = function() {
                 $scope.showFavorites = false;
                 $scope.emptyFavorites = false;
-                // $scope.thirdFourthMenus = true;
             }
             
             $scope.isUrlFavorite = function (menuId) {
-                // $log.debug('array objects in menu favorites = ' + $scope.favoriteItemsCount + '; menuId=' + menuId);
                 var jsonMenu =  JSON.stringify($scope.favoritesMenuItems);
                 var isMenuFavorite =  jsonMenu.indexOf('menuId\":' + menuId);
-                // $log.debug('jsonMenu.indexOf(menuId:' + jsonMenu.indexOf('menuId\":'+menuId));
-                // $log.debug('isMenuFavorite= ' + isMenuFavorite);
                 if (isMenuFavorite==-1) {
                     return false;
                 } else {
                     return true;
                 }
-
             }
             
             /*Getting Ecomp portal Title*/
@@ -214,10 +178,8 @@
             let generateFavoriteItems  = () => {
                 menusService.getFavoriteItems()
                     .then(favorites=> {
-                        // $log.debug('HeaderCtrl.getFavoriteItems:: ' + JSON.stringify(favorites));
                         $scope.favoritesMenuItems = favorites;
                         $scope.favoriteItemsCount = Object.keys(favorites).length;
-                        // $log.info('HeaderCtrl.getFavoriteItems:: number of favorite menus: ' + $scope.favoriteItemsCount);
                     }).catch(err=> {
                         $log.error('HeaderCtrl.getFavoriteItems:: Error retrieving Favorites menus: ' + err);
                 });
@@ -225,11 +187,8 @@
 
            $scope.setAsFavoriteItem =  function(event, menuId){
                var jsonMenuID = angular.toJson({'menuId': + menuId });
-               // $log.debug('HeaderCtrl::setFavoriteItems: ' + jsonMenuID  + " - " +  event.target.id);
-
                menusService.setFavoriteItem(jsonMenuID)
                .then(() => {
-                   // var elementId = '#'+ event.currentTarget.id;
                    angular.element('#' + event.target.id).css('color', '#fbb313');
                    generateFavoriteItems();
                }).catch(err=> {
@@ -238,7 +197,6 @@
            };
 
             $scope.removeAsFavoriteItem =  function(event, menuId){
-                // $log.debug('-----------------------------removeAsFavoriteItem: ' + menuId + " - " +  event.target.id);
                 menusService.removeFavoriteItem(menuId)
                 .then(() => {
                     angular.element('#' + event.target.id).css('color', '#666666');
@@ -276,7 +234,6 @@
                     data: ''
                 }).closePromise.then(needUpdate => {
                     if(needUpdate.value === true){
-                        // $log.debug('AdminsCtrl:openAddNewAdminModal:: updating table data...');
                         updateTableData();
                     }
                 });
@@ -310,7 +267,6 @@
             try {
             	userProfileService.getFunctionalMenuStaticInfo()
                 .then(res=> {
-              	  // $log.info('HeaderCtrl::LoginSnippetCtrl: Login information: ' + JSON.stringify(res));
               	  $scope.firstName = res.firstName;
               	  $scope.lastName = res.lastName;
               	  $scope.loginSnippetEmail = res.email;
@@ -337,10 +293,9 @@
 	            	var userapprole ={
 	            		App:res[i].appName,
 	            		Roles:res[i].roleNames,	
-	            	};
-	            	
+	            	};	            	
 	            	$scope.userapproles.push(userapprole); 
-       		}
+       		 }
        		 
         	});
         	

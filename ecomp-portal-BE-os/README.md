@@ -33,6 +33,7 @@ Version 1.1.0 (Amsterdam), November 2017
 - [Portal-76] Edit functional menu modal doesn't show
 - [Portal-61] Fixed the routing problem, loaded data and changed the notification hyperlink 
 - [Portal-77] Changes to remove preview image and update the new image automatically on App onbarding page
+- [Portal-82] Unable to pick Role in Widget onboarding for assigned app
 
 Version 1.0.0, February 2017
 - Initial release

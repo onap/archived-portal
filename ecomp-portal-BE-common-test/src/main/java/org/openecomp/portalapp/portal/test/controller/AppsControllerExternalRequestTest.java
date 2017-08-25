@@ -70,7 +70,7 @@ public class AppsControllerExternalRequestTest extends MockitoTestSuite {
 		PortalRestStatusEnum portalRestStatusEnum = null;
 		expectedportalRestResponse.setStatus(portalRestStatusEnum.ERROR);
 		EPUser user = mockUser.mockEPUser();
-		user.setEmail("guestT@Research.att.com");
+		user.setEmail("guestT@test.portal.onap.org");
 		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
 		PortalRestResponse<String> actualPortalRestResponse = appsControllerExternalRequest
 				.postPortalAdmin(mockedRequest, mockedResponse, user);
@@ -85,7 +85,7 @@ public class AppsControllerExternalRequestTest extends MockitoTestSuite {
 		PortalRestStatusEnum portalRestStatusEnum = null;
 		expectedportalRestResponse.setStatus(portalRestStatusEnum.ERROR);
 		EPUser user = mockUser.mockEPUser();
-		user.setEmail("guestT@Research.att.com");
+		user.setEmail("guestT@test.portal.onap.org");
 		user.setLoginPwd("pwd");
 		user.setLoginId("Test");
 		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
@@ -103,7 +103,7 @@ public class AppsControllerExternalRequestTest extends MockitoTestSuite {
 		PortalRestStatusEnum portalRestStatusEnum = null;
 		expectedportalRestResponse.setStatus(portalRestStatusEnum.ERROR);
 		EPUser user = mockUser.mockEPUser();
-		user.setEmail("guestT@Research.att.com");
+		user.setEmail("guestT@test.portal.onap.org");
 		user.setLoginPwd("pwd");
 		user.setLoginId("Test");
 		List<EPUser> expectedList = null;
@@ -123,7 +123,7 @@ public class AppsControllerExternalRequestTest extends MockitoTestSuite {
 		PortalRestStatusEnum portalRestStatusEnum = null;
 		expectedportalRestResponse.setStatus(portalRestStatusEnum.OK);
 		EPUser user = mockUser.mockEPUser();
-		user.setEmail("guestT@Research.att.com");
+		user.setEmail("guestT@test.portal.onap.org");
 		user.setLoginPwd("pwd");
 		user.setLoginId("Test");
 		List<EPUser> expectedList = new ArrayList<EPUser>();
@@ -145,7 +145,7 @@ public class AppsControllerExternalRequestTest extends MockitoTestSuite {
 		PortalRestStatusEnum portalRestStatusEnum = null;
 		expectedportalRestResponse.setStatus(portalRestStatusEnum.OK);
 		EPUser user = mockUser.mockEPUser();
-		user.setEmail("guestT@Research.att.com");
+		user.setEmail("guestT@test.portal.onap.org");
 		user.setLoginPwd("pwd");
 		user.setLoginId("Test");
 		List<EPUser> expectedList = new ArrayList<EPUser>();
@@ -178,7 +178,7 @@ public class AppsControllerExternalRequestTest extends MockitoTestSuite {
 		PortalRestStatusEnum portalRestStatusEnum = null;
 		expectedportalRestResponse.setStatus(portalRestStatusEnum.ERROR);
 		EPUser user = mockUser.mockEPUser();
-		user.setEmail("guestT@Research.att.com");
+		user.setEmail("guestT@test.portal.onap.org");
 		user.setLoginPwd("pwd");
 		user.setLoginId("Test");
 		List<EPUser> expectedList = new ArrayList<EPUser>();
@@ -240,119 +240,6 @@ public class AppsControllerExternalRequestTest extends MockitoTestSuite {
 	}
 
 	@Test
-	public void postOnboardAppExternalNotNullTest() {
-		PortalRestResponse<String> expectedportalRestResponse = new PortalRestResponse<String>();
-		expectedportalRestResponse.setMessage("Failed to find user: Test_Owener");
-		expectedportalRestResponse.setResponse(null);
-		PortalRestStatusEnum portalRestStatusEnum = null;
-		expectedportalRestResponse.setStatus(portalRestStatusEnum.ERROR);
-		OnboardingApp expectedOnboardingApp = new OnboardingApp();
-		expectedOnboardingApp.id = null;
-		expectedOnboardingApp.name = "Test";
-		expectedOnboardingApp.url = "Test";
-		expectedOnboardingApp.restUrl = "Test";
-		expectedOnboardingApp.myLoginsAppOwner = "Test_Owener";
-		expectedOnboardingApp.restrictedApp = false;
-		expectedOnboardingApp.isOpen = false;
-		expectedOnboardingApp.isEnabled = false;
-		Mockito.when(userService.getUserByUserId(expectedOnboardingApp.myLoginsAppOwner)).thenReturn(null);
-		PortalRestResponse<String> actualPortalRestResponse = appsControllerExternalRequest
-				.postOnboardAppExternal(mockedRequest, mockedResponse, expectedOnboardingApp);
-		assertEquals(actualPortalRestResponse, expectedportalRestResponse);
-
-	}
-
-	@Test
-	public void postOnboardAppExternalIfUSerListNotNullTest() {
-		PortalRestResponse<String> expectedportalRestResponse = new PortalRestResponse<String>();
-		expectedportalRestResponse.setMessage("User lacks Portal admin role: null");
-		expectedportalRestResponse.setResponse(null);
-		PortalRestStatusEnum portalRestStatusEnum = null;
-		expectedportalRestResponse.setStatus(portalRestStatusEnum.ERROR);
-		OnboardingApp expectedOnboardingApp = new OnboardingApp();
-		expectedOnboardingApp.id = null;
-		expectedOnboardingApp.name = "Test";
-		expectedOnboardingApp.url = "Test";
-		expectedOnboardingApp.restUrl = "Test";
-		expectedOnboardingApp.myLoginsAppOwner = "Test_Owener";
-		expectedOnboardingApp.restrictedApp = false;
-		expectedOnboardingApp.isOpen = false;
-		expectedOnboardingApp.isEnabled = false;
-		List<EPUser> userList = new ArrayList<EPUser>();
-		EPUser user = mockUser.mockEPUser();
-		userList.add(user);
-		Mockito.when(userService.getUserByUserId(expectedOnboardingApp.myLoginsAppOwner)).thenReturn(userList);
-		PortalRestResponse<String> actualPortalRestResponse = appsControllerExternalRequest
-				.postOnboardAppExternal(mockedRequest, mockedResponse, expectedOnboardingApp);
-		assertEquals(actualPortalRestResponse, expectedportalRestResponse);
-
-	}
-
-	@Test
-	public void postOnboardAppExternalIfSuperAdminTest() {
-		PortalRestResponse<String> expectedportalRestResponse = new PortalRestResponse<String>();
-		expectedportalRestResponse.setMessage(null);
-		expectedportalRestResponse.setResponse(null);
-		PortalRestStatusEnum portalRestStatusEnum = null;
-		expectedportalRestResponse.setStatus(portalRestStatusEnum.OK);
-		OnboardingApp expectedOnboardingApp = new OnboardingApp();
-		expectedOnboardingApp.id = null;
-		expectedOnboardingApp.name = "Test";
-		expectedOnboardingApp.url = "Test";
-		expectedOnboardingApp.restUrl = "Test";
-		expectedOnboardingApp.myLoginsAppOwner = "Test_Owener";
-		expectedOnboardingApp.restrictedApp = false;
-		expectedOnboardingApp.isOpen = false;
-		expectedOnboardingApp.isEnabled = false;
-		List<EPUser> userList = new ArrayList<EPUser>();
-		EPUser user = mockUser.mockEPUser();
-		userList.add(user);
-		FieldsValidator expectedFieldValidator = new FieldsValidator();
-		expectedFieldValidator.setHttpStatusCode((long) 200);
-		expectedFieldValidator.setFields(null);
-		expectedFieldValidator.setErrorCode(null);
-		Mockito.when(adminRolesService.isSuperAdmin(user)).thenReturn(true);
-		Mockito.when(userService.getUserByUserId(expectedOnboardingApp.myLoginsAppOwner)).thenReturn(userList);
-		Mockito.when(appService.addOnboardingApp(expectedOnboardingApp, user)).thenReturn(expectedFieldValidator);
-		PortalRestResponse<String> actualPortalRestResponse = appsControllerExternalRequest
-				.postOnboardAppExternal(mockedRequest, mockedResponse, expectedOnboardingApp);
-		assertEquals(actualPortalRestResponse, expectedportalRestResponse);
-
-	}
-
-	@Test
-	public void postOnboardAppExternalFieldValidatorTestTest() {
-		PortalRestResponse<String> expectedportalRestResponse = new PortalRestResponse<String>();
-		expectedportalRestResponse.setMessage("FieldsValidator [httpStatusCode=500, errorCode=null, fields=null]");
-		expectedportalRestResponse.setResponse(null);
-		PortalRestStatusEnum portalRestStatusEnum = null;
-		expectedportalRestResponse.setStatus(portalRestStatusEnum.ERROR);
-		OnboardingApp expectedOnboardingApp = new OnboardingApp();
-		expectedOnboardingApp.id = null;
-		expectedOnboardingApp.name = "Test";
-		expectedOnboardingApp.url = "Test";
-		expectedOnboardingApp.restUrl = "Test";
-		expectedOnboardingApp.myLoginsAppOwner = "Test_Owener";
-		expectedOnboardingApp.restrictedApp = false;
-		expectedOnboardingApp.isOpen = false;
-		expectedOnboardingApp.isEnabled = false;
-		List<EPUser> userList = new ArrayList<EPUser>();
-		EPUser user = mockUser.mockEPUser();
-		userList.add(user);
-		FieldsValidator expectedFieldValidator = new FieldsValidator();
-		expectedFieldValidator.setHttpStatusCode((long) 500);
-		expectedFieldValidator.setFields(null);
-		expectedFieldValidator.setErrorCode(null);
-		Mockito.when(adminRolesService.isSuperAdmin(user)).thenReturn(true);
-		Mockito.when(userService.getUserByUserId(expectedOnboardingApp.myLoginsAppOwner)).thenReturn(userList);
-		Mockito.when(appService.addOnboardingApp(expectedOnboardingApp, user)).thenReturn(expectedFieldValidator);
-		PortalRestResponse<String> actualPortalRestResponse = appsControllerExternalRequest
-				.postOnboardAppExternal(mockedRequest, mockedResponse, expectedOnboardingApp);
-		assertEquals(actualPortalRestResponse, expectedportalRestResponse);
-
-	}
-
-	@Test
 	public void putOnboardAppExternalifAppNullTest() {
 		PortalRestResponse<String> expectedportalRestResponse = new PortalRestResponse<String>();
 		expectedportalRestResponse.setMessage("Unexpected value for field: id");
@@ -379,123 +266,6 @@ public class AppsControllerExternalRequestTest extends MockitoTestSuite {
 		Long appId = (long) 1;
 		OnboardingApp expectedOnboardingApp = new OnboardingApp();
 		expectedOnboardingApp.id = (long) 1;
-		PortalRestResponse<String> actualPortalRestResponse = appsControllerExternalRequest
-				.putOnboardAppExternal(mockedRequest, mockedResponse, appId, expectedOnboardingApp);
-		assertEquals(actualPortalRestResponse, expectedportalRestResponse);
-	}
-
-	@Test
-	public void putOnboardAppExternalIfOnboardingIfUserListNullTest() {
-		PortalRestResponse<String> expectedportalRestResponse = new PortalRestResponse<String>();
-		expectedportalRestResponse.setMessage("Failed to find user: Test_Owener");
-		expectedportalRestResponse.setResponse(null);
-		PortalRestStatusEnum portalRestStatusEnum = null;
-		expectedportalRestResponse.setStatus(portalRestStatusEnum.ERROR);
-		Long appId = (long) 1;
-		OnboardingApp expectedOnboardingApp = new OnboardingApp();
-		expectedOnboardingApp.id = (long) 1;
-		expectedOnboardingApp.name = "Test";
-		expectedOnboardingApp.url = "Test";
-		expectedOnboardingApp.restUrl = "Test";
-		expectedOnboardingApp.myLoginsAppOwner = "Test_Owener";
-		expectedOnboardingApp.restrictedApp = false;
-		expectedOnboardingApp.isOpen = false;
-		expectedOnboardingApp.isEnabled = false;
-		Mockito.when(userService.getUserByUserId(expectedOnboardingApp.myLoginsAppOwner)).thenReturn(null);
-
-		PortalRestResponse<String> actualPortalRestResponse = appsControllerExternalRequest
-				.putOnboardAppExternal(mockedRequest, mockedResponse, appId, expectedOnboardingApp);
-		assertEquals(actualPortalRestResponse, expectedportalRestResponse);
-	}
-
-	@Test
-	public void putOnboardAppExternalIfOnboardingIfUserListNotNullTest() {
-		PortalRestResponse<String> expectedportalRestResponse = new PortalRestResponse<String>();
-		expectedportalRestResponse.setMessage("User lacks Portal admin role: null");
-		expectedportalRestResponse.setResponse(null);
-		PortalRestStatusEnum portalRestStatusEnum = null;
-		expectedportalRestResponse.setStatus(portalRestStatusEnum.ERROR);
-		Long appId = (long) 1;
-		OnboardingApp expectedOnboardingApp = new OnboardingApp();
-		expectedOnboardingApp.id = (long) 1;
-		expectedOnboardingApp.name = "Test";
-		expectedOnboardingApp.url = "Test";
-		expectedOnboardingApp.restUrl = "Test";
-		expectedOnboardingApp.myLoginsAppOwner = "Test_Owener";
-		expectedOnboardingApp.restrictedApp = false;
-		expectedOnboardingApp.isOpen = false;
-		expectedOnboardingApp.isEnabled = false;
-		List<EPUser> userList = new ArrayList<EPUser>();
-		EPUser user = mockUser.mockEPUser();
-		userList.add(user);
-		Mockito.when(userService.getUserByUserId(expectedOnboardingApp.myLoginsAppOwner)).thenReturn(userList);
-		Mockito.when(adminRolesService.isSuperAdmin(user)).thenReturn(false);
-		PortalRestResponse<String> actualPortalRestResponse = appsControllerExternalRequest
-				.putOnboardAppExternal(mockedRequest, mockedResponse, appId, expectedOnboardingApp);
-		assertEquals(actualPortalRestResponse, expectedportalRestResponse);
-	}
-
-	@Test
-	public void putOnboardAppExternalIfOnboardingIfSuperAdminTest() {
-		PortalRestResponse<String> expectedportalRestResponse = new PortalRestResponse<String>();
-		expectedportalRestResponse.setMessage(null);
-		expectedportalRestResponse.setResponse(null);
-		PortalRestStatusEnum portalRestStatusEnum = null;
-		expectedportalRestResponse.setStatus(portalRestStatusEnum.OK);
-		Long appId = (long) 1;
-		OnboardingApp expectedOnboardingApp = new OnboardingApp();
-		expectedOnboardingApp.id = (long) 1;
-		expectedOnboardingApp.name = "Test";
-		expectedOnboardingApp.url = "Test";
-		expectedOnboardingApp.restUrl = "Test";
-		expectedOnboardingApp.myLoginsAppOwner = "Test_Owener";
-		expectedOnboardingApp.restrictedApp = false;
-		expectedOnboardingApp.isOpen = false;
-		expectedOnboardingApp.isEnabled = false;
-		FieldsValidator expectedFieldValidator = new FieldsValidator();
-		expectedFieldValidator.setHttpStatusCode((long) 200);
-		expectedFieldValidator.setFields(null);
-		expectedFieldValidator.setErrorCode(null);
-		List<EPUser> userList = new ArrayList<EPUser>();
-		EPUser user = mockUser.mockEPUser();
-		userList.add(user);
-		Mockito.when(appService.modifyOnboardingApp(expectedOnboardingApp, user)).thenReturn(expectedFieldValidator);
-		Mockito.when(userService.getUserByUserId(expectedOnboardingApp.myLoginsAppOwner)).thenReturn(userList);
-		Mockito.when(adminRolesService.isSuperAdmin(user)).thenReturn(true);
-		PortalRestResponse<String> actualPortalRestResponse = appsControllerExternalRequest
-				.putOnboardAppExternal(mockedRequest, mockedResponse, appId, expectedOnboardingApp);
-		assertEquals(actualPortalRestResponse, expectedportalRestResponse);
-	}
-
-	@Test
-	public void putOnboardAppExternalIfOnboardingIfStatusNotSuccessTest() {
-		PortalRestResponse<String> expectedportalRestResponse = new PortalRestResponse<String>();
-		expectedportalRestResponse.setMessage("FieldsValidator [httpStatusCode=500, errorCode=null, fields=null]");
-		expectedportalRestResponse.setResponse(null);
-		PortalRestStatusEnum portalRestStatusEnum = null;
-		expectedportalRestResponse.setStatus(portalRestStatusEnum.ERROR);
-		Long appId = (long) 1;
-		OnboardingApp expectedOnboardingApp = new OnboardingApp();
-		expectedOnboardingApp.id = (long) 1;
-		expectedOnboardingApp.name = "Test";
-		expectedOnboardingApp.url = "Test";
-		expectedOnboardingApp.restUrl = "Test";
-		expectedOnboardingApp.myLoginsAppOwner = "Test_Owener";
-		expectedOnboardingApp.restrictedApp = false;
-		expectedOnboardingApp.isOpen = false;
-		expectedOnboardingApp.isEnabled = false;
-
-		FieldsValidator expectedFieldValidator = new FieldsValidator();
-		expectedFieldValidator.setHttpStatusCode((long) 500);
-		expectedFieldValidator.setFields(null);
-		expectedFieldValidator.setErrorCode(null);
-
-		List<EPUser> userList = new ArrayList<EPUser>();
-		EPUser user = mockUser.mockEPUser();
-		userList.add(user);
-		Mockito.when(appService.modifyOnboardingApp(expectedOnboardingApp, user)).thenReturn(expectedFieldValidator);
-		Mockito.when(userService.getUserByUserId(expectedOnboardingApp.myLoginsAppOwner)).thenReturn(userList);
-		Mockito.when(adminRolesService.isSuperAdmin(user)).thenReturn(true);
 		PortalRestResponse<String> actualPortalRestResponse = appsControllerExternalRequest
 				.putOnboardAppExternal(mockedRequest, mockedResponse, appId, expectedOnboardingApp);
 		assertEquals(actualPortalRestResponse, expectedportalRestResponse);

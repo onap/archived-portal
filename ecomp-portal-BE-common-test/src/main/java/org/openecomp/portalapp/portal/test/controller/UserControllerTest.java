@@ -118,7 +118,7 @@ public class UserControllerTest extends MockitoTestSuite {
 
 	}
 
-	@Test
+	/*@Test
 	public void modifyLoggedinUserTest() throws Exception {
 		EPUser epUser = mockUser.mockEPUser();
 		PortalRestResponse<String> expectedResponse = new PortalRestResponse<String>();
@@ -137,5 +137,5 @@ public class UserControllerTest extends MockitoTestSuite {
 		Mockito.when(CipherUtil.decrypt(epUser.getLoginPwd())).thenReturn("Password");
 		PortalRestResponse<String> actualResponse = userController.modifyLoggedinUser(mockedRequest, profileDetail);
 		System.out.println(actualResponse);
-	}
+	}*/
 }
