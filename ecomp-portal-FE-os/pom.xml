@@ -22,7 +22,16 @@
 							<directory>${basedir}/client/app</directory>
 						</fileset>
 						<fileset>
+							<directory>${basedir}/dist</directory>
+						</fileset>
+						<fileset>
 							<directory>${basedir}/.tmp</directory>
+						</fileset>
+						<fileset>
+							<directory>${basedir}/node</directory>
+						</fileset>
+						<fileset>
+							<directory>${basedir}/node_modules</directory>
 						</fileset>
 					</filesets>
 				</configuration>

@@ -444,15 +444,15 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 					List <EPRole> getRoleCreated = null;
 					if (!app.getId().equals(PortalConstants.PORTAL_APP_ID)) {
 						List<EPRole> roleCreated =  dataAccessService.getList(EPRole.class,
-								" where role_name = '" + addRoleInDB.getName() +"'", null, null);	
+								" where role_name = '" + addRoleInDB.getName() +"' and app_id = "+ app.getId(), null, null);	
 						EPRole epUpdateRole = roleCreated.get(0);
 						epUpdateRole.setAppRoleId(epUpdateRole.getId());
 						dataAccessService.saveDomainObject(epUpdateRole, null);
 						getRoleCreated =  dataAccessService.getList(EPRole.class,
-								" where role_name = '" + addRoleInDB.getName() +"'", null, null);	
+								" where role_name = '" + addRoleInDB.getName() +"' and app_id = "+ app.getId() , null, null);	
 					} else{
 						getRoleCreated =  dataAccessService.getList(EPRole.class,
-								" where role_name = '" + addRoleInDB.getName() +"'", null, null);	
+								" where role_name = '" + addRoleInDB.getName() +"' and app_id is null", null, null);	
 					}
 				// Add role in External Access system
 				boolean response = addNewRoleInExternalSystem(getRoleCreated, app);
@@ -611,7 +611,7 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 					if (((epApp.getId().equals(app.getId()))
 							&& (!userApp.getRole().getId().equals(PortalConstants.ACCOUNT_ADMIN_ROLE_ID)))
 							|| ((epApp.getId().equals(PortalConstants.PORTAL_APP_ID))
-									&& (globalRole.startsWith("global_")))) {
+									&& (globalRole.toLowerCase().startsWith("global_")))) {
 						CentralUserApp cua = new CentralUserApp();
 						cua.setUserId(null);
 						CentralApp cenApp = new CentralApp(1L, epApp.getCreated(), epApp.getModified(),
@@ -633,7 +633,13 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 									roleFunc.getCode(), roleFunc.getName(), null, null);
 							roleFunctionSet.add(cenRoleFunc);
 						}
-						CentralRole cenRole = new CentralRole(userApp.getRole().getAppRoleId(),
+						Long userRoleId = null;
+						if(globalRole.toLowerCase().startsWith("global_") && epApp.getId().equals(PortalConstants.PORTAL_APP_ID)){
+							userRoleId = userApp.getRole().getId();
+						} else{
+							userRoleId = userApp.getRole().getAppRoleId();
+						}
+						CentralRole cenRole = new CentralRole(userRoleId,
 								userApp.getRole().getCreated(), userApp.getRole().getModified(),
 								userApp.getRole().getCreatedId(), userApp.getRole().getModifiedId(),
 								userApp.getRole().getRowNum(), userApp.getRole().getName(),
@@ -750,7 +756,7 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "getRoleFunction failed", e);
-			throw new Exception("getRoleFunction failed");
+			throw new Exception("getRoleFunction failed", e);
 		}
 		return getRoleFuncList.get(0);
 	}

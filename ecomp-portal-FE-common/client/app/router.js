@@ -241,7 +241,7 @@ angular.module('ecompApp')
             url: '/error404',
             views: {
                 'content@': {
-                    templateUrl: 'app/views/errors/error.404.tpl.html',
+                    templateUrl: 'app/views/errors/error.tpl.html',
                     controller: 'ErrorCtrl',
                     controllerAs: 'error'
                 }

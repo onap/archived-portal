@@ -25,6 +25,13 @@
 	</properties>
 
 	<dependencies>
+		<!-- This pom pulls in artifacts -->
+		<dependency>
+			<groupId>org.openecomp.portal</groupId>
+			<artifactId>common-widgets</artifactId>
+			<version>${project.version}</version>
+			<type>pom</type>
+		</dependency>
 		<dependency>
 			<!-- Setup Spring Data JPA Repository support -->
 			<groupId>org.springframework.boot</groupId>

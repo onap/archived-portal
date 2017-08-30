@@ -771,9 +771,10 @@ public class UserRolesCommonServiceImpl  {
 	 * @param mapper
 	 * @param searchService
 	 * @param applicationsRestClientService
+	 * @return 
 	 * @throws Exception
 	 */
-	private void addRemoteUser(List<RoleInAppForUser> roleInAppForUserList, String userId, EPApp app, ObjectMapper mapper, SearchService searchService, ApplicationsRestClientService applicationsRestClientService) throws Exception{
+	private EPUser addRemoteUser(List<RoleInAppForUser> roleInAppForUserList, String userId, EPApp app, ObjectMapper mapper, SearchService searchService, ApplicationsRestClientService applicationsRestClientService) throws Exception{
 		EPUser addRemoteUser = null;
 		if (remoteUserShouldBeCreated(roleInAppForUserList)) {
 			
@@ -787,6 +788,7 @@ public class UserRolesCommonServiceImpl  {
 				// return null;
 			}
 		}
+		return addRemoteUser;
 	}
 	
 	/**
@@ -882,7 +884,7 @@ public class UserRolesCommonServiceImpl  {
 						remoteAppUser = checkIfRemoteUserExits(userId, app, applicationsRestClientService);
 		
 						if (remoteAppUser == null) {
-							addRemoteUser(roleInAppForUserList, userId, app, mapper, searchService, applicationsRestClientService);
+							remoteAppUser = addRemoteUser(roleInAppForUserList, userId, app, mapper, searchService, applicationsRestClientService);
 						}
 						if (remoteAppUser != null) {
 							Set<EcompRole> userRolesInRemoteApp = postUsersRolesToRemoteApp(roleInAppForUserList, mapper,
@@ -1336,7 +1338,7 @@ public class UserRolesCommonServiceImpl  {
 					EPUser remoteAppUser = null;
 						remoteAppUser = checkIfRemoteUserExits(userId.getOrgUserId(), app, applicationsRestClientService);
 					if (remoteAppUser == null) {
-						addRemoteUser(roleInAppForUserList, userId.getOrgUserId(), app, mapper, searchService, applicationsRestClientService);
+						remoteAppUser =	addRemoteUser(roleInAppForUserList, userId.getOrgUserId(), app, mapper, searchService, applicationsRestClientService);
 						reqMessage = "Saved Successfully";
 					}
 						if (remoteAppUser != null) {
