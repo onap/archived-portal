@@ -180,15 +180,16 @@ public class TicketEventController implements BasicAuthenticationController {
 		JsonNode application = ticketEventNotif.get("application");
 		JsonNode event = ticketEventNotif.get("event");
 		JsonNode header = event.get("header");
+		JsonNode eventSource=header.get("eventSource");
 		JsonNode body = event.get("body");
 		JsonNode SubscriberInfo = ticketEventNotif.get("SubscriberInfo");
 		JsonNode userList = SubscriberInfo.get("UserList");
 
-		if (application == null)
+		if (application == null||application.asText().length()==0||application.asText().equalsIgnoreCase("null"))
 			return "Application is mandatory";
 		if (body == null)
 			return "body is mandatory";
-		if (header.get("eventSource") == null)
+		if (eventSource == null||eventSource.asText().trim().length()==0||eventSource.asText().equalsIgnoreCase("null"))
 			return "Message Source is mandatory";
 		if (userList == null)
 			return "At least one user Id is mandatory";
