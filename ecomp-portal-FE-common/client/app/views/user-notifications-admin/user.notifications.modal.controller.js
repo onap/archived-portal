@@ -187,7 +187,7 @@
                 // // pre-processing
                 if (!($scope.isEditMode)) {
                     var validation = false;
-                    if ($scope.isDateValid($scope.newNotifModel.startTime) && $scope.isDateValid($scope.newNotifModel.endTime) && $scope.newNotifModel.msgHeader != '' && $scope.newNotifModel.msgDescription != '' && ($scope.newNotifModel.startTime < $scope.newNotifModel.endTime)) {
+                    if ($scope.isStartDateValidFromToday($scope.newNotifModel.startTime)&&$scope.isStartDateValidFromToday($scope.newNotifModel.endTime)&&$scope.isDateValid($scope.newNotifModel.startTime) && $scope.isDateValid($scope.newNotifModel.endTime) && $scope.newNotifModel.msgHeader != '' && $scope.newNotifModel.msgDescription != '' && ($scope.newNotifModel.startTime < $scope.newNotifModel.endTime)) {
                         validation = true;
                         if ($scope.newNotifModel.isForAllRoles == 'N') {
                             validation = $scope.checkTreeSelect();
@@ -212,6 +212,8 @@
                     $scope.newNotifModel.endTime = $filter('date')($scope.endTime, 'medium');
                 }
             }
+            
+            /*To validate the manual entry of date in MM/DD/YYYY Format*/
 
             $scope.isDateValid = function(time) {
                 if (time == undefined) {
@@ -228,10 +230,39 @@
                 var year = startDateformat[2];
                 if (year.length != 4) return false;
                 var composedDate = new Date(year, month, day);
-                return composedDate.getDate() == day &&
-                    composedDate.getMonth() == month &&
-                    composedDate.getFullYear() == year;
-
+                 return composedDate.getDate() == day &&
+                         composedDate.getMonth() == month &&
+                         composedDate.getFullYear() == year;
+            };
+            
+         /*The manual and drop down calendar should be consistent.
+         Start date must be greater than or equal to current date.The end dates are not allowed after the 3 months from current dates*/
+            
+            $scope.isStartDateValidFromToday = function (time) {
+            	if(time == undefined){
+                    return false;
+                }
+            	if(typeof time == 'object'){
+            		return true;
+            	}
+                var startDateformat	=time.split('/');
+                if (startDateformat.length != 3) return true;
+                var day = startDateformat[1];
+                var month = startDateformat[0];
+                 month= parseInt(month)-1;
+                var year = startDateformat[2];
+                if(year.length!=4) return true;
+                var composedDate = new Date(year, month, day);
+              /* As end dates are not allowed after the 3 months from current dates*/
+                var x = 3; //or whatever offset
+                var CurrentDate = new Date();
+                /*If composed date is less than the current date,error message should display*/
+                if(composedDate<CurrentDate)
+                	return false;
+                CurrentDate.setMonth(CurrentDate.getMonth() + x);
+                if(composedDate>CurrentDate)
+                	return false;
+                 return true;
             };
 
 

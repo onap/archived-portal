@@ -44,6 +44,7 @@ import org.openecomp.portalapp.portal.transport.CommonWidget;
 import org.openecomp.portalapp.portal.transport.CommonWidgetMeta;
 import org.openecomp.portalapp.portal.utils.EPCommonSystemProperties;
 import org.openecomp.portalapp.portal.utils.EcompPortalUtils;
+import org.openecomp.portalapp.portal.utils.PortalConstants;
 import org.openecomp.portalapp.util.EPUserUtils;
 import org.openecomp.portalsdk.core.domain.AuditLog;
 import org.openecomp.portalsdk.core.domain.support.CollaborateList;
@@ -244,7 +245,7 @@ public class DashboardController extends EPRestrictedBaseController {
 				AuditLog auditLog = new AuditLog();
 				auditLog.setUserId(user.getId());
 				auditLog.setActivityCode(EcompAuditLog.CD_ACTIVITY_SEARCH);
-				auditLog.setComments(searchString);
+				auditLog.setComments(EcompPortalUtils.truncateString(searchString, PortalConstants.AUDIT_LOG_COMMENT_SIZE));
 				MDC.put(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP,EPEELFLoggerAdvice.getCurrentDateTimeUTC());		
 				auditService.logActivity(auditLog, null);
 				MDC.put(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP,EPEELFLoggerAdvice.getCurrentDateTimeUTC());

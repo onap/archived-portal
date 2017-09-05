@@ -131,10 +131,14 @@
 							ng-model="newNotifModel.startTime" b2b-datepicker min="minDate" max="maxDate" 
 							required />
 					</div>
-					<div id="user-startdate-required" ng-show="!isDateValid(newNotifModel.startTime)">
-						<small class="mandatory-categories">Please enter valid date in MM/DD/YYYY format!</small>
+					<div style="{{( isEditMode )? 'opacity : 0; pointer-events: none;':' '}}">
+						<div id="user-startdate-required" ng-show="!isDateValid(newNotifModel.startTime)">
+							<small class="mandatory-categories">Please enter valid date in MM/DD/YYYY format!</small>
+						</div>
+						<div id="user-startdate-required" ng-show="!isStartDateValidFromToday(newNotifModel.startTime)">
+							<small class="date-validation">Date should be greater than or equal to current date!</small>
+						</div>
 					</div>
-					
 				</div>
 				<div ng-show="!isEditMode" ng-init="formatStartDate()"></div> 
 			</div>			
@@ -142,18 +146,23 @@
 			<div id="add-user-notif-enddate" class="add-widget-field"
 				style="padding-bottom: 12px; width: 301px !important; {{( isEditMode )? 'opacity : 0.6; pointer-events: none;':' '}}">
 				<div id="user-notification-enddate-label" class="user-notif-label">
-					<span runat="server" ID="required" class="notifcation-label-user-requiredId">*</span> End	Date (Local Time)
+					<span runat="server" ID="required" class="notifcation-label-user-requiredId">*</span> EndDate (Local Time)
 				</div>
 				<div class="datepicker-container">
 					<input class="notif-input-calendar" type="text" id="datepicker-end" 
 						ng-model="newNotifModel.endTime" b2b-datepicker min="minDate" max="maxDate" 
 						required />
 				</div>
-				<div id="user-endDate-required" ng-show="!isDateValid(newNotifModel.endTime)">
+				<div style="{{( isEditMode )? 'opacity : 0; pointer-events: none;':' '}}">
+					<div id="user-endDate-required" ng-show="!isDateValid(newNotifModel.endTime)">
 						<small class="mandatory-categories">Please enter valid date in MM/DD/YYYY format!</small>
 					</div>
-				<div id="user-enddate-error" ng-show="newNotifModel.endTime&&newNotifModel.startTime&&newNotifModel.startTime.getTime()>=newNotifModel.endTime.getTime()" class="user-enddate-error-txt">
-					<small class="mandatory-categories">End Date must be greater than start Date</small>
+					<div id="user-startdate-required"  ng-show="!isStartDateValidFromToday(newNotifModel.endTime)">
+						<small class="endDate-validation">Date should be greater than or equal to current date!</small>
+					</div>
+					<div id="user-enddate-error" ng-show="newNotifModel.endTime&&newNotifModel.startTime&&newNotifModel.startTime.getTime()>=newNotifModel.endTime.getTime()" class="user-enddate-error-txt">
+						<small class="mandatory-categories">End Date must be greater than start Date</small>
+					</div>
 				</div>
 				<div ng-show="!isEditMode" ng-init="formatEndDate()" ></div> 
 			</div>
@@ -181,7 +190,7 @@
 					ng-model="newNotifModel.msgDescription" name="content">
 				</textarea>
 				<div id="user-notif-message-required" ng-show="newNotifModel.msgDescription.length ==0 ">
-				<small class="mandatory-categories">Message is Required</small>
+					<small class="mandatory-categories">Message is Required</small>
 				</div>
 			</div>
 

@@ -52,6 +52,7 @@ import org.openecomp.portalapp.portal.transport.RoleInAppForUser;
 import org.openecomp.portalapp.portal.transport.UserApplicationRoles;
 import org.openecomp.portalapp.portal.utils.EPCommonSystemProperties;
 import org.openecomp.portalapp.portal.utils.EcompPortalUtils;
+import org.openecomp.portalapp.portal.utils.PortalConstants;
 import org.openecomp.portalapp.util.EPUserUtils;
 import org.openecomp.portalsdk.core.domain.AuditLog;
 import org.openecomp.portalsdk.core.logging.logic.EELFLoggerDelegate;
@@ -213,7 +214,7 @@ public class UserRolesController extends EPRestrictedBaseController {
 			auditLog.setUserId(user.getId());
 			auditLog.setActivityCode(EcompAuditLog.CD_ACTIVITY_UPDATE_ACCOUNT_ADMIN);
 			auditLog.setAffectedRecordId(newAppsListWithAdminRoles.orgUserId);
-			auditLog.setComments(newAppRoles.toString());
+			auditLog.setComments(EcompPortalUtils.truncateString(newAppRoles.toString(), PortalConstants.AUDIT_LOG_COMMENT_SIZE));
 			auditService.logActivity(auditLog, null);
 
 			MDC.put(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP, EPEELFLoggerAdvice.getCurrentDateTimeUTC());
@@ -344,13 +345,15 @@ public class UserRolesController extends EPRestrictedBaseController {
 				logger.info(EELFLoggerDelegate.applicationLogger,
 						"putAppWithUserRoleStateForUser: succeeded for app {}, user {}", newAppRolesForUser.appId,
 						newAppRolesForUser.orgUserId);
+
+				MDC.put(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP, EPEELFLoggerAdvice.getCurrentDateTimeUTC());
 				AuditLog auditLog = new AuditLog();
 				auditLog.setUserId(user.getId());
 				auditLog.setActivityCode(EcompAuditLog.CD_ACTIVITY_UPDATE_USER);
 				auditLog.setAffectedRecordId(newAppRolesForUser.orgUserId);
-				auditLog.setComments(sbUserApps.toString());
-				MDC.put(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP, EPEELFLoggerAdvice.getCurrentDateTimeUTC());
+				auditLog.setComments(EcompPortalUtils.truncateString(sbUserApps.toString(), PortalConstants.AUDIT_LOG_COMMENT_SIZE));
 				auditService.logActivity(auditLog, null);
+				
 				MDC.put(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP, EPEELFLoggerAdvice.getCurrentDateTimeUTC());
 				EcompPortalUtils.calculateDateTimeDifferenceForLog(
 						MDC.get(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP),

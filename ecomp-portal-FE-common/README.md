@@ -8,8 +8,6 @@ of the ECOMP Portal web application.  Those specific versions are built using
 separate Maven projects that copy in ("overlay") the contents of this project
 at package time.
 
-## Static files
+Release Notes
 
-Static files should be entered into the ecomp-portal-FE-common/home directory, 
-whereby home = the webserver html root directory.  The files and directories 
-will be copied exactly as they are placed.
+ - PORTAL-86 remove "home" subdirectory with static files

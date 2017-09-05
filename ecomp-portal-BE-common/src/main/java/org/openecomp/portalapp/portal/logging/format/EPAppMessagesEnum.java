@@ -186,7 +186,16 @@ public enum EPAppMessagesEnum {
     
     InternalUnexpectedFatal(EPErrorCodesEnum.INTERNALUNEXPECTEDFATAL_ONE_ARGUMENT, ErrorTypeEnum.SYSTEM_ERROR, AlarmSeverityEnum.CRITICAL, ErrorSeverityEnum.FATAL,
     							"ERR999F", "Unexpected error", "Details: {0}.", "Please check logs for more information."),
-	
+    
+    ExternalAuthAccessConnectionError(EPErrorCodesEnum.EXTERNALAUTHACCESS_CONNECTIONERROR, ErrorTypeEnum.CONNECTION_PROBLEM, AlarmSeverityEnum.MAJOR, ErrorSeverityEnum.ERROR,
+			"ERR220E", "AAF Connection problem", "Details: {0}.", "Please check logs for more information."),
+
+    ExternalAuthAccessAuthenticationError(EPErrorCodesEnum.EXTERNALAUTHACCESS_AUTHENTICATIONERROR, ErrorTypeEnum.AUTHENTICATION_PROBLEM, AlarmSeverityEnum.MAJOR, ErrorSeverityEnum.ERROR,
+			"ERR120E", "AAF authentication problem", "Details: {0}.", "Please check logs for more information."),
+    
+    ExternalAuthAccessGeneralError(EPErrorCodesEnum.EXTERNALAUTHACCESS_GENERALERROR, ErrorTypeEnum.SYSTEM_ERROR, AlarmSeverityEnum.MAJOR, ErrorSeverityEnum.ERROR,
+			"ERR520E", "Unexpected error", "Details: {0}.", "Please check logs for more information."),
+
 	;
 	
 	ErrorTypeEnum eType;

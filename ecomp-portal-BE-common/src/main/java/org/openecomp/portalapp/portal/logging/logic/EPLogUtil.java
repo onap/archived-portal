@@ -29,6 +29,7 @@ import org.openecomp.portalsdk.core.logging.format.ErrorSeverityEnum;
 import org.openecomp.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.openecomp.portalsdk.core.web.support.UserUtils;
 import org.slf4j.MDC;
+import org.springframework.http.HttpStatus;
 
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
@@ -280,6 +281,17 @@ public class EPLogUtil {
 		}
 		auditLogStoreAnalyticsMsg.append("]");
 		return auditLogStoreAnalyticsMsg.toString();
+	}
+
+	public static void logExternalAuthAccessAlarm(EELFLoggerDelegate logger, HttpStatus res) {
+		if (res.equals(HttpStatus.UNAUTHORIZED) || res.equals(HttpStatus.FORBIDDEN)) {
+			EPLogUtil.logEcompError(logger, EPAppMessagesEnum.ExternalAuthAccessAuthenticationError);
+		} else if (res.equals(HttpStatus.NOT_FOUND) || res.equals(HttpStatus.NOT_ACCEPTABLE)
+				|| res.equals(HttpStatus.CONFLICT) || res.equals(HttpStatus.BAD_REQUEST)) {
+			EPLogUtil.logEcompError(logger, EPAppMessagesEnum.ExternalAuthAccessConnectionError);
+		} else if (!res.equals(HttpStatus.ACCEPTED) && !res.equals(HttpStatus.OK)) {
+			EPLogUtil.logEcompError(logger, EPAppMessagesEnum.ExternalAuthAccessGeneralError);
+		}
 	}
 
 }

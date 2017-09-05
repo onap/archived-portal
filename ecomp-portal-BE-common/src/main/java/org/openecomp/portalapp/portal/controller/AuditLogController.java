@@ -36,6 +36,8 @@ import org.openecomp.portalapp.portal.domain.EPUser;
 import org.openecomp.portalapp.portal.logging.aop.EPEELFLoggerAdvice;
 import org.openecomp.portalapp.portal.logging.logic.EPLogUtil;
 import org.openecomp.portalapp.portal.utils.EPCommonSystemProperties;
+import org.openecomp.portalapp.portal.utils.EcompPortalUtils;
+import org.openecomp.portalapp.portal.utils.PortalConstants;
 import org.openecomp.portalapp.util.EPUserUtils;
 
 @RestController
@@ -83,7 +85,7 @@ public class AuditLogController extends EPRestrictedBaseController {
 				 * valid
 				 */
 				if (comment != null && !comment.equals("") && !comment.equals("undefined"))
-					auditLog.setComments(comment);
+					auditLog.setComments(EcompPortalUtils.truncateString(comment, PortalConstants.AUDIT_LOG_COMMENT_SIZE));
 				if (affectedAppId != null && !affectedAppId.equals("") && !affectedAppId.equals("undefined"))
 					auditLog.setAffectedRecordId(affectedAppId);
 				long userId = EPUserUtils.getUserId(request);

@@ -24,6 +24,7 @@ import org.openecomp.portalapp.portal.domain.EPUser;
 import org.openecomp.portalapp.portal.domain.EPUserApp;
 import org.openecomp.portalapp.portal.domain.ExternalRoleDetails;
 import org.openecomp.portalapp.portal.logging.aop.EPMetricsLog;
+import org.openecomp.portalapp.portal.logging.logic.EPLogUtil;
 import org.openecomp.portalapp.portal.transport.BulkUploadRoleFunction;
 import org.openecomp.portalapp.portal.transport.BulkUploadUserRoles;
 import org.openecomp.portalapp.portal.transport.CentralApp;
@@ -52,6 +53,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -797,6 +799,7 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 						+ app.getNameSpace() + "." + checkType + "/" + roleFuncName + "/*",
 				HttpMethod.GET, getSinglePermEntity, String.class);
 		if (getResponse.getStatusCode().value() != 200) {
+			EPLogUtil.logExternalAuthAccessAlarm(logger, getResponse.getStatusCode());
 			throw new Exception(getResponse.getBody());
 		}
 		logger.debug(EELFLoggerDelegate.debugLogger, "Connected to External Access system");
@@ -814,8 +817,11 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 					SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_URL) + "perm",
 					HttpMethod.POST, entity, String.class);
 			logger.debug(EELFLoggerDelegate.debugLogger, "Connected to External Access system");
+			}catch(HttpClientErrorException e){
+				logger.error(EELFLoggerDelegate.errorLogger, "HttpClientErrorException - Failed to add function in external central auth system", e);
+				EPLogUtil.logExternalAuthAccessAlarm(logger, e.getStatusCode());
 			}catch(Exception e){
-				logger.error(EELFLoggerDelegate.errorLogger, "Failed to add fucntion in external central auth system", e);
+				logger.error(EELFLoggerDelegate.errorLogger, "Failed to add function in external central auth system", e);
 			}
 		} else {
 			try{
@@ -830,8 +836,11 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 					SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_URL) + "perm",
 					HttpMethod.PUT, entity, String.class);
 			logger.debug(EELFLoggerDelegate.debugLogger, "Connected to External Access system");
-			} catch(Exception e){
-				logger.error(EELFLoggerDelegate.errorLogger, "Failed to add fucntion in external central auth system", e);
+			}catch(HttpClientErrorException e){
+				logger.error(EELFLoggerDelegate.errorLogger, "HttpClientErrorException - Failed to add function in external central auth system", e);
+				EPLogUtil.logExternalAuthAccessAlarm(logger, e.getStatusCode());
+			}catch(Exception e){
+				logger.error(EELFLoggerDelegate.errorLogger, "Failed to add function in external central auth system", e);
 
 			}
 		}
@@ -875,6 +884,9 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 		template.exchange(
 				SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_URL) + "perm?force=true",
 				HttpMethod.DELETE, entity, String.class);
+		} catch(HttpClientErrorException e){
+			logger.error(EELFLoggerDelegate.errorLogger, "HttpClientErrorException - Failed to delete functions in External System", e);
+			EPLogUtil.logExternalAuthAccessAlarm(logger, e.getStatusCode());
 		} catch(Exception e){
 			if(e.getMessage().equalsIgnoreCase("404 Not Found")){
 			logger.debug(EELFLoggerDelegate.debugLogger, " It seems like function is already deleted in external central auth system  but exists in local DB", e.getMessage());
@@ -932,6 +944,7 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 					+ epRoleList.get(0).getName().replaceAll(" ", "_") + "\"}";
 			deleteResponse = deleteRoleInExternalSystem(deleteRoleKey);
 			if (deleteResponse.getStatusCode().value() != 200) {
+				EPLogUtil.logExternalAuthAccessAlarm(logger, deleteResponse.getStatusCode());
 				throw new Exception("Failed to delete role in external access system!");
 			}
 			logger.debug(EELFLoggerDelegate.debugLogger, "about to commit the transaction");
@@ -1038,7 +1051,10 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 			transaction.commit();
 			logger.debug(EELFLoggerDelegate.debugLogger, "committed the transaction");
 			result = true;
-		} catch (Exception e) {
+		}catch(HttpClientErrorException e){
+			logger.error(EELFLoggerDelegate.errorLogger, "HttpClientErrorException - Failed to deleteRoleDependeciesRecord", e);
+			EPLogUtil.logExternalAuthAccessAlarm(logger, e.getStatusCode());
+		}catch (Exception e) {
 			EcompPortalUtils.rollbackTransaction(transaction,
 					"deleteDependcyRoleRecord rollback, exception = " + e);
 			logger.error(EELFLoggerDelegate.errorLogger, EcompPortalUtils.getStackTrace(e));
@@ -1174,7 +1190,10 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 				addRoleFunctionInExternalSystem(cenRoleFunc, app);
 				functionsAdded++;
 			}
-		} catch (Exception e) {
+		}catch(HttpClientErrorException e){
+			logger.error(EELFLoggerDelegate.errorLogger, "HttpClientErrorException - bulkUploadFunctions failed", e);
+			EPLogUtil.logExternalAuthAccessAlarm(logger, e.getStatusCode());
+		}catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "bulkUploadFunctions failed", e.getMessage(), e);
 		}
 		return functionsAdded;
@@ -1212,7 +1231,10 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 		template.exchange(
 				SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_URL) + "role",
 				HttpMethod.POST, entity, String.class);
-		} catch(Exception e){
+		}catch(HttpClientErrorException e){
+			logger.error(EELFLoggerDelegate.errorLogger, "HttpClientErrorException - Failed to addRoleInExternalSystem", e);
+			EPLogUtil.logExternalAuthAccessAlarm(logger, e.getStatusCode());
+		}catch(Exception e){
 			if (e.getMessage().equalsIgnoreCase("409 Conflict")) {
 				logger.error(EELFLoggerDelegate.errorLogger, "Role already exits but does not break functionality");
 			} else {
@@ -1238,6 +1260,9 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 					}
 				}
 			}
+		} catch(HttpClientErrorException e){
+			logger.error(EELFLoggerDelegate.errorLogger, "HttpClientErrorException - Failed to bulkUploadRolesFunctions", e);
+			EPLogUtil.logExternalAuthAccessAlarm(logger, e.getStatusCode());
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "bulkUploadRolesFunctions failed", e);
 		}
@@ -1548,6 +1573,9 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 			}
 		
 		logger.debug(EELFLoggerDelegate.debugLogger, "Finished SyncApplicationRolesWithEcompDB");
+		}catch(HttpClientErrorException e){
+			logger.error(EELFLoggerDelegate.errorLogger, "Failed to SyncApplicationRolesWithEcompDB", e);
+			EPLogUtil.logExternalAuthAccessAlarm(logger, e.getStatusCode());
 		}catch(Exception e){
 			logger.error(EELFLoggerDelegate.errorLogger, "Failed to SyncApplicationRolesWithEcompDB", e);
 		}
@@ -1597,7 +1625,10 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 		template.exchange(
 				SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_URL) + "userRole",
 				HttpMethod.POST, entity, String.class);
-		} catch (Exception e) {
+		}catch(HttpClientErrorException e){
+			logger.error(EELFLoggerDelegate.errorLogger, "HttpClientErrorException - Failed to addUserRoleInExternalSystem", e);
+			EPLogUtil.logExternalAuthAccessAlarm(logger, e.getStatusCode());
+		}catch (Exception e) {
 			if (e.getMessage().equalsIgnoreCase("409 Conflict")) {
 				logger.error(EELFLoggerDelegate.errorLogger, "UserRole already exits but does not break functionality");
 			} else {

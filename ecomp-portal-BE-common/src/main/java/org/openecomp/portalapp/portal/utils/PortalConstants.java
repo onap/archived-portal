@@ -27,4 +27,5 @@ public interface PortalConstants {
 	public static final Long SYS_ADMIN_ROLE_ID = 1L;
 	public static final String ADMIN_ROLE = "Account Administrator";
 	public static final String PORTAL_ADMIN_ROLE = "System Administrator";
+	public static final Integer AUDIT_LOG_COMMENT_SIZE = 990;
 }

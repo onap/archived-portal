@@ -414,4 +414,14 @@ public class EcompPortalUtils {
 		return result;
 	}
 
+	public static String truncateString(String originString, int size){
+		if(originString.length()>=size){
+			StringBuilder stringBuilder = new StringBuilder();
+			stringBuilder.append(originString);
+			stringBuilder.setLength(size);
+			stringBuilder.append("...");
+			return stringBuilder.toString();
+		}
+		return originString;
+	}
 }

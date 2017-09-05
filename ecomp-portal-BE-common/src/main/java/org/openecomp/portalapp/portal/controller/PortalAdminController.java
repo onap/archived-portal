@@ -111,8 +111,11 @@ public class PortalAdminController extends EPRestrictedBaseController {
 				auditLog.setUserId(user.getId());
 				auditLog.setActivityCode(EcompAuditLog.CD_ACTIVITY_ADD_PORTAL_ADMIN);
 				auditLog.setAffectedRecordId(userId);
-				auditService.logActivity(auditLog, null);
-
+				try {
+					auditService.logActivity(auditLog, null);
+				} catch (Exception e) {
+					logger.error(EELFLoggerDelegate.errorLogger, "createPortalAdmin: failed for save audit log", e);
+				}
 				MDC.put(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP, EPEELFLoggerAdvice.getCurrentDateTimeUTC());
 				MDC.put(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP, EPEELFLoggerAdvice.getCurrentDateTimeUTC());
 				EcompPortalUtils.calculateDateTimeDifferenceForLog(
@@ -164,7 +167,7 @@ public class PortalAdminController extends EPRestrictedBaseController {
 				auditLog.setActivityCode(EcompAuditLog.CD_ACTIVITY_DELETE_PORTAL_ADMIN);
 				auditLog.setAffectedRecordId(sbcid);
 				auditService.logActivity(auditLog, null);
-
+				
 				MDC.put(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP, EPEELFLoggerAdvice.getCurrentDateTimeUTC());
 				MDC.put(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP, EPEELFLoggerAdvice.getCurrentDateTimeUTC());
 				EcompPortalUtils.calculateDateTimeDifferenceForLog(

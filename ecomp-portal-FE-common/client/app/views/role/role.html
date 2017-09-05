@@ -94,30 +94,7 @@
 				</div>		
 				
 				<a id="manage-role"  href="roleFunctions">Manage Role Functions</a><br><br>
-				
-				<div id="page-title-child" class="pageTitle">
-					<label>Child Roles</label>
-					<a id="add-child-role"  ng-click="addNewChildRoleModalPopup();" ng-style="{'cursor':'pointer'}" class="icon-primary-accordion-plus" size="small"></a>
-				</div>
-				
-				<div b2b-table table-data="role.childRoles"  ng-hide="users.isLoadingTable"	search-string="users.searchString" class="b2b-table-div">
-					<table>
-						<thead b2b-table-row type="header">
-							<tr >
-								<th id="table-header-name" b2b-table-header key="firstName" sortable="true" >Name</th>
-								<th id="table-header-remove" b2b-table-header key="lastName" sortable="true" >Remove</th>
-							</tr>
-						</thead>
-						<tbody b2b-table-row type="body" 	row-repeat="role in role.childRoles">
-							<tr >
-								<td id="role-function-{{role.name}}" b2b-table-body id="rowheader_t1_{{$index}}" headers="col1" ng-bind="role.name"></td>
-								<td b2b-table-body headers="rowheader_t1_{{$index}} col4" id="{{$index}}-button-remove-role" >
-					    			<div ng-click="removeChildRole(role);" ><a href="javascript:void(0)" class="icon-misc-trash"></a></div>
-								</td>							
-							</tr>
-						</tbody>
-					</table>
-				</div>					
+									
 			</div>
 			</div>
 		</div>
