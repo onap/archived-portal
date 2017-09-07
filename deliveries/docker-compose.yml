@@ -7,6 +7,17 @@ version: '2.0'
 
 services:
 
+  cli:
+    image: onap/cli:${PORTAL_TAG}
+    environment:
+      MODE: 'deamon'
+    expose:
+      - 80
+    ports:
+      - 8080:80
+    logging:
+      driver: json-file
+
   # Config files may use hostname "portal-db"
   portal-db:
     image: ${DB_IMG_NAME}:${PORTAL_TAG}
@@ -21,7 +32,7 @@ services:
       driver: json-file
 
   # An environment variable here CAN override the database URL;
-  # instead the value in the config file uses hostname from above 
+  # instead the value in the config file uses hostname from above
   portal-wms:
     image: ${WMS_IMG_NAME}:${PORTAL_TAG}
     expose:
@@ -71,7 +82,7 @@ services:
       - ${PROJECT_DIR}/etc/ECOMPDBCAPP/portal.properties:${WEBAPPS_DIR}/ECOMPDBCAPP/WEB-INF/classes/portal.properties
       - ${PROJECT_DIR}/etc/ECOMPDBCAPP/dbcapp.properties:${WEBAPPS_DIR}/ECOMPDBCAPP/WEB-INF/dbcapp/dbcapp.properties
       - ${PROJECT_DIR}/etc/ECOMPDBCAPP/fusion.properties:${WEBAPPS_DIR}/ECOMPDBCAPP/WEB-INF/fusion/conf/fusion.properties
-      - ${PROJECT_DIR}/portal-apps-logs:/opt/apache-tomcat-8.0.37/logs 
+      - ${PROJECT_DIR}/portal-apps-logs:/opt/apache-tomcat-8.0.37/logs
     command:
       - /wait-for.sh
       - -t
