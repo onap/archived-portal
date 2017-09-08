@@ -6,6 +6,7 @@
 	<artifactId>ecompportal-parent-project</artifactId>
 	<version>0</version>
 	<packaging>pom</packaging>
+        <name>portal</name>
 	
 	<modules>
 		<!-- Child modules do NOT name this parent. -->
