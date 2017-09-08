@@ -51,7 +51,12 @@ public class EcompAuditLog extends AuditLog {
 	public static final String CD_ACTIVITY_UPDATE_USER = "uu ";
 	public static final String CD_ACTIVITY_UPDATE_ACCOUNT_ADMIN = "uaa ";
 	public static final String CD_ACTIVITY_STORE_ANALYTICS = "store_analytics";
-
+	public static final String CD_ACTIVITY_EXTERNAL_AUTH_ADD_ROLE = "eaar";
+	public static final String CD_ACTIVITY_EXTERNAL_AUTH_ADD_FUNCTION = "eaaf";
+	public static final String CD_ACTIVITY_EXTERNAL_AUTH_UPDATE_FUNCTION = "eauf";
+	public static final String CD_ACTIVITY_EXTERNAL_AUTH_UPDATE_ROLE_AND_FUNCTION = "eaurf";
+	public static final String CD_ACTIVITY_EXTERNAL_AUTH_DELETE_ROLE = "eadr";
+	public static final String CD_ACTIVITY_EXTERNAL_AUTH_DELETE_FUNCTION = "eadf";
 	/**
 	 * Creates a new object with the created field set to the current date-time.
 	 */

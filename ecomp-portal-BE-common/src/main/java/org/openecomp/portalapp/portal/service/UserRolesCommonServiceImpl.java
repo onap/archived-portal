@@ -435,7 +435,6 @@ public class UserRolesCommonServiceImpl  {
 	protected void syncAppRoles(SessionFactory sessionFactory, Long appId, EcompRole[] appRoles) throws Exception {
 		logger.debug(EELFLoggerDelegate.debugLogger, "entering syncAppRoles for appId: " + appId);
 		HashMap<Long, EcompRole> newRolesMap = hashMapFromEcompRoles(appRoles);
-		boolean result = false;
 		Session localSession = null;
 		Transaction transaction = null;
 
@@ -467,21 +466,10 @@ public class UserRolesCommonServiceImpl  {
 				}
 			}
 			Collection<EcompRole> newRolesToAdd = newRolesMap.values();
-			for (EcompRole role : newRolesToAdd) {
-				logger.debug(EELFLoggerDelegate.debugLogger, "about to add missing role: " + role.toString());
-				EPRole newRole = new EPRole();
-				// Attention! All roles from remote application supposed to be
-				// active!
-				newRole.setActive(true);
-				newRole.setName(role.getName());
-				newRole.setAppId(appId);
-				newRole.setAppRoleId(role.getId());
-				localSession.save(newRole);
-			}
 			if (obsoleteRoles.size() > 0) {
-				logger.debug(EELFLoggerDelegate.debugLogger, "we have obsolete roles to delete");
+				logger.debug(EELFLoggerDelegate.debugLogger, "syncAppRoles: we have obsolete roles to delete");
 				for (EPRole role : obsoleteRoles) {
-					logger.debug(EELFLoggerDelegate.debugLogger, "obsolete role: " + role.toString());
+					logger.debug(EELFLoggerDelegate.debugLogger, "syncAppRoles: obsolete role: " + role.toString());
 					Long roleId = role.getId();
 					// delete obsolete roles here
 					// Must delete all records with foreign key constraints on
@@ -497,13 +485,13 @@ public class UserRolesCommonServiceImpl  {
 							"from " + EPUserApp.class.getName() + " where app.id=" + appId + " and role_id=" + roleId)
 							.list();
 
-					logger.debug(EELFLoggerDelegate.debugLogger, "number of userRoles to delete: " + userRoles.size());
+					logger.debug(EELFLoggerDelegate.debugLogger, "syncAppRoles: number of userRoles to delete: " + userRoles.size());
 					for (EPUserApp userRole : userRoles) {
 						logger.debug(EELFLoggerDelegate.debugLogger,
-								"about to delete userRole: " + userRole.toString());
+								"syncAppRoles: about to delete userRole: " + userRole.toString());
 						localSession.delete(userRole);
 						logger.debug(EELFLoggerDelegate.debugLogger,
-								"finished deleting userRole: " + userRole.toString());
+								"syncAppRoles: finished deleting userRole: " + userRole.toString());
 					}
 
 					// Delete from fn_menu_functional_roles
@@ -513,7 +501,7 @@ public class UserRolesCommonServiceImpl  {
 							.list();
 					int numMenuRoles = funcMenuRoles.size();
 					logger.debug(EELFLoggerDelegate.debugLogger,
-							"number of funcMenuRoles for roleId: " + roleId + ": " + numMenuRoles);
+							"syncAppRoles: number of funcMenuRoles for roleId: " + roleId + ": " + numMenuRoles);
 					for (FunctionalMenuRole funcMenuRole : funcMenuRoles) {
 						Long menuId = funcMenuRole.menuId;
 						// If this is the only role for this menu item, then the
@@ -525,14 +513,14 @@ public class UserRolesCommonServiceImpl  {
 								.list();
 						int numMenuRoles2 = funcMenuRoles2.size();
 						logger.debug(EELFLoggerDelegate.debugLogger,
-								"number of funcMenuRoles for menuId: " + menuId + ": " + numMenuRoles2);
+								"syncAppRoles: number of funcMenuRoles for menuId: " + menuId + ": " + numMenuRoles2);
 						localSession.delete(funcMenuRole);
 						if (numMenuRoles2 == 1) {
 							// If this is the only role for this menu item, then
 							// the app and roles will be gone,
 							// so must null out the url too, to be consistent
 							logger.debug(EELFLoggerDelegate.debugLogger,
-									"There is exactly 1 menu item for this role, so emptying the url");
+									"syncAppRoles: There is exactly 1 menu item for this role, so emptying the url");
 							@SuppressWarnings("unchecked")
 							List<FunctionalMenuItem> funcMenuItems = localSession
 									.createQuery(
@@ -546,26 +534,33 @@ public class UserRolesCommonServiceImpl  {
 							}
 						}
 					}
-					externalAccessRolesService.deleteRoleDependeciesRecord(localSession, roleId);
-					logger.debug(EELFLoggerDelegate.debugLogger, "about to delete the role: " + role.toString());
+					externalAccessRolesService.deleteRoleDependencyRecords(localSession, roleId, appId);
+					logger.debug(EELFLoggerDelegate.debugLogger, "syncAppRoles: about to delete the role: " + role.toString());
 					localSession.delete(role);
-					logger.debug(EELFLoggerDelegate.debugLogger, "deleted the role");
+					logger.debug(EELFLoggerDelegate.debugLogger, "syncAppRoles: deleted the role");
 				}
 			}
-			logger.debug(EELFLoggerDelegate.debugLogger, "about to commit the transaction");
+			for (EcompRole role : newRolesToAdd) {
+				logger.debug(EELFLoggerDelegate.debugLogger, "syncAppRoles: about to add missing role: " + role.toString());
+				EPRole newRole = new EPRole();
+				// Attention! All roles from remote application supposed to be
+				// active!
+				newRole.setActive(true);
+				newRole.setName(role.getName());
+				newRole.setAppId(appId);
+				newRole.setAppRoleId(role.getId());
+				localSession.save(newRole);
+			}
+			logger.debug(EELFLoggerDelegate.debugLogger, "syncAppRoles: about to commit the transaction");
 			transaction.commit();
-			logger.debug(EELFLoggerDelegate.debugLogger, "committed the transaction");
-			result = true;
+			logger.debug(EELFLoggerDelegate.debugLogger, "syncAppRoles: committed the transaction");
 		} catch (Exception e) {
 			EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeDaoSystemError, e);
 			EcompPortalUtils.rollbackTransaction(transaction,
-					"Exception occurred in syncAppRoles, Details: " + EcompPortalUtils.getStackTrace(e));
+					"syncAppRoles: Exception occurred in syncAppRoles, Details: " + EcompPortalUtils.getStackTrace(e));
+			throw new Exception(e);
 		} finally {
 			localSession.close();
-			if (!result) {
-				throw new Exception(
-						"Exception occurred in syncAppRoles while closing database session for app: '" + appId + "'.");
-			}
 		}
 	}
 	
@@ -867,7 +862,7 @@ public class UserRolesCommonServiceImpl  {
 							userRolesInLocalApp);
 					List<RoleInAppForUser> roleAppUserList = rolesInAppForUser.roles;
 					// Apply changes in external Access system
-					updateUserRolesInExternalSystem(app, rolesInAppForUser.orgUserId, roleAppUserList);
+					updateUserRolesInExternalSystem(app, rolesInAppForUser.orgUserId, roleAppUserList, epRequestValue);
 					result = applyChangesInUserRolesForAppToEcompDB(rolesInAppForUser, epRequestValue, "Portal");
 				} 
 				// In case if portal is not centralized then follow existing approach
@@ -915,143 +910,151 @@ public class UserRolesCommonServiceImpl  {
 		}
 		return result;
 	}
-
+	/**
+	 * It adds user roles in External system and also make data consistent in both local and in External System 
+	 * 
+	 * @param app details
+	 * @param orgUserId
+	 * @param roleInAppUser Contains list of active roles 
+	 */
 	@SuppressWarnings("unchecked")
-	private void updateUserRolesInExternalSystem(EPApp app, String orgUserId, List<RoleInAppForUser> roleInAppUser)
-		{
-		try{
-		//check if user exists 
-		final Map<String, String> userParams = new HashMap<>();
-		userParams.put("orgUserIdValue", orgUserId);
-		List<EPUser> userInfo = checkIfUserExists(userParams);
-		if (userInfo.size() == 0 || userInfo.isEmpty()) {
-		  createLocalUserIfNecessary(orgUserId);
-		}
-		final Map<String, String> loginIdParams = new HashMap<>();
-		loginIdParams.put("orgUserIdValue", orgUserId);	
-		EPUser user = (EPUser) dataAccessService.executeNamedQuery("epUserAppId", loginIdParams, null).get(0);
-		String name = "";
-		if (EPCommonSystemProperties.containsProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_USER_DOMAIN)) {
-			name = orgUserId
-					+ SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_USER_DOMAIN);
-		}
-		ObjectMapper mapper = new ObjectMapper();
-		HttpHeaders headers = EcompPortalUtils.base64encodeKeyForAAFBasicAuth()						;
-		HttpEntity<String> getUserRolesEntity = new HttpEntity<>(headers);
-		logger.debug(EELFLoggerDelegate.debugLogger, "Connecting to external system to get current user roles");
-		ResponseEntity<String> getResponse = template
-				.exchange(SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_URL)
-						+ "roles/user/" + name, HttpMethod.GET, getUserRolesEntity, String.class);
-		if(getResponse.getStatusCode().value() == 200){
-			logger.debug(EELFLoggerDelegate.debugLogger, "Connected to external system and received user roles: ", getResponse.getBody());
-
-		}
-		List<ExternalAccessUserRoleDetail> userRoleDetailList = new ArrayList<>();
-		String res = getResponse.getBody();
-		JSONObject jsonObj = null;
-		JSONArray extRoles = null;
-		if (!res.equals("{}")) {
-			jsonObj = new JSONObject(res);
-			extRoles = jsonObj.getJSONArray("role");
-		}
-		ExternalAccessUserRoleDetail userRoleDetail = null;
-		if (extRoles != null) {
-			for (int i = 0; i < extRoles.length(); i++) {
-				if (extRoles.getJSONObject(i).getString("name").startsWith(app.getNameSpace() + ".") && !extRoles.getJSONObject(i).getString("name").equals(app.getNameSpace()+".admin")
-					&&	!extRoles.getJSONObject(i).getString("name").equals(app.getNameSpace()+".owner")) {
-					ObjectMapper descMapper = new ObjectMapper();
-					if(extRoles.getJSONObject(i).has("description")){
-						ExternalRoleDescription desc = descMapper.readValue(
-								extRoles.getJSONObject(i).getString("description"), ExternalRoleDescription.class);
-						userRoleDetail = new ExternalAccessUserRoleDetail(extRoles.getJSONObject(i).getString("name"),
-								desc);
-						userRoleDetailList.add(userRoleDetail);	
-					}else{
-					userRoleDetail = new ExternalAccessUserRoleDetail(extRoles.getJSONObject(i).getString("name"),
-							null);
-					userRoleDetailList.add(userRoleDetail);
-					}
-
-				}
+	private void updateUserRolesInExternalSystem(EPApp app, String orgUserId, List<RoleInAppForUser> roleInAppUser, boolean isPortalRequest)
+	{
+		try {
+			// check if user exists
+			final Map<String, String> userParams = new HashMap<>();
+			userParams.put("orgUserIdValue", orgUserId);
+			List<EPUser> userInfo = checkIfUserExists(userParams);
+			if (userInfo.isEmpty()) {
+				createLocalUserIfNecessary(orgUserId);
 			}
-		}
-		for (ExternalAccessUserRoleDetail userRole : userRoleDetailList) {
-			HttpEntity<String> entity = new HttpEntity<>(headers);
-			template.exchange(SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_URL)
-					+ "userRole/" + name + "/" + userRole.getName(), HttpMethod.DELETE, entity, String.class);
-		}
-		final Map<String, RoleInAppForUser> roleInAppUserMap = new HashMap<>();
-		for(RoleInAppForUser roleInAppUserNew: roleInAppUser){
-			roleInAppUserMap.put(roleInAppUserNew.getRoleName(), roleInAppUserNew);
-		}
-		final Map<String, Long> params = new HashMap<>();
-		params.put("appId", app.getId());
-		params.put("userId", user.getId());
-		List<EcompUserAppRoles> userAppList = dataAccessService.executeNamedQuery("getUserAppExistingRoles", params, null);
-		// Check if incoming request has sys admin or account admin, if exists add in external system
-			if (!roleInAppUser.isEmpty()) {
-				for (EcompUserAppRoles userApp : userAppList) {
-					if ((userApp.getRoleId().equals(PortalConstants.SYS_ADMIN_ROLE_ID)
-							|| userApp.getRoleId().equals(PortalConstants.ACCOUNT_ADMIN_ROLE_ID)) && !roleInAppUserMap.containsKey(userApp.getRoleName())) {
-						RoleInAppForUser addSpecialRole = new RoleInAppForUser();
-						addSpecialRole.setIsApplied(true);
-						addSpecialRole.setRoleId(userApp.getRoleId());
-						addSpecialRole.setRoleName(userApp.getRoleName());
-						roleInAppUser.add(addSpecialRole);
+			String name = "";
+			if (EPCommonSystemProperties
+					.containsProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_USER_DOMAIN)) {
+				name = orgUserId
+						+ SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_USER_DOMAIN);
+			}
+			ObjectMapper mapper = new ObjectMapper();
+			HttpHeaders headers = EcompPortalUtils.base64encodeKeyForAAFBasicAuth();
+			HttpEntity<String> getUserRolesEntity = new HttpEntity<>(headers);
+			logger.debug(EELFLoggerDelegate.debugLogger, "Connecting to external system to get current user roles");
+			ResponseEntity<String> getResponse = template
+					.exchange(SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_URL)
+							+ "roles/user/" + name, HttpMethod.GET, getUserRolesEntity, String.class);
+			if (getResponse.getStatusCode().value() == 200) {
+				logger.debug(EELFLoggerDelegate.debugLogger, "updateUserRolesInExternalSystem: Finished GET user roles from external system and received user roles {}",
+						getResponse.getBody());
+
+			}
+			List<ExternalAccessUserRoleDetail> userRoleDetailList = new ArrayList<>();
+			String res = getResponse.getBody();
+			JSONObject jsonObj = null;
+			JSONArray extRoles = null;
+			if (!res.equals("{}")) {
+				jsonObj = new JSONObject(res);
+				extRoles = jsonObj.getJSONArray("role");
+			}
+			ExternalAccessUserRoleDetail userRoleDetail = null;
+			if (extRoles != null) {
+				for (int i = 0; i < extRoles.length(); i++) {
+					if (extRoles.getJSONObject(i).getString("name").startsWith(app.getNameSpace() + ".")
+							&& !extRoles.getJSONObject(i).getString("name").equals(app.getNameSpace() + ".admin")
+							&& !extRoles.getJSONObject(i).getString("name").equals(app.getNameSpace() + ".owner")) {
+						ObjectMapper descMapper = new ObjectMapper();
+						if (extRoles.getJSONObject(i).has("description")) {
+							ExternalRoleDescription desc = descMapper.readValue(
+									extRoles.getJSONObject(i).getString("description"), ExternalRoleDescription.class);
+							userRoleDetail = new ExternalAccessUserRoleDetail(
+									extRoles.getJSONObject(i).getString("name"), desc);
+							userRoleDetailList.add(userRoleDetail);
+						} else {
+							userRoleDetail = new ExternalAccessUserRoleDetail(
+									extRoles.getJSONObject(i).getString("name"), null);
+							userRoleDetailList.add(userRoleDetail);
+						}
+
 					}
 				}
 			}
-		List<RoleInAppForUser> roleInAppUserNonDupls = roleInAppUser.stream().distinct().collect(Collectors.toList());
-		for (RoleInAppForUser addRole : roleInAppUserNonDupls) {
-			ExternalAccessUser extUser = null;
-			if ((addRole.getRoleId().equals(PortalConstants.ACCOUNT_ADMIN_ROLE_ID))
-					&& !app.getId().equals(PortalConstants.PORTAL_APP_ID)) {
-				try{
-				String extRole = app.getNameSpace()+"."+PortalConstants.ADMIN_ROLE.replaceAll(" ","_");
-				HttpEntity<String> entity = new HttpEntity<>(headers);
-				logger.debug(EELFLoggerDelegate.debugLogger, "Connecting to External Access system");
-				ResponseEntity<String> getRoleResponse = template.exchange(
-						SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_URL) + "roles/"+extRole,
-						HttpMethod.GET, entity, String.class);
-				String extAdminRole = app.getNameSpace()+"."+PortalConstants.ADMIN_ROLE.replaceAll(" ", "_");
-				if(getRoleResponse.getBody().equals("{}")){
-						String addDesc = "{\"name\":\"" +extAdminRole+ "\"}";
-						HttpEntity<String> roleEntity = new HttpEntity<>(addDesc,headers);
-						template.exchange(
-							SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_URL)  + "role",
-							HttpMethod.POST, roleEntity, String.class);	
+			// If request coming from portal not from external role approval system then we have to check if user already 
+			// have account admin or system admin as GUI will not send these roles 
+			if (!isPortalRequest) {
+				final Map<String, String> loginIdParams = new HashMap<>();
+				loginIdParams.put("orgUserIdValue", orgUserId);
+				EPUser user = (EPUser) dataAccessService.executeNamedQuery("epUserAppId", loginIdParams, null).get(0);
+				final Map<String, Long> params = new HashMap<>();
+				params.put("appId", app.getId());
+				params.put("userId", user.getId());
+				List<EcompUserAppRoles> userAppList = dataAccessService.executeNamedQuery("getUserAppExistingRoles",
+						params, null);
+				if (!roleInAppUser.isEmpty()) {
+					for (EcompUserAppRoles userApp : userAppList) {
+						if (userApp.getRoleId().equals(PortalConstants.SYS_ADMIN_ROLE_ID)
+								|| userApp.getRoleId().equals(PortalConstants.ACCOUNT_ADMIN_ROLE_ID)) {
+							RoleInAppForUser addSpecialRole = new RoleInAppForUser();
+							addSpecialRole.setIsApplied(true);
+							addSpecialRole.setRoleId(userApp.getRoleId());
+							addSpecialRole.setRoleName(userApp.getRoleName());
+							roleInAppUser.add(addSpecialRole);
+						}
+					}
 				}
-				extUser = new ExternalAccessUser(name,
-						app.getNameSpace() + "." + PortalConstants.ADMIN_ROLE.replaceAll(" ", "_"));
-				} catch(Exception e){
-					logger.error(EELFLoggerDelegate.errorLogger, "Failed to add admin role for application {} ",app.getId(),e);
-					continue;
-				}
-			} else {
-				extUser = new ExternalAccessUser(name,
-						app.getNameSpace() + "." + addRole.getRoleName().replaceAll(" ", "_"));
 			}
-			// Assign user role for an application in external access system
-			String userRole = mapper.writeValueAsString(extUser);
-			HttpEntity<String> entity = new HttpEntity<>(userRole, headers);
-			if (addRole.getIsApplied()) {
-				logger.debug(EELFLoggerDelegate.debugLogger, "Connecting to external system and adding user role",
-						addRole.getRoleName());
-				ResponseEntity<String> addResponse = template.exchange(
-						SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_URL) + "userRole",
-						HttpMethod.POST, entity, String.class);
-				logger.debug(EELFLoggerDelegate.debugLogger, "Connected to external system and added user role",
-						getResponse.getBody(), addRole.getRoleName());
-				if (addResponse.getStatusCode().value() != 201) {
+			List<RoleInAppForUser> roleInAppUserNonDupls = roleInAppUser.stream().distinct()
+					.collect(Collectors.toList());
+			final Map<String, RoleInAppForUser> currentUserRolesToUpdate = new HashMap<>();
+			for (RoleInAppForUser roleInAppUserNew : roleInAppUser) {
+				currentUserRolesToUpdate.put(roleInAppUserNew.getRoleName(), roleInAppUserNew);
+			}
+			final Map<String, ExternalAccessUserRoleDetail> currentUserRolesInExternalSystem = new HashMap<>();
+			for (ExternalAccessUserRoleDetail extAccessUserRole : userRoleDetailList) {
+				currentUserRolesInExternalSystem.put(extAccessUserRole.getName(), extAccessUserRole);
+			}
+			// Check if roles does not exists in local but still there in External Central Auth System delete them all
+			for (ExternalAccessUserRoleDetail userRole : userRoleDetailList) {
+				if (!(currentUserRolesToUpdate
+						.containsKey(userRole.getName().substring(app.getNameSpace().length() + 1).replaceAll("_", " "))
+						|| currentUserRolesToUpdate
+								.containsKey(userRole.getName().substring(app.getNameSpace().length() + 1)))) {
+					HttpEntity<String> entity = new HttpEntity<>(headers);
 					logger.debug(EELFLoggerDelegate.debugLogger,
-							"Connected to external system unable to save user role", getResponse.getBody(),
-							addRole.getRoleName());
-					throw new Exception("Failed to add user role for application");
+							"updateUserRolesInExternalSystem: Connecting to external system to DELETE user role {}",
+							userRole);
+					ResponseEntity<String> deleteResponse = template.exchange(
+							SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_URL)
+									+ "userRole/" + name + "/" + userRole.getName(),
+							HttpMethod.DELETE, entity, String.class);
+					logger.debug(EELFLoggerDelegate.debugLogger,
+							"updateUserRolesInExternalSystem: Finished DELETE operation in external system for user role {} and the response is {}",
+							userRole, deleteResponse.getBody());
 				}
 			}
-		}
-		}catch(Exception e){
-			logger.error(EELFLoggerDelegate.errorLogger, "Failed to add user role for application {}", app.getId(),e);
+			// Check if user roles does not exists in External Central Auth System add them all
+			for (RoleInAppForUser addUserRole : roleInAppUserNonDupls) {
+				if (!(currentUserRolesInExternalSystem
+						.containsKey(app.getNameSpace() + "." + addUserRole.getRoleName().replaceAll(" ", "_")))) {
+					ExternalAccessUser extUser = new ExternalAccessUser(name,
+							app.getNameSpace() + "." + addUserRole.getRoleName().replaceAll(" ", "_"));
+					String formattedUserRole = mapper.writeValueAsString(extUser);
+					HttpEntity<String> entity = new HttpEntity<>(formattedUserRole, headers);
+					logger.debug(EELFLoggerDelegate.debugLogger, "updateUserRolesInExternalSystem: Connecting to external system and adding user role",
+							addUserRole.getRoleName());
+					ResponseEntity<String> addResponse = template
+							.exchange(SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_URL)
+									+ "userRole", HttpMethod.POST, entity, String.class);
+					logger.debug(EELFLoggerDelegate.debugLogger,
+							"updateUserRolesInExternalSystem: Finished adding user role in external system {} and added user role {}",
+							getResponse.getBody(), addUserRole.getRoleName());
+					if (addResponse.getStatusCode().value() != 201 && addResponse.getStatusCode().value() != 404) {
+						logger.debug(EELFLoggerDelegate.debugLogger,
+								"Finished POST operation in external system but unable to save user role", getResponse.getBody(),
+								addUserRole.getRoleName());
+						throw new Exception(addResponse.getBody());
+					}
+				}
+			}
+		} catch (Exception e) {
+			logger.error(EELFLoggerDelegate.errorLogger, "updateUserRolesInExternalSystem: Failed to add user role for application {} due to {}", app.getId(), e);
 		}
 
 	}
@@ -1272,20 +1275,22 @@ public class UserRolesCommonServiceImpl  {
 							.executeNamedQuery("userAppRolesRequestList", params, null);
 					epRequestIdSize = epRequestId.size();
 				}
+				
+				//If Non-Centralized app make sure you sync app roles before assigning to user
 				if(!app.getId().equals(PortalConstants.PORTAL_APP_ID) && !app.getCentralAuth()){	
 				EcompRole[] appRoles = applicationsRestClientService.get(EcompRole[].class, app.getId(), "/roles");
 				syncAppRoles(sessionFactory, app.getId(), appRoles);
 				}
-				
 				List<RoleInAppForUser> roleInAppForUserList = roleInAppForUserList(newAppRolesForUser.getRoles(),
 						app.getId(), app.getMlAppName());
 				List<EcompUserAppRoles> userRoleList = null;
-				if(userId != null){
+				if(!userInfo.isEmpty()){
 				final Map<String, Long> appParams = new HashMap<>();
 				appParams.put("userId", userId.getId());
 				appParams.put("appId", app.getId());
 				userRoleList = dataAccessService.executeNamedQuery("getUserAppExistingRoles", appParams, null);
 				}
+				// Check if list contains just account admin role
 				boolean checkIfAdminRoleExists = false;
 				if (reqType.equals("DELETE")) {
 					checkIfAdminRoleExists = userRoleList.stream()
@@ -1298,8 +1303,9 @@ public class UserRolesCommonServiceImpl  {
 				if (app.getCentralAuth()) {
 					// We should add If user does not exist in remote application
 					try {
-						if (!(!app.getId().equals(PortalConstants.PORTAL_APP_ID) && checkIfAdminRoleExists
-								&& (roleInAppForUserList.size() == 1 || reqType.equals("DELETE")))) {
+						// If adding just account admin role dont make remote application user call
+						if (!app.getId().equals(PortalConstants.PORTAL_APP_ID) && !(checkIfAdminRoleExists
+								&& reqType.equals("DELETE")) && roleInAppForUserList.size() > 1) {
 							EPUser remoteAppUser = null;
 							remoteAppUser = checkIfRemoteUserExits(userId.getOrgUserId(), app,
 									applicationsRestClientService);
@@ -1311,7 +1317,7 @@ public class UserRolesCommonServiceImpl  {
 						}
 					} catch (Exception e) {
 						reqMessage = e.getMessage();
-						logger.error(EELFLoggerDelegate.errorLogger, "Failed to added remote user", e);
+						logger.error(EELFLoggerDelegate.errorLogger, "setExternalRequestUserAppRole: Failed to added remote user", e);
 						throw new Exception(reqMessage);
 					}
 					Set<EcompRole> userRolesInLocalApp = postUsersRolesToLocalApp(roleInAppForUserList, mapper,
@@ -1320,8 +1326,8 @@ public class UserRolesCommonServiceImpl  {
 							userRolesInLocalApp);
 					List<RoleInAppForUser> roleAppUserList = rolesInAppForUser.roles;
 					// Apply changes in external Access system
-					updateUserRolesInExternalSystem(app, rolesInAppForUser.orgUserId, roleAppUserList);
-					logger.info(EELFLoggerDelegate.debugLogger, "{} user app roles: for app {}, user {}", logMessage,
+					updateUserRolesInExternalSystem(app, rolesInAppForUser.orgUserId, roleAppUserList, externalSystemRequest);
+					logger.info(EELFLoggerDelegate.debugLogger, "setExternalRequestUserAppRole: {} user app roles: for app {}, user {}", logMessage,
 							newAppRolesForUser.getApplicationName(), newAppRolesForUser.getLoginId());
 					result = applyChangesInUserRolesForAppToEcompDB(rolesInAppForUser, externalSystemRequest, reqType);
 				} 
@@ -1333,7 +1339,7 @@ public class UserRolesCommonServiceImpl  {
 							userRolesInLocalApp);
 					result = applyChangesInUserRolesForAppToEcompDB(rolesInAppForUser, externalSystemRequest, reqType);
 				} else {// remote app
-					
+					// If adding just account admin role don't do remote application user call
 					if(!((roleInAppForUserList.size() == 1 || reqType.equals("DELETE")) && checkIfAdminRoleExists)){
 					EPUser remoteAppUser = null;
 						remoteAppUser = checkIfRemoteUserExits(userId.getOrgUserId(), app, applicationsRestClientService);
@@ -1347,7 +1353,7 @@ public class UserRolesCommonServiceImpl  {
 
 							RolesInAppForUser rolesInAppForUser = constructRolesInAppForUserUpdate(orgUserId,
 									app.getId(), userRolesInRemoteApp);
-							logger.info(EELFLoggerDelegate.debugLogger, "{} user app roles: for app {}, user {}",
+							logger.info(EELFLoggerDelegate.debugLogger, "setExternalRequestUserAppRole: {} user app roles: for app {}, user {}",
 									logMessage, newAppRolesForUser.getApplicationName(),
 									newAppRolesForUser.getLoginId());
 							result = applyChangesInUserRolesForAppToEcompDB(rolesInAppForUser, externalSystemRequest,
@@ -1363,14 +1369,15 @@ public class UserRolesCommonServiceImpl  {
 							}*/
 						}
 					} else {
-						if(!(reqType.equals("DELETE") && userId == null)){
+						// Here we are adding only we have single account admin in roleInAppForUserList and this should not add in remote 
+						if(!(reqType.equals("DELETE")) && userInfo.isEmpty()){
 							reqMessage = "Saved Successfully";
 						}
 						Set<EcompRole> userRolesInRemoteApp = constructUsersEcompRoles(roleInAppForUserList);
 
 						RolesInAppForUser rolesInAppForUser = constructRolesInAppForUserUpdate(orgUserId, app.getId(),
 								userRolesInRemoteApp);
-						logger.info(EELFLoggerDelegate.debugLogger, "{} user app roles: for app {}, user {}",
+						logger.info(EELFLoggerDelegate.debugLogger, "setExternalRequestUserAppRole: {} user app roles: for app {}, user {}",
 								logMessage, newAppRolesForUser.getApplicationName(), newAppRolesForUser.getLoginId());
 						result = applyChangesInUserRolesForAppToEcompDB(rolesInAppForUser, externalSystemRequest,
 								reqType);
@@ -1384,7 +1391,7 @@ public class UserRolesCommonServiceImpl  {
 					}
 				}
 			} catch (Exception e) {
-				String message = String.format("Failed to create user or update user roles for User %s, AppId %s",
+				String message = String.format("setExternalRequestUserAppRole: Failed to create user or update user roles for User %s, AppId %s",
 						orgUserId, appName);
 				logger.error(EELFLoggerDelegate.errorLogger, message, e);
 				result = false;
@@ -1547,6 +1554,8 @@ public class UserRolesCommonServiceImpl  {
 			EcompRole[] appRoles = null;
 			List<EcompRole> roles = new ArrayList<>();
 			if(app.getCentralAuth()){
+				//Sync application roles from External Access System
+				externalAccessRolesService.syncApplicationRolesWithEcompDB(app);
 				List<EPRole> applicationRoles = dataAccessService.getList(EPRole.class, " where app_id = "+app.getId()+ " and active_yn = 'Y'", null, null);;
 				for(EPRole role : applicationRoles){
 					EcompRole ecompRole = new EcompRole();

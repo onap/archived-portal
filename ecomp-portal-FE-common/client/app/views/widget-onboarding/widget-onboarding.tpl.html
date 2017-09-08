@@ -36,10 +36,10 @@
 							</select>
 						</div>
 					</div>
-					<input class="table-search" type="text"
+ 					<input class="table-search" type="text"
 						id="widget-onboarding-table-search"
 						placeholder="Search in entire table"
-						ng-model="widgetOnboarding.searchString" />
+						data-ng-model="widgetOnboarding.searchString" /> 
 
 					<button id="widget-onboarding-button-add"
 						class="btn btn-alt btn-small"
@@ -55,7 +55,7 @@
 					<div ng-hide="widgetOnboarding.isCommError">
 						<div b2b-table table-data="portalAdmin.portalAdminsTableData"
 							ng-hide="widgetOnboarding.isLoadingTable"
-							search-string="portalAdmin.searchString" class="b2b-table-div">
+							search-string="widgetOnboarding.searchString" class="b2b-table-div">
 							<table>
 								<thead b2b-table-row type="header">
 									<tr>

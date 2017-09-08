@@ -3,6 +3,7 @@ package org.openecomp.portalapp.portal.service;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -23,6 +24,7 @@ import org.openecomp.portalapp.portal.domain.EPRole;
 import org.openecomp.portalapp.portal.domain.EPUser;
 import org.openecomp.portalapp.portal.domain.EPUserApp;
 import org.openecomp.portalapp.portal.domain.ExternalRoleDetails;
+import org.openecomp.portalapp.portal.logging.aop.EPAuditLog;
 import org.openecomp.portalapp.portal.logging.aop.EPMetricsLog;
 import org.openecomp.portalapp.portal.logging.logic.EPLogUtil;
 import org.openecomp.portalapp.portal.transport.BulkUploadRoleFunction;
@@ -64,32 +66,62 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 @Service("externalAccessRolesService")
 @EnableAspectJAutoProxy
 @EPMetricsLog
+@EPAuditLog
 public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesService {
+
+	private static final String IS_NULL_STRING = "null";
+
+	private static final String EXTERNAL_AUTH_PERMS = "perms";
+
+	private static final String EXTERNAL_AUTH_ROLE_DESCRIPTION = "description";
+
+	private static final String WHERE_APP_ID_EQUALS = " where app_id = ";
+
+	private static final String IS_EMPTY_JSON_STRING = "{}";
+
+	private static final String CONNECTING_TO_EXTERNAL_AUTH_SYSTEM_LOG_MESSAGE = "Connecting to External Auth system";
+
+	private static final String WHERE_ROLE_ID_EQUALS = " where role_id = ";
+
+	private static final String APP_ROLE_ID = "appRoleId";
+
+	private static final String APP_ID = "appId";
+
+	private static final String PRIORITY = "priority";
+
+	private static final String ACTIVE = "active";
+
+	private static final String ROLE_NAME = "name";
+
+	private static final String ID = "id";
+
+	private static final String WHERE_ROLE_NAME_EQUALS = " where role_name = '";
+
+	private static final String APP_ID_EQUALS = " app_id = ";
 
 	private static EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(ExternalAccessRolesServiceImpl.class);
 
 	@Autowired
 	private DataAccessService dataAccessService;
-	
+
 	@Autowired
 	private SessionFactory sessionFactory;
-
 
 	RestTemplate template = new RestTemplate();
 
 	@SuppressWarnings("unchecked")
-	public List<EPRole> getAppRoles(Long appId, Boolean extRequestValue) throws Exception {
+	public List<EPRole> getAppRoles(Long appId) throws Exception {
 		List<EPRole> applicationRoles = null;
 		String filter = null;
 		try {
 			if (appId == 1) {
 				filter = " where app_id is null";
 			} else {
-				filter = " where app_id = " + appId;
+				filter = WHERE_APP_ID_EQUALS + appId;
 			}
 			applicationRoles = dataAccessService.getList(EPRole.class, filter, null, null);
 		} catch (Exception e) {
-			logger.error(EELFLoggerDelegate.errorLogger, "getAppRoles is failed", e);
+			logger.error(EELFLoggerDelegate.errorLogger, "getAppRoles: failed", e);
 			throw new Exception(e.getMessage());
 		}
 		return applicationRoles;
@@ -101,27 +133,35 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 		List<EPApp> app = null;
 		try {
 			app = (List<EPApp>) dataAccessService.getList(EPApp.class, " where ueb_key = '" + uebkey + "'", null, null);
+			if(!app.get(0).getEnabled()){
+				throw new Exception("Application:"+app.get(0).getName()+" is Unavailable");
+			}
 		} catch (Exception e) {
-			logger.error(EELFLoggerDelegate.errorLogger, "getApp is failed", e);
+			logger.error(EELFLoggerDelegate.errorLogger, "getApp: failed", e);
 			throw new Exception(e.getMessage());
 		}
 		return app;
 	}
 
-	public String getSingleAppRole(String addRole, EPApp app) throws Exception {
-		String response = "";
+	/**
+	 * It returns  single application role from external auth system 
+	 * @param addRole
+	 * @param app
+	 * @return JSON string which contains application role details
+	 * @throws Exception
+	 */
+	private String getSingleAppRole(String addRole, EPApp app) throws Exception {
 		HttpHeaders headers = EcompPortalUtils.base64encodeKeyForAAFBasicAuth();
 		HttpEntity<String> entity = new HttpEntity<>(headers);
-		logger.debug(EELFLoggerDelegate.debugLogger, "Connecting to External Access system");
-		response = template
+		logger.debug(EELFLoggerDelegate.debugLogger, "getSingleAppRole: Connecting to External Auth system");
+		ResponseEntity<String> response = template
 				.exchange(
 						SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_URL) + "roles/"
 								+ app.getNameSpace() + "." + addRole.replaceAll(" ", "_"),
-						HttpMethod.GET, entity, String.class)
-				.getBody();
-		logger.debug(EELFLoggerDelegate.debugLogger, "Connected to External Access system");
-
-		return response;
+						HttpMethod.GET, entity, String.class);
+		logger.debug(EELFLoggerDelegate.debugLogger,
+				"getSingleAppRole: Finished GET app role from External Auth system and status code: {} ", response.getStatusCode().value());
+		return response.getBody();
 	}
 
 	@Override
@@ -130,43 +170,52 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 		ResponseEntity<String> addResponse = null;
 		HttpHeaders headers = EcompPortalUtils.base64encodeKeyForAAFBasicAuth();
 		EPApp app = getApp(uebkey).get(0);
-		String newRole = createNewRoleInExternalSystem(addRole, app);
+		String newRole = updateExistingRoleInExternalSystem(addRole, app);
 		HttpEntity<String> entity = new HttpEntity<>(newRole, headers);
-		logger.debug(EELFLoggerDelegate.debugLogger, "Connecting to External Access system");
+		logger.debug(EELFLoggerDelegate.debugLogger, "addRole: Connecting to External Auth system");
 		addResponse = template.exchange(
 				SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_URL) + "role",
 				HttpMethod.POST, entity, String.class);
 		if (addResponse.getStatusCode().value() == 201) {
 			response = true;
-			logger.debug(EELFLoggerDelegate.debugLogger, "Connected to External Access system");
+			logger.debug(EELFLoggerDelegate.debugLogger, "addRole: Finished adding role in the External Auth system  and response code: {} ", addResponse.getStatusCode().value());
 		}
 		if (addResponse.getStatusCode().value() == 406) {
-			logger.debug(EELFLoggerDelegate.debugLogger, "Connected to External Access system but something went wrong!");
-			throw new Exception("Failed to create role");
+			logger.error(EELFLoggerDelegate.errorLogger,
+					"addRole: Failed to add in the External Auth system due to {} and status code: {}", addResponse.getBody(), addResponse.getStatusCode().value());
 		}
 		return response;
 	}
 
-	@Override
-	public void updateRole(Role addRole, EPApp app) throws Exception {
-		boolean addResponse = updateRoleInExternalSystem(addRole, app);
-		if (!addResponse) {
-			throw new Exception("Failed to update a role");
-		}
-	}
-
+	/**
+	 * 
+	 * It deletes record in external auth system
+	 * 
+	 * @param delRole
+	 * @return JSON String which has status code and response body 
+	 * @throws Exception
+	 */
 	private ResponseEntity<String> deleteRoleInExternalSystem(String delRole) throws Exception {
 		ResponseEntity<String> delResponse = null;
 		HttpHeaders headers = EcompPortalUtils.base64encodeKeyForAAFBasicAuth();
 		HttpEntity<String> entity = new HttpEntity<>(delRole, headers);
-		logger.debug(EELFLoggerDelegate.debugLogger, "Connecting to External Access system");
+		logger.debug(EELFLoggerDelegate.debugLogger, "deleteRoleInExternalSystem: {} " , CONNECTING_TO_EXTERNAL_AUTH_SYSTEM_LOG_MESSAGE);
 		delResponse = template.exchange(
 				SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_URL) + "role?force=true",
 				HttpMethod.DELETE, entity, String.class);
-		logger.debug(EELFLoggerDelegate.debugLogger, "Connected to External Access system");
+		logger.debug(EELFLoggerDelegate.debugLogger, "deleteRoleInExternalSystem: Finished DELETE operation in the External Auth system and status code: {} ", delResponse.getStatusCode().value());
 		return delResponse;
 	}
 
+	/**
+	 * It updates role in external auth system
+	 * 
+	 * @param updateExtRole
+	 * @param app
+	 * @return true if success else false
+	 * @throws Exception
+	 * 					If updateRoleInExternalSystem fails we catch it in logger for detail message
+	 */
 	@SuppressWarnings("unchecked")
 	private boolean updateRoleInExternalSystem(Role updateExtRole, EPApp app) throws Exception {
 		boolean response = false;
@@ -176,75 +225,85 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 		ExternalAccessRolePerms extRolePerms = null;
 		ExternalAccessPerms extPerms = null;
 		List<EPRole> epRoleList = null;
-			epRoleList = dataAccessService.getList(EPRole.class,
-				" where role_id = " + updateExtRole.getId(), null, null);
+		epRoleList = dataAccessService.getList(EPRole.class, WHERE_ROLE_ID_EQUALS + updateExtRole.getId(), null, null);
 		String appRole = getSingleAppRole(epRoleList.get(0).getName(), app);
-		if (!appRole.equals("{}")) {
+		if (!appRole.equals(IS_EMPTY_JSON_STRING)) {
 			JSONObject jsonObj = new JSONObject(appRole);
 			JSONArray extRole = jsonObj.getJSONArray("role");
-			if (!extRole.getJSONObject(0).has("description")) {
-				String roleName = extRole.getJSONObject(0).getString("name");
-				String delRoleKey = "{\"name\":\"" + roleName + "\"}";
-				deleteResponse = deleteRoleInExternalSystem(delRoleKey);
+			if (!extRole.getJSONObject(0).has(EXTERNAL_AUTH_ROLE_DESCRIPTION)) {
+				String roleName = extRole.getJSONObject(0).getString(ROLE_NAME);
+				Map<String, String> delRoleKeyMapper = new HashMap<>();
+				delRoleKeyMapper.put(ROLE_NAME, roleName);
+				String delRoleKeyValue = mapper.writeValueAsString(delRoleKeyMapper);
+				deleteResponse = deleteRoleInExternalSystem(delRoleKeyValue);
 				if (deleteResponse.getStatusCode().value() != 200) {
-					throw new Exception("Failed to delete role in external access system!");
+					throw new Exception(deleteResponse.getBody());
 				}
 				addRole(updateExtRole, app.getUebKey());
 			} else {
-				String desc = extRole.getJSONObject(0).getString("description");
-				String name = extRole.getJSONObject(0).getString("name");
+				String desc = extRole.getJSONObject(0).getString(EXTERNAL_AUTH_ROLE_DESCRIPTION);
+				String name = extRole.getJSONObject(0).getString(ROLE_NAME);
 				List<ExternalAccessPerms> list = null;
-				if (extRole.getJSONObject(0).has("perms")) {
-					JSONArray perms = extRole.getJSONObject(0).getJSONArray("perms");
-					ObjectMapper permsMapper = new ObjectMapper();
-					list = permsMapper.readValue(perms.toString(), TypeFactory.defaultInstance()
+				if (extRole.getJSONObject(0).has(EXTERNAL_AUTH_PERMS)) {
+					JSONArray perms = extRole.getJSONObject(0).getJSONArray(EXTERNAL_AUTH_PERMS);
+					list = mapper.readValue(perms.toString(), TypeFactory.defaultInstance()
 							.constructCollectionType(List.class, ExternalAccessPerms.class));
 				}
-				ObjectMapper roleMapper = new ObjectMapper();
-				ExternalRoleDescription sysRoleList = roleMapper.readValue(desc, ExternalRoleDescription.class);
+				ExternalRoleDescription sysRoleList = mapper.readValue(desc, ExternalRoleDescription.class);
 				// If role name or role functions are updated then delete record in External System and add new record to avoid conflicts
 				Boolean existingRoleActive;
-				boolean res;
+				boolean isActiveValueChanged;
 				// check role active status
 				existingRoleActive = new Boolean(sysRoleList.getActive());
-				res = existingRoleActive.equals(updateExtRole.getActive());
+				isActiveValueChanged = existingRoleActive.equals(updateExtRole.getActive());
 				if (!sysRoleList.getName().equals(updateExtRole.getName())) {
-					String deleteRoleKey = "{\"name\":\"" + name + "\"}";
-					deleteResponse = deleteRoleInExternalSystem(deleteRoleKey);
+					Map<String, String> delRoleKeyMapper = new HashMap<>();
+					delRoleKeyMapper.put(ROLE_NAME, name);
+					String delRoleKeyValue = mapper.writeValueAsString(delRoleKeyMapper);	
+					deleteResponse = deleteRoleInExternalSystem(delRoleKeyValue);
 					if (deleteResponse.getStatusCode().value() != 200) {
-						throw new Exception("Failed to delete role in external access system!");
+						logger.error(EELFLoggerDelegate.errorLogger, "updateRoleInExternalSystem:  Failed to delete role in external system due to {} ", deleteResponse.getBody());
+						throw new Exception(deleteResponse.getBody());
 					}
-					response = addRole(updateExtRole, app.getUebKey());
-					ObjectMapper addPermsMapper = new ObjectMapper();
-					response = addRoleFunctionsInExternalSystem(updateExtRole, addPermsMapper, app);
+					addRole(updateExtRole, app.getUebKey());
+					addRoleFunctionsInExternalSystem(updateExtRole, mapper, app);
 				}
 				ExternalAccessRole updateRole = new ExternalAccessRole();
-				if (!res || !sysRoleList.getPriority().equals(String.valueOf(updateExtRole.getPriority())) || 
-						sysRoleList.getId().equals("null")) {
+				if (!isActiveValueChanged
+						|| !sysRoleList.getPriority().equals(String.valueOf(updateExtRole.getPriority()))
+						|| sysRoleList.getId().equals(IS_NULL_STRING)
+						|| !sysRoleList.getId().equals(String.valueOf(epRoleList.get(0).getId()))) {
 					String updateDesc = "";
+					String appId = (app.getId().equals(PortalConstants.PORTAL_APP_ID)) ? " app_id is null"
+							: APP_ID_EQUALS + app.getId();
 					List<EPRole> getRole = dataAccessService.getList(EPRole.class,
-							" where role_name = '" + updateExtRole.getName() + "'", null, null);
+							WHERE_ROLE_NAME_EQUALS + updateExtRole.getName() + "' and " + appId, null, null);
+					Map<String, Object> extSystemUpdateRoleJsonMapper = new LinkedHashMap<>();
+					extSystemUpdateRoleJsonMapper.put(ID, getRole.get(0).getId());
+					extSystemUpdateRoleJsonMapper.put(ROLE_NAME, updateExtRole.getName());
+					extSystemUpdateRoleJsonMapper.put(ACTIVE, updateExtRole.getActive());
+					extSystemUpdateRoleJsonMapper.put(PRIORITY, updateExtRole.getPriority());
 					if (app.getId().equals(PortalConstants.PORTAL_APP_ID)) {
-						updateDesc = "{\"id\":\"" + getRole.get(0).getId() + "\",\"name\":\"" + updateExtRole.getName()
-								+ "\",\"active\":\"" + updateExtRole.getActive() + "\",\"priority\":\""
-								+ updateExtRole.getPriority() + "\",\"appId\":\"null\",\"appRoleId\":\"null\"}";
-
+						extSystemUpdateRoleJsonMapper.put(APP_ID, null);
+						extSystemUpdateRoleJsonMapper.put(APP_ROLE_ID, null);
 					} else {
-						updateDesc = "{\"id\":\"" + getRole.get(0).getId() + "\",\"name\":\"" + updateExtRole.getName()
-								+ "\",\"active\":\"" + updateExtRole.getActive() + "\",\"priority\":\""
-								+ updateExtRole.getPriority() + "\",\"appId\":\"" + app.getId() + "\",\"appRoleId\":\""
-								+ getRole.get(0).getAppRoleId() + "\"}";
+						extSystemUpdateRoleJsonMapper.put(APP_ID, app.getId());
+						extSystemUpdateRoleJsonMapper.put(APP_ROLE_ID, getRole.get(0).getAppRoleId());
 
 					}
+					updateDesc = mapper.writeValueAsString(extSystemUpdateRoleJsonMapper);
 					updateRole.setName(app.getNameSpace() + "." + updateExtRole.getName().replaceAll(" ", "_"));
 					updateRole.setDescription(updateDesc);
 					String updateRoleDesc = mapper.writeValueAsString(updateRole);
 					HttpEntity<String> entity = new HttpEntity<>(updateRoleDesc, headers);
-					logger.debug(EELFLoggerDelegate.debugLogger, "Connecting to External Access system");
-					template.exchange(
+					logger.debug(EELFLoggerDelegate.debugLogger,
+							"updateRoleInExternalSystem: {} " , CONNECTING_TO_EXTERNAL_AUTH_SYSTEM_LOG_MESSAGE);
+					ResponseEntity<String> updatePermsResponse = template.exchange(
 							SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_URL) + "role",
 							HttpMethod.PUT, entity, String.class);
-					logger.debug(EELFLoggerDelegate.debugLogger, "Connected to External Access system");
+					logger.debug(EELFLoggerDelegate.debugLogger,
+							"updateRoleInExternalSystem: Finished updating in External Auth system and status code: {} ",
+							updatePermsResponse.getStatusCode().value());
 				}
 				List<RoleFunction> roleFunctionListNew = convertSetToListOfRoleFunctions(updateExtRole);
 				Map<String, RoleFunction> updateRoleFunc = new HashMap<>();
@@ -253,17 +312,16 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 				}
 				final Map<String, ExternalAccessPerms> extRolePermMap = new HashMap<>();
 				// Update permissions in the ExternalAccess System
-				ObjectMapper permMapper = new ObjectMapper();
 				if (list != null) {
 					for (ExternalAccessPerms perm : list) {
 						if (!updateRoleFunc.containsKey(perm.getInstance())) {
-							removePermForRole(perm, permMapper, name, headers);
+							removePermForRole(perm, mapper, name, headers);
 						}
 						extRolePermMap.put(perm.getInstance(), perm);
 					}
 				}
 				response = true;
-				if (!roleFunctionListNew.isEmpty() || roleFunctionListNew.size() > 0) {
+				if (!roleFunctionListNew.isEmpty()) {
 					for (RoleFunction roleFunc : roleFunctionListNew) {
 						if (!extRolePermMap.containsKey(roleFunc.getCode())) {
 							String checkType = roleFunc.getCode().contains("menu") ? "menu" : "url";
@@ -273,7 +331,7 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 									app.getNameSpace() + "." + updateExtRole.getName().replaceAll(" ", "_"));
 							String updateRolePerms = mapper.writeValueAsString(extRolePerms);
 							HttpEntity<String> entity = new HttpEntity<>(updateRolePerms, headers);
-							logger.debug(EELFLoggerDelegate.debugLogger, "Connecting to External Access system");
+							logger.debug(EELFLoggerDelegate.debugLogger, "updateRoleInExternalSystem: {} " , CONNECTING_TO_EXTERNAL_AUTH_SYSTEM_LOG_MESSAGE);
 							ResponseEntity<String> addResponse = template.exchange(
 									SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_URL)
 											+ "role/perm",
@@ -281,29 +339,41 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 							if (addResponse.getStatusCode().value() != 201) {
 								response = false;
 								logger.debug(EELFLoggerDelegate.debugLogger,
-										"Connected to External Access system but something went wrong! due to {} and statuscode: {}", addResponse.getStatusCode().getReasonPhrase(), addResponse.getStatusCode().value());
+										"updateRoleInExternalSystem: Connected to External Auth system but something went wrong! due to {} and statuscode: {}",
+										addResponse.getStatusCode().getReasonPhrase(),
+										addResponse.getStatusCode().value());
 							} else {
 								response = true;
-								logger.debug(EELFLoggerDelegate.debugLogger, "Connected to External Access system");
+								logger.debug(EELFLoggerDelegate.debugLogger, "updateRoleInExternalSystem: Finished adding permissions to roles in External Auth system and status code: {} ", addResponse.getStatusCode().value());
 							}
 						}
 					}
 				}
 			}
 		} else {
-			// It seems like role exists in local DB but not in External Access  system
+			// It seems like role exists in local DB but not in External Access system
 			addRole(updateExtRole, app.getUebKey());
 			List<RoleFunction> roleFunctionListUpdate = convertSetToListOfRoleFunctions(updateExtRole);
 			response = true;
-			if (!roleFunctionListUpdate.isEmpty() || roleFunctionListUpdate.size() > 0) {
-				ObjectMapper addPermsMapper = new ObjectMapper();
-				addRoleFunctionsInExternalSystem(updateExtRole, addPermsMapper, app);
+			if (!roleFunctionListUpdate.isEmpty()) {
+				addRoleFunctionsInExternalSystem(updateExtRole, mapper, app);
 			}
 		}
 		return response;
 	}
 	
-	private boolean addRoleFunctionsInExternalSystem(Role updateExtRole, ObjectMapper addPermsMapper, EPApp app) throws Exception {
+	/**
+	 * 
+	 * It adds functions to the role in external auth system 
+	 * 
+	 * @param updateExtRole
+	 * @param addPermsMapper
+	 * @param app
+	 * @return true if success else false
+	 * @throws Exception
+	 */
+	private boolean addRoleFunctionsInExternalSystem(Role updateExtRole, ObjectMapper addPermsMapper, EPApp app)
+			throws Exception {
 		boolean response = false;
 		ExternalAccessRolePerms extAddRolePerms = null;
 		ExternalAccessPerms extAddPerms = null;
@@ -311,31 +381,37 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 		HttpHeaders headers = EcompPortalUtils.base64encodeKeyForAAFBasicAuth();
 		for (RoleFunction roleFunc : roleFunctionListAdd) {
 			String checkType = roleFunc.getCode().contains("menu") ? "menu" : "url";
-			extAddPerms = new ExternalAccessPerms(app.getNameSpace() + "." + checkType, roleFunc.getCode(),
-					"*");
+			extAddPerms = new ExternalAccessPerms(app.getNameSpace() + "." + checkType, roleFunc.getCode(), "*");
 			extAddRolePerms = new ExternalAccessRolePerms(extAddPerms,
 					app.getNameSpace() + "." + updateExtRole.getName().replaceAll(" ", "_"));
 			String updateRolePerms = addPermsMapper.writeValueAsString(extAddRolePerms);
 			HttpEntity<String> entity = new HttpEntity<>(updateRolePerms, headers);
-			logger.debug(EELFLoggerDelegate.debugLogger, "Connecting to External Access system");
+			logger.debug(EELFLoggerDelegate.debugLogger, "addRoleFunctionsInExternalSystem: {} " , CONNECTING_TO_EXTERNAL_AUTH_SYSTEM_LOG_MESSAGE);
 			ResponseEntity<String> addResponse = template.exchange(
-					SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_URL)
-							+ "role/perm",
+					SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_URL) + "role/perm",
 					HttpMethod.POST, entity, String.class);
 			if (addResponse.getStatusCode().value() != 201) {
 				response = false;
 				logger.debug(EELFLoggerDelegate.debugLogger,
-						"Connected to External Access system but something went wrong! due to {} and statuscode: {}", addResponse.getStatusCode().getReasonPhrase(), addResponse.getStatusCode().value());
+						"addRoleFunctionsInExternalSystem: While adding permission to the role in  External Auth system something went wrong! due to {} and statuscode: {}",
+						addResponse.getStatusCode().getReasonPhrase(), addResponse.getStatusCode().value());
 			} else {
 				response = true;
-				logger.debug(EELFLoggerDelegate.debugLogger, "Connected to External Access system");
+				logger.debug(EELFLoggerDelegate.debugLogger, "addRoleFunctionsInExternalSystem: Finished adding permissions to roles in External Auth system and status code: {} ", addResponse.getStatusCode().value());
 			}
 		}
 		return response;
 	}
 
+	/**
+	 * 
+	 * It converts list of functions in updateExtRole parameter to the RoleFunction object
+	 * 
+	 * @param updateExtRole
+	 * @return list of functions 
+	 */
 	@SuppressWarnings("unchecked")
-	private List<RoleFunction> convertSetToListOfRoleFunctions(Role updateExtRole){
+	private List<RoleFunction> convertSetToListOfRoleFunctions(Role updateExtRole) {
 		Set<RoleFunction> roleFunctionSetList = updateExtRole.getRoleFunctions();
 		List<RoleFunction> roleFunctionList = new ArrayList<>();
 		ObjectMapper roleFuncMapper = new ObjectMapper();
@@ -347,20 +423,41 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 		}
 		return roleFunctionList.stream().distinct().collect(Collectors.toList());
 	}
-	
-	private void removePermForRole(ExternalAccessPerms perm, ObjectMapper permMapper,String name, HttpHeaders headers) throws Exception {
+
+	/**
+	 * It delete permissions/functions in the external auth system
+	 * 
+	 * @param perm
+	 * @param permMapper
+	 * @param name
+	 * @param headers
+	 * @throws Exception
+	 */
+	private void removePermForRole(ExternalAccessPerms perm, ObjectMapper permMapper, String name, HttpHeaders headers)
+			throws Exception {
 		ExternalAccessRolePerms extAccessRolePerms = new ExternalAccessRolePerms(perm, name);
 		String permDetails = permMapper.writeValueAsString(extAccessRolePerms);
 		HttpEntity<String> deleteEntity = new HttpEntity<>(permDetails, headers);
-		logger.debug(EELFLoggerDelegate.debugLogger, "Connecting to External Access system");
-		ResponseEntity<String> deletePermResponse = template.exchange(SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_URL)
-						+ "role/"+name+"/perm", HttpMethod.DELETE, deleteEntity, String.class);
+		logger.debug(EELFLoggerDelegate.debugLogger, "removePermForRole: {} " , CONNECTING_TO_EXTERNAL_AUTH_SYSTEM_LOG_MESSAGE);
+		ResponseEntity<String> deletePermResponse = template
+				.exchange(SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_URL) + "role/"
+						+ name + "/perm", HttpMethod.DELETE, deleteEntity, String.class);
 		if (deletePermResponse.getStatusCode().value() != 200) {
-			throw new Exception("Failed to delete role function");
+			throw new Exception(deletePermResponse.getBody());
 		}
-		logger.debug(EELFLoggerDelegate.debugLogger, "Connected to External Access system");
+		logger.debug(EELFLoggerDelegate.debugLogger, "removePermForRole: Finished deleting permission to role in External Auth system and status code: {}",
+				deletePermResponse.getStatusCode().value());
 	}
 
+	/**
+	 * It will create new role in the External Auth System
+	 * 
+	 * @param newRole
+	 * @param app
+	 * @return true if successfully added in the system else false
+	 * @throws Exception
+	 *             If fails to add role in the system
+	 */
 	private boolean addNewRoleInExternalSystem(List<EPRole> newRole, EPApp app) throws Exception {
 		boolean response = false;
 		HttpHeaders headers = EcompPortalUtils.base64encodeKeyForAAFBasicAuth();
@@ -368,52 +465,76 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 		String addNewRole = "";
 		ExternalAccessRole extRole = new ExternalAccessRole();
 		String addDesc = null;
-		addDesc = "{\"id\":\"" + newRole.get(0).getId() + "\",\"name\":\"" + newRole.get(0).getName() + "\",\"active\":\""
-					+ newRole.get(0).getActive() + "\",\"priority\":\"" +newRole.get(0).getPriority() + "\",\"appId\":\""
-					+ newRole.get(0).getAppId() + "\",\"appRoleId\":\"" + newRole.get(0).getAppRoleId() + "\"}";
-
+		Map<String, Object> extSystemJsonMapper = new LinkedHashMap<>();
+		extSystemJsonMapper.put(ID, newRole.get(0).getId());
+		extSystemJsonMapper.put(ROLE_NAME, newRole.get(0).getName());
+		extSystemJsonMapper.put(ACTIVE, newRole.get(0).getActive());
+		extSystemJsonMapper.put(PRIORITY, newRole.get(0).getPriority());
+		extSystemJsonMapper.put(APP_ID, newRole.get(0).getAppId());
+		extSystemJsonMapper.put(APP_ROLE_ID, newRole.get(0).getAppRoleId());
+		addDesc = mapper.writeValueAsString(extSystemJsonMapper);
 		extRole.setName(app.getNameSpace() + "." + newRole.get(0).getName().replaceAll(" ", "_"));
 		extRole.setDescription(addDesc);
 		addNewRole = mapper.writeValueAsString(extRole);
 		HttpEntity<String> deleteEntity = new HttpEntity<>(addNewRole, headers);
-		logger.debug(EELFLoggerDelegate.debugLogger, "Connecting to External Access system");
-		ResponseEntity<String> addNewRoleInExternalSystem = template.exchange(SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_URL)
-						+ "role", HttpMethod.POST, deleteEntity, String.class);
+		logger.debug(EELFLoggerDelegate.debugLogger, "addNewRoleInExternalSystem: {} " , CONNECTING_TO_EXTERNAL_AUTH_SYSTEM_LOG_MESSAGE);
+		ResponseEntity<String> addNewRoleInExternalSystem = template.exchange(
+				SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_URL) + "role",
+				HttpMethod.POST, deleteEntity, String.class);
 		if (addNewRoleInExternalSystem.getStatusCode().value() != 201) {
-			throw new Exception("Failed to add Role in External System");
-		} else{
-			logger.debug(EELFLoggerDelegate.debugLogger, "Connected to External Access system");
+			throw new Exception(addNewRoleInExternalSystem.getBody());
+		} else {
+			logger.debug(EELFLoggerDelegate.debugLogger, "addNewRoleInExternalSystem: Finished adding into External Auth system and status code: {}",
+					addNewRoleInExternalSystem.getStatusCode().value());
 			response = true;
 		}
 		return response;
 	}
-	
+
+	/**
+	 * 
+	 * It updates existing role in the External Auth System
+	 * 
+	 * @param addRole
+	 *            It Contains role information
+	 * @param app
+	 * @return string which is formatted to match with the external auth system
+	 * @throws JsonProcessingException
+	 */
 	@SuppressWarnings("unchecked")
-	private String createNewRoleInExternalSystem(Role addRole, EPApp app) throws JsonProcessingException {
+	private String updateExistingRoleInExternalSystem(Role addRole, EPApp app) throws JsonProcessingException {
 		ObjectMapper mapper = new ObjectMapper();
 		String addNewRole = "";
 		ExternalAccessRole extRole = new ExternalAccessRole();
 		List<EPRole> role = null;
 		String addDesc = null;
-		if(app.getId().equals(PortalConstants.PORTAL_APP_ID)){
-			role = dataAccessService.getList(EPRole.class,
-					" where role_id = " + addRole.getId(), null, null);	
-			addDesc = "{\"id\":\"" + role.get(0).getId() + "\",\"name\":\"" + addRole.getName() + "\",\"active\":\""
-					+ role.get(0).getActive() + "\",\"priority\":\"" + role.get(0).getPriority()
-					+ "\",\"appId\":\"null\",\"appRoleId\":\"null\"}";
-		} else{
-			role = dataAccessService.getList(EPRole.class,
-					" where app_role_id = " + addRole.getId(), null, null);	
-			addDesc = "{\"id\":\"" + role.get(0).getId() + "\",\"name\":\"" + addRole.getName() + "\",\"active\":\""
-					+ role.get(0).getActive() + "\",\"priority\":\"" + addRole.getPriority() + "\",\"appId\":\""
-					+ app.getId() + "\",\"appRoleId\":\"" + role.get(0).getAppRoleId() + "\"}";
+		Map<String, Object> extSystemUpdateRole = new LinkedHashMap<>();
+		if (app.getId().equals(PortalConstants.PORTAL_APP_ID)) {
+			role = dataAccessService.getList(EPRole.class, WHERE_ROLE_ID_EQUALS + addRole.getId(), null, null);
+		} else {
+			role = dataAccessService.getList(EPRole.class, " where app_role_id = " + addRole.getId(), null, null);
 		}
+		extSystemUpdateRole.put(ID, role.get(0).getId());
+		extSystemUpdateRole.put(ROLE_NAME, addRole.getName());
+		extSystemUpdateRole.put(ACTIVE, role.get(0).getActive());
+		extSystemUpdateRole.put(PRIORITY, role.get(0).getPriority());
+		extSystemUpdateRole.put(APP_ID, role.get(0).getAppId());
+		extSystemUpdateRole.put(APP_ROLE_ID, role.get(0).getAppRoleId());
+		addDesc = mapper.writeValueAsString(extSystemUpdateRole);
 		extRole.setName(app.getNameSpace() + "." + addRole.getName().replaceAll(" ", "_"));
 		extRole.setDescription(addDesc);
 		addNewRole = mapper.writeValueAsString(extRole);
 		return addNewRole;
 	}
 
+	/**
+	 * It create a role in the external auth system and then in our local 
+	 * 
+	 * @param addRoleInDB
+	 * @param app
+	 * @return true else false
+	 * @throws Exception
+	 */
 	@SuppressWarnings("unchecked")
 	@Transactional
 	private boolean addRoleInEcompDB(Role addRoleInDB, EPApp app) throws Exception {
@@ -443,40 +564,39 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 					epRoleNew.setAppId(app.getId());
 				}
 				dataAccessService.saveDomainObject(epRoleNew, null);
-					List <EPRole> getRoleCreated = null;
-					if (!app.getId().equals(PortalConstants.PORTAL_APP_ID)) {
-						List<EPRole> roleCreated =  dataAccessService.getList(EPRole.class,
-								" where role_name = '" + addRoleInDB.getName() +"' and app_id = "+ app.getId(), null, null);	
-						EPRole epUpdateRole = roleCreated.get(0);
-						epUpdateRole.setAppRoleId(epUpdateRole.getId());
-						dataAccessService.saveDomainObject(epUpdateRole, null);
-						getRoleCreated =  dataAccessService.getList(EPRole.class,
-								" where role_name = '" + addRoleInDB.getName() +"' and app_id = "+ app.getId() , null, null);	
-					} else{
-						getRoleCreated =  dataAccessService.getList(EPRole.class,
-								" where role_name = '" + addRoleInDB.getName() +"' and app_id is null", null, null);	
-					}
-				// Add role in External Access system
-				boolean response = addNewRoleInExternalSystem(getRoleCreated, app);
-				
-				if (!response) {
-					throw new Exception("Failed to add role!");
+				List<EPRole> getRoleCreated = null;
+				if (!app.getId().equals(PortalConstants.PORTAL_APP_ID)) {
+					List<EPRole> roleCreated = dataAccessService.getList(EPRole.class,
+							WHERE_ROLE_NAME_EQUALS + addRoleInDB.getName() + "' and app_id = " + app.getId(), null,
+							null);
+					EPRole epUpdateRole = roleCreated.get(0);
+					epUpdateRole.setAppRoleId(epUpdateRole.getId());
+					dataAccessService.saveDomainObject(epUpdateRole, null);
+					getRoleCreated = dataAccessService.getList(EPRole.class,
+							WHERE_ROLE_NAME_EQUALS + addRoleInDB.getName() + "' and app_id = " + app.getId(), null,
+							null);
+				} else {
+					getRoleCreated = dataAccessService.getList(EPRole.class,
+							WHERE_ROLE_NAME_EQUALS + addRoleInDB.getName() + "' and app_id is null", null, null);
 				}
+				// Add role in External Auth system
+				result = addNewRoleInExternalSystem(getRoleCreated, app);
 			} else { // if role already exists then update it
 				if (app.getId().equals(PortalConstants.PORTAL_APP_ID)) {
 					applicationRoles = dataAccessService.getList(EPRole.class,
 							" where app_id is null " + " and role_id = " + addRoleInDB.getId(), null, null);
 				} else {
 					applicationRoles = dataAccessService.getList(EPRole.class,
-							" where app_id = " + app.getId() + " and app_role_id = " + addRoleInDB.getId(), null, null);
+							WHERE_APP_ID_EQUALS + app.getId() + " and app_role_id = " + addRoleInDB.getId(), null, null);
 				}
-				if(applicationRoles.isEmpty() && !app.getId().equals(PortalConstants.PORTAL_APP_ID)){
+				if (applicationRoles.isEmpty()) {
 					applicationRoles = dataAccessService.getList(EPRole.class,
-							" where app_id = " + app.getId() + " and role_id = " + addRoleInDB.getId(), null, null);
+							WHERE_APP_ID_EQUALS + app.getId() + " and role_name = '" + addRoleInDB.getName() + "'", null,
+							null);
 				}
 				updateRoleInExternalSystem(addRoleInDB, app);
 				deleteRoleFunction(app, applicationRoles);
-				if (applicationRoles.size() > 0 || !applicationRoles.isEmpty()) {
+				if (!applicationRoles.isEmpty()) {
 					epRole = applicationRoles.get(0);
 					epRole.setName(addRoleInDB.getName());
 					epRole.setPriority(addRoleInDB.getPriority());
@@ -484,15 +604,16 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 					if (app.getId().equals(PortalConstants.PORTAL_APP_ID)) {
 						epRole.setAppId(null);
 						epRole.setAppRoleId(null);
-					} else if(!app.getId().equals(PortalConstants.PORTAL_APP_ID) && applicationRoles.get(0).getAppRoleId() == null){
+					} else if (!app.getId().equals(PortalConstants.PORTAL_APP_ID)
+							&& applicationRoles.get(0).getAppRoleId() == null) {
 						epRole.setAppRoleId(epRole.getId());
 					}
 					dataAccessService.saveDomainObject(epRole, null);
 				}
-				
+
 				saveRoleFunction(listWithoutDuplicates, app, applicationRoles);
+				result = true;
 			}
-			result = true;
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "addRoleInEcompDB is failed", e);
 			throw new Exception(e.getMessage());
@@ -500,20 +621,39 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 		return result;
 	}
 
+	/**
+	 * 
+	 * It validates whether role exists in external auth system
+	 * 
+	 * @param checkRole
+	 * @param app
+	 * @throws Exception
+	 * 					If role exits
+	 */
 	private void checkIfRoleExitsInExternalSystem(Role checkRole, EPApp app) throws Exception {
 		HttpHeaders headers = EcompPortalUtils.base64encodeKeyForAAFBasicAuth();
-		String roleName = app.getNameSpace()+"."+checkRole.getName().replaceAll(" ", "_");
+		String roleName = app.getNameSpace() + "." + checkRole.getName().replaceAll(" ", "_");
 		HttpEntity<String> checkRoleEntity = new HttpEntity<>(headers);
-		logger.debug(EELFLoggerDelegate.debugLogger, "Connecting to External Access system");
-		ResponseEntity<String> checkRoleInExternalSystem = template.exchange(SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_URL)
-						+ "roles/"+roleName, HttpMethod.GET, checkRoleEntity, String.class);
-		if(!checkRoleInExternalSystem.getBody().equals("{}")){
-			logger.debug("Role already exists in external system ", checkRoleInExternalSystem.getBody());
+		logger.debug(EELFLoggerDelegate.debugLogger, "checkIfRoleExitsInExternalSystem: {} " , CONNECTING_TO_EXTERNAL_AUTH_SYSTEM_LOG_MESSAGE);
+		ResponseEntity<String> checkRoleInExternalSystem = template
+				.exchange(SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_URL) + "roles/"
+						+ roleName, HttpMethod.GET, checkRoleEntity, String.class);
+		if (!checkRoleInExternalSystem.getBody().equals(IS_EMPTY_JSON_STRING)) {
+			logger.debug("checkIfRoleExitsInExternalSystem: Role already exists in external system {} and status code: {} ", checkRoleInExternalSystem.getBody(), checkRoleInExternalSystem.getStatusCode().value());
 			throw new Exception("Role already exists in external system");
-		}		
+		}
 	}
 
-	private void saveRoleFunction(List<RoleFunction> roleFunctionListNew, EPApp app, List<EPRole> applicationRoles)	throws Exception {
+	/**
+	 * It saves list of functions to the role in portal
+	 * 
+	 * @param roleFunctionListNew
+	 * @param app
+	 * @param applicationRoles
+	 * @throws Exception
+	 */
+	private void saveRoleFunction(List<RoleFunction> roleFunctionListNew, EPApp app, List<EPRole> applicationRoles)
+			throws Exception {
 		for (RoleFunction roleFunc : roleFunctionListNew) {
 			EPAppRoleFunction appRoleFunc = new EPAppRoleFunction();
 			appRoleFunc.setAppId(app.getId());
@@ -522,20 +662,33 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 			dataAccessService.saveDomainObject(appRoleFunc, null);
 		}
 	}
-
+	
+	/**
+	 * It deletes all EPAppRoleFunction records in the portal
+	 * 
+	 * @param app
+	 * @param role
+	 */
 	@SuppressWarnings("unchecked")
 	private void deleteRoleFunction(EPApp app, List<EPRole> role) {
 		List<EPAppRoleFunction> appRoleFunctionList = dataAccessService.getList(EPAppRoleFunction.class,
-				" where app_id = " + app.getId() + " and role_id = " + role.get(0).getId(), null, null);
-		if (!appRoleFunctionList.isEmpty() || appRoleFunctionList.size() > 0) {
+				WHERE_APP_ID_EQUALS + app.getId() + " and role_id = " + role.get(0).getId(), null, null);
+		if (!appRoleFunctionList.isEmpty()) {
 			for (EPAppRoleFunction approleFunction : appRoleFunctionList) {
 				dataAccessService.deleteDomainObject(approleFunction, null);
 			}
 		}
 	}
-
+	
+	@Override
 	@SuppressWarnings("unchecked")
-	public String getUser(String loginId, String uebkey) throws Exception {
+	public List<EPUser> getUser(String loginId){
+		return (List<EPUser>) dataAccessService.getList(EPUser.class,
+				" where org_user_id = '" + loginId + "'", null, null);
+	}
+
+	@Override
+	public String getUserWithRoles(String loginId, String uebkey) throws Exception {
 		final Map<String, String> params = new HashMap<>();
 		List<EPUser> userList = null;
 		CentralUser cenUser = null;
@@ -543,43 +696,42 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 		String result = null;
 		try {
 			params.put("orgUserIdValue", loginId);
-			List<EPApp> appList = (List<EPApp>) getApp(uebkey);
-			if (appList.size() > 0) {
+			List<EPApp> appList = getApp(uebkey);
+			if (!appList.isEmpty()) {
 				app = appList.get(0);
-				userList = (List<EPUser>) dataAccessService.getList(EPUser.class,
-						" where org_user_id = '" + loginId + "'", null, null);
-				if (userList.size() > 0) {
+				userList = getUser(loginId);
+				if (!userList.isEmpty()) {
 					EPUser user = userList.get(0);
 					ObjectMapper mapper = new ObjectMapper();
 					Set<EPUserApp> userAppSet = user.getEPUserApps();
 					cenUser = createEPUser(user, userAppSet, app);
 					result = mapper.writeValueAsString(cenUser);
-				} else if (userList.size() == 0) {
+				} else if (userList.isEmpty()) {
 					throw new Exception("User not found");
 				}
 			} else {
 				throw new Exception("Application not found");
 			}
 		} catch (Exception e) {
-			logger.error(EELFLoggerDelegate.errorLogger, "getUser is failed", e);
+			logger.error(EELFLoggerDelegate.errorLogger, "getUser: failed", e);
 			throw new Exception(e.getMessage());
 		}
 		return result;
 	}
-	
+
 	@Override
 	public List<CentralRole> getRolesForApp(String uebkey) throws Exception {
-		logger.debug(EELFLoggerDelegate.debugLogger, "Entering into getRolesForApp");
+		logger.debug(EELFLoggerDelegate.debugLogger, "getRolesForApp: Entering into getRolesForApp");
 		List<CentralRole> roleList = new ArrayList<>();
 		final Map<String, Long> params = new HashMap<>();
 		try {
 			List<EPApp> app = getApp(uebkey);
-			List<EPRole> appRolesList = getAppRoles(app.get(0).getId(), null);
+			List<EPRole> appRolesList = getAppRoles(app.get(0).getId());
 			createCentralRoleObject(app, appRolesList, roleList, params);
 		} catch (Exception e) {
 			throw new Exception("getRolesForApp Failed", e);
 		}
-		logger.debug(EELFLoggerDelegate.debugLogger, "Finished getRolesForApp");
+		logger.debug(EELFLoggerDelegate.debugLogger, "getRolesForApp: Finished getRolesForApp");
 		return roleList;
 	}
 
@@ -589,17 +741,26 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 		EPApp app = getApp(uebkey).get(0);
 		List<CentralRoleFunction> getRoleFuncList = null;
 		final Map<String, Long> params = new HashMap<>();
-		params.put("appId", app.getId());
-		//Sync all functions from external system into Ecomp portal DB
-		logger.debug(EELFLoggerDelegate.debugLogger, "Entering into syncRoleFunctionFromExternalAccessSystem");
+		params.put(APP_ID, app.getId());
+		// Sync all functions from external system into Ecomp portal DB
+		logger.debug(EELFLoggerDelegate.debugLogger, "getRoleFuncList: Entering into syncRoleFunctionFromExternalAccessSystem");
 		syncRoleFunctionFromExternalAccessSystem(app);
-		logger.debug(EELFLoggerDelegate.debugLogger, "Finished syncRoleFunctionFromExternalAccessSystem");
+		logger.debug(EELFLoggerDelegate.debugLogger, "getRoleFuncList: Finished syncRoleFunctionFromExternalAccessSystem");
 		getRoleFuncList = dataAccessService.executeNamedQuery("getAllRoleFunctions", params, null);
 		return getRoleFuncList;
 	}
 
+	/**
+	 * It returns user detail information which is deep copy of EPUser.class object
+	 * 
+	 * @param userInfo
+	 * @param userAppSet
+	 * @param app
+	 * @return
+	 * @throws Exception
+	 */
 	@SuppressWarnings("unchecked")
-	public CentralUser createEPUser(EPUser userInfo, Set<EPUserApp> userAppSet, EPApp app) throws Exception {
+	private CentralUser createEPUser(EPUser userInfo, Set<EPUserApp> userAppSet, EPApp app) throws Exception {
 
 		final Map<String, Long> params = new HashMap<>();
 		CentralUser userAppList = new CentralUser();
@@ -626,27 +787,27 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 								epApp.getUebTopicName());
 						cua.setApp(cenApp);
 						params.put("roleId", userApp.getRole().getId());
-						params.put("appId", userApp.getApp().getId());
+						params.put(APP_ID, userApp.getApp().getId());
 						List<CentralRoleFunction> appRoleFunctionList = dataAccessService
 								.executeNamedQuery("getAppRoleFunctionList", params, null);
-						SortedSet<CentralRoleFunction> roleFunctionSet = new TreeSet<CentralRoleFunction>();
+						SortedSet<CentralRoleFunction> roleFunctionSet = new TreeSet<>();
 						for (CentralRoleFunction roleFunc : appRoleFunctionList) {
 							CentralRoleFunction cenRoleFunc = new CentralRoleFunction(roleFunc.getId(),
 									roleFunc.getCode(), roleFunc.getName(), null, null);
 							roleFunctionSet.add(cenRoleFunc);
 						}
 						Long userRoleId = null;
-						if(globalRole.toLowerCase().startsWith("global_") && epApp.getId().equals(PortalConstants.PORTAL_APP_ID)){
+						if (globalRole.toLowerCase().startsWith("global_")
+								&& epApp.getId().equals(PortalConstants.PORTAL_APP_ID)) {
 							userRoleId = userApp.getRole().getId();
-						} else{
+						} else {
 							userRoleId = userApp.getRole().getAppRoleId();
 						}
-						CentralRole cenRole = new CentralRole(userRoleId,
-								userApp.getRole().getCreated(), userApp.getRole().getModified(),
-								userApp.getRole().getCreatedId(), userApp.getRole().getModifiedId(),
-								userApp.getRole().getRowNum(), userApp.getRole().getName(),
-								userApp.getRole().getActive(), userApp.getRole().getPriority(), roleFunctionSet, null,
-								null);
+						CentralRole cenRole = new CentralRole(userRoleId, userApp.getRole().getCreated(),
+								userApp.getRole().getModified(), userApp.getRole().getCreatedId(),
+								userApp.getRole().getModifiedId(), userApp.getRole().getRowNum(),
+								userApp.getRole().getName(), userApp.getRole().getActive(),
+								userApp.getRole().getPriority(), roleFunctionSet, null, null);
 						cua.setRole(cenRole);
 
 						userAppList.userApps.add(cua);
@@ -670,7 +831,7 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 					userInfo.getInternal(), userInfo.getSelectedProfileId(), userInfo.getTimeZoneId(),
 					userInfo.isOnline(), userInfo.getChatId(), userAppList.userApps, null);
 		} catch (Exception e) {
-			logger.error(EELFLoggerDelegate.errorLogger, "createEPUser failed", e);
+			logger.error(EELFLoggerDelegate.errorLogger, "createEPUser: createEPUser failed", e);
 			throw new Exception(e.getMessage());
 		}
 
@@ -687,12 +848,12 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 		List<EPApp> app = null;
 		try {
 			app = getApp(uebkey);
-			if (app.isEmpty() || app.size() == 0) {
+			if (app.isEmpty()) {
 				throw new Exception("Application not found");
 			}
 			String filter = null;
-			if (app.get(0).getId() == PortalConstants.PORTAL_APP_ID) {
-				filter = " where role_id = " + roleId + " and app_id is null ";
+			if (app.get(0).getId().equals(PortalConstants.PORTAL_APP_ID)) {
+				filter = WHERE_ROLE_ID_EQUALS + roleId + " and app_id is null ";
 			} else {
 				filter = " where app_role_id = " + roleId + " and app_id = " + app.get(0).getId();
 
@@ -704,28 +865,38 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 			}
 
 		} catch (Exception e) {
-			logger.error(EELFLoggerDelegate.errorLogger, "getRoleInfo failed", e);
+			logger.error(EELFLoggerDelegate.errorLogger, "getRoleInfo: failed", e);
 			throw new Exception(e.getMessage());
 
 		}
 		return roleList.get(0);
 	}
-
+	
+	/**
+	 * 
+	 * It returns list of app roles along with role functions and which went through deep copy
+	 * 
+	 * @param app
+	 * @param roleInfo
+	 * @param roleList
+	 * @param params
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	private List<CentralRole> createCentralRoleObject(List<EPApp> app, List<EPRole> roleInfo,
 			List<CentralRole> roleList, Map<String, Long> params) {
 		for (EPRole role : roleInfo) {
 			params.put("roleId", role.getId());
-			params.put("appId", app.get(0).getId());
+			params.put(APP_ID, app.get(0).getId());
 			List<CentralRoleFunction> cenRoleFuncList = dataAccessService.executeNamedQuery("getAppRoleFunctionList",
 					params, null);
-			SortedSet<CentralRoleFunction> roleFunctionSet = new TreeSet<CentralRoleFunction>();
+			SortedSet<CentralRoleFunction> roleFunctionSet = new TreeSet<>();
 			for (CentralRoleFunction roleFunc : cenRoleFuncList) {
 				CentralRoleFunction cenRoleFunc = new CentralRoleFunction(role.getId(), roleFunc.getCode(),
 						roleFunc.getName(), null, null);
 				roleFunctionSet.add(cenRoleFunc);
 			}
-			SortedSet<CentralRole> childRoles = new TreeSet<CentralRole>();
+			SortedSet<CentralRole> childRoles = new TreeSet<>();
 			CentralRole cenRole = null;
 			if (role.getAppRoleId() == null) {
 				cenRole = new CentralRole(role.getId(), role.getCreated(), role.getModified(), role.getCreatedId(),
@@ -750,37 +921,47 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 		final Map<String, String> params = new HashMap<>();
 		try {
 			params.put("functionCode", functionCode);
-			params.put("appId", String.valueOf(app.getId()));
+			params.put(APP_ID, String.valueOf(app.getId()));
 			getRoleFuncList = dataAccessService.executeNamedQuery("getRoleFunction", params, null);
-			if (getRoleFuncList.isEmpty() | getRoleFuncList.size() == 0) {
+			if (getRoleFuncList.isEmpty()) {
 				return roleFunc;
 			}
 
 		} catch (Exception e) {
-			logger.error(EELFLoggerDelegate.errorLogger, "getRoleFunction failed", e);
+			logger.error(EELFLoggerDelegate.errorLogger, "getRoleFunction: failed", e);
 			throw new Exception("getRoleFunction failed", e);
 		}
 		return getRoleFuncList.get(0);
 	}
 
 	@Override
-	public void saveCentralRoleFunction(CentralRoleFunction domainCentralRoleFunction, EPApp app) throws Exception {
+	public boolean saveCentralRoleFunction(CentralRoleFunction domainCentralRoleFunction, EPApp app) throws Exception {
+		boolean saveOrUpdateFunction = false;
 		try {
 			addRoleFunctionInExternalSystem(domainCentralRoleFunction, app);
 			dataAccessService.saveDomainObject(domainCentralRoleFunction, null);
+			saveOrUpdateFunction = true;
 		} catch (Exception e) {
-			logger.error(EELFLoggerDelegate.errorLogger, "saveCentralRoleFunction failed", e);
-			throw new Exception(e.getMessage());
+			logger.error(EELFLoggerDelegate.errorLogger, "saveCentralRoleFunction: failed", e);
+			saveOrUpdateFunction = false;
 		}
+		return saveOrUpdateFunction;
 	}
-
+	
+	/**
+	 * It creates application permission in external auth system
+	 * 
+	 * @param domainCentralRoleFunction
+	 * @param app
+	 * @throws Exception
+	 */
 	@SuppressWarnings("unchecked")
 	private void addRoleFunctionInExternalSystem(CentralRoleFunction domainCentralRoleFunction, EPApp app)
 			throws Exception {
 		ObjectMapper mapper = new ObjectMapper();
 		final Map<String, String> params = new HashMap<>();
 		params.put("functionCd", domainCentralRoleFunction.getCode());
-		params.put("appId", String.valueOf(app.getId()));
+		params.put(APP_ID, String.valueOf(app.getId()));
 		ExternalAccessPerms extPerms = new ExternalAccessPerms();
 		HttpHeaders headers = EcompPortalUtils.base64encodeKeyForAAFBasicAuth();
 		List<CentralRoleFunction> appRoleFunc = dataAccessService.executeNamedQuery("getAppFunctionDetails", params,
@@ -793,7 +974,7 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 		}
 		String checkType = domainCentralRoleFunction.getCode().contains("menu") ? "menu" : "url";
 		HttpEntity<String> getSinglePermEntity = new HttpEntity<>(headers);
-		logger.debug(EELFLoggerDelegate.debugLogger, "Connecting to External Access system");
+		logger.debug(EELFLoggerDelegate.debugLogger, "addRoleFunctionInExternalSystem: {} ", CONNECTING_TO_EXTERNAL_AUTH_SYSTEM_LOG_MESSAGE);
 		ResponseEntity<String> getResponse = template.exchange(
 				SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_URL) + "perms/"
 						+ app.getNameSpace() + "." + checkType + "/" + roleFuncName + "/*",
@@ -802,172 +983,200 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 			EPLogUtil.logExternalAuthAccessAlarm(logger, getResponse.getStatusCode());
 			throw new Exception(getResponse.getBody());
 		}
-		logger.debug(EELFLoggerDelegate.debugLogger, "Connected to External Access system");
+		logger.debug(EELFLoggerDelegate.debugLogger, "addRoleFunctionInExternalSystem: Finished GET permission from External Auth system and response: {} ", getResponse.getBody());
 		String res = getResponse.getBody();
-		if (res.equals("{}")) {
-			try{
-			extPerms.setAction("*");
-			extPerms.setInstance(domainCentralRoleFunction.getCode());
-			extPerms.setType(app.getNameSpace() + "." + checkType);
-			extPerms.setDescription(domainCentralRoleFunction.getName());
-			String updateRole = mapper.writeValueAsString(extPerms);
-			HttpEntity<String> entity = new HttpEntity<>(updateRole, headers);
-			logger.debug(EELFLoggerDelegate.debugLogger, "Connecting to External Access system");
-			template.exchange(
-					SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_URL) + "perm",
-					HttpMethod.POST, entity, String.class);
-			logger.debug(EELFLoggerDelegate.debugLogger, "Connected to External Access system");
-			}catch(HttpClientErrorException e){
+		if (res.equals(IS_EMPTY_JSON_STRING)) {
+			try {
+				extPerms.setAction("*");
+				extPerms.setInstance(domainCentralRoleFunction.getCode());
+				extPerms.setType(app.getNameSpace() + "." + checkType);
+				extPerms.setDescription(domainCentralRoleFunction.getName());
+				String updateRole = mapper.writeValueAsString(extPerms);
+				HttpEntity<String> entity = new HttpEntity<>(updateRole, headers);
+				logger.debug(EELFLoggerDelegate.debugLogger, "addRoleFunctionInExternalSystem: {} " , CONNECTING_TO_EXTERNAL_AUTH_SYSTEM_LOG_MESSAGE);
+				ResponseEntity<String> addPermResponse= template.exchange(
+						SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_URL) + "perm",
+						HttpMethod.POST, entity, String.class);
+				logger.debug(EELFLoggerDelegate.debugLogger, "addRoleFunctionInExternalSystem: Finished adding permission in  and status code: {} ", addPermResponse.getStatusCode().value());
+			} catch(HttpClientErrorException e){
 				logger.error(EELFLoggerDelegate.errorLogger, "HttpClientErrorException - Failed to add function in external central auth system", e);
 				EPLogUtil.logExternalAuthAccessAlarm(logger, e.getStatusCode());
-			}catch(Exception e){
-				logger.error(EELFLoggerDelegate.errorLogger, "Failed to add function in external central auth system", e);
+			}catch (Exception e) {
+				logger.error(EELFLoggerDelegate.errorLogger, "addRoleFunctionInExternalSystem: Failed to add fucntion in external central auth system",
+						e);
 			}
 		} else {
-			try{
-			extPerms.setAction("*");
-			extPerms.setInstance(domainCentralRoleFunction.getCode());
-			extPerms.setType(app.getNameSpace() + "." + checkType);
-			extPerms.setDescription(domainCentralRoleFunction.getName());
-			String updateRole = mapper.writeValueAsString(extPerms);
-			HttpEntity<String> entity = new HttpEntity<>(updateRole, headers);
-			logger.debug(EELFLoggerDelegate.debugLogger, "Connecting to External Access system");
-			template.exchange(
-					SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_URL) + "perm",
-					HttpMethod.PUT, entity, String.class);
-			logger.debug(EELFLoggerDelegate.debugLogger, "Connected to External Access system");
-			}catch(HttpClientErrorException e){
+			try {
+				extPerms.setAction("*");
+				extPerms.setInstance(domainCentralRoleFunction.getCode());
+				extPerms.setType(app.getNameSpace() + "." + checkType);
+				extPerms.setDescription(domainCentralRoleFunction.getName());
+				String updateRole = mapper.writeValueAsString(extPerms);
+				HttpEntity<String> entity = new HttpEntity<>(updateRole, headers);
+				logger.debug(EELFLoggerDelegate.debugLogger, "addRoleFunctionInExternalSystem: {} " , CONNECTING_TO_EXTERNAL_AUTH_SYSTEM_LOG_MESSAGE);
+				ResponseEntity<String> updatePermResponse = template.exchange(
+						SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_URL) + "perm",
+						HttpMethod.PUT, entity, String.class);
+				logger.debug(EELFLoggerDelegate.debugLogger, "addRoleFunctionInExternalSystem: Finished updating permission in External Auth system and response: {} ", updatePermResponse.getBody());
+			} catch(HttpClientErrorException e){
 				logger.error(EELFLoggerDelegate.errorLogger, "HttpClientErrorException - Failed to add function in external central auth system", e);
 				EPLogUtil.logExternalAuthAccessAlarm(logger, e.getStatusCode());
-			}catch(Exception e){
-				logger.error(EELFLoggerDelegate.errorLogger, "Failed to add function in external central auth system", e);
-
+			} catch (Exception e) {
+				logger.error(EELFLoggerDelegate.errorLogger, "addRoleFunctionInExternalSystem: Failed to update function in external central auth system",
+						e);
 			}
 		}
 	}
 
 	@Override
 	@Transactional
-	public void deleteCentralRoleFunction(String code, String uebkey) {
+	public boolean deleteCentralRoleFunction(String code, EPApp app) {
+		boolean deleteFunctionResponse = false;
 		try {
-			EPApp app = getApp(uebkey).get(0);
 			final Map<String, String> params = new HashMap<>();
 			params.put("functionCd", code);
-			params.put("appId", String.valueOf(app.getId()));
-			CentralRoleFunction domainCentralRoleFunction = (CentralRoleFunction) dataAccessService.executeNamedQuery("getAppFunctionDetails", params, null).get(0);
- 			deleteRoleFunctionInExternalSystem(domainCentralRoleFunction, app);
- 			//Delete role function dependecy records
- 			deleteAppRoleFunctions(code, app);
+			params.put(APP_ID, String.valueOf(app.getId()));
+			CentralRoleFunction domainCentralRoleFunction = (CentralRoleFunction) dataAccessService
+					.executeNamedQuery("getAppFunctionDetails", params, null).get(0);
+			deleteRoleFunctionInExternalSystem(domainCentralRoleFunction, app);
+			// Delete role function dependency records
+			deleteAppRoleFunctions(code, app);
 			dataAccessService.deleteDomainObject(domainCentralRoleFunction, null);
+			deleteFunctionResponse = true;
 		} catch (Exception e) {
-			logger.error(EELFLoggerDelegate.errorLogger, "deleteCentralRoleFunction failed", e);
+			logger.error(EELFLoggerDelegate.errorLogger, "deleteCentralRoleFunction: failed", e);
 		}
+		return deleteFunctionResponse;
 	}
 
+	/**
+	 * It deletes app function record in portal 
+	 * 
+	 * @param code
+	 * @param app
+	 */
 	private void deleteAppRoleFunctions(String code, EPApp app) {
-			dataAccessService.deleteDomainObjects(EPAppRoleFunction.class, " app_id = "+app.getId()+" and function_cd = '"+ code +"'", null);
+		dataAccessService.deleteDomainObjects(EPAppRoleFunction.class,
+				APP_ID_EQUALS + app.getId() + " and function_cd = '" + code + "'", null);
 	}
-
+	
+	/**
+	 * 
+	 * It deletes permission in the external auth system  
+	 * 
+	 * @param domainCentralRoleFunction
+	 * @param app
+	 * @throws Exception
+	 */
 	private void deleteRoleFunctionInExternalSystem(CentralRoleFunction domainCentralRoleFunction, EPApp app)
 			throws Exception {
-		try{
-		ObjectMapper mapper = new ObjectMapper();
-		ExternalAccessPerms extPerms = new ExternalAccessPerms();
-		String checkType = domainCentralRoleFunction.getCode().contains("menu") ? "menu" : "url";
-		HttpHeaders headers = EcompPortalUtils.base64encodeKeyForAAFBasicAuth();
-		extPerms.setAction("*");
-		extPerms.setInstance(domainCentralRoleFunction.getCode());
-		extPerms.setType(app.getNameSpace() + "." + checkType);
-		extPerms.setDescription(domainCentralRoleFunction.getName());
-		String updateRole = mapper.writeValueAsString(extPerms);
-		HttpEntity<String> entity = new HttpEntity<>(updateRole, headers);
-		template.exchange(
-				SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_URL) + "perm?force=true",
-				HttpMethod.DELETE, entity, String.class);
+		try {
+			ObjectMapper mapper = new ObjectMapper();
+			ExternalAccessPerms extPerms = new ExternalAccessPerms();
+			String checkType = domainCentralRoleFunction.getCode().contains("menu") ? "menu" : "url";
+			HttpHeaders headers = EcompPortalUtils.base64encodeKeyForAAFBasicAuth();
+			extPerms.setAction("*");
+			extPerms.setInstance(domainCentralRoleFunction.getCode());
+			extPerms.setType(app.getNameSpace() + "." + checkType);
+			extPerms.setDescription(domainCentralRoleFunction.getName());
+			String updateRole = mapper.writeValueAsString(extPerms);
+			HttpEntity<String> entity = new HttpEntity<>(updateRole, headers);
+			logger.debug(EELFLoggerDelegate.debugLogger,"deleteRoleFunctionInExternalSystem: {} " , CONNECTING_TO_EXTERNAL_AUTH_SYSTEM_LOG_MESSAGE);
+			ResponseEntity<String> delPermResponse = template.exchange(SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_URL)
+					+ "perm?force=true", HttpMethod.DELETE, entity, String.class);
+			logger.debug(EELFLoggerDelegate.debugLogger, "deleteRoleFunctionInExternalSystem: Finished deleting permission in External Auth system and status code: {} ", delPermResponse.getStatusCode().value());
 		} catch(HttpClientErrorException e){
 			logger.error(EELFLoggerDelegate.errorLogger, "HttpClientErrorException - Failed to delete functions in External System", e);
 			EPLogUtil.logExternalAuthAccessAlarm(logger, e.getStatusCode());
-		} catch(Exception e){
-			if(e.getMessage().equalsIgnoreCase("404 Not Found")){
-			logger.debug(EELFLoggerDelegate.debugLogger, " It seems like function is already deleted in external central auth system  but exists in local DB", e.getMessage());
-			} else{
-				logger.error(EELFLoggerDelegate.errorLogger, "Failed to delete functions in External System", e);
+		} catch (Exception e) {
+			if (e.getMessage().equalsIgnoreCase("404 Not Found")) {
+				logger.debug(EELFLoggerDelegate.debugLogger,
+						" deleteRoleFunctionInExternalSystem: It seems like function is already deleted in external central auth system  but exists in local DB",
+						e.getMessage());
+			} else {
+				logger.error(EELFLoggerDelegate.errorLogger, "deleteRoleFunctionInExternalSystem: Failed to delete functions in External System", e);
 			}
 		}
 	}
 
 	@Override
-	public void saveRoleForApplication(Role saveRole, String uebkey) throws Exception {
+	public boolean saveRoleForApplication(Role saveRole, String uebkey) throws Exception {
+		boolean addRoleResponse = false;
 		try {
 			EPApp app = getApp(uebkey).get(0);
 			addRoleInEcompDB(saveRole, app);
+			addRoleResponse = true;
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "saveRoleForApplication failed", e);
-			throw new Exception(e.getMessage());
 		}
+		return addRoleResponse;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void deleteRoleForApplication(String deleteRole, String uebkey) throws Exception {
-		Session localSession = null;
+	public boolean deleteRoleForApplication(String deleteRole, String uebkey) throws Exception {
+		Session localSession = sessionFactory.openSession();
 		Transaction transaction = null;
 		boolean result = false;
 		try {
-			localSession = sessionFactory.openSession();
 			transaction = localSession.beginTransaction();
 
 			List<EPRole> epRoleList = null;
 			ResponseEntity<String> deleteResponse = null;
 			EPApp app = getApp(uebkey).get(0);
-			if(app.getId() == 1)
-			{
+			if (app.getId() == 1) {
 				epRoleList = dataAccessService.getList(EPRole.class,
-						" where app_id is null " + "and role_name = '" + deleteRole +"'", null, null);
-			}
-			else{
-			epRoleList = dataAccessService.getList(EPRole.class,
-					" where app_id = " + app.getId() + " and role_name = '" + deleteRole +"'", null, null);
+						" where app_id is null " + "and role_name = '" + deleteRole + "'", null, null);
+			} else {
+				epRoleList = dataAccessService.getList(EPRole.class,
+						WHERE_APP_ID_EQUALS + app.getId() + " and role_name = '" + deleteRole + "'", null, null);
 			}
 			// Delete app role functions before deleting role
 			deleteRoleFunction(app, epRoleList);
-			if(app.getId() == 1)
-			{
+			if (app.getId() == 1) {
 				// Delete fn_user_ role
 				dataAccessService.deleteDomainObjects(EPUserApp.class,
-						" app_id = " + app.getId() + " and role_id = " + epRoleList.get(0).getId(), null);
-				
-				deleteRoleDependeciesRecord(localSession, epRoleList.get(0).getId());
+						APP_ID_EQUALS + app.getId() + " and role_id = " + epRoleList.get(0).getId(), null);
+
+				deleteRoleDependencyRecords(localSession, epRoleList.get(0).getId(), app.getId());
 			}
 			// Delete Role in External System
 			String deleteRoleKey = "{\"name\":\"" + app.getNameSpace() + "."
 					+ epRoleList.get(0).getName().replaceAll(" ", "_") + "\"}";
 			deleteResponse = deleteRoleInExternalSystem(deleteRoleKey);
-			if (deleteResponse.getStatusCode().value() != 200) {
+			if (deleteResponse.getStatusCode().value() != 200 || deleteResponse.getStatusCode().value() != 404) {
 				EPLogUtil.logExternalAuthAccessAlarm(logger, deleteResponse.getStatusCode());
-				throw new Exception("Failed to delete role in external access system!");
+				logger.error(EELFLoggerDelegate.errorLogger,
+						"deleteRoleForApplication: Failed to delete role in external auth system! due to {} ",
+						deleteResponse.getBody());
 			}
-			logger.debug(EELFLoggerDelegate.debugLogger, "about to commit the transaction");
+			logger.debug(EELFLoggerDelegate.debugLogger, "deleteRoleForApplication: about to commit the transaction");
 			transaction.commit();
-			logger.debug(EELFLoggerDelegate.debugLogger, "committed the transaction");
+			logger.debug(EELFLoggerDelegate.debugLogger, "deleteRoleForApplication: committed the transaction");
 			dataAccessService.deleteDomainObject(epRoleList.get(0), null);
 			result = true;
 		} catch (Exception e) {
-			logger.error(EELFLoggerDelegate.errorLogger, "deleteRoleForApplication failed", e);
-			throw new Exception(e.getMessage());
-		}finally {
+			logger.error(EELFLoggerDelegate.errorLogger, "deleteRoleForApplication: failed", e);
+			result = false;
+		} finally {
 			localSession.close();
-			if (!result) {
-				throw new Exception(
-						"Exception occurred in deleteRoleForApplication while closing database session for role: '" + deleteRole + "'.");
-			}
 		}
+		return result;
 	}
 
+	/**
+	 * 
+	 * It deletes application user role in external auth system
+	 * 
+	 * @param role
+	 * @param app
+	 * @param LoginId
+	 * @throws Exception
+	 */
 	private void deleteUserRoleInExternalSystem(EPRole role, EPApp app, String LoginId) throws Exception {
 		HttpHeaders headers = EcompPortalUtils.base64encodeKeyForAAFBasicAuth();
 		HttpEntity<String> entity = new HttpEntity<>(headers);
-		logger.debug(EELFLoggerDelegate.debugLogger, "Connecting to External Access system");
+		logger.debug(EELFLoggerDelegate.debugLogger,"deleteUserRoleInExternalSystem: {} " , CONNECTING_TO_EXTERNAL_AUTH_SYSTEM_LOG_MESSAGE);
 		ResponseEntity<String> getResponse = template
 				.exchange(
 						SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_URL) + "userRole/"
@@ -976,14 +1185,14 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 										.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_USER_DOMAIN)
 								+ "/" + app.getNameSpace() + "." + role.getName().replaceAll(" ", "_"),
 						HttpMethod.GET, entity, String.class);
+		logger.debug(EELFLoggerDelegate.debugLogger, "deleteUserRoleInExternalSystem: Finished GET user roles from External Auth system and response: {} ", getResponse.getBody());
 		if (getResponse.getStatusCode().value() != 200) {
 			throw new Exception(getResponse.getBody());
 		}
-		logger.debug(EELFLoggerDelegate.debugLogger, "Connected to External Access system");
 		String res = getResponse.getBody();
-		if (!res.equals("{}")) {
+		if (!res.equals(IS_EMPTY_JSON_STRING)) {
 			HttpEntity<String> userRoleentity = new HttpEntity<>(headers);
-			logger.debug(EELFLoggerDelegate.debugLogger, "Connecting to External Access system");
+			logger.debug(EELFLoggerDelegate.debugLogger, "deleteUserRoleInExternalSystem: {} " , CONNECTING_TO_EXTERNAL_AUTH_SYSTEM_LOG_MESSAGE);
 			ResponseEntity<String> deleteResponse = template
 					.exchange(
 							SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_URL)
@@ -995,7 +1204,7 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 			if (deleteResponse.getStatusCode().value() != 200) {
 				throw new Exception("Failed to delete user role");
 			}
-			logger.debug(EELFLoggerDelegate.debugLogger, "Connected to External Access system");
+			logger.debug(EELFLoggerDelegate.debugLogger, "deleteUserRoleInExternalSystem: Finished deleting user role in External Auth system and status code: {} ", deleteResponse.getStatusCode().value());
 		}
 	}
 
@@ -1012,10 +1221,10 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 				appId = app.get(0).getId();
 			}
 			List<EPRole> epRole = dataAccessService.getList(EPRole.class,
-					" where app_id = " + appId + " and active_yn = 'Y'", null, null);
+					WHERE_APP_ID_EQUALS + appId + " and active_yn = 'Y'", null, null);
 			roleList = createCentralRoleObject(app, epRole, roleList, params);
 		} catch (Exception e) {
-			logger.error(EELFLoggerDelegate.errorLogger, "getActiveRoles failed", e);
+			logger.error(EELFLoggerDelegate.errorLogger, "getActiveRoles: failed", e);
 			throw new Exception(e.getMessage());
 		}
 		return roleList;
@@ -1024,159 +1233,169 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void deleteDependcyRoleRecord(Long roleId, String uebkey, String LoginId) throws Exception {
+	public boolean deleteDependencyRoleRecord(Long roleId, String uebkey, String LoginId) throws Exception {
 		boolean result = false;
-		Session localSession = null;
+		Session localSession = sessionFactory.openSession();
 		Transaction transaction = null;
 		EPApp app = null;
 		try {
-			localSession = sessionFactory.openSession();
 			transaction = localSession.beginTransaction();
 			List<EPRole> epRoleList = null;
 			app = getApp(uebkey).get(0);
 			epRoleList = dataAccessService.getList(EPRole.class,
-					" where app_id = " + app.getId() + " and app_role_id = " + roleId, null, null);
-			if(epRoleList.isEmpty()){
+					WHERE_APP_ID_EQUALS + app.getId() + " and app_role_id = " + roleId, null, null);
+			if (epRoleList.isEmpty()) {
 				epRoleList = dataAccessService.getList(EPRole.class,
-						" where app_id = " + app.getId() + " and role_id = " + roleId, null, null);
+						WHERE_APP_ID_EQUALS + app.getId() + " and role_id = " + roleId, null, null);
 			}
 			// Delete User Role in External System before deleting role
 			deleteUserRoleInExternalSystem(epRoleList.get(0), app, LoginId);
 			// Delete user app roles
 			dataAccessService.deleteDomainObjects(EPUserApp.class,
-					" app_id = " + app.getId() + " and role_id = " + epRoleList.get(0).getId(), null);
-			
-			deleteRoleDependeciesRecord(localSession, epRoleList.get(0).getId());
-			logger.debug(EELFLoggerDelegate.debugLogger, "about to commit the transaction");
+					APP_ID_EQUALS + app.getId() + " and role_id = " + epRoleList.get(0).getId(), null);
+
+			deleteRoleDependencyRecords(localSession, epRoleList.get(0).getId(), app.getId());
+			logger.debug(EELFLoggerDelegate.debugLogger, "deleteDependencyRoleRecord: about to commit the transaction");
 			transaction.commit();
-			logger.debug(EELFLoggerDelegate.debugLogger, "committed the transaction");
+			logger.debug(EELFLoggerDelegate.debugLogger, "deleteDependencyRoleRecord: committed the transaction");
 			result = true;
-		}catch(HttpClientErrorException e){
+		} catch(HttpClientErrorException e){
 			logger.error(EELFLoggerDelegate.errorLogger, "HttpClientErrorException - Failed to deleteRoleDependeciesRecord", e);
 			EPLogUtil.logExternalAuthAccessAlarm(logger, e.getStatusCode());
-		}catch (Exception e) {
-			EcompPortalUtils.rollbackTransaction(transaction,
-					"deleteDependcyRoleRecord rollback, exception = " + e);
+		} catch (Exception e) {
+			EcompPortalUtils.rollbackTransaction(transaction, "deleteDependencyRoleRecord: rollback, exception = " + e);
 			logger.error(EELFLoggerDelegate.errorLogger, EcompPortalUtils.getStackTrace(e));
-		}finally {
+			result = false;
+		} finally {
 			localSession.close();
-			if (!result) {
-				throw new Exception(
-						"Exception occurred in syncAppRoles while closing database session for role: '" + app.getId() + "'.");
-			}
 		}
+		return result;
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	@Transactional
-	public void syncRoleFunctionFromExternalAccessSystem(EPApp app){
-		try{
-		ResponseEntity<String> response = null;
-		HttpHeaders headers = EcompPortalUtils.base64encodeKeyForAAFBasicAuth();
-		HttpEntity<String> entity = new HttpEntity<>(headers);
-		logger.debug(EELFLoggerDelegate.debugLogger, "Connecting to External Access system");
-		response = template.exchange(SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_URL)
-				+ "perms/ns/" + app.getNameSpace(), HttpMethod.GET, entity, String.class);
+	public void syncRoleFunctionFromExternalAccessSystem(EPApp app) {
+		try {
+			ResponseEntity<String> response = null;
+			HttpHeaders headers = EcompPortalUtils.base64encodeKeyForAAFBasicAuth();
+			HttpEntity<String> entity = new HttpEntity<>(headers);
+			logger.debug(EELFLoggerDelegate.debugLogger, "syncRoleFunctionFromExternalAccessSystem: {} " , CONNECTING_TO_EXTERNAL_AUTH_SYSTEM_LOG_MESSAGE);
+			response = template
+					.exchange(SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_URL)
+							+ "perms/ns/" + app.getNameSpace(), HttpMethod.GET, entity, String.class);
 
-		String res = response.getBody();
-		logger.debug(EELFLoggerDelegate.debugLogger, "Connected to External Access system and the result is :", res);
-		JSONObject jsonObj = new JSONObject(res);
-		JSONArray extPerms = jsonObj.getJSONArray("perm");
-		for (int i = 0; i < extPerms.length(); i++) {
-			if (extPerms.getJSONObject(i).getString("type").equals(app.getNameSpace() + ".access")) {
-				extPerms.remove(i);
-				i--;
+			String res = response.getBody();
+			logger.debug(EELFLoggerDelegate.debugLogger, "syncRoleFunctionFromExternalAccessSystem: Finished GET permissions from External Auth system and response: {} ", response.getBody());
+			JSONObject jsonObj = new JSONObject(res);
+			JSONArray extPerms = jsonObj.getJSONArray("perm");
+			for (int i = 0; i < extPerms.length(); i++) {
+				if (extPerms.getJSONObject(i).getString("type").equals(app.getNameSpace() + ".access")) {
+					extPerms.remove(i);
+					i--;
+				}
 			}
-		}
-		ExternalAccessPermsDetail permDetails = null;
-		List<ExternalAccessPermsDetail> permsDetailList = new ArrayList<>();
-		for (int i = 0; i < extPerms.length(); i++) {
-			if (extPerms.getJSONObject(i).has("roles")) {
-				ObjectMapper rolesListMapper = new ObjectMapper();
-				JSONArray resRoles = extPerms.getJSONObject(i).getJSONArray("roles");
-				List<String> list = rolesListMapper.readValue(resRoles.toString(),
-						TypeFactory.defaultInstance().constructCollectionType(List.class, String.class));
-				permDetails = new ExternalAccessPermsDetail(extPerms.getJSONObject(i).getString("type"),
-						extPerms.getJSONObject(i).getString("instance"), extPerms.getJSONObject(i).getString("action"),
-						list, extPerms.getJSONObject(i).getString("description"));
-				permsDetailList.add(permDetails);
-			} else {
-				permDetails = new ExternalAccessPermsDetail(extPerms.getJSONObject(i).getString("type"),
-						extPerms.getJSONObject(i).getString("instance"), extPerms.getJSONObject(i).getString("action"),
-						extPerms.getJSONObject(i).getString("description"));
-				permsDetailList.add(permDetails);
+			ExternalAccessPermsDetail permDetails = null;
+			List<ExternalAccessPermsDetail> permsDetailList = new ArrayList<>();
+			for (int i = 0; i < extPerms.length(); i++) {
+				if (extPerms.getJSONObject(i).has("roles")) {
+					ObjectMapper rolesListMapper = new ObjectMapper();
+					JSONArray resRoles = extPerms.getJSONObject(i).getJSONArray("roles");
+					List<String> list = rolesListMapper.readValue(resRoles.toString(),
+							TypeFactory.defaultInstance().constructCollectionType(List.class, String.class));
+					permDetails = new ExternalAccessPermsDetail(extPerms.getJSONObject(i).getString("type"),
+							extPerms.getJSONObject(i).getString("instance"),
+							extPerms.getJSONObject(i).getString("action"), list,
+							extPerms.getJSONObject(i).getString(EXTERNAL_AUTH_ROLE_DESCRIPTION));
+					permsDetailList.add(permDetails);
+				} else {
+					permDetails = new ExternalAccessPermsDetail(extPerms.getJSONObject(i).getString("type"),
+							extPerms.getJSONObject(i).getString("instance"),
+							extPerms.getJSONObject(i).getString("action"),
+							extPerms.getJSONObject(i).getString(EXTERNAL_AUTH_ROLE_DESCRIPTION));
+					permsDetailList.add(permDetails);
+				}
 			}
-		}
 
-		final Map<String, Long> params = new HashMap<>();
-		final Map<String, CentralRoleFunction> roleFuncMap = new HashMap<>();
-		params.put("appId", app.getId());
-		List<CentralRoleFunction> appFunctions = dataAccessService.executeNamedQuery("getAllRoleFunctions", params,
-				null);
-		if (appFunctions.size() > 0) {
-			for (CentralRoleFunction roleFunc : appFunctions) {
-				roleFuncMap.put(roleFunc.getCode(), roleFunc);
+			final Map<String, Long> params = new HashMap<>();
+			final Map<String, CentralRoleFunction> roleFuncMap = new HashMap<>();
+			params.put(APP_ID, app.getId());
+			List<CentralRoleFunction> appFunctions = dataAccessService.executeNamedQuery("getAllRoleFunctions", params,
+					null);
+			if (!appFunctions.isEmpty()) {
+				for (CentralRoleFunction roleFunc : appFunctions) {
+					roleFuncMap.put(roleFunc.getCode(), roleFunc);
+				}
 			}
-		}
-		// delete all application role functions
-		dataAccessService.deleteDomainObjects(EPAppRoleFunction.class, " app_id = " + app.getId(), null);
-		
-		// Add if new functions and app role functions were added in Externalsystem
-		for (ExternalAccessPermsDetail permsDetail : permsDetailList) {
-			if (!roleFuncMap.containsKey(permsDetail.getInstance())) {
-				CentralRoleFunction addFunction = new CentralRoleFunction();
-				addFunction.setAppId(app.getId());
-				addFunction.setCode(permsDetail.getInstance());
-				addFunction.setName(permsDetail.getDescription());
-				dataAccessService.saveDomainObject(addFunction, null);
-			}
+			// delete all application role functions
+			dataAccessService.deleteDomainObjects(EPAppRoleFunction.class, APP_ID_EQUALS + app.getId(), null);
+
+			// Add if new functions and app role functions were added in external auth system
+			for (ExternalAccessPermsDetail permsDetail : permsDetailList) {
+				if (!roleFuncMap.containsKey(permsDetail.getInstance())) {
+					try{
+					CentralRoleFunction addFunction = new CentralRoleFunction();
+					addFunction.setAppId(app.getId());
+					addFunction.setCode(permsDetail.getInstance());
+					addFunction.setName(permsDetail.getDescription());
+					dataAccessService.saveDomainObject(addFunction, null);
+					} catch(Exception e){
+						logger.error(EELFLoggerDelegate.errorLogger, "syncRoleFunctionFromExternalAccessSystem: Failed to add function", e);
+					}
+				}
 				List<EPRole> epRolesList = null;
 				List<String> roles = permsDetail.getRoles();
 				if (roles != null) {
-				for (String roleList : roles) {
-					if (app.getId().equals(PortalConstants.PORTAL_APP_ID)) {
-						epRolesList = dataAccessService.getList(EPRole.class,
-								" where app_id is null " + " and role_name = '"
-										+ roleList.substring(app.getNameSpace().length() + 1).replaceAll("_", " ") +"'",
-								null, null);
-					} else {
-						epRolesList = dataAccessService.getList(EPRole.class,
-								" where app_id = " + app.getId() + " and role_name = '"
-										+ roleList.substring(app.getNameSpace().length() + 1).replaceAll("_", " ") +"'",
-								null, null);
-					}
-					if(epRolesList.isEmpty()){
+					for (String roleList : roles) {
 						if (app.getId().equals(PortalConstants.PORTAL_APP_ID)) {
 							epRolesList = dataAccessService.getList(EPRole.class,
 									" where app_id is null " + " and role_name = '"
-											+ roleList.substring(app.getNameSpace().length() + 1)
+											+ roleList.substring(app.getNameSpace().length() + 1).replaceAll("_", " ")
 											+ "'",
 									null, null);
 						} else {
 							epRolesList = dataAccessService.getList(EPRole.class,
-									" where app_id = " + app.getId() + " and role_name = '"
-											+ roleList.substring(app.getNameSpace().length() + 1)+"'",
+									WHERE_APP_ID_EQUALS + app.getId() + " and role_name = '"
+											+ roleList.substring(app.getNameSpace().length() + 1).replaceAll("_", " ")
+											+ "'",
 									null, null);
 						}
-					}
-					// save all application role functions
-					if (epRolesList.size() > 0 || !epRolesList.isEmpty()) {
-						EPAppRoleFunction addAppRoleFunc = new EPAppRoleFunction();
-						addAppRoleFunc.setAppId(app.getId());
-						addAppRoleFunc.setCode(permsDetail.getInstance());
-						addAppRoleFunc.setRoleId(epRolesList.get(0).getId());
-						dataAccessService.saveDomainObject(addAppRoleFunc, null);
+						if (epRolesList.isEmpty()) {
+							if (app.getId().equals(PortalConstants.PORTAL_APP_ID)) {
+								epRolesList = dataAccessService.getList(EPRole.class,
+										" where app_id is null " + " and role_name = '"
+												+ roleList.substring(app.getNameSpace().length() + 1) + "'",
+										null, null);
+							} else {
+								epRolesList = dataAccessService.getList(EPRole.class,
+										WHERE_APP_ID_EQUALS + app.getId() + " and role_name = '"
+												+ roleList.substring(app.getNameSpace().length() + 1) + "'",
+										null, null);
+							}
+						}
+						// save all application role functions
+						if (!epRolesList.isEmpty()) {
+							try{
+							EPAppRoleFunction addAppRoleFunc = new EPAppRoleFunction();
+							addAppRoleFunc.setAppId(app.getId());
+							addAppRoleFunc.setCode(permsDetail.getInstance());
+							addAppRoleFunc.setRoleId(epRolesList.get(0).getId());
+							dataAccessService.saveDomainObject(addAppRoleFunc, null);
+							} catch(Exception e){
+								logger.error(EELFLoggerDelegate.errorLogger, "syncRoleFunctionFromExternalAccessSystem: Failed to save app role function ", e);
+							}
+						}
 					}
 				}
 			}
-		}
-		logger.debug(EELFLoggerDelegate.debugLogger, "Finished syncRoleFunctionFromExternalAccessSystem");
-		} catch(Exception e){
-			logger.error(EELFLoggerDelegate.errorLogger, "Failed syncRoleFunctionFromExternalAccessSystem", e);
+			logger.debug(EELFLoggerDelegate.debugLogger, "syncRoleFunctionFromExternalAccessSystem: Finished syncRoleFunctionFromExternalAccessSystem");
+		} catch (Exception e) {
+			logger.error(EELFLoggerDelegate.errorLogger, "syncRoleFunctionFromExternalAccessSystem: Failed syncRoleFunctionFromExternalAccessSystem", e);
 
 		}
 	}
-	
+
+	@Override
 	@SuppressWarnings("unchecked")
 	public Integer bulkUploadFunctions(String uebkey) throws Exception {
 		EPApp app = getApp(uebkey).get(0);
@@ -1190,18 +1409,19 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 				addRoleFunctionInExternalSystem(cenRoleFunc, app);
 				functionsAdded++;
 			}
-		}catch(HttpClientErrorException e){
+		} catch(HttpClientErrorException e){
 			logger.error(EELFLoggerDelegate.errorLogger, "HttpClientErrorException - bulkUploadFunctions failed", e);
 			EPLogUtil.logExternalAuthAccessAlarm(logger, e.getStatusCode());
-		}catch (Exception e) {
-			logger.error(EELFLoggerDelegate.errorLogger, "bulkUploadFunctions failed", e.getMessage(), e);
+		} catch (Exception e) {
+			logger.error(EELFLoggerDelegate.errorLogger, "bulkUploadFunctions: failed", e.getMessage(), e);
 		}
 		return functionsAdded;
 	}
 
+	@Override
 	public Integer bulkUploadRoles(String uebkey) throws Exception {
 		List<EPApp> app = getApp(uebkey);
-		List<EPRole> roles = getAppRoles(app.get(0).getId(), null);
+		List<EPRole> roles = getAppRoles(app.get(0).getId());
 		List<CentralRole> cenRoleList = new ArrayList<>();
 		final Map<String, Long> params = new HashMap<>();
 		Integer rolesListAdded = 0;
@@ -1217,44 +1437,53 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 				rolesListAdded++;
 			}
 		} catch (Exception e) {
-			logger.error(EELFLoggerDelegate.errorLogger, "bulkUploadRoles failed", e);
+			logger.error(EELFLoggerDelegate.errorLogger, "bulkUploadRoles: failed", e);
 			throw new Exception(e.getMessage());
 		}
 		return rolesListAdded;
 	}
-	
+
+	/**
+	 * It creating new role in external auth system while doing bulk upload
+	 * 
+	 * @param role
+	 * @param app
+	 * @throws Exception
+	 */
 	private void addRoleInExternalSystem(Role role, EPApp app) throws Exception {
-		String addRoleNew = createNewRoleInExternalSystem(role, app);
+		String addRoleNew = updateExistingRoleInExternalSystem(role, app);
 		HttpHeaders headers = EcompPortalUtils.base64encodeKeyForAAFBasicAuth();
-		try{
-		HttpEntity<String> entity = new HttpEntity<>(addRoleNew, headers);
-		template.exchange(
-				SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_URL) + "role",
-				HttpMethod.POST, entity, String.class);
-		}catch(HttpClientErrorException e){
+		try {
+			HttpEntity<String> entity = new HttpEntity<>(addRoleNew, headers);
+			template.exchange(
+					SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_URL) + "role",
+					HttpMethod.POST, entity, String.class);
+		} catch(HttpClientErrorException e){
 			logger.error(EELFLoggerDelegate.errorLogger, "HttpClientErrorException - Failed to addRoleInExternalSystem", e);
 			EPLogUtil.logExternalAuthAccessAlarm(logger, e.getStatusCode());
-		}catch(Exception e){
+		} catch (Exception e) {
 			if (e.getMessage().equalsIgnoreCase("409 Conflict")) {
-				logger.error(EELFLoggerDelegate.errorLogger, "Role already exits but does not break functionality");
+				logger.error(EELFLoggerDelegate.errorLogger, "addRoleInExternalSystem: Role already exits but does not break functionality", e);
 			} else {
-				logger.error(EELFLoggerDelegate.errorLogger, "Failed to addRoleInExternalSystem", e.getMessage());
+				logger.error(EELFLoggerDelegate.errorLogger, "addRoleInExternalSystem: Failed to addRoleInExternalSystem", e.getMessage());
 			}
 		}
 	}
-	
+
+	@Override
 	@SuppressWarnings("unchecked")
 	public Integer bulkUploadRolesFunctions(String uebkey) throws Exception {
 		EPApp app = getApp(uebkey).get(0);
-		List<EPRole> roles = getAppRoles(app.getId(), null);
+		List<EPRole> roles = getAppRoles(app.getId());
 		final Map<String, Long> params = new HashMap<>();
 		Integer roleFunctions = 0;
 		try {
 			for (EPRole role : roles) {
 				params.put("roleId", role.getId());
-				List<BulkUploadRoleFunction> appRoleFunc = dataAccessService.executeNamedQuery("uploadAllRoleFunctions", params, null);
-				if(!appRoleFunc.isEmpty()){
-					for(BulkUploadRoleFunction addRoleFunc : appRoleFunc){
+				List<BulkUploadRoleFunction> appRoleFunc = dataAccessService.executeNamedQuery("uploadAllRoleFunctions",
+						params, null);
+				if (!appRoleFunc.isEmpty()) {
+					for (BulkUploadRoleFunction addRoleFunc : appRoleFunc) {
 						addRoleFunctionsInExternalSystem(addRoleFunc, role, app);
 						roleFunctions++;
 					}
@@ -1264,34 +1493,44 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 			logger.error(EELFLoggerDelegate.errorLogger, "HttpClientErrorException - Failed to bulkUploadRolesFunctions", e);
 			EPLogUtil.logExternalAuthAccessAlarm(logger, e.getStatusCode());
 		} catch (Exception e) {
-			logger.error(EELFLoggerDelegate.errorLogger, "bulkUploadRolesFunctions failed", e);
+			logger.error(EELFLoggerDelegate.errorLogger, "bulkUploadRolesFunctions: failed", e);
 		}
 		return roleFunctions;
 	}
-
-	private void addRoleFunctionsInExternalSystem(BulkUploadRoleFunction addRoleFunc, EPRole role, EPApp app){
-			String checkType = addRoleFunc.getFunctionCd().contains("menu") ? "menu" : "url";
-			ExternalAccessRolePerms extRolePerms = null;
-			ExternalAccessPerms extPerms = null;
-			ObjectMapper mapper = new ObjectMapper();
-			try{
+	
+	/**
+	 * Its adding a role function while doing bulk upload
+	 * 
+	 * @param addRoleFunc
+	 * @param role
+	 * @param app
+	 */
+	private void addRoleFunctionsInExternalSystem(BulkUploadRoleFunction addRoleFunc, EPRole role, EPApp app) {
+		String checkType = addRoleFunc.getFunctionCd().contains("menu") ? "menu" : "url";
+		ExternalAccessRolePerms extRolePerms = null;
+		ExternalAccessPerms extPerms = null;
+		ObjectMapper mapper = new ObjectMapper();
+		try {
 			HttpHeaders headers = EcompPortalUtils.base64encodeKeyForAAFBasicAuth();
 
-			extPerms = new ExternalAccessPerms(app.getNameSpace() + "." + checkType, addRoleFunc.getFunctionCd(), "*", addRoleFunc.getFunctionName());
+			extPerms = new ExternalAccessPerms(app.getNameSpace() + "." + checkType, addRoleFunc.getFunctionCd(), "*",
+					addRoleFunc.getFunctionName());
 			extRolePerms = new ExternalAccessRolePerms(extPerms,
 					app.getNameSpace() + "." + role.getName().replaceAll(" ", "_"));
 			String updateRolePerms = mapper.writeValueAsString(extRolePerms);
 			HttpEntity<String> entity = new HttpEntity<>(updateRolePerms, headers);
-			template
-					.exchange(SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_URL)
-							+ "role/perm", HttpMethod.POST, entity, String.class);
-			} catch(Exception e){
-				if (e.getMessage().equalsIgnoreCase("409 Conflict")) {
-					logger.error(EELFLoggerDelegate.errorLogger, "RoleFunction already exits but does not break functionality",e);
-				} else {
-					logger.error(EELFLoggerDelegate.errorLogger, "Failed to addRoleFunctionsInExternalSystem", e.getMessage());
-				}
+			template.exchange(
+					SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_URL) + "role/perm",
+					HttpMethod.POST, entity, String.class);
+		} catch (Exception e) {
+			if (e.getMessage().equalsIgnoreCase("409 Conflict")) {
+				logger.error(EELFLoggerDelegate.errorLogger,
+						"addRoleFunctionsInExternalSystem: RoleFunction already exits but does not break functionality", e);
+			} else {
+				logger.error(EELFLoggerDelegate.errorLogger, "addRoleFunctionsInExternalSystem: Failed to addRoleFunctionsInExternalSystem",
+						e.getMessage());
 			}
+		}
 	}
 
 	@Override
@@ -1347,143 +1586,143 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 			} catch (Exception e) {
 				if (e.getMessage().equalsIgnoreCase("409 Conflict")) {
 					logger.error(EELFLoggerDelegate.errorLogger,
-							"RoleFunction already exits but does not break functionality");
+							"bulkUploadPartnerRoleFunctions: RoleFunction already exits but does not break functionality");
 				} else {
-					logger.error(EELFLoggerDelegate.errorLogger, "Failed to addRoleFunctionsInExternalSystem",
+					logger.error(EELFLoggerDelegate.errorLogger, "bulkUploadPartnerRoleFunctions: Failed to addRoleFunctionsInExternalSystem",
 							e.getMessage());
 				}
 			}
 
 		}
 	}
-	
+
+	@Override
 	@SuppressWarnings("unchecked")
 	@Transactional
-	public void SyncApplicationRolesWithEcompDB(EPApp app){
-		try{
-		ResponseEntity<String> response = null;
-		List<EPRole> finalRoleList = new ArrayList<>();
-		ExternalRoleDescription ApplicationRole = new ExternalRoleDescription();
-		ExternalAccessPerms externalAccessPerms = null;
-		List<String> functionCodelist = new ArrayList<>();
-		List<ExternalRoleDetails> externalRoleDetailsList = new ArrayList<>();
-		ObjectMapper mapper = new ObjectMapper();
-		HttpHeaders headers = EcompPortalUtils.base64encodeKeyForAAFBasicAuth();
-		HttpEntity<String> entity = new HttpEntity<>(headers);
-		logger.debug(EELFLoggerDelegate.debugLogger, "Connecting to External Access system");
-		response = template.exchange(SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_URL)
-				+ "roles/ns/" + app.getNameSpace(), HttpMethod.GET, entity, String.class);
-		String res = response.getBody();
-		logger.debug(EELFLoggerDelegate.debugLogger, "Connected to External Access system and the result is :", res);
-		JSONObject jsonObj = new JSONObject(res);
-		JSONArray extRole = jsonObj.getJSONArray("role");
-		for (int i = 0; i < extRole.length(); i++) {
-			if (extRole.getJSONObject(i).getString("name").equals(app.getNameSpace() + ".admin")
-					|| extRole.getJSONObject(i).getString("name").equals(app.getNameSpace() + ".owner")
-					) {
-				extRole.remove(i);
-				i--;
+	public void syncApplicationRolesWithEcompDB(EPApp app) {
+		try {
+			ResponseEntity<String> response = null;
+			List<EPRole> finalRoleList = new ArrayList<>();
+			ExternalRoleDescription ApplicationRole = new ExternalRoleDescription();
+			ExternalAccessPerms externalAccessPerms = null;
+			List<String> functionCodelist = new ArrayList<>();
+			List<ExternalRoleDetails> externalRoleDetailsList = new ArrayList<>();
+			ObjectMapper mapper = new ObjectMapper();
+			HttpHeaders headers = EcompPortalUtils.base64encodeKeyForAAFBasicAuth();
+			HttpEntity<String> entity = new HttpEntity<>(headers);
+			logger.debug(EELFLoggerDelegate.debugLogger, "syncApplicationRolesWithEcompDB: {} " , CONNECTING_TO_EXTERNAL_AUTH_SYSTEM_LOG_MESSAGE);
+			response = template
+					.exchange(SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_URL)
+							+ "roles/ns/" + app.getNameSpace(), HttpMethod.GET, entity, String.class);
+			String res = response.getBody();
+			logger.debug(EELFLoggerDelegate.debugLogger, "syncApplicationRolesWithEcompDB: Finished GET roles from External Auth system and the result is :",
+					res);
+			JSONObject jsonObj = new JSONObject(res);
+			JSONArray extRole = jsonObj.getJSONArray("role");
+			for (int i = 0; i < extRole.length(); i++) {
+				if (extRole.getJSONObject(i).getString(ROLE_NAME).equals(app.getNameSpace() + ".admin")
+						|| extRole.getJSONObject(i).getString(ROLE_NAME).equals(app.getNameSpace() + ".owner")) {
+					extRole.remove(i);
+					i--;
+				}
+				if (!app.getId().equals(PortalConstants.PORTAL_APP_ID) && extRole.getJSONObject(i).get(ROLE_NAME)
+						.equals(app.getNameSpace() + "." + PortalConstants.ADMIN_ROLE.replaceAll(" ", "_"))) {
+					extRole.remove(i);
+					i--;
+				}
 			}
-			if(!app.getId().equals(PortalConstants.PORTAL_APP_ID) && extRole.getJSONObject(i).get("name").equals(app.getNameSpace()+"."+PortalConstants.ADMIN_ROLE.replaceAll(" ", "_"))){
-				extRole.remove(i);
-				i--;
-			}
-		}
-		List<EPAppRoleFunction> applicationRoleFunctionList = new ArrayList<>();
-		for (int i = 0; i < extRole.length(); i++) {
-			ExternalRoleDetails externalRoleDetail = new ExternalRoleDetails();
-			EPAppRoleFunction ePAppRoleFunction = new EPAppRoleFunction();
-			JSONObject Role = (JSONObject) extRole.get(i);
-			if(!extRole.getJSONObject(i).has("description"))
-			{
-				ApplicationRole.setActive("true");
-					ApplicationRole.setAppId("null");
-				ApplicationRole.setPriority("null");
-				ApplicationRole.setAppRoleId("null");
-				String roleName =extRole.getJSONObject(i).getString("name");
-				ApplicationRole.setName(roleName.substring(app.getNameSpace().length()+1));
-			}
-			else {
-			String desc = extRole.getJSONObject(i).getString("description");
-			ApplicationRole = mapper.readValue(desc, ExternalRoleDescription.class);
-			}
-			
+			List<EPAppRoleFunction> applicationRoleFunctionList = new ArrayList<>();
+			for (int i = 0; i < extRole.length(); i++) {
+				ExternalRoleDetails externalRoleDetail = new ExternalRoleDetails();
+				EPAppRoleFunction ePAppRoleFunction = new EPAppRoleFunction();
+				JSONObject Role = (JSONObject) extRole.get(i);
+				if (!extRole.getJSONObject(i).has(EXTERNAL_AUTH_ROLE_DESCRIPTION)) {
+					ApplicationRole.setActive("true");
+					ApplicationRole.setAppId(IS_NULL_STRING);
+					ApplicationRole.setPriority(IS_NULL_STRING);
+					ApplicationRole.setAppRoleId(IS_NULL_STRING);
+					String roleName = extRole.getJSONObject(i).getString(ROLE_NAME);
+					ApplicationRole.setName(roleName.substring(app.getNameSpace().length() + 1));
+				} else {
+					String desc = extRole.getJSONObject(i).getString(EXTERNAL_AUTH_ROLE_DESCRIPTION);
+					ApplicationRole = mapper.readValue(desc, ExternalRoleDescription.class);
+				}
 
-			SortedSet<ExternalAccessPerms> externalAccessPermsOfRole = new TreeSet<>();
-			if (extRole.getJSONObject(i).has("perms")) {
-				JSONArray extPerm = (JSONArray) Role.get("perms");
-				for (int j = 0; j < extPerm.length(); j++) {
-					JSONObject perms = extPerm.getJSONObject(j);
-					externalAccessPerms = new ExternalAccessPerms(perms.getString("type"), perms.getString("instance"),
-							perms.getString("action"));
-					ePAppRoleFunction.setCode(externalAccessPerms.getInstance());
-					functionCodelist.add(ePAppRoleFunction.getCode());
-					externalAccessPermsOfRole.add(externalAccessPerms);
+				SortedSet<ExternalAccessPerms> externalAccessPermsOfRole = new TreeSet<>();
+				if (extRole.getJSONObject(i).has(EXTERNAL_AUTH_PERMS)) {
+					JSONArray extPerm = (JSONArray) Role.get(EXTERNAL_AUTH_PERMS);
+					for (int j = 0; j < extPerm.length(); j++) {
+						JSONObject perms = extPerm.getJSONObject(j);
+						externalAccessPerms = new ExternalAccessPerms(perms.getString("type"),
+								perms.getString("instance"), perms.getString("action"));
+						ePAppRoleFunction.setCode(externalAccessPerms.getInstance());
+						functionCodelist.add(ePAppRoleFunction.getCode());
+						externalAccessPermsOfRole.add(externalAccessPerms);
+					}
+				}
+
+				if (ApplicationRole.getActive().equals(IS_NULL_STRING)) {
+					externalRoleDetail.setActive(false);
+				} else {
+					externalRoleDetail.setActive(Boolean.parseBoolean(ApplicationRole.getActive().toString()));
+				}
+				externalRoleDetail.setName(ApplicationRole.getName());
+
+				if (ApplicationRole.getAppId().equals(IS_NULL_STRING) && app.getId() == 1) {
+					externalRoleDetail.setAppId(null);
+				} else if (ApplicationRole.getAppId().equals(IS_NULL_STRING)) {
+					externalRoleDetail.setAppId(app.getId());
+				} else {
+					externalRoleDetail.setAppId(Long.parseLong(ApplicationRole.getAppId().toString()));
+				}
+
+				if (ApplicationRole.getPriority().equals(IS_NULL_STRING)) {
+					externalRoleDetail.setPriority(null);
+				} else {
+					externalRoleDetail.setPriority(Integer.parseInt(ApplicationRole.getPriority().toString()));
+				}
+
+				if (ApplicationRole.getAppRoleId().equals(IS_NULL_STRING) && app.getId() == 1) {
+					externalRoleDetail.setAppRoleId(null);
+				}
+
+				if (!externalAccessPermsOfRole.isEmpty()) {
+					for (ExternalAccessPerms externalpermission : externalAccessPermsOfRole) {
+						EPAppRoleFunction apRoleFunction = new EPAppRoleFunction();
+						apRoleFunction.setAppId(app.getId());
+						apRoleFunction.setRoleId(Long.parseLong(ApplicationRole.getId()));
+						apRoleFunction.setCode(externalpermission.getInstance());
+						applicationRoleFunctionList.add(apRoleFunction);
+					}
+				}
+				externalRoleDetailsList.add(externalRoleDetail);
+			}
+
+			for (ExternalRoleDetails externalRole : externalRoleDetailsList) {
+				EPRole ecompRole = convertExternalRoleDetailstoEpRole(externalRole);
+				finalRoleList.add(ecompRole);
+			}
+
+			List<EPRole> applicationRolesList = new ArrayList<>();
+			applicationRolesList = getAppRoles(app.getId());
+			List<String> applicationRoleIdList = new ArrayList<>();
+			for (EPRole applicationRole : applicationRolesList) {
+				applicationRoleIdList.add(applicationRole.getName());
+			}
+
+			List<EPRole> roleListToBeAddInEcompDB = new ArrayList<>();
+			for (EPRole aafRole : finalRoleList) {
+				if (!applicationRoleIdList.contains(aafRole.getName())) {
+					roleListToBeAddInEcompDB.add(aafRole);
 				}
 			}
 
-			if (ApplicationRole.getActive().equals("null")) {
-				externalRoleDetail.setActive(false);
-			} else {
-				externalRoleDetail.setActive(Boolean.parseBoolean(ApplicationRole.getActive().toString()));
+			// Check if roles exits in external Access system and make it
+			// inactive
+			final Map<String, EPRole> checkRolesInactive = new HashMap<>();
+			for (EPRole extrole : finalRoleList) {
+				checkRolesInactive.put(extrole.getName(), extrole);
 			}
-			externalRoleDetail.setName(ApplicationRole.getName());
-
-			if (ApplicationRole.getAppId().equals("null") && app.getId() == 1) {
-				externalRoleDetail.setAppId(null);
-			} else if(ApplicationRole.getAppId().equals("null")){
-				externalRoleDetail.setAppId(app.getId());
-			}else {
-				externalRoleDetail.setAppId(Long.parseLong(ApplicationRole.getAppId().toString()));
-			}
-
-			if (ApplicationRole.getPriority().equals("null")) {
-				externalRoleDetail.setPriority(null);
-			} else {
-				externalRoleDetail.setPriority(Integer.parseInt(ApplicationRole.getPriority().toString()));
-			}
-
-			if (ApplicationRole.getAppRoleId().equals("null") && app.getId() == 1) {
-				externalRoleDetail.setAppRoleId(null);
-			}
-
-			if (!externalAccessPermsOfRole.isEmpty() || externalAccessPermsOfRole.size() > 0) {
-				for (ExternalAccessPerms externalpermission : externalAccessPermsOfRole) {
-					EPAppRoleFunction apRoleFunction = new EPAppRoleFunction();
-					apRoleFunction.setAppId(app.getId());
-					apRoleFunction.setRoleId(Long.parseLong(ApplicationRole.getId()));
-					apRoleFunction.setCode(externalpermission.getInstance());
-					applicationRoleFunctionList.add(apRoleFunction);
-				}
-			}
-			externalRoleDetailsList.add(externalRoleDetail);
-		}
-			
-		for (ExternalRoleDetails externalRole : externalRoleDetailsList) {
-			EPRole ecompRole = new EPRole();
-			ecompRole = convertExternalRoleDetailstoEpRole(externalRole);
-			finalRoleList.add(ecompRole);
-		}
-
-		List<EPRole> applicationRolesList = new ArrayList<>();
-		applicationRolesList = getAppRoles(app.getId(), null);
-		List<String> applicationRoleIdList = new ArrayList<>();
-		for (EPRole applicationRole : applicationRolesList) {
-			applicationRoleIdList.add(applicationRole.getName());
-		}
-
-		List<EPRole> roleListToBeAddInEcompDB = new ArrayList<>();
-		for (EPRole aafRole : finalRoleList) {
-			if (!applicationRoleIdList.contains(aafRole.getName())) {
-				roleListToBeAddInEcompDB.add(aafRole);
-			}
-		}
-		
-		// Check if roles exits in external Access system and make it inactive
-		final Map<String, EPRole> checkRolesInactive = new HashMap<>();
-		for(EPRole extrole : finalRoleList){
-			checkRolesInactive.put(extrole.getName(), extrole);
-		}
 			for (EPRole role : applicationRolesList) {
 				final Map<String, String> extRoleParams = new HashMap<>();
 				List<EPRole> roleList = new ArrayList<>();
@@ -1492,15 +1731,15 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 					if (app.getId() == 1) {
 						roleList = dataAccessService.executeNamedQuery("getPortalAppRoles", extRoleParams, null);
 					} else {
-						extRoleParams.put("appId", app.getId().toString());
+						extRoleParams.put(APP_ID, app.getId().toString());
 						roleList = dataAccessService.executeNamedQuery("getRoletoUpdateAAF", extRoleParams, null);
 					}
 					EPRole updateRoleInactive = roleList.get(0);
 					updateRoleInactive.setActive(false);
-					dataAccessService.saveDomainObject(updateRoleInactive, null);					
+					dataAccessService.saveDomainObject(updateRoleInactive, null);
 				}
 			}
-		
+
 			for (EPRole roleItem : finalRoleList) {
 				final Map<String, String> roleParams = new HashMap<>();
 				List<EPRole> currentList = new ArrayList<>();
@@ -1508,7 +1747,7 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 				if (app.getId() == 1) {
 					currentList = dataAccessService.executeNamedQuery("getPortalAppRoles", roleParams, null);
 				} else {
-					roleParams.put("appId", app.getId().toString());
+					roleParams.put(APP_ID, app.getId().toString());
 					currentList = dataAccessService.executeNamedQuery("getRoletoUpdateAAF", roleParams, null);
 				}
 
@@ -1533,55 +1772,60 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 				}
 			}
 
-		EPRole roleToBeAddedInEcompDB = new EPRole();
-		for (int i = 0; i < roleListToBeAddInEcompDB.size(); i++) {
-			roleToBeAddedInEcompDB = roleListToBeAddInEcompDB.get(i);
-			if(app.getId() == 1)
-			{
-				roleToBeAddedInEcompDB.setAppRoleId(null);
-			}
-			dataAccessService.saveDomainObject(roleToBeAddedInEcompDB, null);
-			List <EPRole> getRoleCreatedInSync = null;
-			if (!app.getId().equals(PortalConstants.PORTAL_APP_ID)) {
-				getRoleCreatedInSync =  dataAccessService.getList(EPRole.class,
-						" where role_name = '" + roleToBeAddedInEcompDB.getName() +"'", null, null);	
-				EPRole epUpdateRole = getRoleCreatedInSync.get(0);
-				epUpdateRole.setAppRoleId(epUpdateRole.getId());
-				dataAccessService.saveDomainObject(epUpdateRole, null);
-			}
-			List<EPRole> roleList = new ArrayList<>();
-			final Map<String, String> params = new HashMap<>();
+			EPRole roleToBeAddedInEcompDB = new EPRole();
+			for (int i = 0; i < roleListToBeAddInEcompDB.size(); i++) {
+				roleToBeAddedInEcompDB = roleListToBeAddInEcompDB.get(i);
+				if (app.getId() == 1) {
+					roleToBeAddedInEcompDB.setAppRoleId(null);
+				}
+				dataAccessService.saveDomainObject(roleToBeAddedInEcompDB, null);
+				List<EPRole> getRoleCreatedInSync = null;
+				if (!app.getId().equals(PortalConstants.PORTAL_APP_ID)) {
+					getRoleCreatedInSync = dataAccessService.getList(EPRole.class,
+							WHERE_ROLE_NAME_EQUALS + roleToBeAddedInEcompDB.getName() + "'", null, null);
+					EPRole epUpdateRole = getRoleCreatedInSync.get(0);
+					epUpdateRole.setAppRoleId(epUpdateRole.getId());
+					dataAccessService.saveDomainObject(epUpdateRole, null);
+				}
+				List<EPRole> roleList = new ArrayList<>();
+				final Map<String, String> params = new HashMap<>();
 
-			params.put("appRoleName", roleToBeAddedInEcompDB.getName());
-			if (app.getId() == 1) {
-				roleList = dataAccessService.executeNamedQuery("getPortalAppRoles", params, null);
-			} else {
-				params.put("appId", app.getId().toString());
-				roleList = dataAccessService.executeNamedQuery("getRoletoUpdateAAF", params, null);
+				params.put("appRoleName", roleToBeAddedInEcompDB.getName());
+				if (app.getId() == 1) {
+					roleList = dataAccessService.executeNamedQuery("getPortalAppRoles", params, null);
+				} else {
+					params.put(APP_ID, app.getId().toString());
+					roleList = dataAccessService.executeNamedQuery("getRoletoUpdateAAF", params, null);
+				}
+				EPRole role = roleList.get(0);
+				Role aaFrole = new Role();
+				aaFrole.setId(role.getId());
+				aaFrole.setActive(role.getActive());
+				aaFrole.setPriority(role.getPriority());
+				aaFrole.setName(role.getName());
+				updateRoleInExternalSystem(aaFrole, app);
 			}
-			EPRole role = roleList.get(0);
-			Role aaFrole = new Role();
-			aaFrole.setId(role.getId());
-			aaFrole.setActive(role.getActive());
-			aaFrole.setPriority(role.getPriority());
-			aaFrole.setName(role.getName());
-			updateRoleInExternalSystem(aaFrole, app);
-		 }
-			dataAccessService.deleteDomainObjects(EPAppRoleFunction.class, " app_id = " + app.getId(), null);
+			dataAccessService.deleteDomainObjects(EPAppRoleFunction.class, APP_ID_EQUALS + app.getId(), null);
 			for (EPAppRoleFunction rolefun : applicationRoleFunctionList) {
 				dataAccessService.saveDomainObject(rolefun, null);
 			}
-		
-		logger.debug(EELFLoggerDelegate.debugLogger, "Finished SyncApplicationRolesWithEcompDB");
-		}catch(HttpClientErrorException e){
+			logger.debug(EELFLoggerDelegate.debugLogger, "syncApplicationRolesWithEcompDB: Finished");
+		} catch(HttpClientErrorException e){
 			logger.error(EELFLoggerDelegate.errorLogger, "Failed to SyncApplicationRolesWithEcompDB", e);
 			EPLogUtil.logExternalAuthAccessAlarm(logger, e.getStatusCode());
-		}catch(Exception e){
-			logger.error(EELFLoggerDelegate.errorLogger, "Failed to SyncApplicationRolesWithEcompDB", e);
+		} catch (Exception e) {
+			logger.error(EELFLoggerDelegate.errorLogger, "syncApplicationRolesWithEcompDB: Failed ", e);
 		}
 	}
 
-	public EPRole convertExternalRoleDetailstoEpRole(ExternalRoleDetails externalRoleDetails) {
+	/**
+	 * 
+	 * It converts from ExternalRoleDetails.class object to EPRole.class object
+	 * 
+	 * @param externalRoleDetails
+	 * @return EPRole object
+	 */
+	private EPRole convertExternalRoleDetailstoEpRole(ExternalRoleDetails externalRoleDetails) {
 		EPRole role = new EPRole();
 		role.setActive(externalRoleDetails.isActive());
 		role.setAppId(externalRoleDetails.getAppId());
@@ -1609,105 +1853,115 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 		return userRolesAdded;
 	}
 
-	private void addUserRoleInExternalSystem(BulkUploadUserRoles userRolesUpload){
-		try{
-		String name = "";
-		ObjectMapper mapper = new ObjectMapper();
-		if (EPCommonSystemProperties.containsProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_USER_DOMAIN)) {
-			name = userRolesUpload.getOrgUserId()
-					+ SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_USER_DOMAIN);
-		}
-		ExternalAccessUser extUser = new ExternalAccessUser(name,
-				userRolesUpload.getAppNameSpace() + "." + userRolesUpload.getRoleName().replaceAll(" ", "_"));
-		String userRole = mapper.writeValueAsString(extUser);
-		HttpHeaders headers = EcompPortalUtils.base64encodeKeyForAAFBasicAuth();
-		HttpEntity<String> entity = new HttpEntity<>(userRole, headers);
-		template.exchange(
-				SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_URL) + "userRole",
-				HttpMethod.POST, entity, String.class);
-		}catch(HttpClientErrorException e){
+	/**
+	 * Its adding a user role in external auth system while doing bulk upload 
+	 * 
+	 * @param userRolesUpload
+	 */
+	private void addUserRoleInExternalSystem(BulkUploadUserRoles userRolesUpload) {
+		try {
+			String name = "";
+			ObjectMapper mapper = new ObjectMapper();
+			if (EPCommonSystemProperties
+					.containsProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_USER_DOMAIN)) {
+				name = userRolesUpload.getOrgUserId()
+						+ SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_USER_DOMAIN);
+			}
+			ExternalAccessUser extUser = new ExternalAccessUser(name,
+					userRolesUpload.getAppNameSpace() + "." + userRolesUpload.getRoleName().replaceAll(" ", "_"));
+			String userRole = mapper.writeValueAsString(extUser);
+			HttpHeaders headers = EcompPortalUtils.base64encodeKeyForAAFBasicAuth();
+			HttpEntity<String> entity = new HttpEntity<>(userRole, headers);
+			template.exchange(
+					SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_URL) + "userRole",
+					HttpMethod.POST, entity, String.class);
+		} catch(HttpClientErrorException e){
 			logger.error(EELFLoggerDelegate.errorLogger, "HttpClientErrorException - Failed to addUserRoleInExternalSystem", e);
 			EPLogUtil.logExternalAuthAccessAlarm(logger, e.getStatusCode());
-		}catch (Exception e) {
+		} catch (Exception e) {
 			if (e.getMessage().equalsIgnoreCase("409 Conflict")) {
-				logger.error(EELFLoggerDelegate.errorLogger, "UserRole already exits but does not break functionality");
+				logger.error(EELFLoggerDelegate.errorLogger, "addUserRoleInExternalSystem: UserRole already exits but does not break functionality");
 			} else {
-				logger.error(EELFLoggerDelegate.errorLogger, "Failed to addUserRoleInExternalSystem", e.getMessage());
+				logger.error(EELFLoggerDelegate.errorLogger, "addUserRoleInExternalSystem: Failed to addUserRoleInExternalSystem", e.getMessage());
 			}
 		}
 	}
 
 	@Override
-	public void deleteRoleDependeciesRecord(Session localSession, Long roleId) throws Exception {
+	public void deleteRoleDependencyRecords(Session localSession, Long roleId, Long appId) throws Exception {
 		try {
+			String sql = "";
+			Query query = null;
+			
+			//It should delete only when it portal's roleId
+			if(appId.equals(PortalConstants.PORTAL_APP_ID)){
 			// Delete from fn_role_function
-			String sql = "DELETE FROM fn_role_function WHERE role_id=" + roleId;
+			sql = "DELETE FROM fn_role_function WHERE role_id=" + roleId;
 			logger.debug(EELFLoggerDelegate.debugLogger, "Executing query: " + sql);
-			Query query = localSession.createSQLQuery(sql);
+			query = localSession.createSQLQuery(sql);
 			query.executeUpdate();
+			
+			// Delete from fn_role_composite
+			sql = "DELETE FROM fn_role_composite WHERE parent_role_id=" + roleId + " OR child_role_id=" + roleId;
+			logger.debug(EELFLoggerDelegate.debugLogger, "Executing query: " + sql);
+			query = localSession.createSQLQuery(sql);
+			query.executeUpdate();
+			}
 			
 			// Delete from ep_app_role_function
-		    sql = "DELETE FROM ep_app_role_function WHERE role_id=" + roleId;
+			sql = "DELETE FROM ep_app_role_function WHERE role_id=" + roleId;
 			logger.debug(EELFLoggerDelegate.debugLogger, "Executing query: " + sql);
-			 query = localSession.createSQLQuery(sql);
+			query = localSession.createSQLQuery(sql);
 			query.executeUpdate();
-			
+
 			// Delete from ep_role_notification
 			sql = "DELETE FROM ep_role_notification WHERE role_id=" + roleId;
 			logger.debug(EELFLoggerDelegate.debugLogger, "Executing query: " + sql);
 			query = localSession.createSQLQuery(sql);
 			query.executeUpdate();
 			
-			// Delete from fn_role_composite
-			sql = "DELETE FROM fn_role_composite WHERE parent_role_id=" + roleId + " OR child_role_id="
-					+ roleId;
-			logger.debug(EELFLoggerDelegate.debugLogger, "Executing query: " + sql);
-			query = localSession.createSQLQuery(sql);
-			query.executeUpdate();
-
 			// Delete from fn_user_pseudo_role
 			sql = "DELETE FROM fn_user_pseudo_role WHERE pseudo_role_id=" + roleId;
 			logger.debug(EELFLoggerDelegate.debugLogger, "Executing query: " + sql);
 			query = localSession.createSQLQuery(sql);
 			query.executeUpdate();
-			
-			//Delete form EP_WIDGET_CATALOG_ROLE
+
+			// Delete form EP_WIDGET_CATALOG_ROLE
 			sql = "DELETE FROM EP_WIDGET_CATALOG_ROLE WHERE role_id=" + roleId;
 			logger.debug(EELFLoggerDelegate.debugLogger, "Executing query: " + sql);
 			query = localSession.createSQLQuery(sql);
 			query.executeUpdate();
-			
-			//Delete form EP_WIDGET_CATALOG_ROLE
+
+			// Delete form EP_WIDGET_CATALOG_ROLE
 			sql = "DELETE FROM ep_user_roles_request_det WHERE requested_role_id=" + roleId;
 			logger.debug(EELFLoggerDelegate.debugLogger, "Executing query: " + sql);
 			query = localSession.createSQLQuery(sql);
 			query.executeUpdate();
-			
-			//Delete form fn_menu_functional_roles
+
+			// Delete form fn_menu_functional_roles
 			sql = "DELETE FROM fn_menu_functional_roles WHERE role_id=" + roleId;
 			logger.debug(EELFLoggerDelegate.debugLogger, "Executing query: " + sql);
 			query = localSession.createSQLQuery(sql);
 			query.executeUpdate();
-			
+
 		} catch (Exception e) {
-			logger.debug(EELFLoggerDelegate.debugLogger, "deleteRoleDependeciesRecord failed " , e);
-			throw new Exception("delete Failed"+ e.getMessage());
+			logger.debug(EELFLoggerDelegate.debugLogger, "deleteRoleDependeciesRecord: failed ", e);
+			throw new Exception("delete Failed" + e.getMessage());
 		}
-		
+
 	}
-	
 	
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<String> getMenuFunctionsList(String uebkey) throws Exception {
 		List<String> appMenuFunctionsList = null;
-		try{
-		EPApp app = getApp(uebkey).get(0);
-		final Map<String, Long> appParams = new HashMap<>();
-		appParams.put("appId", app.getId());
-		appMenuFunctionsList = dataAccessService.executeNamedQuery("getMenuFunctions", appParams, null);
-		} catch(Exception e){
-			logger.error(EELFLoggerDelegate.errorLogger, "Failed getMenuFunctionsList", e);
+		try {
+			EPApp app = getApp(uebkey).get(0);
+			final Map<String, Long> appParams = new HashMap<>();
+			appParams.put(APP_ID, app.getId());
+			appMenuFunctionsList = dataAccessService.executeNamedQuery("getMenuFunctions", appParams, null);
+		} catch (Exception e) {
+			logger.error(EELFLoggerDelegate.errorLogger, "getMenuFunctionsList: Failed", e);
 			return appMenuFunctionsList;
 		}
 		return appMenuFunctionsList;

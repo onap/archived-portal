@@ -7,6 +7,9 @@ version: '2.0'
 
 services:
 
+  # Available from ONAP Nexus repository:
+  # docker login -u USER -p PASS nexus3.onap.org:10001
+  # docker pull nexus3.onap.org:10001/onap/cli:1.1-STAGING-latest
   cli:
     image: onap/cli:${PORTAL_TAG}
     environment:
@@ -46,7 +49,7 @@ services:
     command:
       - /wait-for.sh
       - -t
-      - "60"
+      - "180"
       - portal-db:3306
       - --
       - /start-wms-cmd.sh
@@ -86,7 +89,7 @@ services:
     command:
       - /wait-for.sh
       - -t
-      - "60"
+      - "180"
       - portal-db:3306
       - --
       - /start-apps-cmd.sh

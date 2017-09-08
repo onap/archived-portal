@@ -6,6 +6,7 @@ import org.hibernate.Session;
 import org.openecomp.portalapp.portal.domain.CentralRoleFunction;
 import org.openecomp.portalapp.portal.domain.EPApp;
 import org.openecomp.portalapp.portal.domain.EPRole;
+import org.openecomp.portalapp.portal.domain.EPUser;
 import org.openecomp.portalapp.portal.transport.CentralRole;
 import org.openecomp.portalsdk.core.domain.Role;
 import org.openecomp.portalsdk.core.domain.RoleFunction;
@@ -13,17 +14,16 @@ import org.openecomp.portalsdk.core.domain.RoleFunction;
 public interface ExternalAccessRolesService {
 	
 	/**
-	 * It gets all application roles 
+	 * It gets list of application roles 
 	 * 
 	 * @param appId
-	 * @param extRequestValue
 	 * @return List
 	 * @throws Exception 
 	 */
-	public List<EPRole> getAppRoles(Long appId, Boolean extRequestValue) throws Exception;
+	public List<EPRole> getAppRoles(Long appId) throws Exception;
 	
 	/**
-	 * It returns application details
+	 * It returns single app record
 	 * 
 	 * @param uebkey
 	 * @return List
@@ -40,17 +40,16 @@ public interface ExternalAccessRolesService {
 	 * @throws Exception
 	 */
 	public boolean addRole(Role addRoles, String uebkey) throws Exception;
-	
+
 	/**
-	 * Updates role in the external access system otherwise throws exception
+	 * It returns complete user information
 	 * 
-	 * @param updateRole
-	 * @param uebkey
-	 * @return boolean
+	 * @param loginId
+	 * @return EPUser object
 	 * @throws Exception
 	 */
-	void updateRole(Role updateRole, EPApp app) throws Exception;
-
+	List<EPUser> getUser(String loginId) throws Exception;
+	
 	/**
 	 * It returns complete user information including application roles permissions
 	 * 
@@ -59,7 +58,7 @@ public interface ExternalAccessRolesService {
 	 * @return String
 	 * @throws Exception
 	 */
-	String getUser(String loginId, String uebkey) throws Exception;
+	String getUserWithRoles(String loginId, String uebkey) throws Exception;
 
 	/**
 	 * It returns list of all role functions
@@ -94,17 +93,18 @@ public interface ExternalAccessRolesService {
 	 *  
 	 * @param domainCentralRoleFunction
 	 * @param requestedApp 
+	 * @return true else false
 	 * @throws Exception 
 	 */
-	public void saveCentralRoleFunction(CentralRoleFunction domainCentralRoleFunction, EPApp requestedApp) throws Exception;
+	public boolean saveCentralRoleFunction(CentralRoleFunction domainCentralRoleFunction, EPApp requestedApp) throws Exception;
 
 	/**
 	 * It deletes role function in the DB
 	 * 
 	 * @param code
-	 * @param string 
+	 * @param app 
 	 */
-	public void deleteCentralRoleFunction(String code, String string);
+	public boolean deleteCentralRoleFunction(String code, EPApp app);
 
 	/**
 	 * It gets all roles the applications
@@ -122,16 +122,17 @@ public interface ExternalAccessRolesService {
 	 * @param uebkey
 	 * @throws Exception 
 	 */
-	void saveRoleForApplication(Role saveRole, String uebkey) throws Exception;
+	boolean saveRoleForApplication(Role saveRole, String uebkey) throws Exception;
 
 	/**
 	 *  It deletes role in the DB
 	 *  
 	 * @param code
 	 * @param uebkey
+	 * @return true else false
 	 * @throws Exception 
 	 */
-	void deleteRoleForApplication(String code, String uebkey) throws Exception;
+	boolean deleteRoleForApplication(String code, String uebkey) throws Exception;
 
 	/**
 	 * It gets all active roles for single application 
@@ -147,10 +148,10 @@ public interface ExternalAccessRolesService {
 	 * @param roleId
 	 * @param uebkey
 	 * @param LoginId 
-	 * @return
+	 * @return true else false
 	 * @throws Exception 
 	 */
-	public void deleteDependcyRoleRecord(Long roleId, String uebkey, String LoginId) throws Exception;
+	public boolean deleteDependencyRoleRecord(Long roleId, String uebkey, String LoginId) throws Exception;
 	
 	/**
 	 * It sync new functions codes and names from and updates role functions from external access system
@@ -160,30 +161,90 @@ public interface ExternalAccessRolesService {
 	 */
 	public void syncRoleFunctionFromExternalAccessSystem(EPApp app) throws Exception;
 
+	/**
+	 * It uploads portal functions into external auth system
+	 * @param uebkey
+	 * @return
+	 * @throws Exception
+	 */
 	public Integer bulkUploadFunctions(String uebkey) throws Exception;
 
+	/**
+	 * It uploads portal roles into external auth system
+	 * @param uebkey
+	 * @return
+	 * @throws Exception
+	 */
 	public Integer bulkUploadRoles(String uebkey) throws Exception;
 
-	public void bulkUploadPartnerFunctions(String header, List<RoleFunction> upload) throws Exception;
+	/**
+	 * It uploads partner application role functions into external auth system
+	 * 
+	 * @param uebkey
+	 * @param upload
+	 * @throws Exception
+	 */
+	public void bulkUploadPartnerFunctions(String uebkey, List<RoleFunction> upload) throws Exception;
 
-	public void bulkUploadPartnerRoles(String header, List<Role> upload) throws Exception;
+	/** 
+	 * It uploads partner application role functions into external auth system
+	 * 
+	 * @param uebkey
+	 * @param upload
+	 * @throws Exception
+	 */
+	public void bulkUploadPartnerRoles(String uebkey, List<Role> upload) throws Exception;
 
+	/**
+	 * It returns total no. of portal application role functions records added in external auth system 
+	 * @param uebkey
+	 * @return
+	 * @throws Exception
+	 */
 	Integer bulkUploadRolesFunctions(String uebkey) throws Exception;
 	
 	/**
-	 * SyncApplicationRolesWithEcompDB sync the roles and rolefunctions to the ecomp DB from AAF
+	 *  It syncs the roles and rolefunctions to the ecomp DB from AAF
 	 * @param app
 	 * @throws Exception
 	 */
+	void syncApplicationRolesWithEcompDB(EPApp app) throws Exception;
 
-	void SyncApplicationRolesWithEcompDB(EPApp app) throws Exception;
-
+	/**
+	 * It uploads list of user roles of the application into external auth system 
+	 * 
+	 * @param uebkey
+	 * @return
+	 * @throws Exception
+	 */
 	public Integer bulkUploadUserRoles(String uebkey) throws Exception;
 
+	/**
+	 * It Uploads partner application role functions into external auth system
+	 * 
+	 * @param uebkey
+	 * @param roleList
+	 * @throws Exception
+	 */
 	void bulkUploadPartnerRoleFunctions(String uebkey, List<Role> roleList) throws Exception;
 
-	public void deleteRoleDependeciesRecord(Session localSession, Long roleId) throws Exception;
+	/**
+	 * it deletes all dependency role records 
+	 * 
+	 * @param localSession
+	 * @param roleId
+	 * @param appId
+	 * @throws Exception
+	 */
+	public void deleteRoleDependencyRecords(Session localSession, Long roleId, Long appId) throws Exception;
 
+	/**
+	 * It returns list of applications functions along with functions associated with global role
+	 * 
+	 * @param uebkey
+	 * @return
+	 * @throws Exception
+	 */
 	List<String> getMenuFunctionsList(String uebkey) throws Exception;
 
 

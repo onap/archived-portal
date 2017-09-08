@@ -175,7 +175,7 @@ public class RoleManageController extends EPRestrictedBaseController {
 	public void  syncRoles(EPApp app)
 	{
 		try {
-			externalAccessRolesService.SyncApplicationRolesWithEcompDB(app);
+			externalAccessRolesService.syncApplicationRolesWithEcompDB(app);
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.debugLogger, "failed syncRoles");
 		}
