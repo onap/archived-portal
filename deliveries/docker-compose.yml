@@ -10,7 +10,7 @@ services:
   cli:
     image: onap/cli:${PORTAL_TAG}
     environment:
-      MODE: 'deamon'
+      CLI_MODE: 'daemon'
     expose:
       - 80
     ports:
