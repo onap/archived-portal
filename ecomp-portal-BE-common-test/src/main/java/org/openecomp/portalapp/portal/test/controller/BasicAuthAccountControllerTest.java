@@ -86,8 +86,7 @@ public class BasicAuthAccountControllerTest extends MockitoTestSuite {
 		PortalRestResponse<String> expectedResponse = new PortalRestResponse<String>();
 		expectedResponse.setMessage("SUCCESS");
 		expectedResponse.setResponse("");
-		PortalRestStatusEnum portalRestStatusEnum = null;
-		expectedResponse.setStatus(portalRestStatusEnum.OK);
+		expectedResponse.setStatus(PortalRestStatusEnum.OK);
 		long accountd = 1;
 
 		Mockito.when(basicAuthAccountService.saveBasicAuthAccount(basicAuthCredentials)).thenReturn(accountd);
@@ -106,8 +105,7 @@ public class BasicAuthAccountControllerTest extends MockitoTestSuite {
 		PortalRestResponse<String> expectedResponse = new PortalRestResponse<String>();
 		expectedResponse.setMessage("Authorization Required");
 		expectedResponse.setResponse("Admin Only Operation! ");
-		PortalRestStatusEnum portalRestStatusEnum = null;
-		expectedResponse.setStatus(portalRestStatusEnum.ERROR);
+		expectedResponse.setStatus(PortalRestStatusEnum.ERROR);
 
 		PortalRestResponse<String> actualResponse = basicAuthAccountController.createBasicAuthAccount(mockedRequest,
 				mockedResponse, basicAuthCredentials);
@@ -123,8 +121,7 @@ public class BasicAuthAccountControllerTest extends MockitoTestSuite {
 		PortalRestResponse<String> expectedResponse = new PortalRestResponse<String>();
 		expectedResponse.setMessage("FAILURE");
 		expectedResponse.setResponse("newBasicAuthAccount cannot be null or empty");
-		PortalRestStatusEnum portalRestStatusEnum = null;
-		expectedResponse.setStatus(portalRestStatusEnum.ERROR);
+		expectedResponse.setStatus(PortalRestStatusEnum.ERROR);
 		PortalRestResponse<String> actualResponse = basicAuthAccountController.createBasicAuthAccount(mockedRequest,
 				mockedResponse, basicAuthCredentials);
 		assertEquals(actualResponse, expectedResponse);
@@ -139,8 +136,7 @@ public class BasicAuthAccountControllerTest extends MockitoTestSuite {
 
 		expectedPortalResponse.setMessage("Success");
 		expectedPortalResponse.setResponse(null);
-		PortalRestStatusEnum portalRestStatusEnum = null;
-		expectedPortalResponse.setStatus(portalRestStatusEnum.OK);
+		expectedPortalResponse.setStatus(PortalRestStatusEnum.OK);
 
 		EPUser user = mockUser.mockEPUser();
 		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
@@ -161,8 +157,7 @@ public class BasicAuthAccountControllerTest extends MockitoTestSuite {
 
 		expectedPortalResponse.setMessage("UnAuthorized! Admin Only Operation");
 		expectedPortalResponse.setResponse(new ArrayList<>());
-		PortalRestStatusEnum portalRestStatusEnum = null;
-		expectedPortalResponse.setStatus(portalRestStatusEnum.ERROR);
+		expectedPortalResponse.setStatus(PortalRestStatusEnum.ERROR);
 
 		EPUser user = mockUser.mockEPUser();
 		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
@@ -183,8 +178,7 @@ public class BasicAuthAccountControllerTest extends MockitoTestSuite {
 		PortalRestResponse<String> expectedResponse = new PortalRestResponse<String>();
 		expectedResponse.setMessage("SUCCESS");
 		expectedResponse.setResponse("");
-		PortalRestStatusEnum portalRestStatusEnum = null;
-		expectedResponse.setStatus(portalRestStatusEnum.OK);
+		expectedResponse.setStatus(PortalRestStatusEnum.OK);
 		long accountd = 1;
 		PortalRestResponse<String> actualResponse = basicAuthAccountController.updateAccount(mockedRequest,
 				mockedResponse, accountd, basicAuthCredentials);
@@ -201,8 +195,7 @@ public class BasicAuthAccountControllerTest extends MockitoTestSuite {
 		PortalRestResponse<String> expectedResponse = new PortalRestResponse<String>();
 		expectedResponse.setMessage("Authorization Required");
 		expectedResponse.setResponse("Admin Only Operation! ");
-		PortalRestStatusEnum portalRestStatusEnum = null;
-		expectedResponse.setStatus(portalRestStatusEnum.ERROR);
+		expectedResponse.setStatus(PortalRestStatusEnum.ERROR);
 		long accountd = 1;
 		PortalRestResponse<String> actualResponse = basicAuthAccountController.updateAccount(mockedRequest,
 				mockedResponse, accountd, basicAuthCredentials);
@@ -219,8 +212,7 @@ public class BasicAuthAccountControllerTest extends MockitoTestSuite {
 		PortalRestResponse<String> expectedResponse = new PortalRestResponse<String>();
 		expectedResponse.setMessage("FAILURE");
 		expectedResponse.setResponse("BasicAuthCredentials cannot be null or empty");
-		PortalRestStatusEnum portalRestStatusEnum = null;
-		expectedResponse.setStatus(portalRestStatusEnum.ERROR);
+		expectedResponse.setStatus(PortalRestStatusEnum.ERROR);
 		long accountd = 1;
 		PortalRestResponse<String> actualResponse = basicAuthAccountController.updateAccount(mockedRequest,
 				mockedResponse, accountd, basicAuthCredentials);
@@ -235,8 +227,7 @@ public class BasicAuthAccountControllerTest extends MockitoTestSuite {
 		PortalRestResponse<String> expectedResponse = new PortalRestResponse<String>();
 		expectedResponse.setMessage("SUCCESS");
 		expectedResponse.setResponse("");
-		PortalRestStatusEnum portalRestStatusEnum = null;
-		expectedResponse.setStatus(portalRestStatusEnum.OK);
+		expectedResponse.setStatus(PortalRestStatusEnum.OK);
 		long accountd = 1;
 		Mockito.when(adminRolesService.isSuperAdmin(user)).thenReturn(true);
 		PortalRestResponse<String> actualResponse = basicAuthAccountController.deleteAccount(mockedRequest,
@@ -252,8 +243,7 @@ public class BasicAuthAccountControllerTest extends MockitoTestSuite {
 		PortalRestResponse<String> expectedResponse = new PortalRestResponse<String>();
 		expectedResponse.setMessage("Authorization Required");
 		expectedResponse.setResponse("Admin Only Operation! ");
-		PortalRestStatusEnum portalRestStatusEnum = null;
-		expectedResponse.setStatus(portalRestStatusEnum.ERROR);
+		expectedResponse.setStatus(PortalRestStatusEnum.ERROR);
 		long accountd = 1;
 		Mockito.when(adminRolesService.isSuperAdmin(user)).thenReturn(false);
 		PortalRestResponse<String> actualResponse = basicAuthAccountController.deleteAccount(mockedRequest,

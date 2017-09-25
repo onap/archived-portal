@@ -78,9 +78,9 @@ public abstract class EPFusionBaseController extends FusionBaseController {
 	public Map<String, Object> setMenu(Set<MenuData> menuResult) throws Exception {
 		ObjectMapper mapper = new ObjectMapper();
 		List<List<MenuData>> childItemList = new ArrayList<List<MenuData>>();
-		;
+		
 		List<MenuData> parentList = new ArrayList<MenuData>();
-		;
+		
 		Map<String, Object> model = new HashMap<String, Object>();
 		for (MenuData menu : menuResult) {
 			MenuData parentData = new MenuData();
@@ -99,8 +99,8 @@ public abstract class EPFusionBaseController extends FusionBaseController {
 			}
 			childItemList.add(tempList);
 		}
-		model.put("childItemList", childItemList != null ? mapper.writeValueAsString(childItemList) : "");
-		model.put("parentList", parentList != null ? mapper.writeValueAsString(parentList) : "");
+		model.put("childItemList",  mapper.writeValueAsString(childItemList));
+		model.put("parentList", mapper.writeValueAsString(parentList));
 		return model;
 	}
 }

@@ -80,8 +80,7 @@ public class MicroserviceControllerTest extends MockitoTestSuite{
 		PortalRestResponse<String> expectedportalRestResponse = new PortalRestResponse<String>();
 		expectedportalRestResponse.setMessage("FAILURE");
 		expectedportalRestResponse.setResponse("MicroserviceData cannot be null or empty");
-		PortalRestStatusEnum portalRestStatusEnum = null;
-		expectedportalRestResponse.setStatus(portalRestStatusEnum.ERROR);
+		expectedportalRestResponse.setStatus(PortalRestStatusEnum.ERROR);
 		MicroserviceData microserviceData = null;
 		PortalRestResponse<String> actualportalRestResponse = microserviceController.createMicroservice(mockedRequest,
 				mockedResponse, microserviceData);
@@ -93,8 +92,7 @@ public class MicroserviceControllerTest extends MockitoTestSuite{
 		PortalRestResponse<String> expectedportalRestResponse = new PortalRestResponse<String>();
 		expectedportalRestResponse.setMessage("SUCCESS");
 		expectedportalRestResponse.setResponse("");
-		PortalRestStatusEnum portalRestStatusEnum = null;
-		expectedportalRestResponse.setStatus(portalRestStatusEnum.OK);
+		expectedportalRestResponse.setStatus(PortalRestStatusEnum.OK);
 		PortalRestResponse<String> actualportalRestResponse = microserviceController.createMicroservice(mockedRequest,
 				mockedResponse, microserviceData);
 		assertEquals(actualportalRestResponse, expectedportalRestResponse);
@@ -105,8 +103,7 @@ public class MicroserviceControllerTest extends MockitoTestSuite{
 		PortalRestResponse<String> expectedportalRestResponse = new PortalRestResponse<String>();
 		expectedportalRestResponse.setMessage("FAILURE");
 		expectedportalRestResponse.setResponse(null);
-		PortalRestStatusEnum portalRestStatusEnum = null;
-		expectedportalRestResponse.setStatus(portalRestStatusEnum.ERROR);
+		expectedportalRestResponse.setStatus(PortalRestStatusEnum.ERROR);
 		Mockito.when(microserviceService.saveMicroservice(microserviceData)).thenReturn((long) 1);
 		Mockito.when(microserviceData.getParameterList()).thenThrow(nullPointerException);
 		PortalRestResponse<String> actualportalRestResponse = microserviceController.createMicroservice(mockedRequest,
@@ -126,8 +123,7 @@ public class MicroserviceControllerTest extends MockitoTestSuite{
 		PortalRestResponse<String> expectedportalRestResponse = new PortalRestResponse<String>();
 		expectedportalRestResponse.setMessage("FAILURE");
 		expectedportalRestResponse.setResponse("MicroserviceData cannot be null or empty");
-		PortalRestStatusEnum portalRestStatusEnum = null;
-		expectedportalRestResponse.setStatus(portalRestStatusEnum.ERROR);
+		expectedportalRestResponse.setStatus(PortalRestStatusEnum.ERROR);
 		MicroserviceData microserviceData = null;
 		PortalRestResponse<String> actualportalRestResponse = microserviceController.updateMicroservice(mockedRequest,
 				mockedResponse, 1, microserviceData);
@@ -139,8 +135,7 @@ public class MicroserviceControllerTest extends MockitoTestSuite{
 		PortalRestResponse<String> expectedportalRestResponse = new PortalRestResponse<String>();
 		expectedportalRestResponse.setMessage("SUCCESS");
 		expectedportalRestResponse.setResponse("");
-		PortalRestStatusEnum portalRestStatusEnum = null;
-		expectedportalRestResponse.setStatus(portalRestStatusEnum.OK);
+		expectedportalRestResponse.setStatus(PortalRestStatusEnum.OK);
 		PortalRestResponse<String> actualportalRestResponse = microserviceController.updateMicroservice(mockedRequest,
 				mockedResponse, 1, microserviceData);
 		assertEquals(actualportalRestResponse, expectedportalRestResponse);
@@ -151,8 +146,7 @@ public class MicroserviceControllerTest extends MockitoTestSuite{
 		PortalRestResponse<String> expectedportalRestResponse = new PortalRestResponse<String>();
 		expectedportalRestResponse.setMessage("FAILURE");
 		expectedportalRestResponse.setResponse(null);
-		PortalRestStatusEnum portalRestStatusEnum = null;
-		expectedportalRestResponse.setStatus(portalRestStatusEnum.ERROR);
+		expectedportalRestResponse.setStatus(PortalRestStatusEnum.ERROR);
 		Mockito.when(microserviceController.updateMicroservice(mockedRequest, mockedResponse, 1, microserviceData))
 				.thenThrow(nullPointerException);
 		PortalRestResponse<String> actualportalRestResponse = microserviceController.updateMicroservice(mockedRequest,
@@ -166,8 +160,7 @@ public class MicroserviceControllerTest extends MockitoTestSuite{
 		expectedportalRestResponse.setMessage("FAILURE");
 		expectedportalRestResponse.setResponse(
 				"I/O error on GET request for \""  + EcompPortalUtils.widgetMsProtocol() + "://null/widget/microservices/widgetCatalog/service/1\":null; nested exception is java.net.UnknownHostException: null");
-		PortalRestStatusEnum portalRestStatusEnum = null;
-		expectedportalRestResponse.setStatus(portalRestStatusEnum.ERROR);
+		expectedportalRestResponse.setStatus(PortalRestStatusEnum.ERROR);
 		PowerMockito.mockStatic(WidgetServiceHeaders.class);
 		PortalRestResponse<String> actuaPportalRestResponse = microserviceController.deleteMicroservice(mockedRequest,
 				mockedResponse, 1);
@@ -181,8 +174,7 @@ public class MicroserviceControllerTest extends MockitoTestSuite{
 		PortalRestResponse<String> expectedportalRestResponse = new PortalRestResponse<String>();
 		expectedportalRestResponse.setMessage("SOME WIDGETS ASSOICATE WITH THIS SERVICE");
 		expectedportalRestResponse.setResponse("'null' ,'null' ");
-		PortalRestStatusEnum portalRestStatusEnum = null;
-		expectedportalRestResponse.setStatus(portalRestStatusEnum.WARN);
+		expectedportalRestResponse.setStatus(PortalRestStatusEnum.WARN);
 		List<WidgetCatalog> List = new ArrayList<WidgetCatalog>();
 		WidgetCatalog widgetCatalog = new WidgetCatalog();
 		widgetCatalog.setId(1);
@@ -212,8 +204,7 @@ public class MicroserviceControllerTest extends MockitoTestSuite{
 		PortalRestResponse<String> expectedportalRestResponse = new PortalRestResponse<String>();
 		expectedportalRestResponse.setMessage("SUCCESS");
 		expectedportalRestResponse.setResponse("");
-		PortalRestStatusEnum portalRestStatusEnum = null;
-		expectedportalRestResponse.setStatus(portalRestStatusEnum.OK);
+		expectedportalRestResponse.setStatus(PortalRestStatusEnum.OK);
 		List<WidgetCatalog> List = new ArrayList<WidgetCatalog>();
 		PowerMockito.mockStatic(WidgetServiceHeaders.class);
 		String whatService = "widgets-service";

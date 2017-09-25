@@ -10,6 +10,7 @@ import org.openecomp.portalapp.portal.domain.EPUser;
 import org.openecomp.portalapp.portal.transport.CentralRole;
 import org.openecomp.portalsdk.core.domain.Role;
 import org.openecomp.portalsdk.core.domain.RoleFunction;
+import org.openecomp.portalsdk.core.restful.domain.EcompUser;
 
 public interface ExternalAccessRolesService {
 	
@@ -246,6 +247,14 @@ public interface ExternalAccessRolesService {
 	 * @throws Exception
 	 */
 	List<String> getMenuFunctionsList(String uebkey) throws Exception;
-
+	
+	/**
+	 * 
+	 * @param uebkey applications UebKey
+	 * @return
+	 * @throws Exception
+	 * Method getAllUsers returns all the active users of application
+	 */
+	List<EcompUser> getAllAppUsers(String uebkey) throws Exception;
 
 }

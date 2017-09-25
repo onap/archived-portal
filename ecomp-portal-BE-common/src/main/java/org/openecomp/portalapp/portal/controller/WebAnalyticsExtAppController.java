@@ -178,7 +178,7 @@ public class WebAnalyticsExtAppController extends EPRestrictedRESTfulBaseControl
 					MDC.get(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP),
 					MDC.get(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP));
 			logger.info(EELFLoggerDelegate.auditLogger,
-					EPLogUtil.formatStoreAnalyticsAuditLogMessage(analyticsMap.getUserId(), appName,
+					EPLogUtil.formatStoreAnalyticsAuditLogMessage(analyticsMap.getUserid(), appName,
 							"WebAnalyticsExtAppController.postWebAnalyticsData",
 							EcompAuditLog.CD_ACTIVITY_STORE_ANALYTICS, analyticsMap.getAction(), analyticsMap.getPage(),
 							analyticsMap.getFunction(), analyticsMap.getType()));
@@ -214,10 +214,10 @@ public class WebAnalyticsExtAppController extends EPRestrictedRESTfulBaseControl
 	protected void storeAuxAnalytics(Analytics analyticsMap, String appName) {
 		logger.info(EELFLoggerDelegate.debugLogger,
 				" Registering an action for recommendation: AppName/Function/UserId " + appName + "/"
-						+ analyticsMap.getFunction() + "/" + analyticsMap.getUserId());
+						+ analyticsMap.getFunction() + "/" + analyticsMap.getUserid());
 
 		Map<String, String> requestMapping = new HashMap<String, String>();
-		requestMapping.put("id", analyticsMap.getUserId());
+		requestMapping.put("id", analyticsMap.getUserid());
 		requestMapping.put("action", appName + "|" + analyticsMap.getFunction());
 
 		HttpHeaders headers = new HttpHeaders();

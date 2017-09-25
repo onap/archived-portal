@@ -47,8 +47,7 @@ public class RolesApprovalSystemControllerTest extends MockitoTestSuite {
 		PortalRestResponse<String> expectedportalRestResponse = new PortalRestResponse<String>();
 		expectedportalRestResponse.setMessage("Request has no roles");
 		expectedportalRestResponse.setResponse("save user profile failed");
-		PortalRestStatusEnum portalRestStatusEnum = null;
-		expectedportalRestResponse.setStatus(portalRestStatusEnum.ERROR);
+		expectedportalRestResponse.setStatus(PortalRestStatusEnum.ERROR);
 		ExternalSystemUser extSysUser = new ExternalSystemUser();
 		extSysUser.setApplicationName("Test_App");
 		extSysUser.setLoginId("1");
@@ -66,8 +65,7 @@ public class RolesApprovalSystemControllerTest extends MockitoTestSuite {
 		PortalRestResponse<String> expectedportalRestResponse = new PortalRestResponse<String>();
 		expectedportalRestResponse.setMessage("Saved Successfully");
 		expectedportalRestResponse.setResponse("Success");
-		PortalRestStatusEnum portalRestStatusEnum = null;
-		expectedportalRestResponse.setStatus(portalRestStatusEnum.OK);
+		expectedportalRestResponse.setStatus(PortalRestStatusEnum.OK);
 		ExternalSystemUser extSysUser = new ExternalSystemUser();
 		extSysUser.setApplicationName("Test_App");
 		extSysUser.setLoginId("1");
@@ -91,8 +89,7 @@ public class RolesApprovalSystemControllerTest extends MockitoTestSuite {
 		PortalRestResponse<String> expectedportalRestResponse = new PortalRestResponse<String>();
 		expectedportalRestResponse.setMessage("Received Bad String");
 		expectedportalRestResponse.setResponse("save user profile failed");
-		PortalRestStatusEnum portalRestStatusEnum = null;
-		expectedportalRestResponse.setStatus(portalRestStatusEnum.ERROR);
+		expectedportalRestResponse.setStatus(PortalRestStatusEnum.ERROR);
 		ExternalSystemUser extSysUser = new ExternalSystemUser();
 		extSysUser.setApplicationName("Test_App");
 		extSysUser.setLoginId("1");
@@ -116,8 +113,7 @@ public class RolesApprovalSystemControllerTest extends MockitoTestSuite {
 		PortalRestResponse<String> expectedportalRestResponse = new PortalRestResponse<String>();
 		expectedportalRestResponse.setMessage(null);
 		expectedportalRestResponse.setResponse("save user profile failed");
-		PortalRestStatusEnum portalRestStatusEnum = null;
-		expectedportalRestResponse.setStatus(portalRestStatusEnum.ERROR);
+		expectedportalRestResponse.setStatus(PortalRestStatusEnum.ERROR);
 		ExternalSystemUser extSysUser = new ExternalSystemUser();
 		extSysUser.setApplicationName("Test_App");
 		extSysUser.setLoginId("1");
@@ -137,8 +133,7 @@ public class RolesApprovalSystemControllerTest extends MockitoTestSuite {
 		PortalRestResponse<String> expectedportalRestResponse = new PortalRestResponse<String>();
 		expectedportalRestResponse.setMessage("Request has no login ID");
 		expectedportalRestResponse.setResponse("save user profile failed");
-		PortalRestStatusEnum portalRestStatusEnum = null;
-		expectedportalRestResponse.setStatus(portalRestStatusEnum.ERROR);
+		expectedportalRestResponse.setStatus(PortalRestStatusEnum.ERROR);
 		ExternalSystemUser extSysUser = new ExternalSystemUser();
 		extSysUser.setApplicationName("Test_App");
 		extSysUser.setLoginId(null);
@@ -155,8 +150,7 @@ public class RolesApprovalSystemControllerTest extends MockitoTestSuite {
 		PortalRestResponse<String> expectedportalRestResponse = new PortalRestResponse<String>();
 		expectedportalRestResponse.setMessage("Updated Successfully");
 		expectedportalRestResponse.setResponse("Success");
-		PortalRestStatusEnum portalRestStatusEnum = null;
-		expectedportalRestResponse.setStatus(portalRestStatusEnum.OK);
+		expectedportalRestResponse.setStatus(PortalRestStatusEnum.OK);
 		ExternalSystemUser extSysUser = new ExternalSystemUser();
 		extSysUser.setApplicationName("Test_App");
 		extSysUser.setLoginId("1");
@@ -180,8 +174,7 @@ public class RolesApprovalSystemControllerTest extends MockitoTestSuite {
 		PortalRestResponse<String> expectedportalRestResponse = new PortalRestResponse<String>();
 		expectedportalRestResponse.setMessage("Received Bad String");
 		expectedportalRestResponse.setResponse("save user profile failed");
-		PortalRestStatusEnum portalRestStatusEnum = null;
-		expectedportalRestResponse.setStatus(portalRestStatusEnum.ERROR);
+		expectedportalRestResponse.setStatus(PortalRestStatusEnum.ERROR);
 		ExternalSystemUser extSysUser = new ExternalSystemUser();
 		extSysUser.setApplicationName("Test_App");
 		extSysUser.setLoginId("1");
@@ -206,8 +199,7 @@ public class RolesApprovalSystemControllerTest extends MockitoTestSuite {
 		PortalRestResponse<String> expectedportalRestResponse = new PortalRestResponse<String>();
 		expectedportalRestResponse.setMessage(null);
 		expectedportalRestResponse.setResponse("save user profile failed");
-		PortalRestStatusEnum portalRestStatusEnum = null;
-		expectedportalRestResponse.setStatus(portalRestStatusEnum.ERROR);
+		expectedportalRestResponse.setStatus(PortalRestStatusEnum.ERROR);
 		ExternalSystemUser extSysUser = new ExternalSystemUser();
 		extSysUser.setApplicationName("Test_App");
 		extSysUser.setLoginId("1");
@@ -228,8 +220,7 @@ public class RolesApprovalSystemControllerTest extends MockitoTestSuite {
 		PortalRestResponse<String> expectedportalRestResponse = new PortalRestResponse<String>();
 		expectedportalRestResponse.setMessage("Request has no application name");
 		expectedportalRestResponse.setResponse("delete user profile failed");
-		PortalRestStatusEnum portalRestStatusEnum = null;
-		expectedportalRestResponse.setStatus(portalRestStatusEnum.ERROR);
+		expectedportalRestResponse.setStatus(PortalRestStatusEnum.ERROR);
 		ExternalSystemUser extSysUser = new ExternalSystemUser();
 		extSysUser.setApplicationName(null);
 		extSysUser.setLoginId("1");
@@ -247,8 +238,7 @@ public class RolesApprovalSystemControllerTest extends MockitoTestSuite {
 		PortalRestResponse<String> expectedportalRestResponse = new PortalRestResponse<String>();
 		expectedportalRestResponse.setMessage("Request has no request ID");
 		expectedportalRestResponse.setResponse("delete user profile failed");
-		PortalRestStatusEnum portalRestStatusEnum = null;
-		expectedportalRestResponse.setStatus(portalRestStatusEnum.ERROR);
+		expectedportalRestResponse.setStatus(PortalRestStatusEnum.ERROR);
 		ExternalSystemUser extSysUser = new ExternalSystemUser();
 		extSysUser.setApplicationName("Test");
 		extSysUser.setLoginId("1");
@@ -265,8 +255,7 @@ public class RolesApprovalSystemControllerTest extends MockitoTestSuite {
 		PortalRestResponse<String> expectedportalRestResponse = new PortalRestResponse<String>();
 		expectedportalRestResponse.setMessage("Deleted Successfully");
 		expectedportalRestResponse.setResponse("Success");
-		PortalRestStatusEnum portalRestStatusEnum = null;
-		expectedportalRestResponse.setStatus(portalRestStatusEnum.OK);
+		expectedportalRestResponse.setStatus(PortalRestStatusEnum.OK);
 		ExternalSystemUser extSysUser = new ExternalSystemUser();
 		extSysUser.setApplicationName("Test_App");
 		extSysUser.setLoginId("1");
@@ -291,8 +280,7 @@ public class RolesApprovalSystemControllerTest extends MockitoTestSuite {
 		PortalRestResponse<String> expectedportalRestResponse = new PortalRestResponse<String>();
 		expectedportalRestResponse.setMessage("failed");
 		expectedportalRestResponse.setResponse("delete user profile failed");
-		PortalRestStatusEnum portalRestStatusEnum = null;
-		expectedportalRestResponse.setStatus(portalRestStatusEnum.ERROR);
+		expectedportalRestResponse.setStatus(PortalRestStatusEnum.ERROR);
 		ExternalSystemUser extSysUser = new ExternalSystemUser();
 		extSysUser.setApplicationName("Test_App");
 		extSysUser.setLoginId("1");
@@ -317,8 +305,7 @@ public class RolesApprovalSystemControllerTest extends MockitoTestSuite {
 		PortalRestResponse<String> expectedportalRestResponse = new PortalRestResponse<String>();
 		expectedportalRestResponse.setMessage(null);
 		expectedportalRestResponse.setResponse("delete user profile failed");
-		PortalRestStatusEnum portalRestStatusEnum = null;
-		expectedportalRestResponse.setStatus(portalRestStatusEnum.ERROR);
+		expectedportalRestResponse.setStatus(PortalRestStatusEnum.ERROR);
 		ExternalSystemUser extSysUser = new ExternalSystemUser();
 		extSysUser.setApplicationName("Test_App");
 		extSysUser.setLoginId("1");

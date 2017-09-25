@@ -33,13 +33,12 @@ import org.openecomp.portalapp.portal.domain.EPUser;
 import org.openecomp.portalapp.portal.ecomp.model.PortalRestResponse;
 import org.openecomp.portalapp.portal.ecomp.model.PortalRestStatusEnum;
 import org.openecomp.portalapp.portal.logging.aop.EPAuditLog;
+import org.openecomp.portalapp.portal.service.TicketEventService;
 import org.openecomp.portalapp.portal.service.UserNotificationService;
 import org.openecomp.portalapp.portal.transport.EpNotificationItem;
 import org.openecomp.portalapp.portal.transport.EpRoleNotificationItem;
-import org.openecomp.portalapp.portal.utils.EPCommonSystemProperties;
 import org.openecomp.portalapp.portal.utils.PortalConstants;
 import org.openecomp.portalsdk.core.logging.logic.EELFLoggerDelegate;
-import org.openecomp.portalsdk.core.util.SystemProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
@@ -67,6 +66,9 @@ public class TicketEventController implements BasicAuthenticationController {
 
 	@Autowired
 	private UserNotificationService userNotificationService;
+	
+	@Autowired
+	private TicketEventService ticketEventService;
 
 	private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(TicketEventController.class);
 
@@ -106,6 +108,7 @@ public class TicketEventController implements BasicAuthenticationController {
 			JsonNode event = ticketEventNotif.get("event");
 			JsonNode header = event.get("header");
 			JsonNode body = event.get("body");
+			JsonNode application = ticketEventNotif.get("application");
 			epItem.setMsgDescription(body.toString());
 			Long eventDate = System.currentTimeMillis();
 			if (body.get("eventDate") != null) {
@@ -114,7 +117,7 @@ public class TicketEventController implements BasicAuthenticationController {
 			String eventSource = header.get("eventSource").asText();
 			epItem.setMsgSource(eventSource);
 			String ticket = body.get("ticketNum").asText();
-			String hyperlink = SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_SYSTEM_NOTIFICATION_URL)+eventSource+"num="+ticket;
+			String hyperlink = ticketEventService.getNotificationHyperLink(application, ticket, eventSource);			
 			if(body.get("notificationHyperlink")!=null){
 				hyperlink=body.get("notificationHyperlink").asText();
 			}
@@ -201,7 +204,7 @@ public class TicketEventController implements BasicAuthenticationController {
 				.split(",");		
 		List<EPUser> users = userNotificationService.getUsersByOrgIds(Arrays.asList(UserIds));
 		if(users==null||users.size()==0)
-			return "Invalid Attuid";
+			return "Invalid Org User ID";
 		return null;
 	}
 	

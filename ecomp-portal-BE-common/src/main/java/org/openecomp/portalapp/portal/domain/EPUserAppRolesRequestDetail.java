@@ -53,4 +53,41 @@ public class EPUserAppRolesRequestDetail extends DomainVo {
 		this.reqType = reqType;
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((epRequestIdData == null) ? 0 : epRequestIdData.hashCode());
+		result = prime * result + ((reqRoleId == null) ? 0 : reqRoleId.hashCode());
+		result = prime * result + ((reqType == null) ? 0 : reqType.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		EPUserAppRolesRequestDetail other = (EPUserAppRolesRequestDetail) obj;
+		if (epRequestIdData == null) {
+			if (other.epRequestIdData != null)
+				return false;
+		} else if (!epRequestIdData.equals(other.epRequestIdData))
+			return false;
+		if (reqRoleId == null) {
+			if (other.reqRoleId != null)
+				return false;
+		} else if (!reqRoleId.equals(other.reqRoleId))
+			return false;
+		if (reqType == null) {
+			if (other.reqType != null)
+				return false;
+		} else if (!reqType.equals(other.reqType))
+			return false;
+		return true;
+	}
+
 }

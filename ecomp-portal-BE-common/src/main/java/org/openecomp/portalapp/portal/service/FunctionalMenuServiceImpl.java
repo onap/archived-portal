@@ -284,7 +284,7 @@ public class FunctionalMenuServiceImpl implements FunctionalMenuService {
 		logQuery(sql);
 		@SuppressWarnings("unchecked")
 		List<FunctionalMenuRole> roleItems = dataAccessService.executeSQLQuery(sql, FunctionalMenuRole.class, null);
-		if (roleItems.size() > 0) {
+		if (roleItems.size() > 0 && menuItem != null) {
 			Integer appid = roleItems.get(0).appId;
 			menuItem.appid = appid;
 			List<Integer> roles = new ArrayList<Integer>();

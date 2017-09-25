@@ -213,10 +213,10 @@
                 userProfileService.getUserProfile()
                 .then(profile=> {
                     $log.info('AppDetailsModalCtrl::emptyCookies profile: ', profile);
-                    $scope.attuid = profile.attuid;
-                    $log.info('user has the following attuid: ' + profile.attuid);
-                    if ($cookies.getObject($scope.attuid + '_widget') != undefined && $cookies.getObject($scope.attuid + '_widget') != null) {
-                        $cookies.remove($scope.attuid + '_widget');
+                    $scope.orgUserId = profile.orgUserId;
+                    $log.info('user has the following orgUserId: ' + profile.orgUserId);
+                    if ($cookies.getObject($scope.orgUserId + '_widget') != undefined && $cookies.getObject($scope.orgUserId + '_widget') != null) {
+                        $cookies.remove($scope.orgUserId + '_widget');
                     }
                 });
             };

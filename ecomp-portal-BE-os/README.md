@@ -34,6 +34,14 @@ Version 1.1.0 (Amsterdam), November 2017
 - [Portal-61] Fixed the routing problem, loaded data and changed the notification hyperlink 
 - [Portal-77] Changes to remove preview image and update the new image automatically on App onbarding page
 - [Portal-82] Unable to pick Role in Widget onboarding for assigned app
+- [Portal-94] Unable to see the updates on Edit Functional Menu
+- [Portal-104] Replaced mysql DB connector with mariaDB
+- [Portal-72] Sonar scan - resolving severity Blocker issues 
+- [Portal-103] Fix to enhanced notification ticket source for ONAP
+- [Portal-50] Fix to get the Sonar coverage for ONAP
+- [Portal-86] Remove internal att.com usages from tests and other files
+- [Portal-102] Fixed the page refresh issue on App Account Management page
+- [Portal-104] replace mysql DB connector with mariaDB connector
 
 Version 1.0.0, February 2017
 - Initial release

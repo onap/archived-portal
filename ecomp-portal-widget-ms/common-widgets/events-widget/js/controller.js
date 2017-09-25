@@ -15,27 +15,7 @@ function EventsCtrl($rootScope, applicationsService , $log,
 
 			$scope.editData = JSON.stringify(availableData);
 			$scope.availableDataTemp = $scope.availableData;
-			ngDialog.open({
-						templateUrl : 'app/views/dashboard/dashboard-widget-manage.html',
-						controller : 'CommonWidgetController',
-						resolve : {
-							message : function message() {
-								var message = {
-									type : resourceType,
-									availableData : $scope.editData
-								};
-								return message;
-							}
-						}
-					}).closePromise.then(needUpdate => {	
-						if(resourceType=='NEWS'){
-							$scope.updateNews();
-						}else if(resourceType=='EVENTS'){
-							$scope.updateEvents();
-						}else if(resourceType=='IMPORTANTRESOURCES'){
-							$scope.updateImportRes();
-						}
-	                });		
+			
 		};
 		/*Setting News data*/
 		$scope.eventData = [];

@@ -17,8 +17,5 @@
  * limitations under the License.
  * ================================================================================
  */
-/**
- * Created by wl849v on 12/14/2016.
- */
 
 /*As Recommendation code belongs to internal use  Just kept an empty file in order to avoid 404 errors in the browser console */

@@ -15,7 +15,7 @@
 		<epsdk.version>1.3.0</epsdk.version>
 		<encoding>UTF-8</encoding>
 		<!-- Tests usually require some setup that maven cannot do, so skip. -->
-		<skipTests>true</skipTests>
+		<skipTests>false</skipTests>
 		<nexusproxy>https://nexus.onap.org</nexusproxy>
 		<snapshotNexusPath>/content/repositories/snapshots/</snapshotNexusPath>
 		<stagingNexusPath>content/repositories/staging/</stagingNexusPath>
@@ -67,7 +67,59 @@
 		<finalName>${project.artifactId}</finalName>
 
 		<plugins>
-
+			<plugin>
+			    <groupId>org.jacoco</groupId>
+			    <artifactId>jacoco-maven-plugin</artifactId>
+			    <version>0.7.6.201602180812</version>
+			    <inherited>True</inherited>
+			    <executions>
+			        <!-- Unit-Tests -->
+			        <execution>
+			            <id>prepare-agent</id>
+			            <goals>
+			                <goal>prepare-agent</goal>
+			            </goals>
+			            <configuration>
+			                <destFile>${sonar.jacoco.reportPath}</destFile>
+			            </configuration>
+			        </execution>
+			        <execution>
+			            <id>report</id>
+			            <goals>
+			                <goal>report</goal>
+			            </goals>
+			            <configuration>
+			                <dataFile>${sonar.jacoco.reportPath}</dataFile>
+			                <outputDirectory>${project.basedir}/target/site/jacoco</outputDirectory>
+			            </configuration>
+			        </execution>
+			        <!-- Will see build errors while running the test cases because of dual 
+									instrumentation -->
+			        <execution>
+			            <id>default-instrument</id>
+			            <goals>
+			                <goal>instrument</goal>
+			            </goals>
+			        </execution>
+			        <execution>
+			            <id>default-restore-instrumented-classes</id>
+			            <goals>
+			                <goal>restore-instrumented-classes</goal>
+			            </goals>
+			        </execution>
+			        <!-- Integration Tests (Only report goal) -->
+			        <execution>
+			            <id>report-integration</id>
+			            <goals>
+			                <goal>report-integration</goal>
+			            </goals>
+			            <configuration>
+			                <dataFile>${sonar.jacoco.itReportPath}</dataFile>
+			                <outputDirectory>${project.basedir}/target/site/it-jacoco</outputDirectory>
+			            </configuration>
+			        </execution>
+			    </executions>
+			</plugin>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.1</version>
@@ -223,6 +275,7 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+		
 
 		<!-- Hibernate -->
 		<dependency>
@@ -574,6 +627,31 @@
 			<version>4.11</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-api-mockito</artifactId>
+			<version>1.6.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-core</artifactId>
+			<version>1.6.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-module-junit4</artifactId>
+			<version>1.6.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<version>1.8.5</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.jacoco</groupId>
+		    <artifactId>jacoco-maven-plugin</artifactId>
+		    <version>0.7.6.201602180812</version>
+		</dependency>
 
 		<dependency>
 			<groupId>commons-beanutils</groupId>
@@ -604,14 +682,36 @@
 			<artifactId>springfox-swagger2</artifactId>
 			<version>2.5.0</version>
 		</dependency>
-
 		<dependency>
 			<groupId>io.springfox</groupId>
 			<artifactId>springfox-swagger-ui</artifactId>
 			<version>2.5.0</version>
 		</dependency>
-
+		
+		<!-- Schedulers required Libraries -->
+		
+		<dependency>
+            <groupId>com.googlecode.json-simple</groupId>
+            <artifactId>json-simple</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+ 		<dependency>
+            <groupId>org.glassfish.jersey.core</groupId>
+            <artifactId>jersey-client</artifactId>
+            <version>2.23.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.jaxrs</groupId>
+            <artifactId>jackson-jaxrs-json-provider</artifactId>
+            <version>2.6.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.connectors</groupId>
+            <artifactId>jersey-jetty-connector</artifactId>
+            <version>2.23.1</version>
+        </dependency>
 	</dependencies>
+	
 
 	<!-- No deployment descriptor. -->
 

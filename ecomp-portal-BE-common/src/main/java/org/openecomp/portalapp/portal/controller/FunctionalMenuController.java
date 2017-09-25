@@ -267,6 +267,7 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 	@RequestMapping(value = {
 			"/portalApi/functionalMenuForAuthUser" }, method = RequestMethod.GET, produces = "application/json")
 	public List<FunctionalMenuItem> getMenuItemsForAuthUser(HttpServletRequest request, HttpServletResponse response) {
+
 		EPUser user = EPUserUtils.getUserSession(request);
 		List<FunctionalMenuItem> menuItems = null;
 		try {

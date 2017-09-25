@@ -134,9 +134,8 @@ public class EPUebHelper {
 	  	        refreshPublisherList();
 		    }
 		};
-		if (thread != null) {
-		    thread.start();
-		}
+		thread.start();
+		
 	}
 
 	@EPMetricsLog

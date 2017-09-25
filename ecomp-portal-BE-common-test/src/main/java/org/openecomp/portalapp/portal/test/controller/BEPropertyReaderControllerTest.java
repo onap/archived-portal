@@ -66,7 +66,6 @@ public class BEPropertyReaderControllerTest extends MockitoTestSuite {
 		PowerMockito.mockStatic(SystemProperties.class);
 		Mockito.when(new BEProperty(key, SystemProperties.getProperty(key))).thenThrow(nullPointerException);
 		actualPortalRestResponse = bEPropertyReaderController.readProperty(mockedRequest, key);
-		System.out.println(actualPortalRestResponse);
 		assertTrue(actualPortalRestResponse.equals(ecpectedPortalRestResponse));
 
 	}

@@ -54,56 +54,57 @@ public class SessionCommunication {
 		String appResponse = "";
 		String appName = "Unknwon";
 		int responseCode = 0;
-		
-		try {
-			if (app != null && app.name != null && app.name != "") {
-				appName = app.name;
+		if (app != null && app.name != null && app.name != "") {
+			try {		
+				appName = app.name;				
+				String url = app.restUrl + "/sessionTimeOuts";
+				String encriptedPwdDB = app.appPassword;
+				String appUserName = app.username;
+	
+				setLocalMDCContext(app, "/sessionTimeOuts", url);
+	
+				URL obj = new URL(url);
+	
+				HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+	
+				// optional default is GET
+				con.setRequestMethod("GET");
+				con.setConnectTimeout(3000);
+				con.setReadTimeout(8000);
+				// add request header
+				con.setRequestProperty("username", appUserName);
+				con.setRequestProperty("password", encriptedPwdDB);
+	
+				// con.set
+				responseCode = con.getResponseCode();
+				logger.debug(EELFLoggerDelegate.debugLogger, "Response Code : " + responseCode);
+							
+				BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+				String inputLine;
+				StringBuffer response = new StringBuffer();
+	
+				while ((inputLine = in.readLine()) != null) {
+					response.append(inputLine);
+				}
+	
+				in.close();
+				appResponse = response.toString();
+			} catch (UrlAccessRestrictedException e) {
+				responseCode = HttpServletResponse.SC_UNAUTHORIZED;
+				logger.error(EELFLoggerDelegate.errorLogger, String.format("SessionCommunication.sendGet received an un-authorized exception. AppName: %s", appName));
+				EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeRestApiAuthenticationError, e);
+			} catch (Exception e) {
+				responseCode = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+				String message = String.format(
+						"SessionCommunication.sendGet encountered an Exception. AppName: %s, Details: %s", appName,
+						EcompPortalUtils.getStackTrace(e));
+				EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeHttpConnectionError, e);
+				logger.error(EELFLoggerDelegate.errorLogger, message);
+			} finally {
+				EcompPortalUtils.setExternalAppResponseCode(responseCode);
 			}
-			String url = app.restUrl + "/sessionTimeOuts";
-			String encriptedPwdDB = app.appPassword;
-			String appUserName = app.username;
-
-			setLocalMDCContext(app, "/sessionTimeOuts", url);
-
-			URL obj = new URL(url);
-
-			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-
-			// optional default is GET
-			con.setRequestMethod("GET");
-			con.setConnectTimeout(3000);
-			con.setReadTimeout(8000);
-			// add request header
-			con.setRequestProperty("username", appUserName);
-			con.setRequestProperty("password", encriptedPwdDB);
-
-			// con.set
-			responseCode = con.getResponseCode();
-			logger.debug(EELFLoggerDelegate.debugLogger, "Response Code : " + responseCode);
-						
-			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-			String inputLine;
-			StringBuffer response = new StringBuffer();
-
-			while ((inputLine = in.readLine()) != null) {
-				response.append(inputLine);
-			}
-
-			in.close();
-			appResponse = response.toString();
-		} catch (UrlAccessRestrictedException e) {
-			responseCode = HttpServletResponse.SC_UNAUTHORIZED;
-			logger.error(EELFLoggerDelegate.errorLogger, String.format("SessionCommunication.sendGet received an un-authorized exception. AppName: %s", appName));
-			EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeRestApiAuthenticationError, e);
-		} catch (Exception e) {
-			responseCode = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-			String message = String.format(
-					"SessionCommunication.sendGet encountered an Exception. AppName: %s, Details: %s", appName,
-					EcompPortalUtils.getStackTrace(e));
-			EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeHttpConnectionError, e);
-			logger.error(EELFLoggerDelegate.errorLogger, message);
-		} finally {
-			EcompPortalUtils.setExternalAppResponseCode(responseCode);
+		}else{
+			logger.error(EELFLoggerDelegate.errorLogger, "SessionCommunication sendGet: app is null");
 		}
 		return appResponse;
 	}
@@ -113,10 +114,11 @@ public class SessionCommunication {
 		String appName = "Unknwon";
 		int responseCode = 0;
 		try {
+			if(app==null)
+				throw new Exception("SessionCommunication.pingSession app is null");
 			if (app != null && app.name != null && app.name != "") {
 				appName = app.name;
 			}
-			
 			String url = app.restUrl + "/updateSessionTimeOuts";
 			String encriptedPwdDB = app.appPassword;
 			String appUserName = app.username;
@@ -171,55 +173,56 @@ public class SessionCommunication {
 	public Boolean timeoutSession(OnboardingApp app, String portalJSessionId) throws Exception {
 		String appName = "Unknwon";
 		int responseCode = 0;
-		try {
-			if (app != null && app.name != null && app.name != "") {
+		if (app != null && app.name != null && app.name != "") {
+			try {
 				appName = app.name;
+				String url = app.restUrl + "/timeoutSession" + "?portalJSessionId=" + portalJSessionId;
+	
+				String encriptedPwdDB = app.appPassword;
+				String appUserName = app.username;
+				// String decreptedPwd = CipherUtil.decrypt(encriptedPwdDB,
+				// SystemProperties.getProperty(SystemProperties.Decryption_Key));
+	
+				setLocalMDCContext(app, "/timeoutSession", url);
+	
+				URL obj = new URL(url);
+				HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+	
+				// optional default is GET
+				con.setRequestMethod("POST");
+				con.setConnectTimeout(3000);
+				con.setReadTimeout(15000);
+	
+				// add request header
+				con.setRequestProperty("username", appUserName);
+				con.setRequestProperty("password", encriptedPwdDB);
+	
+				// con.setRequestProperty("portalJSessionId", portalJSessionId);
+				con.setDoInput(true);
+				con.setDoOutput(true);
+				con.getOutputStream().flush();
+				con.getOutputStream().close();
+	
+				responseCode = con.getResponseCode();
+				logger.debug(EELFLoggerDelegate.debugLogger, "Response Code : " + responseCode);
+			} catch (UrlAccessRestrictedException e) {
+				responseCode = HttpServletResponse.SC_UNAUTHORIZED;
+				String message = String.format(
+						"SessionCommunication.timeoutSession received an un-authorized exception. AppName: %s", appName);
+				logger.error(EELFLoggerDelegate.errorLogger, message);
+				EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeRestApiAuthenticationError, e);
+			} catch (Exception e) {
+				responseCode = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+				String message = String.format(
+						"SessionCommunication.timeoutSession encountered an Exception. AppName: %s, Details: %s", appName,
+						EcompPortalUtils.getStackTrace(e));
+				EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeHttpConnectionError, e);
+				logger.error(EELFLoggerDelegate.errorLogger, message);
+			} finally {
+				EcompPortalUtils.setExternalAppResponseCode(responseCode);
 			}
-			
-			String url = app.restUrl + "/timeoutSession" + "?portalJSessionId=" + portalJSessionId;
-
-			String encriptedPwdDB = app.appPassword;
-			String appUserName = app.username;
-			// String decreptedPwd = CipherUtil.decrypt(encriptedPwdDB,
-			// SystemProperties.getProperty(SystemProperties.Decryption_Key));
-
-			setLocalMDCContext(app, "/timeoutSession", url);
-
-			URL obj = new URL(url);
-			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-
-			// optional default is GET
-			con.setRequestMethod("POST");
-			con.setConnectTimeout(3000);
-			con.setReadTimeout(15000);
-
-			// add request header
-			con.setRequestProperty("username", appUserName);
-			con.setRequestProperty("password", encriptedPwdDB);
-
-			// con.setRequestProperty("portalJSessionId", portalJSessionId);
-			con.setDoInput(true);
-			con.setDoOutput(true);
-			con.getOutputStream().flush();
-			con.getOutputStream().close();
-
-			responseCode = con.getResponseCode();
-			logger.debug(EELFLoggerDelegate.debugLogger, "Response Code : " + responseCode);
-		} catch (UrlAccessRestrictedException e) {
-			responseCode = HttpServletResponse.SC_UNAUTHORIZED;
-			String message = String.format(
-					"SessionCommunication.timeoutSession received an un-authorized exception. AppName: %s", appName);
-			logger.error(EELFLoggerDelegate.errorLogger, message);
-			EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeRestApiAuthenticationError, e);
-		} catch (Exception e) {
-			responseCode = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-			String message = String.format(
-					"SessionCommunication.timeoutSession encountered an Exception. AppName: %s, Details: %s", appName,
-					EcompPortalUtils.getStackTrace(e));
-			EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeHttpConnectionError, e);
-			logger.error(EELFLoggerDelegate.errorLogger, message);
-		} finally {
-			EcompPortalUtils.setExternalAppResponseCode(responseCode);
+		}else{
+			logger.error(EELFLoggerDelegate.errorLogger, "SessionCommunication pingSession: app is null");
 		}
 		return true;
 	}

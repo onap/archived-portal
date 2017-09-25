@@ -199,4 +199,5 @@ public class EPRole extends DomainVo {
 	public String toString() {
 		return "[Id = " + id + ", name = " + name + "]";
 	}
+
 }

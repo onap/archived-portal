@@ -174,11 +174,17 @@
                             app.isDoneUpdating = true;
                             this.numberAppsSucceeded++;
                         }).catch(err => {
-                            $log.error(err);
-                            app.isErrorUpdating = true;
+                        	$log.error(err);                       
+                            var errorMessage = 'Failed to update the user application roles: ' + err.status;
+                            if(err.status == 504){ 
+                            	this.numberAppsSucceeded++;
+                            	errorMessage = 'Request is being processed, please check back later!';
+                            } else{
+                            	app.isErrorUpdating = true;
+                            }
                             confirmBoxService.showInformation(
-                            		'Failed to update the user application roles: ' + err.status)
-                            		.then(isConfirmed => {});
+                            		errorMessage)
+                            		.then(isConfirmed => {});                      	
                         }).finally(()=>{
                             this.numberAppsProcessed++;
                             if (this.numberAppsProcessed === this.adminApps.length) {

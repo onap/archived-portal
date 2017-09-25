@@ -60,8 +60,7 @@ public class UserControllerTest extends MockitoTestSuite {
 		PortalRestResponse<ProfileDetail> expectedResponse = new PortalRestResponse<ProfileDetail>();
 		expectedResponse.setMessage(null);
 		expectedResponse.setResponse(null);
-		PortalRestStatusEnum enu = null;
-		expectedResponse.setStatus(enu.ERROR);
+		expectedResponse.setStatus(PortalRestStatusEnum.ERROR);
 		PortalRestResponse<ProfileDetail> response = userController.getLoggedinUser(mockedRequest);
 		assertEquals(response, expectedResponse);
 	}
@@ -74,8 +73,7 @@ public class UserControllerTest extends MockitoTestSuite {
 		expectedResponse.setMessage("success");
 		ProfileDetail profileDetail = new ProfileDetail();
 		expectedResponse.setResponse(profileDetail);
-		PortalRestStatusEnum enu = null;
-		expectedResponse.setStatus(enu.OK);
+		expectedResponse.setStatus(PortalRestStatusEnum.OK);
 		PowerMockito.mockStatic(CipherUtil.class);
 		Mockito.when(CipherUtil.decrypt(epUser.getLoginPwd())).thenReturn("Password");
 		PortalRestResponse<ProfileDetail> response = userController.getLoggedinUser(mockedRequest);
@@ -88,8 +86,7 @@ public class UserControllerTest extends MockitoTestSuite {
 		PortalRestResponse<String> expectedResponse = new PortalRestResponse<String>();
 		expectedResponse.setMessage("java.lang.NullPointerException");
 		expectedResponse.setResponse(null);
-		PortalRestStatusEnum enu = null;
-		expectedResponse.setStatus(enu.ERROR);
+		expectedResponse.setStatus(PortalRestStatusEnum.ERROR);
 		ProfileDetail profileDetail = null;
 		PortalRestResponse<String> actualResponse = userController.modifyLoggedinUser(mockedRequest, profileDetail);
 		assertEquals(actualResponse, expectedResponse);
@@ -104,8 +101,7 @@ public class UserControllerTest extends MockitoTestSuite {
 		expectedResponse.setMessage(
 				"java.lang.ClassCastException: com.sun.crypto.provider.AESCipher$General cannot be cast to javax.crypto.CipherSpi");
 		expectedResponse.setResponse(null);
-		PortalRestStatusEnum enu = null;
-		expectedResponse.setStatus(enu.ERROR);
+		expectedResponse.setStatus(PortalRestStatusEnum.ERROR);
 		ProfileDetail profileDetail = new ProfileDetail();
 		profileDetail.setFirstName("Test_FirstName");
 		profileDetail.setLastName("Test_LastName");

@@ -67,8 +67,7 @@ public class AppsControllerExternalRequestTest extends MockitoTestSuite {
 		PortalRestResponse<String> expectedportalRestResponse = new PortalRestResponse<String>();
 		expectedportalRestResponse.setMessage("Missing required field: email, loginId, or loginPwd");
 		expectedportalRestResponse.setResponse(null);
-		PortalRestStatusEnum portalRestStatusEnum = null;
-		expectedportalRestResponse.setStatus(portalRestStatusEnum.ERROR);
+		expectedportalRestResponse.setStatus(PortalRestStatusEnum.ERROR);
 		EPUser user = mockUser.mockEPUser();
 		user.setEmail("guestT@test.portal.onap.org");
 		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
@@ -82,8 +81,7 @@ public class AppsControllerExternalRequestTest extends MockitoTestSuite {
 		PortalRestResponse<String> expectedportalRestResponse = new PortalRestResponse<String>();
 		expectedportalRestResponse.setMessage("java.lang.NullPointerException");
 		expectedportalRestResponse.setResponse(null);
-		PortalRestStatusEnum portalRestStatusEnum = null;
-		expectedportalRestResponse.setStatus(portalRestStatusEnum.ERROR);
+		expectedportalRestResponse.setStatus(PortalRestStatusEnum.ERROR);
 		EPUser user = mockUser.mockEPUser();
 		user.setEmail("guestT@test.portal.onap.org");
 		user.setLoginPwd("pwd");
@@ -100,8 +98,7 @@ public class AppsControllerExternalRequestTest extends MockitoTestSuite {
 		PortalRestResponse<String> expectedportalRestResponse = new PortalRestResponse<String>();
 		expectedportalRestResponse.setMessage(null);
 		expectedportalRestResponse.setResponse(null);
-		PortalRestStatusEnum portalRestStatusEnum = null;
-		expectedportalRestResponse.setStatus(portalRestStatusEnum.ERROR);
+		expectedportalRestResponse.setStatus(PortalRestStatusEnum.ERROR);
 		EPUser user = mockUser.mockEPUser();
 		user.setEmail("guestT@test.portal.onap.org");
 		user.setLoginPwd("pwd");
@@ -120,8 +117,7 @@ public class AppsControllerExternalRequestTest extends MockitoTestSuite {
 		PortalRestResponse<String> expectedportalRestResponse = new PortalRestResponse<String>();
 		expectedportalRestResponse.setMessage(null);
 		expectedportalRestResponse.setResponse(null);
-		PortalRestStatusEnum portalRestStatusEnum = null;
-		expectedportalRestResponse.setStatus(portalRestStatusEnum.OK);
+		expectedportalRestResponse.setStatus(PortalRestStatusEnum.OK);
 		EPUser user = mockUser.mockEPUser();
 		user.setEmail("guestT@test.portal.onap.org");
 		user.setLoginPwd("pwd");
@@ -142,8 +138,7 @@ public class AppsControllerExternalRequestTest extends MockitoTestSuite {
 		PortalRestResponse<String> expectedportalRestResponse = new PortalRestResponse<String>();
 		expectedportalRestResponse.setMessage(null);
 		expectedportalRestResponse.setResponse(null);
-		PortalRestStatusEnum portalRestStatusEnum = null;
-		expectedportalRestResponse.setStatus(portalRestStatusEnum.OK);
+		expectedportalRestResponse.setStatus(PortalRestStatusEnum.OK);
 		EPUser user = mockUser.mockEPUser();
 		user.setEmail("guestT@test.portal.onap.org");
 		user.setLoginPwd("pwd");
@@ -175,8 +170,7 @@ public class AppsControllerExternalRequestTest extends MockitoTestSuite {
 		PortalRestResponse<String> expectedportalRestResponse = new PortalRestResponse<String>();
 		expectedportalRestResponse.setMessage("FieldsValidator [httpStatusCode=500, errorCode=null, fields=null]");
 		expectedportalRestResponse.setResponse(null);
-		PortalRestStatusEnum portalRestStatusEnum = null;
-		expectedportalRestResponse.setStatus(portalRestStatusEnum.ERROR);
+		expectedportalRestResponse.setStatus(PortalRestStatusEnum.ERROR);
 		EPUser user = mockUser.mockEPUser();
 		user.setEmail("guestT@test.portal.onap.org");
 		user.setLoginPwd("pwd");
@@ -210,8 +204,7 @@ public class AppsControllerExternalRequestTest extends MockitoTestSuite {
 		PortalRestResponse<String> expectedportalRestResponse = new PortalRestResponse<String>();
 		expectedportalRestResponse.setMessage("Unexpected field: id");
 		expectedportalRestResponse.setResponse(null);
-		PortalRestStatusEnum portalRestStatusEnum = null;
-		expectedportalRestResponse.setStatus(portalRestStatusEnum.ERROR);
+		expectedportalRestResponse.setStatus(PortalRestStatusEnum.ERROR);
 
 		OnboardingApp expectedOnboardingApp = new OnboardingApp();
 		expectedOnboardingApp.id = (long) 1;
@@ -227,8 +220,7 @@ public class AppsControllerExternalRequestTest extends MockitoTestSuite {
 		expectedportalRestResponse.setMessage(
 				"Missing required field: name, url, restUrl, restrictedApp, isOpen, isEnabled, myLoginsAppOwner");
 		expectedportalRestResponse.setResponse(null);
-		PortalRestStatusEnum portalRestStatusEnum = null;
-		expectedportalRestResponse.setStatus(portalRestStatusEnum.ERROR);
+		expectedportalRestResponse.setStatus(PortalRestStatusEnum.ERROR);
 
 		OnboardingApp expectedOnboardingApp = new OnboardingApp();
 		expectedOnboardingApp.id = null;
@@ -244,8 +236,7 @@ public class AppsControllerExternalRequestTest extends MockitoTestSuite {
 		PortalRestResponse<String> expectedportalRestResponse = new PortalRestResponse<String>();
 		expectedportalRestResponse.setMessage("Unexpected value for field: id");
 		expectedportalRestResponse.setResponse(null);
-		PortalRestStatusEnum portalRestStatusEnum = null;
-		expectedportalRestResponse.setStatus(portalRestStatusEnum.ERROR);
+		expectedportalRestResponse.setStatus(PortalRestStatusEnum.ERROR);
 		Long appId = null;
 		OnboardingApp expectedOnboardingApp = new OnboardingApp();
 		expectedOnboardingApp.id = null;
@@ -261,8 +252,7 @@ public class AppsControllerExternalRequestTest extends MockitoTestSuite {
 		expectedportalRestResponse.setMessage(
 				"Missing required field: name, url, restUrl, restrictedApp, isOpen, isEnabled, myLoginsAppOwner");
 		expectedportalRestResponse.setResponse(null);
-		PortalRestStatusEnum portalRestStatusEnum = null;
-		expectedportalRestResponse.setStatus(portalRestStatusEnum.ERROR);
+		expectedportalRestResponse.setStatus(PortalRestStatusEnum.ERROR);
 		Long appId = (long) 1;
 		OnboardingApp expectedOnboardingApp = new OnboardingApp();
 		expectedOnboardingApp.id = (long) 1;

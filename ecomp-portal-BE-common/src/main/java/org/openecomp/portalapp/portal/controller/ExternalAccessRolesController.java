@@ -25,6 +25,7 @@ import org.openecomp.portalsdk.core.domain.AuditLog;
 import org.openecomp.portalsdk.core.domain.Role;
 import org.openecomp.portalsdk.core.domain.RoleFunction;
 import org.openecomp.portalsdk.core.logging.logic.EELFLoggerDelegate;
+import org.openecomp.portalsdk.core.restful.domain.EcompUser;
 import org.openecomp.portalsdk.core.service.AuditService;
 import org.openecomp.portalsdk.core.util.SystemProperties;
 import org.slf4j.MDC;
@@ -469,4 +470,18 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 		return functionsList;
 	}
 	
+	
+	@ApiOperation(value = "Gets all active Users of application", response = String.class, responseContainer = "Json")
+	@RequestMapping(value = { "/users" }, method = RequestMethod.GET, produces = "application/json")
+	public  List<EcompUser> getUsersOfApplication(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		List<EcompUser> users = null;
+		try {
+			users = externalAccessRolesService.getAllAppUsers(request.getHeader(UEBKEY));
+		} catch (Exception e) {		
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			logger.error(EELFLoggerDelegate.errorLogger, "getUsersOfApplication failed", e);
+			throw new Exception(e.getMessage());
+		}
+		return users;
+	}
 }

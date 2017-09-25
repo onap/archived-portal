@@ -185,6 +185,7 @@ public class SearchServiceImpl implements SearchService {
 			}
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "searchInPhoneBookWithToken Exception = " + EcompPortalUtils.getStackTrace(e));
+			return null;
 		}
 		return foundUsers.get(0);
 	}

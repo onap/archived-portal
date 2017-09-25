@@ -371,7 +371,7 @@
 	</class>
 
 	<!-- User Role class mapping details -->
-	<class name="EPRole" table="FN_ROLE">
+	<class name="EPRole" table="FN_ROLE" >
 		<id name="id" column="role_id">
 			<generator class="native">
 				<param name="sequence">seq_fn_role</param>
@@ -1800,20 +1800,9 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 			class="org.openecomp.portalapp.portal.domain.CentralRoleFunction" />
 			<![CDATA[
 			
-			SELECT * from ep_app_function where function_cd = :functionCode and app_id =:appId
+			SELECT * from ep_app_function where function_cd like CONCAT('%', :functionCode,'%') and app_id =:appId
 			;
 			
-			]]>
-	</sql-query>
-	
-	<!-- Gets the record from ep_app_function table and requires two parameters  -->
-	<sql-query name="getAppFunctionDetails">
-		<return alias="appFunctionDetails"
-			class="org.openecomp.portalapp.portal.domain.CentralRoleFunction" />
-			<![CDATA[
-			
-					select * from ep_app_function where app_id =:appId and function_cd =:functionCd
-			;		
 			]]>
 	</sql-query>
 		
@@ -1940,4 +1929,18 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 		]]>
 	</sql-query>
 	
+	<sql-query name="ApplicationUserRoles">
+		<return alias="ApplicationUserRoles" class="org.openecomp.portalapp.portal.transport.EcompUserRoles" />
+		<![CDATA[ 
+		    select distinct fu.org_id, fu.manager_id, fu.first_name, fu.middle_name, fu.last_name, fu.phone, fu.email, fu.hrid, fu.org_user_id, fu.org_code, fu.org_manager_userid, fu.job_title, fu.login_id, 
+			fu.active_yn , fr.app_role_id, fr.role_name
+			from fn_user fu, fn_role fr, fn_user_role fur
+			where fu.user_id = fur.user_id and fu.active_yn='Y' and fur.role_id = fr.role_id and fr.app_id =:appId and fr.active_yn='Y'
+	     	union
+            select distinct fu.org_id, fu.manager_id, fu.first_name, fu.middle_name, fu.last_name, fu.phone, fu.email, fu.hrid, fu.org_user_id, fu.org_code, fu.org_manager_userid, fu.job_title, fu.login_id, fu.active_yn , fr.role_id, fr.role_name
+			from fn_user fu, fn_role fr, fn_user_role fur
+			where fu.user_id = fur.user_id and fu.active_yn='Y' and fur.app_id=:appId and fr.role_name like 'global%' and fr.active_yn='Y'
+            ;
+		]]>
+	</sql-query>
 </hibernate-mapping>

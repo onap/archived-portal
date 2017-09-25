@@ -75,7 +75,7 @@
 //    it('should populate retrieved users when search users service returns a list ', ()=> {
 //        //spyOn(usersServiceMock, 'searchUsers');
 //        let usersListRes = [{user: 1}, {user: 2}];
-//        newCtrl.searchUserString = 'some att user name';
+//        newCtrl.searchUserString = 'some org user name';
 //        deferredUsersList.resolve(usersListRes);
 //        newCtrl.searchUsers();
 //        $rootScope.$apply();

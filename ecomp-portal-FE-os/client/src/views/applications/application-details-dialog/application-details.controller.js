@@ -116,8 +116,8 @@
                 userProfileService.getUserProfile()
                     .then(profile=> {
                         // $log.info(profile);
-                        $scope.orgUserId = profile.attuid;
-                        $log.debug('AppDetailsModalCtrl:emptyCookies for the following attuid: ' + profile.attuid);
+                        $scope.orgUserId = profile.orgUserId;
+                        $log.debug('AppDetailsModalCtrl:emptyCookies for the following orgUserId: ' + profile.orgUserId);
                         if ($cookies.getObject($scope.orgUserId + '_apps') != undefined && $cookies.getObject($scope.orgUserId + '_apps') != null) {
                             $cookies.remove($scope.orgUserId + '_apps');
                             $log.debug('AppDetailsModalCtrl:emptyCookies removed: ' + $scope.orgUserId + '_apps');

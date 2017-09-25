@@ -6,7 +6,7 @@
   ================================================================================
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
+  You may obtain a copy of the License at 
   
        http://www.apache.org/licenses/LICENSE-2.0
   
@@ -136,7 +136,7 @@
 							<small class="mandatory-categories">Please enter valid date in MM/DD/YYYY format!</small>
 						</div>
 						<div id="user-startdate-required" ng-show="!isStartDateValidFromToday(newNotifModel.startTime)">
-							<small class="date-validation">Date should be greater than or equal to current date!</small>
+							<small class="date-validation">Date should not be greater than 4 months from current date!</small>
 						</div>
 					</div>
 				</div>
@@ -158,7 +158,7 @@
 						<small class="mandatory-categories">Please enter valid date in MM/DD/YYYY format!</small>
 					</div>
 					<div id="user-startdate-required"  ng-show="!isStartDateValidFromToday(newNotifModel.endTime)">
-						<small class="endDate-validation">Date should be greater than or equal to current date!</small>
+						<small class="endDate-validation">Date should not be greater than 4 months from current date!</small>
 					</div>
 					<div id="user-enddate-error" ng-show="newNotifModel.endTime&&newNotifModel.startTime&&newNotifModel.startTime.getTime()>=newNotifModel.endTime.getTime()" class="user-enddate-error-txt">
 						<small class="mandatory-categories">End Date must be greater than start Date</small>

@@ -228,7 +228,10 @@ public class AdminRolesServiceImpl implements AdminRolesService {
 						EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeDaoSystemError, e);
 						logger.error(EELFLoggerDelegate.errorLogger, "setAppsWithAdminRoleStateForUser: exception in point 2", e);
 						try {
-							transaction.rollback();
+							if(transaction!=null)
+								transaction.rollback();
+							else
+								logger.error(EELFLoggerDelegate.errorLogger, "setAppsWithAdminRoleStateForUser: transaction is null cannot rollback");
 						} catch (Exception ex) {
 							EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeExecuteRollbackError, e);
 							logger.error(EELFLoggerDelegate.errorLogger, "setAppsWithAdminRoleStateForUser: exception in point 3", ex);

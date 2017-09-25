@@ -77,5 +77,42 @@ public class PersUserWidgetSelection extends DomainVo {
 	public void setStatusCode(String statusCode) {
 		this.statusCode = statusCode;
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((statusCode == null) ? 0 : statusCode.hashCode());
+		result = prime * result + ((userId == null) ? 0 : userId.hashCode());
+		result = prime * result + ((widgetId == null) ? 0 : widgetId.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		PersUserWidgetSelection other = (PersUserWidgetSelection) obj;
+		if (statusCode == null) {
+			if (other.statusCode != null)
+				return false;
+		} else if (!statusCode.equals(other.statusCode))
+			return false;
+		if (userId == null) {
+			if (other.userId != null)
+				return false;
+		} else if (!userId.equals(other.userId))
+			return false;
+		if (widgetId == null) {
+			if (other.widgetId != null)
+				return false;
+		} else if (!widgetId.equals(other.widgetId))
+			return false;
+		return true;
+	}
 	
 }

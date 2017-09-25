@@ -156,4 +156,92 @@ public class CentralRole implements Comparable{
 	    	return (c1 == null || c2 == null) ? 1 : c1.compareTo(c2);
 	    }
 
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + (active ? 1231 : 1237);
+			result = prime * result + ((childRoles == null) ? 0 : childRoles.hashCode());
+			result = prime * result + ((created == null) ? 0 : created.hashCode());
+			result = prime * result + ((createdId == null) ? 0 : createdId.hashCode());
+			result = prime * result + ((id == null) ? 0 : id.hashCode());
+			result = prime * result + ((modified == null) ? 0 : modified.hashCode());
+			result = prime * result + ((modifiedId == null) ? 0 : modifiedId.hashCode());
+			result = prime * result + ((name == null) ? 0 : name.hashCode());
+			result = prime * result + ((parentRoles == null) ? 0 : parentRoles.hashCode());
+			result = prime * result + ((priority == null) ? 0 : priority.hashCode());
+			result = prime * result + ((roleFunctions == null) ? 0 : roleFunctions.hashCode());
+			result = prime * result + ((rowNum == null) ? 0 : rowNum.hashCode());
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			CentralRole other = (CentralRole) obj;
+			if (active != other.active)
+				return false;
+			if (childRoles == null) {
+				if (other.childRoles != null)
+					return false;
+			} else if (!childRoles.equals(other.childRoles))
+				return false;
+			if (created == null) {
+				if (other.created != null)
+					return false;
+			} else if (!created.equals(other.created))
+				return false;
+			if (createdId == null) {
+				if (other.createdId != null)
+					return false;
+			} else if (!createdId.equals(other.createdId))
+				return false;
+			if (id == null) {
+				if (other.id != null)
+					return false;
+			} else if (!id.equals(other.id))
+				return false;
+			if (modified == null) {
+				if (other.modified != null)
+					return false;
+			} else if (!modified.equals(other.modified))
+				return false;
+			if (modifiedId == null) {
+				if (other.modifiedId != null)
+					return false;
+			} else if (!modifiedId.equals(other.modifiedId))
+				return false;
+			if (name == null) {
+				if (other.name != null)
+					return false;
+			} else if (!name.equals(other.name))
+				return false;
+			if (parentRoles == null) {
+				if (other.parentRoles != null)
+					return false;
+			} else if (!parentRoles.equals(other.parentRoles))
+				return false;
+			if (priority == null) {
+				if (other.priority != null)
+					return false;
+			} else if (!priority.equals(other.priority))
+				return false;
+			if (roleFunctions == null) {
+				if (other.roleFunctions != null)
+					return false;
+			} else if (!roleFunctions.equals(other.roleFunctions))
+				return false;
+			if (rowNum == null) {
+				if (other.rowNum != null)
+					return false;
+			} else if (!rowNum.equals(other.rowNum))
+				return false;
+			return true;
+		}
+
 }

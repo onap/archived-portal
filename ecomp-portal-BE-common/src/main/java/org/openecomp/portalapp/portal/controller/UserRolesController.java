@@ -153,17 +153,22 @@ public class UserRolesController extends EPRestrictedBaseController {
 		}
 
 		StringBuilder adminAppRoles = new StringBuilder();
-		if (result != null && result.appsRoles.size() >= 1) {
-			adminAppRoles.append("User '" + result.orgUserId + "' has admin role to the apps = {");
-			for (AppNameIdIsAdmin adminAppRole : result.appsRoles) {
-				if (adminAppRole.isAdmin) {
-					adminAppRoles.append(adminAppRole.appName + ", ");
+		if(result != null){
+			if ( result.appsRoles.size() >= 1) {
+				adminAppRoles.append("User '" + result.orgUserId + "' has admin role to the apps = {");
+				for (AppNameIdIsAdmin adminAppRole : result.appsRoles) {
+					if (adminAppRole.isAdmin) {
+						adminAppRoles.append(adminAppRole.appName + ", ");
+					}
 				}
+				adminAppRoles.append("}.");
+			} else {
+				adminAppRoles.append("User '" + result.orgUserId + "' has no Apps with Admin Role.");
 			}
-			adminAppRoles.append("}.");
-		} else {
-			adminAppRoles.append("User '" + result.orgUserId + "' has no Apps with Admin Role.");
+		}else{
+			logger.error(EELFLoggerDelegate.errorLogger, "putAppWithUserRoleStateForUser: getAppsWithAdminRoleStateForUser result is null");
 		}
+		
 		logger.info(EELFLoggerDelegate.errorLogger, adminAppRoles.toString());
 
 		EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/adminAppsRoles", "get result =", result);
@@ -189,18 +194,23 @@ public class UserRolesController extends EPRestrictedBaseController {
 		// newAppsListWithAdminRoles.appsRoles
 		FieldsValidator fieldsValidator = new FieldsValidator();
 		StringBuilder newAppRoles = new StringBuilder();
-		if (newAppsListWithAdminRoles != null && newAppsListWithAdminRoles.appsRoles.size() >= 1) {
-			newAppRoles.append("User '" + newAppsListWithAdminRoles.orgUserId + "' has admin role to the apps = { ");
-			for (AppNameIdIsAdmin adminAppRole : newAppsListWithAdminRoles.appsRoles) {
-				if (adminAppRole.isAdmin) {
-					newAppRoles.append(adminAppRole.appName + " ,");
+		if(newAppsListWithAdminRoles != null ){
+			if (newAppsListWithAdminRoles.appsRoles.size() >= 1) {
+				newAppRoles.append("User '" + newAppsListWithAdminRoles.orgUserId + "' has admin role to the apps = { ");
+				for (AppNameIdIsAdmin adminAppRole : newAppsListWithAdminRoles.appsRoles) {
+					if (adminAppRole.isAdmin) {
+						newAppRoles.append(adminAppRole.appName + " ,");
+					}
 				}
+				newAppRoles.deleteCharAt(newAppRoles.length() - 1);
+				newAppRoles.append("}.");
+			} else {
+				newAppRoles.append("User '" + newAppsListWithAdminRoles.orgUserId + "' has no Apps with Admin Role.");
 			}
-			newAppRoles.deleteCharAt(newAppRoles.length() - 1);
-			newAppRoles.append("}.");
-		} else {
-			newAppRoles.append("User '" + newAppsListWithAdminRoles.orgUserId + "' has no Apps with Admin Role.");
+		}else{
+			logger.error(EELFLoggerDelegate.errorLogger, "putAppWithUserRoleStateForUser: putAppsWithAdminRoleStateForUser result is null");
 		}
+		
 		logger.info(EELFLoggerDelegate.errorLogger, newAppRoles.toString());
 
 		EPUser user = EPUserUtils.getUserSession(request);
@@ -339,7 +349,9 @@ public class UserRolesController extends EPRestrictedBaseController {
 		boolean changesApplied = false;
 		if (!adminRolesService.isAccountAdmin(user)) {
 			EcompPortalUtils.setBadPermissions(user, response, "putAppWithUserRoleStateForUser");
-		} else {
+		} else if(newAppRolesForUser==null){
+			logger.error(EELFLoggerDelegate.errorLogger, "putAppWithUserRoleStateForUser: newAppRolesForUser is null");
+		} else{
 			changesApplied = userRolesService.setAppWithUserRoleStateForUser(user, newAppRolesForUser);
 			if (changesApplied) {
 				logger.info(EELFLoggerDelegate.applicationLogger,

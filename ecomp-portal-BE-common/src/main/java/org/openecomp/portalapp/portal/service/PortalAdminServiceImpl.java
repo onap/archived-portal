@@ -144,7 +144,10 @@ public class PortalAdminServiceImpl implements PortalAdminService {
 
 				transaction.commit();
 				// Add role in the external central auth system
-				result = addPortalAdminInExternalCentralAuth(user.getOrgUserId(), PortalConstants.PORTAL_ADMIN_ROLE);
+				if(user != null)
+					result = addPortalAdminInExternalCentralAuth(user.getOrgUserId(), PortalConstants.PORTAL_ADMIN_ROLE);
+				else
+					logger.error(EELFLoggerDelegate.errorLogger, "PortalAdminServiceImpl createPortalAdmin: failed to Add role in the external central auth system since User obj is null" );
 			} catch (Exception e) {
 				EcompPortalUtils.rollbackTransaction(transaction, "createPortalAdmin rollback, exception = " + e);
 				logger.error(EELFLoggerDelegate.errorLogger, EcompPortalUtils.getStackTrace(e));

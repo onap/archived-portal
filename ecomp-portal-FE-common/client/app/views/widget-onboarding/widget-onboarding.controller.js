@@ -122,7 +122,7 @@
             };
            
             this.filterByDropdownValue = item => {            	
-                if(this.filterByApp.value === '')
+                if(this.filterByApp.value === '' || this.filterByApp.value === 'All Applications')
                     return true;
                 
              	for(var i = 0; i < item.appName.length; i++){

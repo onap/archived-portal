@@ -218,9 +218,8 @@ public class HealthMonitor {
 				}
 			}
 		};
-		if (healthMonitorThread != null) {
-			healthMonitorThread.start();
-		}
+		healthMonitorThread.start();
+		
 	}
 
 	@PreDestroy

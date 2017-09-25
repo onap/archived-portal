@@ -1,21 +1,24 @@
-var ARUGMENT1 = (function(window, undefined) {                                                                                      
+var ARGUMENT1 = (function(window, undefined) {                                                                                      
                                                                                                                                     
-	var ARUGMENT1 = ARUGMENT1 || {};                                                                                                
+	var ARGUMENT1 = ARGUMENT1 || {};                                                                                                
 	function extractHostPortApp(src) {	                                                                                            
-		ARUGMENT1.microserviceId = MICROSERVICE_ID;                                                                                 
-		ARUGMENT1.pathArray = src.split( '/' );                                                                                     
-		ARUGMENT1.widgetName = ARUGMENT1.pathArray[ARUGMENT1.pathArray.length - 2];                                                 
-		ARUGMENT1.serviceSeperator = ARUGMENT1.pathArray[ARUGMENT1.pathArray.length - 4];                                           
-		ARUGMENT1.commonUrl = src.substring(0, src.lastIndexOf("/" + ARUGMENT1.widgetName));                                      
-		ARUGMENT1.recipientDivDataAttrib = 'data-' + ARUGMENT1.widgetName;                                                          
-		ARUGMENT1.controllerName = 'ARUGMENT2';                                                                                     
-		ARUGMENT1.readyCssFlag = 'ARUGMENT3';                                                                                       
-		ARUGMENT1.readyCssFlagExpectedValue = '#bada55';                                                                            
-		ARUGMENT1.serviceURL = src.substring(0, src.lastIndexOf("/" + ARUGMENT1.serviceSeperator)) + '/portalApi/microservice/proxy/parameter/' + WIDGET_ID;  
-	}                                                                                                                              
-	                                                                                                                               
-	extractHostPortApp(document.currentScript.src);                                                                                
-	                                                                                                                               
+		
+		ARGUMENT1.microserviceId = MICROSERVICE_ID;                                                                                 
+		ARGUMENT1.pathArray = src.split( '/' );                                                                                     
+			
+		ARGUMENT1.widgetName = WIDGET_ID;
+		ARGUMENT1.serviceSeperator = ARGUMENT1.pathArray[ARGUMENT1.pathArray.length - 4];                                           
+		ARGUMENT1.commonUrl = src.substring(0, src.lastIndexOf("/" + ARGUMENT1.pathArray[ARGUMENT1.pathArray.length - 2]));       
+		
+		ARGUMENT1.recipientDivDataAttrib = 'data-' + ARGUMENT1.widgetName;                                                          
+		ARGUMENT1.controllerName = 'ARGUMENT2';                                                                                     
+		ARGUMENT1.readyCssFlag = 'ARGUMENT3';                                                                                       
+		ARGUMENT1.readyCssFlagExpectedValue = '#bada55';                                                                            
+		ARGUMENT1.serviceURL = src.substring(0, src.lastIndexOf("/" + ARGUMENT1.serviceSeperator)) + '/portalApi/microservice/proxy/parameter/' + WIDGET_ID;  
+	}                                  
+	
+	extractHostPortApp(document.getElementsByTagName('script')[0].src);
+	
 	function loadStylesheet(url) {                                                                                                 
 		var link = document.createElement('link');                                                                                 
 		link.rel = 'stylesheet';                                                                                                   
@@ -27,7 +30,7 @@ var ARUGMENT1 = (function(window, undefined) {
                                                                                                                                    
 	function isCssReady(callback) {                                                                                                
 		var testElem = document.createElement('span');                                                                             
-		testElem.id = ARUGMENT1.readyCssFlag;	                                                                                   
+		testElem.id = ARGUMENT1.readyCssFlag;	                                                                                   
 		testElem.style = 'CSS_ARG1';                                                                       
 		var entry = document.getElementsByTagName('script')[0];                                                                    
 		entry.parentNode.insertBefore(testElem, entry);                                                                            
@@ -42,7 +45,7 @@ var ARUGMENT1 = (function(window, undefined) {
 			else if (node.currentStyle) {                                                                                          
 				value = node.currentStyle.color;                                                                                   
 			}                                                                                                                      
-			if (value && value === 'rgb(186, 218, 85)' || value.toLowerCase() === ARUGMENT1.readyCssFlagExpectedValue) {           
+			if (value && value === 'rgb(186, 218, 85)' || value.toLowerCase() === ARGUMENT1.readyCssFlagExpectedValue) {           
 				callback();                                                                                                        
 			} else {                                                                                                               
 				setTimeout(poll, 500);                                                                                             
@@ -67,9 +70,11 @@ var ARUGMENT1 = (function(window, undefined) {
 	function loadScript(url, callback) {                                                                                           
 		var script = document.createElement('script');                                                                             
 		script.src = url;                                                                                                          
+		
 		var entry = document.getElementsByTagName('script')[0];                                                                    
 		entry.parentNode.insertBefore(script, entry);                                                                              
-		script.onload = script.onreadystatechange = function() {                                                                   
+		
+		script.onload = script.onreadystatechange = function() {   
 			var rdyState = script.readyState;                                                                                      
 			if (!rdyState || /complete|loaded/.test(script.readyState)) {                                                          
 				callback();                                                                                                        
@@ -111,30 +116,41 @@ var ARUGMENT1 = (function(window, undefined) {
 	}                                      																						   
 																							   
 	}                                                                                                   
-	                                                                                                                               
-	function getMarkupContent(markupLocation, target){                                                                             
+	
+	function getMarkupContent(markupLocation, callback){                                                                             
 		                                                                                                                           
-		jQuery.ajax({                                                                                                              
-	        url: markupLocation,                                                                                                   
-	        success: function (result) {                                                                                           
-	            if (result.isOk == false){                                                                                         
-	            	                                                                                                               
-	            }else{                                                                                                             
-	            	target.innerHTML = result;                                                                                     
-				}                                                                                                                  
-	        },                                                                                                                     
-	        async: false                                                                                                           
-	    });                                                                                                                        
+		try{
+			jQuery.ajax({                                                                                                              
+		        url: markupLocation,
+		        method: "GET",   
+		        xhrFields: {              																							   
+					withCredentials: true       																					   
+				},   
+				crossDomain: true,		
+		        success: function (result) {                                                                                           
+		            if (result.isOk == false){                                                                                         
+		            	                                                                                                               
+		            }else{                                                                                                             
+		            	callback(result);                                                                                   
+					}                                                                                                                  
+		        }                                                                                                        
+			});       
+		}
+		catch(e){
+			
+		}
 	}                                                                                                                              
 	                                                                                                                               
 	function renderWidget(data, location, $controllerProvider) {                                                                   
 		var div = document.createElement('div');                                                                                   
-		getMarkupContent(ARUGMENT1.commonUrl + "/markup/" + ARUGMENT1.widgetName, div);                                          
-		location.append(div);                                                                                                      
-		 ARUGMENT1.widgetData = data;                                                                                              
-		app.controllerProvider.register(ARUGMENT1.controllerName, ARUGMENT1.controller);                                           
-		var mController = angular.element(document.getElementById("widgets"));                                                   
-		mController.scope().activateThis(location);                                                                                
+		getMarkupContent(ARGUMENT1.commonUrl + "/markup/" + ARGUMENT1.widgetName, function(div){
+			location.append(div);                                                                                                      
+			ARGUMENT1.widgetData = data;
+			app.controllerProvider.register(ARGUMENT1.controllerName, ARGUMENT1.controller);                                           
+			var mController = angular.element(document.getElementById("widgets"));                                                   
+			mController.scope().activateThis(location);   
+		});
+		
 	}                                                                                                                              
 	                                                                                                                               
 	function printAllArtifacts(moduleName, controllerName) {                                                                       
@@ -151,14 +167,14 @@ var ARUGMENT1 = (function(window, undefined) {
 	}                                                                                                                              
                                                                                                                                    
 	loadSupportingFiles(function() {                                                                                               
-		loadStylesheet(ARUGMENT1.commonUrl + '/' + ARUGMENT1.widgetName + '/style.css');                                           
-		loadScript(ARUGMENT1.commonUrl + '/' + ARUGMENT1.widgetName + '/controller.js',                                            
+		loadStylesheet(ARGUMENT1.commonUrl + '/' + ARGUMENT1.widgetName + '/style.css');                                           
+		loadScript(ARGUMENT1.commonUrl + '/' + ARGUMENT1.widgetName + '/controller.js',                                            
 			function() {                                                                                                           
-				$('['+ ARUGMENT1.recipientDivDataAttrib + ']').each(function() {                                                   
+				$('['+ ARGUMENT1.recipientDivDataAttrib + ']').each(function() {                                                   
 					var location = jQuery(this);                                                                                   
-					location.removeAttr(ARUGMENT1.recipientDivDataAttrib);                                                         
-					var id = location.attr(ARUGMENT1.recipientDivDataAttrib);                                                      
-					getWidgetData(ARUGMENT1.serviceURL, function(data) {                                                           
+					location.removeAttr(ARGUMENT1.recipientDivDataAttrib);                                                         
+					var id = location.attr(ARGUMENT1.recipientDivDataAttrib);                                                      
+					getWidgetData(ARGUMENT1.serviceURL, function(data) { 
 						isCssReady(function(){                                                                                     
 							renderWidget(data, location);                                                                          
 						});								                                                                           
@@ -168,6 +184,6 @@ var ARUGMENT1 = (function(window, undefined) {
 		);                                                                                                                         
 	});                                                                                                                            
 	                                                                                                                               
-	return ARUGMENT1;	                                                                                                           
+	return ARGUMENT1;	                                                                                                           
 })(window);                                                                                                                        
 				

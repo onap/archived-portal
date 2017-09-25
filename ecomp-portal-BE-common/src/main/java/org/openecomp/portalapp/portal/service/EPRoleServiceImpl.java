@@ -145,7 +145,7 @@ public class EPRoleServiceImpl implements EPRoleService {
 		} else if (appId != 1 && !roleName.equals(PortalConstants.ADMIN_ROLE)) {
 			roles = (List<EPRole>) dataAccessService.executeNamedQuery("getAppRoles", params, null);
 		}
-		int resultsCount = roles.size();
+		int resultsCount = (roles == null ? 0 : roles.size());
 		if (resultsCount > 1) {
 			logger.error(EELFLoggerDelegate.errorLogger,
 					"Trying to recover from duplicates by returning the first search result. This issue should be treated, it is probably not critical because duplicate roles should be similar.");

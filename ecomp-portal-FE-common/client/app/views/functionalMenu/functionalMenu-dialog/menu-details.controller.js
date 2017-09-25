@@ -290,9 +290,7 @@
                     functionalMenuService.saveEditedMenuItem(activeMenuItem)
                         .then(() => {
                             $log.debug('MenuDetailsModalCtrl::saveChanges:  Menu Item saved');
-                           // $scope.closeThisDialog(true);
-                            $scope.$dismiss('cancel');
-
+                            $scope.$close(true);
                         }).catch(err => {
                         if(err.status === 409){//Conflict
                             handleConflictErrors(err);

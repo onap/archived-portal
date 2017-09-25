@@ -82,4 +82,59 @@ public class EPUserAppRolesRequest extends DomainVo {
 	public void setEpRequestIdDetail(Set<EPUserAppRolesRequestDetail> epMyLoginsDetail) {
 		this.epRequestIdDetail = epMyLoginsDetail;
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((appId == null) ? 0 : appId.hashCode());
+		result = prime * result + ((createdDate == null) ? 0 : createdDate.hashCode());
+		result = prime * result + ((epRequestIdDetail == null) ? 0 : epRequestIdDetail.hashCode());
+		result = prime * result + ((requestStatus == null) ? 0 : requestStatus.hashCode());
+		result = prime * result + ((updatedDate == null) ? 0 : updatedDate.hashCode());
+		result = prime * result + ((userId == null) ? 0 : userId.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		EPUserAppRolesRequest other = (EPUserAppRolesRequest) obj;
+		if (appId == null) {
+			if (other.appId != null)
+				return false;
+		} else if (!appId.equals(other.appId))
+			return false;
+		if (createdDate == null) {
+			if (other.createdDate != null)
+				return false;
+		} else if (!createdDate.equals(other.createdDate))
+			return false;
+		if (epRequestIdDetail == null) {
+			if (other.epRequestIdDetail != null)
+				return false;
+		} else if (!epRequestIdDetail.equals(other.epRequestIdDetail))
+			return false;
+		if (requestStatus == null) {
+			if (other.requestStatus != null)
+				return false;
+		} else if (!requestStatus.equals(other.requestStatus))
+			return false;
+		if (updatedDate == null) {
+			if (other.updatedDate != null)
+				return false;
+		} else if (!updatedDate.equals(other.updatedDate))
+			return false;
+		if (userId == null) {
+			if (other.userId != null)
+				return false;
+		} else if (!userId.equals(other.userId))
+			return false;
+		return true;
+	}
 }

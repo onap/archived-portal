@@ -19,6 +19,8 @@
  */
 package org.openecomp.portalapp.portal.domain;
 
+import java.util.Arrays;
+
 import javax.persistence.Lob;
 
 import org.apache.commons.lang.StringUtils;
@@ -93,6 +95,8 @@ public class EPApp extends DomainVo {
 	public void setImageUrl(String imageUrl) {
 		this.imageUrl = imageUrl;
 	}
+
+
 
 	public byte[] getThumbnail() {
 		return this.thumbnail;
@@ -312,4 +316,151 @@ public class EPApp extends DomainVo {
 		return str;
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((alternateUrl == null) ? 0 : alternateUrl.hashCode());
+		result = prime * result + ((appPassword == null) ? 0 : appPassword.hashCode());
+		result = prime * result + ((appRestEndpoint == null) ? 0 : appRestEndpoint.hashCode());
+		result = prime * result + ((appType == null) ? 0 : appType.hashCode());
+		result = prime * result + ((centralAuth == null) ? 0 : centralAuth.hashCode());
+		result = prime * result + ((contactUs == null) ? 0 : contactUs.hashCode());
+		result = prime * result + ((description == null) ? 0 : description.hashCode());
+		result = prime * result + ((enabled == null) ? 0 : enabled.hashCode());
+		result = prime * result + ((imageUrl == null) ? 0 : imageUrl.hashCode());
+		result = prime * result + ((mlAppAdminId == null) ? 0 : mlAppAdminId.hashCode());
+		result = prime * result + ((mlAppName == null) ? 0 : mlAppName.hashCode());
+		result = prime * result + ((motsId == null) ? 0 : motsId.hashCode());
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + ((nameSpace == null) ? 0 : nameSpace.hashCode());
+		result = prime * result + ((notes == null) ? 0 : notes.hashCode());
+		result = prime * result + ((open == null) ? 0 : open.hashCode());
+		result = prime * result + Arrays.hashCode(thumbnail);
+		result = prime * result + ((uebKey == null) ? 0 : uebKey.hashCode());
+		result = prime * result + ((uebSecret == null) ? 0 : uebSecret.hashCode());
+		result = prime * result + ((uebTopicName == null) ? 0 : uebTopicName.hashCode());
+		result = prime * result + ((url == null) ? 0 : url.hashCode());
+		result = prime * result + ((username == null) ? 0 : username.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		EPApp other = (EPApp) obj;
+		if (alternateUrl == null) {
+			if (other.alternateUrl != null)
+				return false;
+		} else if (!alternateUrl.equals(other.alternateUrl))
+			return false;
+		if (appPassword == null) {
+			if (other.appPassword != null)
+				return false;
+		} else if (!appPassword.equals(other.appPassword))
+			return false;
+		if (appRestEndpoint == null) {
+			if (other.appRestEndpoint != null)
+				return false;
+		} else if (!appRestEndpoint.equals(other.appRestEndpoint))
+			return false;
+		if (appType == null) {
+			if (other.appType != null)
+				return false;
+		} else if (!appType.equals(other.appType))
+			return false;
+		if (centralAuth == null) {
+			if (other.centralAuth != null)
+				return false;
+		} else if (!centralAuth.equals(other.centralAuth))
+			return false;
+		if (contactUs == null) {
+			if (other.contactUs != null)
+				return false;
+		} else if (!contactUs.equals(other.contactUs))
+			return false;
+		if (description == null) {
+			if (other.description != null)
+				return false;
+		} else if (!description.equals(other.description))
+			return false;
+		if (enabled == null) {
+			if (other.enabled != null)
+				return false;
+		} else if (!enabled.equals(other.enabled))
+			return false;
+		if (imageUrl == null) {
+			if (other.imageUrl != null)
+				return false;
+		} else if (!imageUrl.equals(other.imageUrl))
+			return false;
+		if (mlAppAdminId == null) {
+			if (other.mlAppAdminId != null)
+				return false;
+		} else if (!mlAppAdminId.equals(other.mlAppAdminId))
+			return false;
+		if (mlAppName == null) {
+			if (other.mlAppName != null)
+				return false;
+		} else if (!mlAppName.equals(other.mlAppName))
+			return false;
+		if (motsId == null) {
+			if (other.motsId != null)
+				return false;
+		} else if (!motsId.equals(other.motsId))
+			return false;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		if (nameSpace == null) {
+			if (other.nameSpace != null)
+				return false;
+		} else if (!nameSpace.equals(other.nameSpace))
+			return false;
+		if (notes == null) {
+			if (other.notes != null)
+				return false;
+		} else if (!notes.equals(other.notes))
+			return false;
+		if (open == null) {
+			if (other.open != null)
+				return false;
+		} else if (!open.equals(other.open))
+			return false;
+		if (!Arrays.equals(thumbnail, other.thumbnail))
+			return false;
+		if (uebKey == null) {
+			if (other.uebKey != null)
+				return false;
+		} else if (!uebKey.equals(other.uebKey))
+			return false;
+		if (uebSecret == null) {
+			if (other.uebSecret != null)
+				return false;
+		} else if (!uebSecret.equals(other.uebSecret))
+			return false;
+		if (uebTopicName == null) {
+			if (other.uebTopicName != null)
+				return false;
+		} else if (!uebTopicName.equals(other.uebTopicName))
+			return false;
+		if (url == null) {
+			if (other.url != null)
+				return false;
+		} else if (!url.equals(other.url))
+			return false;
+		if (username == null) {
+			if (other.username != null)
+				return false;
+		} else if (!username.equals(other.username))
+			return false;
+		return true;
+	}
 }

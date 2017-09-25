@@ -19,10 +19,6 @@
  */
 package org.openecomp.portalapp.portal.domain;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import org.openecomp.portalsdk.core.domain.support.DomainVo;
 
 public class MicroserviceParameter extends DomainVo {

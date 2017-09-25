@@ -1284,7 +1284,7 @@ create table  ep_endpoints_basic_auth_account (
 
 CREATE TABLE ep_app_function (
 app_id INT(11) NOT NULL,
-function_cd VARCHAR(50) NOT NULL,
+function_cd VARCHAR(250) NOT NULL,
 function_name VARCHAR(50) NOT NULL,
 PRIMARY KEY (function_cd, app_id),
 INDEX fk_ep_app_function_app_id (app_id),
@@ -1299,7 +1299,7 @@ CREATE TABLE `ep_app_role_function` (
 `id` INT(11) NOT NULL AUTO_INCREMENT,
 `app_id` INT(11) NOT NULL,
 `role_id` INT(11) NOT NULL,
-`function_cd` VARCHAR(50) NOT NULL,
+`function_cd` VARCHAR(250) NOT NULL,
 PRIMARY KEY (`id`),
 UNIQUE INDEX `UNIQUE KEY` (`app_id`, `role_id`, `function_cd`),
 CONSTRAINT `fk_ep_app_role_function_app_id` FOREIGN KEY (`app_id`) REFERENCES `fn_app` (`app_id`),

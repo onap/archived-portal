@@ -132,8 +132,7 @@
 
     			dashboardService.saveCommonWidgetData($scope.newWidgetObject)
         		.then(function(res){
-        			if (res.status == 'OK') {
-        				$scope.widgetForm.$setPristine();  
+        			if (res.status == 'OK') {  
         				confirmBoxService.showInformation('You have added a new item').then(isConfirmed => {
         				});
         				dashboardService.getCommonWidgetData(message.type)

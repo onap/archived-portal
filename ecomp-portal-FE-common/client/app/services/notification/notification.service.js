@@ -17,9 +17,7 @@
  * limitations under the License.
  * ================================================================================
  */
-/**
- * Created by wl849v on 12/14/2016.
- */
+
 'use strict';
 (function () {
     class NotificationService {

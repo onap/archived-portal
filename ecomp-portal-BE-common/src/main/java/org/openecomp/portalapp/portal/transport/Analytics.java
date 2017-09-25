@@ -27,7 +27,7 @@ public class Analytics {
 	private String action;
 	private String page;
 	private String function;
-	private String userId;
+	private String userid;
 	private String type;
 	
 	public String getType() {
@@ -54,11 +54,11 @@ public class Analytics {
 	public void setFunction(String function) {
 		this.function = function;
 	}
-	public String getUserId() {
-		return userId;
+	public String getUserid() {
+		return userid;
 	}
-	public void setUserId(String userId) {
-		this.userId = userId;
+	public void setUserid(String userId) {
+		this.userid = userId;
 	}
 	
 	
