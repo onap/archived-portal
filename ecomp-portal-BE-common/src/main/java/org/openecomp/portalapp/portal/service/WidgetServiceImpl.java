@@ -1,21 +1,39 @@
 /*-
- * ================================================================================
- * ECOMP Portal
- * ================================================================================
- * Copyright (C) 2017 AT&T Intellectual Property
- * ================================================================================
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
+ * ============LICENSE_START==========================================
+ * ONAP Portal
+ * ===================================================================
+ * Copyright © 2017 AT&T Intellectual Property. All rights reserved.
+ * ===================================================================
+ *
+ * Unless otherwise specified, all software contained herein is licensed
+ * under the Apache License, Version 2.0 (the “License”);
+ * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
- * 
- *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
+ *             http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * ================================================================================
+ *
+ * Unless otherwise specified, all documentation contained herein is licensed
+ * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * you may not use this documentation except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *             https://creativecommons.org/licenses/by/4.0/
+ *
+ * Unless required by applicable law or agreed to in writing, documentation
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * ============LICENSE_END============================================
+ *
+ * ECOMP is a trademark and service mark of AT&T Intellectual Property.
  */
 package org.openecomp.portalapp.portal.service;
 
@@ -54,6 +72,8 @@ import org.openecomp.portalapp.portal.utils.EcompPortalUtils;
 @EPMetricsLog
 public class WidgetServiceImpl implements WidgetService {
 
+	private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(WidgetServiceImpl.class);
+
 	private static final String baseSqlToken = " widget.WIDGET_ID, widget.WDG_NAME, widget.APP_ID, app.APP_NAME, widget.WDG_WIDTH, widget.WDG_HEIGHT, widget.WDG_URL"
 			+ " from FN_WIDGET widget join FN_APP app ON widget.APP_ID = app.APP_ID";
 
@@ -66,8 +86,6 @@ public class WidgetServiceImpl implements WidgetService {
 	private static final String urlField = "url";
 
 	private static final String nameField = "name";
-	EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(WidgetServiceImpl.class);
-
 	@Autowired
 	AdminRolesService adminRolesService;
 	@Autowired
@@ -82,7 +100,7 @@ public class WidgetServiceImpl implements WidgetService {
 			ACCOUNT_ADMIN_ROLE_ID = Long.valueOf(SystemProperties.getProperty(EPCommonSystemProperties.ACCOUNT_ADMIN_ROLE_ID));
 			LONG_ECOMP_APP_ID = Long.valueOf(SystemProperties.getProperty(EPCommonSystemProperties.ECOMP_APP_ID));
 		} catch(Exception e) {
-			logger.error(EELFLoggerDelegate.errorLogger, EcompPortalUtils.getStackTrace(e));
+			logger.error(EELFLoggerDelegate.errorLogger, "init failed", e);
 		}
 	}
 	

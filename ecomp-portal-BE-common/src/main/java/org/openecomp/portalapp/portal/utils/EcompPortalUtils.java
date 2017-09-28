@@ -1,26 +1,42 @@
 /*-
- * ================================================================================
- * ECOMP Portal
- * ================================================================================
- * Copyright (C) 2017 AT&T Intellectual Property
- * ================================================================================
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
+ * ============LICENSE_START==========================================
+ * ONAP Portal
+ * ===================================================================
+ * Copyright © 2017 AT&T Intellectual Property. All rights reserved.
+ * ===================================================================
+ *
+ * Unless otherwise specified, all software contained herein is licensed
+ * under the Apache License, Version 2.0 (the “License”);
+ * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
- * 
- *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
+ *             http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * ================================================================================
+ *
+ * Unless otherwise specified, all documentation contained herein is licensed
+ * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * you may not use this documentation except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *             https://creativecommons.org/licenses/by/4.0/
+ *
+ * Unless required by applicable law or agreed to in writing, documentation
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * ============LICENSE_END============================================
+ *
+ * ECOMP is a trademark and service mark of AT&T Intellectual Property.
  */
 package org.openecomp.portalapp.portal.utils;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
@@ -50,10 +66,15 @@ public class EcompPortalUtils {
 
 	private static EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(EcompPortalUtils.class);
 
+	// TODO: GLOBAL_LOGIN_URL is the same as in SessionTimeoutInterceptor.
+	// It should be defined in SystemProperties.
+	private static final String GLOBAL_LOGIN_URL = "global-login-url";
+
 	/**
 	 * @param orgUserId
-	 * @return true if orgUserId is not empty and contains only alphanumeric,
-	 *         false otherwise
+	 *            User ID to validate
+	 * @return true if orgUserId is not empty and contains only alphanumeric, false
+	 *         otherwise
 	 */
 	public static boolean legitimateUserId(String orgUserId) {
 		return orgUserId.matches("^[a-zA-Z0-9]+$");
@@ -64,7 +85,9 @@ public class EcompPortalUtils {
 	 * expression
 	 * 
 	 * @param source
+	 *            String to split
 	 * @param regex
+	 *            tokens
 	 * @return List of tokens split from the source
 	 */
 	public static List<String> parsingByRegularExpression(String source, String regex) {
@@ -84,7 +107,9 @@ public class EcompPortalUtils {
 	 * Builds a JSON object with error code and message information.
 	 * 
 	 * @param errorCode
+	 *            error code
 	 * @param errorMessage
+	 *            message
 	 * @return JSON object as a String
 	 */
 	public static String jsonErrorMessageResponse(int errorCode, String errorMessage) {
@@ -95,6 +120,7 @@ public class EcompPortalUtils {
 	 * Builds a JSON object with the specified message
 	 * 
 	 * @param message
+	 *            Message to embed
 	 * @return JSON object as a String
 	 */
 	public static String jsonMessageResponse(String message) {
@@ -102,8 +128,8 @@ public class EcompPortalUtils {
 	}
 
 	/**
-	 * Serializes the specified object as JSON and writes the result to the
-	 * debug log. If serialization fails, logs a message to the error logger.
+	 * Serializes the specified object as JSON and writes the result to the debug
+	 * log. If serialization fails, logs a message to the error logger.
 	 * 
 	 * @param logger
 	 *            Logger for the class where the object was built; the logger
@@ -130,8 +156,8 @@ public class EcompPortalUtils {
 	}
 
 	/**
-	 * Serializes the specified object as JSON and writes the result to the
-	 * debug log. If serialization fails, logs a message to the error logger.
+	 * Serializes the specified object as JSON and writes the result to the debug
+	 * log. If serialization fails, logs a message to the error logger.
 	 * 
 	 * @param source
 	 *            First portion of the log message
@@ -169,18 +195,16 @@ public class EcompPortalUtils {
 		}
 	}
 
-	// TODO: GLOBAL_LOGIN_URL is the same as in SessionTimeoutInterceptor.
-	// It should be defined in SystemProperties.
-	private static final String GLOBAL_LOGIN_URL = "global-login-url";
-
 	/**
-	 * Set response status to Unauthorized if user == null and to Forbidden in
-	 * all (!) other cases. Logging is not performed if invocator == null
+	 * Set response status to Unauthorized if user == null and to Forbidden in all
+	 * (!) other cases. Logging is not performed if invocator == null
 	 * 
 	 * @param user
+	 *            User object
 	 * @param response
+	 *            HttpServletResponse
 	 * @param invocator
-	 *            - may be null
+	 *            may be null
 	 */
 	public static void setBadPermissions(EPUser user, HttpServletResponse response, String invocator) {
 		if (user == null) {
@@ -206,8 +230,7 @@ public class EcompPortalUtils {
 				responseCodeInt = Integer.valueOf(responseCode);
 			}
 		} catch (Exception e) {
-			logger.error(EELFLoggerDelegate.errorLogger,
-					"Exception occurred in getResponseCode(). Details: " + EcompPortalUtils.getStackTrace(e));
+			logger.error(EELFLoggerDelegate.errorLogger, "getExternalAppResponseCode failed", e);
 		}
 		return responseCodeInt;
 	}
@@ -218,8 +241,7 @@ public class EcompPortalUtils {
 			String responseCodeString = String.valueOf(responseCode);
 			MDC.put(EPCommonSystemProperties.EXTERNAL_API_RESPONSE_CODE, responseCodeString);
 		} catch (Exception e) {
-			logger.error(EELFLoggerDelegate.errorLogger,
-					"Exception occurred in setResponseCode(). Details: " + EcompPortalUtils.getStackTrace(e));
+			logger.error(EELFLoggerDelegate.errorLogger, "setExternalAppResponseCode failed", e);
 		}
 	}
 
@@ -231,8 +253,7 @@ public class EcompPortalUtils {
 				httpStatusString = httpStatusString.toLowerCase();
 			}
 		} catch (Exception e) {
-			logger.error(EELFLoggerDelegate.errorLogger,
-					"Exception occurred in getHTTPStatusString(). Details: " + EcompPortalUtils.getStackTrace(e));
+			logger.error(EELFLoggerDelegate.errorLogger, "getHTTPStatusString failed", e);
 		}
 		return httpStatusString;
 	}
@@ -242,7 +263,6 @@ public class EcompPortalUtils {
 		// "Internal Ecomp Error: 500 internal_server_error" or
 		// "External App Error: 404 not_found"
 		// TODO: create our own Ecomp error codes, starting with 1000 and up.
-		String responseString = "";
 		String internalExternalString = internal ? "Ecomp Error: " : "App Error: ";
 		String httpStatusString = "unknown_error";
 		try {
@@ -250,10 +270,9 @@ public class EcompPortalUtils {
 				httpStatusString = getHTTPStatusString(responseCode);
 			}
 		} catch (Exception e) {
-			logger.error(EELFLoggerDelegate.errorLogger,
-					"Exception occurred in getFEErrorString(). Details: " + EcompPortalUtils.getStackTrace(e));
+			logger.error(EELFLoggerDelegate.errorLogger, "getFEErrorString failed", e);
 		}
-		responseString = internalExternalString + responseCode + " " + httpStatusString;
+		String responseString = internalExternalString + responseCode + " " + httpStatusString;
 		return responseString;
 	}
 
@@ -274,17 +293,6 @@ public class EcompPortalUtils {
 		return productionBuild;
 	}
 
-	private static final Object stackTraceLock = new Object();
-
-	public static String getStackTrace(Throwable t) {
-		synchronized (stackTraceLock) {
-			StringWriter sw = new StringWriter();
-			PrintWriter pw = new PrintWriter(sw);
-			t.printStackTrace(pw);
-			return sw.toString();
-		}
-	}
-
 	public static String getMyIpAdddress() {
 		InetAddress ip;
 		String localIp;
@@ -293,7 +301,7 @@ public class EcompPortalUtils {
 			localIp = ip.getHostAddress();
 		} catch (UnknownHostException e) {
 			localIp = "unknown";
-			logger.error(EELFLoggerDelegate.errorLogger, EcompPortalUtils.getStackTrace(e));
+			logger.error(EELFLoggerDelegate.errorLogger, "getMyIpAdddress failed ", e);
 		}
 		return localIp;
 	}
@@ -306,23 +314,36 @@ public class EcompPortalUtils {
 			hostName = ip.getHostName();
 		} catch (UnknownHostException e) {
 			hostName = "unknown";
-			logger.error(EELFLoggerDelegate.errorLogger, EcompPortalUtils.getStackTrace(e));
+			logger.error(EELFLoggerDelegate.errorLogger, "getMyHostName failed", e);
 		}
 		return hostName;
 	}
 
-	/* return a default property if the expected one is not available */
+	/**
+	 * Returns a default property if the expected one is not available
+	 * 
+	 * @param property
+	 *            Key
+	 * @param defaultValue
+	 *            default Value
+	 * @return Default value if property is not defined or yields the empty string;
+	 *         else the property value.
+	 */
 	public static String getPropertyOrDefault(String property, String defaultValue) {
-		return ((null == SystemProperties.getProperty(property) || SystemProperties.getProperty(property).equals(""))
-				? defaultValue : SystemProperties.getProperty(property));
+		if (!SystemProperties.containsProperty(property))
+			return defaultValue;
+		String value = SystemProperties.getProperty(property);
+		if (value == null || "".equals(value))
+			return defaultValue;
+		return value;
 	}
 
 	/**
 	 * Calculates the time duration of a function call for logging purpose. It
 	 * stores the result by using "MDC.put(SystemProperties.MDC_TIMER,
 	 * timeDifference);" It is important to call
-	 * "MDC.remove(SystemProperties.MDC_TIMER);" after this method call to clean
-	 * up the record in MDC
+	 * "MDC.remove(SystemProperties.MDC_TIMER);" after this method call to clean up
+	 * the record in MDC
 	 *
 	 * @param beginDateTime
 	 *            the given begin time for the call
@@ -340,42 +361,32 @@ public class EcompPortalUtils {
 				String timeDifference = String.format("%d", endDate.getTime() - beginDate.getTime());
 				MDC.put(SystemProperties.MDC_TIMER, timeDifference);
 			} catch (Exception e) {
-				logger.error(EELFLoggerDelegate.errorLogger, EcompPortalUtils.getStackTrace(e));
+				logger.error(EELFLoggerDelegate.errorLogger, "calculateDateTimeDifferenceForLog failed", e);
 			}
 		}
 	}
-	
-	public static String widgetMsProtocol(){
-		final String protocol;
-		try{
-			protocol = SystemProperties.getProperty(EPCommonSystemProperties.WIDGET_MS_PROTOCOL);
-			return (protocol == null || protocol.trim().equals("")) ? "https" : protocol ;
-		}
-		catch(IllegalStateException ese){
-			//looks like SystemProperties.getProperty throws IllegalStateException if it cannot find a property you are looking for
-			//In order to not break the code if a non-required property is missing from system.properties, returning https as default
-			//when this exception is caught.
-			return "https";
-		}		
-	}
-	
-	public static String localOrDockerHost(){
-		final String effectiveHost;
-		try{
-			effectiveHost = SystemProperties.getProperty(EPCommonSystemProperties.WIDGET_MS_HOSTNAME);
-			return (effectiveHost == null || effectiveHost.trim().equals("")) ? "localhost" : effectiveHost ;
-		}
-		catch(IllegalStateException ese){
-			//looks like SystemProperties.getProperty throws IllegalStateException if it cannot find a property you are looking for
-			//In order to not break the code if a non-required property is missing from system.properties, returning https as default
-			//when this exception is caught.
-			return "localhost";
-		}		
+
+	/**
+	 * Answers the protocol to use.
+	 * 
+	 * @return Protocol name from property file; defaults to https.
+	 */
+	public static String widgetMsProtocol() {
+		return getPropertyOrDefault(EPCommonSystemProperties.WIDGET_MS_PROTOCOL, "https");
 	}
 
 	/**
-	 * It returns headers where username and password of external central auth
-	 * is encoded to base64
+	 * Answers the host to use.
+	 * 
+	 * @return Host name from property file; defaults to localhost.
+	 */
+	public static String localOrDockerHost() {
+		return getPropertyOrDefault(EPCommonSystemProperties.WIDGET_MS_HOSTNAME, "localhost");
+	}
+
+	/**
+	 * It returns headers where username and password of external central auth is
+	 * encoded to base64
 	 * 
 	 * @return header which contains external central auth username and password
 	 *         base64 encoded
@@ -383,12 +394,10 @@ public class EcompPortalUtils {
 	 *             if unable to decrypt the password
 	 */
 	public static HttpHeaders base64encodeKeyForAAFBasicAuth() throws Exception {
-		
 		String userName = "";
 		String decryptedPass = "";
-		if (EPCommonSystemProperties
-				.containsProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_AUTH_USER_NAME) && EPCommonSystemProperties
-				.containsProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_AUTH_PASSWORD)) {
+		if (EPCommonSystemProperties.containsProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_AUTH_USER_NAME)
+				&& EPCommonSystemProperties.containsProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_AUTH_PASSWORD)) {
 			decryptedPass = SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_AUTH_PASSWORD);
 			userName = SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_AUTH_USER_NAME);
 		}
@@ -400,7 +409,7 @@ public class EcompPortalUtils {
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		return headers;
 	}
-	
+
 	private static String decrypted(String encrypted) throws Exception {
 		String result = "";
 		if (encrypted != null && encrypted.length() > 0) {

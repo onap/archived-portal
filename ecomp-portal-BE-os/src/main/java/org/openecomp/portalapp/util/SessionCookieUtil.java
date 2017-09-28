@@ -1,21 +1,39 @@
 /*-
- * ================================================================================
- * ECOMP Portal
- * ================================================================================
- * Copyright (C) 2017 AT&T Intellectual Property
- * ================================================================================
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
+ * ============LICENSE_START==========================================
+ * ONAP Portal
+ * ===================================================================
+ * Copyright © 2017 AT&T Intellectual Property. All rights reserved.
+ * ===================================================================
+ *
+ * Unless otherwise specified, all software contained herein is licensed
+ * under the Apache License, Version 2.0 (the “License”);
+ * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
- * 
- *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
+ *             http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * ================================================================================
+ *
+ * Unless otherwise specified, all documentation contained herein is licensed
+ * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * you may not use this documentation except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *             https://creativecommons.org/licenses/by/4.0/
+ *
+ * Unless required by applicable law or agreed to in writing, documentation
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * ============LICENSE_END============================================
+ *
+ * ECOMP is a trademark and service mark of AT&T Intellectual Property.
  */
 package org.openecomp.portalapp.util;
 
@@ -25,11 +43,10 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.openecomp.portalapp.portal.utils.EPCommonSystemProperties;
-import org.openecomp.portalapp.portal.utils.EcompPortalUtils;
 import org.openecomp.portalsdk.core.logging.logic.EELFLoggerDelegate;
-import org.openecomp.portalsdk.core.onboarding.util.PortalApiConstants;
 import org.openecomp.portalsdk.core.onboarding.listener.PortalTimeoutHandler;
 import org.openecomp.portalsdk.core.onboarding.util.CipherUtil;
+import org.openecomp.portalsdk.core.onboarding.util.PortalApiConstants;
 import org.openecomp.portalsdk.core.util.SystemProperties;
 import org.openecomp.portalsdk.core.web.support.AppUtils;
 
@@ -121,7 +138,7 @@ public class SessionCookieUtil {
 				session.setMaxInactiveInterval(Integer.parseInt(maxIdleAttribute.toString()));
 			}
 		} catch (Exception e) {
-			logger.error(EELFLoggerDelegate.errorLogger, "Could not reset the session timeout. Details: " + EcompPortalUtils.getStackTrace(e));
+			logger.error(EELFLoggerDelegate.errorLogger, "resetSessionMaxIdleTimeOut failed", e);
 		}
 		
 	}

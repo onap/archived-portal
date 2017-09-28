@@ -1,21 +1,39 @@
 /*-
- * ================================================================================
- * ECOMP Portal
- * ================================================================================
- * Copyright (C) 2017 AT&T Intellectual Property
- * ================================================================================
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
+ * ============LICENSE_START==========================================
+ * ONAP Portal
+ * ===================================================================
+ * Copyright © 2017 AT&T Intellectual Property. All rights reserved.
+ * ===================================================================
+ *
+ * Unless otherwise specified, all software contained herein is licensed
+ * under the Apache License, Version 2.0 (the “License”);
+ * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
- * 
- *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
+ *             http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * ================================================================================
+ *
+ * Unless otherwise specified, all documentation contained herein is licensed
+ * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * you may not use this documentation except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *             https://creativecommons.org/licenses/by/4.0/
+ *
+ * Unless required by applicable law or agreed to in writing, documentation
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * ============LICENSE_END============================================
+ *
+ * ECOMP is a trademark and service mark of AT&T Intellectual Property.
  */
 package org.openecomp.portalapp.portal.service;
 
@@ -73,30 +91,31 @@ public class AdminRolesServiceImpl implements AdminRolesService {
 	private Long ACCOUNT_ADMIN_ROLE_ID = 999L;
 	private Long ECOMP_APP_ID = 1L;
 
-	EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(AdminRolesServiceImpl.class);
+	private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(AdminRolesServiceImpl.class);
 
 	@Autowired
 	private SessionFactory sessionFactory;
 	@Autowired
 	private DataAccessService dataAccessService;
 	@Autowired
-	SearchService searchService;
+	private SearchService searchService;
 	@Autowired
-	EPAppService appsService;
-	
-	RestTemplate template = new RestTemplate();
-	
+	private EPAppService appsService;
+
+	private RestTemplate template = new RestTemplate();
+
 	@PostConstruct
 	private void init() {
 		try {
 			SYS_ADMIN_ROLE_ID = Long.valueOf(SystemProperties.getProperty(EPCommonSystemProperties.SYS_ADMIN_ROLE_ID));
-			ACCOUNT_ADMIN_ROLE_ID = Long.valueOf(SystemProperties.getProperty(EPCommonSystemProperties.ACCOUNT_ADMIN_ROLE_ID));
+			ACCOUNT_ADMIN_ROLE_ID = Long
+					.valueOf(SystemProperties.getProperty(EPCommonSystemProperties.ACCOUNT_ADMIN_ROLE_ID));
 			ECOMP_APP_ID = Long.valueOf(SystemProperties.getProperty(EPCommonSystemProperties.ECOMP_APP_ID));
-		} catch(Exception e) {
-			logger.error(EELFLoggerDelegate.errorLogger, EcompPortalUtils.getStackTrace(e));
+		} catch (Exception e) {
+			logger.error(EELFLoggerDelegate.errorLogger, "init failed", e);
 		}
 	}
-	
+
 	@Override
 	@EPMetricsLog
 	@SuppressWarnings("unchecked")
@@ -104,8 +123,8 @@ public class AdminRolesServiceImpl implements AdminRolesService {
 		AppsListWithAdminRole appsListWithAdminRole = null;
 
 		try {
-			List<EPUser> userList = dataAccessService.getList(EPUser.class, " where orgUserId = '" + orgUserId + "'", null,
-					null);
+			List<EPUser> userList = dataAccessService.getList(EPUser.class, " where orgUserId = '" + orgUserId + "'",
+					null, null);
 			HashMap<Long, Long> appsUserAdmin = new HashMap<Long, Long>();
 			if (userList.size() > 0) {
 				EPUser user = userList.get(0);
@@ -114,7 +133,7 @@ public class AdminRolesServiceImpl implements AdminRolesService {
 					userAppList = dataAccessService.getList(EPUserApp.class,
 							" where userId = " + user.getId() + " and role.id = " + ACCOUNT_ADMIN_ROLE_ID, null, null);
 				} catch (Exception e) {
-					logger.error(EELFLoggerDelegate.errorLogger, EcompPortalUtils.getStackTrace(e));
+					logger.error(EELFLoggerDelegate.errorLogger, "getAppsWithAdminRoleStateForUser 1 failed", e);
 					EPLogUtil.logEcompError(EPAppMessagesEnum.BeDaoSystemError);
 				}
 				for (EPUserApp userApp : userAppList) {
@@ -126,22 +145,22 @@ public class AdminRolesServiceImpl implements AdminRolesService {
 			appsListWithAdminRole.orgUserId = orgUserId;
 			List<EPApp> appsList = null;
 			try {
-				appsList = dataAccessService.getList(EPApp.class, "  where ( enabled = 'Y' or id = " + ECOMP_APP_ID + ")", null, null);
+				appsList = dataAccessService.getList(EPApp.class,
+						"  where ( enabled = 'Y' or id = " + ECOMP_APP_ID + ")", null, null);
 			} catch (Exception e) {
-				logger.error(EELFLoggerDelegate.errorLogger, EcompPortalUtils.getStackTrace(e));
+				logger.error(EELFLoggerDelegate.errorLogger, "getAppsWithAdminRoleStateForUser 2 failed", e);
 				EPLogUtil.logEcompError(EPAppMessagesEnum.BeDaoSystemError);
 			}
 			for (EPApp app : appsList) {
 				AppNameIdIsAdmin appNameIdIsAdmin = new AppNameIdIsAdmin();
 				appNameIdIsAdmin.id = app.getId();
-				appNameIdIsAdmin.appName = app.getName();	
+				appNameIdIsAdmin.appName = app.getName();
 				appNameIdIsAdmin.isAdmin = new Boolean(appsUserAdmin.containsKey(app.getId()));
 				appNameIdIsAdmin.restrictedApp = app.isRestrictedApp();
 				appsListWithAdminRole.appsRoles.add(appNameIdIsAdmin);
 			}
 		} catch (Exception e) {
-			logger.error(EELFLoggerDelegate.errorLogger, "Exception occurred while performing AdminRolesServiceImpl.getAppsWithAdminRoleStateForUser operation, Details:"
-							+ EcompPortalUtils.getStackTrace(e));
+			logger.error(EELFLoggerDelegate.errorLogger, "getAppsWithAdminRoleStateForUser 3 failed", e);
 		}
 
 		return appsListWithAdminRole;
@@ -174,8 +193,8 @@ public class AdminRolesServiceImpl implements AdminRolesService {
 				EPUser user = null;
 				boolean createNewUser = false;
 				String orgUserId = newAppsListWithAdminRoles.orgUserId.trim();
-				List<EPUser> localUserList = dataAccessService.getList(EPUser.class, " where org_user_id='" + orgUserId + "'",
-						null, null);
+				List<EPUser> localUserList = dataAccessService.getList(EPUser.class,
+						" where org_user_id='" + orgUserId + "'", null, null);
 				List<EPUserApp> oldAppsWhereUserIsAdmin = new ArrayList<EPUserApp>();
 				if (localUserList.size() > 0) {
 					EPUser tmpUser = localUserList.get(0);
@@ -221,12 +240,13 @@ public class AdminRolesServiceImpl implements AdminRolesService {
 							localSession.save(EPUserApp.class.getName(), newUserApp);
 						}
 						transaction.commit();
-						
-						// Add user admin role for list of centralized applications in external system 
+
+						// Add user admin role for list of centralized applications in external system
 						result = addAdminRoleInExternalSystem(user, localSession, newAppsWhereUserIsAdmin);
 					} catch (Exception e) {
 						EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeDaoSystemError, e);
-						logger.error(EELFLoggerDelegate.errorLogger, "setAppsWithAdminRoleStateForUser: exception in point 2", e);
+						logger.error(EELFLoggerDelegate.errorLogger,
+								"setAppsWithAdminRoleStateForUser: exception in point 2", e);
 						try {
 							if(transaction!=null)
 								transaction.rollback();
@@ -234,14 +254,16 @@ public class AdminRolesServiceImpl implements AdminRolesService {
 								logger.error(EELFLoggerDelegate.errorLogger, "setAppsWithAdminRoleStateForUser: transaction is null cannot rollback");
 						} catch (Exception ex) {
 							EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeExecuteRollbackError, e);
-							logger.error(EELFLoggerDelegate.errorLogger, "setAppsWithAdminRoleStateForUser: exception in point 3", ex);
+							logger.error(EELFLoggerDelegate.errorLogger,
+									"setAppsWithAdminRoleStateForUser: exception in point 3", ex);
 						}
 					} finally {
 						try {
 							localSession.close();
 						} catch (Exception e) {
 							EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeDaoCloseSessionError, e);
-							logger.error(EELFLoggerDelegate.errorLogger, "setAppsWithAdminRoleStateForUser: exception in point 4", e);
+							logger.error(EELFLoggerDelegate.errorLogger,
+									"setAppsWithAdminRoleStateForUser: exception in point 4", e);
 						}
 					}
 				}
@@ -252,7 +274,8 @@ public class AdminRolesServiceImpl implements AdminRolesService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private boolean addAdminRoleInExternalSystem(EPUser user, Session localSession, List<AppNameIdIsAdmin> newAppsWhereUserIsAdmin) {
+	private boolean addAdminRoleInExternalSystem(EPUser user, Session localSession,
+			List<AppNameIdIsAdmin> newAppsWhereUserIsAdmin) {
 		boolean result = false;
 		try {
 			// Reset All admin role for centralized applications
@@ -296,7 +319,7 @@ public class AdminRolesServiceImpl implements AdminRolesService {
 					if (e.getMessage().equalsIgnoreCase("404 Not Found")) {
 						logger.debug(EELFLoggerDelegate.debugLogger, "Application Not found for app {}",
 								app.getNameSpace(), e.getMessage());
-					} else{
+					} else {
 						logger.error(EELFLoggerDelegate.errorLogger, "Application Not found for app {}",
 								app.getNameSpace(), e);
 					}
@@ -358,8 +381,8 @@ public class AdminRolesServiceImpl implements AdminRolesService {
 				} catch (Exception e) {
 					if (e.getMessage().equalsIgnoreCase("404 Not Found")) {
 						logger.debug(EELFLoggerDelegate.errorLogger,
-								"Application name space not found in External system for app {} due to bad rquest name space ", app.getNameSpace(),
-								e.getMessage());
+								"Application name space not found in External system for app {} due to bad rquest name space ",
+								app.getNameSpace(), e.getMessage());
 					} else {
 						logger.error(EELFLoggerDelegate.errorLogger, "Failed to assign admin role for application {}",
 								app.getNameSpace(), e);
@@ -389,7 +412,8 @@ public class AdminRolesServiceImpl implements AdminRolesService {
 				}
 			} catch (Exception e) {
 				EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeDaoSystemError, e);
-				logger.error(EELFLoggerDelegate.errorLogger, "Exception occurred while executing isSuperAdmin operation", e);
+				logger.error(EELFLoggerDelegate.errorLogger,
+						"Exception occurred while executing isSuperAdmin operation", e);
 			}
 		}
 		// else
@@ -413,12 +437,13 @@ public class AdminRolesServiceImpl implements AdminRolesService {
 	public boolean isAccountAdmin(EPUser user) {
 		try {
 			EPUser currentUser = user != null
-					? (EPUser) dataAccessService.getDomainObject(EPUser.class, user.getId(), null) : null;
+					? (EPUser) dataAccessService.getDomainObject(EPUser.class, user.getId(), null)
+					: null;
 			if (currentUser != null && currentUser.getId() != null) {
 				for (EPUserApp userApp : currentUser.getEPUserApps()) {
-					if (//!userApp.getApp().getId().equals(ECOMP_APP_ID)
-							// && 
-							userApp.getRole().getId().equals(ACCOUNT_ADMIN_ROLE_ID)) {
+					if (// !userApp.getApp().getId().equals(ECOMP_APP_ID)
+						// &&
+					userApp.getRole().getId().equals(ACCOUNT_ADMIN_ROLE_ID)) {
 						// Account Administrator sees only the applications
 						// he/she is Administrator
 						return true;
@@ -427,7 +452,8 @@ public class AdminRolesServiceImpl implements AdminRolesService {
 			}
 		} catch (Exception e) {
 			EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeDaoSystemError, e);
-			logger.error(EELFLoggerDelegate.errorLogger, "Exception occurred while executing isAccountAdmin operation", e);
+			logger.error(EELFLoggerDelegate.errorLogger, "Exception occurred while executing isAccountAdmin operation",
+					e);
 		}
 		return false;
 	}
@@ -435,7 +461,8 @@ public class AdminRolesServiceImpl implements AdminRolesService {
 	public boolean isUser(EPUser user) {
 		try {
 			EPUser currentUser = user != null
-					? (EPUser) dataAccessService.getDomainObject(EPUser.class, user.getId(), null) : null;
+					? (EPUser) dataAccessService.getDomainObject(EPUser.class, user.getId(), null)
+					: null;
 			if (currentUser != null && currentUser.getId() != null) {
 				for (EPUserApp userApp : currentUser.getEPUserApps()) {
 					if (!userApp.getApp().getId().equals(ECOMP_APP_ID)) {
@@ -462,7 +489,7 @@ public class AdminRolesServiceImpl implements AdminRolesService {
 		String sql = "SELECT * FROM FN_ROLE WHERE UPPER(ACTIVE_YN) = 'Y' AND APP_ID = " + appId;
 		@SuppressWarnings("unchecked")
 		List<EPRole> roles = dataAccessService.executeSQLQuery(sql, EPRole.class, null);
-		for (EPRole role: roles) {
+		for (EPRole role : roles) {
 			list.add(role);
 		}
 		return list;

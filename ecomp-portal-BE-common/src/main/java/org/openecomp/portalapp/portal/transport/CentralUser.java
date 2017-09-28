@@ -1,3 +1,40 @@
+/*-
+ * ============LICENSE_START==========================================
+ * ONAP Portal
+ * ===================================================================
+ * Copyright © 2017 AT&T Intellectual Property. All rights reserved.
+ * ===================================================================
+ *
+ * Unless otherwise specified, all software contained herein is licensed
+ * under the Apache License, Version 2.0 (the “License”);
+ * you may not use this software except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *             http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Unless otherwise specified, all documentation contained herein is licensed
+ * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * you may not use this documentation except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *             https://creativecommons.org/licenses/by/4.0/
+ *
+ * Unless required by applicable law or agreed to in writing, documentation
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * ============LICENSE_END============================================
+ *
+ * ECOMP is a trademark and service mark of AT&T Intellectual Property.
+ */
 package org.openecomp.portalapp.portal.transport;
 
 import java.util.Date;
@@ -5,68 +42,67 @@ import java.util.Set;
 
 public class CentralUser {
 
-
 	public Long id;
 	public Date created;
 	public Date modified;
 	public Long createdId;
 	public Long modifiedId;
 	public Long rowNum;
-	
-	public Long   orgId;
-    public Long   managerId;
-    public String firstName;
-    public String middleInitial;
-    public String lastName;
-    public String phone;
-    public String fax;
-    public String cellular;
-    public String email;
-    public Long   addressId;
-    public String alertMethodCd;
-    public String hrid;
-    public String orgUserId;
-    public String orgCode;
-    public String address1;
-    public String address2;
-    public String city;
-    public String state;
-    public String zipCode;
-    public String country;
-    public String orgManagerUserId;
-    public String locationClli;
-    public String businessCountryCode;
-    public String businessCountryName;
-    public String businessUnit;
-    public String businessUnitName;
-    public String department;
-    public String departmentName;
-    public String companyCode;
-    public String company;
-    public String zipCodeSuffix;
-    public String jobTitle;
-    public String commandChain;
-    public String siloStatus;
-    public String costCenter;
-    public String financialLocCode;
 
-    public String loginId;
-    public String loginPwd;
-    public Date   lastLoginDate;
-    public boolean active;
-    public boolean internal;
-    public Long    selectedProfileId;
-    public Long timeZoneId;
-    public boolean online;
-    public String chatId;
-    
-    public Set<CentralUserApp> userApps = null;
+	public Long orgId;
+	public Long managerId;
+	public String firstName;
+	public String middleInitial;
+	public String lastName;
+	public String phone;
+	public String fax;
+	public String cellular;
+	public String email;
+	public Long addressId;
+	public String alertMethodCd;
+	public String hrid;
+	public String orgUserId;
+	public String orgCode;
+	public String address1;
+	public String address2;
+	public String city;
+	public String state;
+	public String zipCode;
+	public String country;
+	public String orgManagerUserId;
+	public String locationClli;
+	public String businessCountryCode;
+	public String businessCountryName;
+	public String businessUnit;
+	public String businessUnitName;
+	public String department;
+	public String departmentName;
+	public String companyCode;
+	public String company;
+	public String zipCodeSuffix;
+	public String jobTitle;
+	public String commandChain;
+	public String siloStatus;
+	public String costCenter;
+	public String financialLocCode;
+
+	public String loginId;
+	public String loginPwd;
+	public Date lastLoginDate;
+	public boolean active;
+	public boolean internal;
+	public Long selectedProfileId;
+	public Long timeZoneId;
+	public boolean online;
+	public String chatId;
+
+	public Set<CentralUserApp> userApps = null;
 	public Set<CentralRole> pseudoRoles = null;
-	
-	public CentralUser(){
-		
+
+	public CentralUser() {
+
 	}
-	
+
 	public CentralUser(Long id, Date created, Date modified, Long createdId, Long modifiedId, Long rowNum, Long orgId,
 			Long managerId, String firstName, String middleInitial, String lastName, String phone, String fax,
 			String cellular, String email, Long addressId, String alertMethodCd, String hrid, String orgUserId,
@@ -460,8 +496,5 @@ public class CentralUser {
 			return false;
 		return true;
 	}
-	
-	
 
-	
 }

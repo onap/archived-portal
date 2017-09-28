@@ -1,21 +1,39 @@
 /*-
- * ================================================================================
- * ECOMP Portal
- * ================================================================================
- * Copyright (C) 2017 AT&T Intellectual Property
- * ================================================================================
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
+ * ============LICENSE_START==========================================
+ * ONAP Portal
+ * ===================================================================
+ * Copyright © 2017 AT&T Intellectual Property. All rights reserved.
+ * ===================================================================
+ *
+ * Unless otherwise specified, all software contained herein is licensed
+ * under the Apache License, Version 2.0 (the “License”);
+ * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
- * 
- *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
+ *             http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * ================================================================================
+ *
+ * Unless otherwise specified, all documentation contained herein is licensed
+ * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * you may not use this documentation except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *             https://creativecommons.org/licenses/by/4.0/
+ *
+ * Unless required by applicable law or agreed to in writing, documentation
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * ============LICENSE_END============================================
+ *
+ * ECOMP is a trademark and service mark of AT&T Intellectual Property.
  */
 package org.openecomp.portalapp.portal.controller;
 
@@ -44,7 +62,6 @@ import org.openecomp.portalapp.portal.logging.aop.EPAuditLog;
 import org.openecomp.portalapp.portal.service.ConsulHealthService;
 import org.openecomp.portalapp.portal.service.MicroserviceService;
 import org.openecomp.portalapp.portal.service.WidgetParameterService;
-import org.openecomp.portalapp.portal.utils.CustomLoggingFilter;
 import org.openecomp.portalapp.portal.utils.EcompPortalUtils;
 import org.openecomp.portalapp.util.EPUserUtils;
 import org.openecomp.portalsdk.core.logging.logic.EELFLoggerDelegate;
@@ -78,9 +95,13 @@ import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 @EPAuditLog
 public class WidgetsCatalogController extends EPRestrictedBaseController {
 
-	EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(WidgetsCatalogController.class);
-	RestTemplate template = new RestTemplate();
-	String whatService = "widgets-service";
+	private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(WidgetsCatalogController.class);
+
+	private static final String MS_WIDGET_LOCAL_PORT = "microservices.widget.local.port";
+
+	private RestTemplate template = new RestTemplate();
+
+	private String whatService = "widgets-service";
 
 	@Autowired
 	private ConsulHealthService consulHealthService;
@@ -99,26 +120,24 @@ public class WidgetsCatalogController extends EPRestrictedBaseController {
 	static {
 		// for localhost testing only
 		javax.net.ssl.HttpsURLConnection.setDefaultHostnameVerifier(new javax.net.ssl.HostnameVerifier() {
-
 			public boolean verify(String hostname, javax.net.ssl.SSLSession sslSession) {
-				if (hostname.equals("localhost")) {
+				if ("localhost".equals(hostname))
 					return true;
-				}
 				return false;
 			}
-		});		
+		});
 	}
 
 	@RequestMapping(value = { "/portalApi/microservices/widgetCatalog/{loginName}" }, method = RequestMethod.GET)
-	public List<WidgetCatalog> getUserWidgetCatalog(HttpServletRequest request, HttpServletResponse response,
-			@PathVariable("loginName") String loginName) throws RestClientException, Exception {
+	public List<WidgetCatalog> getUserWidgetCatalog(@PathVariable("loginName") String loginName) {
 		List<WidgetCatalog> widgets = new ArrayList<>();
-		try {CustomLoggingFilter d;
-			ResponseEntity<ArrayList> ans = template.exchange(
-					EcompPortalUtils.widgetMsProtocol() + "://" + consulHealthService.getServiceLocation(whatService,
-							SystemProperties.getProperty("microservices.widget.local.port"))
+		try {
+			ResponseEntity<List> ans = template.exchange(
+					EcompPortalUtils.widgetMsProtocol() + "://"
+							+ consulHealthService.getServiceLocation(whatService,
+									SystemProperties.getProperty(MS_WIDGET_LOCAL_PORT))
 							+ "/widget/microservices/widgetCatalog/" + loginName,
-					HttpMethod.GET, new HttpEntity(WidgetServiceHeaders.getInstance()), ArrayList.class);
+					HttpMethod.GET, new HttpEntity<>(WidgetServiceHeaders.getInstance()), List.class);
 			widgets = ans.getBody();
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "getUserWidgetCatalog failed", e);
@@ -130,17 +149,15 @@ public class WidgetsCatalogController extends EPRestrictedBaseController {
 	}
 
 	@RequestMapping(value = { "/portalApi/microservices/widgetCatalog" }, method = RequestMethod.GET)
-	public List<WidgetCatalog> getWidgetCatalog(HttpServletRequest request, HttpServletResponse response)
-			throws RestClientException, Exception {
+	public List<WidgetCatalog> getWidgetCatalog() {
 		List<WidgetCatalog> widgets = new ArrayList<>();
-		
-		String p = EcompPortalUtils.widgetMsProtocol();
 		try {
-			ResponseEntity<ArrayList> ans = template.exchange(
-					EcompPortalUtils.widgetMsProtocol() + "://" + consulHealthService.getServiceLocation(whatService,
-							SystemProperties.getProperty("microservices.widget.local.port"))
+			ResponseEntity<List> ans = template.exchange(
+					EcompPortalUtils.widgetMsProtocol() + "://"
+							+ consulHealthService.getServiceLocation(whatService,
+									SystemProperties.getProperty(MS_WIDGET_LOCAL_PORT))
 							+ "/widget/microservices/widgetCatalog",
-					HttpMethod.GET, new HttpEntity(WidgetServiceHeaders.getInstance()), ArrayList.class);
+					HttpMethod.GET, new HttpEntity<>(WidgetServiceHeaders.getInstance()), List.class);
 			widgets = ans.getBody();
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "getWidgetCatalog failed", e);
@@ -153,52 +170,55 @@ public class WidgetsCatalogController extends EPRestrictedBaseController {
 
 	@RequestMapping(value = {
 			"/portalApi/microservices/widgetCatalog/{widgetId}" }, method = RequestMethod.PUT, produces = "application/json")
-	public void updateWidgetCatalog(HttpServletRequest request, HttpServletResponse response,
-			@RequestBody WidgetCatalog newWidgetCatalog, @PathVariable("widgetId") long widgetId)
-			throws RestClientException, Exception {
+	public void updateWidgetCatalog(@RequestBody WidgetCatalog newWidgetCatalog, @PathVariable("widgetId") long widgetId) throws Exception {
 		template.exchange(
-				EcompPortalUtils.widgetMsProtocol() + "://" + consulHealthService.getServiceLocation(whatService,
-						SystemProperties.getProperty("microservices.widget.local.port"))
+				EcompPortalUtils.widgetMsProtocol() + "://"
+						+ consulHealthService.getServiceLocation(whatService,
+								SystemProperties.getProperty(MS_WIDGET_LOCAL_PORT))
 						+ "/widget/microservices/widgetCatalog/" + widgetId,
-				HttpMethod.PUT, new HttpEntity(newWidgetCatalog, WidgetServiceHeaders.getInstance()), String.class);
+				HttpMethod.PUT, new HttpEntity<>(newWidgetCatalog, WidgetServiceHeaders.getInstance()), String.class);
 	}
 
 	@RequestMapping(value = { "/portalApi/microservices/widgetCatalog/{widgetId}" }, method = RequestMethod.DELETE)
-	public void deleteOnboardingWidget(HttpServletRequest request, HttpServletResponse response,
-			@PathVariable("widgetId") long widgetId) throws RestClientException, Exception {
+	public void deleteOnboardingWidget(@PathVariable("widgetId") long widgetId) throws Exception {
 		template.exchange(
-				EcompPortalUtils.widgetMsProtocol() + "://" + consulHealthService.getServiceLocation(whatService,
-						SystemProperties.getProperty("microservices.widget.local.port"))
+				EcompPortalUtils.widgetMsProtocol() + "://"
+						+ consulHealthService.getServiceLocation(whatService,
+								SystemProperties.getProperty(MS_WIDGET_LOCAL_PORT))
 						+ "/widget/microservices/widgetCatalog/" + widgetId,
-				HttpMethod.DELETE, new HttpEntity(WidgetServiceHeaders.getInstance()), String.class);
+				HttpMethod.DELETE, new HttpEntity<>(WidgetServiceHeaders.getInstance()), String.class);
 	}
 
 	@RequestMapping(value = { "/portalApi/microservices/widgetCatalog/{widgetId}" }, method = RequestMethod.POST)
-	public String updateWidgetCatalogWithFiles(HttpServletRequest request, HttpServletResponse response,
+	public String updateWidgetCatalogWithFiles(HttpServletRequest request,
 			@PathVariable("widgetId") long widgetId) throws RestClientException, Exception {
 		MultipartHttpServletRequest mRequest;
 		MultiValueMap<String, Object> multipartRequest = new LinkedMultiValueMap<>();
 		String fileName;
-		String tmp_folder = "/tmp/";
+		String tmpFolderName = "/tmp/";
 		String respond = null;
 		FileOutputStream fo = null;
 		try {
 			mRequest = (MultipartHttpServletRequest) request;
 			MultipartFile mFile = mRequest.getFile("file");
 			fileName = mFile.getOriginalFilename();
-			fo = new FileOutputStream(tmp_folder + fileName);
+			fo = new FileOutputStream(tmpFolderName + fileName);
 			fo.write(mFile.getBytes());
+			// silence sonar scan by calling close here
+			fo.close();
+			fo = null;
 
 			HttpHeaders header = new HttpHeaders();
 			header.setContentType(MediaType.MULTIPART_FORM_DATA);
-			multipartRequest.add("file", new FileSystemResource(tmp_folder + fileName));
+			multipartRequest.add("file", new FileSystemResource(tmpFolderName + fileName));
 			multipartRequest.add("widget", request.getParameter("newWidget"));
 			respond = template.postForObject(
-					EcompPortalUtils.widgetMsProtocol() + "://" + consulHealthService.getServiceLocation(whatService,
-							SystemProperties.getProperty("microservices.widget.local.port"))
+					EcompPortalUtils.widgetMsProtocol() + "://"
+							+ consulHealthService.getServiceLocation(whatService,
+									SystemProperties.getProperty(MS_WIDGET_LOCAL_PORT))
 							+ "/widget/microservices/widgetCatalog/" + widgetId,
 					new HttpEntity<>(multipartRequest, WidgetServiceHeaders.getInstance()), String.class);
-			File f = new File(tmp_folder + fileName);
+			File f = new File(tmpFolderName + fileName);
 			f.delete();
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "updateWidgetCatalogWithFiles failed", e);
@@ -214,32 +234,36 @@ public class WidgetsCatalogController extends EPRestrictedBaseController {
 	}
 
 	@RequestMapping(value = { "/portalApi/microservices/widgetCatalog" }, method = RequestMethod.POST)
-	public String createWidgetCatalog(HttpServletRequest request, HttpServletResponse response)
-			throws RestClientException, Exception {
+	public String createWidgetCatalog(HttpServletRequest request)
+			throws Exception {
 		MultipartHttpServletRequest mRequest;
 		MultiValueMap<String, Object> multipartRequest = new LinkedMultiValueMap<>();
 		String fileName;
-		String tmp_folder = "/tmp/";
+		String tmpFolderName = "/tmp/";
 		String respond = null;
 		FileOutputStream fo = null;
 		try {
 			mRequest = (MultipartHttpServletRequest) request;
 			MultipartFile mFile = mRequest.getFile("file");
 			fileName = mFile.getOriginalFilename();
-			fo = new FileOutputStream(tmp_folder + fileName);
+			fo = new FileOutputStream(tmpFolderName + fileName);
 			fo.write(mFile.getBytes());
+			// silence sonar scan by calling close here
+			fo.close();
+			fo = null;
 
 			HttpHeaders header = new HttpHeaders();
 			header.setContentType(MediaType.MULTIPART_FORM_DATA);
-			multipartRequest.add("file", new FileSystemResource(tmp_folder + fileName));
+			multipartRequest.add("file", new FileSystemResource(tmpFolderName + fileName));
 			multipartRequest.add("widget", request.getParameter("newWidget"));
 
 			respond = template.postForObject(
-					EcompPortalUtils.widgetMsProtocol() + "://" + consulHealthService.getServiceLocation(whatService,
-							SystemProperties.getProperty("microservices.widget.local.port"))
+					EcompPortalUtils.widgetMsProtocol() + "://"
+							+ consulHealthService.getServiceLocation(whatService,
+									SystemProperties.getProperty(MS_WIDGET_LOCAL_PORT))
 							+ "/widget/microservices/widgetCatalog",
 					new HttpEntity<>(multipartRequest, WidgetServiceHeaders.getInstance()), String.class);
-			File f = new File(tmp_folder + fileName);
+			File f = new File(tmpFolderName + fileName);
 			f.delete();
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "createWidgetCatalog failed", e);
@@ -255,46 +279,44 @@ public class WidgetsCatalogController extends EPRestrictedBaseController {
 	}
 
 	@RequestMapping(value = "/portalApi/microservices/{widgetId}/framework.js", method = RequestMethod.GET)
-	public String getWidgetFramework(HttpServletRequest request, HttpServletResponse response,
-			@PathVariable("widgetId") long widgetId) throws RestClientException, Exception {
+	public String getWidgetFramework(@PathVariable("widgetId") long widgetId) throws Exception {
 		return template.getForObject(EcompPortalUtils.widgetMsProtocol() + "://"
 				+ consulHealthService.getServiceLocation(whatService,
-						SystemProperties.getProperty("microservices.widget.local.port"))
+						SystemProperties.getProperty(MS_WIDGET_LOCAL_PORT))
 				+ "/widget/microservices/" + widgetId + "/framework.js", String.class,
 				WidgetServiceHeaders.getInstance());
 	}
 
 	@RequestMapping(value = "/portalApi/microservices/{widgetId}/controller.js", method = RequestMethod.GET)
-	public String getWidgetController(HttpServletRequest request, HttpServletResponse response,
-			@PathVariable("widgetId") long widgetId) throws RestClientException, Exception {
+	public String getWidgetController(@PathVariable("widgetId") long widgetId) throws Exception {
 		return template.getForObject(EcompPortalUtils.widgetMsProtocol() + "://"
 				+ consulHealthService.getServiceLocation(whatService,
-						SystemProperties.getProperty("microservices.widget.local.port"))
+						SystemProperties.getProperty(MS_WIDGET_LOCAL_PORT))
 				+ "/widget/microservices/" + widgetId + "/controller.js", String.class,
 				WidgetServiceHeaders.getInstance());
 	}
 
 	@RequestMapping(value = "/portalApi/microservices/{widgetId}/style.css", method = RequestMethod.GET)
-	public String getWidgetCSS(HttpServletRequest request, HttpServletResponse response,
-			@PathVariable("widgetId") long widgetId) throws RestClientException, Exception {
+	public String getWidgetCSS(@PathVariable("widgetId") long widgetId) throws Exception {
 		return template.getForObject(EcompPortalUtils.widgetMsProtocol() + "://"
 				+ consulHealthService.getServiceLocation(whatService,
-						SystemProperties.getProperty("microservices.widget.local.port"))
+						SystemProperties.getProperty(MS_WIDGET_LOCAL_PORT))
 				+ "/widget/microservices/" + widgetId + "/styles.css", String.class,
 				WidgetServiceHeaders.getInstance());
 	}
 
 	@RequestMapping(value = { "/portalApi/microservices/parameters/{widgetId}" }, method = RequestMethod.GET)
 	public PortalRestResponse<List<WidgetParameterResult>> getWidgetParameterResult(HttpServletRequest request,
-			HttpServletResponse response, @PathVariable("widgetId") long widgetId) throws Exception {
+			@PathVariable("widgetId") long widgetId) throws Exception {
 		EPUser user = EPUserUtils.getUserSession(request);
 
 		List<WidgetParameterResult> list = new ArrayList<>();
 		Long serviceId = template.exchange(
-				EcompPortalUtils.widgetMsProtocol() + "://" + consulHealthService.getServiceLocation(whatService,
-						SystemProperties.getProperty("microservices.widget.local.port"))
+				EcompPortalUtils.widgetMsProtocol() + "://"
+						+ consulHealthService.getServiceLocation(whatService,
+								SystemProperties.getProperty(MS_WIDGET_LOCAL_PORT))
 						+ "/widget/microservices/widgetCatalog/parameters/" + widgetId,
-				HttpMethod.GET, new HttpEntity(WidgetServiceHeaders.getInstance()), Long.class).getBody();
+				HttpMethod.GET, new HttpEntity<>(WidgetServiceHeaders.getInstance()), Long.class).getBody();
 		if (serviceId == null) {
 			// return ok/sucess and no service parameter for this widget
 			return new PortalRestResponse<List<WidgetParameterResult>>(PortalRestStatusEnum.WARN,
@@ -302,46 +324,47 @@ public class WidgetsCatalogController extends EPRestrictedBaseController {
 		} else {
 			List<MicroserviceParameter> defaultParam = microserviceService.getParametersById(serviceId);
 			for (MicroserviceParameter param : defaultParam) {
-				WidgetParameterResult user_result = new WidgetParameterResult();
-				user_result.setParam_id(param.getId());
-				user_result.setDefault_value(param.getPara_value());
-				user_result.setParam_key(param.getPara_key());
+				WidgetParameterResult userResult = new WidgetParameterResult();
+				userResult.setParam_id(param.getId());
+				userResult.setDefault_value(param.getPara_value());
+				userResult.setParam_key(param.getPara_key());
 				WidgetCatalogParameter userValue = widgetParameterService.getUserParamById(widgetId, user.getId(),
 						param.getId());
 				if (userValue == null)
-					user_result.setUser_value(param.getPara_value());
+					userResult.setUser_value(param.getPara_value());
 				else {
-					user_result.setUser_value(userValue.getUser_value());
+					userResult.setUser_value(userValue.getUser_value());
 				}
-				list.add(user_result);
+				list.add(userResult);
 			}
 		}
 		return new PortalRestResponse<List<WidgetParameterResult>>(PortalRestStatusEnum.OK, "SUCCESS", list);
 	}
 
 	@RequestMapping(value = { "/portalApi/microservices/services/{paramId}" }, method = RequestMethod.GET)
-	public List<WidgetCatalogParameter> getUserParameterById(HttpServletRequest request, HttpServletResponse response,
-			@PathVariable("paramId") long paramId) throws Exception {
+	public List<WidgetCatalogParameter> getUserParameterById(	@PathVariable("paramId") long paramId) {
 		List<WidgetCatalogParameter> list = widgetParameterService.getUserParameterById(paramId);
 		return list;
 	}
 
 	@RequestMapping(value = { "/portalApi/microservices/services/{paramId}" }, method = RequestMethod.DELETE)
-	public void deleteUserParameterById(HttpServletRequest request, HttpServletResponse response,
-			@PathVariable("paramId") long paramId) throws Exception {
+	public void deleteUserParameterById(@PathVariable("paramId") long paramId) {
 		widgetParameterService.deleteUserParameterById(paramId);
 	}
 
 	@RequestMapping(value = { "/portalApi/microservices/download/{widgetId}" }, method = RequestMethod.GET)
 	public void doDownload(HttpServletRequest request, HttpServletResponse response,
-			@PathVariable("widgetId") long widgetId) throws RestClientException, Exception {
+			@PathVariable("widgetId") long widgetId) throws Exception {
 
 		ServletContext context = request.getServletContext();
-		byte[] byteFile = template.exchange(
-				EcompPortalUtils.widgetMsProtocol() + "://" + consulHealthService.getServiceLocation(whatService,
-						SystemProperties.getProperty("microservices.widget.local.port"))
-						+ "/widget/microservices/download/" + widgetId,
-				HttpMethod.GET, new HttpEntity(WidgetServiceHeaders.getInstance()), byte[].class).getBody();
+		byte[] byteFile = template
+				.exchange(
+						EcompPortalUtils.widgetMsProtocol() + "://"
+								+ consulHealthService.getServiceLocation(whatService,
+										SystemProperties.getProperty(MS_WIDGET_LOCAL_PORT))
+								+ "/widget/microservices/download/" + widgetId,
+						HttpMethod.GET, new HttpEntity<>(WidgetServiceHeaders.getInstance()), byte[].class)
+				.getBody();
 
 		File downloadFile = File.createTempFile("temp", ".zip");
 		FileOutputStream stream = new FileOutputStream(downloadFile.getPath());
@@ -363,7 +386,7 @@ public class WidgetsCatalogController extends EPRestrictedBaseController {
 
 		OutputStream outStream = response.getOutputStream();
 		byte[] buffer = new byte[32 * 1024];
-		int bytesRead = -1;
+		int bytesRead;
 		while ((bytesRead = inputStream.read(buffer)) != -1) {
 			outStream.write(buffer, 0, bytesRead);
 		}
@@ -373,8 +396,8 @@ public class WidgetsCatalogController extends EPRestrictedBaseController {
 	}
 
 	@RequestMapping(value = { "/portalApi/microservices/parameters" }, method = RequestMethod.POST)
-	public PortalRestResponse<String> saveWidgetParameter(HttpServletRequest request, HttpServletResponse response,
-			@RequestBody WidgetCatalogParameter widgetParameters) throws Exception {
+	public PortalRestResponse<String> saveWidgetParameter(HttpServletRequest request,
+			@RequestBody WidgetCatalogParameter widgetParameters) {
 		EPUser user = EPUserUtils.getUserSession(request);
 		widgetParameters.setUserId(user.getId());
 		try {
@@ -386,6 +409,7 @@ public class WidgetsCatalogController extends EPRestrictedBaseController {
 			widgetParameterService.saveUserParameter(widgetParameters);
 
 		} catch (Exception e) {
+			logger.error(EELFLoggerDelegate.errorLogger, "saveWidgetParameter failed", e);
 			return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, "FAILURE", e.getMessage());
 		}
 		return new PortalRestResponse<String>(PortalRestStatusEnum.OK, "SUCCESS", "");

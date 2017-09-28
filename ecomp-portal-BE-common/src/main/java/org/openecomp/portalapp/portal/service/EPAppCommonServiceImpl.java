@@ -1,21 +1,39 @@
 /*-
- * ================================================================================
- * ECOMP Portal
- * ================================================================================
- * Copyright (C) 2017 AT&T Intellectual Property
- * ================================================================================
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
+ * ============LICENSE_START==========================================
+ * ONAP Portal
+ * ===================================================================
+ * Copyright © 2017 AT&T Intellectual Property. All rights reserved.
+ * ===================================================================
+ *
+ * Unless otherwise specified, all software contained herein is licensed
+ * under the Apache License, Version 2.0 (the “License”);
+ * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
- * 
- *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
+ *             http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * ================================================================================
+ *
+ * Unless otherwise specified, all documentation contained herein is licensed
+ * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * you may not use this documentation except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *             https://creativecommons.org/licenses/by/4.0/
+ *
+ * Unless required by applicable law or agreed to in writing, documentation
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * ============LICENSE_END============================================
+ *
+ * ECOMP is a trademark and service mark of AT&T Intellectual Property.
  */
 package org.openecomp.portalapp.portal.service;
 
@@ -915,8 +933,9 @@ public class EPAppCommonServiceImpl implements EPAppService {
 				transaction.commit();
 				result = true;
 			} catch (Exception e) {
+				logger.error(EELFLoggerDelegate.errorLogger, "updateApp failed", e);
 				EcompPortalUtils.rollbackTransaction(transaction,
-						"updateApp rollback, exception = " + EcompPortalUtils.getStackTrace(e));
+						"updateApp rollback, exception = " + e.toString());
 			} finally {
 				EcompPortalUtils.closeLocalSession(localSession, "updateApp");
 			}
@@ -1107,7 +1126,7 @@ public class EPAppCommonServiceImpl implements EPAppService {
 				EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeUebRegisterOnboardingAppError, e);
 				EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeDaoSystemError, e);
 				EcompPortalUtils.rollbackTransaction(transaction,
-						"updateApp rollback, exception = " + EcompPortalUtils.getStackTrace(e));
+						"updateApp rollback, exception = " + e.toString());
 			} finally {
 				EcompPortalUtils.closeLocalSession(localSession, "updateApp");
 			}
@@ -1118,7 +1137,7 @@ public class EPAppCommonServiceImpl implements EPAppService {
 
 	}
 
-	public CambriaTopicManager getTopicManager(LinkedList<String> urlList, String key, String secret)
+	public CambriaTopicManager getTopicManager(List<String> urlList, String key, String secret)
 			throws GeneralSecurityException, Exception {
 		throw new Exception("This method can only be invoked from child class");
 	}

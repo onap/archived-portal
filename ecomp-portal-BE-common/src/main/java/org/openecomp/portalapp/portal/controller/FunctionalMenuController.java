@@ -1,21 +1,39 @@
 /*-
- * ================================================================================
- * ECOMP Portal
- * ================================================================================
- * Copyright (C) 2017 AT&T Intellectual Property
- * ================================================================================
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
+ * ============LICENSE_START==========================================
+ * ONAP Portal
+ * ===================================================================
+ * Copyright © 2017 AT&T Intellectual Property. All rights reserved.
+ * ===================================================================
+ *
+ * Unless otherwise specified, all software contained herein is licensed
+ * under the Apache License, Version 2.0 (the “License”);
+ * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
- * 
- *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
+ *             http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * ================================================================================
+ *
+ * Unless otherwise specified, all documentation contained herein is licensed
+ * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * you may not use this documentation except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *             https://creativecommons.org/licenses/by/4.0/
+ *
+ * Unless required by applicable law or agreed to in writing, documentation
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * ============LICENSE_END============================================
+ *
+ * ECOMP is a trademark and service mark of AT&T Intellectual Property.
  */
 package org.openecomp.portalapp.portal.controller;
 
@@ -102,8 +120,7 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 			functionalMenuService.assignHelpURLs(menuItems);
 			EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/functionalMenu", "result =", menuItems);
 		} catch (Exception e) {
-			logger.error(EELFLoggerDelegate.errorLogger,
-					"Exception occurred while calling functionalMenu. Details: " + EcompPortalUtils.getStackTrace(e));
+			logger.error(EELFLoggerDelegate.errorLogger, "getMenuItems failed", e);
 		}
 		return menuItems;
 	}
@@ -132,9 +149,9 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 	}
 
 	/**
-	 * RESTful service method to fetch all the FunctionalMenuItems, both active
-	 * and inactive, for the EditFunctionalMenu feature. Can only be accessed by
-	 * the portal admin.
+	 * RESTful service method to fetch all the FunctionalMenuItems, both active and
+	 * inactive, for the EditFunctionalMenu feature. Can only be accessed by the
+	 * portal admin.
 	 * 
 	 * @param request
 	 *            HttpServletRequest
@@ -157,16 +174,14 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 			EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/functionalMenuForEditing", "result =",
 					menuItems);
 		} catch (Exception e) {
-			logger.error(EELFLoggerDelegate.errorLogger,
-					"Exception occurred while calling functionalMenuForEditing. Details: "
-							+ EcompPortalUtils.getStackTrace(e));
+			logger.error(EELFLoggerDelegate.errorLogger, "getMenuItemsForEditing failed", e);
 		}
 		return menuItems;
 	}
 
 	/**
-	 * RESTful service method to fetch all the FunctionalMenuItems, active , for
-	 * the Functional menu in notification Tree feature.
+	 * RESTful service method to fetch all the FunctionalMenuItems, active , for the
+	 * Functional menu in notification Tree feature.
 	 * 
 	 * @param request
 	 *            HttpServletRequest
@@ -186,21 +201,17 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 			EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/functionalMenuForNotificationTree", "result =",
 					menuItems);
 		} catch (Exception e) {
-			logger.error(EELFLoggerDelegate.errorLogger,
-					"Exception occurred while calling functionalMenuForNotifications. Details: "
-							+ EcompPortalUtils.getStackTrace(e));
+			logger.error(EELFLoggerDelegate.errorLogger, "getMenuItemsForNotifications failed", e);
 		}
 		return menuItems;
 	}
 
 	/**
-	 * RESTful service method to fetch all FunctionalMenuItems associated with
-	 * an application.
+	 * RESTful service method to fetch all FunctionalMenuItems associated with an
+	 * application.
 	 * 
 	 * @param request
 	 *            HttpServletRequest
-	 * @param response
-	 *            HttpServletResponse
 	 * @param appId
 	 *            application ID
 	 * @return List of FunctionalMenuItem objects
@@ -217,16 +228,14 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 			EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/functionalMenuForApp/" + appId, "result =",
 					menuItems);
 		} catch (Exception e) {
-			logger.error(EELFLoggerDelegate.errorLogger,
-					"Exception occurred while calling functionalMenuForApp. Details: "
-							+ EcompPortalUtils.getStackTrace(e));
+			logger.error(EELFLoggerDelegate.errorLogger, "getMenuItemsForApp failed", e);
 		}
 		return menuItems;
 	}
 
 	/**
-	 * RESTful service method to fetch all FunctionalMenuItems associated with
-	 * the applications and roles that a user has access to.
+	 * RESTful service method to fetch all FunctionalMenuItems associated with the
+	 * applications and roles that a user has access to.
 	 * 
 	 * @param request
 	 *            HttpServletRequest
@@ -246,17 +255,15 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 			EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/functionalMenuForUser/" + orgUserId, "result =",
 					menuItems);
 		} catch (Exception e) {
-			logger.error(EELFLoggerDelegate.errorLogger,
-					"Exception occurred while calling functionalMenuForUser. Details: "
-							+ EcompPortalUtils.getStackTrace(e));
+			logger.error(EELFLoggerDelegate.errorLogger, "getMenuItemsForUser failed", e);
 		}
 
 		return menuItems;
 	}
 
 	/**
-	 * RESTful service method to fetch all FunctionalMenuItems associated with
-	 * the applications and roles that the authenticated user has access to.
+	 * RESTful service method to fetch all FunctionalMenuItems associated with the
+	 * applications and roles that the authenticated user has access to.
 	 * 
 	 * @param request
 	 *            HttpServletRequest
@@ -284,9 +291,7 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 			}
 			functionalMenuService.assignHelpURLs(menuItems);
 		} catch (Exception e) {
-			logger.error(EELFLoggerDelegate.errorLogger,
-					"Exception occurred while calling getMenuItemsForAuthUser. Details: "
-							+ EcompPortalUtils.getStackTrace(e));
+			logger.error(EELFLoggerDelegate.errorLogger, "getMenuItemsForAuthUser failed", e);
 		}
 		return menuItems;
 	}
@@ -320,9 +325,7 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 						"result =", menuItem);
 			}
 		} catch (Exception e) {
-			logger.error(EELFLoggerDelegate.errorLogger,
-					"Exception occurred while calling functionalMenuItemDetails. Details: "
-							+ EcompPortalUtils.getStackTrace(e));
+			logger.error(EELFLoggerDelegate.errorLogger, "getFunctionalMenuItemDetails failed", e);
 		}
 
 		return menuItem;
@@ -471,8 +474,8 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 	}
 
 	/**
-	 * RESTful service to get favorites for the current user as identified in
-	 * the session
+	 * RESTful service to get favorites for the current user as identified in the
+	 * session
 	 * 
 	 * @param request
 	 *            HttpServletRequest
@@ -523,8 +526,8 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 	 * user ID, email and last-login. (Actually has nothing to do with the real
 	 * functional menu.) First attempts to get the information from the Tomcat
 	 * session (i.e., the CSP cookie); if that fails, calls the shared context
-	 * service to read the information from the database. Gives back what it
-	 * found, any of which may be null, as a JSON collection.
+	 * service to read the information from the database. Gives back what it found,
+	 * any of which may be null, as a JSON collection.
 	 * 
 	 * @param request
 	 *            HttpServletRequest

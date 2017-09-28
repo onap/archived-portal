@@ -1,21 +1,39 @@
 /*-
- * ================================================================================
- * ECOMP Portal
- * ================================================================================
- * Copyright (C) 2017 AT&T Intellectual Property
- * ================================================================================
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
+ * ============LICENSE_START==========================================
+ * ONAP Portal
+ * ===================================================================
+ * Copyright © 2017 AT&T Intellectual Property. All rights reserved.
+ * ===================================================================
+ *
+ * Unless otherwise specified, all software contained herein is licensed
+ * under the Apache License, Version 2.0 (the “License”);
+ * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
- * 
- *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
+ *             http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * ================================================================================
+ *
+ * Unless otherwise specified, all documentation contained herein is licensed
+ * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * you may not use this documentation except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *             https://creativecommons.org/licenses/by/4.0/
+ *
+ * Unless required by applicable law or agreed to in writing, documentation
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * ============LICENSE_END============================================
+ *
+ * ECOMP is a trademark and service mark of AT&T Intellectual Property.
  */
 package org.openecomp.portalapp.portal.service;
 
@@ -49,47 +67,40 @@ import org.springframework.web.client.RestTemplate;
 @EPMetricsLog
 public class MicroserviceProxyServiceImpl implements MicroserviceProxyService {
 
-	EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(MicroserviceProxyServiceImpl.class);
+	private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(MicroserviceProxyServiceImpl.class);
+
 	private static final String BASIC_AUTH = "Basic Authentication";
 	private static final String NO_AUTH = "No Authentication";
 	private static final String COOKIE_AUTH = "Cookie based Authentication";
 	private static final String QUESTION_MARK = "?";
 	private static final String ADD_MARK = "&";
 
-	String whatService = "widgets-service";
-
 	@Autowired
 	private ConsulHealthService consulHealthService;
-
 	@Autowired
 	MicroserviceService microserviceService;
-
 	@Autowired
 	WidgetParameterService widgetParameterService;
 
-	RestTemplate template = new RestTemplate();
+	private String whatService = "widgets-service";
+
+	private RestTemplate template = new RestTemplate();
 
 	@Override
 	public String proxyToDestination(long serviceId, EPUser user, HttpServletRequest request) throws Exception {
-
-		//get the microservice object by the id
+		// get the microservice object by the id
 		MicroserviceData data = microserviceService.getMicroserviceDataById(serviceId);
-
 		// No such microservice available
 		if (data == null) {
-			//can we return a better response than null?
+			// can we return a better response than null?
 			return null;
 		}
-	
 		return authenticateAndRespond(data, request, composeParams(data, user));
 	}
-	
+
 	@Override
 	public String proxyToDestinationByWidgetId(long widgetId, EPUser user, HttpServletRequest request)
 			throws Exception {
-
-		String response = null;
-
 		@SuppressWarnings({ "rawtypes", "unchecked" })
 		ResponseEntity<Long> ans = (ResponseEntity<Long>) template.exchange(
 				EcompPortalUtils.widgetMsProtocol() + "://"
@@ -98,14 +109,11 @@ public class MicroserviceProxyServiceImpl implements MicroserviceProxyService {
 						+ "/widget/microservices/widgetCatalog/parameters/" + widgetId,
 				HttpMethod.GET, new HttpEntity(WidgetServiceHeaders.getInstance()), Long.class);
 		Long serviceId = ans.getBody();
-
 		// get the microservice object by the id
 		MicroserviceData data = microserviceService.getMicroserviceDataById(serviceId);
-
 		// No such microservice available
-		if (data == null) {
-			return response;
-		}
+		if (data == null)
+			return null;
 
 		List<MicroserviceParameter> params = composeParams(data, user);
 		for (MicroserviceParameter p : params) {
@@ -114,35 +122,28 @@ public class MicroserviceProxyServiceImpl implements MicroserviceProxyService {
 			if (userValue != null)
 				p.setPara_value(userValue.getUser_value());
 		}
-		
 		return authenticateAndRespond(data, request, params);
-
 	}
 
-	private String authenticateAndRespond(MicroserviceData data, HttpServletRequest request, List<MicroserviceParameter> params){
-		
+	private String authenticateAndRespond(MicroserviceData data, HttpServletRequest request,
+			List<MicroserviceParameter> params) throws HttpClientErrorException, IllegalArgumentException {
 		String response = null;
-		
 		if (data.getSecurityType().equals(NO_AUTH)) {
 			HttpEntity<String> entity = new HttpEntity<String>(headersForNoAuth());
-
 			String url = microserviceUrlConverter(data, params);
-			try {
-				logger.debug(EELFLoggerDelegate.debugLogger, "Before making no authentication call: {}", url);
-				response = template.exchange(url, HttpMethod.GET, entity, String.class).getBody();
-				logger.debug(EELFLoggerDelegate.debugLogger, "No authentication call response: {}", response);
-
-			} catch (HttpClientErrorException e) {
-				throw e;
-			}
+			logger.debug(EELFLoggerDelegate.debugLogger,
+					"authenticateAndRespond: Before making no authentication call: {}", url);
+			response = template.exchange(url, HttpMethod.GET, entity, String.class).getBody();
+			logger.debug(EELFLoggerDelegate.debugLogger, "authenticateAndRespond: No authentication call response: {}",
+					response);
 		} else if (data.getSecurityType().equals(BASIC_AUTH)) {
 			// encoding the username and password
 			String plainCreds = null;
-			try{
+			try {
 				plainCreds = data.getUsername() + ":" + decryptedPassword(data.getPassword());
-			}
-			catch(Exception e){
-				logger.error("problem decrypting password ... check if decryption key is correct in system.properties: ", e);
+			} catch (Exception e) {
+				logger.error("authenticateAndRespond failed to decrypt password", e);
+				throw new IllegalArgumentException("Failed to decrypt password", e);
 			}
 			byte[] plainCredsBytes = plainCreds.getBytes();
 			byte[] base64CredsBytes = Base64.encodeBase64(plainCredsBytes);
@@ -154,7 +155,7 @@ public class MicroserviceProxyServiceImpl implements MicroserviceProxyService {
 			try {
 				response = template.exchange(url, HttpMethod.GET, entity, String.class).getBody();
 			} catch (HttpClientErrorException e) {
-				logger.error("Problem while talking to {1} - message: {2} ", url, e.getMessage());
+				logger.error("authenticateAndRespond failed for basic security url " + url, e);
 				throw e;
 			}
 		} else if (data.getSecurityType().equals(COOKIE_AUTH)) {
@@ -163,16 +164,17 @@ public class MicroserviceProxyServiceImpl implements MicroserviceProxyService {
 			try {
 				response = template.exchange(url, HttpMethod.GET, entity, String.class).getBody();
 			} catch (HttpClientErrorException e) {
+				logger.error("authenticateAndRespond failed for cookie auth url " + url, e);
 				throw e;
 			}
 		}
-		
+
 		return response;
 	}
-	
+
 	private String decryptedPassword(String encryptedPwd) throws Exception {
 		String result = "";
-		if (encryptedPwd != null & encryptedPwd.length() > 0) {
+		if (encryptedPwd != null && encryptedPwd.length() > 0) {
 			try {
 				result = CipherUtil.decrypt(encryptedPwd,
 						SystemProperties.getProperty(SystemProperties.Decryption_Key));
@@ -181,7 +183,7 @@ public class MicroserviceProxyServiceImpl implements MicroserviceProxyService {
 				throw e;
 			}
 		}
-		
+
 		return result;
 	}
 
@@ -199,40 +201,42 @@ public class MicroserviceProxyServiceImpl implements MicroserviceProxyService {
 
 		return url;
 	}
-	
-	private HttpHeaders headersForNoAuth(){
+
+	private HttpHeaders headersForNoAuth() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
 
 		return headers;
 	}
+
+	// TODO: why is this generically named cookie used?
+	private final static String Cookie = "Cookie";
 	
-	private HttpHeaders headersForBasicAuth(HttpServletRequest request, String base64Creds){
+	private HttpHeaders headersForBasicAuth(HttpServletRequest request, String base64Creds) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Authorization", "Basic " + base64Creds);
 		headers.setContentType(MediaType.APPLICATION_JSON);
-		String rawCookie = request.getHeader("Cookie");
-		headers.add("Cookie", rawCookie);
-		
+		String rawCookie = request.getHeader(Cookie);
+		if (rawCookie != null)
+			headers.add(Cookie, rawCookie);
 		return headers;
 	}
 
-	private HttpHeaders headersForCookieAuth(HttpServletRequest request){
+	private HttpHeaders headersForCookieAuth(HttpServletRequest request) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
-		String rawCookie = request.getHeader("Cookie");
-		headers.add("Cookie", rawCookie);
-		
+		String rawCookie = request.getHeader(Cookie);
+		if (rawCookie != null)
+			headers.add(Cookie, rawCookie);
 		return headers;
 	}
-	
-	private List<MicroserviceParameter> composeParams(MicroserviceData data, EPUser user){
+
+	private List<MicroserviceParameter> composeParams(MicroserviceData data, EPUser user) {
 		List<MicroserviceParameter> params = data.getParameterList();
-		MicroserviceParameter userId_param = new MicroserviceParameter();
-		userId_param.setPara_key("userId");
-		userId_param.setPara_value(user.getOrgUserId());
-		params.add(userId_param);
-		
+		MicroserviceParameter userIdParam = new MicroserviceParameter();
+		userIdParam.setPara_key("userId");
+		userIdParam.setPara_value(user.getOrgUserId());
+		params.add(userIdParam);
 		return params;
 	}
 }

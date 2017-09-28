@@ -1,3 +1,40 @@
+/*-
+ * ============LICENSE_START==========================================
+ * ONAP Portal
+ * ===================================================================
+ * Copyright © 2017 AT&T Intellectual Property. All rights reserved.
+ * ===================================================================
+ *
+ * Unless otherwise specified, all software contained herein is licensed
+ * under the Apache License, Version 2.0 (the “License”);
+ * you may not use this software except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *             http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Unless otherwise specified, all documentation contained herein is licensed
+ * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * you may not use this documentation except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *             https://creativecommons.org/licenses/by/4.0/
+ *
+ * Unless required by applicable law or agreed to in writing, documentation
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * ============LICENSE_END============================================
+ *
+ * ECOMP is a trademark and service mark of AT&T Intellectual Property.
+ */
 package org.openecomp.portalapp.portal.transport;
 
 import java.util.Arrays;
@@ -28,8 +65,7 @@ public class CentralApp {
 	public String uebKey; // ueb_key
 	public String uebSecret; // ueb_secret
 	public String uebTopicName; // ueb_topic_name
-	
-	
+
 	public CentralApp(Long id, Date created, Date modified, Long createdId, Long modifiedId, Long rowNum, String name,
 			String imageUrl, String description, String notes, String url, String alternateUrl, String restEndpoint,
 			String mlAppName, String mlAppAdminId, String motsId, String appPassword, String open, String enabled,
@@ -60,149 +96,195 @@ public class CentralApp {
 		this.uebSecret = uebSecret;
 		this.uebTopicName = uebTopicName;
 	}
-	
+
 	public Long getId() {
 		return id;
 	}
+
 	public void setId(Long id) {
 		this.id = id;
 	}
-	
+
 	public Date getCreated() {
 		return created;
 	}
+
 	public void setCreated(Date created) {
 		this.created = created;
 	}
+
 	public Date getModified() {
 		return modified;
 	}
+
 	public void setModified(Date modified) {
 		this.modified = modified;
 	}
+
 	public Long getCreatedId() {
 		return createdId;
 	}
+
 	public void setCreatedId(Long createdId) {
 		this.createdId = createdId;
 	}
+
 	public Long getModifiedId() {
 		return modifiedId;
 	}
+
 	public void setModifiedId(Long modifiedId) {
 		this.modifiedId = modifiedId;
 	}
+
 	public Long getRowNum() {
 		return rowNum;
 	}
+
 	public void setRowNum(Long rowNum) {
 		this.rowNum = rowNum;
 	}
+
 	public String getName() {
 		return name;
 	}
+
 	public void setName(String name) {
 		this.name = name;
 	}
+
 	public String getImageUrl() {
 		return imageUrl;
 	}
+
 	public void setImageUrl(String imageUrl) {
 		this.imageUrl = imageUrl;
 	}
+
 	public String getDescription() {
 		return description;
 	}
+
 	public void setDescription(String description) {
 		this.description = description;
 	}
+
 	public String getNotes() {
 		return notes;
 	}
+
 	public void setNotes(String notes) {
 		this.notes = notes;
 	}
+
 	public String getUrl() {
 		return url;
 	}
+
 	public void setUrl(String url) {
 		this.url = url;
 	}
+
 	public String getAlternateUrl() {
 		return alternateUrl;
 	}
+
 	public void setAlternateUrl(String alternateUrl) {
 		this.alternateUrl = alternateUrl;
 	}
+
 	public String getRestEndpoint() {
 		return restEndpoint;
 	}
+
 	public void setRestEndpoint(String restEndpoint) {
 		this.restEndpoint = restEndpoint;
 	}
+
 	public String getMlAppName() {
 		return mlAppName;
 	}
+
 	public void setMlAppName(String mlAppName) {
 		this.mlAppName = mlAppName;
 	}
+
 	public String getMlAppAdminId() {
 		return mlAppAdminId;
 	}
+
 	public void setMlAppAdminId(String mlAppAdminId) {
 		this.mlAppAdminId = mlAppAdminId;
 	}
+
 	public String getMotsId() {
 		return motsId;
 	}
+
 	public void setMotsId(String motsId) {
 		this.motsId = motsId;
 	}
+
 	public String getAppPassword() {
 		return appPassword;
 	}
+
 	public void setAppPassword(String appPassword) {
 		this.appPassword = appPassword;
 	}
+
 	public String getOpen() {
 		return open;
 	}
+
 	public void setOpen(String open) {
 		this.open = open;
 	}
+
 	public String getEnabled() {
 		return enabled;
 	}
+
 	public void setEnabled(String enabled) {
 		this.enabled = enabled;
 	}
+
 	public byte[] getThumbnail() {
 		return thumbnail;
 	}
+
 	public void setThumbnail(byte[] thumbnail) {
 		this.thumbnail = thumbnail;
 	}
+
 	public String getUsername() {
 		return username;
 	}
+
 	public void setUsername(String username) {
 		this.username = username;
 	}
+
 	public String getUebKey() {
 		return uebKey;
 	}
+
 	public void setUebKey(String uebKey) {
 		this.uebKey = uebKey;
 	}
+
 	public String getUebSecret() {
 		return uebSecret;
 	}
+
 	public void setUebSecret(String uebSecret) {
 		this.uebSecret = uebSecret;
 	}
+
 	public String getUebTopicName() {
 		return uebTopicName;
 	}
+
 	public void setUebTopicName(String uebTopicName) {
 		this.uebTopicName = uebTopicName;
 	}
@@ -366,6 +448,5 @@ public class CentralApp {
 			return false;
 		return true;
 	}
-	
-	
+
 }

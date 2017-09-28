@@ -1,15 +1,14 @@
 # docker-compose for ONAP portal containers: database, microservice, portal apps.
-# Only exposes the portal apps on host network, not the database or WMS.
-# Works in multiple environments; does not pull from a Nexus repository.
 # Relies on .env file in current directory.
+# Works in multiple environments; does not pull from a Nexus registry.
+# Exposes the portal apps docker (but not DB nor WMS dockers) on the host network.
+# Images must be pulled from ONAP Nexus registry after logging in like this:
+# docker login -u USER -p PASS nexus3.onap.org:10001
 
 version: '2.0'
 
 services:
 
-  # Available from ONAP Nexus repository:
-  # docker login -u USER -p PASS nexus3.onap.org:10001
-  # docker pull nexus3.onap.org:10001/onap/cli:1.1-STAGING-latest
   cli:
     image: onap/cli:${PORTAL_TAG}
     environment:

@@ -1,66 +1,18 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.onap.portal</groupId>
+	<parent>
+		<groupId>org.onap.portal</groupId>
+		<artifactId>onap-portal-parent</artifactId>
+		<version>1.3.0-SNAPSHOT</version>
+	</parent>
+
 	<artifactId>ecompportal-be-common</artifactId>
 	<packaging>war</packaging>
-	<!-- Version number is managed manually; no Jenkins build.number -->
-	<version>1.3.0-SNAPSHOT</version>
 
 	<properties>
-		<springframework.version>4.2.0.RELEASE</springframework.version>
-		<hibernate.version>4.3.11.Final</hibernate.version>
-		<eelf.version>1.0.0</eelf.version>
-		<fasterxml.version>2.7.4</fasterxml.version>
-		<epsdk.version>1.3.0</epsdk.version>
-		<encoding>UTF-8</encoding>
-		<!-- Tests usually require some setup that maven cannot do, so skip. -->
 		<skipTests>false</skipTests>
-		<nexusproxy>https://nexus.onap.org</nexusproxy>
-		<snapshotNexusPath>/content/repositories/snapshots/</snapshotNexusPath>
-		<stagingNexusPath>content/repositories/staging/</stagingNexusPath>
-		<releaseNexusPath>/content/repositories/releases/</releaseNexusPath>
 	</properties>
-
-	<repositories>
-		<repository>
-			<id>onap-releases</id>
-			<name>ONAP - Release Repository</name>
-			<url>${nexusproxy}/${releaseNexusPath}</url>
-		</repository>
-		<repository>
-			<id>onap-staging</id>
-			<name>ONAP - Staging Repository</name>
-			<url>${nexusproxy}/${stagingNexusPath}</url>
-		</repository>
-		<repository>
-			<id>onap-snapshots</id>
-			<name>ONAP - Snapshot Repository</name>
-			<url>${nexusproxy}/${snapshotNexusPath}</url>
-		</repository>
-	</repositories>
-
-	<profiles>
-		<!-- disable doclint, a new feature in Java 8, when generating javadoc -->
-		<profile>
-			<id>doclint-java8-disable</id>
-			<activation>
-				<jdk>[1.8,)</jdk>
-			</activation>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-javadoc-plugin</artifactId>
-						<configuration>
-							<additionalparam>-Xdoclint:none</additionalparam>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-
-	</profiles>
 
 	<build>
 		<!-- The war file name carries no version number -->
@@ -68,72 +20,73 @@
 
 		<plugins>
 			<plugin>
-			    <groupId>org.jacoco</groupId>
-			    <artifactId>jacoco-maven-plugin</artifactId>
-			    <version>0.7.6.201602180812</version>
-			    <inherited>True</inherited>
-			    <executions>
-			        <!-- Unit-Tests -->
-			        <execution>
-			            <id>prepare-agent</id>
-			            <goals>
-			                <goal>prepare-agent</goal>
-			            </goals>
-			            <configuration>
-			                <destFile>${sonar.jacoco.reportPath}</destFile>
-			            </configuration>
-			        </execution>
-			        <execution>
-			            <id>report</id>
-			            <goals>
-			                <goal>report</goal>
-			            </goals>
-			            <configuration>
-			                <dataFile>${sonar.jacoco.reportPath}</dataFile>
-			                <outputDirectory>${project.basedir}/target/site/jacoco</outputDirectory>
-			            </configuration>
-			        </execution>
-			        <!-- Will see build errors while running the test cases because of dual 
-									instrumentation -->
-			        <execution>
-			            <id>default-instrument</id>
-			            <goals>
-			                <goal>instrument</goal>
-			            </goals>
-			        </execution>
-			        <execution>
-			            <id>default-restore-instrumented-classes</id>
-			            <goals>
-			                <goal>restore-instrumented-classes</goal>
-			            </goals>
-			        </execution>
-			        <!-- Integration Tests (Only report goal) -->
-			        <execution>
-			            <id>report-integration</id>
-			            <goals>
-			                <goal>report-integration</goal>
-			            </goals>
-			            <configuration>
-			                <dataFile>${sonar.jacoco.itReportPath}</dataFile>
-			                <outputDirectory>${project.basedir}/target/site/it-jacoco</outputDirectory>
-			            </configuration>
-			        </execution>
-			    </executions>
-			</plugin>
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.1</version>
-				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
-				</configuration>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.7.6.201602180812</version>
+				<inherited>True</inherited>
+				<executions>
+					<!-- Unit-Tests -->
+					<execution>
+						<id>prepare-agent</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+						<configuration>
+							<skipTests>false</skipTests>
+							<destFile>${sonar.jacoco.reportPath}</destFile>
+						</configuration>
+					</execution>
+					<execution>
+						<id>default-instrument</id>
+						<goals>
+							<goal>instrument</goal>
+						</goals>
+						<configuration>
+							<skipTests>false</skipTests>
+						</configuration>
+					</execution>
+					<execution>
+						<id>default-restore-instrumented-classes</id>
+						<phase>test</phase>
+						<goals>
+							<goal>restore-instrumented-classes</goal>
+						</goals>
+						<configuration>
+							<skipTests>false</skipTests>
+						</configuration>
+					</execution>
+					<execution>
+						<id>post-unit-test</id>
+						<phase>test</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+						<configuration>
+							<skipTests>false</skipTests>
+							<dataFile>${sonar.jacoco.reportPath}</dataFile>
+							<outputDirectory>${project.basedir}/target/site/jacoco</outputDirectory>
+						</configuration>
+					</execution>
+					<execution>
+						<id>report-integration</id>
+						<phase>test</phase>
+						<goals>
+							<goal>report-integration</goal>
+						</goals>
+						<configuration>
+							<skipTests>false</skipTests>
+							<dataFile>${sonar.jacoco.itReportPath}</dataFile>
+							<outputDirectory>${project.basedir}/target/site/it-jacoco</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 
 			<!-- Generate javadoc jar; see profile for Java 8 -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.10.3</version>
+				<version>3.0.0-M1</version>
 				<executions>
 					<execution>
 						<id>attach-javadocs</id>
@@ -170,7 +123,7 @@
 					<packagingExcludes>WEB-INF/lib/*.jar</packagingExcludes>
 				</configuration>
 			</plugin>
-			
+
 			<!-- No deployment step for this project -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -275,7 +228,6 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		
 
 		<!-- Hibernate -->
 		<dependency>
@@ -346,11 +298,8 @@
 		</dependency>
 
 		<!-- Oracle JDBC driver -->
-<!-- 		<dependency>
-			<groupId>com.oracle</groupId>
-			<artifactId>ojdbc6</artifactId>
-			<version>11.2.0.4</version>
-		</dependency> -->
+		<!-- <dependency> <groupId>com.oracle</groupId> <artifactId>ojdbc6</artifactId> 
+			<version>11.2.0.4</version> </dependency> -->
 		<!-- Apache Tiles -->
 		<dependency>
 			<groupId>org.apache.tiles</groupId>
@@ -648,9 +597,9 @@
 			<version>1.8.5</version>
 		</dependency>
 		<dependency>
-		    <groupId>org.jacoco</groupId>
-		    <artifactId>jacoco-maven-plugin</artifactId>
-		    <version>0.7.6.201602180812</version>
+			<groupId>org.jacoco</groupId>
+			<artifactId>jacoco-maven-plugin</artifactId>
+			<version>0.7.6.201602180812</version>
 		</dependency>
 
 		<dependency>
@@ -680,38 +629,37 @@
 		<dependency>
 			<groupId>io.springfox</groupId>
 			<artifactId>springfox-swagger2</artifactId>
-			<version>2.5.0</version>
+			<version>2.7.0</version>
 		</dependency>
 		<dependency>
 			<groupId>io.springfox</groupId>
 			<artifactId>springfox-swagger-ui</artifactId>
-			<version>2.5.0</version>
+			<version>2.7.0</version>
 		</dependency>
-		
+
 		<!-- Schedulers required Libraries -->
-		
+
 		<dependency>
-            <groupId>com.googlecode.json-simple</groupId>
-            <artifactId>json-simple</artifactId>
-            <version>1.1.1</version>
-        </dependency>
- 		<dependency>
-            <groupId>org.glassfish.jersey.core</groupId>
-            <artifactId>jersey-client</artifactId>
-            <version>2.23.1</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.jaxrs</groupId>
-            <artifactId>jackson-jaxrs-json-provider</artifactId>
-            <version>2.6.3</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.jersey.connectors</groupId>
-            <artifactId>jersey-jetty-connector</artifactId>
-            <version>2.23.1</version>
-        </dependency>
+			<groupId>com.googlecode.json-simple</groupId>
+			<artifactId>json-simple</artifactId>
+			<version>1.1.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish.jersey.core</groupId>
+			<artifactId>jersey-client</artifactId>
+			<version>2.23.1</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.jaxrs</groupId>
+			<artifactId>jackson-jaxrs-json-provider</artifactId>
+			<version>2.6.3</version>
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish.jersey.connectors</groupId>
+			<artifactId>jersey-jetty-connector</artifactId>
+			<version>2.23.1</version>
+		</dependency>
 	</dependencies>
-	
 
 	<!-- No deployment descriptor. -->
 

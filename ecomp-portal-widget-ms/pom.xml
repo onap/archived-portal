@@ -2,65 +2,68 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.openecomp.portal</groupId>
+
+	<parent>
+		<groupId>org.onap.portal</groupId>
+		<artifactId>onap-portal-parent</artifactId>
+		<version>1.3.0-SNAPSHOT</version>
+	</parent>
+
 	<artifactId>widget-ms-parent</artifactId>
-	<version>1.3.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
-        <modules>
-                <!-- Child modules do NOT name this parent. -->
-                <!-- Defined for build convenience only! -->
-                <!-- This POM names only ONAP projects -->      
-                <module>common-widgets</module>
-                <module>widget-ms</module>     
-        </modules>
+	<modules>
+		<module>common-widgets</module>
+		<!-- The widget-ms module uses Spring; it cannot name this parent. -->
+		<module>widget-ms</module>
+	</modules>
 
-        <build>
-                <plugins>
-                        <!-- No deployment step for this project -->
-                        <plugin>
-                                <groupId>org.apache.maven.plugins</groupId>
-                                <artifactId>maven-deploy-plugin</artifactId>
-                                <version>2.8</version>
-                                <configuration>
-                                        <skip>true</skip>
-                                </configuration>
-                        </plugin>
+	<build>
+		<plugins>
+			<!-- No deployment step for this project -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-deploy-plugin</artifactId>
+				<version>2.8</version>
+				<configuration>
+					<skip>true</skip>
+				</configuration>
+			</plugin>
 
-				<plugin>
-						<groupId>org.jacoco</groupId>
-						<artifactId>jacoco-maven-plugin</artifactId>
-						<version>0.7.6.201602180812</version>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.7.6.201602180812</version>
+				<configuration>
+					<skip>true</skip>
+				</configuration>
+				<inherited>True</inherited>
+				<executions>
+					<!-- Unit-Tests -->
+					<execution>
+						<id>prepare-agent</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+						<phase>test</phase>
 						<configuration>
-							<skip>true</skip>
+							<destFile>${sonar.jacoco.reportPath}</destFile>
 						</configuration>
-						<inherited>True</inherited>
-						<executions>
-							<!-- Unit-Tests -->
-							<execution>
-								<id>prepare-agent</id>
-								<goals>
-									<goal>prepare-agent</goal>
-								</goals>
-								<phase>test</phase>
-								<configuration>
-									<destFile>${sonar.jacoco.reportPath}</destFile>
-								</configuration>
-							</execution>
-							<execution>
-								<id>report</id>
-								<goals>
-									<goal>report</goal>
-								</goals>
-								<phase>test</phase>
-								<configuration>
-									<dataFile>${sonar.jacoco.reportPath}</dataFile>
-									<outputDirectory>${project.basedir}/target/site/jacoco</outputDirectory>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
-                </plugins>
-        </build>
+					</execution>
+					<execution>
+						<id>report</id>
+						<goals>
+							<goal>report</goal>
+						</goals>
+						<phase>test</phase>
+						<configuration>
+							<dataFile>${sonar.jacoco.reportPath}</dataFile>
+							<outputDirectory>${project.basedir}/target/site/jacoco</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 
 </project>

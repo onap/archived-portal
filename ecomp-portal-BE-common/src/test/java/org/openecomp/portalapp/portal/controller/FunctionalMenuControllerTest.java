@@ -1,21 +1,39 @@
 /*-
- * ================================================================================
- * ECOMP Portal
- * ================================================================================
- * Copyright (C) 2017 AT&T Intellectual Property
- * ================================================================================
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
+ * ============LICENSE_START==========================================
+ * ONAP Portal
+ * ===================================================================
+ * Copyright © 2017 AT&T Intellectual Property. All rights reserved.
+ * ===================================================================
+ *
+ * Unless otherwise specified, all software contained herein is licensed
+ * under the Apache License, Version 2.0 (the “License”);
+ * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
- * 
- *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
+ *             http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * ================================================================================
+ *
+ * Unless otherwise specified, all documentation contained herein is licensed
+ * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * you may not use this documentation except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *             https://creativecommons.org/licenses/by/4.0/
+ *
+ * Unless required by applicable law or agreed to in writing, documentation
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * ============LICENSE_END============================================
+ *
+ * ECOMP is a trademark and service mark of AT&T Intellectual Property.
  */
 package org.openecomp.portalapp.portal.controller;
 
@@ -84,6 +102,8 @@ public class FunctionalMenuControllerTest extends MockitoTestSuite {
 
 	@Mock
 	AdminRolesService adminRolesService = new AdminRolesServiceImpl();
+	
+	NullPointerException nullPointerException = new NullPointerException();
 
 	@Before
 	public void setup() {
@@ -200,6 +220,16 @@ public class FunctionalMenuControllerTest extends MockitoTestSuite {
 	}
 	
 	@Test
+	public void getMenuItemsExceptionTest(){
+		List<FunctionalMenuItem> actualmenuItems = null;
+		List<FunctionalMenuItem> expectedmenuItems = null;
+		
+		Mockito.when(functionalMenuController.getMenuItemsForAuthUser(mockedRequest, mockedResponse)).thenThrow(nullPointerException);
+		actualmenuItems = functionalMenuController.getMenuItemsForAuthUser(mockedRequest, mockedResponse);
+		assertEquals(actualmenuItems, expectedmenuItems);
+	}
+	
+	@Test
 	public void getFunctionalMenuStaticInfoExceptionTest(){
 		String fnMenuStaticactualResponse = null;
 		String fnMenuStaticexpectedResponse = null;
@@ -274,6 +304,20 @@ public class FunctionalMenuControllerTest extends MockitoTestSuite {
 	}
 	
 	@Test
+	public void getFunctionalMenuItemDetailsExceptionTest(){
+		Integer menuId = 1234;
+		FunctionalMenuItem actualmenuItem = null;
+		FunctionalMenuItem expectedmenuItem = null;
+		EPUser user = mockUser.mockEPUser();
+		Mockito.when(adminRolesService.isSuperAdmin(user)).thenReturn(true);	
+		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
+		Mockito.when(functionalMenuService.getFunctionalMenuItemDetails(menuId)).thenThrow(nullPointerException);	
+		
+		actualmenuItem = functionalMenuController.getFunctionalMenuItemDetails(mockedRequest, menuId, mockedResponse);
+		assertEquals(actualmenuItem, expectedmenuItem);
+	}
+	
+	@Test
 	public void getFunctionalMenuItemDetailsTest(){
 		Integer menuId = 1234;
 		FunctionalMenuItem actualmenuItem = null;
@@ -314,6 +358,27 @@ public class FunctionalMenuControllerTest extends MockitoTestSuite {
 	}
 	
 	@Test
+	public void getMenuItemsForEditingExceptionTest(){
+		List<FunctionalMenuItem> actualMenuItems = null;
+		List<FunctionalMenuItem> expectedMenuItems = null;
+		EPUser user = mockUser.mockEPUser();
+		Mockito.when(adminRolesService.isSuperAdmin(user)).thenReturn(true);	
+		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
+		Mockito.when(functionalMenuService.getFunctionalMenuItems(true)).thenThrow(nullPointerException);
+		actualMenuItems = functionalMenuController.getMenuItemsForEditing(mockedRequest, mockedResponse);
+		assertEquals(actualMenuItems, expectedMenuItems);
+	}
+	
+	@Test
+	public void getMenuItemsForNotificationsExceptionTest(){
+		List<FunctionalMenuItem> actualMenuItems = null;
+		List<FunctionalMenuItem> expectedMenuItems = null;
+		Mockito.when(functionalMenuService.getFunctionalMenuItemsForNotificationTree(true)).thenThrow(nullPointerException);	
+		
+		actualMenuItems = functionalMenuController.getMenuItemsForNotifications(mockedRequest, mockedResponse);
+		assertEquals(actualMenuItems, expectedMenuItems);
+	}
+	@Test
 	public void getMenuItemsForNotificationsTest(){
 		List<FunctionalMenuItem> actualMenuItems = null;
 		List<FunctionalMenuItem> expectedMenuItems = new ArrayList<FunctionalMenuItem>();
@@ -335,11 +400,33 @@ public class FunctionalMenuControllerTest extends MockitoTestSuite {
 	}
 	
 	@Test
+	public void getMenuItemsForAppExceptionTest(){
+		Integer appId = 1234;
+		List<FunctionalMenuItem> actualMenuItems = null;
+		List<FunctionalMenuItem> expectedMenuItems = null;
+		Mockito.when(functionalMenuService.getFunctionalMenuItemsForApp(appId)).thenThrow(nullPointerException);
+		
+		actualMenuItems = functionalMenuController.getMenuItemsForApp(mockedRequest, appId);
+		assertEquals(actualMenuItems, expectedMenuItems);		
+	}
+	
+	@Test
 	public void getMenuItemsForUserTest(){
 		String orgUserId ="test";
 		List<FunctionalMenuItem> actualMenuItems = null;
 		List<FunctionalMenuItem> expectedMenuItems = null;
 		Mockito.when(functionalMenuService.getFunctionalMenuItemsForUser(orgUserId)).thenReturn(actualMenuItems);                
+		
+		actualMenuItems = functionalMenuController.getMenuItemsForUser(mockedRequest, orgUserId);
+		assertEquals(actualMenuItems, expectedMenuItems);		
+	}
+	
+	@Test
+	public void getMenuItemsForUserExceptionTest(){
+		String orgUserId ="test";
+		List<FunctionalMenuItem> actualMenuItems = null;
+		List<FunctionalMenuItem> expectedMenuItems = null;
+		Mockito.when(functionalMenuService.getFunctionalMenuItemsForUser(orgUserId)).thenThrow(nullPointerException);                
 		
 		actualMenuItems = functionalMenuController.getMenuItemsForUser(mockedRequest, orgUserId);
 		assertEquals(actualMenuItems, expectedMenuItems);		
@@ -499,6 +586,20 @@ public class FunctionalMenuControllerTest extends MockitoTestSuite {
 		expectedportalRestResponse.setResponse("Portal");
 		PowerMockito.mockStatic(SystemProperties.class);
 		Mockito.when(SystemProperties.getProperty(SystemProperties.APP_DISPLAY_NAME)).thenReturn("Portal");
+		actualportalRestResponse = functionalMenuController.getECOMPTitle(mockedRequest, mockedResponse);
+		assertEquals(actualportalRestResponse, expectedportalRestResponse);
+	}
+	
+	@Test
+	public void getECOMPTitleExceptionTest(){
+		PortalRestResponse<String> actualportalRestResponse = null;
+		PortalRestResponse<String> expectedportalRestResponse = new PortalRestResponse<String>();
+		expectedportalRestResponse.setStatus(PortalRestStatusEnum.ERROR);
+		expectedportalRestResponse.setMessage(null);
+		expectedportalRestResponse.setResponse(null);
+		PowerMockito.mockStatic(SystemProperties.class);
+		
+		Mockito.when(SystemProperties.getProperty(SystemProperties.APP_DISPLAY_NAME)).thenThrow(nullPointerException);
 		actualportalRestResponse = functionalMenuController.getECOMPTitle(mockedRequest, mockedResponse);
 		assertEquals(actualportalRestResponse, expectedportalRestResponse);
 	}

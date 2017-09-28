@@ -5,7 +5,7 @@
 set -x
 
 TIMESTAMP=$(date +%C%y%m%dT%H%M%S)
-export VERSION="1.1.0-SNAPSHOT-${TIMESTAMP}"
+export VERSION="1.3.0-SNAPSHOT-${TIMESTAMP}"
 export LATEST="latest"
 
 exec ./os_docker_base.sh

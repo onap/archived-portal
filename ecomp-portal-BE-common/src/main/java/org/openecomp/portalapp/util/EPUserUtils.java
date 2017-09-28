@@ -1,31 +1,47 @@
 /*-
- * ================================================================================
- * ECOMP Portal
- * ================================================================================
- * Copyright (C) 2017 AT&T Intellectual Property
- * ================================================================================
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
+ * ============LICENSE_START==========================================
+ * ONAP Portal
+ * ===================================================================
+ * Copyright © 2017 AT&T Intellectual Property. All rights reserved.
+ * ===================================================================
+ *
+ * Unless otherwise specified, all software contained herein is licensed
+ * under the Apache License, Version 2.0 (the “License”);
+ * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
- * 
- *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
+ *             http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * ================================================================================
+ *
+ * Unless otherwise specified, all documentation contained herein is licensed
+ * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * you may not use this documentation except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *             https://creativecommons.org/licenses/by/4.0/
+ *
+ * Unless required by applicable law or agreed to in writing, documentation
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * ============LICENSE_END============================================
+ *
+ * ECOMP is a trademark and service mark of AT&T Intellectual Property.
  */
 package org.openecomp.portalapp.util;
 
-import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -33,24 +49,15 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Restrictions;
-import org.hibernate.transform.Transformers;
-import org.openecomp.portalapp.portal.domain.CentralRoleFunction;
 import org.openecomp.portalapp.portal.domain.EPRole;
 import org.openecomp.portalapp.portal.domain.EPUser;
 import org.openecomp.portalapp.portal.domain.EPUserApp;
 import org.openecomp.portalapp.portal.service.EPRoleFunctionService;
-import org.openecomp.portalapp.portal.utils.EcompPortalUtils;
 import org.openecomp.portalsdk.core.domain.RoleFunction;
 import org.openecomp.portalsdk.core.exception.SessionExpiredException;
 import org.openecomp.portalsdk.core.lm.FusionLicenseManager;
 import org.openecomp.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.openecomp.portalsdk.core.menu.MenuBuilder;
-import org.openecomp.portalsdk.core.onboarding.util.PortalApiConstants;
-import org.openecomp.portalsdk.core.onboarding.util.PortalApiProperties;
 import org.openecomp.portalsdk.core.service.DataAccessService;
 import org.openecomp.portalsdk.core.util.SystemProperties;
 import org.openecomp.portalsdk.core.web.support.AppUtils;
@@ -65,9 +72,6 @@ public class EPUserUtils {
 	public static final String ALL_ROLE_FUNCTIONS = "allRoleFunctions";
 
 	private static DataAccessService dataAccessService;
-	
-	@Autowired
-	private static SessionFactory sessionFactory;
 
 	/**
 	 * Gets the EPUser object from the session.
@@ -98,8 +102,8 @@ public class EPUserUtils {
 	 *            Menu data
 	 * @param loginMethod_ignored
 	 *            How the user authenticated; ignored
-	 * @param allRoleFunctions
-	 *            Set of user's roles
+	 * @param ePRoleFunctionService
+	 *            role function service
 	 */
 	@SuppressWarnings("rawtypes")
 	public static void setUserSession(HttpServletRequest request, EPUser user, Set applicationMenuData,
@@ -111,9 +115,9 @@ public class EPUserUtils {
 		session.setAttribute(SystemProperties.getProperty(SystemProperties.USER_ATTRIBUTE_NAME), user);
 
 		setAllRoleFunctions(ePRoleFunctionService.getRoleFunctions(), session);
-		
-		ePRoleFunctionService.getRoleFunctions(request,user);
-			
+
+		ePRoleFunctionService.getRoleFunctions(request, user);
+
 		// truncate the role (and therefore the role function) data to save
 		// memory in the session
 		user.setEPRoles(null);
@@ -190,10 +194,9 @@ public class EPUserUtils {
 		session.removeAttribute(SystemProperties.getProperty(SystemProperties.ROLE_FUNCTIONS_ATTRIBUTE_NAME));
 	}
 
-
 	/**
-	 * Gets role information from the user session, in the cached user object.
-	 * As a side effect sets a session variable with the roles.
+	 * Gets role information from the user session, in the cached user object. As a
+	 * side effect sets a session variable with the roles.
 	 * 
 	 * @param request
 	 *            HttpServletRequest
@@ -352,7 +355,7 @@ public class EPUserUtils {
 				}
 			}
 		} catch (Exception e) {
-			logger.error(EELFLoggerDelegate.errorLogger, "HEADER!!!! Exception : " + EcompPortalUtils.getStackTrace(e));
+			logger.error(EELFLoggerDelegate.errorLogger, "getRequestId failed", e);
 		}
 
 		return (requestId.isEmpty() ? UUID.randomUUID().toString() : requestId);

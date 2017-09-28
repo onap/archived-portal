@@ -1,21 +1,39 @@
 /*-
- * ================================================================================
- * ECOMP Portal
- * ================================================================================
- * Copyright (C) 2017 AT&T Intellectual Property
- * ================================================================================
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
+ * ============LICENSE_START==========================================
+ * ONAP Portal
+ * ===================================================================
+ * Copyright © 2017 AT&T Intellectual Property. All rights reserved.
+ * ===================================================================
+ *
+ * Unless otherwise specified, all software contained herein is licensed
+ * under the Apache License, Version 2.0 (the “License”);
+ * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
- * 
- *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
+ *             http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * ================================================================================
+ *
+ * Unless otherwise specified, all documentation contained herein is licensed
+ * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * you may not use this documentation except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *             https://creativecommons.org/licenses/by/4.0/
+ *
+ * Unless required by applicable law or agreed to in writing, documentation
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * ============LICENSE_END============================================
+ *
+ * ECOMP is a trademark and service mark of AT&T Intellectual Property.
  */
 
 package org.openecomp.portalapp.portal.service;
@@ -340,9 +358,10 @@ public class UserRolesCommonServiceImpl  {
 			transaction.commit();
 			result = true;
 		} catch (Exception e) {
+			logger.error(EELFLoggerDelegate.errorLogger, "syncUserRoles failed", e);
 			EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeDaoSystemError, e);
 			EcompPortalUtils.rollbackTransaction(transaction,
-					"Exception occurred in syncUserRoles, Details: " + EcompPortalUtils.getStackTrace(e));
+					"Exception occurred in syncUserRoles, Details: " + e.toString());
 			if("DELETE".equals(reqType)){
 				throw new Exception(e.getMessage());
 			}
@@ -557,9 +576,10 @@ public class UserRolesCommonServiceImpl  {
 			transaction.commit();
 			logger.debug(EELFLoggerDelegate.debugLogger, "syncAppRoles: committed the transaction");
 		} catch (Exception e) {
+			logger.error(EELFLoggerDelegate.errorLogger, "syncAppRoles failed", e);
 			EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeDaoSystemError, e);
 			EcompPortalUtils.rollbackTransaction(transaction,
-					"syncAppRoles: Exception occurred in syncAppRoles, Details: " + EcompPortalUtils.getStackTrace(e));
+					"Exception occurred in syncAppRoles, Details: " + e.toString());
 			throw new Exception(e);
 		} finally {
 			localSession.close();
@@ -1693,7 +1713,8 @@ public class UserRolesCommonServiceImpl  {
 		try {
 			logger.error(EELFLoggerDelegate.errorLogger,"Should not be reached here, still the endpoint is yet to be defined");
 			boolean result = postUserRolesToMylogins(userAppRolesData, applicationsRestClientService, userAppRolesData.appId, user.getId());
-			
+			logger.debug(EELFLoggerDelegate.debugLogger,"putUserAppRolesRequest: result {}", result);
+						
 			params.put("appId", userAppRolesData.appId);
 			EPUserAppRolesRequest epAppRolesRequestData = new EPUserAppRolesRequest();
 			epAppRolesRequestData.setCreatedDate(new Date());

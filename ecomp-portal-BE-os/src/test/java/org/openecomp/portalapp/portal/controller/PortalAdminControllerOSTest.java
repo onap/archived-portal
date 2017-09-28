@@ -1,4 +1,41 @@
-/*package org.openecomp.portalapp.portal.controller;
+/*-
+ * ============LICENSE_START==========================================
+ * ONAP Portal
+ * ===================================================================
+ * Copyright © 2017 AT&T Intellectual Property. All rights reserved.
+ * ===================================================================
+ *
+ * Unless otherwise specified, all software contained herein is licensed
+ * under the Apache License, Version 2.0 (the “License”);
+ * you may not use this software except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *             http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Unless otherwise specified, all documentation contained herein is licensed
+ * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * you may not use this documentation except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *             https://creativecommons.org/licenses/by/4.0/
+ *
+ * Unless required by applicable law or agreed to in writing, documentation
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * ============LICENSE_END============================================
+ *
+ * ECOMP is a trademark and service mark of AT&T Intellectual Property.
+ */
+package org.openecomp.portalapp.portal.controller;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -17,14 +54,15 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.openecomp.portalapp.portal.domain.EPRole;
 import org.openecomp.portalapp.portal.domain.EPUser;
+import org.openecomp.portalapp.portal.framework.MockEPUser;
+import org.openecomp.portalapp.portal.framework.MockitoTestSuite;
 import org.openecomp.portalapp.portal.service.AdminRolesService;
 import org.openecomp.portalapp.portal.service.AdminRolesServiceImpl;
 import org.openecomp.portalapp.portal.service.PortalAdminService;
 import org.openecomp.portalapp.portal.service.PortalAdminServiceImpl;
-import org.openecomp.portalapp.portal.test.core.MockEPUser;
 import org.openecomp.portalapp.portal.transport.FieldsValidator;
+import org.openecomp.portalapp.portal.transport.PortalAdmin;
 import org.openecomp.portalapp.portal.utils.EcompPortalUtils;
-import org.openecomp.portalapp.test.framework.MockitoTestSuite;
 import org.openecomp.portalapp.util.EPUserUtils;
 import org.openecomp.portalsdk.core.service.AuditService;
 import org.openecomp.portalsdk.core.service.AuditServiceImpl;
@@ -69,7 +107,7 @@ public class PortalAdminControllerOSTest {
 		EPUser user = mockUser.mockEPUser();
 		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
 		Mockito.when(adminRolesService.isSuperAdmin(user)).thenReturn(false);
-		String userInfo = "1-test";
+		Long userInfo = (long) 12;
 		assertNull(portalAdminController.deletePortalAdmin(mockedRequest, userInfo, mockedResponse));
 
 	}
@@ -85,11 +123,11 @@ public class PortalAdminControllerOSTest {
 		expectedFieldValidator.setFields(null);
 		expectedFieldValidator.setErrorCode(null);
 		FieldsValidator actualFieldValidator = new FieldsValidator();
-		String userInfo = "1-test";
+		Long userInfo = (long) 12;
 		Mockito.when(adminRolesService.isSuperAdmin(user)).thenReturn(true);
-		Mockito.when(portalAdminService.deletePortalAdmin((long) 1)).thenReturn(expectedFieldValidator);
+		Mockito.when(portalAdminService.deletePortalAdmin((long) 12)).thenReturn(expectedFieldValidator);
 		actualFieldValidator = portalAdminController.deletePortalAdmin(mockedRequest, userInfo, mockedResponse);
-       assertEquals(actualFieldValidator,expectedFieldValidator);
+        assertEquals(actualFieldValidator,expectedFieldValidator);
 
 	}
 	
@@ -99,7 +137,7 @@ public class PortalAdminControllerOSTest {
 		EPUser user = mockUser.mockEPUser();
 		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
 		Mockito.when(adminRolesService.isSuperAdmin(user)).thenReturn(false);
-		String userInfo = "";
+		Long userInfo = null;
 		assertNull(portalAdminController.deletePortalAdmin(mockedRequest, userInfo, mockedResponse));
 	}
 	
@@ -138,5 +176,66 @@ public class PortalAdminControllerOSTest {
 		List<EPRole> actualRoleList = 	portalAdminController.getRolesByApp(mockedRequest, appId, mockedResponse);
 		assertEquals(actualRoleList,expectedRoleList);
 	}
+	
+	@Test
+	public void createPortalAdminIfUserNullTest()
+	{
+		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(null);
+		assertNull(portalAdminController.createPortalAdmin(mockedRequest, "guestT", mockedResponse));
+	}
+	
+	
+	@Test
+	public void createPortalAdminIfUserIsSuperAdminTest()
+	{
+
+		EPUser user = mockUser.mockEPUser();
+		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
+		FieldsValidator expectedFieldValidator = new FieldsValidator();
+		expectedFieldValidator.setHttpStatusCode((long) 200);
+		expectedFieldValidator.setFields(null);
+		expectedFieldValidator.setErrorCode(null);
+		FieldsValidator actualFieldValidator = new FieldsValidator();
+		Mockito.when(adminRolesService.isSuperAdmin(user)).thenReturn(true);
+		Mockito.when(portalAdminService.createPortalAdmin("guestT")).thenReturn(expectedFieldValidator);
+		actualFieldValidator = portalAdminController.createPortalAdmin(mockedRequest, "guestT", mockedResponse);
+        assertEquals(actualFieldValidator,expectedFieldValidator);
+	}
+	
+	@Test
+	public void createPortalAdminIfUserIsNotSuperAdminTest()
+	{
+		EPUser user = mockUser.mockEPUser();
+		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
+		Mockito.when(adminRolesService.isSuperAdmin(user)).thenReturn(false);
+		assertNull(portalAdminController.createPortalAdmin(mockedRequest, "guestT", mockedResponse));
+	}
+		
+	@Test
+	public void getPortalAdminsIfUserNullTest()
+	{
+		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(null);
+		assertNull(portalAdminController.getPortalAdmins(mockedRequest, mockedResponse));
+	}
+	
+	@Test
+	public void getPortalAdminsIfUserAdminTest()
+	{
+		EPUser user = mockUser.mockEPUser();
+		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
+		List<PortalAdmin> portalAdmins = new ArrayList<>();
+		Mockito.when(adminRolesService.isSuperAdmin(user)).thenReturn(true);
+		Mockito.when(portalAdminService.getPortalAdmins()).thenReturn(portalAdmins);
+		List<PortalAdmin> actualortalAdmins = portalAdminController.getPortalAdmins(mockedRequest, mockedResponse);
+        assertEquals(actualortalAdmins,portalAdmins);
+	}
+	
+	@Test
+	public void getPortalAdminIfUserIsNotSuperAdminTest()
+	{
+		EPUser user = mockUser.mockEPUser();
+		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
+		Mockito.when(adminRolesService.isSuperAdmin(user)).thenReturn(false);
+		assertNull(portalAdminController.getPortalAdmins(mockedRequest, mockedResponse));
+	}
 }
-*/

@@ -1,21 +1,39 @@
 /*-
- * ================================================================================
- * ECOMP Portal
- * ================================================================================
- * Copyright (C) 2017 AT&T Intellectual Property
- * ================================================================================
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
+ * ============LICENSE_START==========================================
+ * ONAP Portal
+ * ===================================================================
+ * Copyright © 2017 AT&T Intellectual Property. All rights reserved.
+ * ===================================================================
+ *
+ * Unless otherwise specified, all software contained herein is licensed
+ * under the Apache License, Version 2.0 (the “License”);
+ * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
- * 
- *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
+ *             http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * ================================================================================
+ *
+ * Unless otherwise specified, all documentation contained herein is licensed
+ * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * you may not use this documentation except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *             https://creativecommons.org/licenses/by/4.0/
+ *
+ * Unless required by applicable law or agreed to in writing, documentation
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * ============LICENSE_END============================================
+ *
+ * ECOMP is a trademark and service mark of AT&T Intellectual Property.
  */
 package org.openecomp.portalapp.service.sessionmgt;
 
@@ -27,14 +45,6 @@ import java.util.UUID;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.slf4j.MDC;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-
-import com.att.eelf.configuration.Configuration;
-import org.openecomp.portalsdk.core.exception.UrlAccessRestrictedException;
-import org.openecomp.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.openecomp.portalapp.portal.logging.aop.EPAuditLog;
 import org.openecomp.portalapp.portal.logging.aop.EPMetricsLog;
 import org.openecomp.portalapp.portal.logging.format.EPAppMessagesEnum;
@@ -42,31 +52,39 @@ import org.openecomp.portalapp.portal.logging.logic.EPLogUtil;
 import org.openecomp.portalapp.portal.transport.OnboardingApp;
 import org.openecomp.portalapp.portal.utils.EPCommonSystemProperties;
 import org.openecomp.portalapp.portal.utils.EcompPortalUtils;
+import org.openecomp.portalsdk.core.exception.UrlAccessRestrictedException;
+import org.openecomp.portalsdk.core.logging.logic.EELFLoggerDelegate;
+import org.slf4j.MDC;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
+import com.att.eelf.configuration.Configuration;
 
 @Service("sessionCommunication")
 @org.springframework.context.annotation.Configuration
 @EnableAspectJAutoProxy
 public class SessionCommunication {
 	EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(SessionCommunication.class);
-	
+
 	@EPAuditLog
 	public String sendGet(OnboardingApp app) throws Exception {
 		String appResponse = "";
-		String appName = "Unknwon";
+		String appName = "";
 		int responseCode = 0;
 		if (app != null && app.name != null && app.name != "") {
-			try {		
-				appName = app.name;				
+			try {
+				appName = app.name;
 				String url = app.restUrl + "/sessionTimeOuts";
 				String encriptedPwdDB = app.appPassword;
 				String appUserName = app.username;
-	
+
 				setLocalMDCContext(app, "/sessionTimeOuts", url);
-	
+
 				URL obj = new URL(url);
-	
+
 				HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-	
+
 				// optional default is GET
 				con.setRequestMethod("GET");
 				con.setConnectTimeout(3000);
@@ -74,36 +92,37 @@ public class SessionCommunication {
 				// add request header
 				con.setRequestProperty("username", appUserName);
 				con.setRequestProperty("password", encriptedPwdDB);
-	
+
 				// con.set
 				responseCode = con.getResponseCode();
 				logger.debug(EELFLoggerDelegate.debugLogger, "Response Code : " + responseCode);
-							
+
 				BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
 				String inputLine;
 				StringBuffer response = new StringBuffer();
-	
+
 				while ((inputLine = in.readLine()) != null) {
 					response.append(inputLine);
 				}
-	
+
 				in.close();
 				appResponse = response.toString();
 			} catch (UrlAccessRestrictedException e) {
 				responseCode = HttpServletResponse.SC_UNAUTHORIZED;
-				logger.error(EELFLoggerDelegate.errorLogger, String.format("SessionCommunication.sendGet received an un-authorized exception. AppName: %s", appName));
+				logger.error(EELFLoggerDelegate.errorLogger, String.format(
+						"SessionCommunication.sendGet received an un-authorized exception. AppName: %s", appName));
 				EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeRestApiAuthenticationError, e);
 			} catch (Exception e) {
 				responseCode = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
 				String message = String.format(
 						"SessionCommunication.sendGet encountered an Exception. AppName: %s, Details: %s", appName,
-						EcompPortalUtils.getStackTrace(e));
+						e.toString());
 				EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeHttpConnectionError, e);
-				logger.error(EELFLoggerDelegate.errorLogger, message);
+				logger.error(EELFLoggerDelegate.errorLogger, message, e);
 			} finally {
 				EcompPortalUtils.setExternalAppResponseCode(responseCode);
 			}
-		}else{
+		} else {
 			logger.error(EELFLoggerDelegate.errorLogger, "SessionCommunication sendGet: app is null");
 		}
 		return appResponse;
@@ -111,19 +130,17 @@ public class SessionCommunication {
 
 	@EPAuditLog
 	public Boolean pingSession(OnboardingApp app, String sessionTimeoutMap) throws Exception {
-		String appName = "Unknwon";
+		String appName = "";
 		int responseCode = 0;
 		try {
-			if(app==null)
-				throw new Exception("SessionCommunication.pingSession app is null");
+			if (app == null)
+				throw new Exception("SessionCommunication.pingSession: app is null");
 			if (app != null && app.name != null && app.name != "") {
 				appName = app.name;
 			}
 			String url = app.restUrl + "/updateSessionTimeOuts";
 			String encriptedPwdDB = app.appPassword;
 			String appUserName = app.username;
-			// String decreptedPwd = CipherUtil.decrypt(encriptedPwdDB,
-			// SystemProperties.getProperty(SystemProperties.Decryption_Key));
 
 			setLocalMDCContext(app, "/updateSessionTimeOuts", url);
 
@@ -158,14 +175,13 @@ public class SessionCommunication {
 		} catch (Exception e) {
 			responseCode = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
 			String message = String.format(
-					"SessionCommunication.pingSession encountered an Exception. AppName: %s, Details: %s", appName,
-					EcompPortalUtils.getStackTrace(e));
+					"SessionCommunication.pingSession encountered an Exception. AppName: %s, Details: %s", appName, e.toString());
 			EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeHttpConnectionError, e);
-			logger.error(EELFLoggerDelegate.errorLogger, message);
+			logger.error(EELFLoggerDelegate.errorLogger, message, e);
 		} finally {
 			EcompPortalUtils.setExternalAppResponseCode(responseCode);
 		}
-		
+
 		return true;
 	}
 
@@ -177,51 +193,52 @@ public class SessionCommunication {
 			try {
 				appName = app.name;
 				String url = app.restUrl + "/timeoutSession" + "?portalJSessionId=" + portalJSessionId;
-	
+
 				String encriptedPwdDB = app.appPassword;
 				String appUserName = app.username;
 				// String decreptedPwd = CipherUtil.decrypt(encriptedPwdDB,
 				// SystemProperties.getProperty(SystemProperties.Decryption_Key));
-	
+
 				setLocalMDCContext(app, "/timeoutSession", url);
-	
+
 				URL obj = new URL(url);
 				HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-	
+
 				// optional default is GET
 				con.setRequestMethod("POST");
 				con.setConnectTimeout(3000);
 				con.setReadTimeout(15000);
-	
+
 				// add request header
 				con.setRequestProperty("username", appUserName);
 				con.setRequestProperty("password", encriptedPwdDB);
-	
+
 				// con.setRequestProperty("portalJSessionId", portalJSessionId);
 				con.setDoInput(true);
 				con.setDoOutput(true);
 				con.getOutputStream().flush();
 				con.getOutputStream().close();
-	
+
 				responseCode = con.getResponseCode();
 				logger.debug(EELFLoggerDelegate.debugLogger, "Response Code : " + responseCode);
 			} catch (UrlAccessRestrictedException e) {
 				responseCode = HttpServletResponse.SC_UNAUTHORIZED;
 				String message = String.format(
-						"SessionCommunication.timeoutSession received an un-authorized exception. AppName: %s", appName);
+						"SessionCommunication.timeoutSession received an un-authorized exception. AppName: %s",
+						appName);
 				logger.error(EELFLoggerDelegate.errorLogger, message);
 				EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeRestApiAuthenticationError, e);
 			} catch (Exception e) {
 				responseCode = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
 				String message = String.format(
-						"SessionCommunication.timeoutSession encountered an Exception. AppName: %s, Details: %s", appName,
-						EcompPortalUtils.getStackTrace(e));
+						"SessionCommunication.timeoutSession encountered an Exception. AppName: %s, Details: %s", 
+						appName, e.toString());
 				EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeHttpConnectionError, e);
-				logger.error(EELFLoggerDelegate.errorLogger, message);
+				logger.error(EELFLoggerDelegate.errorLogger, message, e);
 			} finally {
 				EcompPortalUtils.setExternalAppResponseCode(responseCode);
 			}
-		}else{
+		} else {
 			logger.error(EELFLoggerDelegate.errorLogger, "SessionCommunication pingSession: app is null");
 		}
 		return true;
@@ -231,18 +248,17 @@ public class SessionCommunication {
 	private void setLocalMDCContext(OnboardingApp app, String restPath, String url) {
 		setRequestId();
 		MDC.put(EPCommonSystemProperties.PROTOCOL, EPCommonSystemProperties.HTTP);
-		if (url!=null && url.contains("https")) {
+		if (url != null && url.contains("https")) {
 			MDC.put(EPCommonSystemProperties.PROTOCOL, EPCommonSystemProperties.HTTPS);
 		}
 		MDC.put(EPCommonSystemProperties.FULL_URL, url);
 		MDC.put(EPCommonSystemProperties.TARGET_ENTITY, app.myLoginsAppName);
 		MDC.put(EPCommonSystemProperties.TARGET_SERVICE_NAME, restPath);
 	}
-	
+
 	/**
-	 * Generates request id, service name fields and loads them
-	 * into MDC, as these values could be empty as these
-	 * session timeout requests are generated at 
+	 * Generates request id, service name fields and loads them into MDC, as these
+	 * values could be empty as these session timeout requests are generated at
 	 * scheduled intervals using quartz scheduler.
 	 */
 	@EPMetricsLog
@@ -251,15 +267,15 @@ public class SessionCommunication {
 		if (StringUtils.isEmpty(requestId)) {
 			MDC.put(Configuration.MDC_KEY_REQUEST_ID, UUID.randomUUID().toString());
 		}
-		
+
 		MDC.put(Configuration.MDC_SERVICE_NAME, "/quartz/keepSessionAlive");
 		MDC.put(EPCommonSystemProperties.PARTNER_NAME, EPCommonSystemProperties.ECOMP_PORTAL_BE);
 	}
-	
+
 	/**
-	 * Remove the values from MDC as these requests are 
-	 * executed at regular intervals based on quartz rather
-	 * incoming REST API requests.
+	 * Remove the values from MDC as these requests are executed at regular
+	 * intervals based on quartz rather incoming REST API requests.
+	 * 
 	 * @param bAll
 	 */
 	@EPMetricsLog

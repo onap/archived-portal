@@ -1,58 +1,20 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.onap.portal</groupId>
+	<parent>
+		<groupId>org.onap.portal</groupId>
+		<artifactId>onap-portal-parent</artifactId>
+		<version>1.3.0-SNAPSHOT</version>
+	</parent>
+
 	<artifactId>ecompportal-be-os</artifactId>
 	<packaging>war</packaging>
-	<version>1.1</version>
 
 	<properties>
-		<portal.version>1.3.0-SNAPSHOT</portal.version>
-		<epsdk.version>1.3.0</epsdk.version>
-		<!-- Jenkins SHOULD invoke mvn with argument -Dbuild.number=${BUILD_NUMBER} -->
-		<build.number>0</build.number>
-		<springframework.version>4.2.0.RELEASE</springframework.version>
-		<hibernate.version>4.3.11.Final</hibernate.version>
-		<eelf.version>1.0.0</eelf.version>
-		<encoding>UTF-8</encoding>
-		<!-- If skipTests is false use this command to generate the report:
-			mvn clean jacoco:prepare-agent install jacoco:report  -->
+		<!-- If skipTests is false use this command to generate the report: mvn 
+			clean jacoco:prepare-agent install jacoco:report -->
 		<skipTests>false</skipTests>
-		<skipCoverage>false</skipCoverage>		
-		<jacoco.data.file>${project.build.directory}/coverage-reports/jacoco-ut.exec</jacoco.data.file>
-		<sonar-jacoco-listeners.version>3.8</sonar-jacoco-listeners.version>
-		<sonar.core.codeCoveragePlugin>jacoco</sonar.core.codeCoveragePlugin>
-        <sonar.jacoco.reportPath>${project.build.directory}/code-coverage/jacoco.exec</sonar.jacoco.reportPath>
-		<sonar.jacoco.itReportPath>${project.build.directory}/code-coverage/jacoco-it.exec</sonar.jacoco.itReportPath>
-		<!-- Note: This list should match jacoco-maven-plugin's exclusion list below -->
-		<sonar.exclusions>**.js</sonar.exclusions>
-		<nexusproxy>https://nexus.onap.org</nexusproxy>
-		<snapshotNexusPath>content/repositories/snapshots/</snapshotNexusPath>
-		<stagingNexusPath>content/repositories/staging/</stagingNexusPath>
-		<releaseNexusPath>content/repositories/releases/</releaseNexusPath>
 	</properties>
-
-	<repositories>
-		<repository>
-			<id>onap-releases</id>
-			<name>ONAP - Release Repository</name>
-			<url>${nexusproxy}/${releaseNexusPath}</url>
-		</repository>
-		<repository>
-			<id>onap-staging</id>
-			<name>ONAP - Staging Repository</name>
-			<url>${nexusproxy}/${stagingNexusPath}</url>
-		</repository>
-		<repository>
-			<id>onap-snapshots</id>
-			<name>ONAP - Snapshot Repository</name>
-			<url>${nexusproxy}/${snapshotNexusPath}</url>
-		</repository>
-		<repository>
-			<id>onap-public</id>
-			<url>${nexusproxy}/content/groups/public</url>
-		</repository>
-	</repositories>
 
 	<build>
 		<sourceDirectory>src/main/java</sourceDirectory>
@@ -78,76 +40,72 @@
 				</dependencies>
 			</plugin>
 			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.1</version>
-				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
-				</configuration>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.7.6.201602180812</version>
+				<inherited>True</inherited>
+				<executions>
+					<!-- Unit-Tests -->
+					<execution>
+						<id>prepare-agent</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+						<configuration>
+							<skipTests>false</skipTests>
+							<destFile>${sonar.jacoco.reportPath}</destFile>
+						</configuration>
+					</execution>
+					<execution>
+						<id>default-instrument</id>
+						<goals>
+							<goal>instrument</goal>
+						</goals>
+						<configuration>
+							<skipTests>false</skipTests>
+						</configuration>
+					</execution>
+					<execution>
+						<id>default-restore-instrumented-classes</id>
+						<phase>test</phase>
+						<goals>
+							<goal>restore-instrumented-classes</goal>
+						</goals>
+						<configuration>
+							<skipTests>false</skipTests>
+						</configuration>
+					</execution>
+					<execution>
+						<id>post-unit-test</id>
+						<phase>test</phase>
+
+						<goals>
+							<goal>report</goal>
+						</goals>
+						<configuration>
+							<skipTests>false</skipTests>
+							<dataFile>${sonar.jacoco.reportPath}</dataFile>
+							<outputDirectory>${project.basedir}/target/site/jacoco</outputDirectory>
+						</configuration>
+					</execution>
+					<!-- Will see build errors while running the test cases because of dual 
+						instrumentation -->
+
+					<!-- Integration Tests (Only report goal) -->
+					<execution>
+						<id>report-integration</id>
+						<phase>test</phase>
+						<goals>
+							<goal>report-integration</goal>
+						</goals>
+						<configuration>
+							<skipTests>false</skipTests>
+							<dataFile>${sonar.jacoco.itReportPath}</dataFile>
+							<outputDirectory>${project.basedir}/target/site/it-jacoco</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
-						<plugin>
-			    <groupId>org.jacoco</groupId>
-			    <artifactId>jacoco-maven-plugin</artifactId>
-			    <version>0.7.6.201602180812</version>
-			    <executions>
-			        <execution>
-			            <id>prepare-agent</id>
-			            <goals>
-			                <goal>prepare-agent</goal>
-			            </goals>
-			            <phase>test</phase>
-			            <configuration>
-			                <destFile>${sonar.jacoco.reportPath}</destFile>
-			                <skip>${skipCoverage}</skip>
-			            </configuration>
-			        </execution>
-			        <execution>
-			            <id>report</id>
-			            <goals>
-			                <goal>report</goal>
-			            </goals>
-			            <phase>test</phase>
-			            <configuration>
-			                <dataFile>${sonar.jacoco.reportPath}</dataFile>
-			                <outputDirectory>${project.basedir}/target/site/jacoco</outputDirectory>
-			                <skip>${skipCoverage}</skip>
-			            </configuration>
-			        </execution>
-			        <!-- Integration Tests (Only report goal) -->
-			        <execution>
-			            <id>report-integration</id>
-			            <goals>
-			                <goal>report-integration</goal>
-			            </goals>
-			            <configuration>
-			                <dataFile>${sonar.jacoco.itReportPath}</dataFile>
-			                <outputDirectory>${project.basedir}/target/site/it-jacoco</outputDirectory>
-			                <skip>${skipCoverage}</skip>
-			            </configuration>
-			        </execution>
-			        <!-- Will see build errors while running the test cases because of dual 
-									instrumentation -->
-			        <execution>
-			            <id>default-instrument</id>
-			            <goals>
-			                <goal>instrument</goal>
-			            </goals>
-			            <configuration>
-			                <skip>${skipCoverage}</skip>
-			            </configuration>
-			        </execution>
-			        <execution>
-			            <id>default-restore-instrumented-classes</id>
-			            <goals>
-			                <goal>restore-instrumented-classes</goal>
-			            </goals>
-			            <configuration>
-			                <skip>${skipCoverage}</skip>
-			            </configuration>
-			        </execution>
-			    </executions>
-			</plugin>
-			
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
@@ -190,7 +148,7 @@
 						</manifestEntries>
 					</archive>
 					<overlays>
-						<!-- specify the order in which these should be applied -->						
+						<!-- specify the order in which these should be applied -->
 						<overlay>
 							<groupId>org.onap.portal</groupId>
 							<artifactId>ecompportal-be-common</artifactId>
@@ -198,7 +156,7 @@
 						<overlay>
 							<groupId>org.onap.portal.sdk</groupId>
 							<artifactId>epsdk-app-overlay</artifactId>
-						</overlay>						
+						</overlay>
 					</overlays>
 				</configuration>
 			</plugin>
@@ -279,23 +237,6 @@
 							</resources>
 						</configuration>
 					</execution>
-<!-- 					<execution> -->
-<!-- 						<id>copy-src</id> -->
-<!-- 						<phase>generate-resources</phase> -->
-<!-- 						<goals> -->
-<!-- 							<goal>copy-resources</goal> -->
-<!-- 						</goals> -->
-<!-- 						<configuration> -->
-<!-- 							<outputDirectory>${basedir}/target/classes</outputDirectory> -->
-<!-- 							<overwrite>false</overwrite> -->
-<!-- 							<skip>${skipTests}</skip> -->
-<!-- 							<resources> -->
-<!-- 								<resource> -->
-<!-- 									<directory>${basedir}/../ecomp-portal-BE-common/target/classes</directory> -->
-<!-- 								</resource> -->
-<!-- 							</resources> -->
-<!-- 						</configuration> -->
-<!-- 					</execution> -->
 				</executions>
 			</plugin>
 		</plugins>
@@ -340,29 +281,6 @@
 	</build>
 
 	<dependencies>
-	<!--  
-		<dependency>
-			<groupId>com.att.eelf</groupId>
-			<artifactId>eelf-core</artifactId>
-			<version>${eelf.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.mockito</groupId>
-					<artifactId>mockito-core</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.powermock</groupId>
-					<artifactId>powermock-module-junit4</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-	
-		<dependency>
-			<groupId>com.google.code.gson</groupId>
-			<artifactId>gson</artifactId>
-			<version>2.5</version>
-		</dependency>
-	-->
 		<!-- Spring -->
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -414,18 +332,12 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-
 		<!-- Hibernate -->
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
 			<version>${hibernate.version}</version>
 		</dependency>
-
-		<!-- jsr303 validation -->
-		<!-- <dependency> <groupId>javax.validation</groupId> <artifactId>validation-api</artifactId> 
-			<version>1.1.0.Final</version> </dependency> -->
-
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-validator</artifactId>
@@ -464,7 +376,6 @@
 			<artifactId>cxf-rt-rs-client</artifactId>
 			<version>3.0.0-milestone1</version>
 		</dependency>
-
 		<!-- Mapper -->
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
@@ -486,14 +397,12 @@
 			<artifactId>classmate</artifactId>
 			<version>1.3.1</version>
 		</dependency>
-	
 		<!-- Use Mariadb connector/j for failover -->
 		<dependency>
 			<groupId>org.mariadb.jdbc</groupId>
 			<artifactId>mariadb-java-client</artifactId>
 			<version>1.5.8</version>
 		</dependency>
-		
 		<!-- Elastic Search -->
 		<dependency>
 			<groupId>org.elasticsearch</groupId>
@@ -505,7 +414,6 @@
 			<artifactId>jest</artifactId>
 			<version>2.0.0</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.apache.jcs</groupId>
 			<artifactId>jcs</artifactId>
@@ -517,14 +425,12 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-
 		<dependency>
 			<groupId>org.apache.tomcat</groupId>
 			<artifactId>tomcat-websocket</artifactId>
 			<version>8.0.28</version>
 			<scope>provided</scope>
 		</dependency>
-
 		<!-- Raptor required Libraries -->
 		<!-- for static charts -->
 		<dependency>
@@ -593,10 +499,6 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-
-		<!-- <dependency> <groupId>com.lowagie</groupId> <artifactId>itext</artifactId> 
-			<version>2.0.8</version> <exclusions> <exclusion> <groupId>org.bouncycastle</groupId> 
-			<artifactId>bcprov-jdk14</artifactId> </exclusion> </exclusions> </dependency> -->
 		<!-- Quartz -->
 		<dependency>
 			<groupId>org.quartz-scheduler</groupId>
@@ -610,13 +512,11 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-
 		<dependency>
 			<groupId>commons-codec</groupId>
 			<artifactId>commons-codec</artifactId>
 			<version>1.9</version>
 		</dependency>
-
 		<dependency>
 			<groupId>com.att.nsa</groupId>
 			<artifactId>cambriaClient</artifactId>
@@ -640,7 +540,6 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-
 		<!-- SDK overlay war -->
 		<dependency>
 			<groupId>org.onap.portal.sdk</groupId>
@@ -648,30 +547,26 @@
 			<version>${epsdk.version}</version>
 			<type>war</type>
 		</dependency>
-
 		<dependency>
 			<groupId>org.onap.portal.sdk</groupId>
 			<artifactId>epsdk-app-common</artifactId>
 			<version>${epsdk.version}</version>
 			<type>jar</type>
 		</dependency>
-
 		<!-- EcompPortal common overlay -->
 		<dependency>
 			<groupId>org.onap.portal</groupId>
 			<artifactId>ecompportal-be-common</artifactId>
-			<version>${portal.version}</version>
+			<version>${project.version}</version>
 			<type>war</type>
 		</dependency>
-
 		<dependency>
 			<groupId>org.onap.portal</groupId>
 			<artifactId>ecompportal-be-common</artifactId>
-			<version>${portal.version}</version>
+			<version>${project.version}</version>
 			<type>jar</type>
 			<classifier>classes</classifier>
 		</dependency>
-
 		<dependency>
 			<groupId>org.onap.portal.sdk</groupId>
 			<artifactId>epsdk-fw</artifactId>
@@ -695,19 +590,16 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-
 		<dependency>
 			<groupId>org.onap.portal.sdk</groupId>
 			<artifactId>epsdk-core</artifactId>
 			<version>${epsdk.version}</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.onap.portal.sdk</groupId>
 			<artifactId>epsdk-workflow</artifactId>
 			<version>${epsdk.version}</version>
 		</dependency>
-
 		<!-- Raptor required Libraries -->
 		<!-- for static charts -->
 		<dependency>
@@ -715,7 +607,6 @@
 			<artifactId>epsdk-analytics</artifactId>
 			<version>${epsdk.version}</version>
 		</dependency>
-
 		<!-- Referenced by some poms and needed for testing; do NOT use "test" 
 			scope here. -->
 		<dependency>
@@ -723,7 +614,6 @@
 			<artifactId>httpclient</artifactId>
 			<version>4.5.2</version>
 		</dependency>
-
 		<!-- for testing -->
 		<dependency>
 			<groupId>junit</groupId>
@@ -752,14 +642,11 @@
 			<version>1.8.5</version>
 			<scope>test</scope>
 		</dependency>
-        <dependency>
+		<dependency>
 			<groupId>commons-beanutils</groupId>
 			<artifactId>commons-beanutils</artifactId>
 			<version>1.9.2</version>
 		</dependency>
-         
-         
-		
 		<!-- OpenID Connect Dependencies -->
 		<dependency>
 			<groupId>org.mitre</groupId>
@@ -772,7 +659,6 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-taglibs</artifactId>
@@ -784,7 +670,6 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-
 		<dependency>
 			<groupId>org.aspectj</groupId>
 			<artifactId>aspectjrt</artifactId>
@@ -795,7 +680,6 @@
 			<artifactId>aspectjweaver</artifactId>
 			<version>1.8.9</version>
 		</dependency>
-
 	</dependencies>
 
 	<reporting>
@@ -803,7 +687,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.10.4</version>
+				<version>3.0.0-M1</version>
 				<configuration>
 					<failOnError>false</failOnError>
 					<doclet>org.umlgraph.doclet.UmlGraphDoc</doclet>
@@ -816,15 +700,8 @@
 					<useStandardDocletOptions>true</useStandardDocletOptions>
 				</configuration>
 			</plugin>
-			
+
 		</plugins>
 	</reporting>
-
-	<distributionManagement>
-		<site>
-			<id>ecomp-site</id>
-			<url>dav:${nexusproxy}/content/sites/site/org/onap/portal/${project.version}</url>
-		</site>
-	</distributionManagement>
 
 </project>

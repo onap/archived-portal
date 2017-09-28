@@ -1,3 +1,40 @@
+/*-
+ * ============LICENSE_START==========================================
+ * ONAP Portal
+ * ===================================================================
+ * Copyright © 2017 AT&T Intellectual Property. All rights reserved.
+ * ===================================================================
+ *
+ * Unless otherwise specified, all software contained herein is licensed
+ * under the Apache License, Version 2.0 (the “License”);
+ * you may not use this software except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *             http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Unless otherwise specified, all documentation contained herein is licensed
+ * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * you may not use this documentation except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *             https://creativecommons.org/licenses/by/4.0/
+ *
+ * Unless required by applicable law or agreed to in writing, documentation
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * ============LICENSE_END============================================
+ *
+ * ECOMP is a trademark and service mark of AT&T Intellectual Property.
+ */
 package org.openecomp.portalapp.portal.controller;
 
 import static org.junit.Assert.assertEquals;
@@ -15,13 +52,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.openecomp.portalapp.portal.framework.MockitoTestSuite;
-import org.openecomp.portalapp.portal.controller.MicroserviceController;
 import org.openecomp.portalapp.portal.domain.MicroserviceData;
 import org.openecomp.portalapp.portal.domain.WidgetCatalog;
 import org.openecomp.portalapp.portal.domain.WidgetServiceHeaders;
 import org.openecomp.portalapp.portal.ecomp.model.PortalRestResponse;
 import org.openecomp.portalapp.portal.ecomp.model.PortalRestStatusEnum;
+import org.openecomp.portalapp.portal.framework.MockitoTestSuite;
 import org.openecomp.portalapp.portal.service.ConsulHealthService;
 import org.openecomp.portalapp.portal.service.ConsulHealthServiceImpl;
 import org.openecomp.portalapp.portal.service.MicroserviceService;
@@ -39,7 +75,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest(WidgetServiceHeaders.class)
+@PrepareForTest({WidgetServiceHeaders.class, EcompPortalUtils.class})
 public class MicroserviceControllerTest extends MockitoTestSuite{
 
 	@InjectMocks
@@ -164,6 +200,7 @@ public class MicroserviceControllerTest extends MockitoTestSuite{
 	public void deleteMicroserviceExceptionTest() throws Exception {
 		PortalRestResponse<String> expectedportalRestResponse = new PortalRestResponse<String>();
 		expectedportalRestResponse.setMessage("FAILURE");
+		PowerMockito.mockStatic(EcompPortalUtils.class);
 		expectedportalRestResponse.setResponse(
 				"I/O error on GET request for \""  + EcompPortalUtils.widgetMsProtocol() + "://null/widget/microservices/widgetCatalog/service/1\":null; nested exception is java.net.UnknownHostException: null");
 		PortalRestStatusEnum portalRestStatusEnum = null;
@@ -191,13 +228,14 @@ public class MicroserviceControllerTest extends MockitoTestSuite{
 		List.add(widgetCatalog);
 		List.add(widgetCatalog1);
 		PowerMockito.mockStatic(WidgetServiceHeaders.class);
+		PowerMockito.mockStatic(EcompPortalUtils.class);
 		String whatService = "widgets-service";
 		Mockito.when(consulHealthService.getServiceLocation(whatService, SystemProperties.getProperty("microservices.widget.local.port"))).thenReturn("Test");
 		Mockito.when(ans.getBody()).thenReturn(List);
 		ParameterizedTypeReference<List<WidgetCatalog>> typeRef = new ParameterizedTypeReference<List<WidgetCatalog>>() {
 		};
 		Mockito.when(template.exchange(
-				HTTPS + consulHealthService.getServiceLocation(whatService, SystemProperties.getProperty("microservices.widget.local.port"))
+				EcompPortalUtils.widgetMsProtocol() + "://" + consulHealthService.getServiceLocation(whatService, SystemProperties.getProperty("microservices.widget.local.port"))
 						+ "/widget/microservices/widgetCatalog/service/" + 1,
 				HttpMethod.GET, new HttpEntity(WidgetServiceHeaders.getInstance()), typeRef)).thenReturn(ans);
 
@@ -216,6 +254,7 @@ public class MicroserviceControllerTest extends MockitoTestSuite{
 		expectedportalRestResponse.setStatus(portalRestStatusEnum.OK);
 		List<WidgetCatalog> List = new ArrayList<WidgetCatalog>();
 		PowerMockito.mockStatic(WidgetServiceHeaders.class);
+		PowerMockito.mockStatic(EcompPortalUtils.class);
 		String whatService = "widgets-service";
 		Mockito.when(consulHealthService.getServiceLocation(whatService, SystemProperties.getProperty("microservices.widget.local.port"))).thenReturn("Test");
 		Mockito.when(ans.getBody()).thenReturn(List);
