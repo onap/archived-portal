@@ -10,7 +10,7 @@ version: '2.0'
 services:
 
   cli:
-    image: onap/cli:${PORTAL_TAG}
+    image: ${CLI_IMG_NAME}:${PORTAL_TAG}
     environment:
       CLI_MODE: 'daemon'
     expose:

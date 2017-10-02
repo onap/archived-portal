@@ -20,13 +20,14 @@ source $(dirname $0)/.env
 # Build the containers
 ./build_portalapps_dockers.sh
 
-APPS_VERSION="${NEXUS_REPO}/openecomp/${EP_IMG_NAME}:${VERSION}"
-DB_VERSION="${NEXUS_REPO}/openecomp/${DB_IMG_NAME}:${VERSION}"
-WMS_VERSION="${NEXUS_REPO}/openecomp/${WMS_IMG_NAME}:${VERSION}"
+PREFIX=onap
+APPS_VERSION="${NEXUS_REPO}/${PREFIX}/${EP_IMG_NAME}:${VERSION}"
+DB_VERSION="${NEXUS_REPO}/${PREFIX}/${DB_IMG_NAME}:${VERSION}"
+WMS_VERSION="${NEXUS_REPO}/${PREFIX}/${WMS_IMG_NAME}:${VERSION}"
 
-APPS_LATEST="${NEXUS_REPO}/openecomp/${EP_IMG_NAME}:${LATEST}"
-DB_LATEST="${NEXUS_REPO}/openecomp/${DB_IMG_NAME}:${LATEST}"
-WMS_LATEST="${NEXUS_REPO}/openecomp/${WMS_IMG_NAME}:${LATEST}"
+APPS_LATEST="${NEXUS_REPO}/${PREFIX}/${EP_IMG_NAME}:${LATEST}"
+DB_LATEST="${NEXUS_REPO}/${PREFIX}/${DB_IMG_NAME}:${LATEST}"
+WMS_LATEST="${NEXUS_REPO}/${PREFIX}/${WMS_IMG_NAME}:${LATEST}"
 
 # tag versions
 docker tag ${EP_IMG_NAME}:${PORTAL_TAG} ${APPS_VERSION}
@@ -38,7 +39,7 @@ docker tag ${DB_IMG_NAME}:${PORTAL_TAG} ${DB_LATEST}
 docker tag ${WMS_IMG_NAME}:${PORTAL_TAG} ${WMS_VERSION}
 docker tag ${WMS_IMG_NAME}:${PORTAL_TAG} ${WMS_LATEST}
 
-# push
+# push to registry
 docker push ${APPS_VERSION}
 docker push ${APPS_LATEST}
 
