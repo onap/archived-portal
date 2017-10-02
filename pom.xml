@@ -3,12 +3,12 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<!--<parent>
+	<parent>
 		<groupId>org.onap.oparent</groupId>
 		<artifactId>oparent</artifactId>
 		<version>0.1.1</version>
 		<relativePath />
-	</parent>-->
+	</parent>
 
 	<groupId>org.onap.portal</groupId>
 	<artifactId>onap-portal-parent</artifactId>
@@ -34,19 +34,8 @@
 		<eelf.version>1.0.0</eelf.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<encoding>UTF-8</encoding>
-		<sonar.language>java</sonar.language>
-		<sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
-		<sonar.skipDesign>true</sonar.skipDesign>
-		<sonar.surefire.reportsPath>${project.build.directory}/surefire-reports</sonar.surefire.reportsPath>
-		<sonar.jacoco.reportPath>${project.basedir}/target/jacoco.exec</sonar.jacoco.reportPath>
-		<sonar.jacoco.itReportPath>${project.basedir}/target/it-jacoco.exec</sonar.jacoco.itReportPath>
-		<sonar.jacoco.reportMissing.force.zero>true</sonar.jacoco.reportMissing.force.zero>
-		<sonar.projectVersion>${project.version}</sonar.projectVersion>
-		<sonar.skipDesign>true</sonar.skipDesign>
-		<sonar.projectBaseDir>${project.basedir}</sonar.projectBaseDir>
-		<sonar.exclusions>**/scripts/**/*,**.js</sonar.exclusions>
-		<sonar.test.exclusions>**/test/**/*,**/tests/**/*</sonar.test.exclusions>
-		<!--<sonar.java.binaries>.</sonar.java.binaries>-->
+                <sonar.exclusions>**/scripts/**/*,**.js</sonar.exclusions>
+                <sonar.test.exclusions>**/test/**/*,**/tests/**/*</sonar.test.exclusions>
 	</properties>
 
 	<!-- Specify the repositories here to avoid coordination of ~/.m2/settings.xml 
@@ -149,11 +138,6 @@
 						<source>1.8</source>
 						<target>1.8</target>
 					</configuration>
-				</plugin>
-				<plugin>
-					<groupId>org.sonarsource.scanner.maven</groupId>
-					<artifactId>sonar-maven-plugin</artifactId>
-					<version>3.0.2</version>
 				</plugin>
 			</plugins>
 		</pluginManagement>
