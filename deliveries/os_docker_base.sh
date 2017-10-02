@@ -14,20 +14,23 @@ if [ -z "$LATEST" ]; then
     exit 1
 fi
 
+# ONAP docker registry for pushing; may need to move
+# this into os_docker_push, os_docker_release scripts
+NEXUS_REPO=nexus3.onap.org:10003
+
 # Establish environment variables
 source $(dirname $0)/.env
 
 # Build the containers
 ./build_portalapps_dockers.sh
 
-PREFIX=onap
-APPS_VERSION="${NEXUS_REPO}/${PREFIX}/${EP_IMG_NAME}:${VERSION}"
-DB_VERSION="${NEXUS_REPO}/${PREFIX}/${DB_IMG_NAME}:${VERSION}"
-WMS_VERSION="${NEXUS_REPO}/${PREFIX}/${WMS_IMG_NAME}:${VERSION}"
+APPS_VERSION="${NEXUS_REPO}/${EP_IMG_NAME}:${VERSION}"
+DB_VERSION="${NEXUS_REPO}/${DB_IMG_NAME}:${VERSION}"
+WMS_VERSION="${NEXUS_REPO}/${WMS_IMG_NAME}:${VERSION}"
 
-APPS_LATEST="${NEXUS_REPO}/${PREFIX}/${EP_IMG_NAME}:${LATEST}"
-DB_LATEST="${NEXUS_REPO}/${PREFIX}/${DB_IMG_NAME}:${LATEST}"
-WMS_LATEST="${NEXUS_REPO}/${PREFIX}/${WMS_IMG_NAME}:${LATEST}"
+APPS_LATEST="${NEXUS_REPO}/${EP_IMG_NAME}:${LATEST}"
+DB_LATEST="${NEXUS_REPO}/${DB_IMG_NAME}:${LATEST}"
+WMS_LATEST="${NEXUS_REPO}/${WMS_IMG_NAME}:${LATEST}"
 
 # tag versions
 docker tag ${EP_IMG_NAME}:${PORTAL_TAG} ${APPS_VERSION}
