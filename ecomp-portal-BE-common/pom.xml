@@ -19,69 +19,6 @@
 		<finalName>${project.artifactId}</finalName>
 
 		<plugins>
-			<plugin>
-				<groupId>org.jacoco</groupId>
-				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.7.6.201602180812</version>
-				<inherited>True</inherited>
-				<executions>
-					<!-- Unit-Tests -->
-					<execution>
-						<id>prepare-agent</id>
-						<goals>
-							<goal>prepare-agent</goal>
-						</goals>
-						<configuration>
-							<skipTests>false</skipTests>
-							<destFile>${sonar.jacoco.reportPath}</destFile>
-						</configuration>
-					</execution>
-					<execution>
-						<id>default-instrument</id>
-						<goals>
-							<goal>instrument</goal>
-						</goals>
-						<configuration>
-							<skipTests>false</skipTests>
-						</configuration>
-					</execution>
-					<execution>
-						<id>default-restore-instrumented-classes</id>
-						<phase>test</phase>
-						<goals>
-							<goal>restore-instrumented-classes</goal>
-						</goals>
-						<configuration>
-							<skipTests>false</skipTests>
-						</configuration>
-					</execution>
-					<execution>
-						<id>post-unit-test</id>
-						<phase>test</phase>
-						<goals>
-							<goal>report</goal>
-						</goals>
-						<configuration>
-							<skipTests>false</skipTests>
-							<dataFile>${sonar.jacoco.reportPath}</dataFile>
-							<outputDirectory>${project.basedir}/target/site/jacoco</outputDirectory>
-						</configuration>
-					</execution>
-					<execution>
-						<id>report-integration</id>
-						<phase>test</phase>
-						<goals>
-							<goal>report-integration</goal>
-						</goals>
-						<configuration>
-							<skipTests>false</skipTests>
-							<dataFile>${sonar.jacoco.itReportPath}</dataFile>
-							<outputDirectory>${project.basedir}/target/site/it-jacoco</outputDirectory>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-
 			<!-- Generate javadoc jar; see profile for Java 8 -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -595,11 +532,6 @@
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-core</artifactId>
 			<version>1.8.5</version>
-		</dependency>
-		<dependency>
-			<groupId>org.jacoco</groupId>
-			<artifactId>jacoco-maven-plugin</artifactId>
-			<version>0.7.6.201602180812</version>
 		</dependency>
 
 		<dependency>

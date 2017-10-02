@@ -23,11 +23,6 @@
 
 		<plugins>
 			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>sonar-maven-plugin</artifactId>
-				<version>3.2</version>
-			</plugin>
-			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-site-plugin</artifactId>
 				<version>3.6</version>
@@ -38,73 +33,6 @@
 						<version>2.10</version>
 					</dependency>
 				</dependencies>
-			</plugin>
-			<plugin>
-				<groupId>org.jacoco</groupId>
-				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.7.6.201602180812</version>
-				<inherited>True</inherited>
-				<executions>
-					<!-- Unit-Tests -->
-					<execution>
-						<id>prepare-agent</id>
-						<goals>
-							<goal>prepare-agent</goal>
-						</goals>
-						<configuration>
-							<skipTests>false</skipTests>
-							<destFile>${sonar.jacoco.reportPath}</destFile>
-						</configuration>
-					</execution>
-					<execution>
-						<id>default-instrument</id>
-						<goals>
-							<goal>instrument</goal>
-						</goals>
-						<configuration>
-							<skipTests>false</skipTests>
-						</configuration>
-					</execution>
-					<execution>
-						<id>default-restore-instrumented-classes</id>
-						<phase>test</phase>
-						<goals>
-							<goal>restore-instrumented-classes</goal>
-						</goals>
-						<configuration>
-							<skipTests>false</skipTests>
-						</configuration>
-					</execution>
-					<execution>
-						<id>post-unit-test</id>
-						<phase>test</phase>
-
-						<goals>
-							<goal>report</goal>
-						</goals>
-						<configuration>
-							<skipTests>false</skipTests>
-							<dataFile>${sonar.jacoco.reportPath}</dataFile>
-							<outputDirectory>${project.basedir}/target/site/jacoco</outputDirectory>
-						</configuration>
-					</execution>
-					<!-- Will see build errors while running the test cases because of dual 
-						instrumentation -->
-
-					<!-- Integration Tests (Only report goal) -->
-					<execution>
-						<id>report-integration</id>
-						<phase>test</phase>
-						<goals>
-							<goal>report-integration</goal>
-						</goals>
-						<configuration>
-							<skipTests>false</skipTests>
-							<dataFile>${sonar.jacoco.itReportPath}</dataFile>
-							<outputDirectory>${project.basedir}/target/site/it-jacoco</outputDirectory>
-						</configuration>
-					</execution>
-				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
