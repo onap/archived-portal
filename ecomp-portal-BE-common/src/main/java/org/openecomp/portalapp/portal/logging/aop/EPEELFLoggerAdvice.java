@@ -102,14 +102,11 @@ public class EPEELFLoggerAdvice {
 	 */
 	public Object[] before(SecurityEventTypeEnum securityEventType, Object[] args, Object[] passOnArgs) {
 		String className = "";
-		if (passOnArgs[0] != null) {
+		if (passOnArgs.length > 0 && passOnArgs[0] != null)
 			className = passOnArgs[0].toString();
-		}
-
 		String methodName = "";
-		if (passOnArgs[1] != null) {
+		if (passOnArgs.length > 1 && passOnArgs[1] != null)
 			methodName = passOnArgs[1].toString();
-		}
 
 		// Initialize Request defaults only for controller methods.
 		MDC.put(className + methodName + EPCommonSystemProperties.METRICSLOG_BEGIN_TIMESTAMP, getCurrentDateTimeUTC());
@@ -119,7 +116,7 @@ public class EPEELFLoggerAdvice {
 			MDC.put(className + methodName + EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP,
 					getCurrentDateTimeUTC());
 			HttpServletRequest req = null;
-			if (args[0] != null && args[0] instanceof HttpServletRequest) {
+			if (args.length > 0 && args[0] != null && args[0] instanceof HttpServletRequest) {
 				req = (HttpServletRequest) args[0];
 				this.setHttpRequestBasedDefaultsIntoGlobalLoggingContext(req, securityEventType, methodName);
 			}
@@ -142,12 +139,11 @@ public class EPEELFLoggerAdvice {
 	public void after(SecurityEventTypeEnum securityEventType, String statusCode, String responseCode, Object[] args,
 			Object[] returnArgs, Object[] passOnArgs) {
 		String className = "";
-		if (passOnArgs[0] != null)
+		if (passOnArgs.length > 0 && passOnArgs[0] != null)
 			className = passOnArgs[0].toString();
-
 		// Method Name
 		String methodName = "";
-		if (passOnArgs[1] != null)
+		if (passOnArgs.length > 1 && passOnArgs[1] != null)
 			methodName = passOnArgs[1].toString();
 
 		if (MDC.get(EPCommonSystemProperties.TARGET_SERVICE_NAME) == null
@@ -167,7 +163,7 @@ public class EPEELFLoggerAdvice {
 		// Making sure to reload the INCOMING request MDC defaults if they have
 		// been wiped out by either Outgoing or LDAP Phone book search
 		// operations.
-		if (securityEventType != null && args[0] != null && args[0] instanceof HttpServletRequest
+		if (securityEventType != null && args.length > 0 && args[0] != null && args[0] instanceof HttpServletRequest
 				&& securityEventType == SecurityEventTypeEnum.INCOMING_REST_MESSAGE
 				&& (MDC.get(EPCommonSystemProperties.FULL_URL) == null
 						|| MDC.get(EPCommonSystemProperties.FULL_URL) == "")) {
