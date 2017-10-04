@@ -24,6 +24,8 @@
 		<java.version>1.8</java.version>
 		<hibernate.version>4.3.11.Final</hibernate.version>
 		<skipTests>true</skipTests>
+		<!-- Replicate this from OParent -->
+		<jacocoVersion>0.7.6.201602180812</jacocoVersion>
 	</properties>
 
 	<dependencies>
@@ -128,6 +130,13 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+		<!-- Jacoco offline instrumentation agent -->
+		<dependency>
+			<groupId>org.jacoco</groupId>
+			<artifactId>org.jacoco.agent</artifactId>
+			<version>${jacocoVersion}</version>
+			<classifier>runtime</classifier>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -150,6 +159,7 @@
 
 		<pluginManagement>
 			<plugins>
+				<!-- replicated from OParent -->
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-site-plugin</artifactId>
@@ -184,10 +194,28 @@
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.7.6.201602180812</version>
+				<version>${jacocoVersion}</version>
 				<executions>
+					<!-- disable jacoco executions from oparent -->
 					<execution>
-						<id>prepare-agent</id>
+						<id>pre-unit-test</id>
+						<phase>none</phase>
+					</execution>
+					<execution>
+						<id>post-unit-test</id>
+						<phase>none</phase>
+					</execution>
+					<execution>
+						<id>pre-integration-test</id>
+						<phase>none</phase>
+					</execution>
+					<execution>
+						<id>post-integration-test</id>
+						<phase>none</phase>
+					</execution>
+					<!-- Order matters -->
+					<execution>
+						<id>portal-prepare-agent</id>
 						<goals>
 							<goal>prepare-agent</goal>
 						</goals>
@@ -195,21 +223,22 @@
 							<destFile>${sonar.jacoco.reportPath}</destFile>
 						</configuration>
 					</execution>
+					<!-- offline instrumentation for PowerMock -->
 					<execution>
-						<id>default-instrument</id>
+						<id>portal-offline-instrument</id>
 						<goals>
 							<goal>instrument</goal>
 						</goals>
 					</execution>
 					<execution>
-						<id>default-restore-instrumented-classes</id>
+						<id>portal-restore-instrumented-classes</id>
 						<phase>test</phase>
 						<goals>
 							<goal>restore-instrumented-classes</goal>
 						</goals>
 					</execution>
 					<execution>
-						<id>post-unit-test</id>
+						<id>portal-post-unit-test</id>
 						<phase>test</phase>
 						<goals>
 							<goal>report</goal>
@@ -219,8 +248,17 @@
 							<outputDirectory>${project.basedir}/target/site/jacoco</outputDirectory>
 						</configuration>
 					</execution>
-			
 				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<systemPropertyVariables>
+						<jacoco-agent.destfile>${project.build.directory}/code-coverage/jacoco-ut.exec</jacoco-agent.destfile>
+					</systemPropertyVariables>
+				</configuration>
 			</plugin>
 		</plugins>
 

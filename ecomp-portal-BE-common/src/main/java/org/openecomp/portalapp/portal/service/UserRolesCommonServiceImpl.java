@@ -38,6 +38,7 @@
 
 package org.openecomp.portalapp.portal.service;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -48,6 +49,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
@@ -86,6 +88,7 @@ import org.openecomp.portalapp.portal.transport.ExternalRoleDescription;
 import org.openecomp.portalapp.portal.transport.FieldsValidator;
 import org.openecomp.portalapp.portal.transport.FunctionalMenuItem;
 import org.openecomp.portalapp.portal.transport.FunctionalMenuRole;
+import org.openecomp.portalapp.portal.transport.RemoteRole;
 import org.openecomp.portalapp.portal.transport.RemoteUserWithRoles;
 import org.openecomp.portalapp.portal.transport.RoleInAppForUser;
 import org.openecomp.portalapp.portal.transport.RolesInAppForUser;
@@ -111,14 +114,14 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @EPMetricsLog
-public class UserRolesCommonServiceImpl  {
+public class UserRolesCommonServiceImpl {
 
 	private static EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(UserRolesCommonServiceImpl.class);
 
 	private static final Object syncRests = new Object();
-	
+
 	@Autowired
-	private DataAccessService dataAccessService;				
+	private DataAccessService dataAccessService;
 	@Autowired
 	private SessionFactory sessionFactory;
 	@Autowired
@@ -130,17 +133,17 @@ public class UserRolesCommonServiceImpl  {
 	@Autowired
 	private EPRoleService epRoleService;
 	@Autowired
-	private RoleService roleService;	
-	
+	private RoleService roleService;
+
 	@Autowired
 	private ExternalAccessRolesService externalAccessRolesService;
-	
+
 	RestTemplate template = new RestTemplate();
-	
+
 	/**
 	 * 
 	 * @param ecompRoles
-	 * @return  HashMap<Long, EcompRole>
+	 * @return HashMap<Long, EcompRole>
 	 */
 	private static HashMap<Long, EcompRole> hashMapFromEcompRoles(EcompRole[] ecompRoles) {
 		HashMap<Long, EcompRole> result = new HashMap<Long, EcompRole>();
@@ -153,7 +156,7 @@ public class UserRolesCommonServiceImpl  {
 		}
 		return result;
 	}
-	
+
 	/**
 	 * 
 	 * @param userId
@@ -191,16 +194,19 @@ public class UserRolesCommonServiceImpl  {
 			EcompPortalUtils.closeLocalSession(localSession, "searchOrCreateUser");
 		}
 	}
-	
+
 	/**
-	 * This method return nothing and remove roles before adding any roles for an app
+	 * This method return nothing and remove roles before adding any roles for an
+	 * app
+	 * 
 	 * @param userRole
 	 * @param appId
 	 * @param localSession
 	 * @param userAppRoles
 	 * @param newUserAppRolesMap
 	 */
-	private static void syncUserRolesExtension(EPUserApp userRole, Long appId, Session localSession, EcompRole[] userAppRoles, HashMap<Long, EcompRole> newUserAppRolesMap) {
+	private static void syncUserRolesExtension(EPUserApp userRole, Long appId, Session localSession,
+			EcompRole[] userAppRoles, HashMap<Long, EcompRole> newUserAppRolesMap) {
 
 		Long userAppRoleId = 0L;
 		if (appId == PortalConstants.PORTAL_APP_ID) { // local app
@@ -215,32 +221,32 @@ public class UserRolesCommonServiceImpl  {
 			newUserAppRolesMap.remove(userAppRoleId);
 		}
 	}
-	
+
 	/**
 	 * Checks whether the role is inactive
-	 *  
+	 * 
 	 * @param epRole
 	 * @throws Exception
-	 * 			if role is inactive, throws exception
+	 *             if role is inactive, throws exception
 	 */
-	private void checkIfRoleInactive(EPRole epRole) throws Exception{	
-		if(!epRole.getActive()){
-			throw new Exception(epRole.getName()+ " role is unavailable");
+	private void checkIfRoleInactive(EPRole epRole) throws Exception {
+		if (!epRole.getActive()) {
+			throw new Exception(epRole.getName() + " role is unavailable");
 		}
 	}
-	
+
 	/**
 	 * 
 	 * @param sessionFactory
 	 * @param userId
 	 * @param appId
 	 * @param userAppRoles
-	 * @param extRequestValue 
-	 * 			set to false if request is from users page otherwise true
+	 * @param extRequestValue
+	 *            set to false if request is from users page otherwise true
 	 * @throws Exception
 	 */
-	protected void syncUserRoles(SessionFactory sessionFactory, String userId, Long appId,
-			EcompRole[] userAppRoles, Boolean extRequestValue, String reqType) throws Exception {
+	protected void syncUserRoles(SessionFactory sessionFactory, String userId, Long appId, EcompRole[] userAppRoles,
+			Boolean extRequestValue, String reqType) throws Exception {
 		boolean result = false;
 		Session localSession = null;
 		Transaction transaction = null;
@@ -261,28 +267,33 @@ public class UserRolesCommonServiceImpl  {
 				@SuppressWarnings("unchecked")
 				List<EPUserApp> userRoles = localSession.createQuery("from " + EPUserApp.class.getName()
 						+ " where app.id=" + appId + roleActive + " and userId=" + client.getId()).list();
-				
+
 				if ("DELETE".equals(reqType)) {
 					for (EPUserApp userAppRoleList : userRoles) {
 						userAppParams.put("roleName", String.valueOf(userAppRoleList.getRole().getName()));
-						userAppParams.put("appId",  String.valueOf(appId));
+						userAppParams.put("appId", String.valueOf(appId));
 						appParams.put("appRoleName", userAppRoleList.getRole().getName());
 						@SuppressWarnings("unchecked")
-						List<EPRole>  rolesList = (!userAppRoleList.getRole().getName().equals(PortalConstants.ADMIN_ROLE)) ? (List<EPRole>) dataAccessService.executeNamedQuery("getAppRoles", userAppParams, null) : (List<EPRole>) dataAccessService.executeNamedQuery("getPortalAppRoles", appParams, null);	
-						if(rolesList.size() > 0 || !rolesList.isEmpty()){
-						checkIfRoleInactive(rolesList.get(0));
+						List<EPRole> rolesList = (!userAppRoleList.getRole().getName()
+								.equals(PortalConstants.ADMIN_ROLE))
+										? (List<EPRole>) dataAccessService.executeNamedQuery("getAppRoles",
+												userAppParams, null)
+										: (List<EPRole>) dataAccessService.executeNamedQuery("getPortalAppRoles",
+												appParams, null);
+						if (rolesList.size() > 0 || !rolesList.isEmpty()) {
+							checkIfRoleInactive(rolesList.get(0));
 						}
 					}
 				}
 
 				for (EPUserApp userRole : userRoles) {
-					if (!userRole.getRoleId().equals(PortalConstants.ACCOUNT_ADMIN_ROLE_ID) && userRole.getRoleId() != PortalConstants.SYS_ADMIN_ROLE_ID && !extRequestValue){
+					if (!userRole.getRoleId().equals(PortalConstants.ACCOUNT_ADMIN_ROLE_ID)
+							&& userRole.getRoleId() != PortalConstants.SYS_ADMIN_ROLE_ID && !extRequestValue) {
 						syncUserRolesExtension(userRole, appId, localSession, userAppRoles, newUserAppRolesMap);
-						}
-					else if (extRequestValue && ("PUT".equals(reqType) || "POST".equals(reqType) || "DELETE".equals(reqType))){
+					} else if (extRequestValue
+							&& ("PUT".equals(reqType) || "POST".equals(reqType) || "DELETE".equals(reqType))) {
 						syncUserRolesExtension(userRole, appId, localSession, userAppRoles, newUserAppRolesMap);
-					}
-					else if (extRequestValue && !userRole.getRoleId().equals(PortalConstants.ACCOUNT_ADMIN_ROLE_ID)){
+					} else if (extRequestValue && !userRole.getRoleId().equals(PortalConstants.ACCOUNT_ADMIN_ROLE_ID)) {
 						syncUserRolesExtension(userRole, appId, localSession, userAppRoles, newUserAppRolesMap);
 					}
 				}
@@ -293,12 +304,13 @@ public class UserRolesCommonServiceImpl  {
 					HashMap<Long, EPRole> rolesMap = new HashMap<Long, EPRole>();
 					if (appId.equals(PortalConstants.PORTAL_APP_ID)) { // local app
 						String appIdValue = "";
-						if(!extRequestValue){
-							appIdValue = "and id != " +  PortalConstants.SYS_ADMIN_ROLE_ID; 
+						if (!extRequestValue) {
+							appIdValue = "and id != " + PortalConstants.SYS_ADMIN_ROLE_ID;
 						}
 						@SuppressWarnings("unchecked")
 						List<EPRole> roles = localSession
-								.createQuery("from " + EPRole.class.getName() + " where appId is null " + appIdValue).list();
+								.createQuery("from " + EPRole.class.getName() + " where appId is null " + appIdValue)
+								.list();
 						for (EPRole role : roles) {
 							role.setAppId(1L);
 							rolesMap.put(role.getId(), role);
@@ -319,15 +331,18 @@ public class UserRolesCommonServiceImpl  {
 					EPRole role = null;
 					for (EcompRole userRole : newRolesToAdd) {
 						EPUserApp userApp = new EPUserApp();
-						if (("PUT".equals(reqType) || "POST".equals(reqType)) && userRole.getName().equals(PortalConstants.ADMIN_ROLE)) {
-							role = (EPRole) localSession.get(EPRole.class, new Long(PortalConstants.ACCOUNT_ADMIN_ROLE_ID));
+						if (("PUT".equals(reqType) || "POST".equals(reqType))
+								&& userRole.getName().equals(PortalConstants.ADMIN_ROLE)) {
+							role = (EPRole) localSession.get(EPRole.class,
+									new Long(PortalConstants.ACCOUNT_ADMIN_ROLE_ID));
 							userApp.setRole(role);
-						} else if ((userRole.getId().equals(PortalConstants.ACCOUNT_ADMIN_ROLE_ID)) && !extRequestValue){
-								continue;
-						}else if((userRole.getId().equals(PortalConstants.SYS_ADMIN_ROLE_ID)) && app.getId().equals(PortalConstants.PORTAL_APP_ID) && !extRequestValue){
+						} else if ((userRole.getId().equals(PortalConstants.ACCOUNT_ADMIN_ROLE_ID))
+								&& !extRequestValue) {
 							continue;
-						}						
-						else {
+						} else if ((userRole.getId().equals(PortalConstants.SYS_ADMIN_ROLE_ID))
+								&& app.getId().equals(PortalConstants.PORTAL_APP_ID) && !extRequestValue) {
+							continue;
+						} else {
 							userApp.setRole(rolesMap.get(userRole.getId()));
 						}
 
@@ -339,19 +354,17 @@ public class UserRolesCommonServiceImpl  {
 
 					if (appId == PortalConstants.PORTAL_APP_ID) {
 						/*
-						 * for local app -- hack - always make sure fn_role
-						 * table's app_id is null and not 1 for primary app in
-						 * this case being ecomp portal app; reason: hibernate
-						 * is rightly setting this to 1 while persisting to
-						 * fn_role as per the mapping but SDK role management
-						 * code expects the app_id to be null as there is no
+						 * for local app -- hack - always make sure fn_role table's app_id is null and
+						 * not 1 for primary app in this case being ecomp portal app; reason: hibernate
+						 * is rightly setting this to 1 while persisting to fn_role as per the mapping
+						 * but SDK role management code expects the app_id to be null as there is no
 						 * concept of App_id in SDK
 						 */
 						localSession.flush();
 						SQLQuery sqlQuery = localSession
 								.createSQLQuery("update fn_role set app_id = null where app_id = 1 ");
 						sqlQuery.executeUpdate();
-						
+
 					}
 				}
 			}
@@ -362,7 +375,7 @@ public class UserRolesCommonServiceImpl  {
 			EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeDaoSystemError, e);
 			EcompPortalUtils.rollbackTransaction(transaction,
 					"Exception occurred in syncUserRoles, Details: " + e.toString());
-			if("DELETE".equals(reqType)){
+			if ("DELETE".equals(reqType)) {
 				throw new Exception(e.getMessage());
 			}
 		} finally {
@@ -373,13 +386,13 @@ public class UserRolesCommonServiceImpl  {
 			}
 		}
 	}
-	
+
 	/**
 	 * Called when getting the list of roles for the user
 	 * 
 	 * @param appRoles
 	 * @param userAppRoles
-	 * @return List<RoleInAppForUser> 
+	 * @return List<RoleInAppForUser>
 	 */
 	protected List<RoleInAppForUser> constructRolesInAppForUserGet(EcompRole[] appRoles, EcompRole[] userAppRoles) {
 		List<RoleInAppForUser> rolesInAppForUser = new ArrayList<RoleInAppForUser>();
@@ -411,11 +424,12 @@ public class UserRolesCommonServiceImpl  {
 	 * 
 	 * @param appRoles
 	 * @param userAppRoles
-	 * @param extRequestValue 
-	 * 			set to false if request is from users page otherwise true
+	 * @param extRequestValue
+	 *            set to false if request is from users page otherwise true
 	 * @return List<RoleInAppForUser>
 	 */
-	protected List<RoleInAppForUser> constructRolesInAppForUserGet(List<Role> appRoles, EPRole[] userAppRoles, Boolean extRequestValue) {
+	protected List<RoleInAppForUser> constructRolesInAppForUserGet(List<Role> appRoles, EPRole[] userAppRoles,
+			Boolean extRequestValue) {
 		List<RoleInAppForUser> rolesInAppForUser = new ArrayList<RoleInAppForUser>();
 
 		Set<Long> userAppRolesMap = new HashSet<Long>();
@@ -443,7 +457,6 @@ public class UserRolesCommonServiceImpl  {
 		return rolesInAppForUser;
 	}
 
-	
 	/**
 	 * copies of methods in GetAppsWithUserRoleState
 	 * 
@@ -505,7 +518,8 @@ public class UserRolesCommonServiceImpl  {
 							"from " + EPUserApp.class.getName() + " where app.id=" + appId + " and role_id=" + roleId)
 							.list();
 
-					logger.debug(EELFLoggerDelegate.debugLogger, "syncAppRoles: number of userRoles to delete: " + userRoles.size());
+					logger.debug(EELFLoggerDelegate.debugLogger,
+							"syncAppRoles: number of userRoles to delete: " + userRoles.size());
 					for (EPUserApp userRole : userRoles) {
 						logger.debug(EELFLoggerDelegate.debugLogger,
 								"syncAppRoles: about to delete userRole: " + userRole.toString());
@@ -555,14 +569,16 @@ public class UserRolesCommonServiceImpl  {
 						}
 					}
 					externalAccessRolesService.deleteRoleDependencyRecords(localSession, roleId, appId);
-					logger.debug(EELFLoggerDelegate.debugLogger, "syncAppRoles: about to delete the role: " + role.toString());
+					logger.debug(EELFLoggerDelegate.debugLogger,
+							"syncAppRoles: about to delete the role: " + role.toString());
 					localSession.delete(role);
 					localSession.flush();
 					logger.debug(EELFLoggerDelegate.debugLogger, "syncAppRoles: deleted the role");
 				}
 			}
 			for (EcompRole role : newRolesToAdd) {
-				logger.debug(EELFLoggerDelegate.debugLogger, "syncAppRoles: about to add missing role: " + role.toString());
+				logger.debug(EELFLoggerDelegate.debugLogger,
+						"syncAppRoles: about to add missing role: " + role.toString());
 				EPRole newRole = new EPRole();
 				// Attention! All roles from remote application supposed to be
 				// active!
@@ -585,11 +601,7 @@ public class UserRolesCommonServiceImpl  {
 			localSession.close();
 		}
 	}
-	
-	
-	
-	
-	
+
 	/**
 	 * Called when updating the list of roles for the user
 	 * 
@@ -613,7 +625,7 @@ public class UserRolesCommonServiceImpl  {
 		}
 		return result;
 	}
-	
+
 	/**
 	 * 
 	 * @param roleInAppForUserList
@@ -627,7 +639,7 @@ public class UserRolesCommonServiceImpl  {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Builds JSON and posts it to a remote application to update user roles.
 	 * 
@@ -653,11 +665,11 @@ public class UserRolesCommonServiceImpl  {
 		// even when it fails!
 		return updateUserRolesInEcomp;
 	}
-	
+
 	/**
 	 * 
 	 * @param roleInAppForUserList
-	 * @return Set<EcompRole> 
+	 * @return Set<EcompRole>
 	 */
 	protected Set<EcompRole> constructUsersEcompRoles(List<RoleInAppForUser> roleInAppForUserList) {
 		Set<EcompRole> existingUserRoles = new TreeSet<EcompRole>();
@@ -671,18 +683,18 @@ public class UserRolesCommonServiceImpl  {
 		}
 		return existingUserRoles;
 	}
-	
+
 	/**
 	 * Constructs user app roles excluding Account Administrator role
 	 * 
 	 * @param roleInAppForUserList
-	 * @return
-	 * 	      List of roles with Role name, Role Id
+	 * @return List of roles with Role name, Role Id
 	 */
 	protected Set<EcompRole> constructUsersRemoteAppRoles(List<RoleInAppForUser> roleInAppForUserList) {
 		Set<EcompRole> existingUserRoles = new TreeSet<EcompRole>();
 		for (RoleInAppForUser roleInAppForUser : roleInAppForUserList) {
-			if (roleInAppForUser.isApplied && !roleInAppForUser.getRoleId().equals(PortalConstants.ACCOUNT_ADMIN_ROLE_ID)) {
+			if (roleInAppForUser.isApplied
+					&& !roleInAppForUser.getRoleId().equals(PortalConstants.ACCOUNT_ADMIN_ROLE_ID)) {
 				EcompRole ecompRole = new EcompRole();
 				ecompRole.setId(roleInAppForUser.roleId);
 				ecompRole.setName(roleInAppForUser.roleName);
@@ -691,16 +703,17 @@ public class UserRolesCommonServiceImpl  {
 		}
 		return existingUserRoles;
 	}
-	
+
 	/**
 	 * This is for a single app
 	 * 
 	 * @param rolesInAppForUser
-	 * @param externalSystemRequest  
-	 * 			set to false if requests from Users page otherwise true
+	 * @param externalSystemRequest
+	 *            set to false if requests from Users page otherwise true
 	 * @return true on success, false otherwise
 	 */
-	protected boolean applyChangesInUserRolesForAppToEcompDB(RolesInAppForUser rolesInAppForUser, boolean externalSystemRequest, String reqType) throws Exception {
+	protected boolean applyChangesInUserRolesForAppToEcompDB(RolesInAppForUser rolesInAppForUser,
+			boolean externalSystemRequest, String reqType) throws Exception {
 		boolean result = false;
 		String userId = rolesInAppForUser.orgUserId;
 		Long appId = rolesInAppForUser.appId;
@@ -710,8 +723,10 @@ public class UserRolesCommonServiceImpl  {
 			}
 
 			if (rolesInAppForUser != null) {
-				EcompRole[] userAppRoles = new EcompRole[rolesInAppForUser.roles.stream().distinct().collect(Collectors.toList()).size()];
-				for (int i = 0; i < rolesInAppForUser.roles.stream().distinct().collect(Collectors.toList()).size(); i++) {
+				EcompRole[] userAppRoles = new EcompRole[rolesInAppForUser.roles.stream().distinct()
+						.collect(Collectors.toList()).size()];
+				for (int i = 0; i < rolesInAppForUser.roles.stream().distinct().collect(Collectors.toList())
+						.size(); i++) {
 					RoleInAppForUser roleInAppForUser = rolesInAppForUser.roles.get(i);
 					EcompRole role = new EcompRole();
 					role.setId(roleInAppForUser.roleId);
@@ -723,8 +738,9 @@ public class UserRolesCommonServiceImpl  {
 					result = true;
 				} catch (Exception e) {
 					logger.error(EELFLoggerDelegate.errorLogger,
-							"applyChangesInUserRolesForAppToEcompDB: failed to syncUserRoles for orgUserId " + userId, e);
-					if("DELETE".equals(reqType)){
+							"applyChangesInUserRolesForAppToEcompDB: failed to syncUserRoles for orgUserId " + userId,
+							e);
+					if ("DELETE".equals(reqType)) {
 						throw new Exception(e.getMessage());
 					}
 				}
@@ -732,7 +748,7 @@ public class UserRolesCommonServiceImpl  {
 		}
 		return result;
 	}
-	
+
 	/**
 	 * 
 	 * @param appId
@@ -748,7 +764,7 @@ public class UserRolesCommonServiceImpl  {
 		userWithRemoteAppRoles.setRoles(remoteUser.getRoles());
 		return userWithRemoteAppRoles;
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -777,7 +793,7 @@ public class UserRolesCommonServiceImpl  {
 
 		return rolesList;
 	}
-	
+
 	/**
 	 * It adds new user for remote application
 	 * 
@@ -788,14 +804,17 @@ public class UserRolesCommonServiceImpl  {
 	 * @param mapper
 	 * @param searchService
 	 * @param applicationsRestClientService
-	 * @return 
+	 * @return
 	 * @throws Exception
 	 */
-	private EPUser addRemoteUser(List<RoleInAppForUser> roleInAppForUserList, String userId, EPApp app, ObjectMapper mapper, SearchService searchService, ApplicationsRestClientService applicationsRestClientService) throws Exception{
+	private EPUser addRemoteUser(List<RoleInAppForUser> roleInAppForUserList, String userId, EPApp app,
+			ObjectMapper mapper, SearchService searchService,
+			ApplicationsRestClientService applicationsRestClientService) throws Exception {
 		EPUser addRemoteUser = null;
 		if (remoteUserShouldBeCreated(roleInAppForUserList)) {
-			
-			createNewUserOnRemoteApp(userId, app, applicationsRestClientService, searchService, mapper, isAppUpgradeVersion(app));
+
+			createNewUserOnRemoteApp(userId, app, applicationsRestClientService, searchService, mapper,
+					isAppUpgradeVersion(app));
 			// If we succeed, we know that the new user was
 			// persisted on remote app.
 			addRemoteUser = getUserFromApp(userId, app, applicationsRestClientService);
@@ -807,10 +826,10 @@ public class UserRolesCommonServiceImpl  {
 		}
 		return addRemoteUser;
 	}
-	
+
 	/**
-	 * It checks whether the remote user exists or not
-	 * if exits returns user object else null
+	 * It checks whether the remote user exists or not if exits returns user object
+	 * else null
 	 * 
 	 * @param userId
 	 * @param app
@@ -818,7 +837,8 @@ public class UserRolesCommonServiceImpl  {
 	 * @return
 	 * @throws HTTPException
 	 */
-	private EPUser checkIfRemoteUserExits(String userId, EPApp app, ApplicationsRestClientService applicationsRestClientService) throws HTTPException{
+	private EPUser checkIfRemoteUserExits(String userId, EPApp app,
+			ApplicationsRestClientService applicationsRestClientService) throws HTTPException {
 		EPUser checkRemoteUser = null;
 		try {
 			checkRemoteUser = getUserFromApp(userId, app, applicationsRestClientService);
@@ -828,7 +848,7 @@ public class UserRolesCommonServiceImpl  {
 				logger.debug(EELFLoggerDelegate.debugLogger,
 						"setAppWithUserRoleStateForUser: getuserFromApp threw exception with response code 400; continuing",
 						e);
-			} else if(e.getResponseCode() == 404) {
+			} else if (e.getResponseCode() == 404) {
 				logger.debug(EELFLoggerDelegate.debugLogger,
 						"setAppWithUserRoleStateForUser: getuserFromApp threw exception with response code 404; continuing",
 						e);
@@ -839,14 +859,13 @@ public class UserRolesCommonServiceImpl  {
 		}
 		return checkRemoteUser;
 	}
-	
-	
+
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see org.openecomp.portalapp.portal.service.UserRolesService#
-	 * setAppWithUserRoleStateForUser(org.openecomp.portalapp.portal.domain.
-	 * EPUser, org.openecomp.portalapp.portal.transport.AppWithRolesForUser)
+	 * setAppWithUserRoleStateForUser(org.openecomp.portalapp.portal.domain. EPUser,
+	 * org.openecomp.portalapp.portal.transport.AppWithRolesForUser)
 	 */
 	public boolean setAppWithUserRoleStateForUser(EPUser user, AppWithRolesForUser newAppRolesForUser) {
 		boolean result = false;
@@ -877,7 +896,7 @@ public class UserRolesCommonServiceImpl  {
 									applicationsRestClientService);
 						}
 					}
-					
+
 					Set<EcompRole> userRolesInLocalApp = postUsersRolesToLocalApp(roleInAppForUserList, mapper,
 							applicationsRestClientService, appId, userId);
 					RolesInAppForUser rolesInAppForUser = constructRolesInAppForUserUpdate(userId, appId,
@@ -886,26 +905,27 @@ public class UserRolesCommonServiceImpl  {
 					// Apply changes in external Access system
 					updateUserRolesInExternalSystem(app, rolesInAppForUser.orgUserId, roleAppUserList, epRequestValue);
 					result = applyChangesInUserRolesForAppToEcompDB(rolesInAppForUser, epRequestValue, "Portal");
-				} 
+				}
 				// In case if portal is not centralized then follow existing approach
-				else if(!app.getCentralAuth() && app.getId().equals(PortalConstants.PORTAL_APP_ID)){
+				else if (!app.getCentralAuth() && app.getId().equals(PortalConstants.PORTAL_APP_ID)) {
 					Set<EcompRole> userRolesInLocalApp = postUsersRolesToLocalApp(roleInAppForUserList, mapper,
-							applicationsRestClientService, appId, userId);	
+							applicationsRestClientService, appId, userId);
 					RolesInAppForUser rolesInAppForUser = constructRolesInAppForUserUpdate(userId, appId,
 							userRolesInLocalApp);
 					result = applyChangesInUserRolesForAppToEcompDB(rolesInAppForUser, epRequestValue, "Portal");
-				} else{// remote app
+				} else {// remote app
 					EPUser remoteAppUser = null;
-					if(!app.getCentralAuth() && !app.getId().equals(PortalConstants.PORTAL_APP_ID)){
-						
+					if (!app.getCentralAuth() && !app.getId().equals(PortalConstants.PORTAL_APP_ID)) {
+
 						remoteAppUser = checkIfRemoteUserExits(userId, app, applicationsRestClientService);
-		
+
 						if (remoteAppUser == null) {
-							remoteAppUser = addRemoteUser(roleInAppForUserList, userId, app, mapper, searchService, applicationsRestClientService);
+							remoteAppUser = addRemoteUser(roleInAppForUserList, userId, app, mapper, searchService,
+									applicationsRestClientService);
 						}
 						if (remoteAppUser != null) {
-							Set<EcompRole> userRolesInRemoteApp = postUsersRolesToRemoteApp(roleInAppForUserList, mapper,
-									applicationsRestClientService, appId, userId);
+							Set<EcompRole> userRolesInRemoteApp = postUsersRolesToRemoteApp(roleInAppForUserList,
+									mapper, applicationsRestClientService, appId, userId);
 							RolesInAppForUser rolesInAppForUser = constructRolesInAppForUserUpdate(userId, appId,
 									userRolesInRemoteApp);
 							result = applyChangesInUserRolesForAppToEcompDB(rolesInAppForUser, epRequestValue, null);
@@ -913,8 +933,8 @@ public class UserRolesCommonServiceImpl  {
 							// If no roles remain, request app to set user inactive.
 							if (userRolesInRemoteApp.size() == 0) {
 								logger.debug(EELFLoggerDelegate.debugLogger,
-										"setAppWithUserRoleStateForUser: no roles in app {}, set user {} to inactive", app,
-										userId);
+										"setAppWithUserRoleStateForUser: no roles in app {}, set user {} to inactive",
+										app, userId);
 								remoteAppUser.setActive(false);
 								postUserToRemoteApp(userId, user, app, applicationsRestClientService);
 							}
@@ -922,8 +942,7 @@ public class UserRolesCommonServiceImpl  {
 					}
 				}
 			} catch (Exception e) {
-				String message = String.format(
-						"Failed to create user or update user roles for User %s, AppId %s",
+				String message = String.format("Failed to create user or update user roles for User %s, AppId %s",
 						userId, Long.toString(appId));
 				logger.error(EELFLoggerDelegate.errorLogger, message, e);
 				result = false;
@@ -932,16 +951,20 @@ public class UserRolesCommonServiceImpl  {
 		}
 		return result;
 	}
+
 	/**
-	 * It adds user roles in External system and also make data consistent in both local and in External System 
+	 * It adds user roles in External system and also make data consistent in both
+	 * local and in External System
 	 * 
-	 * @param app details
+	 * @param app
+	 *            details
 	 * @param orgUserId
-	 * @param roleInAppUser Contains list of active roles 
+	 * @param roleInAppUser
+	 *            Contains list of active roles
 	 */
 	@SuppressWarnings("unchecked")
-	private void updateUserRolesInExternalSystem(EPApp app, String orgUserId, List<RoleInAppForUser> roleInAppUser, boolean isPortalRequest)
-	{
+	private void updateUserRolesInExternalSystem(EPApp app, String orgUserId, List<RoleInAppForUser> roleInAppUser,
+			boolean isPortalRequest) {
 		try {
 			// check if user exists
 			final Map<String, String> userParams = new HashMap<>();
@@ -964,7 +987,8 @@ public class UserRolesCommonServiceImpl  {
 					.exchange(SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_URL)
 							+ "roles/user/" + name, HttpMethod.GET, getUserRolesEntity, String.class);
 			if (getResponse.getStatusCode().value() == 200) {
-				logger.debug(EELFLoggerDelegate.debugLogger, "updateUserRolesInExternalSystem: Finished GET user roles from external system and received user roles {}",
+				logger.debug(EELFLoggerDelegate.debugLogger,
+						"updateUserRolesInExternalSystem: Finished GET user roles from external system and received user roles {}",
 						getResponse.getBody());
 
 			}
@@ -998,8 +1022,9 @@ public class UserRolesCommonServiceImpl  {
 					}
 				}
 			}
-			// If request coming from portal not from external role approval system then we have to check if user already 
-			// have account admin or system admin as GUI will not send these roles 
+			// If request coming from portal not from external role approval system then we
+			// have to check if user already
+			// have account admin or system admin as GUI will not send these roles
 			if (!isPortalRequest) {
 				final Map<String, String> loginIdParams = new HashMap<>();
 				loginIdParams.put("orgUserIdValue", orgUserId);
@@ -1032,7 +1057,8 @@ public class UserRolesCommonServiceImpl  {
 			for (ExternalAccessUserRoleDetail extAccessUserRole : userRoleDetailList) {
 				currentUserRolesInExternalSystem.put(extAccessUserRole.getName(), extAccessUserRole);
 			}
-			// Check if roles does not exists in local but still there in External Central Auth System delete them all
+			// Check if roles does not exists in local but still there in External Central
+			// Auth System delete them all
 			for (ExternalAccessUserRoleDetail userRole : userRoleDetailList) {
 				if (!(currentUserRolesToUpdate
 						.containsKey(userRole.getName().substring(app.getNameSpace().length() + 1).replaceAll("_", " "))
@@ -1051,7 +1077,8 @@ public class UserRolesCommonServiceImpl  {
 							userRole, deleteResponse.getBody());
 				}
 			}
-			// Check if user roles does not exists in External Central Auth System add them all
+			// Check if user roles does not exists in External Central Auth System add them
+			// all
 			for (RoleInAppForUser addUserRole : roleInAppUserNonDupls) {
 				if (!(currentUserRolesInExternalSystem
 						.containsKey(app.getNameSpace() + "." + addUserRole.getRoleName().replaceAll(" ", "_")))) {
@@ -1059,7 +1086,8 @@ public class UserRolesCommonServiceImpl  {
 							app.getNameSpace() + "." + addUserRole.getRoleName().replaceAll(" ", "_"));
 					String formattedUserRole = mapper.writeValueAsString(extUser);
 					HttpEntity<String> entity = new HttpEntity<>(formattedUserRole, headers);
-					logger.debug(EELFLoggerDelegate.debugLogger, "updateUserRolesInExternalSystem: Connecting to external system and adding user role",
+					logger.debug(EELFLoggerDelegate.debugLogger,
+							"updateUserRolesInExternalSystem: Connecting to external system and adding user role",
 							addUserRole.getRoleName());
 					ResponseEntity<String> addResponse = template
 							.exchange(SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_URL)
@@ -1069,14 +1097,16 @@ public class UserRolesCommonServiceImpl  {
 							getResponse.getBody(), addUserRole.getRoleName());
 					if (addResponse.getStatusCode().value() != 201 && addResponse.getStatusCode().value() != 404) {
 						logger.debug(EELFLoggerDelegate.debugLogger,
-								"Finished POST operation in external system but unable to save user role", getResponse.getBody(),
-								addUserRole.getRoleName());
+								"Finished POST operation in external system but unable to save user role",
+								getResponse.getBody(), addUserRole.getRoleName());
 						throw new Exception(addResponse.getBody());
 					}
 				}
 			}
 		} catch (Exception e) {
-			logger.error(EELFLoggerDelegate.errorLogger, "updateUserRolesInExternalSystem: Failed to add user role for application {} due to {}", app.getId(), e);
+			logger.error(EELFLoggerDelegate.errorLogger,
+					"updateUserRolesInExternalSystem: Failed to add user role for application {} due to {}",
+					app.getId(), e);
 		}
 
 	}
@@ -1094,30 +1124,30 @@ public class UserRolesCommonServiceImpl  {
 			ApplicationsRestClientService applicationsRestClientService, SearchService searchService,
 			ObjectMapper mapper, boolean postOpenSource) throws Exception {
 
-			
-			EPUser client = searchService.searchUserByUserId(userId);
-			
-			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-			
-			if (client == null) {
-				String msg = "cannot create user " + userId + ", because he/she cannot be found in phonebook.";
-				logger.error(EELFLoggerDelegate.errorLogger, msg);
-				throw new Exception(msg);
-			}
+		EPUser client = searchService.searchUserByUserId(userId);
 
-			client.setLoginId(userId);
-			client.setActive(true);
+		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-			String userInString = null;
-			userInString = mapper.writerFor(EPUser.class).writeValueAsString(client);
-			logger.debug(EELFLoggerDelegate.debugLogger,
-					"about to post new client to remote application, users json = " + userInString);
-			applicationsRestClientService.post(EPUser.class, app.getId(), userInString, String.format("/user", userId));
+		if (client == null) {
+			String msg = "cannot create user " + userId + ", because he/she cannot be found in phonebook.";
+			logger.error(EELFLoggerDelegate.errorLogger, msg);
+			throw new Exception(msg);
+		}
+
+		client.setLoginId(userId);
+		client.setActive(true);
+
+		String userInString = null;
+		userInString = mapper.writerFor(EPUser.class).writeValueAsString(client);
+		logger.debug(EELFLoggerDelegate.debugLogger,
+				"about to post new client to remote application, users json = " + userInString);
+		applicationsRestClientService.post(EPUser.class, app.getId(), userInString, String.format("/user", userId));
 
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	protected void applyChangesToAppRolesRequest(Long appId, Long userId, String updateStatus, EPUserAppRolesRequest epUserAppRolesRequest) {
+	protected void applyChangesToAppRolesRequest(Long appId, Long userId, String updateStatus,
+			EPUserAppRolesRequest epUserAppRolesRequest) {
 		final Map<String, Long> epRequestParams = new HashMap<>();
 		try {
 			EPUserAppRolesRequest epAppRolesRequestData = epUserAppRolesRequest;
@@ -1146,7 +1176,7 @@ public class UserRolesCommonServiceImpl  {
 			logger.error(EELFLoggerDelegate.errorLogger, "applyChangesToAppRolesRequest failed", e);
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public void applyChangesToUserAppRolesForMyLoginsRequest(EPUser user, Long appId) {
 		final Map<String, Long> params = new HashMap<>();
@@ -1185,7 +1215,7 @@ public class UserRolesCommonServiceImpl  {
 			logger.error(EELFLoggerDelegate.errorLogger, "applyChangesToUserAppRolesRequest failed", e);
 		}
 	}
-	
+
 	/**
 	 * Pushes specified user details to the specified remote app.
 	 * 
@@ -1200,30 +1230,29 @@ public class UserRolesCommonServiceImpl  {
 	 */
 	protected void postUserToRemoteApp(String userId, EPUser user, EPApp app,
 			ApplicationsRestClientService applicationsRestClientService) throws HTTPException {
-	
-		 getUser(userId, app, applicationsRestClientService);
-					
+
+		getUser(userId, app, applicationsRestClientService);
+
 	}
-	
+
 	/**
 	 * It returns user details for single org user id
 	 * 
 	 * @param userParams
-	 * @return
-	 * 		if user exists it returns list of user details otherwise empty value
+	 * @return if user exists it returns list of user details otherwise empty value
 	 */
 	@SuppressWarnings("unchecked")
-	private List<EPUser> checkIfUserExists(Map<String, String> userParams){	
-		return (List<EPUser>)dataAccessService.executeNamedQuery("epUserAppId", userParams, null);
+	private List<EPUser> checkIfUserExists(Map<String, String> userParams) {
+		return (List<EPUser>) dataAccessService.executeNamedQuery("epUserAppId", userParams, null);
 	}
-	
+
 	/**
 	 * It checks whether the new user is valid or not otherwise throws exception
 	 * 
 	 * @param orgUserId
 	 * @param app
-	 * @return 
-	 * 			Checks if user is valid and returns message otherwise throws exception
+	 * @return Checks if user is valid and returns message otherwise throws
+	 *         exception
 	 * @throws Exception
 	 */
 	private String validateNewUser(String orgUserId, EPApp app) throws Exception {
@@ -1237,29 +1266,30 @@ public class UserRolesCommonServiceImpl  {
 		}
 		return "Saved Successfully";
 	}
-	
+
 	/**
-	 *   Checks if the fields exists or not
-	 *   
+	 * Checks if the fields exists or not
+	 * 
 	 * @param userList
-	 * 			contains user information
+	 *            contains user information
 	 * @param app
-	 * 			contains app name
+	 *            contains app name
 	 * @throws Exception
-	 * 			throws exception if the field is not valid
+	 *             throws exception if the field is not valid
 	 */
-	private void validateExternalRequestFields(List<EPUser> userList, EPApp app) throws Exception{
-		if (userList.size() == 0 || userList.isEmpty() ) {
+	private void validateExternalRequestFields(List<EPUser> userList, EPApp app) throws Exception {
+		if (userList.size() == 0 || userList.isEmpty()) {
 			throw new Exception("User does not exist");
-		} else if(app == null) {
+		} else if (app == null) {
 			throw new Exception("Application does not exist");
-		} else if(!app.getEnabled() && !app.getId().equals(PortalConstants.PORTAL_APP_ID)) {
-			throw new Exception(app.getMlAppName()+" application is unavailable");
+		} else if (!app.getEnabled() && !app.getId().equals(PortalConstants.PORTAL_APP_ID)) {
+			throw new Exception(app.getMlAppName() + " application is unavailable");
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	public ExternalRequestFieldsValidator setExternalRequestUserAppRole(ExternalSystemUser newAppRolesForUser, String reqType) {
+	public ExternalRequestFieldsValidator setExternalRequestUserAppRole(ExternalSystemUser newAppRolesForUser,
+			String reqType) {
 		boolean result = false;
 		boolean externalSystemRequest = true;
 		final Map<String, Long> params = new HashMap<>();
@@ -1275,7 +1305,7 @@ public class UserRolesCommonServiceImpl  {
 			orgUserId = newAppRolesForUser.getLoginId().trim();
 		}
 		String appName = newAppRolesForUser.getApplicationName();
-		String logMessage = ("DELETE").equals(reqType) ? "Deleting": "Assigning/Updating" ;
+		String logMessage = ("DELETE").equals(reqType) ? "Deleting" : "Assigning/Updating";
 		if (orgUserId.length() > 0) {
 			ObjectMapper mapper = new ObjectMapper();
 			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -1297,24 +1327,24 @@ public class UserRolesCommonServiceImpl  {
 							.executeNamedQuery("userAppRolesRequestList", params, null);
 					epRequestIdSize = epRequestId.size();
 				}
-				
-				//If Non-Centralized app make sure you sync app roles before assigning to user
-				if(!app.getId().equals(PortalConstants.PORTAL_APP_ID) && !app.getCentralAuth()){	
-				EcompRole[] appRoles = applicationsRestClientService.get(EcompRole[].class, app.getId(), "/roles");
-				syncAppRoles(sessionFactory, app.getId(), appRoles);
+
+				// If Non-Centralized app make sure you sync app roles before assigning to user
+				if (!app.getId().equals(PortalConstants.PORTAL_APP_ID) && !app.getCentralAuth()) {
+					EcompRole[] appRoles = applicationsRestClientService.get(EcompRole[].class, app.getId(), "/roles");
+					syncAppRoles(sessionFactory, app.getId(), appRoles);
 				}
 				List<RoleInAppForUser> roleInAppForUserList = roleInAppForUserList(newAppRolesForUser.getRoles(),
 						app.getId(), app.getMlAppName());
 				List<EcompUserAppRoles> userRoleList = null;
-				if(!userInfo.isEmpty()){
-				final Map<String, Long> appParams = new HashMap<>();
-				appParams.put("userId", userId.getId());
-				appParams.put("appId", app.getId());
-				userRoleList = dataAccessService.executeNamedQuery("getUserAppExistingRoles", appParams, null);
+				if (!userInfo.isEmpty()) {
+					final Map<String, Long> appParams = new HashMap<>();
+					appParams.put("userId", userId.getId());
+					appParams.put("appId", app.getId());
+					userRoleList = dataAccessService.executeNamedQuery("getUserAppExistingRoles", appParams, null);
 				}
 				// Check if list contains just account admin role
 				boolean checkIfAdminRoleExists = false;
-				if (reqType.equals("DELETE") && userRoleList!=null) {
+				if (reqType.equals("DELETE") && userRoleList != null) {
 					checkIfAdminRoleExists = userRoleList.stream()
 							.anyMatch(userRole -> userRole.getRoleId().equals(PortalConstants.ACCOUNT_ADMIN_ROLE_ID));
 				} else {
@@ -1326,11 +1356,11 @@ public class UserRolesCommonServiceImpl  {
 					// We should add If user does not exist in remote application
 					try {
 						// If adding just account admin role dont make remote application user call
-						if (!app.getId().equals(PortalConstants.PORTAL_APP_ID) && !(checkIfAdminRoleExists
-								&& reqType.equals("DELETE")) && roleInAppForUserList.size() > 1) {
+						if (!app.getId().equals(PortalConstants.PORTAL_APP_ID)
+								&& !(checkIfAdminRoleExists && reqType.equals("DELETE"))
+								&& roleInAppForUserList.size() > 1) {
 							EPUser remoteAppUser = null;
-							remoteAppUser = checkIfRemoteUserExits(orgUserId, app,
-									applicationsRestClientService);
+							remoteAppUser = checkIfRemoteUserExits(orgUserId, app, applicationsRestClientService);
 							if (remoteAppUser == null) {
 								addRemoteUser(roleInAppForUserList, orgUserId, app, mapper, searchService,
 										applicationsRestClientService);
@@ -1339,7 +1369,8 @@ public class UserRolesCommonServiceImpl  {
 						}
 					} catch (Exception e) {
 						reqMessage = e.getMessage();
-						logger.error(EELFLoggerDelegate.errorLogger, "setExternalRequestUserAppRole: Failed to added remote user", e);
+						logger.error(EELFLoggerDelegate.errorLogger,
+								"setExternalRequestUserAppRole: Failed to added remote user", e);
 						throw new Exception(reqMessage);
 					}
 					Set<EcompRole> userRolesInLocalApp = postUsersRolesToLocalApp(roleInAppForUserList, mapper,
@@ -1348,63 +1379,68 @@ public class UserRolesCommonServiceImpl  {
 							userRolesInLocalApp);
 					List<RoleInAppForUser> roleAppUserList = rolesInAppForUser.roles;
 					// Apply changes in external Access system
-					updateUserRolesInExternalSystem(app, rolesInAppForUser.orgUserId, roleAppUserList, externalSystemRequest);
-					logger.info(EELFLoggerDelegate.debugLogger, "setExternalRequestUserAppRole: {} user app roles: for app {}, user {}", logMessage,
+					updateUserRolesInExternalSystem(app, rolesInAppForUser.orgUserId, roleAppUserList,
+							externalSystemRequest);
+					logger.info(EELFLoggerDelegate.debugLogger,
+							"setExternalRequestUserAppRole: {} user app roles: for app {}, user {}", logMessage,
 							newAppRolesForUser.getApplicationName(), newAppRolesForUser.getLoginId());
 					result = applyChangesInUserRolesForAppToEcompDB(rolesInAppForUser, externalSystemRequest, reqType);
-				} 
-				// If local application is not centralized 
-				else if(!app.getCentralAuth() && app.getId().equals(PortalConstants.PORTAL_APP_ID)){
+				}
+				// If local application is not centralized
+				else if (!app.getCentralAuth() && app.getId().equals(PortalConstants.PORTAL_APP_ID)) {
 					Set<EcompRole> userRolesInLocalApp = postUsersRolesToLocalApp(roleInAppForUserList, mapper,
-							applicationsRestClientService, app.getId(), orgUserId);	
+							applicationsRestClientService, app.getId(), orgUserId);
 					RolesInAppForUser rolesInAppForUser = constructRolesInAppForUserUpdate(orgUserId, app.getId(),
 							userRolesInLocalApp);
 					result = applyChangesInUserRolesForAppToEcompDB(rolesInAppForUser, externalSystemRequest, reqType);
 				} else {// remote app
 					// If adding just account admin role don't do remote application user call
-					if(!((roleInAppForUserList.size() == 1 || reqType.equals("DELETE")) && checkIfAdminRoleExists)){
-					EPUser remoteAppUser = null;
+					if (!((roleInAppForUserList.size() == 1 || reqType.equals("DELETE")) && checkIfAdminRoleExists)) {
+						EPUser remoteAppUser = null;
 						remoteAppUser = checkIfRemoteUserExits(orgUserId, app, applicationsRestClientService);
-					if (remoteAppUser == null) {
-						remoteAppUser =	addRemoteUser(roleInAppForUserList, orgUserId, app, mapper, searchService, applicationsRestClientService);
-						reqMessage = "Saved Successfully";
-					}
+						if (remoteAppUser == null) {
+							remoteAppUser = addRemoteUser(roleInAppForUserList, orgUserId, app, mapper, searchService,
+									applicationsRestClientService);
+							reqMessage = "Saved Successfully";
+						}
 						if (remoteAppUser != null) {
 							Set<EcompRole> userRolesInRemoteApp = postUsersRolesToRemoteApp(roleInAppForUserList,
 									mapper, applicationsRestClientService, app.getId(), orgUserId);
 
 							RolesInAppForUser rolesInAppForUser = constructRolesInAppForUserUpdate(orgUserId,
 									app.getId(), userRolesInRemoteApp);
-							logger.info(EELFLoggerDelegate.debugLogger, "setExternalRequestUserAppRole: {} user app roles: for app {}, user {}",
-									logMessage, newAppRolesForUser.getApplicationName(),
-									newAppRolesForUser.getLoginId());
+							logger.info(EELFLoggerDelegate.debugLogger,
+									"setExternalRequestUserAppRole: {} user app roles: for app {}, user {}", logMessage,
+									newAppRolesForUser.getApplicationName(), newAppRolesForUser.getLoginId());
 							result = applyChangesInUserRolesForAppToEcompDB(rolesInAppForUser, externalSystemRequest,
 									reqType);
 							// If no roles remain, request app to set user inactive.
-							/*if (userRolesInRemoteApp.size() == 0) {
-								logger.debug(EELFLoggerDelegate.debugLogger,
-										"setAppWithUserRoleStateForUser: no roles in app {}, set user {} to inactive", app,
-										orgUserId);
-								//TODO Need  to fix the logged in user is not set to inactive
-								remoteAppUser.setActive(false);
-								postUserToRemoteApp(orgUserId, user, app, applicationsRestClientService);
-							}*/
+							/*
+							 * if (userRolesInRemoteApp.size() == 0) {
+							 * logger.debug(EELFLoggerDelegate.debugLogger,
+							 * "setAppWithUserRoleStateForUser: no roles in app {}, set user {} to inactive"
+							 * , app, orgUserId); //TODO Need to fix the logged in user is not set to
+							 * inactive remoteAppUser.setActive(false); postUserToRemoteApp(orgUserId, user,
+							 * app, applicationsRestClientService); }
+							 */
 						}
 					} else {
-						// Here we are adding only we have single account admin in roleInAppForUserList and this should not add in remote 
-						if(!(reqType.equals("DELETE")) && userInfo.isEmpty()){
+						// Here we are adding only we have single account admin in roleInAppForUserList
+						// and this should not add in remote
+						if (!(reqType.equals("DELETE")) && userInfo.isEmpty()) {
 							reqMessage = "Saved Successfully";
 						}
 						Set<EcompRole> userRolesInRemoteApp = constructUsersEcompRoles(roleInAppForUserList);
 
 						RolesInAppForUser rolesInAppForUser = constructRolesInAppForUserUpdate(orgUserId, app.getId(),
 								userRolesInRemoteApp);
-						logger.info(EELFLoggerDelegate.debugLogger, "setExternalRequestUserAppRole: {} user app roles: for app {}, user {}",
-								logMessage, newAppRolesForUser.getApplicationName(), newAppRolesForUser.getLoginId());
+						logger.info(EELFLoggerDelegate.debugLogger,
+								"setExternalRequestUserAppRole: {} user app roles: for app {}, user {}", logMessage,
+								newAppRolesForUser.getApplicationName(), newAppRolesForUser.getLoginId());
 						result = applyChangesInUserRolesForAppToEcompDB(rolesInAppForUser, externalSystemRequest,
 								reqType);
 					}
-					if(!result){
+					if (!result) {
 						reqMessage = "Failed to save the user app role(s)";
 					}
 					if (epRequestIdSize > 0 && !userInfo.isEmpty()) {
@@ -1413,22 +1449,22 @@ public class UserRolesCommonServiceImpl  {
 					}
 				}
 			} catch (Exception e) {
-				String message = String.format("setExternalRequestUserAppRole: Failed to create user or update user roles for User %s, AppId %s",
+				String message = String.format(
+						"setExternalRequestUserAppRole: Failed to create user or update user roles for User %s, AppId %s",
 						orgUserId, appName);
 				logger.error(EELFLoggerDelegate.errorLogger, message, e);
 				result = false;
 				reqMessage = e.getMessage();
-				 if(epRequestIdSize > 0 && userInfo!=null && !userInfo.isEmpty()){
-				 updateStatus = "F";
-				 applyChangesToAppRolesRequest(app.getId(), userId.getId(),
-				 updateStatus, epRequestId.get(0));
-				 }
+				if (epRequestIdSize > 0 && userInfo != null && !userInfo.isEmpty()) {
+					updateStatus = "F";
+					applyChangesToAppRolesRequest(app.getId(), userId.getId(), updateStatus, epRequestId.get(0));
+				}
 			}
 
 		}
 		return new ExternalRequestFieldsValidator(result, reqMessage);
 	}
-	
+
 	/**
 	 * 
 	 * @param roleInAppForUserList
@@ -1436,7 +1472,7 @@ public class UserRolesCommonServiceImpl  {
 	 * @param applicationsRestClientService
 	 * @param appId
 	 * @param userId
-	 * @return  Set<EcompRole>
+	 * @return Set<EcompRole>
 	 * @throws JsonProcessingException
 	 * @throws HTTPException
 	 */
@@ -1446,16 +1482,16 @@ public class UserRolesCommonServiceImpl  {
 		Set<EcompRole> updatedUserRoles = constructUsersEcompRoles(roleInAppForUserList);
 		return updatedUserRoles;
 	}
-	
+
 	/**
-	 * It constructs and returns list of user app roles when the external API role approval system calls
-	 * this method
+	 * It constructs and returns list of user app roles when the external API role
+	 * approval system calls this method
 	 * 
 	 * @param roleInAppForUserList
 	 * @param appId
 	 * @return list of user app roles
 	 * @throws Exception
-	 * 		   throws exceptions if role id does not exits 
+	 *             throws exceptions if role id does not exits
 	 */
 	private List<RoleInAppForUser> roleInAppForUserList(List<ExternalSystemRoleApproval> roleInAppForUserList,
 			Long appId, String appName) throws Exception {
@@ -1467,14 +1503,18 @@ public class UserRolesCommonServiceImpl  {
 			if (existingAppRole == null) {
 				logger.error(EELFLoggerDelegate.errorLogger, "roleInAppForUserList failed for the roles {}",
 						roleInAppForUserList);
-				throw new Exception("'" +roleInAppForUser.getRoleName() + "'" +" role does not exist for " + appName + " application");
+				throw new Exception("'" + roleInAppForUser.getRoleName() + "'" + " role does not exist for " + appName
+						+ " application");
 			}
 			if (!existingAppRole.getActive()) {
 				logger.error(EELFLoggerDelegate.errorLogger, "roleInAppForUserList failed for the roles {}",
 						roleInAppForUserList);
-				throw new Exception(roleInAppForUser.getRoleName() + " role is unavailable for "+ appName + " application");
+				throw new Exception(
+						roleInAppForUser.getRoleName() + " role is unavailable for " + appName + " application");
 			} else {
-				ecompRole.roleId = (appId == 1 || roleInAppForUser.getRoleName().equals(PortalConstants.ADMIN_ROLE)) ? existingAppRole.getId() : existingAppRole.getAppRoleId();
+				ecompRole.roleId = (appId == 1 || roleInAppForUser.getRoleName().equals(PortalConstants.ADMIN_ROLE))
+						? existingAppRole.getId()
+						: existingAppRole.getAppRoleId();
 				ecompRole.roleName = roleInAppForUser.getRoleName();
 				ecompRole.isApplied = true;
 				existingUserRoles.add(ecompRole);
@@ -1482,8 +1522,6 @@ public class UserRolesCommonServiceImpl  {
 		}
 		return existingUserRoles;
 	}
-	
-	
 
 	/**
 	 * 
@@ -1493,8 +1531,8 @@ public class UserRolesCommonServiceImpl  {
 	 * @return EPUser
 	 * @throws HTTPException
 	 */
-	protected EPUser getUserFromApp(String userId, EPApp app, ApplicationsRestClientService applicationsRestClientService)
-			throws HTTPException {
+	protected EPUser getUserFromApp(String userId, EPApp app,
+			ApplicationsRestClientService applicationsRestClientService) throws HTTPException {
 		// local app
 		if (app.getId() == PortalConstants.PORTAL_APP_ID) {
 			// Map<String,String> params = new HashMap<String,String>();
@@ -1508,32 +1546,31 @@ public class UserRolesCommonServiceImpl  {
 				return null;
 		}
 		// remote app
-		
+
 		return getUser(userId, app, applicationsRestClientService);
 	}
-	
+
 	protected EPUser getUser(String userId, EPApp app, ApplicationsRestClientService applicationsRestClientService)
 			throws HTTPException {
 		return applicationsRestClientService.get(EPUser.class, app.getId(), String.format("/user/%s", userId));
 
 	}
-	
-	protected boolean isAppUpgradeVersion(EPApp app){
+
+	protected boolean isAppUpgradeVersion(EPApp app) {
 		return true;
 	}
-	
-	
-	public ExternalSystemAccess getExternalRequestAccess(){
-		ExternalSystemAccess res = null; 
+
+	public ExternalSystemAccess getExternalRequestAccess() {
+		ExternalSystemAccess res = null;
 		try {
-			res = new ExternalSystemAccess(EPCommonSystemProperties.EXTERNAL_ACCESS_ENABLE,
-					Boolean.parseBoolean(SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_ACCESS_ENABLE)));
+			res = new ExternalSystemAccess(EPCommonSystemProperties.EXTERNAL_ACCESS_ENABLE, Boolean
+					.parseBoolean(SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_ACCESS_ENABLE)));
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "getExternalRequestAccess failed" + e.getMessage());
 		}
-		return res;		
+		return res;
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -1548,10 +1585,10 @@ public class UserRolesCommonServiceImpl  {
 		try {
 			// for ecomp portal app, no need to make a remote call
 			List<Role> roleList = new ArrayList<>();
-			if (appId == PortalConstants.PORTAL_APP_ID) {		
-				if(app.getCentralAuth()){
+			if (appId == PortalConstants.PORTAL_APP_ID) {
+				if (app.getCentralAuth()) {
 					List<CentralRole> cenRoleList = externalAccessRolesService.getRolesForApp(app.getUebKey());
-					for(CentralRole cenRole : cenRoleList){
+					for (CentralRole cenRole : cenRoleList) {
 						Role role = new Role();
 						role.setActive(cenRole.isActive());
 						role.setId(cenRole.getId());
@@ -1559,46 +1596,48 @@ public class UserRolesCommonServiceImpl  {
 						role.setPriority(cenRole.getPriority());
 						roleList.add(role);
 					}
-				}else{
+				} else {
 					roleList = roleService.getAvailableRoles(userId);
 				}
 				List<Role> activeRoleList = new ArrayList<Role>();
-				for(Role role: roleList) {
-					if(role.getActive()) {
-						if(role.getId() != 1){ // prevent portal admin from being added
+				for (Role role : roleList) {
+					if (role.getActive()) {
+						if (role.getId() != 1) { // prevent portal admin from being added
 							activeRoleList.add(role);
-						} else if(extRequestValue){
+						} else if (extRequestValue) {
 							activeRoleList.add(role);
 						}
 					}
-						
+
 				}
-				EPUser localUser  = getUserFromApp(userId, app, applicationsRestClientService);
+				EPUser localUser = getUserFromApp(userId, app, applicationsRestClientService);
 				// If localUser does not exists return roles
 				Set<EPRole> roleSet = null;
 				EPRole[] roleSetList = null;
-				if(localUser != null){
+				if (localUser != null) {
 					roleSet = localUser.getAppEPRoles(app);
 					roleSetList = roleSet.toArray(new EPRole[0]);
 				}
 				rolesInAppForUser = constructRolesInAppForUserGet(activeRoleList, roleSetList, extRequestValue);
 				return rolesInAppForUser;
 			}
-			
+
 			EcompRole[] appRoles = null;
 			List<EcompRole> roles = new ArrayList<>();
-			if(app.getCentralAuth()){
-				//Sync application functions from External Access System
+			if (app.getCentralAuth()) {
+				// Sync application functions from External Access System
 				externalAccessRolesService.syncRoleFunctionFromExternalAccessSystem(app);
-				List<EPRole> applicationRoles = dataAccessService.getList(EPRole.class, " where app_id = "+app.getId()+ " and active_yn = 'Y'", null, null);;
-				for(EPRole role : applicationRoles){
+				List<EPRole> applicationRoles = dataAccessService.getList(EPRole.class,
+						" where app_id = " + app.getId() + " and active_yn = 'Y'", null, null);
+				;
+				for (EPRole role : applicationRoles) {
 					EcompRole ecompRole = new EcompRole();
 					ecompRole.setId(role.getId());
 					ecompRole.setName(role.getName());
 					roles.add(ecompRole);
 				}
 				appRoles = roles.toArray(new EcompRole[roles.size()]);
-			} else{
+			} else {
 				appRoles = applicationsRestClientService.get(EcompRole[].class, appId, "/roles");
 			}
 			// Test this error case, for generating an internal Ecomp Portal
@@ -1607,31 +1646,32 @@ public class UserRolesCommonServiceImpl  {
 			// If there is an exception in the rest client api, then null will
 			// be returned.
 			if (appRoles != null) {
-				if(!app.getCentralAuth()) {
-				syncAppRoles(sessionFactory, appId, appRoles);
+				if (!app.getCentralAuth()) {
+					syncAppRoles(sessionFactory, appId, appRoles);
 				}
 				EcompRole[] userAppRoles = null;
 				try {
 					try {
-						if(app.getCentralAuth()){
+						if (app.getCentralAuth()) {
 							final Map<String, String> params = new HashMap<>();
 							final Map<String, Long> userParams = new HashMap<>();
 							params.put("orgUserIdValue", userId);
 							List<EPUser> user = dataAccessService.executeNamedQuery("epUserAppId", params, null);
 							userParams.put("appId", app.getId());
-							userParams.put("userId", user.get(0).getId());	
-							List<EPUserAppCurrentRoles> userAppsRolesList = dataAccessService.executeNamedQuery("getUserAppCurrentRoles", userParams, null);
-								List<EcompRole> setUserRoles = new ArrayList<>();
-								for(EPUserAppCurrentRoles role : userAppsRolesList){
-									EcompRole ecompRole = new EcompRole();
-									ecompRole.setId(role.getRoleId());
-									ecompRole.setName(role.getRoleName());
-									setUserRoles.add(ecompRole);
-								}
-								userAppRoles = setUserRoles.toArray(new EcompRole[setUserRoles.size()]);
-								rolesInAppForUser = constructRolesInAppForUserGet(appRoles, userAppRoles);
-								return rolesInAppForUser;
-						}else{
+							userParams.put("userId", user.get(0).getId());
+							List<EPUserAppCurrentRoles> userAppsRolesList = dataAccessService
+									.executeNamedQuery("getUserAppCurrentRoles", userParams, null);
+							List<EcompRole> setUserRoles = new ArrayList<>();
+							for (EPUserAppCurrentRoles role : userAppsRolesList) {
+								EcompRole ecompRole = new EcompRole();
+								ecompRole.setId(role.getRoleId());
+								ecompRole.setName(role.getRoleName());
+								setUserRoles.add(ecompRole);
+							}
+							userAppRoles = setUserRoles.toArray(new EcompRole[setUserRoles.size()]);
+							rolesInAppForUser = constructRolesInAppForUserGet(appRoles, userAppRoles);
+							return rolesInAppForUser;
+						} else {
 							userAppRoles = applicationsRestClientService.get(EcompRole[].class, appId,
 									String.format("/user/%s/roles", userId));
 						}
@@ -1656,21 +1696,21 @@ public class UserRolesCommonServiceImpl  {
 							logger.warn(EELFLoggerDelegate.applicationLogger, message);
 						}
 					}
-					
-					 HashMap<Long, EcompRole> appRolesActiveMap =hashMapFromEcompRoles(appRoles);
-						ArrayList<EcompRole> activeRoles = new ArrayList<EcompRole>();
-						if(userAppRoles != null){
-							for (int i = 0; i < userAppRoles.length; i++) {
-								if (appRolesActiveMap.containsKey(userAppRoles[i].getId())) {
-									EcompRole role = new EcompRole();
-									role.setId(userAppRoles[i].getId());
-									role.setName(userAppRoles[i].getName());
-									activeRoles.add(role);
-								}
+
+					HashMap<Long, EcompRole> appRolesActiveMap = hashMapFromEcompRoles(appRoles);
+					ArrayList<EcompRole> activeRoles = new ArrayList<EcompRole>();
+					if (userAppRoles != null) {
+						for (int i = 0; i < userAppRoles.length; i++) {
+							if (appRolesActiveMap.containsKey(userAppRoles[i].getId())) {
+								EcompRole role = new EcompRole();
+								role.setId(userAppRoles[i].getId());
+								role.setName(userAppRoles[i].getName());
+								activeRoles.add(role);
 							}
 						}
-						EcompRole[]	userAppRolesActive = activeRoles.toArray(new EcompRole[activeRoles.size()]);
-					
+					}
+					EcompRole[] userAppRolesActive = activeRoles.toArray(new EcompRole[activeRoles.size()]);
+
 					// If the remote application isn't down we MUST sync user
 					// roles here in case we have this user here!
 					syncUserRoles(sessionFactory, userId, appId, userAppRolesActive, extRequestValue, null);
@@ -1693,7 +1733,7 @@ public class UserRolesCommonServiceImpl  {
 		return rolesInAppForUser;
 
 	}
-	
+
 	private boolean postUserRolesToMylogins(AppWithRolesForUser userAppRolesData,
 			ApplicationsRestClientService applicationsRestClientService, Long appId, Long userId)
 			throws JsonProcessingException, HTTPException {
@@ -1701,20 +1741,24 @@ public class UserRolesCommonServiceImpl  {
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		String userRolesAsString = mapper.writeValueAsString(userAppRolesData);
-		logger.error(EELFLoggerDelegate.errorLogger,"Should not be reached here, as the endpoint is not defined yet from the Mylogins");
-		applicationsRestClientService.post(AppWithRolesForUser.class, appId, userRolesAsString, String.format("/user/%s/myLoginroles", userId));
+		logger.error(EELFLoggerDelegate.errorLogger,
+				"Should not be reached here, as the endpoint is not defined yet from the Mylogins");
+		applicationsRestClientService.post(AppWithRolesForUser.class, appId, userRolesAsString,
+				String.format("/user/%s/myLoginroles", userId));
 		return result;
 	}
 
 	public FieldsValidator putUserAppRolesRequest(AppWithRolesForUser userAppRolesData, EPUser user) {
 		FieldsValidator fieldsValidator = new FieldsValidator();
 		final Map<String, Long> params = new HashMap<>();
-		EPUserAppRoles  appRole= new EPUserAppRoles();
+		EPUserAppRoles appRole = new EPUserAppRoles();
 		try {
-			logger.error(EELFLoggerDelegate.errorLogger,"Should not be reached here, still the endpoint is yet to be defined");
-			boolean result = postUserRolesToMylogins(userAppRolesData, applicationsRestClientService, userAppRolesData.appId, user.getId());
-			logger.debug(EELFLoggerDelegate.debugLogger,"putUserAppRolesRequest: result {}", result);
-						
+			logger.error(EELFLoggerDelegate.errorLogger,
+					"Should not be reached here, still the endpoint is yet to be defined");
+			boolean result = postUserRolesToMylogins(userAppRolesData, applicationsRestClientService,
+					userAppRolesData.appId, user.getId());
+			logger.debug(EELFLoggerDelegate.debugLogger, "putUserAppRolesRequest: result {}", result);
+
 			params.put("appId", userAppRolesData.appId);
 			EPUserAppRolesRequest epAppRolesRequestData = new EPUserAppRolesRequest();
 			epAppRolesRequestData.setCreatedDate(new Date());
@@ -1727,7 +1771,7 @@ public class UserRolesCommonServiceImpl  {
 			dataAccessService.saveDomainObject(epAppRolesRequestData, null);
 			for (RoleInAppForUser userAppRoles : appRoleIdList) {
 				Boolean isAppliedVal = userAppRoles.isApplied;
-				params.put("appRoleId", userAppRoles.roleId);				
+				params.put("appRoleId", userAppRoles.roleId);
 				if (isAppliedVal) {
 					appRole = (EPUserAppRoles) dataAccessService.executeNamedQuery("appRoles", params, null).get(0);
 					EPUserAppRolesRequestDetail epAppRoleDetail = new EPUserAppRolesRequestDetail();
@@ -1735,7 +1779,7 @@ public class UserRolesCommonServiceImpl  {
 					epAppRoleDetail.setReqType("P");
 					epAppRoleDetail.setEpRequestIdData(epAppRolesRequestData);
 					dataAccessService.saveDomainObject(epAppRoleDetail, null);
-					}			
+				}
 			}
 			epAppRolesRequestData.setEpRequestIdDetail(appRoleDetails);
 			fieldsValidator.httpStatusCode = new Long(HttpServletResponse.SC_OK);
@@ -1747,18 +1791,18 @@ public class UserRolesCommonServiceImpl  {
 		return fieldsValidator;
 	}
 
-	public List<EPUserAppCatalogRoles> getUserAppCatalogRoles(EPUser userid, String appName) {	
+	public List<EPUserAppCatalogRoles> getUserAppCatalogRoles(EPUser userid, String appName) {
 		Map<String, String> params = new HashMap<>();
 		params.put("userid", userid.getId().toString());
-		//params.put("appid", appid);
+		// params.put("appid", appid);
 		params.put("appName", appName);
-			
+
 		@SuppressWarnings("unchecked")
 		List<EPUserAppCatalogRoles> userAppRoles = (List<EPUserAppCatalogRoles>) dataAccessService
 				.executeNamedQuery("userAppCatalogRoles", params, null);
-		return userAppRoles;	
+		return userAppRoles;
 	}
-	
+
 	public String updateRemoteUserProfile(String orgUserId, Long appId) {
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -1794,7 +1838,6 @@ public class UserRolesCommonServiceImpl  {
 		return "success";
 	}
 
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -1810,4 +1853,100 @@ public class UserRolesCommonServiceImpl  {
 		return roleList;
 	}
 
+	/**
+	 * Retrieves and returns a list of user app roles for local and remote
+	 * applications based on the app id.
+	 * 
+	 * @param appId
+	 * @return list of user app roles
+	 * @throws HTTPException
+	 */
+	public List<UserApplicationRoles> getUsersFromAppEndpoint(Long appId) throws HTTPException {
+		ArrayList<UserApplicationRoles> userApplicationRoles = new ArrayList<UserApplicationRoles>();
+
+		EPApp app = appsService.getApp(appId);
+		// If local or centralized application
+		if (appId == PortalConstants.PORTAL_APP_ID || app.getCentralAuth()) {
+			@SuppressWarnings("unchecked")
+			List<EPUser> userList = (List<EPUser>) dataAccessService.executeNamedQuery("getActiveUsers", null, null);
+			for (EPUser user : userList) {
+				UserApplicationRoles userWithAppRoles = convertToUserApplicationRoles(appId, user, app);
+				if (userWithAppRoles.getRoles() != null && userWithAppRoles.getRoles().size() > 0)
+					userApplicationRoles.add(userWithAppRoles);
+			}
+		}
+		// remote app
+		else {
+			RemoteUserWithRoles[] remoteUsers = null;
+			String remoteUsersString = applicationsRestClientService.getIncomingJsonString(appId, "/users");
+			remoteUsers = doGetUsers(isAppUpgradeVersion(app), remoteUsersString);
+			userApplicationRoles = new ArrayList<UserApplicationRoles>();
+			for (RemoteUserWithRoles remoteUser : remoteUsers) {
+				UserApplicationRoles userWithRemoteAppRoles = convertToUserApplicationRoles(appId, remoteUser);
+				if (userWithRemoteAppRoles.getRoles() != null && userWithRemoteAppRoles.getRoles().size() > 0) {
+					userApplicationRoles.add(userWithRemoteAppRoles);
+				} else {
+					logger.debug(EELFLoggerDelegate.debugLogger, "User " + userWithRemoteAppRoles.getOrgUserId()
+							+ " doesn't have any roles assigned to any app.");
+				}
+			}
+		}
+		return userApplicationRoles;
+	}
+
+	/**
+	 * 
+	 * @param appId
+	 * @param user
+	 * @param appgetUsersFromAppEndpoint
+	 * @return
+	 */
+	private UserApplicationRoles convertToUserApplicationRoles(Long appId, EPUser user, EPApp app) {
+		UserApplicationRoles userWithRemoteAppRoles = new UserApplicationRoles();
+		userWithRemoteAppRoles.setAppId(appId);
+		userWithRemoteAppRoles.setOrgUserId(user.getOrgUserId());
+		userWithRemoteAppRoles.setFirstName(user.getFirstName());
+		userWithRemoteAppRoles.setLastName(user.getLastName());
+		userWithRemoteAppRoles.setRoles(convertToRemoteRoleList(user, app));
+		return userWithRemoteAppRoles;
+	}
+
+	/**
+	 * 
+	 * @param user
+	 * @param app
+	 * @return
+	 */
+	private List<RemoteRole> convertToRemoteRoleList(EPUser user, EPApp app) {
+		List<RemoteRole> roleList = new ArrayList<RemoteRole>();
+		SortedSet<EPRole> roleSet = user.getAppEPRoles(app);
+		for (EPRole role : roleSet) {
+			RemoteRole rRole = new RemoteRole();
+			rRole.setId(role.getId());
+			rRole.setName(role.getName());
+			roleList.add(rRole);
+		}
+		return roleList;
+	}
+
+	/**
+	 *  
+	 * Returns RemoteUserWithRoles reading the value from remote application user in the form a string from an ObjectMapper
+	 * @param postOpenSource
+	 * @param remoteUsersString
+	 * @return RemoteUserWithRoles
+	 */
+	public RemoteUserWithRoles[] doGetUsers(boolean postOpenSource, String remoteUsersString) {
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+			return mapper.readValue(remoteUsersString, RemoteUserWithRoles[].class);
+		} catch (IOException e) {
+			logger.error(EELFLoggerDelegate.errorLogger, "doGetUsers : Failed : Unexpected property in incoming JSON",
+					e);
+			logger.error(EELFLoggerDelegate.errorLogger,
+					"doGetUsers : Incoming JSON that caused it --> " + remoteUsersString);
+		}
+
+		return new RemoteUserWithRoles[0];
+	}
 }

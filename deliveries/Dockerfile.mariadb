@@ -19,10 +19,10 @@ COPY ${PORTAL_SCRIPT_DIR}/EcompPortalDMLMySql_1710_OS.sql     /docker-entrypoint
 COPY Apps_Users_OnBoarding_Script.sql                         /docker-entrypoint-initdb.d/EcompPortalDMLMySql_1710_z_apps_users.sql
 
 # SDK App DDL and DML unchanged since 1707
-COPY ${SDK_SCRIPT_DIR}/EcompSdkDDLMySql_1707_Common.sql       /docker-entrypoint-initdb.d/
-COPY ${SDK_SCRIPT_DIR}/EcompSdkDDLMySql_1707_OS.sql           /docker-entrypoint-initdb.d/
-COPY ${SDK_SCRIPT_DIR}/EcompSdkDMLMySql_1707_Common.sql       /docker-entrypoint-initdb.d/
-COPY ${SDK_SCRIPT_DIR}/EcompSdkDMLMySql_1707_OS.sql           /docker-entrypoint-initdb.d/
+COPY ${SDK_SCRIPT_DIR}/EcompSdkDDLMySql_1710_Common.sql       /docker-entrypoint-initdb.d/
+COPY ${SDK_SCRIPT_DIR}/EcompSdkDDLMySql_1710_OS.sql           /docker-entrypoint-initdb.d/
+COPY ${SDK_SCRIPT_DIR}/EcompSdkDMLMySql_1710_Common.sql       /docker-entrypoint-initdb.d/
+COPY ${SDK_SCRIPT_DIR}/EcompSdkDMLMySql_1710_OS.sql           /docker-entrypoint-initdb.d/
 
 # DBC App combined DDL/DML, built by script
 COPY ${DBC_SCRIPT_DIR}/dbca-complete-mysql-1707-os.sql  /docker-entrypoint-initdb.d/

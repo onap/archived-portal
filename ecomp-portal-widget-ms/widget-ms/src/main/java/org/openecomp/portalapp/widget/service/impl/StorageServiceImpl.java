@@ -244,8 +244,8 @@ public class StorageServiceImpl implements StorageService {
 		String controllerName = "Portal" + widgetId + "Ctrl";
 		String cssName = "portal" + widgetId + "-css-ready";
 		String colorArg1 = "color: #fff";
-		String framework = sb.replaceAll("ARUGMENT1", namespace).replaceAll("ARUGMENT2", controllerName)
-				.replaceAll("ARUGMENT3", cssName).replaceAll("CSS_ARG1", colorArg1)
+		String framework = sb.replaceAll("ARGUMENT1", namespace).replaceAll("ARGUMENT2", controllerName)
+				.replaceAll("ARGUMENT3", cssName).replaceAll("CSS_ARG1", colorArg1)
 				.replaceAll("MICROSERVICE_ID", newWidget.getServiceId().toString())
 				.replaceAll("WIDGET_ID", Long.toString(widgetId));
 
@@ -350,8 +350,8 @@ public class StorageServiceImpl implements StorageService {
 		String controllerName = "Portal" + widgetId + "Ctrl";
 		String cssName = "portal" + widgetId + "-css-ready";
 		String colorArg1 = "color: #fff";
-		String framework = sb.replaceAll("ARUGMENT1", namespace).replaceAll("ARUGMENT2", controllerName)
-				.replaceAll("ARUGMENT3", cssName).replaceAll("CSS_ARG1", colorArg1)
+		String framework = sb.replaceAll("ARGUMENT1", namespace).replaceAll("ARGUMENT2", controllerName)
+				.replaceAll("ARGUMENT3", cssName).replaceAll("CSS_ARG1", colorArg1)
 				.replaceAll("MICROSERVICE_ID", newWidget.getServiceId().toString())
 				.replaceAll("WIDGET_ID", Long.toString(widgetId));
 		widgetFile.setFramework(framework.getBytes());

@@ -3,12 +3,14 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
+
 	<parent>
 		<groupId>org.onap.oparent</groupId>
 		<artifactId>oparent</artifactId>
 		<version>0.1.1</version>
 		<relativePath />
 	</parent>
+
 
 	<groupId>org.onap.portal</groupId>
 	<artifactId>onap-portal-parent</artifactId>
@@ -32,15 +34,16 @@
 		<hibernate.version>4.3.11.Final</hibernate.version>
 		<fasterxml.version>2.7.4</fasterxml.version>
 		<eelf.version>1.0.0</eelf.version>
+		<!-- NOT provided by OParent, unfortunately -->
+		<jacocoVersion>0.7.6.201602180812</jacocoVersion>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<encoding>UTF-8</encoding>
-                <sonar.exclusions>**/scripts/**/*,**.js</sonar.exclusions>
-                <sonar.test.exclusions>**/test/**/*,**/tests/**/*</sonar.test.exclusions>
+		<sonar.exclusions>**/scripts/**/*,**.js</sonar.exclusions>
+		<sonar.test.exclusions>**/test/**/*,**/tests/**/*</sonar.test.exclusions>
 	</properties>
 
 	<!-- Specify the repositories here to avoid coordination of ~/.m2/settings.xml 
-		files among all developers. Also use values (not properties) so oparent can 
-		be resolved. -->
+		files among developers. Use values (not properties) so oparent can be resolved. -->
 	<repositories>
 		<repository>
 			<id>onap-releases</id>
@@ -100,7 +103,6 @@
 				</plugins>
 			</build>
 		</profile>
-
 	</profiles>
 
 	<build>
@@ -139,14 +141,98 @@
 						<target>1.8</target>
 					</configuration>
 				</plugin>
+				<!-- maven-site-plugin config is provided by OParent -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-site-plugin</artifactId>
+					<version>3.6</version>
+					<dependencies>
+						<dependency>
+							<groupId>org.apache.maven.wagon</groupId>
+							<artifactId>wagon-webdav-jackrabbit</artifactId>
+							<version>2.10</version>
+						</dependency>
+					</dependencies>
+				</plugin>
 			</plugins>
 		</pluginManagement>
 		<plugins>
+			<!-- Jacoco -->
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<!-- Override OParent version -->
+				<version>${jacocoVersion}</version>
+				<executions>
+					<!-- disable jacoco executions from oparent -->
+					<execution>
+						<id>pre-unit-test</id>
+						<phase>none</phase>
+					</execution>
+					<execution>
+						<id>post-unit-test</id>
+						<phase>none</phase>
+					</execution>
+					<execution>
+						<id>pre-integration-test</id>
+						<phase>none</phase>
+					</execution>
+					<execution>
+						<id>post-integration-test</id>
+						<phase>none</phase>
+					</execution>
+					<!-- Order matters -->
+					<execution>
+						<id>portal-prepare-agent</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+						<configuration>
+							<destFile>${sonar.jacoco.reportPath}</destFile>
+						</configuration>
+					</execution>
+					<!-- offline instrumentation for PowerMock -->
+					<execution>
+						<id>portal-offline-instrument</id>
+						<goals>
+							<goal>instrument</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>portal-restore-instrumented-classes</id>
+						<phase>test</phase>
+						<goals>
+							<goal>restore-instrumented-classes</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>portal-post-unit-test</id>
+						<phase>test</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+						<configuration>
+							<dataFile>${sonar.jacoco.reportPath}</dataFile>
+							<outputDirectory>${project.basedir}/target/site/jacoco</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<systemPropertyVariables>
+						<jacoco-agent.destfile>${project.build.directory}/code-coverage/jacoco-ut.exec</jacoco-agent.destfile>
+					</systemPropertyVariables>
+				</configuration>
+			</plugin>
 			<!-- No deployment step for this project -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-deploy-plugin</artifactId>
-				<version>2.8</version>
+				<!-- version managed by oparent <version>2.8</version> -->
 				<configuration>
 					<skip>true</skip>
 				</configuration>

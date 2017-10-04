@@ -64,22 +64,6 @@ public class ExtractJar {
 		}
 	}
 
-	public static void readJar(File jarFile) throws Exception {
-		JarInputStream in = new JarInputStream(new FileInputStream(jarFile));
-		JarEntry je;
-		while ((je = in.getNextJarEntry()) != null) {
-			if (je.isDirectory() == false) {
-				if (je.getName().startsWith("att/raptor/config/")) {
-					// while((je=in.getNextJarEntry( ))!=null) {
-					System.out.println(je.getName() + " " + je.getTime());
-					// }
-
-				}
-			}
-		}
-		in.close();
-	}
-
 	public static void extractFilesFromJar(String directory) throws IOException {
 		// JarFile jar = new JarFile(jarFile);
 		Class clazz = ExtractJar.class;

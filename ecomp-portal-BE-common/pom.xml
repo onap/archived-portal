@@ -113,7 +113,6 @@
 			<artifactId>gson</artifactId>
 			<version>2.5</version>
 		</dependency>
-
 		<!-- Spring -->
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -165,7 +164,6 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-
 		<!-- Hibernate -->
 		<dependency>
 			<groupId>org.hibernate</groupId>
@@ -177,7 +175,6 @@
 			<artifactId>hibernate-validator</artifactId>
 			<version>5.1.3.Final</version>
 		</dependency>
-
 		<!-- hibernate-core depends on dom4j, which has optional dependencies. 
 			On jenkins, contrary to doc, mvn 3.0.5 packages the optional dependencies 
 			in the war. Workaround: exclude them explicitly. -->
@@ -216,7 +213,6 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-
 		<!-- Servlet+JSP+JSTL -->
 		<dependency>
 			<groupId>javax.servlet</groupId>
@@ -233,10 +229,6 @@
 			<artifactId>jstl</artifactId>
 			<version>1.2</version>
 		</dependency>
-
-		<!-- Oracle JDBC driver -->
-		<!-- <dependency> <groupId>com.oracle</groupId> <artifactId>ojdbc6</artifactId> 
-			<version>11.2.0.4</version> </dependency> -->
 		<!-- Apache Tiles -->
 		<dependency>
 			<groupId>org.apache.tiles</groupId>
@@ -253,7 +245,6 @@
 			<artifactId>cxf-rt-rs-client</artifactId>
 			<version>3.0.0-milestone1</version>
 		</dependency>
-
 		<!-- Mapper -->
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
@@ -270,13 +261,11 @@
 			<artifactId>jackson-databind</artifactId>
 			<version>${fasterxml.version}</version>
 		</dependency>
-
 		<dependency>
 			<groupId>postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 			<version>9.1-901-1.jdbc4</version>
 		</dependency>
-
 		<!-- Elastic Search -->
 		<dependency>
 			<groupId>org.elasticsearch</groupId>
@@ -288,7 +277,6 @@
 			<artifactId>jest</artifactId>
 			<version>2.0.0</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.apache.jcs</groupId>
 			<artifactId>jcs</artifactId>
@@ -299,16 +287,13 @@
 					<artifactId>*</artifactId>
 				</exclusion>
 			</exclusions>
-			<!-- -->
 		</dependency>
-
 		<dependency>
 			<groupId>org.apache.tomcat</groupId>
 			<artifactId>tomcat-websocket</artifactId>
 			<version>8.0.28</version>
 			<scope>provided</scope>
 		</dependency>
-
 		<dependency>
 			<groupId>concurrent</groupId>
 			<artifactId>concurrent</artifactId>
@@ -320,8 +305,6 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-
-
 		<dependency>
 			<groupId>commons-lang</groupId>
 			<artifactId>commons-lang</artifactId>
@@ -388,7 +371,6 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-
 		<!-- for generating PDF -->
 		<dependency>
 			<groupId>com.lowagie</groupId>
@@ -408,19 +390,16 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-
 		<dependency>
 			<groupId>org.bouncycastle</groupId>
 			<artifactId>bcprov-jdk16</artifactId>
 			<version>1.45</version>
 		</dependency>
-
 		<dependency>
 			<groupId>commons-codec</groupId>
 			<artifactId>commons-codec</artifactId>
 			<version>1.9</version>
 		</dependency>
-
 		<dependency>
 			<groupId>com.att.nsa</groupId>
 			<artifactId>cambriaClient</artifactId>
@@ -444,7 +423,6 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-
 		<dependency>
 			<groupId>org.onap.portal.sdk</groupId>
 			<artifactId>epsdk-fw</artifactId>
@@ -489,7 +467,6 @@
 			<artifactId>epsdk-workflow</artifactId>
 			<version>${epsdk.version}</version>
 		</dependency>
-
 		<!-- Raptor required Libraries -->
 		<!-- for static charts -->
 		<dependency>
@@ -497,7 +474,6 @@
 			<artifactId>epsdk-analytics</artifactId>
 			<version>${epsdk.version}</version>
 		</dependency>
-
 		<!-- Referenced by some poms and needed for testing; do NOT use "test" 
 			scope here. -->
 		<dependency>
@@ -505,7 +481,6 @@
 			<artifactId>httpclient</artifactId>
 			<version>4.5.2</version>
 		</dependency>
-
 		<!-- for testing -->
 		<dependency>
 			<groupId>junit</groupId>
@@ -533,31 +508,26 @@
 			<artifactId>mockito-core</artifactId>
 			<version>1.8.5</version>
 		</dependency>
-
 		<dependency>
 			<groupId>commons-beanutils</groupId>
 			<artifactId>commons-beanutils</artifactId>
 			<version>1.9.2</version>
 		</dependency>
-
 		<dependency>
 			<groupId>com.ecwid.consul</groupId>
 			<artifactId>consul-api</artifactId>
 			<version>1.2.1</version>
 		</dependency>
-
 		<dependency>
 			<groupId>com.orbitz.consul</groupId>
 			<artifactId>consul-client</artifactId>
 			<version>0.13.8</version>
 		</dependency>
-
 		<dependency>
 			<groupId>commons-fileupload</groupId>
 			<artifactId>commons-fileupload</artifactId>
 			<version>1.3</version>
 		</dependency>
-
 		<dependency>
 			<groupId>io.springfox</groupId>
 			<artifactId>springfox-swagger2</artifactId>
@@ -568,9 +538,7 @@
 			<artifactId>springfox-swagger-ui</artifactId>
 			<version>2.7.0</version>
 		</dependency>
-
 		<!-- Schedulers required Libraries -->
-
 		<dependency>
 			<groupId>com.googlecode.json-simple</groupId>
 			<artifactId>json-simple</artifactId>
@@ -590,6 +558,13 @@
 			<groupId>org.glassfish.jersey.connectors</groupId>
 			<artifactId>jersey-jetty-connector</artifactId>
 			<version>2.23.1</version>
+		</dependency>
+		<!-- Jacoco for offline instrumentation -->
+		<dependency>
+			<groupId>org.jacoco</groupId>
+			<artifactId>org.jacoco.agent</artifactId>
+			<version>${jacocoVersion}</version>
+			<classifier>runtime</classifier>
 		</dependency>
 	</dependencies>
 

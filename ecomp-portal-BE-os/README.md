@@ -42,6 +42,8 @@ Version 1.1.0 (Amsterdam), November 2017
 - [Portal-86] Remove internal att.com usages from tests and other files
 - [Portal-102] Fixed the page refresh issue on App Account Management page
 - [Portal-104] replace mysql DB connector with mariaDB connector
+- [Portal-116] Empty Widgets on Home page - widget uploaded with a wrong format in db 
+- [Portal-59] Fix to to display Portal users on User page
 
 Version 1.0.0, February 2017
 - Initial release
