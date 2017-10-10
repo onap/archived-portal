@@ -23,19 +23,22 @@ USAGE
 
 wait_for() {
   command="$*"
+  if [ "$QUIET" -ne 1 ]; then echo "$0: probing host $HOST port $PORT"; fi
   for i in `seq $TIMEOUT` ; do
     nc -z "$HOST" "$PORT" > /dev/null 2>&1
     result=$?
     if [ $result -eq 0 ] ; then
-      if [ "$QUIET" -ne 1 ]; then echo "Operation succeeded on try $i"; fi
+      if [ "$QUIET" -ne 1 ]; then echo "$0: operation succeeded on try $i"; fi
       if [ -n "$command" ] ; then
+        if [ "$QUIET" -ne 1 ]; then echo "$0: exec-ing command $command"; fi
         exec $command
       fi
       exit 0
     fi
+    if [ "$QUIET" -ne 1 ]; then echo "$0: sleeping after try $i"; fi
     sleep 1
   done
-  echo "Operation timed out" >&2
+  echo "$0: Operation timed out" >&2
   exit 1
 }
 

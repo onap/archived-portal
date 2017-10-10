@@ -1,18 +1,19 @@
 # Large image
 # FROM openjdk:8-jdk
-# Very small image
+# Tiny image; it includes java and nc
 FROM frolvlad/alpine-oraclejdk8:slim
 
 # Arguments are supplied by build script;
 # the defaults below only support testing
 ARG WMS_JAR=build/widget-ms.jar
-# Launch script
-COPY start-wms-cmd.sh /
-# Wait script, which depends on nc
-COPY wait-for.sh /
 # Onejar
 COPY ${WMS_JAR} /app.jar
 RUN sh -c 'touch /app.jar'
-VOLUME /tmp
-ENV JAVA_OPTS=""
+
+# Wait script, which depends on nc
+COPY wait-for.sh /
+# Launch script
+COPY start-wms-cmd.sh /
+
+# Define default command
 CMD /start-wms-cmd.sh
