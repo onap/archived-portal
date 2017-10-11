@@ -44,6 +44,6 @@ Version 1.1.0 (Amsterdam), November 2017
 - [Portal-104] replace mysql DB connector with mariaDB connector
 - [Portal-116] Empty Widgets on Home page - widget uploaded with a wrong format in db 
 - [Portal-59] Fix to to display Portal users on User page
-
+- [Portal-127] Remove GreenSock license code from b2b library
 Version 1.0.0, February 2017
 - Initial release
