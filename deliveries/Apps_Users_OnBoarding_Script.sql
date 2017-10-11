@@ -370,4 +370,8 @@ UPDATE  `fn_app` SET  `thumbnail` = 0x89504E470D0A1A0A0000000D49484452000000D400
 -- for R1 Enhanced Notification ticket source from JIRA
 INSERT INTO `ep_basic_auth_account` VALUES (1,'JIRA','jira','6APqvG4AU2rfLgCvMdySwQ==','Y');
 
+-- for setting up CLI and AAI-UI to be visible on Home page for demo account
+INSERT INTO `fn_pers_user_app_sel` VALUES (1,1,7,'S');
+INSERT INTO `fn_pers_user_app_sel` VALUES (2,1,8,'S');
+
 commit;

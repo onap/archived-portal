@@ -5,7 +5,7 @@
 # Images must be pulled from ONAP Nexus registry after logging in like this:
 # docker login -u USER -p PASS nexus3.onap.org:10001
 
-version: '2.0'
+version: '2.1'
 
 services:
 
@@ -47,7 +47,7 @@ services:
     command:
       - /wait-for.sh
       - -t
-      - "180"
+      - "300"
       - portal-db:3306
       - --
       - /start-wms-cmd.sh
@@ -87,7 +87,7 @@ services:
     command:
       - /wait-for.sh
       - -t
-      - "180"
+      - "300"
       - portal-db:3306
       - --
       - /start-apps-cmd.sh
