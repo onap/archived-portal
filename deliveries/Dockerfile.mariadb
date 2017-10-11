@@ -2,7 +2,6 @@ FROM mariadb:latest
 
 ARG PORTAL_SCRIPT_DIR=${PORTAL_SCRIPT_DIR}
 ARG SDK_SCRIPT_DIR=${SDK_SCRIPT_DIR}
-ARG DBC_SCRIPT_DIR=${DBC_SCRIPT_DIR}
 
 # constant
 #Add config file
@@ -23,6 +22,3 @@ COPY ${SDK_SCRIPT_DIR}/EcompSdkDDLMySql_1710_Common.sql       /docker-entrypoint
 COPY ${SDK_SCRIPT_DIR}/EcompSdkDDLMySql_1710_OS.sql           /docker-entrypoint-initdb.d/
 COPY ${SDK_SCRIPT_DIR}/EcompSdkDMLMySql_1710_Common.sql       /docker-entrypoint-initdb.d/
 COPY ${SDK_SCRIPT_DIR}/EcompSdkDMLMySql_1710_OS.sql           /docker-entrypoint-initdb.d/
-
-# DBC App combined DDL/DML, built by script
-COPY ${DBC_SCRIPT_DIR}/dbca-complete-mysql-1707-os.sql  /docker-entrypoint-initdb.d/

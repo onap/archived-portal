@@ -1,7 +1,6 @@
 #!/bin/bash
-# Builds Portal, Portal-SDK and DMaaP-BC webapps;
-# then packages all into a docker.
-# Prereq: all three projects have been cloned from git.
+# Builds Portal and Portal-SDK webapps; packages all into a docker.
+# Prereq: all projects have been cloned from git.
 # Expects to be invoked with CWD=portal/deliveries
 # Caches files in local directory for docker build.
 
@@ -51,8 +50,7 @@ mkdir $BUILD_REL
 SCR_BASE=$BUILD_REL/scripts
 PORTAL_SCRIPT_DIR=$SCR_BASE/ecomp-portal-DB-os
 SDK_SCRIPT_DIR=$SCR_BASE/epsdk-app-os
-DBC_SCRIPT_DIR=$SCR_BASE/dbca-os
-mkdir -p ${PORTAL_SCRIPT_DIR} ${SDK_SCRIPT_DIR} ${DBC_SCRIPT_DIR}
+mkdir -p ${PORTAL_SCRIPT_DIR} ${SDK_SCRIPT_DIR}
 
 # copy over DB scripts for the dockerfiles
 # Portal
@@ -61,18 +59,12 @@ cp $BASE/ecomp-portal-DB-os/*.sql ${PORTAL_SCRIPT_DIR}
 # SDK app
 cp $BASE/sdk/ecomp-sdk/epsdk-app-common/db-scripts/*.sql ${SDK_SCRIPT_DIR}
 cp $BASE/sdk/ecomp-sdk/epsdk-app-os/db-scripts/*.sql ${SDK_SCRIPT_DIR}
-# DBC app
-cp $BASE/dmaapbc/dcae_dmaapbc_webapp/dbca-common/db-scripts/*.sql ${DBC_SCRIPT_DIR}
-cp $BASE/dmaapbc/dcae_dmaapbc_webapp/dbca-os/db-scripts/*.sql ${DBC_SCRIPT_DIR}
-# Assemble a script with "use" at the top.
-cat $DBC_SCRIPT_DIR/dbca-create-mysql-1707-os.sql $DBC_SCRIPT_DIR/dbca-ddl-mysql-1707-common.sql $DBC_SCRIPT_DIR/dbca-dml-mysql-1707-os.sql > $DBC_SCRIPT_DIR/dbca-complete-mysql-1707-os.sql
 
 # build database docker
 DB_DOCKER_CMD="
   docker build -t ${DB_IMG_NAME}:${PORTAL_TAG} ${PROXY_ARGS}
     --build-arg PORTAL_SCRIPT_DIR=${PORTAL_SCRIPT_DIR}
     --build-arg SDK_SCRIPT_DIR=${SDK_SCRIPT_DIR}
-    --build-arg DBC_SCRIPT_DIR=${DBC_SCRIPT_DIR}
     -f Dockerfile.mariadb .
 "
 echo "Build mariadb docker image"
@@ -99,11 +91,6 @@ cd $BASE/sdk/ecomp-sdk/epsdk-app-os
 ${MVN} clean package
 cp target/epsdk-app-os.war $BUILD_ABS
 
-echo "Build and copy Portal-DBC app"
-cd $BASE/dmaapbc/dcae_dmaapbc_webapp
-${MVN} clean package
-cp dbca-os/target/dmaap-bc-app-os.war $BUILD_ABS
-
 PROXY_ARGS=""
 if [ $HTTP_PROXY ]; then
     PROXY_ARGS+="--build-arg HTTP_PROXY=${HTTP_PROXY}"
@@ -119,7 +106,6 @@ PORTAL_DOCKER_CMD="
     --build-arg FE_DIR=$BUILD_REL/public
     --build-arg PORTAL_WAR=$BUILD_REL/ecompportal-be-os.war
     --build-arg SDK_WAR=$BUILD_REL/epsdk-app-os.war
-    --build-arg DBC_WAR=$BUILD_REL/dmaap-bc-app-os.war
     -f $PORTAL_DOCKERFILE .
 "
 $PORTAL_DOCKER_CMD

@@ -1,5 +1,5 @@
 # Dockerfile for image with ONAP applications:
-# Portal app, Portal-SDK app, Portal-DBC app.
+# Portal app, Portal-SDK app.
 
 # Yields an image 823 MB
 FROM frolvlad/alpine-oraclejdk8:slim
@@ -11,7 +11,6 @@ FROM frolvlad/alpine-oraclejdk8:slim
 ARG PORTAL_WAR=build/ecompportal-be-os.war
 ARG FE_DIR=build/public
 ARG SDK_WAR=build/epsdk-app-os.war
-ARG DBC_WAR=build/dmaap-bc-app-os.war
 ARG HTTP_PROXY
 ARG HTTPS_PROXY
 
@@ -36,7 +35,7 @@ RUN mkdir -p /opt
 RUN mv ${TOMCAT} /opt
 
 WORKDIR ${TOMCATHOME}/webapps
-RUN mkdir ECOMPPORTAL && mkdir ECOMPSDKAPP && mkdir ECOMPDBCAPP
+RUN mkdir ECOMPPORTAL && mkdir ECOMPSDKAPP
 
 # Portal has many parts
 COPY $PORTAL_WAR ECOMPPORTAL
@@ -46,10 +45,6 @@ COPY ${FE_DIR} ECOMPPORTAL/public
 # SDK app has only a war
 COPY $SDK_WAR ECOMPSDKAPP
 RUN cd ECOMPSDKAPP && unzip -q *.war && rm *.war
-
-# DBC app has only a war
-COPY $DBC_WAR ECOMPDBCAPP
-RUN cd ECOMPDBCAPP && unzip -q *.war && rm *.war
 
 VOLUME ${TOMCATHOME}/logs
 
