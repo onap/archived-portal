@@ -1552,7 +1552,7 @@ public class UserRolesCommonServiceImpl {
 
 	protected EPUser getUser(String userId, EPApp app, ApplicationsRestClientService applicationsRestClientService)
 			throws HTTPException {
-		return applicationsRestClientService.get(EPUser.class, app.getId(), String.format("/user/%s", userId));
+		return applicationsRestClientService.get(EPUser.class, app.getId(), String.format("/user/%s", userId), true);
 
 	}
 

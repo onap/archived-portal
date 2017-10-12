@@ -14,7 +14,7 @@ https://www.eclipse.org/m2e-wtp/
 
 ## Release Notes
 
-Version 1.1.0 (Amsterdam), November 2017
+Version 1.3.0 (Amsterdam), November 2017
 - [Portal-6] Updates to License and Trademark in the PORTAL Source Code
 - [Portal-7] Improvements added as part of the rebasing process
 - [Portal-17] Remove jfree related items
@@ -45,5 +45,7 @@ Version 1.1.0 (Amsterdam), November 2017
 - [Portal-116] Empty Widgets on Home page - widget uploaded with a wrong format in db 
 - [Portal-59] Fix to to display Portal users on User page
 - [Portal-127] Remove GreenSock license code from b2b library
+- [Portal-125] Fixed the missing role assignment when adding a user in portal
+
 Version 1.0.0, February 2017
 - Initial release
