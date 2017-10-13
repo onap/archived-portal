@@ -1,9 +1,10 @@
 # docker-compose for ONAP portal containers: database, microservice, portal apps.
-# Relies on .env file in current directory.
+# Relies on .env file, which CANNOT be specified via command-line option
 # Works in multiple environments; does not pull from a Nexus registry.
 # Exposes the portal apps docker (but not DB nor WMS dockers) on the host network.
 # Images must be pulled from ONAP Nexus registry after logging in like this:
 # docker login -u USER -p PASS nexus3.onap.org:10001
+# Uses healthcheck feature added in docker-compose v2.1
 
 version: '2.1'
 
@@ -31,9 +32,12 @@ services:
       - /var/lib/mysql
     logging:
       driver: json-file
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      timeout: 10s
+      retries: 30
 
-  # An environment variable here CAN override the database URL;
-  # instead the value in the config file uses hostname from above
+  # The app config file uses the docker name above
   portal-wms:
     image: ${WMS_IMG_NAME}:${PORTAL_TAG}
     expose:
@@ -41,15 +45,11 @@ services:
     links:
       - portal-db
     depends_on:
-      - portal-db
+      portal-db:
+        condition: service_healthy
     volumes:
-      - ${PROPS_DIR}/ECOMPWIDGETMS/application.properties:/application.properties
+      - ${PROPS_DIR}/ONAPWIDGETMS/application.properties:/application.properties
     command:
-      - /wait-for.sh
-      - -t
-      - "300"
-      - portal-db:3306
-      - --
       - /start-wms-cmd.sh
     logging:
       driver: json-file
@@ -58,8 +58,6 @@ services:
   # two apps use identical configuration keys with different values
   portal-apps:
     image: ${EP_IMG_NAME}:${PORTAL_TAG}
-    expose:
-      - 8989
     ports:
       - 8989:8080
       - 8010:8009
@@ -68,31 +66,26 @@ services:
       - portal-db
       - portal-wms
     depends_on:
-      - portal-db
-      - portal-wms
+      portal-db:
+        condition: service_healthy
+      portal-wms:
+        condition: service_started
     volumes:
-      - ${PROPS_DIR}/ECOMPPORTALAPP/system.properties:${WEBAPPS_DIR}/ECOMPPORTAL/WEB-INF/conf/system.properties
-      - ${PROPS_DIR}/ECOMPPORTALAPP/fusion.properties:${WEBAPPS_DIR}/ECOMPPORTAL/WEB-INF/fusion/conf/fusion.properties
-      - ${PROPS_DIR}/ECOMPPORTALAPP/portal.properties:${WEBAPPS_DIR}/ECOMPPORTAL/WEB-INF/classes/portal.properties
-      - ${PROPS_DIR}/ECOMPPORTALAPP/openid-connect.properties:${WEBAPPS_DIR}/ECOMPPORTAL/WEB-INF/classes/openid-connect.properties
-      - ${PROPS_DIR}/ECOMPPORTALAPP/logback.xml:${WEBAPPS_DIR}/ECOMPPORTAL/WEB-INF/classes/logback.xml
-      - ${PROPS_DIR}/ECOMPSDKAPP/fusion.properties:${WEBAPPS_DIR}/ECOMPSDKAPP/WEB-INF/fusion/conf/fusion.properties
-      - ${PROPS_DIR}/ECOMPSDKAPP/system.properties:${WEBAPPS_DIR}/ECOMPSDKAPP/WEB-INF/conf/system.properties
-      - ${PROPS_DIR}/ECOMPSDKAPP/portal.properties:${WEBAPPS_DIR}/ECOMPSDKAPP/WEB-INF/classes/portal.properties
-      - ${PROPS_DIR}/ECOMPDBCAPP/system.properties:${WEBAPPS_DIR}/ECOMPDBCAPP/WEB-INF/conf/system.properties
-      - ${PROPS_DIR}/ECOMPDBCAPP/portal.properties:${WEBAPPS_DIR}/ECOMPDBCAPP/WEB-INF/classes/portal.properties
-      - ${PROPS_DIR}/ECOMPDBCAPP/dbcapp.properties:${WEBAPPS_DIR}/ECOMPDBCAPP/WEB-INF/dbcapp/dbcapp.properties
-      - ${PROPS_DIR}/ECOMPDBCAPP/fusion.properties:${WEBAPPS_DIR}/ECOMPDBCAPP/WEB-INF/fusion/conf/fusion.properties
+      - ${PROPS_DIR}/ONAPPORTAL/system.properties:${WEBAPPS_DIR}/ONAPPORTAL/WEB-INF/conf/system.properties
+      - ${PROPS_DIR}/ONAPPORTAL/fusion.properties:${WEBAPPS_DIR}/ONAPPORTAL/WEB-INF/fusion/conf/fusion.properties
+      - ${PROPS_DIR}/ONAPPORTAL/portal.properties:${WEBAPPS_DIR}/ONAPPORTAL/WEB-INF/classes/portal.properties
+      - ${PROPS_DIR}/ONAPPORTAL/openid-connect.properties:${WEBAPPS_DIR}/ONAPPORTAL/WEB-INF/classes/openid-connect.properties
+      - ${PROPS_DIR}/ONAPPORTAL/logback.xml:${WEBAPPS_DIR}/ONAPPORTAL/WEB-INF/classes/logback.xml
+      - ${PROPS_DIR}/ONAPPORTALSDK/fusion.properties:${WEBAPPS_DIR}/ONAPPORTALSDK/WEB-INF/fusion/conf/fusion.properties
+      - ${PROPS_DIR}/ONAPPORTALSDK/system.properties:${WEBAPPS_DIR}/ONAPPORTALSDK/WEB-INF/conf/system.properties
+      - ${PROPS_DIR}/ONAPPORTALSDK/portal.properties:${WEBAPPS_DIR}/ONAPPORTALSDK/WEB-INF/classes/portal.properties
+      - ${PROPS_DIR}/ONAPPORTALSDK/logback.xml:${WEBAPPS_DIR}/ONAPPORTALSDK/WEB-INF/classes/logback.xml
       - ${LOGS_DIR}:/opt/apache-tomcat-8.0.37/logs
     command:
-      - /wait-for.sh
-      - -t
-      - "300"
-      - portal-db:3306
-      - --
       - /start-apps-cmd.sh
       # see comments in .env file
       - $EXTRA_HOST_IP
       - $EXTRA_HOST_NAME
     logging:
       driver: json-file
+
