@@ -128,7 +128,7 @@ INSERT IGNORE INTO `fn_app_contact_us` (app_id, contact_name, contact_email, url
 	"AAI UI Application");
 INSERT IGNORE INTO `fn_app_contact_us` (app_id, contact_name, contact_email, url, active_yn, description) VALUES (
 	(select min(app_id) from fn_app where app_name like "%CLI%"),
-	"CLI Team","portal@lists.onap.org","https://wiki.onap.org/display/DW/Approved+Projects",NULL,
+	"CLI Team","onap-discuss@lists.onap.org","https://wiki.onap.org/display/DW/Approved+Projects",NULL,
 	"CLI Application");	
 -- end new 1610.2
 
