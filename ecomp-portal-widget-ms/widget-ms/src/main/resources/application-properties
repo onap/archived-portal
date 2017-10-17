@@ -3,12 +3,12 @@ server.contextPath=/widget
 server.port=8082
 spring.http.multipart.max-file-size=128MB
 spring.http.multipart.max-request-size=128MB
-microservice.widget.location=/demeter/WebApps/dev/ECOMPPORTAL/microservices/widgets-dir/
+microservice.widget.location=/tmp
 
 ## App DB Properties
-spring.datasource.url=jdbc:mariadb:failover://demeter.homer.att.com:3306/ecomp_portal_1702&connectTimeout=2000
-spring.datasource.username=portal
-spring.datasource.password=ENC(8tWrJAXdOKaMqvrVy5e2Jg==)
+spring.datasource.url=jdbc:mariadb://localhost:3306/ecomp_portal_1702&connectTimeout=2000
+spring.datasource.username=widget-user
+spring.datasource.password=widget-pass
 spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
 spring.database.driver.classname=org.mariadb.jdbc.Driver
 spring.jpa.show-sql=false
