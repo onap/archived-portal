@@ -18,6 +18,8 @@ ARG HTTPS_PROXY
 ARG TOMCAT=apache-tomcat-8.0.37
 ARG TOMCATTAR=${TOMCAT}.tar.gz
 ARG TOMCATHOME=/opt/${TOMCAT}
+ARG PORTALCONTEXT=ONAPPORTAL
+ARG SDKCONTEXT=ONAPPORTALSDK
 
 ENV http_proxy $HTTP_PROXY
 ENV https_proxy $HTTPS_PROXY
@@ -35,16 +37,16 @@ RUN mkdir -p /opt
 RUN mv ${TOMCAT} /opt
 
 WORKDIR ${TOMCATHOME}/webapps
-RUN mkdir ECOMPPORTAL && mkdir ECOMPSDKAPP
+RUN mkdir ${PORTALCONTEXT} && mkdir ${SDKCONTEXT}
 
 # Portal has many parts
-COPY $PORTAL_WAR ECOMPPORTAL
-RUN cd ECOMPPORTAL && unzip -q *.war && rm *.war
-COPY ${FE_DIR} ECOMPPORTAL/public
+COPY $PORTAL_WAR ${PORTALCONTEXT}
+RUN cd ${PORTALCONTEXT} && unzip -q *.war && rm *.war
+COPY ${FE_DIR} ${PORTALCONTEXT}/public
 
 # SDK app has only a war
-COPY $SDK_WAR ECOMPSDKAPP
-RUN cd ECOMPSDKAPP && unzip -q *.war && rm *.war
+COPY $SDK_WAR ${SDKCONTEXT}
+RUN cd ${SDKCONTEXT} && unzip -q *.war && rm *.war
 
 VOLUME ${TOMCATHOME}/logs
 
