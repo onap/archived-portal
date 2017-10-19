@@ -94,5 +94,5 @@
 		"loggedinUser" : "http://localhost:8080/ecompportal/portalApi/loggedinUser",
 		"modifyLoggedinUser" : "http://localhost:8080/ecompportal/portalApi/modifyLoggedinUser"
 	},
-	"cookieDomain": "org.openecomp"
+	"cookieDomain": "onap.org"
 }

@@ -94,5 +94,5 @@
 		"loggedinUser" : "portalApi/loggedinUser",
 		"modifyLoggedinUser" : "portalApi/modifyLoggedinUser"
 	},
-	"cookieDomain": "openecomp.org"
+	"cookieDomain": "onap.org"
 }
