@@ -1961,4 +1961,23 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
             ;
 		]]>
 	</sql-query>
+	
+    <query name="getEPUserByOrgUserId">
+	<![CDATA[
+		FROM EPUser WHERE orgUserId = :org_user_id
+	]]>
+    </query>
+
+	<query name="getEPUserByLoginId">
+	<![CDATA[
+		FROM EPUser WHERE loginId = :login_id
+	]]>
+    </query>
+
+    <query name="getEPUserByLoginIdLoginPwd">
+	<![CDATA[
+		FROM EPUser WHERE loginId = :login_id and loginPwd = :login_pwd		
+	]]>
+    </query>
+
 </hibernate-mapping>
