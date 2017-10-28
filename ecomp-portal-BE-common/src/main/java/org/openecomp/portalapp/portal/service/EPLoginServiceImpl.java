@@ -41,25 +41,25 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import org.openecomp.portalsdk.core.logging.logic.EELFLoggerDelegate;
-import org.openecomp.portalsdk.core.menu.MenuBuilder;
-import org.openecomp.portalsdk.core.service.DataAccessService;
-import org.openecomp.portalsdk.core.service.support.FusionService;
-import org.openecomp.portalsdk.core.util.SystemProperties;
-import org.openecomp.portalsdk.core.web.support.AppUtils;
 import org.openecomp.portalapp.command.EPLoginBean;
 import org.openecomp.portalapp.portal.domain.EPUser;
 import org.openecomp.portalapp.portal.logging.aop.EPMetricsLog;
 import org.openecomp.portalapp.portal.logging.format.EPAppMessagesEnum;
 import org.openecomp.portalapp.portal.logging.logic.EPLogUtil;
 import org.openecomp.portalapp.util.EPUserUtils;
+import org.openecomp.portalsdk.core.logging.logic.EELFLoggerDelegate;
+import org.openecomp.portalsdk.core.menu.MenuBuilder;
+import org.openecomp.portalsdk.core.service.DataAccessService;
+import org.openecomp.portalsdk.core.service.support.FusionService;
+import org.openecomp.portalsdk.core.util.SystemProperties;
+import org.openecomp.portalsdk.core.web.support.AppUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service("eploginService")
 @Transactional
@@ -179,43 +179,33 @@ public class EPLoginServiceImpl extends FusionService implements EPLoginService 
 	 * @param password
 	 * @return EPUser object; null on error or if no match.
 	 */
+	@SuppressWarnings("rawtypes")
 	private EPUser findUser(String loginId, String password) {
-		List<?> list = null;
-
-		StringBuffer criteria = new StringBuffer();
-		criteria.append(" where login_id = '").append(loginId).append("'").append(" and login_pwd = '").append(password)
-				.append("'");
-
+		Map<String, String> params = new HashMap<>();
+		params.put("login_id", loginId);
+		params.put("login_pwd", password);
+		List list = null;
 		try {
-			list = getDataAccessService().getList(EPUser.class, criteria.toString(), null, null);
+			list = dataAccessService.executeNamedQuery("getEPUserByLoginIdLoginPwd", params, new HashMap());
 		} catch (Exception e) {
 			EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeDaoSystemError, e);
-			logger.error(EELFLoggerDelegate.errorLogger, "findUser(String) failed on " + loginId, e);
+			logger.error(EELFLoggerDelegate.errorLogger, "findUser failed on " + loginId, e);
 		}
-
-		return (list == null || list.size() == 0) ? null : (EPUser) list.get(0);
+		return (list == null || list.isEmpty()) ? null : (EPUser) list.get(0);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.openecomp.portalapp.portal.service.EPLoginService#findUserWithoutPwd(java.lang.String)
-	 */
-	@Override
+	@SuppressWarnings("rawtypes")
 	public EPUser findUserWithoutPwd(String loginId) {
-		List<?> list = null;
-
-		StringBuffer criteria = new StringBuffer();
-		criteria.append(" where login_id = '").append(loginId).append("'");
-
+		Map<String, String> params = new HashMap<>();
+		params.put("login_id", loginId);
+		List list = null;
 		try {
-			list = getDataAccessService().getList(EPUser.class, criteria.toString(), null, null);
+			list = dataAccessService.executeNamedQuery("getEPUserByLoginId", params, new HashMap());
 		} catch (Exception e) {
 			EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeDaoSystemError, e);
-			String message = "findUserWithoutPwd failed on " + loginId;
-			logger.error(EELFLoggerDelegate.errorLogger, message, e);
+			logger.error(EELFLoggerDelegate.errorLogger, "findUserWithoutPwd failed on " + loginId, e);
 		}
-
-		return (list == null || list.size() == 0) ? null : (EPUser) list.get(0);
+		return (list == null || list.isEmpty()) ? null : (EPUser) list.get(0);
 	}
 
 	/**
@@ -225,20 +215,18 @@ public class EPLoginServiceImpl extends FusionService implements EPLoginService 
 	 * @param bean
 	 * @return EPUser object; null on error or if no match.
 	 */
+	@SuppressWarnings("rawtypes")
 	private EPUser findUser(EPLoginBean bean) {
-		List<?> list = null;
-
-		StringBuffer criteria = new StringBuffer();
-		criteria.append(" where orgUserId = '").append(bean.getOrgUserId()).append("'");
-
+		Map<String, String> params = new HashMap<>();
+		params.put("org_user_id", bean.getOrgUserId());
+		List list = null;
 		try {
-			list = getDataAccessService().getList(EPUser.class, criteria.toString(), null, null);
+			list = dataAccessService.executeNamedQuery("getUserByOrgUserId", params, new HashMap());
 		} catch (Exception e) {
 			EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeDaoSystemError, e);
 			logger.error(EELFLoggerDelegate.errorLogger, "findUser(EPLoginBean) failed", e);
 		}
-
-		return (list == null || list.size() == 0) ? null : (EPUser) list.get(0);
+		return (list == null || list.isEmpty()) ? null : (EPUser) list.get(0);
 	}
 
 	public DataAccessService getDataAccessService() {
