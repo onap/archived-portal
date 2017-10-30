@@ -74,10 +74,10 @@ services:
       - ${PROPS_DIR}/ONAPPORTAL/portal.properties:${WEBAPPS_DIR}/ONAPPORTAL/WEB-INF/classes/portal.properties
       - ${PROPS_DIR}/ONAPPORTAL/openid-connect.properties:${WEBAPPS_DIR}/ONAPPORTAL/WEB-INF/classes/openid-connect.properties
       - ${PROPS_DIR}/ONAPPORTAL/logback.xml:${WEBAPPS_DIR}/ONAPPORTAL/WEB-INF/classes/logback.xml
-      - ${PROPS_DIR}/ONAPPORTALSDK/fusion.properties:${WEBAPPS_DIR}/ONAPPORTALSDK/WEB-INF/fusion/conf/fusion.properties
-      - ${PROPS_DIR}/ONAPPORTALSDK/system.properties:${WEBAPPS_DIR}/ONAPPORTALSDK/WEB-INF/conf/system.properties
-      - ${PROPS_DIR}/ONAPPORTALSDK/portal.properties:${WEBAPPS_DIR}/ONAPPORTALSDK/WEB-INF/classes/portal.properties
-      - ${PROPS_DIR}/ONAPPORTALSDK/logback.xml:${WEBAPPS_DIR}/ONAPPORTALSDK/WEB-INF/classes/logback.xml
+      - ${PROPS_DIR}/ONAPPORTALSDK-1.3.0/fusion.properties:${WEBAPPS_DIR}/ONAPPORTALSDK/WEB-INF/fusion/conf/fusion.properties
+      - ${PROPS_DIR}/ONAPPORTALSDK-1.3.0/system.properties:${WEBAPPS_DIR}/ONAPPORTALSDK/WEB-INF/conf/system.properties
+      - ${PROPS_DIR}/ONAPPORTALSDK-1.3.0/portal.properties:${WEBAPPS_DIR}/ONAPPORTALSDK/WEB-INF/classes/portal.properties
+      - ${PROPS_DIR}/ONAPPORTALSDK-1.3.0/logback.xml:${WEBAPPS_DIR}/ONAPPORTALSDK/WEB-INF/classes/logback.xml
       - ${LOGS_DIR}:/opt/apache-tomcat-8.0.37/logs
     command:
       - /wait-for.sh
