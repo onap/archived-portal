@@ -221,7 +221,7 @@ public class EPLoginServiceImpl extends FusionService implements EPLoginService 
 		params.put("org_user_id", bean.getOrgUserId());
 		List list = null;
 		try {
-			list = dataAccessService.executeNamedQuery("getUserByOrgUserId", params, new HashMap());
+			list = dataAccessService.executeNamedQuery("getEPUserByOrgUserId", params, new HashMap());
 		} catch (Exception e) {
 			EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeDaoSystemError, e);
 			logger.error(EELFLoggerDelegate.errorLogger, "findUser(EPLoginBean) failed", e);
