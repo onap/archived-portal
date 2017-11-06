@@ -1,11 +1,9 @@
 .. This work is licensed under a Creative Commons Attribution 4.0 International License.
 
-Portal: Tutorials
------------------
-
-.. toctree::
-   :maxdepth: 2
+Portal Platform
+---------------
  
-   portal-sdk/index
-
-
+.. toctree::
+   :maxdepth: 1
+ 
+   architecture.rst

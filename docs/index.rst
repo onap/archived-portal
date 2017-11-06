@@ -2,13 +2,15 @@
 
 Portal
 ------
-
+  
 .. toctree::
    :maxdepth: 2
 
+   platform/index
+   release-notes/index
    tutorials/index
 
 Search
 ======
-
+ 
 * :ref:`search`

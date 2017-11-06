@@ -1,6 +1,6 @@
 Google Charts
 =============
-
+ 
 Now that we've established our database connection and can request and retrieve data from our tables, we can focus on our web application.
 
 Installing

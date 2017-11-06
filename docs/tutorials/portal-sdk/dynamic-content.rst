@@ -1,6 +1,6 @@
 Dynamic content
 ===============
-
+ 
 Now, we'll make our new application dynamic by allowing user interaction. To do this, we'll let the user select between "download" and "upload" charts with an HTML select/option menu.
 
 Creating the Angularized select/option menu

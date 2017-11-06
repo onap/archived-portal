@@ -1,6 +1,6 @@
 Creating a new application
 ==========================
-
+ 
 Our tutorial application will consist of two parts:
 
 1. Java code: We'll create a controller (in reality you might need to create many, depending on how complex your application is) that will handle many of our web requests. Most importantly, it will handle the top-level access request.

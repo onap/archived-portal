@@ -1,6 +1,6 @@
 Setting up a database connection
 ================================
-
+ 
 Most applications will need access to a database. In this tutorial, we'll connect to a database in order to pull data for displaying in a Google chart.
 
 Injecting data
