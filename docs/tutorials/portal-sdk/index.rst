@@ -5,7 +5,7 @@
 
 Building ONAP Portal SDK Web Applications
 =========================================
-
+ 
 .. toctree::
 	:maxdepth: 6
 	:caption: Contents:

@@ -1,6 +1,6 @@
 Pulling DB data
 ===============
-
+ 
 In the :ref:`connectionjava` section, we set up a connection to the :code:`ecomp_sdk` database. Now, we going to use our AngularJS controller (:code:`controller.js`) and data service (:code:`data-service.js`) to make an HTTP request to our Spring controller (:code:`MyAppController.java`), wait for the results, and map them into a Google Chart.
 
 AngularJS Promises

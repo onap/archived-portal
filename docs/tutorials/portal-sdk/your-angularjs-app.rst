@@ -1,6 +1,6 @@
 Your AngularJS app
 =========================
-
+ 
 Now that we've established a database connection, it's time to work on the web side of your app. To start, we'll create some files in :code:`sdk/ecomp-sdk/epsdk-app-os/src/main/webapp/app/fusion/scripts/myapp/myfirstpage`.
 
 myfirstpage.html
