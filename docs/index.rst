@@ -7,8 +7,8 @@ Portal
    :maxdepth: 2
 
    platform/index
-   release-notes/index
    tutorials/index
+   release-notes
 
 Search
 ======
