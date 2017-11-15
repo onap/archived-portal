@@ -7,3 +7,4 @@ Portal Platform
    :maxdepth: 1
  
    architecture.rst
+   offeredapis.rst
