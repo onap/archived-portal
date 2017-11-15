@@ -11,7 +11,7 @@ Architecture
 
 The ONAP Portal is a platform that provides the ability to integrate different ONAP applications into a centralized Portal Core. The intention is to allow decentralized applications to run within their own infrastructure while providing common management services and connectivity. The Portal core provides capabilities including application onboarding & management, centralized access management, and hosted application widgets. Using the provided SDK, application developers can leverage the built-in capabilities (Services / API / UI controls) along with bundled tools and technologies.
 
-.. image:: PortalArchDiagram.jpg
+.. image:: ONAP_Amsterdam_arch.png
 
 The Portal provides a web-based user interface that provides access to all of the subsystems of an instance of ONAP. It offers both design-time tools and run-time monitoring and control.
 

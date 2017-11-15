@@ -14,14 +14,13 @@ Version: 1.3.0
 .. toctree::
     :maxdepth: 1		   
 
-The ONAP Portal is a platform that provides the ability to integrate different ONAP applications into a centralized Portal Core. The platform seed code is improved with below listed enhancements in this release. This is technically the first release of ONAP Portal Platform, previous release was the seed code contribution. As such, the defects fixed in this release were raised during the course of the release and while its integration testing. Anything not closed is captured below under Known Issues. If you want to review the defects fixed in the Amsterdam release, refer to Jira (jira.onpa.org).
+The ONAP Portal is a platform that provides the ability to integrate different ONAP applications into a centralized Portal Core. The platform seed code is improved with below listed enhancements in this release. This is technically the first release of ONAP Portal Platform, previous release was the seed code contribution. As such, the defects fixed in this release were raised during the course of the release and while its integration testing. Anything not closed is captured below under Known Issues. If you want to review the defects fixed in the Amsterdam release, refer to Jira (jira.onap.org).
 	
 **New Features**
 	* Digital Experience Control/UI upgrade. 
 	* Portal Notification Enhancement and act on it w/o copy/paste, e.g. hyperlink to target function with context transfer.
 	* Prepared onboarding App process where the partner is ready for centralized user authentication via AAF.
-
-	Source code of Portal Platform and its SDK is released under the following repositories on gerrit.onap.org
+	* Source code of Portal Platform and its SDK is released under the following repositories on gerrit.onap.org
 	* portal - (Release branch: "release-1.3.0")
 	* portal/sdk - (Release branch: "release-1.3.2")
 	
