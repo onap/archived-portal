@@ -66,10 +66,13 @@ public class PolicyUtil {
 	
 	public static PolicyResponseWrapper wrapResponse (ClientResponse cres) {	
 		String resp_str = "";
+		int statuscode = 0;
 		if ( cres != null ) {
 			resp_str = cres.readEntity(String.class);
+			statuscode = cres.getStatus();
 		}
-		int statuscode = cres.getStatus();
+		
+		
 		PolicyResponseWrapper w = PolicyUtil.wrapResponse ( resp_str, statuscode );
 		return (w);
 	}
