@@ -1,21 +1,39 @@
 /*-
- * ================================================================================
- * ECOMP Portal
- * ================================================================================
- * Copyright (C) 2017 AT&T Intellectual Property
- * ================================================================================
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
+ * ============LICENSE_START==========================================
+ * ONAP Portal
+ * ===================================================================
+ * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ * ===================================================================
+ *
+ * Unless otherwise specified, all software contained herein is licensed
+ * under the Apache License, Version 2.0 (the "License");
+ * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
- * 
- *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
+ *             http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * ================================================================================
+ *
+ * Unless otherwise specified, all documentation contained herein is licensed
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
+ * you may not use this documentation except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *             https://creativecommons.org/licenses/by/4.0/
+ *
+ * Unless required by applicable law or agreed to in writing, documentation
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * ============LICENSE_END============================================
+ *
+ * ECOMP is a trademark and service mark of AT&T Intellectual Property.
  */
 'use strict';
 (function () {
@@ -26,6 +44,7 @@
             $scope.appsIsDown = false;
             $scope.noUsersInApp = false;
             $scope.multiAppAdmin = false;
+            $scope.syncRolesApplied = false;
 
             $log.info('UsersCtrl:: initializing...');
             /**
@@ -38,10 +57,13 @@
             };
 
             let init = () => {
+            	$scope.app = {
+            		appId : ''	
+            	};
                 this.isLoadingTable = false;
                 this.selectedApp = null;
                 this.isAppSelectDisabled = false;
-                this.selectApp = 'Select application';
+                this.selectApp = 'Select Application';
                 this.adminApps = [{index: 0, id: 0, value: this.selectApp, title: this.selectApp}];
                 getAdminApps();
 
@@ -137,7 +159,7 @@
                      }
                 }
                
-                if (this.selectedApp.title != this.selectApp) { // 'Select Application'
+                if (this.selectedApp.value != this.selectApp) { // 'Select Application'
                     usersService.getAccountUsers(this.selectedApp.id)
                         .then(accountUsers => {
                             $log.debug('UsersCtrl::updateUsersList accountUsers: '+ accountUsers);
@@ -231,13 +253,32 @@
      	        });
             };
 
+            this.syncRolesFromExternalAuthSystem = (appId) =>{
+            	applicationsService.syncRolesEcompFromExtAuthSystem(appId).then(function(res){
+            		if(res.status == 200){
+            	     confirmBoxService.showInformation('Sync operation completed successfully!').then(isConfirmed => {});          			
+            		} else{
+   	        		 confirmBoxService.showInformation('Sync operation failed for '+app).then(isConfirmed => {});          			
+            		}
+            	});
+            };
 
             $scope.$watch('users.selectedApp.value', (newVal, oldVal) => {
+            	if(typeof(newVal) != 'undefined' && !newVal.includes("Select")){
+            	  applicationsService.getSingleAppInfo(newVal).then(function(res) {
+            		  $scope.app.appId = res.id;
+            		  if(res.centralAuth == true){
+            			  $scope.syncRolesApplied = true;
+            		  } else{
+            			  $scope.syncRolesApplied = false; 
+            		  }
+		            });
+            	}
                 if (!newVal || _.isEqual(newVal, oldVal)) {
                     return;
                 }
                 $log.debug('UsersCtrl::openAddNewUserModal:$watch selectedApp -> Fire with: ', newVal);
-                this.accountUsers = []; //reset table and show swirl here
+                this.accountUsers = []; // reset table and show swirl here
                 updateUsersList();
             });
 

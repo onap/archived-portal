@@ -1,5 +1,9 @@
 {
 	"api": {
+		"singleAppInfo":"portalApi/singleAppInfo",
+		"singleAppInfoById":"portalApi/singleAppInfoById",
+		"syncRolesFromExternalAuthSystem":"portalApi/syncRoles",
+		"syncFunctionsFromExternalAuthSystem":"portalApi/syncFunctions",
 		"userApps": "portalApi/userApps",
 		"persUserApps": "portalApi/persUserApps",
 		"appCatalog": "portalApi/appCatalog",
@@ -59,17 +63,17 @@
 		"saveNotification": "portalApi/saveNotification",
 		"getNotificationRoles":"portalApi/notificationRole",
 		"getRole": "portalApi/get_role",
-		"getRoles": "portalApi/get_roles",
+		"getRoles": "portalApi/get_roles/:appId",
 		"toggleRole": "portalApi/role_list/toggleRole",
 		"removeRole": "portalApi/role_list/removeRole",
-		"saveRole": "portalApi/role/saveRole.htm",
+		"saveRole": "portalApi/role/saveRole/:appId",
 		"toggleRoleRoleFunction": "portalApi/role/removeRoleFunction.htm",
 		"addRoleRoleFunction": "portalApi/role/addRoleFunction.htm",
 		"toggleRoleChildRole": "portalApi/role/removeChildRole.htm",
 		"addRoleChildRole": "portalApi/role/addChildRole.htm",
-		"getRoleFunctions": "portalApi/get_role_functions",
-		"saveRoleFunction": "portalApi/role_function_list/saveRoleFunction.htm",
-		"removeRoleFunction": "portalApi/role_function_list/removeRoleFunction.htm",
+		"getRoleFunctions": "portalApi/get_role_functions/:appId",
+		"saveRoleFunction": "portalApi/role_function_list/saveRoleFunction/:appId",
+		"removeRoleFunction": "portalApi/role_function_list/removeRoleFunction/:appId",
 		"userAppsOrderBySortPref": "portalApi/userAppsOrderBySortPref",
 		"userAppsOrderByName": "portalApi/userAppsOrderByName",
 		"saveUserAppsSortingPreference": "portalApi/saveUserAppsSortingPreference",
@@ -92,7 +96,8 @@
 		"userApplicationRoles":"portalApi/userApplicationRoles",
 		"ecompTitle":"portalApi/ecompTitle",
 		"loggedinUser" : "portalApi/loggedinUser",
-		"modifyLoggedinUser" : "portalApi/modifyLoggedinUser"
+		"modifyLoggedinUser" : "portalApi/modifyLoggedinUser",
+		"centralizedApps": "portalApi/centralizedApps" 
 	},
 	"cookieDomain": "onap.org"
 }

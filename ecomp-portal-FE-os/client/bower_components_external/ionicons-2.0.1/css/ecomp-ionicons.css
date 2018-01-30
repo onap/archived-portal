@@ -68,6 +68,10 @@
 .icon-datanetwork-softwareasaservice:before,
 .icon-datanetwork-messaging2:before,
 .icon-controls-moreapplications:before,
+.icon-people-groupcollaboration:before,
+.icon-controls-settingsconnectedactivity:before,
+.icon-content-grid2:before,
+.icon-retail-gallery:before,
 .icon-arrows-upload:before { 
 	display: inline-block; 
 	font-family: "Ionicons"; 
@@ -208,3 +212,11 @@
 .icon-datanetwork-messaging2:before { content: "\f132"; }
 
 .icon-controls-moreapplications:before { content: "\f20b"; }
+
+.icon-people-groupcollaboration:before { content: "\f47c"; }
+
+.icon-controls-settingsconnectedactivity:before { content: "\f411"; }
+
+.icon-content-grid2:before { content: "\f440"; }
+
+.icon-retail-gallery:before  { content: "\f481"; }

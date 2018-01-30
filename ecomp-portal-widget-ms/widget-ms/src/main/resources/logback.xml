@@ -122,7 +122,7 @@
 		</rollingPolicy>
 	</appender> 
 	
-	<logger name="org.openecomp.portalapp.widget" level="debug" additivity="false">
+	<logger name="org.onap.portalapp.widget" level="debug" additivity="false">
 		<appender-ref ref="ERROR" />
 		<appender-ref ref="DEBUG" />
 		<appender-ref ref="APPLICATION" />

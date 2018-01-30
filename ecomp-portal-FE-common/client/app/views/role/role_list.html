@@ -2,11 +2,11 @@
   ============LICENSE_START==========================================
   ONAP Portal
   ===================================================================
-  Copyright © 2017 AT&T Intellectual Property. All rights reserved.
+  Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
   ===================================================================
  
   Unless otherwise specified, all software contained herein is licensed
-  under the Apache License, Version 2.0 (the “License”);
+  under the Apache License, Version 2.0 (the "License");
   you may not use this software except in compliance with the License.
   You may obtain a copy of the License at
  
@@ -19,7 +19,7 @@
   limitations under the License.
  
   Unless otherwise specified, all documentation contained herein is licensed
-  under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+  under the Creative Commons License, Attribution 4.0 Intl. (the "License");
   you may not use this documentation except in compliance with the License.
   You may obtain a copy of the License at
  
@@ -46,8 +46,20 @@
 			<h1 class="heading-page" >Roles</h1>
 		</div>
 		<div class="admins-table">
+		
+		<!-- Centralized Apps -->
+		<div class="table-dropdown" ng-if="apps.selectedCentralizedApp">
+			<select id="dropdown1" name="dropdown1" b2b-dropdown ng-change="getRolesForSelectedCentralizedApp(apps.selectedCentralizedApp);" 
+						ng-model="apps.selectedCentralizedApp">
+		       	<option b2b-dropdown-list option-repeat="item in centralizedApps" value="{{item.appId}}">{{item.appName}}</option>
+		     </select>
+		</div>
+		
+		<br/>
+		
 			<div id="button-create-role" align="left" class="admins-table-btn-create" >
-				<button id="button-create-role" ng-click="goToUrl(0)" class = "btn btn-alt btn-small">Create</button>
+				<button id="button-create-role" ng-click="addRoleModalPopup(apps.selectedCentralizedApp)" class = "btn btn-alt btn-small">Create</button>
+				<button id="button-sync-role"  ng-show="syncRolesApplied" ng-click="syncRolesFromExternalAuthSystem(apps.selectedCentralizedApp)" class = "btn btn-alt btn-small"><i class="icon-arrows-update-refresh-syncL" aria-hidden="true"></i>&nbsp;Sync Roles</button>
 			</div>
 			<br>
 			  <div class="property-label">
@@ -61,6 +73,7 @@
 		                    <th b2b-table-header key="priority" sortable="true" id="col2">Priority</th>
 		                    <th b2b-table-header id="col3" sortable="false">Active</th>
 		                    <th b2b-table-header id="col4" sortable="false">Edit</th>
+		                    <th ng-if="apps.selectedCentralizedApp != 1" b2b-table-header id="col4" sortable="false">Delete</th>
 		                </tr>
 		            </thead>
 		            <tbody b2b-table-row type="body" row-repeat="rowData in availableRoles">
@@ -74,17 +87,19 @@
 		                    <td b2b-table-body headers="rowheader_t1_{{$index}} col3" >
 		                    	<div >
 						    		<label class="btn-switch-label" tabindex="0" role="option">
-										<input type="checkbox" id="{{$index}}-button-toggle-role" b2b-switches ng-model="rowData.active" ng-click="toggleRole(rowData.active,rowData);">
+										<input type="checkbox" id="{{$index}}-button-toggle-role" b2b-switches ng-model="rowData.active" ng-click="toggleRole(apps.selectedCentralizedApp, rowData.active,rowData);">
 								    </label> 
 						    	</div>
 		                    </td>
-		                    <td b2b-table-body id="{{$index}}-button-edit-role" class="icon-misc-pen" ng-click="goToUrl(rowData.id)"></td>    
+		                    <td b2b-table-body id="{{$index}}-button-edit-role" class="icon-misc-pen" ng-click="editRoleModalPopup(apps.selectedCentralizedApp, rowData)"></td>
+		                    <td ng-if="apps.selectedCentralizedApp != 1"  b2b-table-body class="icon-trash" ng-click="removeRole(apps.selectedCentralizedApp, rowData)"></td>    
 		                </tr>
 		            </tbody>
 		        </table>
-		        
-		      
 		    </div>
+		    
+		    <a id="manage-role" ng-click="fnManageRoleFunctions()" href="roleFunctions">Manage Role Functions</a><br><br>
+		    
 		</div>
 	</div>
 </div>

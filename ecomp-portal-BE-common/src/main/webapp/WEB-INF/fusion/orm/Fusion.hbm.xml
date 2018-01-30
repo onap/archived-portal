@@ -3,11 +3,11 @@
   ============LICENSE_START==========================================
   ONAP Portal
   ===================================================================
-  Copyright © 2017 AT&T Intellectual Property. All rights reserved.
+  Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
   ===================================================================
  
   Unless otherwise specified, all software contained herein is licensed
-  under the Apache License, Version 2.0 (the “License”);
+  under the Apache License, Version 2.0 (the "License");
   you may not use this software except in compliance with the License.
   You may obtain a copy of the License at
  
@@ -20,7 +20,7 @@
   limitations under the License.
  
   Unless otherwise specified, all documentation contained herein is licensed
-  under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+  under the Creative Commons License, Attribution 4.0 Intl. (the "License");
   you may not use this documentation except in compliance with the License.
   You may obtain a copy of the License at
  
@@ -45,7 +45,7 @@
 Publishes mappings and queries for EP SDK library features ONLY.
 Portal app mappings and features are in EP.hbm.xml.
 -->
-<hibernate-mapping package="org.openecomp.portalsdk.core.domain">
+<hibernate-mapping package="org.onap.portalsdk.core.domain">
 
      <!-- User class mapping details -->
     <class name="User" table="FN_USER">
@@ -104,12 +104,12 @@ Portal app mappings and features are in EP.hbm.xml.
 		
         <set name="userApps" table="FN_USER_ROLE" lazy="false" sort="natural" inverse="true" cascade="all-delete-orphan">
             <key column="user_id"/>
-            <one-to-many class="org.openecomp.portalsdk.core.domain.UserApp" />
+            <one-to-many class="org.onap.portalsdk.core.domain.UserApp" />
         </set>
 
         <set name="pseudoRoles" table="FN_USER_PSEUDO_ROLE" lazy="false" sort="natural">
             <key column="user_id"/>
-            <many-to-many column="pseudo_role_id" class="org.openecomp.portalsdk.core.domain.Role" />
+            <many-to-many column="pseudo_role_id" class="org.onap.portalsdk.core.domain.Role" />
         </set>
     </class>
 
@@ -118,8 +118,8 @@ Portal app mappings and features are in EP.hbm.xml.
             <key-property name="userId" type="long">
                 <column name="user_id" precision="11" scale="0" />
             </key-property>
-        	<key-many-to-one name="app" class="org.openecomp.portalsdk.core.domain.App" column="app_id" />
-        	<key-many-to-one name="role" class="org.openecomp.portalsdk.core.domain.Role" column="role_id" />
+        	<key-many-to-one name="app" class="org.onap.portalsdk.core.domain.App" column="app_id" />
+        	<key-many-to-one name="role" class="org.onap.portalsdk.core.domain.Role" column="role_id" />
         </composite-id>
         <property name="priority" type="java.lang.Short">
             <column name="priority" precision="4" scale="0" />
@@ -149,17 +149,17 @@ Portal app mappings and features are in EP.hbm.xml.
 
         <set name="roleFunctions" table="FN_ROLE_FUNCTION" lazy="false" sort="natural">
             <key column="role_id"/>
-            <many-to-many column="function_cd" class="org.openecomp.portalsdk.core.domain.RoleFunction"/>
+            <many-to-many column="function_cd" class="org.onap.portalsdk.core.domain.RoleFunction"/>
         </set>
 
         <set name="childRoles" table="FN_ROLE_COMPOSITE" lazy="false" sort="natural">
             <key column="parent_role_id"/>
-            <many-to-many column="child_role_id" class="org.openecomp.portalsdk.core.domain.Role"/>
+            <many-to-many column="child_role_id" class="org.onap.portalsdk.core.domain.Role"/>
         </set>
         
         <set name="parentRoles" table="FN_ROLE_COMPOSITE" lazy="false" sort="natural">
             <key column="child_role_id"/>
-            <many-to-many column="parent_role_id" class="org.openecomp.portalsdk.core.domain.Role"/>
+            <many-to-many column="parent_role_id" class="org.onap.portalsdk.core.domain.Role"/>
         </set>
 
     </class>
@@ -277,14 +277,14 @@ Portal app mappings and features are in EP.hbm.xml.
     
     <!-- Lookup (id/value bean) class mapping details -->
     <class name="Lookup">
-        <composite-id  name="nameValueId" class="org.openecomp.portalsdk.core.domain.support.NameValueId">
+        <composite-id  name="nameValueId" class="org.onap.portalsdk.core.domain.support.NameValueId">
           <key-property name="val"/>
           <key-property name="lab" />
         </composite-id>
     </class>
 
 	<class name="UrlsAccessible" table="V_URL_ACCESS">
-      <composite-id  name="urlsAccessibleKey" class="org.openecomp.portalsdk.core.domain.UrlsAccessibleKey">
+      <composite-id  name="urlsAccessibleKey" class="org.onap.portalsdk.core.domain.UrlsAccessibleKey">
     	<key-property	name="url"	column="url"/>
     	<key-property   name="functionCd"	column="function_cd"/>
       </composite-id>
@@ -309,6 +309,10 @@ Portal app mappings and features are in EP.hbm.xml.
       select email from User where id = :user_id
     </query>
 
+    <query name="getAppPassword">
+      select id,appPassword from App
+    </query>
+    
     <query name="getAllUsers">
       select id, firstName, lastName from User where active = true order by lastName, firstName
     </query>

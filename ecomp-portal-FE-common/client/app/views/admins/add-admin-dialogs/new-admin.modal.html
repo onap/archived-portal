@@ -2,11 +2,11 @@
   ============LICENSE_START==========================================
   ONAP Portal
   ===================================================================
-  Copyright © 2017 AT&T Intellectual Property. All rights reserved.
+  Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
   ===================================================================
  
   Unless otherwise specified, all software contained herein is licensed
-  under the Apache License, Version 2.0 (the “License”);
+  under the Apache License, Version 2.0 (the "License");
   you may not use this software except in compliance with the License.
   You may obtain a copy of the License at
  
@@ -19,7 +19,7 @@
   limitations under the License.
  
   Unless otherwise specified, all documentation contained herein is licensed
-  under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+  under the Creative Commons License, Attribution 4.0 Intl. (the "License");
   you may not use this documentation except in compliance with the License.
   You may obtain a copy of the License at
  
@@ -93,7 +93,7 @@
 					<span class="left">Administrates:</span>
 					<!--<span class="right" ng-click="newAdmin.addAdministratedApp()">+Add</span>-->
 				</div>
-				<div class="adminAppsRoles_dropdown">
+				<div class="adminAppsRoles_dropdown" id="sort-by-{{newAdmin.selectedNewApp.value}}">
 					<select id="dropdown1" name="dropdown1" b2b-dropdown
 						placeholder-text="Select application"
 						ng-model="newAdmin.selectedNewApp.value">

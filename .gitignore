@@ -3,4 +3,5 @@
 /.settings
 /dmaapbc
 /sdk
-/target
+/target/*/*.*
+/target/*

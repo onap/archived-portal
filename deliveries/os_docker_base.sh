@@ -18,9 +18,6 @@ fi
 # this into os_docker_push, os_docker_release scripts
 NEXUS_REPO=nexus3.onap.org:10003
 
-# Establish environment variables
-source $(dirname $0)/.env
-
 # Build the containers
 ./build_portalapps_dockers.sh
 

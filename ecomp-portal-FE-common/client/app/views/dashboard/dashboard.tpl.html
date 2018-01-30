@@ -2,11 +2,11 @@
   ============LICENSE_START==========================================
   ONAP Portal
   ===================================================================
-  Copyright © 2017 AT&T Intellectual Property. All rights reserved.
+  Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
   ===================================================================
  
   Unless otherwise specified, all software contained herein is licensed
-  under the Apache License, Version 2.0 (the “License”);
+  under the Apache License, Version 2.0 (the "License");
   you may not use this software except in compliance with the License.
   You may obtain a copy of the License at
  
@@ -19,7 +19,7 @@
   limitations under the License.
  
   Unless otherwise specified, all documentation contained herein is licensed
-  under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+  under the Creative Commons License, Attribution 4.0 Intl. (the "License");
   you may not use this documentation except in compliance with the License.
   You may obtain a copy of the License at
  
@@ -47,7 +47,7 @@
 					<span class="simulateGridHeaderTitle">Applications <span
 						class="dashboardSortHeader">Sort by:</span>
 						
-						<div id="dashboard-dropdown">
+						<div class="dashboard-dropdown" id="sort-by-dropdownid-{{selectedSortType.value}}">
 						<select id="sort-by-{{selectedSortType.value}}" name="dropdown1" b2b-dropdown  ng-model="selectedSortType.value" ng-change="selectedSortTypeChanged(selectedSortType.value)">  
 				        <option b2b-dropdown-list option-repeat="d in sort_options" value="{{d.value}}">{{d.title}}</option>
 				                </select>
@@ -61,9 +61,7 @@
 							<div class="app-error-block">
 								<i class="icon-information full-linear-icon-information"
 									class="icon-info"></i> <br>
-								<div class="activity-error-msg1">
-									You do not have access to any application or function in ECOMP
-									Portal.
+								<div class="activity-error-msg1">									
 									<div ng-include src="'app/views/dashboard/dashboard-extension.tpl.html'"></div>
 								</div>
 							</div>
@@ -142,17 +140,13 @@
 								<h3>{{ widget.headerText}}</h3>
 								<div class="box-header-btns pull-right"
 									ng-if="isAdminPortalAdmin == true" class="ng-scope">
-										<a id="widgetHeaderBtns"
+										<span id="widgetHeaderBtns-{{widget.headerText.split(' ').join('-')}}"
 											class="widgetHeaderBtn widgetHeaderBtnPosition singleBtnBorder"
 											ng-class="singleBtnBorder" alt="Settings"
 											ng-mousedown="showImpResOption=!showImpResOption"
 											ng-mouseleave="showImpResOption=false" title="Settings"
 											ddh-accessibility-click="13,32" tabindex="0"><span
-											class="widgetHeaderBtns-span"><img
-											ng-src="assets/images/generic.png"
-											class="widgetHeaderBtns-img" alt="..."
-											aria-label="Tap or Click to move"
-											src="assets/images/generic.png"></span></a>
+											class="widgetHeaderBtns-span"><span class="icon-controls-moreapplications"></span></span></span>
 
 										<ul class="optionsMenu widget-menu-options"											
 											ng-show="showImpResOption"

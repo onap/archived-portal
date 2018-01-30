@@ -1,0 +1,178 @@
+<div id="widget-scheduler" ng-controller="SchedulerCtrl" class="widget-scheduler-main" >
+		<div id="widget-scheduler" class="widget-scheduler-main">
+		<span class="ecomp-spinner" ng-show="showTimeslotSpinner"></span>
+		<span class="ecomp-spinner" ng-show="showSpinner"></span>
+		<div ng-if="!hasParentData">
+			<div class="activity-error-container" style="background: rgb(255, 255, 255); overflow: hidden !important; width: 100%;">
+				<div class="activity-error-block">
+					<i class="icon-information full-linear-icon-information" style="margin-left: 125px; font-size: 90px"></i> <br>
+					<div class="activity-error-msg1">No prerequisite data available</div>
+				</div>
+			</div>
+		</div>
+		<div ng-if="hasParentData" ng-hide="showSpinner || showTimeslotSpinner">
+			<div class="row-nowrap">
+				<br>
+				<div class="scheduler-radio" role="radio">
+					<label for="nowRadio" class="radio"> <input
+						type="radio" ng-model="schedulerForm.checkboxSelection" id="nowRadio"
+						name="nowRadio"  value="true">
+						<i class="skin"></i> <span>Now</span>
+					</label>
+				</div>
+			</div>
+				<div class="scheduler-radio" role="radio">
+					<label for="rangeRadio" class="radio"> <input
+						type="radio" ng-model="schedulerForm.checkboxSelection" id="rangeRadio"
+						name="rangeRadio" value="false">
+						<i class="skin"></i> <span>Range</span>
+					</label>
+				</div>
+			
+			<br>
+			<div class="row-nowrap">
+				<div class="span12">
+					<div class="form-row">
+						<label for="textinputID-2a">From Date</label>
+						<div class="datepicker-container">
+							<input id="startDate"  min="minDate"
+								ng-disabled="(schedulerForm.checkboxSelection=='true')? true:false"
+								name="startDate" type="text" class="span12"
+								ng-model="schedulerForm.fromDate" b2b-datepicker> 
+								<span 	class="error"
+								ng-show="fromDateEmpty && schedulerForm.fromDate=='' && schedulerForm.checkboxSelection=='false'">A	required date is missing</span>
+								<span class="error" ng-show="!isDateValid(schedulerForm.fromDate) && schedulerForm.fromDate!=''">Please enter valid date in MM/DD/YYYY format!</span>
+								<span class="error" ng-show="isDateValid(schedulerForm.fromDate) && !isStartDateValidFromToday(schedulerForm.fromDate) && schedulerForm.fromDate!=''">Input date must be greater than today!</span>
+						</div>
+					</div>
+					
+				</div>
+			</div>
+			<br>
+			<div class="row-nowrap">
+				<div class="span12">
+					<div class="form-row">
+						<label for="textinputID-2a">To Date</label>
+						<div class="datepicker-container">
+							<input id="startDate"  min="minDate" ng-disabled="(schedulerForm.checkboxSelection=='true')? true:false" name="endDate" type="text" class="span12"
+								ng-model="schedulerForm.toDate" b2b-datepicker> 
+								<span class="error" ng-show="(fromDateGreater || (!isToDateGreaterFromDate(schedulerForm.fromDate,schedulerForm.toDate) && schedulerForm.toDate!=''))">To date must be greater than From date.</span> 
+								<span class="error" ng-show="toDateEmpty && schedulerForm.toDate=='' && schedulerForm.checkboxSelection=='false'">A required date is missing</span>
+								<span class="error" ng-show="!isDateValid(schedulerForm.toDate) && schedulerForm.toDate!=''">Please enter valid date in MM/DD/YYYY format!</span>
+								<span class="error" ng-show="isDateValid(schedulerForm.toDate) && !isStartDateValidFromToday(schedulerForm.toDate) && schedulerForm.toDate!=''">Input date must be greater than today!</span>
+						</div>
+					</div>
+				</div>
+			</div>
+			<br>
+			<div class="row-nowrap">
+				<div class="span12">
+					<div class="form-row">
+						<label for="dropdown1">Please Select Option For Duration
+							and FallBack</label> <select id="dropdown1" name="dropdown1" b2b-dropdown
+							placeholder-text="" ng-model="selectedTimeUint.text">
+							<option b2b-dropdown-list option-repeat="d in timeUnit"
+								value="{{d.text}}">{{d.text}}</option>
+						</select>
+					</div>
+				</div>
+			</div>
+			<br>
+			<div class="row-nowrap">
+				<div class="span12">
+					<div class="form-row">
+						<label for="textinputID-2a">Duration</label>
+						<div class="field-group">
+							<input id="textinputID-2a" class="span12" type="number"
+								data-ng-model="schedulerForm.duration"> <span
+								class="error"
+								ng-show="durationEmpty && schedulerForm.duration==''">Required!</span>
+						</div>
+					</div>
+				</div>
+				<div class="span12">
+					<div class="form-row">
+						<label for="fallBackDuration">FallBack Duration</label>
+						<div class="field-group">
+							<input id="fallBackDuration" class="span12" type="number"
+								data-ng-model="schedulerForm.fallbackDuration"> <span
+								class="error"
+								ng-show="fallBackDurationEmpty && schedulerForm.fallbackDuration==''">Required!</span>
+						</div>
+					</div>
+				</div>
+			</div>
+			<br>
+			<div class="row-nowrap">
+				<div class="span12">
+					<div class="form-row">
+						<label for="concurrency">Concurrency Limit</label>
+						<div class="field-group">
+							<input id="concurrency" class="span12" type="number"
+								data-ng-model="schedulerForm.concurrencyLimit" min="1" max="30">
+							<span class="error"
+								ng-show="concurrencyLimitEmpty && schedulerForm.concurrencyLimit==''">Required!</span>
+						</div>
+					</div>
+				</div>
+			</div>
+			<br>
+			<div class="row-nowrap">
+				<div class="span12">
+					<div class="form-row">
+						<label for="policy">Policy</label> <select name="policy"
+							b2b-dropdown placeholder-text="Select Policy"
+							ng-model="selectedPolicy.policyName" id="policy">
+							<option b2b-dropdown-list option-repeat="p in policys"
+								value="{{p.policyName}}">{{p.policyName}}</option>
+						</select>
+					</div>
+				</div>
+			</div>
+			<br>
+			<div>
+				<button type="button" id="find" name="Find" ng-show="(schedulerForm.checkboxSelection=='true')? false:true"
+					class="btn btn-alt btn-small" ng-click="schedule()">Find</button>				
+				<div b2b-table table-data="timeSlots"  ng-hide="timeSlots.length==0"	class="b2b-table-div">
+					<table>
+						<thead b2b-table-row type="header">
+							<tr>
+								<th b2b-table-header key="firstName" sortable="true" id="start-time" default-sort="a">Start Time</th>
+								<th b2b-table-header key="lastName" sortable="true" id="end-time">Finish Time</th>							
+							</tr>
+						</thead>
+						<tbody b2b-table-row type="body" 	row-repeat="rowData in timeSlots" class="table-users-div">
+							<tr ng-click="users.openAddNewUserModal(rowData)">
+								<td b2b-table-body id="rowheader_t1_{{$index}}-startTime" headers="start-time" ng-bind="rowData.startTime"></td>
+								<td b2b-table-body  id="rowheader_t1_{{$index}}-endTime"  headers="end-time" ng-bind="rowData.finishTime"></td>
+													
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+			
+			<div class="b2b-modal-footer">
+				<div class="cta-button-group in">
+					<div ng-show="(schedulerForm.checkboxSelection=='true')? false:true">
+						<button class="btn btn-alt btn-small" id="div-confirm-ok-button"
+							type="button" ng-click="reject()" ng-disabled="schedulerID=='' || showSpinner || showTimeslotSpinner">Reject</button>
+						<button class="btn btn-alt btn-small" id="div-confirm-ok-button"
+						type="button" name="submit" ng-click="submit()" ng-disabled="schedulerID=='' || showSpinner || showTimeslotSpinner">Schedule</button>
+						
+					</div>
+					<div ng-show="(schedulerForm.checkboxSelection=='true')? true:false">
+						<button class="btn btn-alt btn-small" id="div-confirm-ok-button"
+						type="button" name="submit" ng-click="schedule()" ng-disabled="showSpinner || showTimeslotSpinner">Schedule</button>
+					</div>
+					<div>
+						<button class="btn btn-alt btn-small" 
+						type="button" ng-click="closeModal()">Cancel</button>		
+					</div>
+				</div>
+			</div>
+		</div>
+	</div> 
+	
+	
+</div>

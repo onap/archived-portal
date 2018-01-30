@@ -1,10 +1,44 @@
-/**
- * Created by nnaffar on 12/20/15.
+/*-
+ * ============LICENSE_START==========================================
+ * ONAP Portal
+ * ===================================================================
+ * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ * ===================================================================
+ *
+ * Unless otherwise specified, all software contained herein is licensed
+ * under the Apache License, Version 2.0 (the "License");
+ * you may not use this software except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *             http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Unless otherwise specified, all documentation contained herein is licensed
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
+ * you may not use this documentation except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *             https://creativecommons.org/licenses/by/4.0/
+ *
+ * Unless required by applicable law or agreed to in writing, documentation
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * ============LICENSE_END============================================
+ *
+ * ECOMP is a trademark and service mark of AT&T Intellectual Property.
  */
 'use strict';
 (function () {
     class MenuDetailsModalCtrl {
-        constructor($scope, $log, functionalMenuService, errorMessageByCode, ECOMP_URL_REGEX,$rootScope,confirmBoxService,items) {
+        constructor($scope, $log, functionalMenuService, errorMessageByCode, $modalInstance, ECOMP_URL_REGEX,$rootScope,confirmBoxService,items) {
         	$scope.ngDialogData=items;
         	$scope.isAllApplications = false;
             let newMenuModel = {
@@ -15,7 +49,6 @@
             };
 
             let getAvailableRoles = (appid) => {
-                this.isSaving = true;
                 if (appid != null) {
                     $log.debug("MenuDetailsModalCtrl::getAvailableRoles: About to call getManagedRolesMenu");
                     functionalMenuService.getManagedRolesMenu(appid).then(rolesObj => {
@@ -46,7 +79,6 @@
                         }
                         
                         $rootScope.$broadcast('availableRolesReady');
-                        this.isSaving = false;
                         for(var i=0; i<rolesObj.length;i++){
                         	this.availableRoles[i].isApplied = false;
                         	for(var j=0;j<this.preSelectedRoles.roles.length;j++){
@@ -227,11 +259,12 @@
                 		break;
                 	}
                 }
-                debugger;
                 $log.debug('MenuDetailsModalCtrl::updateSelectedApp: drop down app item = ' + JSON.stringify(appItem.index));
                 $log.debug("MenuDetailsModalCtrl::updateSelectedApp: appItem in updateSelectedApp: ");
                 $log.debug('MenuDetailsModalCtrl::updateSelectedApp: ',appItem);
-                this.selectedApp.isDisabled = ! appobj.enabled;
+                if (appItem !== "Select Application"){
+                		this.selectedApp.isDisabled = ! appobj.enabled;
+                }
                 this.selectedApp.index=appobj.index;
                  $log.debug("MenuDetailsModalCtrl::updateSelectedApp: isDisabled: "+this.selectedApp.isDisabled);
                 getAvailableRoles(appobj.index);
@@ -328,7 +361,7 @@
                         .then(() => {
                             $log.debug('MenuDetailsModalCtrl::saveChanges:  Menu Item saved');
                            // $scope.closeThisDialog(true);
-                            $scope.$dismiss('cancel');
+                            $modalInstance.close("confirmed");
                         }).catch(err => {
                         if(err.status === 409){//Conflict
                             handleConflictErrors(err);
@@ -352,7 +385,7 @@
             });
         }
     }
-    MenuDetailsModalCtrl.$inject = ['$scope', '$log', 'functionalMenuService', 'errorMessageByCode', 'ECOMP_URL_REGEX','$rootScope','confirmBoxService','items'];
+    MenuDetailsModalCtrl.$inject = ['$scope', '$log', 'functionalMenuService', 'errorMessageByCode', '$modalInstance', 'ECOMP_URL_REGEX','$rootScope','confirmBoxService','items'];
     angular.module('ecompApp').controller('MenuDetailsModalCtrl', MenuDetailsModalCtrl);
 
   })();

@@ -1,0 +1,95 @@
+/*-
+ * ============LICENSE_START==========================================
+ * ONAP Portal
+ * ===================================================================
+ * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ * ===================================================================
+ *
+ * Unless otherwise specified, all software contained herein is licensed
+ * under the Apache License, Version 2.0 (the "License");
+ * you may not use this software except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *             http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Unless otherwise specified, all documentation contained herein is licensed
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
+ * you may not use this documentation except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *             https://creativecommons.org/licenses/by/4.0/
+ *
+ * Unless required by applicable law or agreed to in writing, documentation
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * ============LICENSE_END============================================
+ *
+ * ECOMP is a trademark and service mark of AT&T Intellectual Property.
+ */
+package org.onap.portalapp.portal.transport;
+
+import static org.junit.Assert.assertEquals;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.junit.Test;
+import org.onap.portalapp.portal.transport.RemoteRole;
+import org.onap.portalapp.portal.transport.UserApplicationRoles;
+
+public class UserApplicationRolesTest {
+
+	public UserApplicationRoles mockUserApplicationRoles(){
+		UserApplicationRoles userApplicationRoles = new UserApplicationRoles();
+		
+		List<RemoteRole> roles = new ArrayList<RemoteRole>();
+		RemoteRole remoteRole = new RemoteRole();
+		remoteRole.setId((long)1);
+		remoteRole.setName("test");
+		roles.add(remoteRole);
+		
+		userApplicationRoles.setAppId((long)1);
+		userApplicationRoles.setOrgUserId("test");
+		userApplicationRoles.setFirstName("test");
+		userApplicationRoles.setLastName("test");
+		userApplicationRoles.setRoles(roles);
+		
+		return userApplicationRoles;
+	}
+	
+	@Test
+	public void userApplicationRolesTest(){
+		UserApplicationRoles userApplicationRoles = mockUserApplicationRoles();
+		
+		UserApplicationRoles userApplicationRoles1 = new UserApplicationRoles();
+		
+		List<RemoteRole> roles = new ArrayList<RemoteRole>();
+		RemoteRole remoteRole = new RemoteRole();
+		remoteRole.setId((long)1);
+		remoteRole.setName("test");
+		roles.add(remoteRole);
+		
+		userApplicationRoles1.setAppId((long)1);
+		userApplicationRoles1.setOrgUserId("test");
+		userApplicationRoles1.setFirstName("test");
+		userApplicationRoles1.setLastName("test");
+		userApplicationRoles1.setRoles(roles);
+		
+		assertEquals(userApplicationRoles.getAppId(), userApplicationRoles1.getAppId());
+		assertEquals(userApplicationRoles.getOrgUserId(), userApplicationRoles1.getOrgUserId());
+		assertEquals(userApplicationRoles.getFirstName(), userApplicationRoles1.getFirstName());
+		assertEquals(userApplicationRoles.getLastName(), userApplicationRoles1.getLastName());
+		assertEquals(userApplicationRoles.getRoles(), userApplicationRoles1.getRoles());
+		
+		
+	}
+}

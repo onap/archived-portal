@@ -2,11 +2,11 @@
   ============LICENSE_START==========================================
   ONAP Portal
   ===================================================================
-  Copyright © 2017 AT&T Intellectual Property. All rights reserved.
+  Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
   ===================================================================
  
   Unless otherwise specified, all software contained herein is licensed
-  under the Apache License, Version 2.0 (the “License”);
+  under the Apache License, Version 2.0 (the "License");
   you may not use this software except in compliance with the License.
   You may obtain a copy of the License at
  
@@ -19,7 +19,7 @@
   limitations under the License.
  
   Unless otherwise specified, all documentation contained herein is licensed
-  under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+  under the Creative Commons License, Attribution 4.0 Intl. (the "License");
   you may not use this documentation except in compliance with the License.
   You may obtain a copy of the License at
  
@@ -35,229 +35,230 @@
  
   ECOMP is a trademark and service mark of AT&T Intellectual Property.
   -->
-<div class="application-details-modal">
 
-		<div class="b2b-modal-header">
-			<h2 class="account-details-title" id="application-details-title">Application Details</h2>
-
-			<div class="corner-button in">
-				<button type="button" class="close" aria-label="Closhhhe"
-					ng-click="$dismiss('cancel')"></button>
-			</div>
-		</div>
-
-		<div class="b2b-modal-body">
-    <div class="app-properties-main" scroll-top="appDetails.scrollApi">
-        <form name="appForm" novalidate autocomplete="off">
-            <!-- We can remove this script once we get to Firefox version 47
-                  autocomplete="off" won't work until v47 -->
-           <!--  <script type="text/javascript">
-                document.getElementById("appForm").reset();
-            </script> -->
-            <div id="app-left-container" class="left-container">
-                <div class="property-label checkbox-label"> 
-					<label for="checkbox-app-is-restricted" class="checkbox"> 
-		                <input type="checkbox" ng-model="appDetails.app.restrictedApp" id="checkbox-app-is-restricted" ng-disabled="appDetails.isEditMode" ng-checked="appDetails.app.restrictedApp"/> 
-		                <i class="skin"></i> 
-		                <span>Hyperlink only application</span> 
-		            </label> 
-				</div>       
-                <div class="property required">
-                    <div class="property-label">Application Name</div>
-                    <input id="input-app-name"  type="text"
-                           ng-model="appDetails.app.name"
-                           maxlength="100"
-                           name="name"
-                           ng-pattern="/^[a-zA-Z0-9_\-\s\&]*$/"
-                           required/>
-
-                    <div id="error-container-conflict" class="error-container" ng-show="appDetails.conflictMessages.name" id="conflictMessages-name">
-                        <small id="app-name-error-conflict" class="err-message" ng-bind="appDetails.conflictMessages.name"></small>
-                    </div>
-                    <div id="error-container-edit" class="error-container" ng-show="appForm.name.$dirty || appDetails.isEditMode">
-                        <div ng-messages="appForm.name.$error" class="error-container">
-                            <small id="app-name-error-required" class="err-message" ng-message="required">Application name is required</small>
-                            <small id="app-name-error-alpha-num" class="err-message" ng-message="pattern">Application name must be alphanumeric</small>
-                        </div>
-                    </div>
-                </div>
-                <!--<div class="property">-->
-                <!--<div class="property-label">Description</div>-->
-                <!--<input class="input-field" type="text" ng-model="appDetails.app.description"/>-->
-                <!--</div>-->
-                <!--<div class="property">-->
-                <!--<div class="property-label">Notes</div>-->
-                <!--<input class="input-field" type="text" ng-model="appDetails.app.notes"/>-->
-                <!--</div>-->
-                <div class="property required">
-                    <div id="url-property-label" class="property-label">URL</div>
-                    <input  id="input-app-url"
-                           ng-model="appDetails.app.url"
-                           maxlength="256"
-                           name="url"
-                           type="url" placeholder="https://"
-                           ng-pattern="appDetails.ECOMP_URL_REGEX"
-                           required />
-                    <div id="app-error-url" class="error-container" ng-show="appDetails.conflictMessages.url" id="div-app-name-err-url">
-                        <small class="err-message" ng-bind="appDetails.conflictMessages.url"></small>
-                    </div>
-                    <div id="app-error-url-message" class="error-container" ng-show="appForm.url.$dirty || appDetails.isEditMode">
-                        <div ng-messages="appForm.url.$error" class="error-container">
-                            <small id="error-app-url-req" class="err-message" ng-message="required">Application URL is required</small>
-                            <!--<small id="error-app-url-invalid" class="err-message" ng-message="pattern">Application URL must be a valid URL</small>-->
-                            <small id="error-app-url-invalid" class="err-message" ng-show="appForm.url.$error.url">Application URL must be a valid URL</small>
-                        </div>
-                    </div>
-                    <!--<span class="err-message" ng-show="appForm.url.$error.url"> Not valid URL!</span>-->
-                </div>
-
-
-                <div class="property" ng-show="!appDetails.app.restrictedApp">
-                    <div class="property-label">Rest API URL</div>
-                    <input  id="input-app-rest-url"
-                           ng-model="appDetails.app.restUrl"
-                           name="restUrl"
-                           type="url" placeholder="https://"
-                           ng-pattern="appDetails.ECOMP_URL_REGEX"
-                           maxlength="256"/>
-                    <div id="app-error-rest-message" class="error-container" ng-show="appForm.restUrl.$dirty || appDetails.isEditMode">
-                        <div ng-messages="appForm.restUrl.$error" class="error-container">
-                            <!--<small class="err-message" ng-message="pattern">Application REST URL must be a valid URL</small>-->
-                            <small class="err-message" ng-show="appForm.restUrl.$error.url">Application REST URL must be a valid URL</small>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="property required" ng-show="!appDetails.app.restrictedApp">
-                    <div id="username-property-label"  class="property-label">Username</div>
-                    <input  type="text"
-                           ng-model="appDetails.app.username"
-                           name="username"
-                           maxlength="256"
-                           ng-required="!appDetails.app.restrictedApp"/>
-                    <div id="app-error-username-container" class="error-container" ng-show="appForm.username.$dirty || appDetails.isEditMode">
-                        <div ng-messages="appForm.username.$error" class="error-container">
-                            <small  id="error-appusername-reqd" class="err-message" ng-message="required">My Logins App Username is required</small>
-                        </div>
-                    </div>
-                </div>
-                <div class="property required" ng-show="!appDetails.app.restrictedApp">
-                    <div id="pwd-property-label"  class="property-label">Password</div>
-                    <input  type="password"  id="input-mylogins-password"
-                           ng-model="appDetails.app.appPassword" autocomplete="new-password"
-                           name="appPassword"
-                           maxlength="256"
-                           ng-required="!appDetails.app.restrictedApp"/>
-                    <div id="app-error-password-container" class="error-container" ng-show="appForm.appPassword.$dirty || appDetails.isEditMode">
-                        <div ng-messages="appForm.appPassword.$error" class="error-container">
-                            <small id="error-mylogins-password-reqd" class="err-message" ng-message="required">My Logins App Password is required</small>
-                        </div>
-                    </div>
-
-	                <div class="property" ng-show="!appDetails.app.restrictedApp">
-	                    <div id="pwd-property-label"  class="property-label">Name Space</div>
-	                    <input  type="text"  id="input-mylogins-auth-namespace"
-	                           ng-model="appDetails.app.nameSpace" 
-	                           name="appAuthNameSpace"
-	                           maxlength="256"/>
-	                </div>                                    
-                </div>
-            </div>
-            <div class="right-container">
-                <div class="property">
-                    <div class="property-label">Upload Image</div>
-                    <input type="file" id="input-app-image-upload"
-                           class="input-file-field"
-                           accept="image/*"
-                           ng-model="appDetails.originalImage"
-                           name="appImage"
-                           image-upload="appDetails.originalImage"
-                           image-upload-resize-max-height="300"
-                           image-upload-resize-max-width="360"
-                           image-upload-resize-quality="0.7"
-                           image-upload-api="appDetails.imageApi" style="height: 24px;"/>
-
-                    <div id="app-error-image-upload" class="error-container" ng-show="appForm.appImage.$dirty">
-                        <div ng-messages="appForm.appImage.$error" class="error-container">
-                            <small id="error-app-invalid-image" class="err-message" ng-message="mimeType">Uploaded file must be an image</small>
-                            <small id="error-app-invalid-image-size" class="err-message" ng-message="imageSize">Image file must be smaller than 1MB</small>
-                        </div>
-                    </div>
-
-                    <div class="property-label preview">
-                        <span class="left-label">Preview</span>
-                        <span class="remove" ng-click="appDetails.removeImage()">Remove</span>
-                    </div>
-                    <img id="image-app-preview" class="image-preview" ng-src="{{appDetails.app.imageLink || appDetails.app.thumbnail || appDetails.emptyImgForPreview}}"/>
-                    <div id="property-communication-inbox" class="property" ng-show="!appDetails.app.restrictedApp">
-                        <div id="property-communication-inbox-label" class="property-label">Communication Inbox</div>
-                        <input  type="text" id="input-UEB-topicname"
-                               ng-model="appDetails.app.uebTopicName"
-                               name="uebTopicName" readonly="readonly"/>
-                    </div>
-
-                    <div id="property-communication-key" class="property" ng-show="!appDetails.app.restrictedApp">
-                        <div id="property-communication-key-label" class="property-label">Communication Key</div>
-                        <input  type="text" id="input-UEB-communication-key"
-                               ng-model="appDetails.app.uebKey"
-                               name="uebKey" readonly="readonly" />
-                    </div>
-
-                    <div id="property-communication-secret" class="property" ng-show="!appDetails.app.restrictedApp">
-                        <div id="property-communication-secret-label" class="property-label">Communication Secret</div>
-                        <input  type="text" id="input-UEB-communication-secret"
-                               ng-model="appDetails.app.uebSecret"
-                               name="uebSecret" readonly="readonly" />
-                    </div>
-
-                    <div id="property-guest-access" class="property">
-                        <label for="checkbox-app-is-open" class="checkbox"> 
-		                <input type="checkbox" ng-model="appDetails.app.isOpen" id="checkbox-app-is-open" ng-checked="appDetails.app.isOpen || appDetails.app.restrictedApp" ng-disabled="appDetails.app.restrictedApp"/> 
-		                <i class="skin"></i> 
-		                <span>Allow guest access</span> 
-		            </label> 
-                    </div>
-                    <div id="property-active" class="property">
-                     <label for="checkbox-app-is-enabled" class="checkbox"> 
-		                <input type="checkbox" ng-model="appDetails.app.isEnabled" id="checkbox-app-is-enabled"/> 
-		                <i class="skin"></i> 
-		                <span>Active</span> 
-		            </label>    
-                    </div> <br/>
-                    <div id="property-is-central-auth" class="property" ng-show="!appDetails.app.restrictedApp">
-                     <label for="checkbox-app-is-central-auth" class="checkbox"> 
-		                <input type="checkbox" ng-model="appDetails.app.isCentralAuth" id="checkbox-app-is-central-auth"/> 
-		                <i class="skin"></i> 
-		                <span>Centralized</span> 
-		            </label>    
-                    </div>
-
-                </div>
-
-            </div>
-        </form>
-    </div>
+<div class="b2b-modal-header">
+	<h2 class="account-details-title" id="application-details-title">Application
+		Details</h2>
+	<div class="corner-button in">
+		<button type="button" class="close" id="div-confirm-close-button"
+			aria-label="Close" ng-click="$dismiss('cancel')"></button>
 	</div>
-		
-			<br>
-			<div class="b2b-modal-footer">
-				<div class="dialog-control">
-				<span class="ecomp-save-spinner" ng-show="appDetails.isSaving"></span> 
-				<button id="button-save-app" class="btn btn-alt btn-small" ng-class="{disabled: appForm.$invalid}" ng-click="appDetails.saveChanges()">Save</button> 	
-						<button id="button-notification-cancel" class="btn btn-alt btn-small" ng-click="$dismiss('cancel')"role="button" tabindex="0">Cancel</button>
-						
-						
-					</div>
-			</div>
-			
-			
-			
-
 </div>
+<div class="b2b-modal-body">
+	<div class="application-details-modal">
+		<div class="app-properties-main" scroll-top="appDetails.scrollApi">
+			<form name="appForm" novalidate autocomplete="off">
+				<div id="app-left-container" class="left-container">
+					<div class="property-label checkbox-label">
+						<label for="checkbox-app-is-restricted" class="checkbox">
+							<input type="checkbox" ng-model="appDetails.app.restrictedApp"
+							id="checkbox-app-is-restricted"
+							ng-disabled="appDetails.isEditMode"
+							ng-checked="appDetails.app.restrictedApp" /> <i class="skin"></i>
+							<span>Hyperlink only application</span>
+						</label>
+					</div>
+					<div class="property required">
+						<div class="property-label">Application Name</div>
+						<input id="input-app-name" type="text"
+							ng-model="appDetails.app.name" maxlength="100" name="name"
+							ng-pattern="/^[a-zA-Z0-9_\-\s\&]*$/" required />
+
+						<div id="error-container-conflict" class="error-container"
+							ng-show="appDetails.conflictMessages.name"
+							id="conflictMessages-name">
+							<small id="app-name-error-conflict" class="err-message"
+								ng-bind="appDetails.conflictMessages.name"></small>
+						</div>
+						<div id="error-container-edit" class="error-container"
+							ng-show="appForm.name.$dirty || appDetails.isEditMode">
+							<div ng-messages="appForm.name.$error" class="error-container">
+								<small id="app-name-error-required" class="err-message"
+									ng-message="required">Application name is required</small> <small
+									id="app-name-error-alpha-num" class="err-message"
+									ng-message="pattern">Application name must be
+									alphanumeric</small>
+							</div>
+						</div>
+					</div>
+					<div class="property required">
+						<div id="url-property-label" class="property-label">URL</div>
+						<input id="input-app-url" ng-model="appDetails.app.url"
+							maxlength="256" name="url" type="url" placeholder="https://"
+							ng-pattern="appDetails.ECOMP_URL_REGEX" required />
+						<div id="app-error-url" class="error-container"
+							ng-show="appDetails.conflictMessages.url"
+							id="div-app-name-err-url">
+							<small class="err-message"
+								ng-bind="appDetails.conflictMessages.url"></small>
+						</div>
+						<div id="app-error-url-message" class="error-container"
+							ng-show="appForm.url.$dirty || appDetails.isEditMode">
+							<div ng-messages="appForm.url.$error" class="error-container">
+								<small id="error-app-url-req" class="err-message"
+									ng-message="required">Application URL is required</small>
+								<!--<small id="error-app-url-invalid" class="err-message" ng-message="pattern">Application URL must be a valid URL</small>-->
+								<small id="error-app-url-invalid" class="err-message"
+									ng-show="appForm.url.$error.url">Application URL must
+									be a valid URL</small>
+							</div>
+						</div>
+						<!--<span class="err-message" ng-show="appForm.url.$error.url"> Not valid URL!</span>-->
+					</div>
 
 
-<script type="application/javascript">
-    $(document).ready(function(){
-        $(".ngdialog-content").css("top","-150px")
-    });
-</script>
+					<div class="property required" ng-show="!appDetails.app.restrictedApp">
+						<div class="property-label">Rest API URL</div>
+						<input id="input-app-rest-url" ng-model="appDetails.app.restUrl"
+							name="restUrl" type="url" placeholder="https://"
+							ng-pattern="appDetails.ECOMP_URL_REGEX" maxlength="256"
+							ng-required="!appDetails.app.restrictedApp" />
+						<div id="app-error-rest-message" class="error-container"
+							ng-show="appForm.restUrl.$dirty || appDetails.isEditMode">
+							<div ng-messages="appForm.restUrl.$error" class="error-container">
+								<small class="err-message" ng-show="appForm.restUrl.$error.url">Application
+									REST URL must be a valid URL</small>
+							</div>
+						</div>
+					</div>
+
+					<div class="property required"
+						ng-show="!appDetails.app.restrictedApp">
+						<div id="username-property-label" class="property-label">Username</div>
+						<input type="text" ng-model="appDetails.app.username"
+							name="username" maxlength="256"
+							ng-required="!appDetails.app.restrictedApp" />
+						<div id="app-error-username-container" class="error-container"
+							ng-show="appForm.username.$dirty || appDetails.isEditMode">
+							<div ng-messages="appForm.username.$error"
+								class="error-container">
+								<small id="error-appusername-reqd" class="err-message"
+									ng-message="required">My Logins App Username is
+									required</small>
+							</div>
+						</div>
+					</div>
+					<div class="property required"
+						ng-show="!appDetails.app.restrictedApp">
+						<div id="pwd-property-label" class="property-label">Password</div>
+						<input type="password" id="input-mylogins-password"
+							ng-model="appDetails.app.appPassword" autocomplete="new-password"
+							name="appPassword" maxlength="256"
+							ng-required="!appDetails.app.restrictedApp" />
+						<div id="app-error-password-container" class="error-container"
+							ng-show="appForm.appPassword.$dirty || appDetails.isEditMode">
+							<div ng-messages="appForm.appPassword.$error"
+								class="error-container">
+								<small id="error-mylogins-password-reqd" class="err-message"
+									ng-message="required">My Logins App Password is
+									required</small>
+							</div>
+						</div>
+
+						<div class="property" ng-show="!appDetails.app.restrictedApp">
+							<div id="pwd-property-label" class="property-label">Name
+								Space</div>
+							<input type="text" id="input-mylogins-auth-namespace"
+								ng-model="appDetails.app.nameSpace" name="appAuthNameSpace"
+								maxlength="256" />
+						</div>
+					</div>
+				</div>
+				<div class="right-container">
+					<div class="property">
+						<div class="property-label">Upload Image</div>
+						<input type="file" id="input-app-image-upload"
+							class="input-file-field" accept="image/*"
+							ng-model="appDetails.originalImage" name="appImage"
+							image-upload="appDetails.originalImage"
+							image-upload-resize-max-height="300"
+							image-upload-resize-max-width="360"
+							image-upload-resize-quality="0.7"
+							image-upload-api="appDetails.imageApi" style="height: 24px;" />
+
+						<div id="app-error-image-upload" class="error-container"
+							ng-show="appForm.appImage.$dirty">
+							<div ng-messages="appForm.appImage.$error"
+								class="error-container">
+								<small id="error-app-invalid-image" class="err-message"
+									ng-message="mimeType">Uploaded file must be an image</small> <small
+									id="error-app-invalid-image-size" class="err-message"
+									ng-message="imageSize">Image file must be smaller than
+									1MB</small>
+							</div>
+						</div>
+
+						<div class="property-label preview">
+							<span class="left-label">Preview</span> <span class="remove"
+								ng-click="appDetails.removeImage()">Remove</span>
+						</div>
+						<img id="image-app-preview" class="image-preview"
+							ng-src="{{appDetails.app.imageLink || appDetails.app.thumbnail || appDetails.emptyImgForPreview}}" />
+						<div id="property-communication-inbox" class="property"
+							ng-show="!appDetails.app.restrictedApp">
+							<div id="property-communication-inbox-label"
+								class="property-label">Communication Inbox</div>
+							<input type="text" id="input-UEB-topicname"
+								ng-model="appDetails.app.uebTopicName" name="uebTopicName"
+								readonly="readonly" />
+						</div>
+
+						<div id="property-communication-key" class="property"
+							ng-show="!appDetails.app.restrictedApp">
+							<div id="property-communication-key-label" class="property-label">Communication
+								Key</div>
+							<input type="text" id="input-UEB-communication-key"
+								ng-model="appDetails.app.uebKey" name="uebKey"
+								readonly="readonly" />
+						</div>
+
+						<div id="property-communication-secret" class="property"
+							ng-show="!appDetails.app.restrictedApp">
+							<div id="property-communication-secret-label"
+								class="property-label">Communication Secret</div>
+							<input type="text" id="input-UEB-communication-secret"
+								ng-model="appDetails.app.uebSecret" name="uebSecret"
+								readonly="readonly" />
+						</div>
+
+						<div id="property-guest-access" class="property">
+							<label for="checkbox-app-is-open" class="checkbox"> <input
+								type="checkbox" ng-model="appDetails.app.isOpen"
+								id="checkbox-app-is-open"
+								ng-checked="appDetails.app.isOpen || appDetails.app.restrictedApp"
+								ng-disabled="appDetails.app.restrictedApp" /> <i class="skin"></i>
+								<span>Allow guest access</span>
+							</label>
+						</div>
+						<div id="property-active" class="property">
+							<label for="checkbox-app-is-enabled" class="checkbox"> <input
+								type="checkbox" ng-model="appDetails.app.isEnabled"
+								id="checkbox-app-is-enabled" /> <i class="skin"></i> <span>Active</span>
+							</label>
+						</div>
+						<br />
+						<div id="property-is-central-auth" class="property"
+							ng-show="!appDetails.app.restrictedApp">
+							<label for="checkbox-app-is-central-auth" class="checkbox">
+								<input type="checkbox" ng-model="appDetails.app.isCentralAuth"
+								id="checkbox-app-is-central-auth" /> <i class="skin"></i> <span>Centralized</span>
+							</label>
+						</div>
+
+					</div>
+
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+<div class="b2b-modal-footer">
+	<div align="right">
+		<span class="ecomp-save-spinner" ng-show="appDetails.isSaving"></span>
+		<button id="button-save-app" class="btn btn-alt btn-small"
+			ng-class="{disabled: appForm.$invalid}"
+			ng-click="appDetails.saveChanges()">Save</button>
+		<button id="button-notification-cancel" class="btn btn-alt btn-small"
+			ng-click="$dismiss('cancel')" role="button" tabindex="0">Cancel</button>
+	</div>
+</div>

@@ -3,11 +3,11 @@
   ============LICENSE_START==========================================
   ONAP Portal
   ===================================================================
-  Copyright © 2017 AT&T Intellectual Property. All rights reserved.
+  Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
   ===================================================================
  
   Unless otherwise specified, all software contained herein is licensed
-  under the Apache License, Version 2.0 (the “License”);
+  under the Apache License, Version 2.0 (the "License");
   you may not use this software except in compliance with the License.
   You may obtain a copy of the License at
  
@@ -20,7 +20,7 @@
   limitations under the License.
  
   Unless otherwise specified, all documentation contained herein is licensed
-  under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+  under the Creative Commons License, Attribution 4.0 Intl. (the "License");
   you may not use this documentation except in compliance with the License.
   You may obtain a copy of the License at
  
@@ -54,7 +54,7 @@
 	<!-- The Portal app can function on a HA cluster -->
 	<distributable/>
 	
-	<context-param>
+	<!-- <context-param>
     	<param-name>contextConfigLocation</param-name>
    		<param-value>/WEB-INF/oid-context.xml</param-value>
 	</context-param>
@@ -63,11 +63,11 @@
 	   <listener-class>
 	        org.springframework.web.context.ContextLoaderListener
 	   </listener-class>
-	</listener> 
+	</listener>  -->
 
 
 	<listener>
-    	<listener-class>org.openecomp.portalapp.portal.listener.UserSessionListener</listener-class>
+    	<listener-class>org.onap.portalapp.portal.listener.UserSessionListener</listener-class>
   	</listener>
   	  	
   	<filter>
@@ -88,18 +88,13 @@
       <url-pattern>/*</url-pattern>
     </filter-mapping>
     
-	<filter>
-	    <filter-name>springSecurityFilterChain</filter-name>
-	    <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
-	     <!-- <init-param>
-	        <param-name>contextAttribute</param-name>
-	        <param-value>org.springframework.web.servlet.FrameworkServlet.CONTEXT.appServlet</param-value>
-	    </init-param> -->
+   	<filter>
+	    <filter-name>SecurityXssFilter</filter-name>
+	    <filter-class>org.onap.portalapp.filter.SecurityXssFilter</filter-class>
 	</filter>
-
+	
 	<filter-mapping>
-	    <filter-name>springSecurityFilterChain</filter-name>
+	    <filter-name>SecurityXssFilter</filter-name>
 	    <url-pattern>/*</url-pattern>
 	</filter-mapping>
-	 
 </web-app>

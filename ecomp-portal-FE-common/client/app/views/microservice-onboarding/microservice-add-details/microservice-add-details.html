@@ -2,11 +2,11 @@
   ============LICENSE_START==========================================
   ONAP Portal
   ===================================================================
-  Copyright © 2017 AT&T Intellectual Property. All rights reserved.
+  Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
   ===================================================================
  
   Unless otherwise specified, all software contained herein is licensed
-  under the Apache License, Version 2.0 (the “License”);
+  under the Apache License, Version 2.0 (the "License");
   you may not use this software except in compliance with the License.
   You may obtain a copy of the License at
  
@@ -19,7 +19,7 @@
   limitations under the License.
  
   Unless otherwise specified, all documentation contained herein is licensed
-  under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+  under the Creative Commons License, Attribution 4.0 Intl. (the "License");
   you may not use this documentation except in compliance with the License.
   You may obtain a copy of the License at
  
@@ -49,7 +49,7 @@
 <div class="microservice-add-details-model">
 
 		<div class="b2b-modal-header">
-			<h2 class="title" id="microservice-add-details-title">Microservice Details</h2>
+			<h2  id="microservice-add-details-title">Microservice Details</h2>
 
 			<div class="corner-button in">
 				<button type="button" class="close" aria-label="Close" id="microservicedetails-button-cancel"
@@ -62,7 +62,7 @@
 		<div class="microservice-properties-main"
 			scroll-top="microserviceAddDetails.scrollApi">
 			<form id="microservices-details-form" name="serviceForm" novalidate
-				autocomplete="off">
+				autocomplete="off" method="post">
 				<div class="item required">
 					<div class="item-label">Microservice Name</div>
 					<input id="microservice-details-input-name" class="table-search-field"
@@ -95,7 +95,7 @@
 					<div class="item-label">Microservice Description</div>
 					<textarea b2b-reset b2b-reset-textarea id="widgets-details-input-desc"
 						name="desc" ng-model="microserviceAddDetails.service.desc"
-						ng-change="microserviceAddDetails.updateDesc()"></textarea>
+						ng-change="microserviceAddDetails.updateDesc()"  class="textAreaDesc"></textarea>
 					<div class="error-container"
 						ng-show="(microserviceAddDetails.emptyServiceDesc 
 					|| (serviceForm.desc.$dirty && microserviceAddDetails.service.desc == ''))">
@@ -243,7 +243,7 @@
 			<div class="b2b-modal-footer">
 				<div class="cta-button-group cta-modal-footer-flex">		
 					<button class="btn btn-alt btn-small" id="microservice-details-save-button" ng-click="microserviceAddDetails.saveChanges()">Save</button>				
-					<button class="btn btn-alt btn-small" id="microservice-details-close-button" ng-click="$dismiss('cancel')">Close</button>	
+					<button class="btn btn-alt btn-small" id="microservice-details-close-button" ng-click="$dismiss('cancel')">Cancel</button>	
 				</div>
 			</div>
 			

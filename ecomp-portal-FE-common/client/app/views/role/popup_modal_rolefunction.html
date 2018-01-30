@@ -2,11 +2,11 @@
   ============LICENSE_START==========================================
   ONAP Portal
   ===================================================================
-  Copyright © 2017 AT&T Intellectual Property. All rights reserved.
+  Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
   ===================================================================
  
   Unless otherwise specified, all software contained herein is licensed
-  under the Apache License, Version 2.0 (the “License”);
+  under the Apache License, Version 2.0 (the "License");
   you may not use this software except in compliance with the License.
   You may obtain a copy of the License at
  
@@ -19,7 +19,7 @@
   limitations under the License.
  
   Unless otherwise specified, all documentation contained herein is licensed
-  under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+  under the Creative Commons License, Attribution 4.0 Intl. (the "License");
   you may not use this documentation except in compliance with the License.
   You may obtain a copy of the License at
  
@@ -35,90 +35,135 @@
  
   ECOMP is a trademark and service mark of AT&T Intellectual Property.
   -->
-  <style>
-  .dialog-control {
-    position: relative;
-    bottom: -13px;
-    right: 0px;
-}
-  </style>
 <style>
-  .dialog-control {
-    position: relative;
-    bottom: -13px;
-    right: 0px;
+.dialog-control {
+	position: relative;
+	bottom: -13px;
+	right: 0px;
 }
-  </style>
+</style>
 
 <!-- <link rel="stylesheet" href="role.css">
- --><div class="new-admin-modal">
-		<div class="b2b-modal-header">
-			
+ -->
+<div class="new-admin-modal" style="height: 600px;">
+	<div class="b2b-modal-header">
 
-			<div class="corner-button in">
-				<button type="button" class="close" aria-label="Close" id="button-cancel-role"
-					ng-click="$dismiss('cancel')"></button>
-			</div>
+
+		<div class="corner-button in">
+			<button type="button" class="close" aria-label="Close"
+				id="button-cancel-role" ng-click="$dismiss('cancel')"></button>
 		</div>
+	</div>
 
-		<div class="b2b-modal-body">
+	<div class="b2b-modal-body">
 		<form id="admin-details-form" name="adminForm" novalidate>
-		<div class="title" ng-bind="label" class="adminForm-title"></div>
-<br>
-		<div >
-					<div class="item-label"> <span ID="required" style="color: Red;"
-						visible="false"> *</span>Name:</div>
-					<input id="name-property-input"
-						class="adminForm-name-property-input" ng-model="editRoleFunction.name"
-						type="text" maxlength="30"
-						 />
-
-					<div class="error-container"
-						ng-show="!editRoleFunction.name||editRoleFunction.name.length==0">
-						<small id="microservices-details-input-url-required"
-							class="err-message">Name is Required</small>
-					</div>
+			<div class="title" ng-bind="label" class="adminForm-title"></div>
+			<br>
+			<div>
+				<div class="item-label">
+					<span ID="required" style="color: Red;" visible="false"> *</span>Type:
+					<fieldset style="height: 75px;" role="radiogroup"
+						b2b-radio-group-accessibility aria-labelledby="radiolabel2">
+						<div class="form-row" role="radio"
+							ng-repeat="radioObj in ngRepeatDemo">
+							<label style="margin-top: 10px;" for="{{radioObj.id}}"
+								class="radio"> <input type="radio"
+								ng-model="selectedvalueradioButtonGroup.type"
+								id="{{radioObj.id}}" ng-disabled="disableCd"
+								name="nameradioButton" value="{{radioObj.value}}"> <i
+								style="margin-top: 10px;" class="skin"></i> <span
+								style="margin-top: 10px;">{{radioObj.labelvalue}}</span>
+							</label>
+						</div>
+					</fieldset>
+					<br> <input
+						ng-show="selectedvalueradioButtonGroup.type === 'other'"
+						id="type-property-input" class="adminForm-name-property-input"
+						ng-model="editRoleFunction.type" ng-disabled="disableCd"
+						type="text" maxlength="30" />
 				</div>
-			<br>	
-				<div >
-					<div class="item-label"> <span ID="required" style="color: Red;"
-						visible="false"> *</span>Code:</div>
-					<input id="code-property-input"
-						class="adminForm-code-property-input" ng-model="editRoleFunction.code" ng-disabled="disableCd"
-						type="text" maxlength="30"
-						 />
-
-					<div class="error-container"
-						ng-show="!editRoleFunction.code||editRoleFunction.code.length==0">
-						<small id="code-property-required"
-							class="err-message">Code is Required</small>
-					</div>
+				<div class="error-container"
+					ng-show="selectedvalueradioButtonGroup.type === 'other'&&(!editRoleFunction.type||editRoleFunction.type.length==0)">
+					<small id="microservices-details-input-url-required"
+						class="err-message">Type is Required</small>
 				</div>
-		
+			</div>
+			<br>
+			<div>
+				<div class="item-label">
+					<span ID="required" style="color: Red;" visible="false"> *</span>Instance:
+				</div>
+				<input id="code-property-input"
+					class="adminForm-code-property-input"
+					ng-model="editRoleFunction.code" ng-disabled="disableCd"
+					type="text" maxlength="250" />
+
+				<div class="error-container"
+					ng-show="!editRoleFunction.code||editRoleFunction.code.length==0">
+					<small id="code-property-required" class="err-message">Instance
+						is Required</small>
+				</div>
+			</div>
+			<br>
+			<div>
+				<div class="item-label">
+					<span ID="required" style="color: Red;" visible="false"> *</span>Action:
+				</div>
+				<input id="action-property-input"
+					class="adminForm-name-property-input"
+					ng-model="editRoleFunction.action" ng-disabled="disableCd"
+					type="text" maxlength="30" />
+				<div class="error-container"
+					ng-show="!editRoleFunction.action||editRoleFunction.action.length==0">
+					<small id="microservices-details-input-url-required"
+						class="err-message">Action is Required</small>
+				</div>
+			</div>
+			<br>
+			<div>
+				<div class="item-label">
+					<span ID="required" style="color: Red;" visible="false"> *</span>Name:
+				</div>
+				<input id="name-property-input"
+					class="adminForm-name-property-input"
+					ng-model="editRoleFunction.name" type="text" maxlength="50" />
+
+				<div class="error-container"
+					ng-show="!editRoleFunction.name||editRoleFunction.name.length==0">
+					<small id="microservices-details-input-url-required"
+						class="err-message">Name is Required</small>
+				</div>
+			</div>
+			<br>
+			<div class="item-label">
+				<span style="color: #0568ae; font-size: 20px;"
+					class="icon-numslets-flat-info"></span> Code: <span
+					ng-show="selectedvalueradioButtonGroup.type !== 'other'">{{selectedvalueradioButtonGroup.type}}|{{editRoleFunction.code}}|{{editRoleFunction.action}}</span>
+				<span ng-show="selectedvalueradioButtonGroup.type === 'other'">{{editRoleFunction.type}}|{{editRoleFunction.code}}|{{editRoleFunction.action}}</span>
+			</div>
 		</form>
 	</div>
-		
-			<div class="b2b-modal-footer">
-				<div class="dialog-control">
-				
-<button id="button-app-save" class="btn btn-alt btn-small" size="small" ng-disabled="(!editRoleFunction.name||editRoleFunction.name.length==0)||(!editRoleFunction.code||editRoleFunction.code.length==0 )" ng-click="!saveRoleFunction(editRoleFunction)";herf="javascript:void(0)">Save</button>
-						
-						<div id="button-app-cancel" class="btn btn-alt btn-small" ng-click="$dismiss('cancel')" role="button" tabindex="0" herf="javascript:void(0)">Cancel</div>
+
+	<div class="b2b-modal-footer">
+		<div class="dialog-control">
+
+			<button id="button-app-save" class="btn btn-alt btn-small"
+				size="small"
+				ng-disabled="(!editRoleFunction.name||editRoleFunction.name.length==0)||(!editRoleFunction.code||editRoleFunction.code.length==0 )||(!editRoleFunction.action||editRoleFunction.action.length==0)
+			||(!selectedvalueradioButtonGroup.type||selectedvalueradioButtonGroup.type.length==0)||(selectedvalueradioButtonGroup.type ==='other'&&(!editRoleFunction.type||editRoleFunction.type.length==0))"
+				ng-click="!saveRoleFunction(editRoleFunction,selectedvalueradioButtonGroup.type)"
+				herf="javascript:void(0)">Save</button>
+
+			<div id="button-app-cancel" class="btn btn-alt btn-small"
+				ng-click="$dismiss('cancel')" role="button" tabindex="0"
+				herf="javascript:void(0)">Cancel</div>
 		</div>
-		
-		<!-- <div class="dialog-control">
+	</div>
 
-<button id="button-app-save" class="btn btn-alt btn-small" size="small" ng-disabled="(!editRoleFunction.name||editRoleFunction.name.length==0)||(!editRoleFunction.code||editRoleFunction.code.length==0 )" ng-click="!saveRoleFunction(editRoleFunction)";herf="javascript:void(0)">Save</button>
-
-<div id="button-app-cancel" class="btn btn-alt btn-small" ng-click="closeThisDialog()" role="button" tabindex="0" herf="javascript:void(0)">Cancel</div>
-</div> -->
-			</div>
-			
 </div>
 
 <script>
-$(document).ready(function(){
-    $(".ngdialog-close").attr('id','dialog-close');
-});
+	$(document).ready(function() {
+		$(".ngdialog-close").attr('id', 'dialog-close');
+	});
 </script>
-

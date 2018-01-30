@@ -2,11 +2,11 @@
   ============LICENSE_START==========================================
   ONAP Portal
   ===================================================================
-  Copyright © 2017 AT&T Intellectual Property. All rights reserved.
+  Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
   ===================================================================
  
   Unless otherwise specified, all software contained herein is licensed
-  under the Apache License, Version 2.0 (the “License”);
+  under the Apache License, Version 2.0 (the "License");
   you may not use this software except in compliance with the License.
   You may obtain a copy of the License at
  
@@ -19,7 +19,7 @@
   limitations under the License.
  
   Unless otherwise specified, all documentation contained herein is licensed
-  under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+  under the Creative Commons License, Attribution 4.0 Intl. (the "License");
   you may not use this documentation except in compliance with the License.
   You may obtain a copy of the License at
  
@@ -191,11 +191,11 @@
 										<li><div class="reg-userLastLogin-label"><span class="reg-userLastLogin-label-spn reg-common-label-spn-txt">
 					                        Last login<span class="visuallyhidden">:</span></span></div></li>
 										<li><div class="reg-userLastLogin-value"><span class="reg-userLastLogin-value-spn">
-					                        {{lastLogin}}<span class="visuallyhidden"></span></span></div></li>
+					                        {{ lastLogin | date : 'medium' }}<span class="visuallyhidden"></span></span></div></li>
 						                <li>&nbsp;</li>
 					 					<li>
 					               			<div class="display-userAppRoles-label">
-					                			<a href="javascript:void(0);"  ng-click="getUserApplicationRoles()"  class="icon-primary-accordion-plus" ng-class="{true: 'icon-primary-accordion-plus', false: 'icon-primary-accordion-minus'}[ !displayUserAppRoles]" >Applications and Roles</a>
+					                			<a href="javascript:void(0);"  ng-click="getUserApplicationRoles()"  class="icon-primary-accordion-plus" ng-class="{true: 'icon-primary-accordion-plus', false: 'icon-primary-accordion-minus'}[ !displayUserAppRoles]" ><span class="business-card-app-role">Applications and Roles</span></a>
 					                 		</div>
 					                 		<br>
 					                        <div class="display-userAppRoles-label display-userAppRoles-label-txt" ng-show="displayUserAppRoles">

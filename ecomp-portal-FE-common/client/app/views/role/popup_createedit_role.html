@@ -1,0 +1,137 @@
+<!--
+  ============LICENSE_START==========================================
+  ONAP Portal
+  ===================================================================
+  Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+  ===================================================================
+ 
+  Unless otherwise specified, all software contained herein is licensed
+  under the Apache License, Version 2.0 (the "License");
+  you may not use this software except in compliance with the License.
+  You may obtain a copy of the License at
+ 
+              http://www.apache.org/licenses/LICENSE-2.0
+ 
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+ 
+  Unless otherwise specified, all documentation contained herein is licensed
+  under the Creative Commons License, Attribution 4.0 Intl. (the "License");
+  you may not use this documentation except in compliance with the License.
+  You may obtain a copy of the License at
+ 
+              https://creativecommons.org/licenses/by/4.0/
+ 
+  Unless required by applicable law or agreed to in writing, documentation
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+ 
+  ============LICENSE_END============================================
+ 
+  ECOMP is a trademark and service mark of AT&T Intellectual Property.
+  -->
+  <style>
+  .checkbox .skin {
+    left: 112px;
+    top: -8px;
+}
+.checkbox input {
+    margin: 0px;
+    left: 105px;
+    height: 20px;
+    top: -4px;
+    }
+.checkbox span {
+    display: inline-block;
+    margin-left: 1px;
+    margin-top: 0;
+    position: relative;
+    top: -3px;
+}
+.property-label {
+	margin-right: 40px;
+}
+.dialog-control {
+    bottom: 170px;
+    position: fixed;
+    right: 588px;
+}
+.header-txt{
+	font-size: 30px;
+}
+  </style>
+		<div class="b2b-modal-header">	
+			<div id="title" class="w-ecomp-main-view-title">
+	    		<h1 id="role" class="header-txt" >Role</h1>
+	   		 </div>
+			<div class="corner-button in">
+				<button type="button" class="close" aria-label="Close" id="button-cancel-role"
+					ng-click="$dismiss('cancel')"></button>
+			</div>
+		</div>
+		
+	 	<div class="b2b-modal-body">
+			    <p class="p-info">Please <span ng-if="roleId != ''">edit</span> <span ng-if="roleId == ''">add</span> the role details below:&nbsp;</p><br>
+			    
+			       <div ng-show ="isGlobalRole" class="property-label checkbox-label"> 
+					<label for="checkbox-app-is-restricted" class="checkbox"> 
+		                <input type="checkbox" ng-model="isGlobalRoleChecked.isChecked" id="checkbox-app-is-restricted"  ng-checked="isGlobalRoleChecked.isChecked" /> 
+		                <i id="checkbox-app-is-restricted" class="skin"></i> 
+		                <span>Global Roles: </span> 
+		            </label> 
+				</div>
+			     
+				<div id="role-text" >
+					<label id="role-text-name-label" >*Name:</label>
+					<input id="input-name"  class="input-field" maxlength="300"  type="text" data-ng-model="role.name" ng-disabled = "isGlobalRoleChecked.isChecked && appId != 1">					 
+					<br>
+					<label id="role-text-priority-label">Priority:</label>
+					<input id="input-priority" class="input-field" maxlength="30"  type="text" data-ng-model="role.priority" ng-disabled = "isGlobalRoleChecked.isChecked && appId != 1">					 	
+				</div>
+				<br/>
+				<div class="scrolling-table">
+					<div ng-if="roleFunctions.length">
+						<div id="page-title"  class="pageTitle">
+							<label>Role Functions</label>
+						</div>					
+						<div b2b-table table-data="availableRoleFunctions" class="b2b-table-div">
+						<span class="ecomp-spinner" ng-show="isLoadingRoleFunctions"></span>
+							<table>
+								<thead b2b-table-row type="header">
+									<tr>
+										<th b2b-table-header key="firstName" sortable="true" id="col1"></th>
+										<th b2b-table-header key="name" sortable="true" id="col2">Name</th>
+									</tr>
+								</thead>
+								<tbody b2b-table-row type="body"
+									row-repeat="rowData in availableRoleFunctions">
+									<tr>
+										<td b2b-table-body id="rowheader_t1_{{$index}}" headers="col1">
+											<label class="btn-switch-label" tabindex="0" role="option">
+												<input id="row-input-{{$index}}" type="checkbox" b2b-switches
+												ng-model="rowData.selected"
+												ng-click="toggleRoleFunction(rowData.selected,rowData);">
+										</label>
+										</td>
+										<td b2b-table-body headers="rowheader_t1_{{$index}} col2"
+											ng-bind="rowData.name"></td>		
+									</tr>
+								</tbody>
+							</table>
+						</div>										
+					</div>
+			</div>
+	 </div>
+	 
+	 <div class="b2b-modal-footer">
+	 	<div class="cta-button-group in">	
+	 		<button id="button-app-save" class="btn btn-alt btn-small" size="small" ng-click="saveRole(role, editRoleFunction);" href="javascript:void(0)">Save</button>
+						
+			<button id="button-app-cancel" class="btn btn-alt btn-small" ng-click="$dismiss('cancel')" role="button" tabindex="0" href="javascript:void(0)">Cancel</button>
+		</div>
+	 </div>	  

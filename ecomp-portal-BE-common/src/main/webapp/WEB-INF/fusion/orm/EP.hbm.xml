@@ -3,11 +3,11 @@
   ============LICENSE_START==========================================
   ONAP Portal
   ===================================================================
-  Copyright © 2017 AT&T Intellectual Property. All rights reserved.
+  Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
   ===================================================================
  
   Unless otherwise specified, all software contained herein is licensed
-  under the Apache License, Version 2.0 (the “License”);
+  under the Apache License, Version 2.0 (the "License");
   you may not use this software except in compliance with the License.
   You may obtain a copy of the License at
  
@@ -20,7 +20,7 @@
   limitations under the License.
  
   Unless otherwise specified, all documentation contained herein is licensed
-  under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+  under the Creative Commons License, Attribution 4.0 Intl. (the "License");
   you may not use this documentation except in compliance with the License.
   You may obtain a copy of the License at
  
@@ -41,7 +41,7 @@
         "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 
 <!-- Publishes mappings and queries specific to the ECOMP Portal application. -->
-<hibernate-mapping package="org.openecomp.portalapp.portal.domain">
+<hibernate-mapping package="org.onap.portalapp.portal.domain">
 
 	<!-- Widget class mapping details -->
 	<class name="Widget" table="FN_WIDGET">
@@ -195,6 +195,7 @@
 		<property name="jobTitle" column="job_title" />
 		<property name="siloStatus" column="silo_status" />
 		<property name="financialLocCode" column="fin_loc_code" />
+		<property name="costCenter" column="cost_center" />
 
 		<property name="active" column="active_yn" type="yes_no" />
 		<property name="internal" column="is_internal_yn" type="yes_no" />
@@ -209,7 +210,7 @@
 		<set name="EPUserApps" table="FN_USER_ROLE" lazy="false" sort="natural"
 			inverse="true">
 			<key column="user_id" />
-			<one-to-many class="org.openecomp.portalapp.portal.domain.EPUserApp" />
+			<one-to-many class="org.onap.portalapp.portal.domain.EPUserApp" />
 		</set>
 
 	</class>
@@ -282,9 +283,9 @@
 				<column name="user_id" precision="11" scale="0" />
 			</key-property>
 			<key-many-to-one name="app"
-				class="org.openecomp.portalapp.portal.domain.EPApp" column="app_id" />
+				class="org.onap.portalapp.portal.domain.EPApp" column="app_id" />
 			<key-many-to-one name="role"
-				class="org.openecomp.portalapp.portal.domain.EPRole" column="role_id" />
+				class="org.onap.portalapp.portal.domain.EPRole" column="role_id" />
 		</composite-id>
 		<property name="priority" type="java.lang.Short">
 			<column name="priority" precision="4" scale="0" />
@@ -408,21 +409,21 @@
 			sort="natural">
 			<key column="role_id" />
 			<many-to-many column="function_cd"
-				class="org.openecomp.portalsdk.core.domain.RoleFunction" />
+				class="org.onap.portalsdk.core.domain.RoleFunction" />
 		</set>
 
 		<set name="childRoles" table="FN_ROLE_COMPOSITE" lazy="false"
 			sort="natural">
 			<key column="parent_role_id" />
 			<many-to-many column="child_role_id"
-				class="org.openecomp.portalapp.portal.domain.EPRole" />
+				class="org.onap.portalapp.portal.domain.EPRole" />
 		</set>
 
 		<set name="parentRoles" table="FN_ROLE_COMPOSITE" lazy="false"
 			sort="natural">
 			<key column="child_role_id" />
 			<many-to-many column="parent_role_id"
-				class="org.openecomp.portalapp.portal.domain.EPRole" />
+				class="org.onap.portalapp.portal.domain.EPRole" />
 		</set>
 
 	</class>
@@ -466,10 +467,11 @@
 		<property name="roleId" column="role_id"></property>
 		<property name="appId" column="app_id"></property>
 		<property name="code" column="function_cd"></property>
+		<property name="roleAppId" column="role_app_id"></property>
 	</class>
 
 	<!-- CentralRoleFunction class mapping details -->
-	<class name="CentralRoleFunction" table="ep_app_function">
+	<class name="CentralV2RoleFunction" table="ep_app_function">
 		<composite-id>
 			<key-property name="appId" 
 				column="app_id" />
@@ -507,7 +509,7 @@
 			lazy="false" cascade="save-update, persist" inverse="true" fetch="select">
 			<key column="req_id" />
 			<one-to-many
-				class="org.openecomp.portalapp.portal.domain.EPUserAppRolesRequestDetail" />
+				class="org.onap.portalapp.portal.domain.EPUserAppRolesRequestDetail" />
 		</set>
 	</class>
 
@@ -521,7 +523,7 @@
 		<property name="reqRoleId" column="requested_role_id" />
 		<property name="reqType" column="request_type" />
 		<many-to-one name="epRequestIdData" fetch="select"
-			class="org.openecomp.portalapp.portal.domain.EPUserAppRolesRequest">
+			class="org.onap.portalapp.portal.domain.EPUserAppRolesRequest">
 			<column name="req_id" not-null="true" />
 		</many-to-one>
 	</class>
@@ -550,7 +552,7 @@
 	<!-- requires values for named parameters :searchQuery and :userId -->
 	<sql-query name="searchPortal">
 		<return alias="searchResult"
-			class="org.openecomp.portalapp.portal.ecomp.model.SearchResultItem" />
+			class="org.onap.portalapp.portal.ecomp.model.SearchResultItem" />
 		<![CDATA[
 			select @rn /*'*/:=/*'*/ @rn+1 AS rowId, CATEGORY, NAME, UUID, TARGET from
 				( (
@@ -559,7 +561,15 @@
 				upper( :searchQuery ) != ''
 				and (upper(first_name) like upper(CONCAT('%', :searchQuery, '%'))
 				or upper(last_name) like upper(CONCAT('%', :searchQuery, '%'))
-				or upper(org_user_id) like upper(CONCAT('%', :searchQuery, '%')))
+				or upper(org_user_id) like upper(CONCAT('%', :searchQuery, '%'))
+				or 
+		        ((first_name LIKE (SELECT concat('%',trim(SUBSTRING(:searchQuery, 1, INSTR(:searchQuery,' '))),'%'))
+		        AND
+		       last_name LIKE (concat('%',(SELECT(SUBSTRING(:searchQuery, INSTR(:searchQuery,' ')+1, LENGTH(:searchQuery)))),'%')))
+		        OR
+		       (last_name LIKE (SELECT concat('%',trim(SUBSTRING(:searchQuery, 1, INSTR(:searchQuery,' '))),'%'))
+		         AND
+		       first_name LIKE (concat('%',(SELECT(SUBSTRING(:searchQuery, INSTR(:searchQuery,' ')+1, LENGTH(:searchQuery)))),'%')))))
 				and  upper(active_yn) = 'Y'
 				)
 				union
@@ -656,7 +666,7 @@
 	<!-- requires values for named parameters :searchQuery and :userId -->
 	<sql-query name="getNotifications">
 		<return alias="notificationResult"
-			class="org.openecomp.portalapp.portal.transport.EpNotificationItem" />
+			class="org.onap.portalapp.portal.transport.EpNotificationItem" />
 		<![CDATA[
 			select @rn /*'*/:=/*'*/ @rn+1 AS rowId, notification_ID, is_for_online_users,is_for_all_roles, msg_header, msg_description,msg_source, start_Time, end_time, priority, created_date, creator_ID,notification_hyperlink, active_YN from
 			( 
@@ -730,9 +740,8 @@
 		]]>
 
 	</sql-query>
-	
 		<sql-query name="getUsersByOrgIdsNotifications">
-		<return alias="getUsersByOrgIdsNotificationsResult" class="org.openecomp.portalapp.portal.domain.EPUser"/>
+		<return alias="getUsersByOrgIdsNotificationsResult" class="org.onap.portalapp.portal.domain.EPUser"/>
 		<![CDATA[
 			SELECT * from fn_user where org_user_id in (:OrgIds)
 		]]>
@@ -743,7 +752,7 @@
 	<!-- Gets all Admin notification history; accepts no parameters -->
 	<sql-query name="getAdminNotificationHistoryVO">
 		<return alias="adminNotificationHistoryVOResult"
-			class="org.openecomp.portalapp.portal.transport.EpNotificationItemVO" /> 
+			class="org.onap.portalapp.portal.transport.EpNotificationItemVO" /> 
 		<![CDATA[
 		SELECT * from (
 SELECT 
@@ -799,7 +808,7 @@ SELECT
 
 	<sql-query name="getEpNotificationAppRoles">
 		<return alias="notificationAppRoles"
-			class="org.openecomp.portalapp.portal.domain.EcompAppRole" />
+			class="org.onap.portalapp.portal.domain.EcompAppRole" />
 		<!-- This query requires no parameters. -->
 		<![CDATA[
 
@@ -819,7 +828,7 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 	<!-- Gets all notification history -->
 	<sql-query name="getNotificationHistoryVO">
 		<return alias="notificationHistoryVOResult"
-			class="org.openecomp.portalapp.portal.transport.EpNotificationItemVO" />
+			class="org.onap.portalapp.portal.transport.EpNotificationItemVO" />
 		<![CDATA[
 		SELECT
 			notificationId, isForOnlineUsers, isForAllRoles, msgHeader,	msgDescription,msgSource,
@@ -957,7 +966,7 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 	<!-- Gets role details for a specified notification -->
 	<sql-query name="getNotificationRoles">
 		<return alias="notificationRolesResult"
-			class="org.openecomp.portalapp.portal.transport.EpRoleNotificationItem" />
+			class="org.onap.portalapp.portal.transport.EpRoleNotificationItem" />
 		<![CDATA[
 			SELECT * 
  			FROM
@@ -970,7 +979,7 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 	<!-- Gets all applications, possibly with contact information -->
 	<sql-query name="getAppsAndContacts">
 		<return alias="appContactUs"
-			class="org.openecomp.portalapp.portal.ecomp.model.AppContactUsItem" />
+			class="org.onap.portalapp.portal.ecomp.model.AppContactUsItem" />
 		<!-- This query requires no parameters. -->
 		<![CDATA[
 			select 
@@ -992,7 +1001,7 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 	<!-- Gets all rows from the app-contact-us table, extended with app information -->
 	<sql-query name="getAppContactUsItems">
 		<return alias="appContactUs"
-			class="org.openecomp.portalapp.portal.ecomp.model.AppContactUsItem" />
+			class="org.onap.portalapp.portal.ecomp.model.AppContactUsItem" />
 		<!-- This query requires no parameters. -->
 		<![CDATA[
 			select 
@@ -1013,7 +1022,7 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 	<!-- Gets one row for each app with the category and catenated functions. -->
 	<sql-query name="getAppCategoryFunctions">
 		<return alias="appCategoryFunctions"
-			class="org.openecomp.portalapp.portal.ecomp.model.AppCategoryFunctionsItem" />
+			class="org.onap.portalapp.portal.ecomp.model.AppCategoryFunctionsItem" />
 		<!-- This query requires no parameters. -->
 		<![CDATA[
 			SELECT @rn /*'*/:=/*'*/ @rn+1 AS rowId,
@@ -1051,7 +1060,7 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 	<!-- Gets one row for each function-application-role combination. -->
 	<sql-query name="getAppAccessFunctionRole">
 		<return alias="appAccessFunctionRole"
-			class="org.openecomp.portalapp.portal.domain.GetAccessResult" />
+			class="org.onap.portalapp.portal.domain.GetAccessResult" />
 		<!-- This query requires one parameters. -->
 		<![CDATA[
 			select @rn /*'*/:=/*'*/ @rn+1 AS row_id, t.role_id, t.ECOMP_FUNCTION, t.APP_NAME, t.APP_MOTS_ID, t.ROLE_NAME,
@@ -1099,21 +1108,21 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 	</sql-query>
 	
 	<sql-query name="getActiveUsers">
-		<return alias="EPUser" class="org.openecomp.portalapp.portal.domain.EPUser" />   
+		<return alias="EPUser" class="org.onap.portalapp.portal.domain.EPUser" />   
 		<![CDATA[
     		SELECT * FROM FN_USER WHERE active_yn='Y' 
 		]]>
 	</sql-query>
 
 	<sql-query name="getAppsAdmins">
-		<return alias="adminUserApp" class="org.openecomp.portalapp.portal.domain.AdminUserApp" />   
+		<return alias="adminUserApp" class="org.onap.portalapp.portal.domain.AdminUserApp" />   
 	<![CDATA[
     	SELECT apps.APP_NAME, apps.APP_ID, user.USER_ID, user.FIRST_NAME, user.LAST_NAME, user.org_user_id FROM fn_user_role userrole INNER JOIN fn_user user ON user.USER_ID = userrole.USER_ID INNER JOIN fn_app apps ON apps.APP_ID = userrole.APP_ID  WHERE user.active_yn='Y' AND userrole.ROLE_ID = :accountAdminRoleId AND (apps.ENABLED = 'Y' OR apps.APP_ID=1)      
 	]]>
 	</sql-query>
 	
 	<sql-query name="getPortalAdmins">
-		<return alias="portalAdmin" class="org.openecomp.portalapp.portal.transport.PortalAdmin" />   
+		<return alias="portalAdmin" class="org.onap.portalapp.portal.transport.PortalAdmin" />   
 	<![CDATA[
 		SELECT u.user_id, u.first_name, u.last_name, u.login_id FROM fn_user u, fn_user_role ur WHERE u.active_yn = 'Y' AND u.user_id = ur.user_id AND ur.role_id= :adminRoleId
 	]]>
@@ -1121,7 +1130,7 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 	
 	<!-- Gets personalized list of enabled and accessible apps for regular user -->
 	<sql-query name="getPersUserApps">
-		<return alias="persUserApps" class="org.openecomp.portalapp.portal.domain.EPApp" />
+		<return alias="persUserApps" class="org.onap.portalapp.portal.domain.EPApp" />
 		<!-- This query requires one parameter: userId (number) -->
 		<![CDATA[
 		    select
@@ -1149,7 +1158,7 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 	<!-- Gets personalized list of enabled and accessible apps for Portal (super) 
 		admin -->
 	<sql-query name="getPersAdminApps">
-		<return alias="persAdminApps" class="org.openecomp.portalapp.portal.domain.EPApp" />
+		<return alias="persAdminApps" class="org.onap.portalapp.portal.domain.EPApp" />
 		<!-- This query requires one parameter: userId (number) -->
 		<![CDATA[
 		    select
@@ -1179,7 +1188,7 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 
 	<!-- Gets personalized list of enabled and accessible Admin apps by name -->
 	<sql-query name="getPersAdminAppsOrderByName">
-		<return alias="AdminAppsOrderByName" class="org.openecomp.portalapp.portal.domain.EPApp" />
+		<return alias="AdminAppsOrderByName" class="org.onap.portalapp.portal.domain.EPApp" />
 		<!-- This query requires one parameter: userId (number) -->
 		<![CDATA[ 
 		 select
@@ -1202,15 +1211,25 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 				or
 				(a.OPEN = 'N' and r.ROLE_ID is null and p.STATUS_CD = 'S')
 			)
-			order by app_name
-		    ;
+			union
+		select distinct  -- multiple roles yield multiple rows
+			    b.APP_ID			, b.APP_NAME 		, b.APP_IMAGE_URL  		,b.APP_DESCRIPTION , 
+	    		b.APP_NOTES 		, b.APP_URL 		, b.APP_ALTERNATE_URL 	, b.APP_REST_ENDPOINT ,
+			   	b.ML_APP_NAME 		, b.ML_APP_ADMIN_ID , b.MOTS_ID 			, b.APP_PASSWORD ,
+    			b.THUMBNAIL 		, b.APP_USERNAME	, b.OPEN 				, b.ENABLED , 
+          b.UEB_TOPIC_NAME 	, b.UEB_KEY 		, b.UEB_SECRET 			, b.APP_TYPE         , b.AUTH_CENTRAL ,
+          b.AUTH_NAMESPACE
+          from fn_user_role a, fn_app b, ep_app_role_function c   , fn_role d , ep_app_function e
+          where a.user_id =:userId  and b.app_id = c.app_id and a.app_id = c.role_app_id and b.enabled = 'Y' and c.role_id = d.role_id and d.active_yn='Y' and a.role_id = d.role_id and e.app_id = c.app_id
+		  order by app_name
+		  ;
 		
 		]]>
 	</sql-query>
 
 	<!--Gets personalized list of enabled and accessible User apps by name -->
 	<sql-query name="getPersUserAppsOrderByName">
-		<return alias="UserAppsOrderByName" class="org.openecomp.portalapp.portal.domain.EPApp" />
+		<return alias="UserAppsOrderByName" class="org.onap.portalapp.portal.domain.EPApp" />
 		<!-- This query requires one parameter: userId (number) -->
 		<![CDATA[ 
 		select
@@ -1231,8 +1250,18 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 		        or
 				(a.OPEN = 'N' and r.USER_ID is not null and (p.STATUS_CD is null or p.STATUS_CD != 'H'))
 			)
-			order by app_name
-		    ;
+			union
+		select distinct  -- multiple roles yield multiple rows
+			    b.APP_ID			, b.APP_NAME 		, b.APP_IMAGE_URL  		,b.APP_DESCRIPTION , 
+	    		b.APP_NOTES 		, b.APP_URL 		, b.APP_ALTERNATE_URL 	, b.APP_REST_ENDPOINT ,
+			   	b.ML_APP_NAME 		, b.ML_APP_ADMIN_ID , b.MOTS_ID 			, b.APP_PASSWORD ,
+    			b.THUMBNAIL 		, b.APP_USERNAME	, b.OPEN 				, b.ENABLED , 
+          b.UEB_TOPIC_NAME 	, b.UEB_KEY 		, b.UEB_SECRET 			, b.APP_TYPE         , b.AUTH_CENTRAL ,
+          b.AUTH_NAMESPACE
+          from fn_user_role a, fn_app b, ep_app_role_function c   , fn_role d , ep_app_function e
+          where a.user_id =:userId  and b.app_id = c.app_id and a.app_id = c.role_app_id and b.enabled = 'Y' and c.role_id = d.role_id and d.active_yn='Y' and a.role_id = d.role_id and e.app_id = c.app_id
+		order by app_name
+		 ;
 		
 		]]>
 	</sql-query>
@@ -1241,8 +1270,7 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 	<!--Gets personalized list of enabled and accessible Super Admin apps by 
 		LastUsed -->
 	<sql-query name="getAdminAppsOrderByLastUsed">
-		<return alias="AdminAppsOrderByLastUsed" class="org.openecomp.portalapp.portal.domain.EPApp" />
-		
+		<return alias="AdminAppsOrderByLastUsed" class="org.onap.portalapp.portal.domain.EPApp" />
 		<![CDATA[
 		    select 
 			*
@@ -1266,6 +1294,16 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 				or
 				(a.OPEN = 'N' and r.ROLE_ID is null and p.STATUS_CD = 'S')
 			)
+			union
+		  select distinct  -- multiple roles yield multiple rows
+			    b.APP_ID			, b.APP_NAME 		, b.APP_IMAGE_URL  		,b.APP_DESCRIPTION , 
+	    		b.APP_NOTES 		, b.APP_URL 		, b.APP_ALTERNATE_URL 	, b.APP_REST_ENDPOINT ,
+			   	b.ML_APP_NAME 		, b.ML_APP_ADMIN_ID , b.MOTS_ID 			, b.APP_PASSWORD ,
+    			b.THUMBNAIL 		, b.APP_USERNAME	, b.OPEN 				, b.ENABLED , 
+          b.UEB_TOPIC_NAME 	, b.UEB_KEY 		, b.UEB_SECRET 			, b.APP_TYPE         , b.AUTH_CENTRAL ,
+          b.AUTH_NAMESPACE
+          from fn_user_role a, fn_app b, ep_app_role_function c   , fn_role d , ep_app_function e
+          where a.user_id =:userId  and b.app_id = c.app_id and a.app_id = c.role_app_id and b.enabled = 'Y' and c.role_id = d.role_id and d.active_yn='Y' and a.role_id = d.role_id and e.app_id = c.app_id
 			) A 
     		left outer join
 			(select  distinct
@@ -1279,8 +1317,7 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 
 	<!--Gets personalized list of enabled and accessible User apps by LastUsed -->
 	<sql-query name="getUserAppsOrderByLastUsed">
-		<return alias="UserAppsOrderByLastUsed" class="org.openecomp.portalapp.portal.domain.EPApp" />
-		
+		<return alias="UserAppsOrderByLastUsed" class="org.onap.portalapp.portal.domain.EPApp" />
 		<![CDATA[ 
 			select * from (select
 				distinct  -- multiple roles yield multiple rows
@@ -1299,7 +1336,18 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 				(a.OPEN = 'Y' and p.STATUS_CD = 'S')
 		        or
 				(a.OPEN = 'N' and r.USER_ID is not null and (p.STATUS_CD is null or p.STATUS_CD != 'H'))
-			)) A 
+			)union
+		select distinct  -- multiple roles yield multiple rows
+			    b.APP_ID			, b.APP_NAME 		, b.APP_IMAGE_URL  		,b.APP_DESCRIPTION , 
+	    		b.APP_NOTES 		, b.APP_URL 		, b.APP_ALTERNATE_URL 	, b.APP_REST_ENDPOINT ,
+			   	b.ML_APP_NAME 		, b.ML_APP_ADMIN_ID , b.MOTS_ID 			, b.APP_PASSWORD ,
+    			b.THUMBNAIL 		, b.APP_USERNAME	, b.OPEN 				, b.ENABLED , 
+          b.UEB_TOPIC_NAME 	, b.UEB_KEY 		, b.UEB_SECRET 			, b.APP_TYPE         , b.AUTH_CENTRAL ,
+          b.AUTH_NAMESPACE
+          from fn_user_role a, fn_app b, ep_app_role_function c   , fn_role d , ep_app_function e
+          where a.user_id =:userId  and b.app_id = c.app_id and a.app_id = c.role_app_id and b.enabled = 'Y' and c.role_id = d.role_id and d.active_yn='Y' and a.role_id = d.role_id and e.app_id = c.app_id
+			
+			) A 
     		left outer join
 			(select  distinct
 			c.AFFECTED_RECORD_ID, c.AUDIT_DATE 
@@ -1316,8 +1364,7 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 	<!--Gets personalized list of enabled and accessible Super Admin apps by 
 		Most Used -->
 	<sql-query name="getAdminAppsOrderByMostUsed">
-		<return alias="AdminAppsOrderByMostUsed" class="org.openecomp.portalapp.portal.domain.EPApp" />
-		
+		<return alias="AdminAppsOrderByMostUsed" class="org.onap.portalapp.portal.domain.EPApp" />
 		<![CDATA[ 		
 			select 
 			*
@@ -1340,7 +1387,16 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 				(a.OPEN = 'N' and r.ROLE_ID is not null and (p.STATUS_CD is null or p.STATUS_CD != 'H'))
 				or
 				(a.OPEN = 'N' and r.ROLE_ID is null and p.STATUS_CD = 'S')
-			)
+			)union
+		   select distinct  -- multiple roles yield multiple rows
+			    b.APP_ID			, b.APP_NAME 		, b.APP_IMAGE_URL  		,b.APP_DESCRIPTION , 
+	    		b.APP_NOTES 		, b.APP_URL 		, b.APP_ALTERNATE_URL 	, b.APP_REST_ENDPOINT ,
+			   	b.ML_APP_NAME 		, b.ML_APP_ADMIN_ID , b.MOTS_ID 			, b.APP_PASSWORD ,
+    			b.THUMBNAIL 		, b.APP_USERNAME	, b.OPEN 				, b.ENABLED , 
+          b.UEB_TOPIC_NAME 	, b.UEB_KEY 		, b.UEB_SECRET 			, b.APP_TYPE         , b.AUTH_CENTRAL ,
+          b.AUTH_NAMESPACE
+          from fn_user_role a, fn_app b, ep_app_role_function c   , fn_role d , ep_app_function e
+          where a.user_id =:userId  and b.app_id = c.app_id and a.app_id = c.role_app_id and b.enabled = 'Y' and c.role_id = d.role_id and d.active_yn='Y' and a.role_id = d.role_id and e.app_id = c.app_id
 			) A 
 			left outer join
 			(select  FN_AUDIT_LOG.AFFECTED_RECORD_ID, COUNT(*) AS total_visits 
@@ -1359,8 +1415,7 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 	<!--Gets personalized list of enabled and accessible NON Super Admin User 
 		apps by Most Used -->
 	<sql-query name="getUserAppsOrderByMostUsed">
-		<return alias="UserAppsOrderByMostUsed" class="org.openecomp.portalapp.portal.domain.EPApp" />
-		
+		<return alias="UserAppsOrderByMostUsed" class="org.onap.portalapp.portal.domain.EPApp" />
 		<![CDATA[ 
 			select * from 
 			(select
@@ -1380,7 +1435,17 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 				(a.OPEN = 'Y' and p.STATUS_CD = 'S')
 		        or
 				(a.OPEN = 'N' and r.USER_ID is not null and (p.STATUS_CD is null or p.STATUS_CD != 'H'))
-			))A 
+			)union
+		  select distinct  -- multiple roles yield multiple rows
+			    b.APP_ID			, b.APP_NAME 		, b.APP_IMAGE_URL  		,b.APP_DESCRIPTION , 
+	    		b.APP_NOTES 		, b.APP_URL 		, b.APP_ALTERNATE_URL 	, b.APP_REST_ENDPOINT ,
+			   	b.ML_APP_NAME 		, b.ML_APP_ADMIN_ID , b.MOTS_ID 			, b.APP_PASSWORD ,
+    			b.THUMBNAIL 		, b.APP_USERNAME	, b.OPEN 				, b.ENABLED , 
+          b.UEB_TOPIC_NAME 	, b.UEB_KEY 		, b.UEB_SECRET 			, b.APP_TYPE         , b.AUTH_CENTRAL ,
+          b.AUTH_NAMESPACE
+          from fn_user_role a, fn_app b, ep_app_role_function c   , fn_role d, ep_app_function e
+          where a.user_id =:userId  and b.app_id = c.app_id and a.app_id = c.role_app_id and b.enabled = 'Y' and c.role_id = d.role_id and d.active_yn='Y' and a.role_id = d.role_id and e.app_id = c.app_id
+			)A 
 			left outer join
 			(select  FN_AUDIT_LOG.AFFECTED_RECORD_ID, COUNT(*) AS total_visits 
 			from FN_APP LEFT JOIN FN_AUDIT_LOG 
@@ -1397,8 +1462,7 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 	<!--Gets personalized list of enabled and accessible Super Admin apps by 
 		Manual -->
 	<sql-query name="getAdminAppsOrderByManual">
-		<return alias="AdminAppsOrderByManual" class="org.openecomp.portalapp.portal.domain.EPApp" />
-		
+		<return alias="AdminAppsOrderByManual" class="org.onap.portalapp.portal.domain.EPApp" />
 		<![CDATA[ 
 			select * from 			
 			(select
@@ -1420,7 +1484,17 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 				(a.OPEN = 'N' and r.ROLE_ID is not null and (p.STATUS_CD is null or p.STATUS_CD != 'H'))
 				or
 				(a.OPEN = 'N' and r.ROLE_ID is null and p.STATUS_CD = 'S')
-			)) A
+			)union
+		select distinct  -- multiple roles yield multiple rows
+			    b.APP_ID			, b.APP_NAME 		, b.APP_IMAGE_URL  		,b.APP_DESCRIPTION , 
+	    		b.APP_NOTES 		, b.APP_URL 		, b.APP_ALTERNATE_URL 	, b.APP_REST_ENDPOINT ,
+			   	b.ML_APP_NAME 		, b.ML_APP_ADMIN_ID , b.MOTS_ID 			, b.APP_PASSWORD ,
+    			b.THUMBNAIL 		, b.APP_USERNAME	, b.OPEN 				, b.ENABLED , 
+          b.UEB_TOPIC_NAME 	, b.UEB_KEY 		, b.UEB_SECRET 			, b.APP_TYPE         , b.AUTH_CENTRAL ,
+          b.AUTH_NAMESPACE
+          from fn_user_role a, fn_app b, ep_app_role_function c   , fn_role d, ep_app_function e
+          where a.user_id =:userId  and b.app_id = c.app_id and a.app_id = c.role_app_id and b.enabled = 'Y' and c.role_id = d.role_id and d.active_yn='Y' and a.role_id = d.role_id and e.app_id = c.app_id
+			) A
 			left outer join
 			 (select m.app_id, m.sort_order 
 			from ep_pers_user_app_man_sort m
@@ -1436,8 +1510,7 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 	<!--Gets personalized list of enabled and accessible NON Super admin User 
 		apps by Manual -->
 	<sql-query name="getUserAppsOrderByManual">
-		<return alias="UserAppsOrderByManual" class="org.openecomp.portalapp.portal.domain.EPApp" />
-		
+		<return alias="UserAppsOrderByManual" class="org.onap.portalapp.portal.domain.EPApp" />
 		<![CDATA[ 
 							select * from	(select
 				distinct  -- multiple roles yield multiple rows
@@ -1456,7 +1529,17 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 				(a.OPEN = 'Y' and p.STATUS_CD = 'S')
 		        or
 				(a.OPEN = 'N' and r.USER_ID is not null and (p.STATUS_CD is null or p.STATUS_CD != 'H'))
-			)) A
+			)union
+		select distinct  -- multiple roles yield multiple rows
+			    b.APP_ID			, b.APP_NAME 		, b.APP_IMAGE_URL  		,b.APP_DESCRIPTION , 
+	    		b.APP_NOTES 		, b.APP_URL 		, b.APP_ALTERNATE_URL 	, b.APP_REST_ENDPOINT ,
+			   	b.ML_APP_NAME 		, b.ML_APP_ADMIN_ID , b.MOTS_ID 			, b.APP_PASSWORD ,
+    			b.THUMBNAIL 		, b.APP_USERNAME	, b.OPEN 				, b.ENABLED , 
+          b.UEB_TOPIC_NAME 	, b.UEB_KEY 		, b.UEB_SECRET 			, b.APP_TYPE         , b.AUTH_CENTRAL ,
+          b.AUTH_NAMESPACE
+          from fn_user_role a, fn_app b, ep_app_role_function c   , fn_role d, ep_app_function e
+          where a.user_id =:userId  and b.app_id = c.app_id and a.app_id = c.role_app_id and b.enabled = 'Y' and c.role_id = d.role_id and d.active_yn='Y' and a.role_id = d.role_id and e.app_id = c.app_id
+			) A
 			left outer join
 			 (select m.app_id, m.sort_order 
 			from ep_pers_user_app_man_sort m
@@ -1472,7 +1555,7 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 		statuses -->
 	<sql-query name="getUserAppCatalog">
 		<return alias="userAppCatalog"
-			class="org.openecomp.portalapp.portal.ecomp.model.AppCatalogItem" />
+			class="org.onap.portalapp.portal.ecomp.model.AppCatalogItem" />
 		<!-- This query requires one parameter: userId (number) -->
 		<![CDATA[
 						select 
@@ -1517,19 +1600,24 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 	</sql-query>
 
 	<sql-query name="getMyloginAppDetails">
-		<return alias="myloginAppDetails" class="org.openecomp.portalapp.portal.domain.EPApp" />
-		
+		<return alias="myloginAppDetails" class="org.onap.portalapp.portal.domain.EPApp" />
 		<![CDATA[ 
 		SELECT * FROM fn_app  where ml_app_name =:appName
 		;		
 		]]>
 	</sql-query>
 	
-		<sql-query name="getMyAppDetailsByUebKey">
-		<return alias="myAppDetailsByUebKey" class="org.openecomp.portalapp.portal.domain.EPApp" />
-		
+	<sql-query name="getAppDetailsByAppName">
+		<return alias="appDetailsByAppName" class="org.onap.portalapp.portal.domain.EPApp" />
 		<![CDATA[ 
-				
+		SELECT * FROM fn_app  where app_name =:appName
+		;		
+		]]>
+	</sql-query>
+	
+		<sql-query name="getMyAppDetailsByUebKey">
+		<return alias="myAppDetailsByUebKey" class="org.onap.portalapp.portal.domain.EPApp" />
+		<![CDATA[ 
 		SELECT * FROM fn_app  where ueb_key =:appKey
 		;		
 		]]>
@@ -1565,19 +1653,56 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 	</sql-query>
 
 	<sql-query name="getAppRoles">
-		<return alias="appRoles" class="org.openecomp.portalapp.portal.domain.EPRole" />
-		
+		<return alias="appRoles" class="org.onap.portalapp.portal.domain.EPRole" />
 		<![CDATA[ 
 		SELECT * FROM fn_role where role_name =:roleName and app_id =:appId
 		;		
 		]]>
 	</sql-query>
 	
-	<sql-query name="getPortalAppRoles">
-		<return alias="appRoles" class="org.openecomp.portalapp.portal.domain.EPRole" />
-		
+	<sql-query name="getPartnerAppRolesList">
+		<return alias="partnerAppRolesList" class="org.onap.portalapp.portal.domain.EPRole" />
 		<![CDATA[ 
-				
+		SELECT * FROM fn_role where app_id =:appId
+		;		
+		]]>
+	</sql-query>
+	
+	<sql-query name="getPortalAppRolesList">
+		<return alias="portalAppRolesList" class="org.onap.portalapp.portal.domain.EPRole" />
+		<![CDATA[ 
+		SELECT * FROM fn_role where app_id is null
+		;		
+		]]>
+	</sql-query>
+	
+	<sql-query name="getPortalAppRoleByRoleId">
+		<return alias="portalAppByRoleId" class="org.onap.portalapp.portal.domain.EPRole" />
+		<![CDATA[ 
+		SELECT * FROM fn_role where role_id =:roleId and app_id is null
+		;		
+		]]>
+	</sql-query>
+	
+	<sql-query name="getPartnerAppRoleByRoleId">
+		<return alias="portalAppByRoleId" class="org.onap.portalapp.portal.domain.EPRole" />
+		<![CDATA[ 
+		SELECT * FROM fn_role where app_role_id =:appRoleId and app_id =:appId
+		;		
+		]]>
+	</sql-query>
+	
+	<sql-query name="getPartnerAppRoleById">
+		<return alias="portalAppByRoleId" class="org.onap.portalapp.portal.domain.EPRole" />
+		<![CDATA[ 
+		SELECT * FROM fn_role where role_id =:appRoleId and app_id =:appId
+		;		
+		]]>
+	</sql-query>
+	
+	<sql-query name="getPortalAppRoles">
+		<return alias="appRoles" class="org.onap.portalapp.portal.domain.EPRole" />
+		<![CDATA[ 
 		SELECT * FROM fn_role where role_name =:appRoleName and app_id is null
 		;		
 		]]>
@@ -1585,7 +1710,6 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 
 	<sql-query name="deleteMicroserviceParameter">
 		<![CDATA[ 
-				
 		DELETE FROM ep_microservice_parameter WHERE service_id =:serviceId
 		;		
 		]]>
@@ -1593,7 +1717,6 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 	
 	<sql-query name="deleteMicroserviceParameterById">
 		<![CDATA[ 
-				
 		DELETE FROM ep_microservice_parameter WHERE id =:paramId
 		;		
 		]]>
@@ -1601,7 +1724,6 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 	
 	<sql-query name="deleteWidgetCatalogParameter">
 		<![CDATA[ 
-				
 		DELETE FROM ep_widget_catalog_parameter WHERE param_id =:paramId
 		;		
 		]]>
@@ -1609,17 +1731,14 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 
 	<sql-query name="deleteMicroservice">
 		<![CDATA[ 
-				
 		DELETE FROM ep_microservice WHERE id =:serviceId
 		;		
 		]]>
 	</sql-query>
 
 	<sql-query name="epUserAppId">
-		<return alias="userAppId" class="org.openecomp.portalapp.portal.domain.EPUser" />
-		
+		<return alias="userAppId" class="org.onap.portalapp.portal.domain.EPUser" />
 		<![CDATA[ 
-				
 		SELECT * FROM  FN_USER  where ORG_USER_ID = :orgUserIdValue
 		;		
 		]]>
@@ -1627,10 +1746,8 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 
 	<sql-query name="userAppsSortPreferenceQuery">
 		<return alias="appsSortPreferenceQuery"
-			class="org.openecomp.portalapp.portal.domain.EPUserAppsSortPreference" />
-		
+			class="org.onap.portalapp.portal.domain.EPUserAppsSortPreference" />
 		<![CDATA[ 
-				
 		SELECT * from  EP_PERS_USER_APP_SORT e where e.USER_ID = :userId
 				
 		]]>
@@ -1638,10 +1755,8 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 
 	<sql-query name="userAppsManualSortPrfQuery">
 		<return alias="AppsManualSortPrfQuery"
-			class="org.openecomp.portalapp.portal.domain.EPUserAppsManualSortPreference" />
-		
+			class="org.onap.portalapp.portal.domain.EPUserAppsManualSortPreference" />
 		<![CDATA[ 
-				
 		SELECT * from  EP_PERS_USER_APP_MAN_SORT where USER_ID =:userId
 				
 		]]>
@@ -1649,7 +1764,7 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 
 	<sql-query name="userWidgetManualSortPrfQuery">
 		<return alias="widgetManualSortPrfQuery"
-			class="org.openecomp.portalapp.portal.domain.EPWidgetsManualSortPreference" />
+			class="org.onap.portalapp.portal.domain.EPWidgetsManualSortPreference" />
 		<![CDATA[ 
 		SELECT * from  EP_PERS_USER_WIDGET_PLACEMENT where USER_ID =:userId
 		]]>
@@ -1657,7 +1772,7 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 
 	<sql-query name="appRoles">
 		<return alias="rolesForApp"
-			class="org.openecomp.portalapp.portal.domain.EPUserAppRoles" />
+			class="org.onap.portalapp.portal.domain.EPUserAppRoles" />
 		<![CDATA[ 
 			SELECT ROLE_ID, APP_ID from FN_ROLE where APP_ROLE_ID = :appRoleId and app_id = :appId
 			;
@@ -1666,7 +1781,7 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 
 	<sql-query name="userAppRolesRequestList">
 		<return alias="appRolesRequestList"
-			class="org.openecomp.portalapp.portal.domain.EPUserAppRolesRequest" />
+			class="org.onap.portalapp.portal.domain.EPUserAppRolesRequest" />
 		<![CDATA[ 
 			SELECT req_id, user_id, app_id, created_date, updated_date, request_status from  EP_USER_ROLES_REQUEST where user_id =:userId and app_id=:appId and request_status = 'P'
 			;
@@ -1675,7 +1790,7 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 
 	<sql-query name="userAppRolesRequestDetailList">
 		<return alias="appRolesRequestDetailList"
-			class="org.openecomp.portalapp.portal.domain.EPUserAppRolesRequestDetail" />
+			class="org.onap.portalapp.portal.domain.EPUserAppRolesRequestDetail" />
 		<![CDATA[ 
 		
 			SELECT  id, req_id, requested_role_id, request_type from  EP_USER_ROLES_REQUEST_DET where req_id =:reqId
@@ -1686,7 +1801,7 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 	<!-- Gets list of enabled apps including accessible and select statuses -->
 	<sql-query name="getAdminAppCatalog">
 		<return alias="adminAppCatalog"
-			class="org.openecomp.portalapp.portal.ecomp.model.AppCatalogItem" />
+			class="org.onap.portalapp.portal.ecomp.model.AppCatalogItem" />
 		<!-- This query requires one parameter: userId (number) -->
 		<![CDATA[
 			select 
@@ -1735,7 +1850,7 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 
 	<sql-query name="userAppCatalogRoles">
 		<return alias="epUserAppCatalogRoles"
-			class="org.openecomp.portalapp.portal.domain.EPUserAppCatalogRoles" />
+			class="org.onap.portalapp.portal.domain.EPUserAppCatalogRoles" />
 		<![CDATA[ 
         select  a.req_id, B.requested_role_id ,  A.request_status  , A.app_id , (select role_name from fn_role where role_id = B.requested_role_id) as role_name
        from ep_user_roles_request A left join ep_user_roles_request_det B
@@ -1749,8 +1864,7 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 
 	<sql-query name="getUserApproles">
 		<return alias="businessCardUserApplicationRoles"
-			class="org.openecomp.portalapp.portal.transport.BusinessCardApplicationRole" />
-		
+			class="org.onap.portalapp.portal.transport.BusinessCardApplicationRole" />
 		<![CDATA[
 		
  		select   fr.role_name, fa.app_name 
@@ -1764,7 +1878,6 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
      
     <!--delete the records from ep_notification table when the endtime is more than 3 months-->
 	<sql-query name="deleteNotificationsFromEpNotificationTable">
-		
 		<![CDATA[
 		delete from ep_notification where  curdate() >= DATE_ADD(end_time,INTERVAL 3 MONTH)
 		]]>
@@ -1773,7 +1886,6 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 
 	 	<!-- delete the records from ep_role_notification table when the endtime is more than 3 months -->
 	<sql-query name="deleteNotificationsFromEpRoleNotificationTable">
-		
 		<![CDATA[
 	delete from ep_role_notification where  notification_id in (select notification_id from ep_notification where  curdate() >= DATE_ADD(end_time,INTERVAL 3 MONTH))
 		]]>
@@ -1781,7 +1893,6 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 	
 	<!-- delete the records from ep_user_notification table when the endtime is more than 3 months-->
 	<sql-query name="deleteNotificationsFromEpUserNotificationTable">
-		
 		<![CDATA[
 	delete from ep_user_notification where  notification_id in (select notification_id from ep_notification where  curdate() >= DATE_ADD(end_time,INTERVAL 3 MONTH))
 		]]>
@@ -1790,7 +1901,7 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 	<!-- Gets list of role functions and it requires two parameters appId and roleId-->
 	<sql-query name="getAppRoleFunctionList">
 		<return alias="appRoleFunctionList"
-			class="org.openecomp.portalapp.portal.domain.CentralRoleFunction" />
+			class="org.onap.portalapp.portal.domain.CentralV2RoleFunction" />
 		<![CDATA[ 
 			
 			SELECT DISTINCT f.app_id , f.function_cd, f.function_name from ep_app_role_function rf, ep_app_function f  
@@ -1803,7 +1914,7 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 	<!-- Gets list of all role functions -->
 	<sql-query name="getAllRoleFunctions">
 		<return alias="allRoleFunctions"
-			class="org.openecomp.portalapp.portal.domain.CentralRoleFunction" />
+			class="org.onap.portalapp.portal.domain.CentralV2RoleFunction" />
 		<![CDATA[ 
 			
 			SELECT * from ep_app_function where app_id =:appId
@@ -1815,7 +1926,7 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 	<!-- Get ep_app_function records provided by single parameter -->
 	<sql-query name="getRoleFunction">
 		<return alias="RoleFunction"
-			class="org.openecomp.portalapp.portal.domain.CentralRoleFunction" />
+			class="org.onap.portalapp.portal.domain.CentralV2RoleFunction" />
 			<![CDATA[
 			
 			SELECT * from ep_app_function where function_cd like CONCAT('%', :functionCode,'%') and app_id =:appId
@@ -1827,7 +1938,7 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 	<!-- Gets the current user app roles records and requires two parameters  -->
 	<sql-query name="getUserAppCurrentRoles">
 		<return alias="userAppCurrentRoles"
-			class="org.openecomp.portalapp.portal.transport.EPUserAppCurrentRoles" />
+			class="org.onap.portalapp.portal.transport.EPUserAppCurrentRoles" />
 			<![CDATA[
 			
 			select distinct fu.role_id, fr.user_id, fu.role_name, fu.priority from fn_role fu left outer join fn_user_role fr ON fu.role_id = fr.role_id and fu.app_id = fr.app_id and fr.role_id != 999 where fu.app_id =:appId and fr.user_id =:userId
@@ -1838,7 +1949,7 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 	<!-- Gets the current user app roles along with account administrator and requires two parameters  -->
 	<sql-query name="getUserAppExistingRoles">
 		<return alias="userAppExistingRoles"
-			class="org.openecomp.portalapp.portal.transport.EcompUserAppRoles" />
+			class="org.onap.portalapp.portal.transport.EcompUserAppRoles" />
 			<![CDATA[
 			select fr.role_name, fu.app_id, fu.user_id, fu.priority, fu.role_id from fn_user_role fu 
 			left outer join fn_role fr on fu.role_id = fr.role_id 
@@ -1850,7 +1961,7 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 	<!-- Gets the current user app roles records and requires two parameters  -->
 	<sql-query name="getAllFunctions">
 		<return alias="allFunctions"
-			class="org.openecomp.portalsdk.core.domain.RoleFunction" />
+			class="org.onap.portalsdk.core.domain.RoleFunction" />
 			<![CDATA[	
 			select * from fn_function
 			;		
@@ -1860,15 +1971,15 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 	<!-- Gets the  all role functions and requires one parameters -->
 	<sql-query name="uploadAllRoleFunctions">
 		<return alias="allRoleFunctions"
-			class="org.openecomp.portalapp.portal.transport.BulkUploadRoleFunction" />
+			class="org.onap.portalapp.portal.transport.BulkUploadRoleFunction" />
 			<![CDATA[	
 				select fr.function_cd, fn.function_name from fn_role_function fr left outer join fn_function fn on fr.function_cd = fn.function_cd where role_id =:roleId
 				;		
 			]]>
 	</sql-query>
 
-	<sql-query name="getRoletoUpdateAAF">
-		<return alias="getRoletoUpdateAAF" class="org.openecomp.portalapp.portal.domain.EPRole" />
+	<sql-query name="getRoletoUpdateInExternalAuthSystem">
+		<return alias="roletoUpdateInExternalAuthSystem" class="org.onap.portalapp.portal.domain.EPRole" />
 			<![CDATA[
 					SELECT * FROM fn_role where role_name =:appRoleName and app_id =:appId
 			;		
@@ -1876,18 +1987,29 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 	</sql-query>
 
 	<sql-query name="getBulkUserRoles">
-		<return alias="bulkUserRoles" class="org.openecomp.portalapp.portal.transport.BulkUploadUserRoles" />
+		<return alias="bulkUserRoles" class="org.onap.portalapp.portal.transport.BulkUploadUserRoles" />
 			<![CDATA[
 			select fr.role_name, fu.org_user_id, fa.auth_namespace from fn_user_role fur 
 			left outer join fn_role fr on fr.role_id = fur.role_id 
 			left outer join fn_app fa on fa.app_id = fur.app_id
-			left outer join fn_user fu on fu.user_id = fur.user_id where fa.ueb_key =:uebKey and fu.org_user_id != 'su1234'	
+			left outer join fn_user fu on fu.user_id = fur.user_id where fa.ueb_key =:uebKey
+			;	
+			]]>
+	</sql-query>
+	
+	<sql-query name="getBulkUsersForSingleRole">
+		<return alias="bulkUsersForSingleRole" class="org.onap.portalapp.portal.transport.BulkUploadUserRoles" />
+			<![CDATA[
+			select fr.role_name, fu.org_user_id, fa.auth_namespace from fn_user_role fur 
+			left outer join fn_role fr on fr.role_id = fur.role_id 
+			left outer join fn_app fa on fa.app_id = fur.app_id
+			left outer join fn_user fu on fu.user_id = fur.user_id where fa.ueb_key =:uebKey and fr.role_id =:roleId
 			;	
 			]]>
 	</sql-query>
 	
 	<sql-query name="getCentralizedApps">
-		<return alias="centralizedApps" class="org.openecomp.portalapp.portal.domain.EPApp" />
+		<return alias="centralizedApps" class="org.onap.portalapp.portal.domain.EPApp" />
 			<![CDATA[
 			select * from fn_app where auth_central = 'Y' and open = 'N';
 			;	
@@ -1895,8 +2017,7 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 	</sql-query>
 	
 	<sql-query name="getUserRoles">
-			<return alias="getUserRolesList" class="org.openecomp.portalapp.portal.domain.UserRole" />
-	
+			<return alias="getUserRolesList" class="org.onap.portalapp.portal.domain.UserRole" />
 		<![CDATA[ 
 				
         SELECT DISTINCT user.USER_ID, role.ROLE_ID, user.org_user_id, user.FIRST_NAME, user.LAST_NAME, role.ROLE_NAME  FROM fn_user_role userrole INNER JOIN fn_user user ON user.USER_ID = userrole.USER_ID INNER JOIN fn_role role ON role.ROLE_ID = userrole.ROLE_ID WHERE user.org_user_id =:org_user_id and userrole.app_id = 1 
@@ -1910,12 +2031,20 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 			and fu.app_id = ep.app_id
 			and fu.user_id =:userId and ep.app_id = 1
 			and ea.function_cd = ep.function_cd
-			;	
+		    union
+            select distinct app_r_f.function_cd from ep_app_role_function app_r_f, ep_app_function a_f
+			where role_id = 999
+			and app_r_f.function_cd = a_f.function_cd
+			and exists
+			(
+			select fa.app_id from fn_user fu, fn_user_role ur, fn_app fa where fu.user_id =:userId and fu.user_id = ur.user_id
+			and ur.role_id = 999 and ur.app_id = fa.app_id and fa.enabled = 'Y'
+			);
 			]]>
 	</sql-query>
 	
 	<sql-query name="getUserRolesForLeftMenu">
-			<return alias="getUserRolesListForLeftMenu" class="org.openecomp.portalapp.portal.domain.UserRole" />
+			<return alias="getUserRolesListForLeftMenu" class="org.onap.portalapp.portal.domain.UserRole" />
 	
 		<![CDATA[ 
   		SELECT DISTINCT user.USER_ID, role.ROLE_ID, user.org_user_id, user.FIRST_NAME, user.LAST_NAME, role.ROLE_NAME  FROM fn_user_role userrole 
@@ -1927,6 +2056,19 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 		]]>
 	</sql-query>
 	
+	<sql-query name="getRolesForLeftMenu">
+			<return alias="getUserRolesListForLeftMenu" class="org.onap.portalapp.portal.domain.UserRole" />
+	
+		<![CDATA[ 
+  		SELECT DISTINCT user.USER_ID, role.ROLE_ID, user.org_user_id, user.FIRST_NAME, user.LAST_NAME, role.ROLE_NAME  FROM fn_user_role userrole 
+        INNER JOIN fn_user user ON user.USER_ID = userrole.USER_ID 
+        INNER JOIN fn_app app ON app.app_id= userrole.app_id
+        INNER JOIN fn_role role ON role.ROLE_ID = userrole.ROLE_ID 
+        WHERE user.org_user_id =:org_user_id and (userrole.app_id = 1 or role.role_id =   999) and ((app.enabled='Y' and auth_central='Y' ) or app.app_id=1)
+        ;
+		]]>
+	</sql-query>
+	
 	<!-- Gets all functions for an application along with global functions and requires single parameter -->
 	<sql-query name="getMenuFunctions">
 		<![CDATA[ 
@@ -1934,21 +2076,21 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 			where f.app_id =:appId
 			UNION
 			select epa.function_cd from fn_role fnr, ep_app_role_function epr, ep_app_function epa where epr.role_id = fnr.role_id
-			and epa.function_cd = epr.function_cd and fnr.role_name like 'global%'
+			and epa.function_cd = epr.function_cd and fnr.role_name like 'global%' and fnr.app_id is null and epr.app_id = 1
 		 ;
 		]]>
 	</sql-query>
 	
 	<sql-query name="getRequestIdsForApp">
-	<return alias="getRequestIdsForApp" class="org.openecomp.portalapp.portal.domain.EPUserAppRolesRequest" />
+	<return alias="getRequestIdsForApp" class="org.onap.portalapp.portal.domain.EPUserAppRolesRequest" />
 		<![CDATA[ 
 		select * from ep_user_roles_request where app_id =:app_id
 		;
 		]]>
 	</sql-query>
-	
+
 	<sql-query name="ApplicationUserRoles">
-		<return alias="ApplicationUserRoles" class="org.openecomp.portalapp.portal.transport.EcompUserRoles" />
+		<return alias="ApplicationUserRoles" class="org.onap.portalapp.portal.transport.EcompUserRoles" />
 		<![CDATA[ 
 		    select distinct fu.org_id, fu.manager_id, fu.first_name, fu.middle_name, fu.last_name, fu.phone, fu.email, fu.hrid, fu.org_user_id, fu.org_code, fu.org_manager_userid, fu.job_title, fu.login_id, 
 			fu.active_yn , fr.app_role_id, fr.role_name
@@ -1960,6 +2102,35 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 			where fu.user_id = fur.user_id and fu.active_yn='Y' and fur.app_id=:appId and fr.role_name like 'global%' and fr.active_yn='Y'
             ;
 		]]>
+	</sql-query>
+	
+	<sql-query name="getCurrentAppRoleFunctions">
+		<return alias="ApplicationUserRoles" class="org.onap.portalapp.portal.transport.LocalRole" />
+		<![CDATA[ 
+		select distinct fr.role_id, fr.role_name  from fn_role fr, ep_app_function ef, ep_app_role_function epr where fr.role_id = epr.role_id and epr.function_cd = ef.function_cd
+ 		and ef.function_cd =:functionCd and epr.app_id =:appId
+ 		;
+		]]>
+	</sql-query>
+	
+	<sql-query name="deleteUserWidgetPlacement">
+		<![CDATA[ 
+		DELETE FROM ep_pers_user_widget_placement WHERE user_id =:userId AND widget_id =:widgetId
+		;		
+		]]>
+	</sql-query>
+	
+	<sql-query name="getCentralizedAppsOfUser">	
+		<return alias="CentralizedAppsForRoles" class="org.onap.portalapp.portal.domain.CentralizedApp" />   	
+		<![CDATA[
+		
+ 		select distinct fa.app_id, fa.app_name
+		from  fn_role fr, fn_user_role fur, fn_app fa, fn_user fu  
+		Where  fu.user_id =  fur.user_id and fur.role_id = fr.role_id and fa.app_id = fur.app_id 
+		and fu.org_user_id = :userId and (fur.role_id = 999 or fur.role_id = 1) and fr.active_yn='Y' and ((fa.enabled = 'Y' and fa.auth_central='Y') or fa.app_id =1) 
+		;
+ 
+ 		]]>
 	</sql-query>
 	
     <query name="getEPUserByOrgUserId">
@@ -1979,5 +2150,193 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 		FROM EPUser WHERE loginId = :login_id and loginPwd = :login_pwd		
 	]]>
     </query>
-
+    
+    <sql-query name="getGlobalRoleWithApplicationRoleFunctions">	
+		<return alias="getGlobalRoleWithApplicationRoleFunctions" class="org.onap.portalapp.portal.transport.GlobalRoleWithApplicationRoleFunction" />   	
+		<![CDATA[
+		
+ 		select distinct  d.role_id, d.role_name , c.function_cd , e.function_name , d.active_yn , d.priority , c.app_id, c.role_app_id
+		from fn_user_role a, fn_app b, ep_app_role_function c , fn_role d , ep_app_function e
+		where b.app_id = c.app_id and a.app_id = c.role_app_id and b.enabled = 'Y' and c.role_id = d.role_id and d.active_yn='Y' and e.function_cd = c.function_cd and c.app_id= :appId and e.app_id=c.app_id
+		;
+ 
+ 		]]>
+	</sql-query>
+	
+     <sql-query name="getGlobalRolesOfPortal">
+		<return alias="getGlobalRolesOfPortal" class="org.onap.portalapp.portal.domain.EPRole" />
+		<![CDATA[ 
+		select * from fn_role where role_name  like 'global_%' and app_id is null and active_yn='Y'
+		;		
+		]]>
+	</sql-query>
+	
+	<sql-query name="getAppRoleFunctionOnRoleIdandAppId">
+		<return alias="appRoleFunctionOnRoleIdandAppId" class="org.onap.portalapp.portal.domain.EPAppRoleFunction" />
+		<![CDATA[ 
+		select * from ep_app_role_function where app_id =:appId and role_id =:roleId 
+		;		
+		]]>
+	</sql-query>
+	
+	<sql-query name="getAppFunctionOnCodeAndAppId">
+		<return alias="appFunctionOnCodeAndAppId" class="org.onap.portalapp.portal.domain.CentralV2RoleFunction" />
+		<![CDATA[ 
+		select * from ep_app_function where app_id =:appId and function_cd =:functionCd 
+		;		
+		]]>
+	</sql-query>
+	
+	<sql-query name="getGlobalRoleForRequestedApp">	
+		<return alias="getGlobalRoleForRequestedApp" class="org.onap.portalapp.portal.transport.GlobalRoleWithApplicationRoleFunction" />   	
+		<![CDATA[
+		
+ 		select distinct  d.role_id, d.role_name , c.function_cd , e.function_name , d.active_yn , d.priority , c.app_id, c.role_app_id
+        from fn_user_role a, fn_app b, ep_app_role_function c , fn_role d , ep_app_function e
+        where b.app_id = c.app_id and a.app_id = c.role_app_id and b.enabled = 'Y' and c.role_id = d.role_id and d.active_yn='Y' and e.function_cd = c.function_cd and c.app_id=:requestedAppId and c.role_id =:roleId and e.app_id = c.app_id
+        ;
+ 
+ 		]]>
+	</sql-query>
+	
+	<sql-query name="updateMenuFunctionalAndRoles">	
+		<![CDATA[
+		  UPDATE fn_menu_functional m, fn_menu_functional_roles mr SET m.url='' WHERE m.menu_id=mr.menu_id AND mr.app_id=:app_id	
+ 		 ;
+ 		]]>
+	</sql-query>
+	
+	<!-- Remove any favorites associated with a menu item that is associated with this app -->
+	<sql-query name="removeAppFromMenuFavorites">	
+		<![CDATA[
+		DELETE FROM fn_menu_favorites using fn_menu_favorites inner join fn_menu_functional_roles where fn_menu_functional_roles.app_id=:app_id AND fn_menu_functional_roles.menu_id=fn_menu_favorites.menu_id
+		;
+ 		]]>
+	</sql-query>
+	
+	<!-- Remove all role, appid records from fn_menu_functional_role that is associated with this app -->
+	<sql-query name="removeAppFromMenuFunctionalRoles">	
+		<![CDATA[
+		DELETE FROM fn_menu_functional_roles WHERE app_id=:app_id
+		;
+ 		]]>
+	</sql-query>
+	
+	<!-- Remove all roles, rolefunctions, appid records from ep_app_role_function that is associated with this app -->
+	<sql-query name="removeAppFromEpAppRoleFunction">	
+		<![CDATA[
+		DELETE FROM ep_app_role_function WHERE app_id=:app_id
+		;
+ 		]]>
+	</sql-query>
+	
+	<!-- Remove all rolefunctions, appid records from ep_app_function that is associated with this app -->
+	<sql-query name="removeAppFromEpAppFunction">	
+		<![CDATA[
+		DELETE FROM ep_app_function WHERE app_id=:app_id
+		;
+ 		]]>
+	</sql-query>
+	
+	<!-- Remove all records from fn_user_role associated with this app that is associated with this app -->
+	<sql-query name="removeAppFromFnUserRole">	
+		<![CDATA[
+		DELETE FROM fn_user_role WHERE app_id=:app_id
+		;
+ 		]]>
+	</sql-query>
+	
+	<!-- Remove any widgets that is associated with this app-->
+	<sql-query name="removeAppFromEpWidgetCatalogRole">	
+		<![CDATA[
+		DELETE FROM ep_widget_catalog_role WHERE app_id=:app_id
+		;
+ 		]]>
+	</sql-query>
+	
+	<!-- Remove any notifications that is associated with this app-->
+	<sql-query name="removeAppFromEpRoleNotification">	
+		<![CDATA[
+		DELETE FROM ep_role_notification using ep_role_notification inner join fn_role 
+		where fn_role.app_id=:app_id and ep_role_notification.role_id= fn_role.role_id
+		;
+ 		]]>
+	</sql-query>
+	
+	<!-- Remove all records from fn_role that is associated with this app-->
+	<sql-query name="removeAppFromFnRole">	
+		<![CDATA[
+		DELETE FROM fn_role where app_id=:app_id
+		;
+ 		]]>
+	</sql-query>
+	
+	<!-- Remove app contact us entries that is associated with this app-->
+	<sql-query name="removeAppFromAppContactUs">	
+		<![CDATA[
+		DELETE FROM fn_app_contact_us where app_id=:app_id
+		;
+ 		]]>
+	</sql-query>
+	
+	<!-- Remove app personalization entries that is associated with this app-->
+	<sql-query name="removeAppFromEpPersUserAppSel">	
+		<![CDATA[
+		DELETE FROM fn_pers_user_app_sel where app_id=:app_id
+		;
+ 		]]>
+	</sql-query>
+	
+	<!-- Remove app personalization sorting entries that is associated with this app-->
+	<sql-query name="removeAppFromEpPersUserAppManSort">	
+		<![CDATA[
+		DELETE FROM ep_pers_user_app_man_sort where app_id=:app_id
+		;
+ 		]]>
+	</sql-query>
+	
+	<!-- Remove rows from user role request table entries that is associated with this app-->
+	<sql-query name="removeAppFromEpUserRolesRequest">	
+		<![CDATA[
+		DELETE FROM ep_user_roles_request where app_id=:app_id
+		;
+ 		]]>
+	</sql-query>
+	
+	<!-- Remove rows from web analytics table entries that is associated with this app-->
+	<sql-query name="removeAppFromEpWebAnalytics">	
+		<![CDATA[
+		DELETE FROM ep_web_analytics_source where app_id=:app_id
+		;
+ 		]]>
+	</sql-query>
+	
+	<!-- Remove row from fn app table -->
+	<sql-query name="removeAppFromFnApp">	
+		<![CDATA[
+		DELETE FROM fn_app where app_id=:app_id
+		;
+ 		]]>
+	</sql-query>
+	
+	<sql-query name="getUserRoleOnUserIdAndRoleIdAndAppId">	
+		<return alias="getUserRoleOnUserIdAndRoleIdAndAppId" class="org.onap.portalapp.portal.domain.EPUserApp" />   	
+		<![CDATA[
+		
+ 		select * from fn_user_role where user_id= :userId 
+ 		and role_id= :roleId 
+ 		and app_id= :appId
+ 		; 
+ 
+ 		]]>
+	</sql-query>	
+	
+    <query name="getBasicauthAccount">
+      select id,password from BasicAuthCredentials
+    </query>
+    
+     <query name="getMicroserviceInfo">
+      select id,password from MicroserviceData
+    </query>
+	
 </hibernate-mapping>

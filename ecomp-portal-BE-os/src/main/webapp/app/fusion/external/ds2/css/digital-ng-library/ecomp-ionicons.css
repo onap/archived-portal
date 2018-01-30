@@ -37,6 +37,7 @@
 .icon-people-oneperson-stalker:before, .icon-controls-pointer:before,
 .icon-arrows-replay-restart:before, .icon-content-star:before,
 .icon-misc-trash:before, .icon-arrows-upload:before,
+.icon-controls-moreapplications:before,
 .icon-controls-upPRIMARY, .ion-navicon										
 {
     display: inline-block;
@@ -154,3 +155,5 @@
 .icon-controls-upPRIMARY:before { content: "\f3d8";  }
 
 .ion-navicon:before { content: "\f20e"; }
+
+.icon-controls-moreapplications:before { content: "\f20b"; }

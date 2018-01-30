@@ -2,7 +2,7 @@
 USE portal;
  
 SET FOREIGN_KEY_CHECKS=1; 
-
+ 
 -- Apps; note that the IDs are used below.
 
 INSERT INTO `fn_app` (`app_id`, `app_name`, `app_image_url`, `app_description`, `app_notes`, `app_url`, `app_alternate_url`, `app_rest_endpoint`, `ml_app_name`, `ml_app_admin_id`, `mots_id`, `app_password`, `open`, `enabled`, `thumbnail`, `app_username`, `ueb_key`, `ueb_secret`, `ueb_topic_name`, `app_type`,`auth_central`,`auth_namespace`) VALUES 
@@ -68,8 +68,8 @@ insert into fn_role values(1000,'System Administrator','Y',1,2,1); -- SDK from 9
 insert into fn_role values(1001,'Standard User','Y',1,2,16); -- SDK
 insert into fn_role values(1002,'System Administrator','Y',1,3,1); -- DMaap from 999 to 1
 insert into fn_role values(1003,'Standard User','Y',1,3,16); -- DMaap
-insert into fn_role values(1004,'System Administrator','Y',1,4,1); -- SDC from 999 to 1
-insert into fn_role values(1005,'Standard User','Y',1,4,16); -- SDC
+insert into fn_role values(1004,'ADMIN','Y',1,4,0); -- SDC from 999 to 1
+insert into fn_role values(1005,'TESTOR','Y',1,4,1); -- SDC
 insert into fn_role values(1006,'System Administrator','Y',1,5,1); -- Policy from 999 to 1
 insert into fn_role values(1007,'Standard User','Y',1,5,16); -- Policy 
 insert into fn_role values(1008,'System Administrator','Y',1,6,1); -- VID from 999 to 1
@@ -86,9 +86,13 @@ INSERT INTO `fn_user_role` (`user_id`,`role_id`,`priority`,`app_id`) VALUES (1,1
 INSERT INTO `fn_user_role` (`user_id`,`role_id`,`priority`,`app_id`) VALUES (1,1006,NULL,5);
 INSERT INTO `fn_user_role` (`user_id`,`role_id`,`priority`,`app_id`) VALUES (1,1008,NULL,6);
 
-INSERT INTO `fn_user_role` (`user_id`,`role_id`,`priority`,`app_id`) VALUES (3,1004,NULL,4);
-
-INSERT INTO `fn_user_role` (`user_id`,`role_id`,`priority`,`app_id`) VALUES (4,1004,NULL,4);
+INSERT INTO `fn_user_role` (`user_id`,`role_id`,`priority`,`app_id`) VALUES (2,1004,NULL,4);
+INSERT INTO `fn_user_role` (`user_id`,`role_id`,`priority`,`app_id`) VALUES (3,1005,NULL,4);
+INSERT INTO `fn_user_role` (`user_id`,`role_id`,`priority`,`app_id`) VALUES (4,1005,NULL,4);
+INSERT INTO `fn_user_role` (`user_id`,`role_id`,`priority`,`app_id`) VALUES (5,1005,NULL,4);
+INSERT INTO `fn_user_role` (`user_id`,`role_id`,`priority`,`app_id`) VALUES (6,1005,NULL,4);
+INSERT INTO `fn_user_role` (`user_id`,`role_id`,`priority`,`app_id`) VALUES (7,1005,NULL,4);
+INSERT INTO `fn_user_role` (`user_id`,`role_id`,`priority`,`app_id`) VALUES (8,1005,NULL,4);
 
 INSERT INTO `fn_user_role` (`user_id`,`role_id`,`priority`,`app_id`) VALUES (9,999,NULL,1);
 INSERT INTO `fn_user_role` (`user_id`,`role_id`,`priority`,`app_id`) VALUES (9,1008,NULL,6);

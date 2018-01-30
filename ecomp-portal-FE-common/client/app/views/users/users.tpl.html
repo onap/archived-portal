@@ -2,11 +2,11 @@
   ============LICENSE_START==========================================
   ONAP Portal
   ===================================================================
-  Copyright © 2017 AT&T Intellectual Property. All rights reserved.
+  Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
   ===================================================================
  
   Unless otherwise specified, all software contained herein is licensed
-  under the Apache License, Version 2.0 (the “License”);
+  under the Apache License, Version 2.0 (the "License");
   you may not use this software except in compliance with the License.
   You may obtain a copy of the License at
  
@@ -19,7 +19,7 @@
   limitations under the License.
  
   Unless otherwise specified, all documentation contained herein is licensed
-  under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+  under the Creative Commons License, Attribution 4.0 Intl. (the "License");
   you may not use this documentation except in compliance with the License.
   You may obtain a copy of the License at
  
@@ -54,6 +54,7 @@
 						</div>
 						<button class="btn btn-alt btn-small" id="users-button-add"  ng-click="users.openAddNewUserModal()"><i class="icon-people-userbookmark" aria-hidden="true"></i>&nbsp;Add User</button> 
 	                   	<button class="btn btn-alt btn-small" id="users-bulk-upload-button-add"  ng-click="users.openBulkUserUploadModal()"><i class="icon-arrows-upload" aria-hidden="true"></i>&nbsp;Bulk Upload</button>
+	                   	<button class="btn btn-alt btn-small" id="users-button-sync" ng-show="syncRolesApplied" ng-click="users.syncRolesFromExternalAuthSystem(app.appId)"><i class="icon-arrows-update-refresh-syncL" aria-hidden="true"></i>&nbsp;Sync Roles</button>
 					</div>
                 </div>
                 <div ng-hide="users.isLoadingTable">

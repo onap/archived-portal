@@ -1,21 +1,39 @@
 /*-
- * ================================================================================
- * ECOMP Portal
- * ================================================================================
- * Copyright (C) 2017 AT&T Intellectual Property
- * ================================================================================
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
+ * ============LICENSE_START==========================================
+ * ONAP Portal
+ * ===================================================================
+ * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ * ===================================================================
+ *
+ * Unless otherwise specified, all software contained herein is licensed
+ * under the Apache License, Version 2.0 (the "License");
+ * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
- * 
- *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
+ *             http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * ================================================================================
+ *
+ * Unless otherwise specified, all documentation contained herein is licensed
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
+ * you may not use this documentation except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *             https://creativecommons.org/licenses/by/4.0/
+ *
+ * Unless required by applicable law or agreed to in writing, documentation
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * ============LICENSE_END============================================
+ *
+ * ECOMP is a trademark and service mark of AT&T Intellectual Property.
  */
 
 
@@ -43,7 +61,7 @@ app.controller('roleController', function ($scope, $http, confirmBoxService, ngD
 				$scope.routeRoleId = $stateParams.roleId;
 				$scope.ociavailableRoleFunctions =JSON.parse($scope.data.availableRoleFunctions);
 				$scope.isGlobalRoleChecked=($scope.role.name.indexOf('global_')==-1)?false:true;
-
+				
 				$scope.availableRoleFunctions=[];
 
 				if($scope.ociavailableRoleFunctions)
@@ -105,6 +123,11 @@ app.controller('roleController', function ($scope, $http, confirmBoxService, ngD
 					}else{
 						$scope.role.name=$scope.role.name.replace('global_','');
 					}
+					for(let key in $scope.role.roleFunctions){
+						if($scope.role.roleFunctions[key].hasOwnProperty('selected')){
+							delete $scope.role.roleFunctions[key].selected;
+						}
+					}
 					var postData = {
 							role: $scope.role, 
 							childRoles: $scope.role.childRoles,
@@ -154,11 +177,6 @@ app.controller('roleController', function ($scope, $http, confirmBoxService, ngD
         });
     	
     	modalInstance.result.finally(function () {
-    		if($stateParams.roleId === '0'){
-				return $scope.role;
-			}else{
-				$scope.fetchRoles();
-			}
 	    });
 	};
 		
@@ -195,22 +213,11 @@ app.controller('roleController', function ($scope, $http, confirmBoxService, ngD
 		$scope.removeRoleFunction = function(roleFunction) {
 			confirmBoxService.confirm("You are about to remove the role function "+roleFunction.name+" from the role for "+$scope.role.name+". Do you want to continue?").then(
 	    			function(confirmed){
-						var uuu = conf.api.toggleRoleRoleFunction + "?role_id=" + $stateParams.roleId;
-						  var postData={roleFunction:roleFunction};
 						  	if(confirmed) {	
-								$http.post(uuu, postData).then(
-										function(response) {
-											$scope.role= response.data.role;
-											$.each($scope.availableRoleFunctions, function(k, c){ 
-							  			    	if(c.code === roleFunction.code) {
-							  			    		c.selected = false;
-							  			    	}
-							  			    });
-										}, 
-										function(response) {
-											confirmBoxService.showInformation("Error while saving.");
-										}
-								);									
+						  		var index = $scope.role.roleFunctions.indexOf(roleFunction);
+							 	if(index>=0)
+									$scope.role.roleFunctions.splice(index, 1);
+								return;
 								}
 				
 	    	});

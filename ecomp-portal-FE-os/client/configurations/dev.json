@@ -1,5 +1,9 @@
 {
 	"api": {
+		"singleAppInfo":"http://localhost:8080/ecompportal/portalApi/singleAppInfo",
+		"singleAppInfoById":"http://localhost:8080/ecompportal/portalApi/singleAppInfoById",
+		"syncRolesFromExternalAuthSystem":"http://localhost:8080/ecompportal/portalApi/syncRoles",
+		"syncFunctionsFromExternalAuthSystem":"http://localhost:8080/ecompportal/portalApi/syncFunctions",
 		"userApps": "http://localhost:8080/ecompportal/portalApi/userApps",
 		"persUserApps": "http://localhost:8080/ecompportal/portalApi/persUserApps",
 		"appCatalog": "http://localhost:8080/ecompportal/portalApi/appCatalog",
@@ -59,17 +63,17 @@
 		"saveNotification": "http://localhost:8080/ecompportal/portalApi/saveNotification",
 		"getNotificationRoles":"http://localhost:8080/ecompportal/portalApi/notificationRole",
 		"getRole": "http://localhost:8080/ecompportal/portalApi/get_role",
-		"getRoles": "http://localhost:8080/ecompportal/portalApi/get_roles",
+		"getRoles": "http://localhost:8080/ecompportal/portalApi/get_roles/:appId",
 		"toggleRole": "http://localhost:8080/ecompportal/portalApi/role_list/toggleRole",
 		"removeRole": "http://localhost:8080/ecompportal/portalApi/role_list/removeRole",
-		"saveRole": "http://localhost:8080/ecompportal/portalApi/role/saveRole.htm",
+		"saveRole": "http://localhost:8080/ecompportal/portalApi/role/saveRole/:appId",
 		"toggleRoleRoleFunction": "http://localhost:8080/ecompportal/portalApi/role/removeRoleFunction.htm",
 		"addRoleRoleFunction": "http://localhost:8080/ecompportal/portalApi/role/addRoleFunction.htm",
 		"toggleRoleChildRole": "http://localhost:8080/ecompportal/portalApi/role/removeChildRole.htm",
 		"addRoleChildRole": "http://localhost:8080/ecompportal/portalApi/role/addChildRole.htm",
-		"getRoleFunctions": "http://localhost:8080/ecompportal/portalApi/get_role_functions",
-		"saveRoleFunction": "http://localhost:8080/ecompportal/portalApi/role_function_list/saveRoleFunction.htm",
-		"removeRoleFunction": "http://localhost:8080/ecompportal/portalApi/role_function_list/removeRoleFunction.htm",
+		"getRoleFunctions": "http://localhost:8080/ecompportal/portalApi/get_role_functions/:appId",
+		"saveRoleFunction": "http://localhost:8080/ecompportal/portalApi/role_function_list/saveRoleFunction/:appId",
+		"removeRoleFunction": "http://localhost:8080/ecompportal/portalApi/role_function_list/removeRoleFunction/:appId",
 		"userAppsOrderBySortPref": "http://localhost:8080/ecompportal/portalApi/userAppsOrderBySortPref",
 		"userAppsOrderByName": "http://localhost:8080/ecompportal/portalApi/userAppsOrderByName",
 		"saveUserAppsSortingPreference": "http://localhost:8080/ecompportal/portalApi/saveUserAppsSortingPreference",
@@ -92,7 +96,8 @@
 		"userApplicationRoles":"http://localhost:8080/ecompportal/portalApi/userApplicationRoles",
 		"ecompTitle":"http://localhost:8080/ecompportal/portalApi/ecompTitle",
 		"loggedinUser" : "http://localhost:8080/ecompportal/portalApi/loggedinUser",
-		"modifyLoggedinUser" : "http://localhost:8080/ecompportal/portalApi/modifyLoggedinUser"
+		"modifyLoggedinUser" : "http://localhost:8080/ecompportal/portalApi/modifyLoggedinUser",
+		"centralizedApps": "http:/localhost:8080/ecompportal/portalApi/centralizedApps"
 	},
 	"cookieDomain": "onap.org"
 }

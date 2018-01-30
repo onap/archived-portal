@@ -1,5 +1,6 @@
 /catalina.base_IS_UNDEFINED/
 /target/
+jacoco.exec
 .classpath
 .project
 .settings/

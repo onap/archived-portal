@@ -10,10 +10,8 @@ ARG WMS_JAR=build/widget-ms.jar
 COPY ${WMS_JAR} /app.jar
 RUN sh -c 'touch /app.jar'
 
-# Wait script, which depends on nc
-COPY wait-for.sh /
 # Launch script
-COPY start-wms-cmd.sh /
+COPY start-wms.sh /
 
 # Define default command
-CMD /start-wms-cmd.sh
+CMD /start-wms.sh

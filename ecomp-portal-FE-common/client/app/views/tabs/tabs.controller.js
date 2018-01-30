@@ -1,27 +1,45 @@
 /*-
- * ================================================================================
- * eCOMP Portal
- * ================================================================================
- * Copyright (C) 2017 AT&T Intellectual Property
- * ================================================================================
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
+ * ============LICENSE_START==========================================
+ * ONAP Portal
+ * ===================================================================
+ * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ * ===================================================================
+ *
+ * Unless otherwise specified, all software contained herein is licensed
+ * under the Apache License, Version 2.0 (the "License");
+ * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
- * 
- *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
+ *             http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * ================================================================================
+ *
+ * Unless otherwise specified, all documentation contained herein is licensed
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
+ * you may not use this documentation except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *             https://creativecommons.org/licenses/by/4.0/
+ *
+ * Unless required by applicable law or agreed to in writing, documentation
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * ============LICENSE_END============================================
+ *
+ * ECOMP is a trademark and service mark of AT&T Intellectual Property.
  */
 'use strict';
 (function () {
     const HTTP_PROTOCOL_RGX = /https?:\/\//;
     class  TabsCtrl {
-        constructor(applicationsService, $log, $window, conf, userProfileService, userbarUpdateService, $scope,$cookies,$rootScope,confirmBoxService,auditLogService) {        	
+        constructor(applicationsService, $log, $window, conf, userProfileService, userbarUpdateService, $scope,$cookies,$rootScope,confirmBoxService,auditLogService,schedulerService) {        	
         	// Tab counter
             var counter = 1;
             var tabLimit = 6;
@@ -238,9 +256,21 @@
             		$cookies.remove('addTab');
             	}
             });
+            
+            /*Listening on partner applications */
+            var eventMethod = window.addEventListener ? "addEventListener" : "attachEvent";
+    	    var eventer = window[eventMethod];
+    	    var messageEvent = eventMethod == "attachEvent" ? "onmessage" : "message";
+    	    eventer(messageEvent,function(e) {
+	    	  $scope.openModal(e.data);
+	    	},false);
+    	    
+    	    $scope.openModal = function(data){
+    	    	schedulerService.showWidget(data.widgetName,data.widgetData,data.widgetParameter).then(isConfirmed => {});
+    	    }
         }
     }
-    TabsCtrl.$inject = ['applicationsService', '$log', '$window', 'conf', 'userProfileService', 'userbarUpdateService', '$scope','$cookies','$rootScope','confirmBoxService','auditLogService'];
+    TabsCtrl.$inject = ['applicationsService', '$log', '$window', 'conf', 'userProfileService', 'userbarUpdateService', '$scope','$cookies','$rootScope','confirmBoxService','auditLogService','schedulerService'];
     angular.module('ecompApp').controller('TabsCtrl', TabsCtrl);
     
     angular.module('ecompApp').directive('mainArea', function() {

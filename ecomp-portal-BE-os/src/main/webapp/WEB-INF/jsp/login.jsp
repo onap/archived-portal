@@ -2,11 +2,11 @@
   ============LICENSE_START==========================================
   ONAP Portal
   ===================================================================
-  Copyright © 2017 AT&T Intellectual Property. All rights reserved.
+  Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
   ===================================================================
  
   Unless otherwise specified, all software contained herein is licensed
-  under the Apache License, Version 2.0 (the “License”);
+  under the Apache License, Version 2.0 (the "License");
   you may not use this software except in compliance with the License.
   You may obtain a copy of the License at
  
@@ -19,7 +19,7 @@
   limitations under the License.
  
   Unless otherwise specified, all documentation contained herein is licensed
-  under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+  under the Creative Commons License, Attribution 4.0 Intl. (the "License");
   you may not use this documentation except in compliance with the License.
   You may obtain a copy of the License at
  
@@ -38,8 +38,8 @@
 <%@ taglib uri="http://tiles.apache.org/tags-tiles" prefix="tiles"%>
 <%@ taglib prefix="c"      uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt"    uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%@ page import="org.openecomp.portalsdk.core.util.SystemProperties" %>
-<%@ page import="org.openecomp.portalapp.portal.utils.EPSystemProperties" %>
+<%@ page import="org.onap.portalsdk.core.util.SystemProperties" %>
+<%@ page import="org.onap.portalapp.portal.utils.EPSystemProperties" %>
 <c:set var="title" value="Login" />
 <c:set var="isMobileEnabled"
 	value="<%=(SystemProperties.getProperty(SystemProperties.MOBILE_ENABLE)!= null && SystemProperties.getProperty(SystemProperties.MOBILE_ENABLE).trim().equals(\"true\"))%>" />
@@ -188,22 +188,6 @@ app.controller("externalLoginController", function ($scope) {
         });
 
     };
-	/**
-	$scope.loginExternal = function() {
-
-        
-		  var redirectUrl = "login_external/login";
-          var form = $('<form action="' + redirectUrl + '" method="post">' +
-                  '<input type="hidden" name="loginId" value='+$scope.loginId+' />' +
-                  '<input type="hidden" name="password" value='+$scope.password+' />' +
-                  '</form>');
-                  
-                  $('body').append(form);
-                  $(form).submit();
-         
-
-    };
-    */	
 });
 </script>
 	

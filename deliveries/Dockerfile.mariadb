@@ -1,24 +1,22 @@
 FROM mariadb:latest
 
-ARG PORTAL_SCRIPT_DIR=${PORTAL_SCRIPT_DIR}
-ARG SDK_SCRIPT_DIR=${SDK_SCRIPT_DIR}
+ARG DB_SCRIPT_DIR=${DB_SCRIPT_DIR}
 
 # constant
 #Add config file
 COPY my.cnf /etc/mysql/my.cnf
-#ADD cluster.cnf /etc/mysql/conf.d
 
 # Scripts are executed in alphabetical order
 
-# Portal DDL and DML at 1710
-COPY ${PORTAL_SCRIPT_DIR}/EcompPortalDDLMySql_1710_Common.sql /docker-entrypoint-initdb.d/
-COPY ${PORTAL_SCRIPT_DIR}/EcompPortalDDLMySql_1710_OS.sql     /docker-entrypoint-initdb.d/
-COPY ${PORTAL_SCRIPT_DIR}/EcompPortalDMLMySql_1710_Common.sql /docker-entrypoint-initdb.d/
-COPY ${PORTAL_SCRIPT_DIR}/EcompPortalDMLMySql_1710_OS.sql     /docker-entrypoint-initdb.d/
-COPY Apps_Users_OnBoarding_Script.sql                         /docker-entrypoint-initdb.d/EcompPortalDMLMySql_1710_z_apps_users.sql
+# Portal DDL and DML at v2.1
+COPY ${DB_SCRIPT_DIR}/PortalDDLMySql_2_1_Common.sql /docker-entrypoint-initdb.d/
+COPY ${DB_SCRIPT_DIR}/PortalDDLMySql_2_1_OS.sql     /docker-entrypoint-initdb.d/
+COPY ${DB_SCRIPT_DIR}/PortalDMLMySql_2_1_Common.sql /docker-entrypoint-initdb.d/
+COPY ${DB_SCRIPT_DIR}/PortalDMLMySql_2_1_OS.sql     /docker-entrypoint-initdb.d/
+# Do not copy the onboarding script here; it's mounted as a volume
 
-# SDK App DDL and DML unchanged since 1707
-COPY ${SDK_SCRIPT_DIR}/EcompSdkDDLMySql_1710_Common.sql       /docker-entrypoint-initdb.d/
-COPY ${SDK_SCRIPT_DIR}/EcompSdkDDLMySql_1710_OS.sql           /docker-entrypoint-initdb.d/
-COPY ${SDK_SCRIPT_DIR}/EcompSdkDMLMySql_1710_Common.sql       /docker-entrypoint-initdb.d/
-COPY ${SDK_SCRIPT_DIR}/EcompSdkDMLMySql_1710_OS.sql           /docker-entrypoint-initdb.d/
+# SDK App DDL and DML
+COPY ${DB_SCRIPT_DIR}/EcompSdkDDLMySql_1710_Common.sql       /docker-entrypoint-initdb.d/
+COPY ${DB_SCRIPT_DIR}/EcompSdkDDLMySql_1710_OS.sql           /docker-entrypoint-initdb.d/
+COPY ${DB_SCRIPT_DIR}/EcompSdkDMLMySql_1710_Common.sql       /docker-entrypoint-initdb.d/
+COPY ${DB_SCRIPT_DIR}/EcompSdkDMLMySql_1710_OS.sql           /docker-entrypoint-initdb.d/

@@ -2,11 +2,11 @@
   ============LICENSE_START==========================================
   ONAP Portal
   ===================================================================
-  Copyright © 2017 AT&T Intellectual Property. All rights reserved.
+  Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
   ===================================================================
  
   Unless otherwise specified, all software contained herein is licensed
-  under the Apache License, Version 2.0 (the “License”);
+  under the Apache License, Version 2.0 (the "License");
   you may not use this software except in compliance with the License.
   You may obtain a copy of the License at
  
@@ -19,7 +19,7 @@
   limitations under the License.
  
   Unless otherwise specified, all documentation contained herein is licensed
-  under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+  under the Creative Commons License, Attribution 4.0 Intl. (the "License");
   you may not use this documentation except in compliance with the License.
   You may obtain a copy of the License at
  
@@ -50,12 +50,7 @@
 				<div b2b-table table-data="contact.functionalTableData" class="b2b-table-div">
 						<table>
 							<thead b2b-table-row type="header">
-								<tr>
-								  <th id="th-functionalItem-0" b2b-table-header sortable="false">Category</th>	                     
-			                      <th id="th-functionalItem-1" b2b-table-header sortable="false">ECOMP Functions</th>
-			                      <th id="th-functionalItem-2" b2b-table-header sortable="false">ECOMP Application</th>
-			                 	  <!-- <th id="th-functionalItem-3" b2b-table-header >Contact</th> --> 
-							  </tr>
+								<tr ng-include src="'app/views/support/contact-us/contact-us-table-header.html'"></tr>
 							</thead>
 							<!--  Use track-by="UNIQUE KEY HERE" or leave out if no unique keys in data  -->
 							<tbody b2b-table-row type="body"

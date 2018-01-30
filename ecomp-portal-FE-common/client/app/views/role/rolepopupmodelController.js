@@ -1,21 +1,39 @@
 /*-
- * ================================================================================
- * ECOMP Portal
- * ================================================================================
- * Copyright (C) 2017 AT&T Intellectual Property
- * ================================================================================
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
+ * ============LICENSE_START==========================================
+ * ONAP Portal
+ * ===================================================================
+ * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ * ===================================================================
+ *
+ * Unless otherwise specified, all software contained herein is licensed
+ * under the Apache License, Version 2.0 (the "License");
+ * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
- * 
- *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
+ *             http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * ================================================================================
+ *
+ * Unless otherwise specified, all documentation contained herein is licensed
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
+ * you may not use this documentation except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *             https://creativecommons.org/licenses/by/4.0/
+ *
+ * Unless required by applicable law or agreed to in writing, documentation
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * ============LICENSE_END============================================
+ *
+ * ECOMP is a trademark and service mark of AT&T Intellectual Property.
  */
 app.controller('rolepopupController',  function ($scope, role, roleId, confirmBoxService, $http, $state, availableRoles, conf, availableRoleFunctions,ngDialog){
 	
@@ -74,35 +92,13 @@ app.controller('rolepopupController',  function ($scope, role, roleId, confirmBo
 				confirmBoxService.confirm("You are about to remove the role function "+availableRoleFunction.name+" from the role for "+$scope.role.name+". Do you want to continue?").then(
 		    			function(confirmed){
 		    					if(confirmed) {	
-								var postData={roleFunction:availableRoleFunction};
-								$http.post(uuu, postData).then(
-										function(response) {
-											$scope.role= response.data.role;
-										}, 
-										function(response) {
-											confirmBoxService.showInformation("Error while saving.");
-										}
-								);
-									
-									
-									
+									availableRoleFunction.id = roleId;
+									var index = $scope.role.roleFunctions.indexOf(availableRoleFunction);
+								 	if(index>=0)
+										$scope.role.roleFunctions.splice(index, 1);
+									return;										
 									
 								}
-								/*
-							  	  $.ajax({
-							  		 type : 'POST',
-							  		 url : uuu,
-							  		 dataType: 'json',
-							  		 contentType: 'application/json',
-							  		 data: JSON.stringify(postData),
-							  		 success : function(data){
-							  			$scope.$apply(function(){$scope.role=data.role;}); 
-									 },
-									 error : function(data){
-										 modalService.showFailure("Fail","Error while saving.");
-									 }
-							  	  });
-							  	  */
 		    			}).catch(function(err) {
 							  availableRoleFunction.selected=!availableRoleFunction.selected;
 					    		$log.error('roleListController::confirmBoxService.confirm error:', err);
@@ -120,34 +116,10 @@ app.controller('rolepopupController',  function ($scope, role, roleId, confirmBo
 				confirmBoxService.confirm("You are about to add the role function "+availableRoleFunction.name+" to the role for "+$scope.role.name+". Do you want to continue?").then(
 		    			function(confirmed){
 		    				if(confirmed) {
-								  var postData={roleFunction:availableRoleFunction};
-								  $http.post(uuu,postData).then( function(response) {
-									  $scope.role=response.data.role;
-									  },
-									  
-									  function(data) {
-										  confirmBoxService.showInformation("Error while saving.");
-									  });
-							}	/*		  
-								  	  $.ajax({
-								  		 type : 'POST',
-								  		 url : uuu,
-								  		 dataType: 'json',
-								  		 contentType: 'application/json',
-								  		 data: JSON.stringify(postData),
-								  		 success : function(data){
-								  			$scope.$apply(function(){$scope.role=data.role;}); 
-										 },
-										 error : function(data){
-											 modalService.showFailure("Fail","Error while saving.");
-										 }
-								  	  });
-								  	  
-									
-						    	},
-						    	function(){
-						    		availableRoleFunction.selected=!availableRoleFunction.selected;
-						    	})*/
+		    					availableRoleFunction.id = roleId;
+		    					$scope.role.roleFunctions.push(availableRoleFunction);
+		    					return;
+							}
 			}).catch(function(err) {
 				  availableRoleFunction.selected=!availableRoleFunction.selected;
 		    		$log.error('roleListController::confirmBoxService.confirm error:', err);
@@ -186,21 +158,6 @@ app.controller('rolepopupController',  function ($scope, role, roleId, confirmBo
 	    				availableRole.selected=!availableRole.selected;
 			    		$log.error('roleListController::confirmBoxService.confirm error:', err);
 		    	});
-					  	 /* $.ajax({
-					  		 type : 'POST',
-					  		 url : uuu,
-					  		 dataType: 'json',
-					  		 contentType: 'application/json',
-					  		 data: JSON.stringify(postData),
-					  		 success : function(data){
-					  			 console.log('role',data.role);
-					  			 $scope.$apply(function(){$scope.role=data.role;}); 
-							 },
-							 error : function(data){
-								 modalService.showFailure("Fail","Error while saving.");
-							 }
-					  	  });
-					  	  */
 				
 	    	
 		} else {
@@ -222,19 +179,6 @@ app.controller('rolepopupController',  function ($scope, role, roleId, confirmBo
 								  confirmBoxService.showInformation("Error while saving.");
 							  });
 						  }
-			  	 /* $.ajax({
-			  		 type : 'POST',
-			  		 url : uuu,
-			  		 dataType: 'json',
-			  		 contentType: 'application/json',
-			  		 data: JSON.stringify(postData),
-			  		 success : function(data){
-			  			$scope.$apply(function(){$scope.role=data.role;}); 
-					 },
-					 error : function(data){
-						 modalService.showFailure("Fail","Error while saving.");
-					 }
-			  	});*/
 				
 	    	}).catch(function(err) {
 				availableRole.selected=!availableRole.selected;

@@ -30,6 +30,8 @@ services:
     volumes:
       # Just specify a path and let the Engine create a volume
       - /var/lib/mysql
+      # Inject the onboarding script at start time
+      - ./Apps_Users_OnBoarding_Script.sql:/docker-entrypoint-initdb.d/zzz_apps_users_onboarding.sql
     logging:
       driver: json-file
     healthcheck:
@@ -49,14 +51,13 @@ services:
         condition: service_healthy
     volumes:
       - ${PROPS_DIR}/ONAPWIDGETMS/application.properties:/application.properties
+      - ${PROPS_DIR}/ONAPWIDGETMS/application.yml:/application.yml
     command:
-      - /start-wms-cmd.sh
+      - /start-wms.sh
     logging:
       driver: json-file
 
-  # Environment variables here CANNOT override the database URL because
-  # two apps use identical configuration keys with different values
-  portal-apps:
+  portal-app:
     image: ${EP_IMG_NAME}:${PORTAL_TAG}
     ports:
       - 8989:8080
@@ -76,16 +77,34 @@ services:
       - ${PROPS_DIR}/ONAPPORTAL/portal.properties:${WEBAPPS_DIR}/ONAPPORTAL/WEB-INF/classes/portal.properties
       - ${PROPS_DIR}/ONAPPORTAL/openid-connect.properties:${WEBAPPS_DIR}/ONAPPORTAL/WEB-INF/classes/openid-connect.properties
       - ${PROPS_DIR}/ONAPPORTAL/logback.xml:${WEBAPPS_DIR}/ONAPPORTAL/WEB-INF/classes/logback.xml
+      - ${LOGS_DIR}:/opt/apache-tomcat-8.0.37/logs
+    command:
+      - /start-apache-tomcat.sh
+      # see comments in .env file
+      - -i
+      - $EXTRA_HOST_IP
+      - -n
+      - $EXTRA_HOST_NAME
+    logging:
+      driver: json-file
+
+  portal-sdk:
+    image: ${SDK_IMG_NAME}:${PORTAL_TAG}
+    ports:
+      - 8990:8080
+    links:
+      - portal-db
+      - portal-wms
+    depends_on:
+      portal-db:
+        condition: service_healthy
+    volumes:
       - ${PROPS_DIR}/ONAPPORTALSDK/fusion.properties:${WEBAPPS_DIR}/ONAPPORTALSDK/WEB-INF/fusion/conf/fusion.properties
       - ${PROPS_DIR}/ONAPPORTALSDK/system.properties:${WEBAPPS_DIR}/ONAPPORTALSDK/WEB-INF/conf/system.properties
       - ${PROPS_DIR}/ONAPPORTALSDK/portal.properties:${WEBAPPS_DIR}/ONAPPORTALSDK/WEB-INF/classes/portal.properties
       - ${PROPS_DIR}/ONAPPORTALSDK/logback.xml:${WEBAPPS_DIR}/ONAPPORTALSDK/WEB-INF/classes/logback.xml
       - ${LOGS_DIR}:/opt/apache-tomcat-8.0.37/logs
     command:
-      - /start-apps-cmd.sh
-      # see comments in .env file
-      - $EXTRA_HOST_IP
-      - $EXTRA_HOST_NAME
+      - /start-apache-tomcat.sh
     logging:
       driver: json-file
-
