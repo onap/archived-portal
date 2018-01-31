@@ -2,6 +2,40 @@
   "comments": [
     {
       "key": {
+        "uuid": "5a93c517_563c5193",
+        "filename": "deliveries/Dockerfile.sdk",
+        "patchSetId": 2
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 681
+      },
+      "writtenOn": "2018-01-31T17:27:02Z",
+      "side": 1,
+      "message": "Should not be here",
+      "revId": "9de40a6f00a6f014f4cdb776649e20d5cb58b56c",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_d647011c",
+        "filename": "deliveries/docker-compose.yml",
+        "patchSetId": 2
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 681
+      },
+      "writtenOn": "2018-01-31T17:27:02Z",
+      "side": 1,
+      "message": "What is the new application.yml for WMS?",
+      "revId": "9de40a6f00a6f014f4cdb776649e20d5cb58b56c",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5a93c517_965179da",
         "filename": "deliveries/docker-compose.yml",
         "patchSetId": 2
@@ -19,6 +53,131 @@
         "endLine": 91,
         "endChar": 12
       },
+      "revId": "9de40a6f00a6f014f4cdb776649e20d5cb58b56c",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_b64cb543",
+        "filename": "ecomp-portal-BE-common/pom.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 681
+      },
+      "writtenOn": "2018-01-31T17:27:02Z",
+      "side": 1,
+      "message": "Will the directory tree be renamed to drop the \"ecomp\" prefix\"",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 1,
+        "endChar": 104
+      },
+      "revId": "9de40a6f00a6f014f4cdb776649e20d5cb58b56c",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_165d69e9",
+        "filename": "ecomp-portal-BE-os/src/main/resources/portal.properties",
+        "patchSetId": 2
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 681
+      },
+      "writtenOn": "2018-01-31T17:27:02Z",
+      "side": 1,
+      "message": "Remove \"ECOMP\"",
+      "revId": "9de40a6f00a6f014f4cdb776649e20d5cb58b56c",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_d66e2196",
+        "filename": "ecomp-portal-DB-common/PortalDDLMySql_2_1_Common.sql",
+        "patchSetId": 2
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 681
+      },
+      "writtenOn": "2018-01-31T17:27:02Z",
+      "side": 1,
+      "message": "This is labeled Open Source even tho it\u0027s in the Common area.  What is the right label to use?",
+      "revId": "9de40a6f00a6f014f4cdb776649e20d5cb58b56c",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_360745cc",
+        "filename": "ecomp-portal-DB-common/README.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 681
+      },
+      "writtenOn": "2018-01-31T17:27:02Z",
+      "side": 1,
+      "message": "Probably can be deleted, the previous name and path, to remove yet another \"ecomp\"",
+      "revId": "9de40a6f00a6f014f4cdb776649e20d5cb58b56c",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_560a11d3",
+        "filename": "ecomp-portal-DB-os/README.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 681
+      },
+      "writtenOn": "2018-01-31T17:27:02Z",
+      "side": 1,
+      "message": "Probably should delete this line with \"ecomp\"",
+      "revId": "9de40a6f00a6f014f4cdb776649e20d5cb58b56c",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_b6fa75bb",
+        "filename": "pom.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 681
+      },
+      "writtenOn": "2018-01-31T17:27:02Z",
+      "side": 1,
+      "message": "so portal v2.2 uses EPSDK v2.1?",
+      "revId": "9de40a6f00a6f014f4cdb776649e20d5cb58b56c",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_d6f5c1cb",
+        "filename": "version.properties",
+        "patchSetId": 2
+      },
+      "lineNbr": 4,
+      "author": {
+        "id": 681
+      },
+      "writtenOn": "2018-01-31T17:27:02Z",
+      "side": 1,
+      "message": "Oops!  You really want 1.1 here?  I don\u0027t think so.",
       "revId": "9de40a6f00a6f014f4cdb776649e20d5cb58b56c",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
