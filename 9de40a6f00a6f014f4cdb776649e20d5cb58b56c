@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a93c517_965179da",
+        "filename": "deliveries/docker-compose.yml",
+        "patchSetId": 2
+      },
+      "lineNbr": 91,
+      "author": {
+        "id": 45
+      },
+      "writtenOn": "2018-01-31T17:20:55Z",
+      "side": 1,
+      "message": "We need to coordinate these new docker image changes into integration repo heat template scripts. I created a Jira to track this - https://jira.onap.org/browse/PORTAL-181",
+      "range": {
+        "startLine": 91,
+        "startChar": 2,
+        "endLine": 91,
+        "endChar": 12
+      },
+      "revId": "9de40a6f00a6f014f4cdb776649e20d5cb58b56c",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
