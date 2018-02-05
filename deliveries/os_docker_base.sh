@@ -21,6 +21,9 @@ NEXUS_REPO=nexus3.onap.org:10003
 # Build the containers
 ./build_portalapps_dockers.sh
 
+# Establish environment variables
+source $(dirname $0)/.env
+
 APPS_VERSION="${NEXUS_REPO}/${EP_IMG_NAME}:${VERSION}"
 DB_VERSION="${NEXUS_REPO}/${DB_IMG_NAME}:${VERSION}"
 WMS_VERSION="${NEXUS_REPO}/${WMS_IMG_NAME}:${VERSION}"
