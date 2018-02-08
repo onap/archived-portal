@@ -371,7 +371,9 @@ public class UserRolesCommonServiceImpl  {
 				throw new Exception(e.getMessage());
 			}
 		} finally {
-			localSession.close();
+			if (localSession != null) {
+				localSession.close();		
+			}				
 			if (!result && !"DELETE".equals(reqType)) {
 				throw new Exception(
 						"Exception occurred in syncUserRoles while closing database session for app: '" + appId + "'.");
