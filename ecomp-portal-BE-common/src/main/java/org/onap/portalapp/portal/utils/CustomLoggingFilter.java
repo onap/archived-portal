@@ -59,7 +59,7 @@ public class CustomLoggingFilter extends Filter<ILoggingEvent> {
 		try {
 			if ((event.getLevel() != Level.ERROR || event.getLevel() != Level.WARN) && 
 				(event.getThreadName().equalsIgnoreCase("UEBConsumerThread")) &&
-				(event.getLoggerName().contains("org.openecomp.nsa") || event.getLoggerName().contains("org.apache.http"))
+				(event.getLoggerName().contains("org.onap.nsa") || event.getLoggerName().contains("org.apache.http"))
 				) {
 				return FilterReply.DENY;
 			} else {

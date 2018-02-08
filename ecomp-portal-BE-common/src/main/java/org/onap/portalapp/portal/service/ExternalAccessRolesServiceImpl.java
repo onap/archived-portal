@@ -122,10 +122,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
@@ -1105,10 +1103,14 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 	
 	@Override
 	@SuppressWarnings("unchecked")
-	public List<EPUser> getUser(String loginId){
+	public List<EPUser> getUser(String loginId) throws InvalidUserException{
 		final Map<String, String> userParams = new HashMap<>();
 		userParams.put("org_user_id", loginId);
-		return (List<EPUser>) dataAccessService.executeNamedQuery("getEPUserByOrgUserId", userParams, null);
+		List<EPUser> userList = dataAccessService.executeNamedQuery("getEPUserByOrgUserId", userParams, null);
+		if (userList.isEmpty()) {
+			throw new InvalidUserException("User not found");
+		}
+		return userList;
 	}
 
 	@Override
@@ -2777,9 +2779,11 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 						extRoleParams.put(APP_ID, app.getId().toString());
 						roleList = dataAccessService.executeNamedQuery(GET_ROLE_TO_UPDATE_IN_EXTERNAL_AUTH_SYSTEM, extRoleParams, null);
 					}
-					EPRole updateRoleInactive = roleList.get(0);
-					updateRoleInactive.setActive(false);
-					dataAccessService.saveDomainObject(updateRoleInactive, null);
+					if(!roleList.isEmpty()) {
+						EPRole updateRoleInactive = roleList.get(0);
+						updateRoleInactive.setActive(false);
+						dataAccessService.saveDomainObject(updateRoleInactive, null);
+					}
 				}
 			} catch (Exception e) {
 				logger.error(EELFLoggerDelegate.errorLogger,
@@ -2875,8 +2879,8 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 					EPAppRoleFunction checkRoleFunctionExits = roleFunctionsMap.get(externalpermission.getInstance());
 					if (checkRoleFunctionExits == null) {
 						String funcCode = externalpermission.getType().substring(app.getNameSpace().length() + 1)
-								+ FUNCTION_PIPE + externalAccessPerms.getInstance() + FUNCTION_PIPE
-								+ externalAccessPerms.getAction();
+								+ FUNCTION_PIPE + externalpermission.getInstance() + FUNCTION_PIPE
+								+ externalpermission.getAction();
 						EPAppRoleFunction checkRoleFunctionPipeExits = roleFunctionsMap.get(funcCode);
 						if (checkRoleFunctionPipeExits == null) {
 							try {

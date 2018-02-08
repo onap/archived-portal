@@ -50,7 +50,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * TODO REFACTOR moved from org.onap.portalsdk.core.scheduler to
- * org.openecomp.portalapp.scheduler
+ * org.onap.portalapp.scheduler
  *
  */
 @Component

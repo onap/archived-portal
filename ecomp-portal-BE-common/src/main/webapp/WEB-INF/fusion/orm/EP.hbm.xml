@@ -1985,6 +1985,15 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 			;		
 			]]>
 	</sql-query>
+	
+		<!-- Gets all active records from fn_role that is associated with this app-->
+	<sql-query name="getActiveRolesOfApplication">
+		<return alias="activeRolesOfApplication" class="org.onap.portalapp.portal.domain.EPRole" />
+		<![CDATA[
+		select * from fn_role where active_yn = 'Y' and app_id=:appId
+		;
+ 		]]>
+	</sql-query>
 
 	<sql-query name="getBulkUserRoles">
 		<return alias="bulkUserRoles" class="org.onap.portalapp.portal.transport.BulkUploadUserRoles" />
@@ -2318,6 +2327,15 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 		;
  		]]>
 	</sql-query>
+
+
+	<query name="getBasicauthAccount">
+      select id,password from BasicAuthCredentials
+    </query>
+    
+     <query name="getMicroserviceInfo">
+      select id,password from MicroserviceData
+    </query>
 	
 	<sql-query name="getUserRoleOnUserIdAndRoleIdAndAppId">	
 		<return alias="getUserRoleOnUserIdAndRoleIdAndAppId" class="org.onap.portalapp.portal.domain.EPUserApp" />   	

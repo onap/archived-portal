@@ -306,13 +306,13 @@ public class AppContactUsControllerTest extends MockitoTestSuite{
 		PortalRestResponse<String> expectedResponse = new PortalRestResponse<String>();
 		expectedResponse.setStatus(PortalRestStatusEnum.OK);
 		expectedResponse.setMessage("success");
-		expectedResponse.setResponse("\"ush_ticket_url\":\"http://todo_enter_ush_ticket_url\",\"portal_info_url\":\"https://todo_enter_portal_info_url\",\"feedback_email_address\":\"portal@lists.openecomp.org\"");
+		expectedResponse.setResponse("\"ush_ticket_url\":\"http://todo_enter_ush_ticket_url\",\"portal_info_url\":\"https://todo_enter_portal_info_url\",\"feedback_email_address\":\"portal@lists.onap.org\"");
 		PowerMockito.mockStatic(SystemProperties.class);
 		PowerMockito.mockStatic(EPCommonSystemProperties.class);
 		
 		Mockito.when(SystemProperties.getProperty(EPCommonSystemProperties.USH_TICKET_URL)).thenReturn("http://todo_enter_ush_ticket_url"); 
 		Mockito.when(SystemProperties.getProperty(EPCommonSystemProperties.PORTAL_INFO_URL)).thenReturn("https://todo_enter_portal_info_url"); 
-		Mockito.when(SystemProperties.getProperty(EPCommonSystemProperties.FEEDBACK_EMAIL_ADDRESS)).thenReturn("portal@lists.openecomp.org"); 
+		Mockito.when(SystemProperties.getProperty(EPCommonSystemProperties.FEEDBACK_EMAIL_ADDRESS)).thenReturn("portal@lists.onap.org"); 
 		
 		actualResponse = appContactUsController.getPortalDetails(mockedRequest);
 		assertTrue(actualResponse.getStatus().compareTo(PortalRestStatusEnum.OK) == 0);
@@ -330,7 +330,7 @@ public class AppContactUsControllerTest extends MockitoTestSuite{
 		
 		Mockito.when(SystemProperties.getProperty(EPCommonSystemProperties.USH_TICKET_URL)).thenThrow(nullPointerException); 
 		Mockito.when(SystemProperties.getProperty(EPCommonSystemProperties.PORTAL_INFO_URL)).thenReturn("https://todo_enter_portal_info_url"); 
-		Mockito.when(SystemProperties.getProperty(EPCommonSystemProperties.FEEDBACK_EMAIL_ADDRESS)).thenReturn("portal@lists.openecomp.org"); 
+		Mockito.when(SystemProperties.getProperty(EPCommonSystemProperties.FEEDBACK_EMAIL_ADDRESS)).thenReturn("portal@lists.onap.org"); 
 		
 		actualResponse = appContactUsController.getPortalDetails(mockedRequest);
 		assertEquals(actualResponse, expectedResponse);

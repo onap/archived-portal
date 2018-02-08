@@ -14,16 +14,20 @@ https://www.eclipse.org/m2e-wtp/
 
 ## Release Notes
 
-Version 2.1 
+Version 2.2
+- [PORTAL-136] Raise JUnit test coverage ONAP Portal to 50% for Beijing 
+- [PORTAL-133] replace ECOMP to ONAP on Contact Us and Get Access page
 - [PORTAL-145] Harden code to address SQL injecton, XSS vulnerabilities
 - [PORTAL-156] Left menu are showing web analytics items and missing plus icons on Account Details page
 - [Portal-148] ONAP Portal Beijing does not accept logins; currently OIDC code is disabled; please check the web.xml
   Long term solution is being worked on.
 - [Portal-140] Portal role synch error with partner apps
-- [Portal-111] To get Centralized apps on Roles and Role Functions page;
+- [Portal-111] To get Centralized apps on Roles and Role Functions page
    Create, Edit and Delete calls for Roles and Role Functions
 - [Portal-121] GUI controls overlapping on app onboarding dialog
 - [Portal-133] Replace ECOMP wording from contact us page with ONAP
+- [Portal-88] unable to deselect widget on Widget catalog page
+- [Portak-19] Replaced the keyword openecomp to onap 
 - [Portal-88] Unable to deselect widget on Widget catalog page
 - [Portal-111] Centralized Role Management Task(Integration to AAF)
 - [PORTAL-157] OpenID connect conflicting with spring security

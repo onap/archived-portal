@@ -114,7 +114,7 @@ import com.google.gson.Gson;
 
 @Configuration
 @EnableWebMvc
-@ComponentScan(basePackages = {"org.onap", "org.openecomp" }, excludeFilters = {
+@ComponentScan(basePackages = {"org.onap"}, excludeFilters = {
 		@Filter(value = { LogoutController.class, SDKLoginController.class}, type = FilterType.ASSIGNABLE_TYPE) })
 @Profile("src")
 @EnableAsync

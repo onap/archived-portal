@@ -36,7 +36,7 @@ package org.onap.portalapp.portal.core;
  *
  * ECOMP is a trademark and service mark of AT&T Intellectual Property.
  */
-//package org.openecomp.portalapp.portal.core;
+//package org.onap.portalapp.portal.core;
 //
 //import static org.junit.Assert.assertEquals;
 //import static org.junit.Assert.assertTrue;
@@ -47,12 +47,12 @@ package org.onap.portalapp.portal.core;
 //
 //import org.junit.Assert;
 //import org.junit.Test;
-//import org.openecomp.portalapp.framework.ApplicationCommonContextTestSuite;
-//import org.openecomp.portalapp.portal.domain.EPUser;
-//import org.openecomp.portalapp.portal.test.core.MockEPUser;
-//import org.openecomp.portalapp.portal.transport.AppNameIdIsAdmin;
-//import org.openecomp.portalapp.portal.transport.AppsListWithAdminRole;
-//import org.openecomp.portalsdk.core.util.SystemProperties;
+//import org.onap.portalapp.framework.ApplicationCommonContextTestSuite;
+//import org.onap.portalapp.portal.domain.EPUser;
+//import org.onap.portalapp.portal.test.core.MockEPUser;
+//import org.onap.portalapp.portal.transport.AppNameIdIsAdmin;
+//import org.onap.portalapp.portal.transport.AppsListWithAdminRole;
+//import org.onap.portalsdk.core.util.SystemProperties;
 //import org.springframework.http.MediaType;
 //import org.springframework.test.web.servlet.ResultActions;
 //import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;

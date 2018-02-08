@@ -35,32 +35,14 @@
  *
  * ECOMP is a trademark and service mark of AT&T Intellectual Property.
  */
-package org.onap.portalapp.portal.domain;
 
-import static org.junit.Assert.assertEquals;
-import org.junit.Test;
-import org.onap.portalapp.portal.domain.EPUserAppsManualSortPreference;
+package org.onap.portalapp.portal.exceptions;
 
-public class EPUserAppsManualSortPreferenceTest {
+@SuppressWarnings("serial")
+public class SyncUserRolesException extends Exception{
 
-	public EPUserAppsManualSortPreference mockEPUserAppsManualSortPreference(){
-		
-		EPUserAppsManualSortPreference epUserAppsManualSortPreference = new EPUserAppsManualSortPreference();
-		epUserAppsManualSortPreference.setUserId(1l);
-		epUserAppsManualSortPreference.setAppId((long)1);
-		epUserAppsManualSortPreference.setAppManualSortOrder(1);
-		
-		return epUserAppsManualSortPreference;
-	}
+	public SyncUserRolesException(String msg) {
+		   super(msg);
+	   } 
 	
-	@Test
-	public void epUserAppsManualSortPreferenceTest(){
-	
-		EPUserAppsManualSortPreference epUserAppsManualSortPreference = mockEPUserAppsManualSortPreference();
-		
-		assertEquals(epUserAppsManualSortPreference.getUserId(), new Long(1));
-		assertEquals(epUserAppsManualSortPreference.getAppId(), new Long(1));
-		assertEquals(epUserAppsManualSortPreference.getAppManualSortOrder(), 1);
-		
-	}
 }

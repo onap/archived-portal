@@ -245,7 +245,7 @@ public class PortalResourceInterceptor extends ResourceInterceptor {
 		BasicAuthCredentials creds;
 		try {
 			creds = basicAuthService.getBasicAuthCredentialByUsernameAndPassword(accountNamePassword[0],
-					encrypted(accountNamePassword[1]));
+					accountNamePassword[1]);
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "checkBasicAuth failed to get credentials", e);
 			final String msg = "Failed while getting basic authentication credential: ";

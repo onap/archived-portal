@@ -58,11 +58,6 @@ import org.onap.portalapp.portal.utils.PortalConstants;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
-/*import org.openecomp.vid.policy.PolicyProperties;
-import org.openecomp.vid.policy.PolicyResponseWrapper;
-import org.openecomp.vid.policy.PolicyRestInterfaceFactory;
-import org.openecomp.vid.policy.PolicyRestInterfaceIfc;
-import org.openecomp.vid.policy.PolicyUtil;*/
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;

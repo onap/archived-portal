@@ -73,7 +73,7 @@ public class UserNotificationServiceImpl implements UserNotificationService {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.openecomp.portalapp.portal.service.UserNotificationService#
+	 * @see org.onap.portalapp.portal.service.UserNotificationService#
 	 * getNotifications(java.lang.Long)
 	 */
 	@Override
@@ -93,7 +93,7 @@ public class UserNotificationServiceImpl implements UserNotificationService {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.openecomp.portalapp.portal.service.UserNotificationService#
+	 * @see org.onap.portalapp.portal.service.UserNotificationService#
 	 * getNotificationHistoryVO(java.lang.Long)
 	 */
 	@Override
@@ -109,7 +109,7 @@ public class UserNotificationServiceImpl implements UserNotificationService {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.openecomp.portalapp.portal.service.UserNotificationService#
+	 * @see org.onap.portalapp.portal.service.UserNotificationService#
 	 * getAdminNotificationVOS()
 	 */
 	@Override
@@ -125,7 +125,7 @@ public class UserNotificationServiceImpl implements UserNotificationService {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.openecomp.portalapp.portal.service.UserNotificationService#
+	 * @see org.onap.portalapp.portal.service.UserNotificationService#
 	 * getNotificationRoles(java.lang.Long)
 	 */
 	@Override
@@ -141,7 +141,7 @@ public class UserNotificationServiceImpl implements UserNotificationService {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.openecomp.portalapp.portal.service.UserNotificationService#
+	 * @see org.onap.portalapp.portal.service.UserNotificationService#
 	 * getAppRoleList()
 	 */
 	@SuppressWarnings("unchecked")
@@ -155,7 +155,7 @@ public class UserNotificationServiceImpl implements UserNotificationService {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.openecomp.portalapp.portal.service.UserNotificationService#
+	 * @see org.onap.portalapp.portal.service.UserNotificationService#
 	 * setNotificationsRead(java.lang.Long, int)
 	 */
 	@Override
@@ -171,8 +171,8 @@ public class UserNotificationServiceImpl implements UserNotificationService {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.openecomp.portalapp.portal.service.UserNotificationService#
-	 * saveNotification(org.openecomp.portalapp.portal.transport.
+	 * @see org.onap.portalapp.portal.service.UserNotificationService#
+	 * saveNotification(org.onap.portalapp.portal.transport.
 	 * EpNotificationItem)
 	 */
 	@Override
@@ -196,7 +196,9 @@ public class UserNotificationServiceImpl implements UserNotificationService {
 		if (notificationItem.getNotificationId() != null) {
 			EpNotificationItem updateNotificationItem = (EpNotificationItem) getDataAccessService()
 					.getDomainObject(EpNotificationItem.class, notificationItem.getNotificationId(), null);
-			notificationItem.setRoles(updateNotificationItem.getRoles());
+			if(updateNotificationItem != null) {
+				notificationItem.setRoles(updateNotificationItem.getRoles());
+			}
 		}
 		if (notificationItem.msgSource == null) {
 			notificationItem.setMsgSource("EP");

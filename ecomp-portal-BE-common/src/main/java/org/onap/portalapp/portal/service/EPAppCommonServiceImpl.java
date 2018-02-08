@@ -100,7 +100,6 @@ import com.att.nsa.cambria.client.CambriaClient.CambriaApiException;
 import com.att.nsa.cambria.client.CambriaClientBuilders;
 import com.att.nsa.cambria.client.CambriaIdentityManager;
 import com.att.nsa.cambria.client.CambriaTopicManager;
-import com.google.common.primitives.Ints;
 
 public class EPAppCommonServiceImpl implements EPAppService {
 
@@ -515,8 +514,8 @@ public class EPAppCommonServiceImpl implements EPAppService {
 	 * (non-Javadoc)
 	 *
 	 * @see
-	 * org.openecomp.portalapp.portal.service.EPAppService#getAppCatalog(
-	 * org.openecomp.portalapp.portal.domain.EPUser)
+	 * org.onap.portalapp.portal.service.EPAppService#getAppCatalog(
+	 * org.onap.portalapp.portal.domain.EPUser)
 	 */
 	@Override
 	public List<AppCatalogItem> getUserAppCatalog(EPUser user) {
@@ -532,8 +531,8 @@ public class EPAppCommonServiceImpl implements EPAppService {
 	 * (non-Javadoc)
 	 *
 	 * @see
-	 * org.openecomp.portalapp.portal.service.EPAppService#getAdminAppCatalog(
-	 * org.openecomp.portalapp.portal.domain.EPUser)
+	 * org.onap.portalapp.portal.service.EPAppService#getAdminAppCatalog(
+	 * org.onap.portalapp.portal.domain.EPUser)
 	 */
 	@Override
 	public List<AppCatalogItem> getAdminAppCatalog(EPUser user) {
@@ -1404,7 +1403,7 @@ public class EPAppCommonServiceImpl implements EPAppService {
 						epWidgetsManualSort.setWidgetCol(epWidgetsManPref.getCol());
 						epWidgetsManualSort.setWidgetWidth(epWidgetsManPref.getSizeX());
 						epWidgetsManualSort.setWidgetHeight(epWidgetsManPref.getSizeY());
-						HashMap<String, Integer> additionalUpdateParam = new HashMap<String, Integer>();
+						HashMap<String, Long> additionalUpdateParam = new HashMap<>();
 						additionalUpdateParam.put("userId", epWidgetsManualSort.getUserId());
 						dataAccessService.saveDomainObject(epWidgetsManualSort, additionalUpdateParam);
 					} else {
@@ -1414,7 +1413,7 @@ public class EPAppCommonServiceImpl implements EPAppService {
 						epWidgetsManualSort.setWidgetCol(epWidgetsManPref.getCol());
 						epWidgetsManualSort.setWidgetWidth(epWidgetsManPref.getSizeX());
 						epWidgetsManualSort.setWidgetHeight(epWidgetsManPref.getSizeY());
-						epWidgetsManualSort.setUserId(Ints.checkedCast(user.getId()));
+						epWidgetsManualSort.setUserId(user.getId());
 						dataAccessService.saveDomainObject(epWidgetsManualSort, null);
 					}
 					fieldsValidator.httpStatusCode = new Long(HttpServletResponse.SC_OK);
@@ -1485,7 +1484,7 @@ public class EPAppCommonServiceImpl implements EPAppService {
 						EPUserAppsManualSortPreference epAppsManualSort = existingAppIds.get(appid);
 						epAppsManualSort
 								.setAppManualSortOrder((epAppsManPref.getCol() + (6 * epAppsManPref.getRow())) + 1);
-						HashMap<String, Integer> additionalUpdateParam = new HashMap<String, Integer>();
+						HashMap<String, Long> additionalUpdateParam = new HashMap<>();
 						additionalUpdateParam.put("userId", epAppsManualSort.getUserId());
 						dataAccessService.saveDomainObject(epAppsManualSort, additionalUpdateParam);
 					} else {
@@ -1493,7 +1492,7 @@ public class EPAppCommonServiceImpl implements EPAppService {
 						epAppsManualSort.setAppId(epAppsManPref.getAppid());
 						epAppsManualSort
 								.setAppManualSortOrder((epAppsManPref.getCol() + (6 * epAppsManPref.getRow())) + 1);
-						epAppsManualSort.setUserId(Ints.checkedCast(user.getId()));
+						epAppsManualSort.setUserId(user.getId());
 						dataAccessService.saveDomainObject(epAppsManualSort, null);
 					}
 					fieldsValidator.httpStatusCode = new Long(HttpServletResponse.SC_OK);
@@ -1509,9 +1508,9 @@ public class EPAppCommonServiceImpl implements EPAppService {
 	/*
 	 * (non-Javadoc)
 	 *
-	 * @see org.openecomp.portalapp.portal.service.EPAppService#
+	 * @see org.onap.portalapp.portal.service.EPAppService#
 	 * deleteUserAppSortManual(java.lang.String,
-	 * org.openecomp.portalapp.portal.domain.EPUser)
+	 * org.onap.portalapp.portal.domain.EPUser)
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
@@ -1550,7 +1549,7 @@ public class EPAppCommonServiceImpl implements EPAppService {
 			epSortTypes = dataAccessService.executeNamedQuery("userAppsSortPreferenceQuery", params, null);
 			if (epSortTypes.size() == 0) {
 				usrSortPr = new EPUserAppsSortPreference();
-				usrSortPr.setUserId(Ints.checkedCast(user.getId()));
+				usrSortPr.setUserId((int)(long)(user.getId()));
 				usrSortPr.setSortPref(appsSortPreference.getValue());
 				dataAccessService.saveDomainObject(usrSortPr, null);
 				fieldsValidator.httpStatusCode = new Long(HttpServletResponse.SC_OK);

@@ -74,7 +74,7 @@ public class AppContactUsServiceImpl implements AppContactUsService {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.openecomp.portalapp.portal.service.AppContactUsService#
+	 * @see org.onap.portalapp.portal.service.AppContactUsService#
 	 * getAppContactUs()
 	 */
 	@SuppressWarnings("unchecked")
@@ -89,7 +89,7 @@ public class AppContactUsServiceImpl implements AppContactUsService {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.openecomp.portalapp.portal.service.AppContactUsService#
+	 * @see org.onap.portalapp.portal.service.AppContactUsService#
 	 * getAllAppsAndContacts()
 	 */
 	@SuppressWarnings("unchecked")

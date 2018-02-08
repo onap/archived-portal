@@ -59,7 +59,7 @@ public class RemoteWebServiceCallServiceImpl extends WebServiceCallServiceImpl i
 	
 	/*
 	 * (non-Javadoc)
-	 * @see org.openecomp.portalapp.service.sessionmgt.RemoteWebServiceCallService#verifyRESTCredential(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+	 * @see org.onap.portalapp.service.sessionmgt.RemoteWebServiceCallService#verifyRESTCredential(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
 	 */
 	public boolean verifyRESTCredential(String secretKey, String requestUebKey, String requestAppName,
 			String requestPassword) throws Exception {

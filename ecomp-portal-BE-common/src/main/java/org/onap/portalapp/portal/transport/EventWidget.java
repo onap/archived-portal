@@ -36,7 +36,7 @@ package org.onap.portalapp.portal.transport;
  *
  * ECOMP is a trademark and service mark of AT&T Intellectual Property.
  */
-/*package org.openecomp.portalapp.portal.transport;
+/*package org.onap.portalapp.portal.transport;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -45,7 +45,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import org.openecomp.portalsdk.core.domain.support.DomainVo;
+import org.onap.portalsdk.core.domain.support.DomainVo;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 *//**

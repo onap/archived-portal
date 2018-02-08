@@ -38,25 +38,21 @@
 package org.onap.portalapp.portal.service;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 import org.onap.portalapp.portal.domain.EPApp;
 import org.onap.portalapp.portal.domain.EPUser;
 import org.onap.portalapp.portal.domain.EPUserApp;
 import org.onap.portalapp.portal.domain.PersUserAppSelection;
-import org.onap.portalapp.portal.domain.PersUserWidgetSelection;
 import org.onap.portalapp.portal.logging.aop.EPMetricsLog;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.onap.portalsdk.core.service.DataAccessService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service("persUserAppService")
 @Transactional
@@ -81,9 +77,9 @@ public class PersUserAppServiceImpl implements PersUserAppService {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.openecomp.portalapp.portal.service.UserAppSelectService#
-	 * setAppCatalogSelection(org.openecomp.portalapp.portal.domain.EPUser,
-	 * org.openecomp.portalapp.portal.transport.AppCatalogSelection)
+	 * @see org.onap.portalapp.portal.service.UserAppSelectService#
+	 * setAppCatalogSelection(org.onap.portalapp.portal.domain.EPUser,
+	 * org.onap.portalapp.portal.transport.AppCatalogSelection)
 	 */
 	@Override
 	public void setPersUserAppValue(EPUser user, EPApp app, boolean select, boolean pending) {

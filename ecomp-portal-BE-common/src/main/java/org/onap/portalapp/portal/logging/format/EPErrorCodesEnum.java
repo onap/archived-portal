@@ -116,6 +116,6 @@ public enum EPErrorCodesEnum implements EELFResolvableErrorEnum {
      * Here this application loads messages from three bundles
      */
     static {
-        EELFResourceManager.loadMessageBundle("org/openecomp/portalapp/portal/logging/format/ApplicationCodes");
+        EELFResourceManager.loadMessageBundle("org/onap/portalapp/portal/logging/format/ApplicationCodes");
     }
 }

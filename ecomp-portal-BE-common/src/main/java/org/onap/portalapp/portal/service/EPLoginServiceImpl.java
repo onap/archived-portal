@@ -44,6 +44,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.onap.portalapp.command.EPLoginBean;
 import org.onap.portalapp.portal.domain.EPUser;
 import org.onap.portalapp.portal.logging.aop.EPMetricsLog;
@@ -52,6 +53,8 @@ import org.onap.portalapp.portal.logging.logic.EPLogUtil;
 import org.onap.portalapp.util.EPUserUtils;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.onap.portalsdk.core.menu.MenuBuilder;
+import org.onap.portalsdk.core.onboarding.exception.CipherUtilException;
+import org.onap.portalsdk.core.onboarding.util.CipherUtil;
 import org.onap.portalsdk.core.service.DataAccessService;
 import org.onap.portalsdk.core.service.support.FusionService;
 import org.onap.portalsdk.core.util.SystemProperties;
@@ -74,7 +77,7 @@ public class EPLoginServiceImpl extends FusionService implements EPLoginService 
 
 	/*
 	 * (non-Javadoc)
-	 * @see org.openecomp.portalapp.portal.service.EPLoginService#findUser(org.openecomp.portalapp.command.EPLoginBean, java.lang.String, java.util.HashMap)
+	 * @see org.onap.portalapp.portal.service.EPLoginService#findUser(org.openecomp.portalapp.command.EPLoginBean, java.lang.String, java.util.HashMap)
 	 */
 	@SuppressWarnings("rawtypes")
 	public EPLoginBean findUser(EPLoginBean bean, String menuPropertiesFilename, HashMap additionalParams)
@@ -84,7 +87,7 @@ public class EPLoginServiceImpl extends FusionService implements EPLoginService 
 
 	/*
 	 * (non-Javadoc)
-	 * @see org.openecomp.portalapp.portal.service.EPLoginService#findUser(org.openecomp.portalapp.command.EPLoginBean, java.lang.String, java.util.HashMap, boolean)
+	 * @see org.onap.portalapp.portal.service.EPLoginService#findUser(org.onap.portalapp.command.EPLoginBean, java.lang.String, java.util.HashMap, boolean)
 	 */
 	@SuppressWarnings("rawtypes")
 	public EPLoginBean findUser(EPLoginBean bean, String menuPropertiesFilename_ignored, HashMap additionalParams,
@@ -179,19 +182,31 @@ public class EPLoginServiceImpl extends FusionService implements EPLoginService 
 	 * @param password
 	 * @return EPUser object; null on error or if no match.
 	 */
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private EPUser findUser(String loginId, String password) {
 		Map<String, String> params = new HashMap<>();
 		params.put("login_id", loginId);
-		params.put("login_pwd", password);
-		List list = null;
+		List<EPUser> list = null;
 		try {
-			list = dataAccessService.executeNamedQuery("getEPUserByLoginIdLoginPwd", params, new HashMap());
+			list = dataAccessService.executeNamedQuery("getEPUserByLoginId", params, new HashMap());
+			for (EPUser user : list) {
+				try {
+					if (StringUtils.isNotBlank(user.getLoginPwd())) {
+						final String dbDecryptedPwd = CipherUtil.decryptPKC(user.getLoginPwd());
+						if (dbDecryptedPwd.equals(password)) {
+							return user;
+						}
+					}
+				} catch (CipherUtilException e) {
+					logger.error(EELFLoggerDelegate.errorLogger, "findUser() failed", e);
+				}
+			}
+
 		} catch (Exception e) {
 			EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeDaoSystemError, e);
 			logger.error(EELFLoggerDelegate.errorLogger, "findUser failed on " + loginId, e);
 		}
-		return (list == null || list.isEmpty()) ? null : (EPUser) list.get(0);
+		return null;
 	}
 
 	@SuppressWarnings("rawtypes")

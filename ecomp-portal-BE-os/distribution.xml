@@ -11,7 +11,7 @@
             <directory>${basedir}</directory>
             <outputDirectory/>
             <excludes>
-            	<exclude>**/src/org/openecomp/fusion/**</exclude>
+            	<exclude>**/src/org/onap/fusion/**</exclude>
                 <exclude>**/src/openecomp/raptor/**</exclude>
                 <exclude>**/.settings/**</exclude>
                 <exclude>**/target/**</exclude>

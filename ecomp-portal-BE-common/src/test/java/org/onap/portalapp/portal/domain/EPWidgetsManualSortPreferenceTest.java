@@ -47,7 +47,7 @@ public class EPWidgetsManualSortPreferenceTest {
 	public EPWidgetsManualSortPreference mockEPWidgetsManualSortPreference(){
 		EPWidgetsManualSortPreference epWidgetsManualSortPreference = new EPWidgetsManualSortPreference();
 				
-		epWidgetsManualSortPreference.setUserId(1);
+		epWidgetsManualSortPreference.setUserId(1l);
 		epWidgetsManualSortPreference.setWidgetId((long)1);
 		epWidgetsManualSortPreference.setWidgetRow(1);
 		epWidgetsManualSortPreference.setWidgetCol(1);
@@ -62,7 +62,7 @@ public class EPWidgetsManualSortPreferenceTest {
 		EPWidgetsManualSortPreference epWidgetsManualSortPreference = mockEPWidgetsManualSortPreference();
 		
 		assertEquals(epWidgetsManualSortPreference.getWidgetId(), new Long(1));
-		assertEquals(epWidgetsManualSortPreference.getUserId(), 1);
+		assertEquals(epWidgetsManualSortPreference.getUserId(), new Long(1));
 		assertEquals(epWidgetsManualSortPreference.getWidgetRow(), 1);
 		assertEquals(epWidgetsManualSortPreference.getWidgetCol(), 1);
 		assertEquals(epWidgetsManualSortPreference.getWidgetHeight(), 1);

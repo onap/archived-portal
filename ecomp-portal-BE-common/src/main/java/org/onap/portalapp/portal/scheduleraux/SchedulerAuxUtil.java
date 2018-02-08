@@ -43,9 +43,6 @@ import java.util.Date;
 
 import org.glassfish.jersey.client.ClientResponse;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
-/*import org.openecomp.vid.policy.PolicyResponseWrapper;
-import org.openecomp.vid.policy.PolicyUtil;
-import org.openecomp.vid.policy.RestObject;*/
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 

@@ -242,7 +242,7 @@ public class DashboardControllerTest {
 		expectedData.setStatus(PortalRestStatusEnum.ERROR);
 		expectedData.setMessage("ERROR");
 		expectedData.setResponse("Category cannot be null or empty");
-		
+
 		Mockito.when(adminRolesService.isSuperAdmin(Matchers.anyObject())).thenReturn(true);
 		PortalRestResponse<String> actualResponse = dashboardController.saveWidgetData(commonWidget, mockedRequest, mockedResponse);
 		assertEquals(expectedData,actualResponse);
@@ -258,7 +258,7 @@ public class DashboardControllerTest {
 		expectedData.setMessage("Invalid category: test");
 		expectedData.setResponse(null); 
 		Mockito.when(adminRolesService.isSuperAdmin(Matchers.anyObject())).thenReturn(true);
-		PortalRestResponse<String> actualResponse = dashboardController.saveWidgetData(commonWidget, mockedRequest, mockedResponse);
+		PortalRestResponse<String> actualResponse = dashboardController.saveWidgetData(commonWidget,mockedRequest, mockedResponse);
 		assertEquals(expectedData,actualResponse);		
 	}
 	

@@ -75,7 +75,7 @@ public class EPLeftMenuServiceImpl implements EPLeftMenuService {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org.openecomp.portalapp.portal.service.EPLeftMenuService#getLeftMenuItems
+	 * org.onap.portalapp.portal.service.EPLeftMenuService#getLeftMenuItems
 	 * (java.util.Set)
 	 */
 	@Override

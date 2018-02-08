@@ -480,6 +480,13 @@
 			<artifactId>epsdk-app-common</artifactId>
 			<version>${epsdk.version}</version>
 			<type>jar</type>
+				 <exclusions>
+				<exclusion>
+             		<groupId>commons-beanutils</groupId>
+             		<artifactId>commons-beanutils-core</artifactId>
+            	 </exclusion>
+              </exclusions>
+			
 		</dependency>
 		<!-- EcompPortal common overlay -->
 		<dependency>

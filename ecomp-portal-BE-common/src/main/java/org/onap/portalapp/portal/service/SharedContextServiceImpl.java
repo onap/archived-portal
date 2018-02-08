@@ -71,7 +71,7 @@ public class SharedContextServiceImpl implements SharedContextService {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.openecomp.portalsdk.core.service.SharedContextService#
+	 * @see org.onap.portalsdk.core.service.SharedContextService#
 	 * getSharedContexts()
 	 */
 	@Override
@@ -89,7 +89,7 @@ public class SharedContextServiceImpl implements SharedContextService {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.openecomp.portalsdk.core.service.SharedContextService#
+	 * @see org.onap.portalsdk.core.service.SharedContextService#
 	 * getSharedContext(java. lang.String, java.lang.String)
 	 */
 	@Override
@@ -112,7 +112,7 @@ public class SharedContextServiceImpl implements SharedContextService {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.openecomp.portalapp.portal.service.SharedContextService#
+	 * @see org.onap.portalapp.portal.service.SharedContextService#
 	 * addSharedContext(java.lang.String, java.lang.String, java.lang.String)
 	 */
 	@Override
@@ -124,8 +124,8 @@ public class SharedContextServiceImpl implements SharedContextService {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.openecomp.portalsdk.core.service.SharedContextService#
-	 * saveSharedContext(org.openecomp.portalapp.portal.domain.SharedContext)
+	 * @see org.onap.portalsdk.core.service.SharedContextService#
+	 * saveSharedContext(org.onap.portalapp.portal.domain.SharedContext)
 	 */
 	@Override
 	public void saveSharedContext(SharedContext context) {
@@ -135,8 +135,8 @@ public class SharedContextServiceImpl implements SharedContextService {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.openecomp.portalsdk.core.service.SharedContextService#
-	 * deleteSharedContext(org.openecomp.portalapp.portal.domain.SharedContext)
+	 * @see org.onap.portalsdk.core.service.SharedContextService#
+	 * deleteSharedContext(org.onap.portalapp.portal.domain.SharedContext)
 	 */
 	@Override
 	public void deleteSharedContext(SharedContext context) {
@@ -146,7 +146,7 @@ public class SharedContextServiceImpl implements SharedContextService {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.openecomp.portalapp.portal.service.SharedContextService#
+	 * @see org.onap.portalapp.portal.service.SharedContextService#
 	 * deleteSharedContexts(java.lang.String)
 	 */
 	@Override
@@ -167,7 +167,7 @@ public class SharedContextServiceImpl implements SharedContextService {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.openecomp.portalapp.portal.service.SharedContextService#
+	 * @see org.onap.portalapp.portal.service.SharedContextService#
 	 * expireSharedContexts(int)
 	 */
 	@Override

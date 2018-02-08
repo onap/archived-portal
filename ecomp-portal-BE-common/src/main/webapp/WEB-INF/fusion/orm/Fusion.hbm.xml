@@ -354,4 +354,8 @@ Portal app mappings and features are in EP.hbm.xml.
 	]]>
 	</sql-query>
 	
+	<query name="getAppPassword">
+      select id,appPassword from App
+    </query>
+
 </hibernate-mapping>

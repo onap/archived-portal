@@ -36,7 +36,7 @@
  * ECOMP is a trademark and service mark of AT&T Intellectual Property.
  */
 package org.onap.portalapp.portal.service;
-//package org.openecomp.portalapp.portal.service;
+//package org.onap.portalapp.portal.service;
 //
 //import javax.servlet.http.HttpServletRequest;
 //import javax.servlet.http.HttpServletResponse;
@@ -48,10 +48,10 @@ package org.onap.portalapp.portal.service;
 //import org.mockito.Mock;
 //import org.mockito.Mockito;
 //import org.mockito.MockitoAnnotations;
-//import org.openecomp.portalapp.portal.framework.MockitoTestSuite;
-//import org.openecomp.portalapp.portal.utils.EPSystemProperties;
-//import org.openecomp.portalsdk.core.service.DataAccessService;
-//import org.openecomp.portalsdk.core.util.SystemProperties;
+//import org.onap.portalapp.portal.framework.MockitoTestSuite;
+//import org.onap.portalapp.portal.utils.EPSystemProperties;
+//import org.onap.portalsdk.core.service.DataAccessService;
+//import org.onap.portalsdk.core.util.SystemProperties;
 //import org.powermock.api.mockito.PowerMockito;
 //
 //import java.io.BufferedReader;

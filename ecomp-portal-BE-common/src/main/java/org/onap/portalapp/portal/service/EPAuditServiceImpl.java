@@ -73,7 +73,7 @@ public class EPAuditServiceImpl implements EPAuditService {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org.openecomp.portalapp.portal.service.EPUserService#getGuestLastLogin(
+	 * org.onap.portalapp.portal.service.EPUserService#getGuestLastLogin(
 	 * java.lang.String)
 	 */
 	public Date getGuestLastLogin(String userId) {
@@ -102,7 +102,7 @@ public class EPAuditServiceImpl implements EPAuditService {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org.openecomp.portalapp.portal.service.EPAuditService#delAuditLogFromDay(
+	 * org.onap.portalapp.portal.service.EPAuditService#delAuditLogFromDay(
 	 * )
 	 */
 	@Override

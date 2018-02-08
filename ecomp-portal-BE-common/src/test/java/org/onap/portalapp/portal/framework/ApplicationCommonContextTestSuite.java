@@ -36,20 +36,20 @@ package org.onap.portalapp.portal.framework;
  *
  * ECOMP is a trademark and service mark of AT&T Intellectual Property.
  */
-//package org.openecomp.portalapp.portal.framework;
+//package org.onap.portalapp.portal.framework;
 //
 //import java.io.IOException;
 //
 //import org.junit.Before;
 //import org.junit.runner.RunWith;
-//import org.openecomp.portalsdk.core.conf.AppConfig;
-////import org.openecomp.portalapp.conf.ExternalAppConfig;
-////import org.openecomp.portalapp.conf.HibernateMappingLocations;
-//import org.openecomp.portalsdk.core.conf.HibernateConfiguration;
-//import org.openecomp.portalsdk.core.conf.HibernateMappingLocatable;
-//import org.openecomp.portalsdk.core.objectcache.AbstractCacheManager;
-//import org.openecomp.portalsdk.core.util.CacheManager;
-//import org.openecomp.portalsdk.core.util.SystemProperties;
+//import org.onap.portalsdk.core.conf.AppConfig;
+////import org.onap.portalapp.conf.ExternalAppConfig;
+////import org.onap.portalapp.conf.HibernateMappingLocations;
+//import org.onap.portalsdk.core.conf.HibernateConfiguration;
+//import org.onap.portalsdk.core.conf.HibernateMappingLocatable;
+//import org.onap.portalsdk.core.objectcache.AbstractCacheManager;
+//import org.onap.portalsdk.core.util.CacheManager;
+//import org.onap.portalsdk.core.util.SystemProperties;
 //import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.context.annotation.Bean;
 //import org.springframework.context.annotation.ComponentScan;
@@ -118,14 +118,14 @@ package org.onap.portalapp.portal.framework;
 //}
 //
 //@Configuration
-//@ComponentScan(basePackages = "org.openecomp", excludeFilters = {
+//@ComponentScan(basePackages = "org.onap", excludeFilters = {
 //		// the following source configurations should not be scanned; instead of
 //		// using Exclusion filter, we can use the @Profile annotation to exclude
 //		// them
-//		@ComponentScan.Filter(type = FilterType.REGEX, pattern = "org.openecomp.portalsdk.core.controller.LogoutController*"),
-//		@ComponentScan.Filter(type = FilterType.REGEX, pattern = "org.openecomp.portalsdk.core.controller.SDKLoginController*"),
-//		@ComponentScan.Filter(type = FilterType.REGEX, pattern = "org.openecomp.portalapp.conf.ExternalAppConfig*"),
-//		@ComponentScan.Filter(type = FilterType.REGEX, pattern = "org.openecomp.*.*InitUebHandler*") })
+//		@ComponentScan.Filter(type = FilterType.REGEX, pattern = "org.onap.portalsdk.core.controller.LogoutController*"),
+//		@ComponentScan.Filter(type = FilterType.REGEX, pattern = "org.onap.portalsdk.core.controller.SDKLoginController*"),
+//		@ComponentScan.Filter(type = FilterType.REGEX, pattern = "org.onap.portalapp.conf.ExternalAppConfig*"),
+//		@ComponentScan.Filter(type = FilterType.REGEX, pattern = "org.onap.*.*InitUebHandler*") })
 //@Profile("test")
 //class MockAppConfig extends AppConfig {
 //
@@ -185,7 +185,7 @@ package org.onap.portalapp.portal.framework;
 //	}
 //
 //	public String[] getPackagesToScan() {
-//		return new String[] { "org.openecomp", "src" };
+//		return new String[] { "org.onap", "src" };
 //	}
 //
 //}

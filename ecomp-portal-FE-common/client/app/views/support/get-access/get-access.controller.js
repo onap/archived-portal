@@ -95,7 +95,7 @@
                 	// $log.info('GetAccessCtrl::updateAppsList source: ', source);
                 	for(var i=0;i<source.length; i++){
                 		var dataArr = source[i];
-                		var checkEcompFuncAvail = 'Ecomp Function Not Available' ; 
+                		var checkEcompFuncAvail = 'Function Not Available' ; 
                 		var reqStatus = 'Pending'; 
                 		dataArr.ecompFunction = (dataArr.ecompFunction === null) ? checkEcompFuncAvail : dataArr.ecompFunction;
                 		dataArr.reqType = (dataArr.reqType === 'P') ? reqStatus : dataArr.reqType;
@@ -133,7 +133,7 @@
         	let init = () => {
                 // $log.info('GetAccessCtrl:: initializing...');
                 this.searchString = '';
-                this.getAccessTableHeaders = ['ECOMP Function', 'Application Name', 'Role Name', 'Current Role', 'Request Status'];
+                this.getAccessTableHeaders = ['Function', 'Application Name', 'Role Name', 'Current Role', 'Request Status'];
                 this.appTable=[];
                 this.updateAppsList();             
                 this.viewPerPage=20;

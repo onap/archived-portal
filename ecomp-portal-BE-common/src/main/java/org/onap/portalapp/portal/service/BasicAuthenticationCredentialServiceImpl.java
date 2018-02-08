@@ -47,7 +47,10 @@ import org.onap.portalapp.portal.domain.EPEndpoint;
 import org.onap.portalapp.portal.domain.EPEndpointAccount;
 import org.onap.portalapp.portal.logging.aop.EPMetricsLog;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
+import org.onap.portalsdk.core.onboarding.exception.CipherUtilException;
+import org.onap.portalsdk.core.onboarding.util.CipherUtil;
 import org.onap.portalsdk.core.service.DataAccessService;
+import org.onap.portalsdk.core.util.SystemProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.stereotype.Service;
@@ -68,20 +71,31 @@ public class BasicAuthenticationCredentialServiceImpl implements BasicAuthentica
 		List<Criterion> restrictionsList = new ArrayList<Criterion>();
 		Criterion contextUserNameCrit = Restrictions.eq("username", username);
 		restrictionsList.add(contextUserNameCrit);
-		Criterion contextPasswordCrit = Restrictions.eq("password", password);
-		restrictionsList.add(contextPasswordCrit);
 
 		@SuppressWarnings("unchecked")
 		List<BasicAuthCredentials> credList = (List<BasicAuthCredentials>) dataAccessService
 				.getList(BasicAuthCredentials.class, null, restrictionsList, null);
-		if (credList == null || credList.size() == 0) {
+		if (credList ==null || credList.isEmpty()) {
 			logger.error(EELFLoggerDelegate.errorLogger,
 					"getBasicAuthCredentialByAppName: no credential(s) for " + username);
 			return null;
 		}
 		logger.debug(EELFLoggerDelegate.debugLogger,
 				"getBasicAuthCredentialByAppName: cred list size: " + credList.size());
-		BasicAuthCredentials cred = (BasicAuthCredentials) credList.get(0);
+		BasicAuthCredentials cred = null;
+		for (BasicAuthCredentials basicAuthCredentials  : credList) {
+			try {
+				final String dbDecryptedPwd = CipherUtil.decryptPKC(basicAuthCredentials.getPassword());
+				if (dbDecryptedPwd.equals(password)) {
+					cred= (BasicAuthCredentials) basicAuthCredentials;
+		            break;
+		        }
+			} catch (CipherUtilException e) {
+				logger.error(EELFLoggerDelegate.errorLogger, "getBasicAuthCredentialByUsernameAndPassword() failed", e);
+			}
+	        
+	    }
+		 if (cred!=null && cred.getId()!=null)
 		cred.setEndpoints(getEndpointsByAccountId(cred.getId()));
 		return cred;
 	}

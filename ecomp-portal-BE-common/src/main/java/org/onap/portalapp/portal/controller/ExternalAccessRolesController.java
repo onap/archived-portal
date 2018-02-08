@@ -39,6 +39,7 @@ package org.onap.portalapp.portal.controller;
 
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -69,10 +70,15 @@ import org.onap.portalapp.portal.utils.PortalConstants;
 import org.onap.portalsdk.core.domain.AuditLog;
 import org.onap.portalsdk.core.domain.Role;
 import org.onap.portalsdk.core.domain.RoleFunction;
+import org.onap.portalsdk.core.domain.User;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
+import org.onap.portalsdk.core.restful.domain.EcompRole;
 import org.onap.portalsdk.core.restful.domain.EcompUser;
 import org.onap.portalsdk.core.service.AuditService;
+import org.onap.portalsdk.core.service.UserService;
+import org.onap.portalsdk.core.service.UserServiceCentalizedImpl;
 import org.onap.portalsdk.core.util.SystemProperties;
+import org.onap.portalsdk.core.web.support.UserUtils;
 import org.slf4j.MDC;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -87,6 +93,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import io.swagger.annotations.ApiOperation;
 
@@ -116,6 +123,9 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 
 	@Autowired
 	private ExternalAccessRolesService externalAccessRolesService;
+
+	@Autowired
+	private UserService userservice =  new UserServiceCentalizedImpl();
 
 	@ApiOperation(value = "Gets user role for an application.", response = CentralUser.class, responseContainer="List")
 	@RequestMapping(value = {
@@ -803,5 +813,57 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 			response.getWriter().write(reason);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 		}
+	}
+	
+	@ApiOperation(value = "Gets ecompUser of an application.", response = CentralUser.class, responseContainer = "List")
+	@RequestMapping(value = { "/ecompUser/{loginId}" }, method = RequestMethod.GET, produces = "application/json")
+	public String getEcompUser(HttpServletRequest request, HttpServletResponse response,
+			@PathVariable("loginId") String loginId) throws Exception {
+		EcompUser user = new EcompUser();
+		ObjectMapper mapper = new ObjectMapper();
+		CentralUser answer = null;
+		try {
+			fieldsValidation(request);
+			answer = externalAccessRolesService.getUserRoles(loginId, request.getHeader(UEBKEY));
+			if (answer != null) {
+				String res = mapper.writeValueAsString(answer);
+                User ecompUser = userservice.userMapper(res);
+				user = UserUtils.convertToEcompUser(ecompUser);
+			}
+		} catch (Exception e) {
+			logger.error(EELFLoggerDelegate.errorLogger, "getEcompUser failed", e);
+			throw e;
+		}
+		return mapper.writeValueAsString(user);
+	}
+
+	@ApiOperation(value = "Gets user ecomp role for an application.", response = CentralUser.class, responseContainer = "List")
+	@RequestMapping(value = { "/ecompRoles" }, method = RequestMethod.GET, produces = "application/json")
+	public List<EcompRole> getEcompRolesOfApplication(HttpServletRequest request, HttpServletResponse response)
+			throws Exception {
+		List<EcompRole> ecompRoles = new ArrayList<EcompRole>();
+		ObjectMapper mapper = new ObjectMapper();
+		List<CentralV2Role> cenRole = null;
+		try {
+			fieldsValidation(request);
+			EPApp app = externalAccessRolesService.getApp(request.getHeader(UEBKEY)).get(0);
+			// Sync all roles from external system into Ecomp portal DB
+			logger.debug(EELFLoggerDelegate.debugLogger, "getRolesForApp: Entering into syncApplicationRolesWithEcompDB");
+			 externalAccessRolesService.syncApplicationRolesWithEcompDB(app);
+			logger.debug(EELFLoggerDelegate.debugLogger, "getRolesForApp: Finished syncApplicationRolesWithEcompDB");
+			cenRole = externalAccessRolesService.getActiveRoles(request.getHeader(UEBKEY));
+		} catch (Exception e) {
+			sendErrorResponse(response, e);
+			logger.error(EELFLoggerDelegate.errorLogger, "getActiveRoles failed", e);
+		}
+		String res = mapper.writeValueAsString(cenRole);
+		if (res != null) {
+			List<Role> roles = mapper.readValue(res,
+					TypeFactory.defaultInstance().constructCollectionType(List.class, Role.class));
+			for (Role role : roles)
+				ecompRoles.add(UserUtils.convertToEcompRole(role));
+			logger.debug(EELFLoggerDelegate.debugLogger, "Request completed for getEcompRolesOfApplication");
+		}
+		return ecompRoles;
 	}
 }

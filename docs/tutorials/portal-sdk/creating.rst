@@ -55,7 +55,7 @@ Copy the following basic controller code into your Java code location as :code:`
 
 .. code-block:: java
 
-    package org.openecomp.myapp;
+    package org.onap.myapp;
 
     import java.util.HashMap;
     import java.util.ArrayList;
@@ -85,9 +85,9 @@ Copy the following basic controller code into your Java code location as :code:`
     import org.json.JSONObject;
     import org.json.JSONArray;
     
-    import org.openecomp.portalsdk.core.controller.RestrictedBaseController;
-    import org.openecomp.portalsdk.core.util.SystemProperties;
-    import org.openecomp.portalsdk.core.domain.User;
+    import org.onap.portalsdk.core.controller.RestrictedBaseController;
+    import org.onap.portalsdk.core.util.SystemProperties;
+    import org.onap.portalsdk.core.domain.User;
     
     @Controller
     @Repository

@@ -37,7 +37,8 @@
  */
 package org.onap.portalapp.portal.service;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +46,6 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.onap.portalsdk.core.util.SystemProperties;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -55,11 +55,10 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.onap.portalapp.portal.domain.EPApp;
 import org.onap.portalapp.portal.framework.MockitoTestSuite;
-import org.onap.portalapp.portal.service.AppsCacheService;
-import org.onap.portalapp.portal.utils.EcompPortalUtils;
 import org.onap.portalapp.service.RemoteWebServiceCallServiceImpl;
 import org.onap.portalsdk.core.onboarding.util.CipherUtil;
 import org.onap.portalsdk.core.service.DataAccessService;
+import org.onap.portalsdk.core.util.SystemProperties;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -77,7 +76,6 @@ public class RemoteWebServiceCallServiceImplTest {
 	
 	@Mock
 	DataAccessService dataAccessService;
-	
 
 	@Before
 	public void setup() {

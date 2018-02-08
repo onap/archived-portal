@@ -53,7 +53,6 @@ import javax.ws.rs.core.Response;
 import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.cxf.transport.http.HTTPException;
-import org.onap.portalapp.portal.service.AppsCacheService;
 import org.onap.portalapp.portal.domain.EPApp;
 import org.onap.portalapp.portal.logging.aop.EPAuditLog;
 import org.onap.portalapp.portal.logging.aop.EPMetricsLog;
@@ -252,7 +251,7 @@ public class ApplicationsRestClientServiceImpl implements ApplicationsRestClient
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org.openecomp.portalapp.portal.service.ApplicationsRestClientService#get(
+	 * org.onap.portalapp.portal.service.ApplicationsRestClientService#get(
 	 * java.lang.Class, long, java.lang.String, boolean)
 	 */
 	@Override
@@ -354,13 +353,15 @@ public class ApplicationsRestClientServiceImpl implements ApplicationsRestClient
 		WebClient client = null;
 		Response response = null;
 		T t = null;
-
+		logger.debug(EELFLoggerDelegate.debugLogger, "Entering to createClientForApp method for payload: {} and restPath: {} and appId: {}", payload.toString(), restPath, appId);
 		client = createClientForApp(appId, restPath);
 		EcompPortalUtils.logAndSerializeObject(logger, restPath, "POST request =", payload);
-
+		logger.debug(EELFLoggerDelegate.debugLogger, "Finished createClientForApp method for payload: {} and restPath: {} and appId: {}", payload.toString(), restPath, appId);
 		try {
 			if (client != null) {
+				logger.debug(EELFLoggerDelegate.debugLogger, "Entering to POST for payload: {} and restPath: {} and appId: {}", payload.toString(), restPath, appId);
 				response = client.post(payload);
+				logger.debug(EELFLoggerDelegate.debugLogger, "Finished to POST for payload: {} and restPath: {} and appId: {}", payload.toString(), restPath, appId);
 			} else {
 				logger.error(EELFLoggerDelegate.errorLogger,
 						"Unable to create the Webclient to make the '" + restPath + "' API call.");
@@ -396,12 +397,21 @@ public class ApplicationsRestClientServiceImpl implements ApplicationsRestClient
 		Response response = null;
 		T t = null;
 
+		logger.debug(EELFLoggerDelegate.debugLogger, "Entering to createClientForApp method for payload: {} and restPath: {} and appId: {}", payload.toString(), restPath, appId);
+
 		client = createClientForApp(appId, restPath);
 		EcompPortalUtils.logAndSerializeObject(logger, restPath, "PUT request =", payload);
+		
+		logger.debug(EELFLoggerDelegate.debugLogger, "Finished createClientForApp method for payload: {} and restPath: {} and appId: {}", payload.toString(), restPath, appId);
 
 		try {
 			if (client != null) {
+				logger.debug(EELFLoggerDelegate.debugLogger, "Entering to PUT for payload: {} and restPath: {} and appId: {}", payload.toString(), restPath, appId);
+
 				response = client.put(payload);
+				
+				logger.debug(EELFLoggerDelegate.debugLogger, "Finished to PUT for payload: {} and restPath: {} and appId: {}", payload.toString(), restPath, appId);
+
 			} else {
 				logger.error(EELFLoggerDelegate.errorLogger,
 						"Unable to create the Webclient to make the '" + restPath + "' API call.");

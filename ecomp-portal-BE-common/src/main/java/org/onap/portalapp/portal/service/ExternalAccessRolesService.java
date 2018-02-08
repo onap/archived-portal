@@ -49,6 +49,7 @@ import org.onap.portalapp.portal.domain.EPApp;
 import org.onap.portalapp.portal.domain.EPRole;
 import org.onap.portalapp.portal.domain.EPUser;
 import org.onap.portalapp.portal.domain.ExternalRoleDetails;
+import org.onap.portalapp.portal.exceptions.InvalidUserException;
 import org.onap.portalapp.portal.transport.CentralRole;
 import org.onap.portalapp.portal.transport.CentralUser;
 import org.onap.portalapp.portal.transport.CentralV2Role;
@@ -100,7 +101,7 @@ public interface ExternalAccessRolesService {
 	 * @return EPUser object
 	 * @throws Exception
 	 */
-	List<EPUser> getUser(String loginId) throws Exception;
+	List<EPUser> getUser(String loginId) throws InvalidUserException;
 	
 	/**
 	 * It returns complete user information including application roles permissions

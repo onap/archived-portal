@@ -63,7 +63,6 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.onap.portalapp.portal.service.SearchService;
 import org.onap.portalapp.externalsystemapproval.model.ExternalSystemRoleApproval;
 import org.onap.portalapp.externalsystemapproval.model.ExternalSystemUser;
 import org.onap.portalapp.portal.domain.EPApp;
@@ -75,6 +74,7 @@ import org.onap.portalapp.portal.domain.EPUserAppRoles;
 import org.onap.portalapp.portal.domain.EPUserAppRolesRequest;
 import org.onap.portalapp.portal.domain.EPUserAppRolesRequestDetail;
 import org.onap.portalapp.portal.domain.ExternalSystemAccess;
+import org.onap.portalapp.portal.exceptions.SyncUserRolesException;
 import org.onap.portalapp.portal.logging.aop.EPMetricsLog;
 import org.onap.portalapp.portal.logging.format.EPAppMessagesEnum;
 import org.onap.portalapp.portal.logging.logic.EPLogUtil;
@@ -246,7 +246,6 @@ public class UserRolesCommonServiceImpl  {
 	 */
 	protected void syncUserRoles(SessionFactory sessionFactory, String userId, Long appId,
 			EcompRole[] userAppRoles, Boolean extRequestValue, String reqType) throws Exception {
-		boolean result = false;
 		Session localSession = null;
 		Transaction transaction = null;
 		String roleActive = null;
@@ -361,23 +360,17 @@ public class UserRolesCommonServiceImpl  {
 				}
 			}
 			transaction.commit();
-			result = true;
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "syncUserRoles failed", e);
 			EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeDaoSystemError, e);
 			EcompPortalUtils.rollbackTransaction(transaction,
 					"Exception occurred in syncUserRoles, Details: " + e.toString());
 			if("DELETE".equals(reqType)){
-				throw new Exception(e.getMessage());
+				throw new SyncUserRolesException(e.getMessage());
 			}
 		} finally {
-			if (localSession != null) {
-				localSession.close();		
-			}				
-			if (!result && !"DELETE".equals(reqType)) {
-				throw new Exception(
-						"Exception occurred in syncUserRoles while closing database session for app: '" + appId + "'.");
-			}
+			if(localSession != null)
+				localSession.close();
 		}
 	}
 	
@@ -759,7 +752,7 @@ public class UserRolesCommonServiceImpl  {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.openecomp.portalapp.portal.service.UserRolesService#
+	 * @see org.onap.portalapp.portal.service.UserRolesService#
 	 * importRolesFromRemoteApplication(java.lang.Long)
 	 */
 	public List<EPRole> importRolesFromRemoteApplication(Long appId) throws HTTPException {
@@ -851,9 +844,9 @@ public class UserRolesCommonServiceImpl  {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.openecomp.portalapp.portal.service.UserRolesService#
-	 * setAppWithUserRoleStateForUser(org.openecomp.portalapp.portal.domain.
-	 * EPUser, org.openecomp.portalapp.portal.transport.AppWithRolesForUser)
+	 * @see org.onap.portalapp.portal.service.UserRolesService#
+	 * setAppWithUserRoleStateForUser(org.onap.portalapp.portal.domain.
+	 * EPUser, org.onap.portalapp.portal.transport.AppWithRolesForUser)
 	 */
 	public boolean setAppWithUserRoleStateForUser(EPUser user, AppWithRolesForUser newAppRolesForUser) {
 		boolean result = false;
@@ -1572,7 +1565,7 @@ public class UserRolesCommonServiceImpl  {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.openecomp.portalapp.portal.service.UserRolesService#
+	 * @see org.onap.portalapp.portal.service.UserRolesService#
 	 * getAppRolesForUser(java.lang.Long, java.lang.String)
 	 */
 	@SuppressWarnings("unchecked")
@@ -1606,7 +1599,7 @@ public class UserRolesCommonServiceImpl  {
 							activeRoleList.add(role);
 						}
 					}
-						
+					 	
 				}
 				EPUser localUser  = getUserFromApp(userId, app, applicationsRestClientService);
 				// If localUser does not exists return roles
@@ -1623,7 +1616,9 @@ public class UserRolesCommonServiceImpl  {
 			EcompRole[] appRoles = null;
 			List<EcompRole> roles = new ArrayList<>();
 			if(app.getCentralAuth()){
-				List<EPRole> applicationRoles = dataAccessService.getList(EPRole.class, " where app_id = "+app.getId()+ " and active_yn = 'Y'", null, null);;
+				final Map<String, Long> appParams =  new HashMap<>();
+				appParams.put("appId", app.getId());
+				List<EPRole> applicationRoles = dataAccessService.executeNamedQuery("getActiveRolesOfApplication", appParams, null);
 				for(EPRole role : applicationRoles){
 					EcompRole ecompRole = new EcompRole();
 					ecompRole.setId(role.getId());
@@ -1739,10 +1734,11 @@ public class UserRolesCommonServiceImpl  {
 		return result;
 	}
 
+	@SuppressWarnings("unchecked")
 	public FieldsValidator putUserAppRolesRequest(AppWithRolesForUser userAppRolesData, EPUser user) {
 		FieldsValidator fieldsValidator = new FieldsValidator();
 		final Map<String, Long> params = new HashMap<>();
-		EPUserAppRoles  appRole= new EPUserAppRoles();
+		List<EPUserAppRoles>  appRole= null;
 		try {
 			logger.error(EELFLoggerDelegate.errorLogger,"Should not be reached here, still the endpoint is yet to be defined");
 			boolean result = postUserRolesToMylogins(userAppRolesData, applicationsRestClientService, userAppRolesData.appId, user.getId());
@@ -1762,13 +1758,15 @@ public class UserRolesCommonServiceImpl  {
 				Boolean isAppliedVal = userAppRoles.isApplied;
 				params.put("appRoleId", userAppRoles.roleId);				
 				if (isAppliedVal) {
-					appRole = (EPUserAppRoles) dataAccessService.executeNamedQuery("appRoles", params, null).get(0);
-					EPUserAppRolesRequestDetail epAppRoleDetail = new EPUserAppRolesRequestDetail();
-					epAppRoleDetail.setReqRoleId(appRole.getRoleId());
-					epAppRoleDetail.setReqType("P");
-					epAppRoleDetail.setEpRequestIdData(epAppRolesRequestData);
-					dataAccessService.saveDomainObject(epAppRoleDetail, null);
-					}			
+					appRole = (List<EPUserAppRoles>) dataAccessService.executeNamedQuery("appRoles", params, null);
+					if (!appRole.isEmpty()) {
+						EPUserAppRolesRequestDetail epAppRoleDetail = new EPUserAppRolesRequestDetail();
+						epAppRoleDetail.setReqRoleId(appRole.get(0).getRoleId());
+						epAppRoleDetail.setReqType("P");
+						epAppRoleDetail.setEpRequestIdData(epAppRolesRequestData);
+						dataAccessService.saveDomainObject(epAppRoleDetail, null);
+					}
+				}			
 			}
 			epAppRolesRequestData.setEpRequestIdDetail(appRoleDetails);
 			fieldsValidator.httpStatusCode = new Long(HttpServletResponse.SC_OK);
@@ -1831,7 +1829,7 @@ public class UserRolesCommonServiceImpl  {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.openecomp.portalapp.portal.service.UserRolesService#
+	 * @see org.onap.portalapp.portal.service.UserRolesService#
 	 * getCachedAppRolesForUser(java.lang.Long, java.lang.Long)
 	 */
 	public List<EPUserApp> getCachedAppRolesForUser(Long appId, Long userId) {

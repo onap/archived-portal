@@ -171,8 +171,7 @@ public class DashboardController extends EPRestrictedBaseController {
 	 * @return Rest response wrapped around a String; e.g., "success" or "ERROR"
 	 */
 	@RequestMapping(value = "/widgetData", method = RequestMethod.POST, produces = "application/json")
-	public PortalRestResponse<String> saveWidgetData(@RequestBody CommonWidget commonWidget, HttpServletRequest request,
-			HttpServletResponse response) {
+	public PortalRestResponse<String> saveWidgetData(@RequestBody CommonWidget commonWidget, HttpServletRequest request, HttpServletResponse response) {
 		logger.debug(EELFLoggerDelegate.debugLogger, "saveWidgetData: argument is {}", commonWidget);
 		EPUser user = EPUserUtils.getUserSession(request);
 		if (adminRolesService.isSuperAdmin(user)) {

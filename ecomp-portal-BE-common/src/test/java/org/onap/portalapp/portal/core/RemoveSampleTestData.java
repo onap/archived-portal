@@ -36,7 +36,7 @@ package org.onap.portalapp.portal.core;
  *
  * ECOMP is a trademark and service mark of AT&T Intellectual Property.
  */
-//package org.openecomp.portalapp.portal.core;
+//package org.onap.portalapp.portal.core;
 //
 //import java.sql.Connection;
 //import java.sql.SQLException;
@@ -45,7 +45,7 @@ package org.onap.portalapp.portal.core;
 //
 //import org.junit.After;
 //import org.junit.Test;
-//import org.openecomp.portalapp.framework.ApplicationCommonContextTestSuite;
+//import org.onap.portalapp.framework.ApplicationCommonContextTestSuite;
 //import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.core.io.ClassPathResource;
 //import org.springframework.jdbc.datasource.DataSourceUtils;

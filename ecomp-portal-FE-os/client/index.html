@@ -92,7 +92,6 @@
 
 </head>
 <body ng-app="ecompApp">
-<base href="" id="baseHref">
 <script>
 	    if (!String.prototype.includes) {
 		  String.prototype.includes = function(search, start) {
@@ -120,7 +119,7 @@
 
 	    
 		var base = window.location.pathname.substring(0, window.location.pathname.indexOf("/",2)+1);
-		document.getElementById('baseHref').href = base;
+		document.write("<base href='" + base + "' />");
 
 		
 	    

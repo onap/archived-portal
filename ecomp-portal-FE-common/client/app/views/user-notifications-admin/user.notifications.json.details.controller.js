@@ -35,32 +35,25 @@
  *
  * ECOMP is a trademark and service mark of AT&T Intellectual Property.
  */
-package org.onap.portalapp.portal.domain;
+'use strict';
 
-import static org.junit.Assert.assertEquals;
-import org.junit.Test;
-import org.onap.portalapp.portal.domain.EPUserAppsManualSortPreference;
+(function () {
 
-public class EPUserAppsManualSortPreferenceTest {
+    class userNotificationCtrl {
+        constructor($scope,  ngDialog,items) {
+    		$scope.messageData=items.text;
+    		$scope.messageObject=items.messageObject;
+    		$scope.selectedAdminNotification=items.selectedAdminNotification;
+    		$scope.messageRecipients=items.messageRecipients;
+    		$scope.notifiHyperlink=function(ticket){
+     	    	window.open(ticket);
+    		}
+         }
+    }
+    userNotificationCtrl.$inject = ['$scope','ngDialog','items'];
+    angular.module('ecompApp').controller('userNotificationCtrl', userNotificationCtrl);
+})();
 
-	public EPUserAppsManualSortPreference mockEPUserAppsManualSortPreference(){
-		
-		EPUserAppsManualSortPreference epUserAppsManualSortPreference = new EPUserAppsManualSortPreference();
-		epUserAppsManualSortPreference.setUserId(1l);
-		epUserAppsManualSortPreference.setAppId((long)1);
-		epUserAppsManualSortPreference.setAppManualSortOrder(1);
-		
-		return epUserAppsManualSortPreference;
-	}
-	
-	@Test
-	public void epUserAppsManualSortPreferenceTest(){
-	
-		EPUserAppsManualSortPreference epUserAppsManualSortPreference = mockEPUserAppsManualSortPreference();
-		
-		assertEquals(epUserAppsManualSortPreference.getUserId(), new Long(1));
-		assertEquals(epUserAppsManualSortPreference.getAppId(), new Long(1));
-		assertEquals(epUserAppsManualSortPreference.getAppManualSortOrder(), 1);
-		
-	}
-}
+
+
+ 

@@ -60,6 +60,37 @@ public class ExternalRequestFieldsValidator {
 		this.detailMessage = detailMessage;
 	}
 	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((detailMessage == null) ? 0 : detailMessage.hashCode());
+		result = prime * result + (this.result ? 1231 : 1237);
+		return result;
+	}
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ExternalRequestFieldsValidator other = (ExternalRequestFieldsValidator) obj;
+		if (detailMessage == null) {
+			if (other.detailMessage != null)
+				return false;
+		} else if (!detailMessage.equals(other.detailMessage))
+			return false;
+		if (result != other.result)
+			return false;
+		return true;
+	}
+	
+	
+	
+	
+	
 	
 	
 }

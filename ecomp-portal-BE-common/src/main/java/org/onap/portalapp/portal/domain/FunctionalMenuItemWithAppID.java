@@ -47,7 +47,7 @@ import javax.persistence.Id;
 import javax.persistence.Transient;
 /***
  * 
- * This class is almost identical to org.openecomp.portalapp.portal.transport.FunctionalMenuItem
+ * This class is almost identical to org.onap.portalapp.portal.transport.FunctionalMenuItem
  * The only difference is the appId field. In FunctionMenuItem, we used @Transient as an attribute, and we are using @Column in this class.
  * In some sql queries, we need to have appId, but it's not a field in fn_menu_functional table.
  * 

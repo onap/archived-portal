@@ -59,7 +59,7 @@ public class ManifestServiceImpl implements ManifestService {
 
 	/*
 	 * (non-Javadoc)
-	 * @see org.openecomp.portalapp.portal.service.ManifestService#getWebappManifest()
+	 * @see org.onap.portalapp.portal.service.ManifestService#getWebappManifest()
 	 */
 	public Attributes getWebappManifest() throws IOException {
 		EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(ManifestServiceImpl.class);

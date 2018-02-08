@@ -42,17 +42,17 @@ import org.onap.portalsdk.core.domain.support.DomainVo;
 public class EPWidgetsManualSortPreference extends DomainVo{
 
 	private static final long serialVersionUID = 4607102334801223570L;
-	private int userId;
+	private Long userId;
 	private Long widgetId;
 	private int widgetRow;
 	private int widgetCol;
 	private int widgetWidth;
 	private int widgetHeight;
 
-	public int getUserId() {
+	public Long getUserId() {
 		return userId;
 	}
-	public void setUserId(int userId) {
+	public void setUserId(Long userId) {
 		this.userId = userId;
 	}
 	public Long getWidgetId() {

@@ -42,14 +42,14 @@ import org.onap.portalsdk.core.domain.support.DomainVo;
 public class EPUserAppsManualSortPreference extends DomainVo {
 
 	private static final long serialVersionUID = -6270136291139278216L;
-	private int userId;
+	private Long userId;
 	private Long appId;
 	private int appManualSortOrder;
 	
-	public int getUserId() {
+	public Long getUserId() {
 		return userId;
 	}
-	public void setUserId(int userId) {
+	public void setUserId(Long userId) {
 		this.userId = userId;
 	}
 	public Long getAppId() {

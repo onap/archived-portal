@@ -62,7 +62,7 @@ public class GetAccessServiceImpl implements GetAccessService{
 
 	/*
 	 * (non-Javadoc)
-	 * @see org.openecomp.portalapp.portal.service.GetAccessService#getAppAccessList()
+	 * @see org.onap.portalapp.portal.service.GetAccessService#getAppAccessList()
 	 */
 	@SuppressWarnings("unchecked")
 	@Override

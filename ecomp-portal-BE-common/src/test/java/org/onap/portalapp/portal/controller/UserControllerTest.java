@@ -135,7 +135,7 @@ public class UserControllerTest extends MockitoTestSuite {
 
 	@Test
 	public void modifyLoggedinUserExceptionTest() {
-		EPUser epUser = null;
+		EPUser epUser =null;
 		PortalRestResponse<String> expectedResponse = new PortalRestResponse<String>();
 		expectedResponse.setMessage("java.lang.NullPointerException");
 		expectedResponse.setResponse(null);
