@@ -146,7 +146,7 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 	
 	@ApiOperation(value = "Gets user roles for an application which is upgraded to newer version.", response = String.class, responseContainer="List")
 	@RequestMapping(value = {
-			"/v2/user/{loginId}" }, method = RequestMethod.GET, produces = "application/json")
+			"/v1/user/{loginId}" }, method = RequestMethod.GET, produces = "application/json")
 	public String getV2UserList(HttpServletRequest request, HttpServletResponse response,
 			@PathVariable("loginId") String loginId) throws Exception {
 		String answer = null;
@@ -186,7 +186,7 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 	
 	@ApiOperation(value = "Gets roles for an application which is upgraded to newer version.", response = CentralV2Role.class, responseContainer="Json")
 	@RequestMapping(value = {
-			"/v2/roles" }, method = RequestMethod.GET, produces = "application/json")
+			"/v1/roles" }, method = RequestMethod.GET, produces = "application/json")
 	public List<CentralV2Role> getV2RolesForApp(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		logger.debug(EELFLoggerDelegate.debugLogger, "Request received for getV2RolesForApp");
 		List<CentralV2Role> answer = null;
@@ -233,7 +233,7 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 	
 	@ApiOperation(value = "Gets all role functions for an application which is upgraded to newer version.", response = CentralV2RoleFunction.class, responseContainer="Json")
 	@RequestMapping(value = {
-			"/v2/functions" }, method = RequestMethod.GET, produces = "application/json")
+			"/v1/functions" }, method = RequestMethod.GET, produces = "application/json")
 	public List<CentralV2RoleFunction> getV2RoleFunctionsList(HttpServletRequest request, HttpServletResponse response)
 			throws Exception {
 		List<CentralV2RoleFunction> cenRoleFuncList = null;
@@ -276,7 +276,7 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 	
 	@ApiOperation(value = "Gets v2 role information for an application which is upgraded to newer version.", response = CentralV2Role.class, responseContainer="Json")
 	@RequestMapping(value = {
-			"/v2/role/{role_id}" }, method = RequestMethod.GET, produces = "application/json")
+			"/v1/role/{role_id}" }, method = RequestMethod.GET, produces = "application/json")
 	public CentralV2Role getV2RoleInfo(HttpServletRequest request, HttpServletResponse response,
 			@PathVariable("role_id") Long roleId) throws Exception {
 		CentralV2Role answer = null;
@@ -312,7 +312,7 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 	}
 	
 	@ApiOperation(value = "Gets role information for an application provided by function code.", response = CentralV2RoleFunction.class, responseContainer = "Json")
-	@RequestMapping(value = { "/v2/function/{code}" }, method = RequestMethod.GET, produces = "application/json")
+	@RequestMapping(value = { "/v1/function/{code}" }, method = RequestMethod.GET, produces = "application/json")
 	public CentralV2RoleFunction getV2RoleFunction(HttpServletRequest request, HttpServletResponse response,
 			@PathVariable("code") String code) throws Exception {
 		CentralV2RoleFunction centralV2RoleFunction = null;
@@ -341,10 +341,20 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 			EPApp requestedApp = applicationList.get(0);
 			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 			CentralV2RoleFunction availableRoleFunction = mapper.readValue(data, CentralV2RoleFunction.class);
-			CentralV2RoleFunction domainRoleFunction = externalAccessRolesService.getRoleFunction(availableRoleFunction.getCode(),
-					requestedApp.getUebKey());
+			CentralV2RoleFunction domainRoleFunction = null;
+			if(availableRoleFunction.getType()!=null && availableRoleFunction.getAction()!= null) {
+				String code = availableRoleFunction.getType()+"|"+availableRoleFunction.getCode()+"|"+availableRoleFunction.getAction();
+				domainRoleFunction = externalAccessRolesService.getRoleFunction(code,
+						requestedApp.getUebKey());
+			} else {
+				domainRoleFunction = externalAccessRolesService.getRoleFunction(availableRoleFunction.getCode(),
+						requestedApp.getUebKey());
+			}
+	
 			boolean saveOrUpdateResponse = false;
-			if (domainRoleFunction != null) {
+			if (domainRoleFunction != null && domainRoleFunction.getCode().equals(availableRoleFunction.getCode())
+					&& domainRoleFunction.getType().equals(availableRoleFunction.getType())
+					&& domainRoleFunction.getAction().equals(availableRoleFunction.getAction())) {
 				domainRoleFunction.setName(availableRoleFunction.getName());
 				saveOrUpdateResponse = externalAccessRolesService.saveCentralRoleFunction(domainRoleFunction,
 						requestedApp);
@@ -760,11 +770,11 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 	public  List<EcompUser> getUsersOfApplication(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		List<EcompUser> users = null;
 		try {
+			fieldsValidation(request);
 			users = externalAccessRolesService.getAllAppUsers(request.getHeader(UEBKEY));
 		} catch (Exception e) {		
-			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			sendErrorResponse(response, e);
 			logger.error(EELFLoggerDelegate.errorLogger, "getUsersOfApplication failed", e);
-			throw new Exception(e.getMessage());
 		}
 		return users;
 	}
@@ -816,10 +826,10 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 	}
 	
 	@ApiOperation(value = "Gets ecompUser of an application.", response = CentralUser.class, responseContainer = "List")
-	@RequestMapping(value = { "/ecompUser/{loginId}" }, method = RequestMethod.GET, produces = "application/json")
+	@RequestMapping(value = { "/v2/user/{loginId}" }, method = RequestMethod.GET, produces = "application/json")
 	public String getEcompUser(HttpServletRequest request, HttpServletResponse response,
 			@PathVariable("loginId") String loginId) throws Exception {
-		EcompUser user = new EcompUser();
+		EcompUser user = null;
 		ObjectMapper mapper = new ObjectMapper();
 		CentralUser answer = null;
 		try {
@@ -831,33 +841,38 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 				user = UserUtils.convertToEcompUser(ecompUser);
 			}
 		} catch (Exception e) {
+			sendErrorResponse(response, e);	
 			logger.error(EELFLoggerDelegate.errorLogger, "getEcompUser failed", e);
-			throw e;
 		}
-		return mapper.writeValueAsString(user);
+		if (user != null) {
+			return mapper.writeValueAsString(user);
+		}
+		return null;
 	}
 
 	@ApiOperation(value = "Gets user ecomp role for an application.", response = CentralUser.class, responseContainer = "List")
-	@RequestMapping(value = { "/ecompRoles" }, method = RequestMethod.GET, produces = "application/json")
+	@RequestMapping(value = { "/v2/roles" }, method = RequestMethod.GET, produces = "application/json")
 	public List<EcompRole> getEcompRolesOfApplication(HttpServletRequest request, HttpServletResponse response)
 			throws Exception {
-		List<EcompRole> ecompRoles = new ArrayList<EcompRole>();
+		List<EcompRole> ecompRoles = null;
 		ObjectMapper mapper = new ObjectMapper();
 		List<CentralV2Role> cenRole = null;
 		try {
 			fieldsValidation(request);
 			EPApp app = externalAccessRolesService.getApp(request.getHeader(UEBKEY)).get(0);
 			// Sync all roles from external system into Ecomp portal DB
-			logger.debug(EELFLoggerDelegate.debugLogger, "getRolesForApp: Entering into syncApplicationRolesWithEcompDB");
-			 externalAccessRolesService.syncApplicationRolesWithEcompDB(app);
+			logger.debug(EELFLoggerDelegate.debugLogger,
+					"getRolesForApp: Entering into syncApplicationRolesWithEcompDB");
+			externalAccessRolesService.syncApplicationRolesWithEcompDB(app);
 			logger.debug(EELFLoggerDelegate.debugLogger, "getRolesForApp: Finished syncApplicationRolesWithEcompDB");
 			cenRole = externalAccessRolesService.getActiveRoles(request.getHeader(UEBKEY));
 		} catch (Exception e) {
 			sendErrorResponse(response, e);
 			logger.error(EELFLoggerDelegate.errorLogger, "getActiveRoles failed", e);
 		}
-		String res = mapper.writeValueAsString(cenRole);
-		if (res != null) {
+		if (cenRole != null) {
+			String res = mapper.writeValueAsString(cenRole);
+			ecompRoles = new ArrayList<>();
 			List<Role> roles = mapper.readValue(res,
 					TypeFactory.defaultInstance().constructCollectionType(List.class, Role.class));
 			for (Role role : roles)

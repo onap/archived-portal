@@ -114,7 +114,10 @@ app.controller('rolefunctionpopupController',function($scope, confirmBoxService,
 						var exists = false, x;
 						for (x in message.availableRoleFunctions) {
 							console.log(message.availableRoleFunctions[x].name);
-							if (message.availableRoleFunctions[x].name == availableRoleFunction.name) {
+							if (message.availableRoleFunctions[x].type == availableRoleFunction.type
+									&& message.availableRoleFunctions[x].code == availableRoleFunction.code
+									&& message.availableRoleFunctions[x].action == availableRoleFunction.action
+									&& message.availableRoleFunctions[x].name == availableRoleFunction.name) {
 								confirmBoxService.showInformation("Role Function already exists.");
 								exists = true;
 								availableRoleFunction.name = $scope.tempText;

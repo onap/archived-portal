@@ -353,9 +353,5 @@ Portal app mappings and features are in EP.hbm.xml.
 		select sum(total_lines) TOTAL_LINES from demo_kpi_sourcecode_stats group by category1
 	]]>
 	</sql-query>
-	
-	<query name="getAppPassword">
-      select id,appPassword from App
-    </query>
 
 </hibernate-mapping>

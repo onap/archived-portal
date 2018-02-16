@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.onap.portal</groupId>
 		<artifactId>onap-portal-parent</artifactId>
-		<version>2.2</version>
+		<version>2.2.0</version>
 	</parent>
 
 	<artifactId>portal-be-common</artifactId>
@@ -239,9 +239,19 @@
 			<version>2.3.1</version>
 		</dependency>
 		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>jstl</artifactId>
-			<version>1.2</version>
+    		<groupId>org.apache.taglibs</groupId>
+    		<artifactId>taglibs-standard-spec</artifactId>
+    		<version>1.2.5</version>
+		</dependency>
+		<dependency>
+    		<groupId>org.apache.taglibs</groupId>
+    		<artifactId>taglibs-standard-impl</artifactId>
+    		<version>1.2.5</version>
+		</dependency>
+		<dependency>
+    		<groupId>org.apache.taglibs</groupId>
+   			<artifactId>taglibs-standard-jstlel</artifactId>
+    		<version>1.2.5</version>
 		</dependency>
 		<!-- Apache Tiles -->
 		<dependency>
@@ -406,8 +416,8 @@
 		</dependency>
 		<dependency>
 			<groupId>org.bouncycastle</groupId>
-			<artifactId>bcprov-jdk16</artifactId>
-			<version>1.45</version>
+			<artifactId>bcprov-jdk15on</artifactId>
+			<version>1.59</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-codec</groupId>

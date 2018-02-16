@@ -251,6 +251,7 @@ public class AdminRolesServiceImpl implements AdminRolesService {
 						if (EcompPortalUtils.checkIfRemoteCentralAccessAllowed()) {
 							// Add user admin role for list of centralized applications in external system
 							addAdminRoleInExternalSystem(user, localSession, newAppsWhereUserIsAdmin);
+							result = true;
 						}	
 					} catch (Exception e) {
 						EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeDaoSystemError, e);
@@ -409,7 +410,7 @@ public class AdminRolesServiceImpl implements AdminRolesService {
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean isSuperAdmin(EPUser user) {
-		if ((user != null) /* && (user.getId() == null) */ && (user.getOrgUserId() != null)) {
+		if ((user != null) && (user.getOrgUserId() != null)) {
 			String sql = "SELECT user.USER_ID, user.org_user_id, userrole.ROLE_ID, userrole.APP_ID FROM fn_user_role userrole "
 					+ "INNER JOIN fn_user user ON user.USER_ID = userrole.USER_ID " + "WHERE user.org_user_id = '"
 					+ user.getOrgUserId() + "' " + "AND userrole.ROLE_ID = '" + SYS_ADMIN_ROLE_ID + "' "
@@ -425,21 +426,6 @@ public class AdminRolesServiceImpl implements AdminRolesService {
 						"Exception occurred while executing isSuperAdmin operation", e);
 			}
 		}
-		// else
-		// {
-		// User currentUser = user != null ? (User)
-		// dataAccessService.getDomainObject(User.class, user.getId(), null) :
-		// null;
-		// if (currentUser != null && currentUser.getId() != null) {
-		// for (UserApp userApp : currentUser.getUserApps()) {
-		// if (userApp.getApp().getId().equals(ECOMP_APP_ID) &&
-		// userApp.getRole().getId().equals(SYS_ADMIN_ROLE_ID)) {
-		// // Super Administrator role is global, no need to keep iterating
-		// return true;
-		// }
-		// }
-		// }
-		// }
 		return false;
 	}
 
@@ -450,9 +436,7 @@ public class AdminRolesServiceImpl implements AdminRolesService {
 					: null;
 			if (currentUser != null && currentUser.getId() != null) {
 				for (EPUserApp userApp : currentUser.getEPUserApps()) {
-					if (// !userApp.getApp().getId().equals(ECOMP_APP_ID)
-						// &&
-					userApp.getRole().getId().equals(ACCOUNT_ADMIN_ROLE_ID)) {
+					if (userApp.getRole().getId().equals(ACCOUNT_ADMIN_ROLE_ID)) {
 						// Account Administrator sees only the applications
 						// he/she is Administrator
 						return true;

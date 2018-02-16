@@ -76,6 +76,7 @@ import org.onap.portalsdk.core.domain.Role;
 import org.onap.portalsdk.core.restful.domain.EcompUser;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -624,7 +625,17 @@ public class ExternalAccessRolesControllerTest {
 		EcompUser user = new EcompUser();
 		user.setOrgUserId("guestT");
 		users.add(user);
+		StringWriter sw = new StringWriter();
+		PrintWriter writer = new PrintWriter(sw);
+		Mockito.when(mockedResponse.getWriter()).thenReturn(writer);	
+		List<EPApp> applicationList = new ArrayList<EPApp>();
+		EPApp app = mockApp();
+		app.setCentralAuth(true);
+		applicationList.add(app);
+		Mockito.when(externalAccessRolesService.getApp(mockedRequest.getHeader(uebKey))).thenReturn(applicationList);
 		Mockito.when(externalAccessRolesService.getAllAppUsers(mockedRequest.getHeader(uebKey))).thenReturn(users);
+		ResponseEntity<String> response = new ResponseEntity<>(HttpStatus.OK);
+		Mockito.when(externalAccessRolesService.getNameSpaceIfExists(app)).thenReturn(response);
 		List<EcompUser> expectedUsers = 	externalAccessRolesController.getUsersOfApplication(mockedRequest, mockedResponse);
 		assertEquals(expectedUsers, users);
 	}

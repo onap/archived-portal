@@ -5,3 +5,4 @@
 /sdk
 /target/*/*.*
 /target/*
+/ecomp-portal-BE-common/jacoco.exec

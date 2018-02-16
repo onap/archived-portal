@@ -1285,7 +1285,15 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 		final Map<String, Long> params = new HashMap<>();
 		CentralV2User userAppList = new CentralV2User();
 		CentralV2User user1 = null;
+		final Map<String, Long> params1 = new HashMap<>();
+		List<EPRole> globalRoleList = new ArrayList<>();
+
 		try {
+			if (app.getId() != PortalConstants.PORTAL_APP_ID) {
+				params1.put("userId", userInfo.getId());
+				params1.put("appId", app.getId());
+				globalRoleList = dataAccessService.executeNamedQuery("userAppGlobalRoles", params1, null);
+			}
 			userAppList.setUserApps(new TreeSet<CentralV2UserApp>());
 			for (EPUserApp userApp : userAppSet) {
 				if (userApp.getRole().getActive()) {
@@ -1306,41 +1314,46 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 								epApp.getThumbnail(), epApp.getUsername(), epApp.getUebKey(), epApp.getUebSecret(),
 								epApp.getUebTopicName());
 						cua.setApp(cenApp);
-						params.put("roleId", userApp.getRole().getId());
-						params.put(APP_ID, userApp.getApp().getId());
-						CentralV2Role centralRole;
-						List<EPRole> globalRoleList;
-						globalRoleList = getGlobalRolesOfPortal();
-						EPRole result = globalRoleList.stream().filter(x -> userApp.getRole().getId().equals(x.getId()))
-								.findAny().orElse(null);
-						if (result != null && userApp.getApp().getId() != app.getId()) {
-							userApp.getRole().setId(result.getId());
-							centralRole = getGlobalRoleForRequestedApp(app.getId(), userApp.getRole().getId());
-							cua.setRole(centralRole);
+						Long appId = null;
+						if (globalRole.toLowerCase().startsWith("global_")
+								&& epApp.getId().equals(PortalConstants.PORTAL_APP_ID)
+								&& !epApp.getId().equals(app.getId())) {
+							appId = app.getId();
+							EPRole result = null;
+							if (globalRoleList.size() > 0)
+								result = globalRoleList.stream()
+										.filter(x -> userApp.getRole().getId().equals(x.getId())).findAny()
+										.orElse(null);
+							if (result == null)
+								continue;
 						} else {
-							List<CentralV2RoleFunction> appRoleFunctionList = dataAccessService
-									.executeNamedQuery("getAppRoleFunctionList", params, null);
-							SortedSet<CentralV2RoleFunction> roleFunctionSet = new TreeSet<>();
-							for (CentralV2RoleFunction roleFunc : appRoleFunctionList) {
-								String functionCode = EcompPortalUtils.getFunctionCode(roleFunc.getCode());
-								CentralV2RoleFunction cenRoleFunc = new CentralV2RoleFunction(roleFunc.getId(),
-										functionCode, roleFunc.getName(), null, null);
-								roleFunctionSet.add(cenRoleFunc);
-							}
-							Long userRoleId = null;
-							if (globalRole.toLowerCase().startsWith("global_")
-									&& epApp.getId().equals(PortalConstants.PORTAL_APP_ID)) {
-								userRoleId = userApp.getRole().getId();
-							} else {
-								userRoleId = userApp.getRole().getAppRoleId();
-							}
-							CentralV2Role cenRole = new CentralV2Role(userRoleId, userApp.getRole().getCreated(),
-									userApp.getRole().getModified(), userApp.getRole().getCreatedId(),
-									userApp.getRole().getModifiedId(), userApp.getRole().getRowNum(),
-									userApp.getRole().getName(), userApp.getRole().getActive(),
-									userApp.getRole().getPriority(), roleFunctionSet, null, null);
-							cua.setRole(cenRole);
+							appId = userApp.getApp().getId();
 						}
+						params.put("roleId", userApp.getRole().getId());
+						params.put(APP_ID, appId);
+						List<CentralV2RoleFunction> appRoleFunctionList = dataAccessService
+								.executeNamedQuery("getAppRoleFunctionList", params, null);
+						SortedSet<CentralV2RoleFunction> roleFunctionSet = new TreeSet<>();
+						for (CentralV2RoleFunction roleFunc : appRoleFunctionList) {
+							String functionCode = EcompPortalUtils.getFunctionCode(roleFunc.getCode());
+							CentralV2RoleFunction cenRoleFunc = new CentralV2RoleFunction(roleFunc.getId(),
+									functionCode, roleFunc.getName(), null, null);
+							roleFunctionSet.add(cenRoleFunc);
+						}
+						Long userRoleId = null;
+						if (globalRole.toLowerCase().startsWith("global_")
+								|| epApp.getId().equals(PortalConstants.PORTAL_APP_ID)) {
+							userRoleId = userApp.getRole().getId();
+						} else {
+							userRoleId = userApp.getRole().getAppRoleId();
+						}
+						CentralV2Role cenRole = new CentralV2Role(userRoleId, userApp.getRole().getCreated(),
+								userApp.getRole().getModified(), userApp.getRole().getCreatedId(),
+								userApp.getRole().getModifiedId(), userApp.getRole().getRowNum(),
+								userApp.getRole().getName(), userApp.getRole().getActive(),
+								userApp.getRole().getPriority(), roleFunctionSet, null, null);
+						cua.setRole(cenRole);
+
 						userAppList.getUserApps().add(cua);
 					}
 				}
@@ -1480,9 +1493,8 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 	@SuppressWarnings("unchecked")
 	@Override
 	public CentralV2RoleFunction getRoleFunction(String functionCode, String uebkey) throws Exception {
-		if (functionCode.contains("|"))
-			functionCode = EcompPortalUtils.getFunctionCode(functionCode);
-		functionCode = encodeFunctionCode(functionCode);
+		String code = EcompPortalUtils.getFunctionCode(functionCode);
+		String encodedCode = encodeFunctionCode(code);
 		CentralV2RoleFunction roleFunc = null;
 		EPApp app = getApp(uebkey).get(0);
 		List<CentralV2RoleFunction> getRoleFuncList = null;
@@ -1492,11 +1504,15 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 			params.put(APP_ID, String.valueOf(app.getId()));
 			getRoleFuncList = dataAccessService.executeNamedQuery(GET_ROLE_FUNCTION_QUERY, params, null);
 			if (getRoleFuncList.isEmpty()) {
-				return roleFunc;
+				params.put(FUNCTION_CODE_PARAMS, encodedCode);
+				getRoleFuncList = dataAccessService.executeNamedQuery(GET_ROLE_FUNCTION_QUERY, params, null);
+				if (getRoleFuncList.isEmpty()) {
+					return roleFunc;
+				}
 			} else {
 				if (getRoleFuncList.size() > 1) {
-					CentralV2RoleFunction cenV2RoleFunction = appFunctionListFilter(functionCode, getRoleFuncList);
-					if(cenV2RoleFunction == null)
+					CentralV2RoleFunction cenV2RoleFunction = appFunctionListFilter(encodedCode, getRoleFuncList);
+					if (cenV2RoleFunction == null)
 						return roleFunc;
 					roleFunc = checkIfPipesExitsInFunctionCode(cenV2RoleFunction);
 				} else {
@@ -1528,7 +1544,6 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 		return roleFunc;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public boolean saveCentralRoleFunction(CentralV2RoleFunction domainCentralRoleFunction, EPApp app) throws Exception {
 		boolean saveOrUpdateFunction = false;
@@ -1536,41 +1551,15 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 			domainCentralRoleFunction.setCode(encodeFunctionCode(domainCentralRoleFunction.getCode()));
 			final Map<String, String> functionParams = new HashMap<>();
 			functionParams.put("appId", String.valueOf(app.getId()));
-			List<CentralV2RoleFunction> appRoleFuncWithPipe = new ArrayList<>();
-			// If request coming from portal application we use type, instance/code and action to fetch record
-			if(domainCentralRoleFunction.getType()!=null && domainCentralRoleFunction.getAction()!=null){
-				functionParams.put(FUNCTION_CODE_PARAMS, domainCentralRoleFunction.getType()+FUNCTION_PIPE
-						+domainCentralRoleFunction.getCode()+FUNCTION_PIPE+domainCentralRoleFunction.getAction());
-				appRoleFuncWithPipe =  dataAccessService.executeNamedQuery(GET_ROLE_FUNCTION_QUERY, functionParams, null);
-				if(appRoleFuncWithPipe.isEmpty()){
-					functionParams.put(FUNCTION_CODE_PARAMS, domainCentralRoleFunction.getCode());
-					appRoleFuncWithPipe =  dataAccessService.executeNamedQuery(GET_ROLE_FUNCTION_QUERY, functionParams, null);
-				}
-			} 
-			// If request coming from SDK applications we use just function code to fetch record
-			else{
-				functionParams.put(FUNCTION_CODE_PARAMS, domainCentralRoleFunction.getCode());
-			}		
-			CentralV2RoleFunction appFunctionCode = null;
-			if(!appRoleFuncWithPipe.isEmpty()){
-				// Make sure we extract correct record if similar records are found as query uses like condition 
-			   appFunctionCode = appFunctionListFilter(domainCentralRoleFunction.getCode(), appRoleFuncWithPipe);	
-			   if(appFunctionCode == null){
-				   appFunctionCode = domainCentralRoleFunction;
-			   }
-			} else{
-				appFunctionCode = domainCentralRoleFunction;
-			}
-			appFunctionCode.setName(domainCentralRoleFunction.getName());
 			if(EcompPortalUtils.checkIfRemoteCentralAccessAllowed()) {
-				addRoleFunctionInExternalSystem(appFunctionCode, app);			
+				addRoleFunctionInExternalSystem(domainCentralRoleFunction, app);			
 			}
 			if(domainCentralRoleFunction.getType() != null && domainCentralRoleFunction.getAction() != null){
-				appFunctionCode.setCode(domainCentralRoleFunction.getType()+
+				domainCentralRoleFunction.setCode(domainCentralRoleFunction.getType()+
 					FUNCTION_PIPE+domainCentralRoleFunction.getCode()+FUNCTION_PIPE+domainCentralRoleFunction.getAction());
 			}
-			appFunctionCode.setAppId(app.getId());
-			dataAccessService.saveDomainObject(appFunctionCode, null);
+			domainCentralRoleFunction.setAppId(app.getId());
+			dataAccessService.saveDomainObject(domainCentralRoleFunction, null);
 			saveOrUpdateFunction = true;
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "saveCentralRoleFunction: failed", e);
