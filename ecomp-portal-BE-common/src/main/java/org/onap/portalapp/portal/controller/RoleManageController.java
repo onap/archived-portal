@@ -108,6 +108,8 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 @EnableAspectJAutoProxy
 @EPAuditLog
 public class RoleManageController extends EPRestrictedBaseController {
+	private static final String PIPE = "|";
+
 	private static final String ROLE_INVALID_CHARS = "%=():,\"\"";
 
 	private static EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(RoleManageController.class);
@@ -340,7 +342,7 @@ public class RoleManageController extends EPRestrictedBaseController {
 										+ " and action: " + roleFunction.getAction() + " found while saving!");
 							}
 							roleFunction.setCode(externalAccessRolesService.encodeFunctionCode(roleFunction.getCode()));
-							roleFunction.setCode(roleFunction.getType() + "|" + roleFunction.getCode() + "|"
+							roleFunction.setCode(roleFunction.getType() + PIPE + roleFunction.getCode() + PIPE
 									+ roleFunction.getAction());
 							domainRole.addRoleFunction((CentralV2RoleFunction) roleFunction);
 						}
@@ -500,8 +502,12 @@ public class RoleManageController extends EPRestrictedBaseController {
 			if (isAuthorizedUser(user, requestedApp)) {
 				fieldsValidation(requestedApp);
 				if (requestedApp.getCentralAuth()) {
-					CentralV2RoleFunction domainRoleFunction = externalAccessRolesService.getRoleFunction(roleFunc.getCode(),
+					String code = roleFunc.getType()+PIPE+roleFunc.getCode()+PIPE+roleFunc.getAction();
+					CentralV2RoleFunction domainRoleFunction = externalAccessRolesService.getRoleFunction(code,
 							requestedApp.getUebKey());
+					if(domainRoleFunction.getType() == null || domainRoleFunction.getAction() == null) {
+						addIfTypeActionDoesNotExits(domainRoleFunction);
+					}
 					if (domainRoleFunction != null && domainRoleFunction.getCode().equals(roleFunc.getCode())
 							&& domainRoleFunction.getType().equals(roleFunc.getType())
 							&& domainRoleFunction.getAction().equals(roleFunc.getAction())) {
@@ -558,6 +564,24 @@ public class RoleManageController extends EPRestrictedBaseController {
 		return new PortalRestResponse<>(PortalRestStatusEnum.OK, "Saved Successfully!", "Success");
 	}
 
+
+
+	private void addIfTypeActionDoesNotExits(CentralV2RoleFunction domainRoleFunction) {
+		if(domainRoleFunction.getCode().contains(PIPE)) {
+			String newfunctionCodeFormat = EcompPortalUtils.getFunctionCode(domainRoleFunction.getCode());
+			String newfunctionTypeFormat = EcompPortalUtils.getFunctionType(domainRoleFunction.getCode());
+			String newfunctionActionFormat = EcompPortalUtils.getFunctionAction(domainRoleFunction.getCode());
+			domainRoleFunction.setType(newfunctionTypeFormat);
+			domainRoleFunction.setAction(newfunctionActionFormat);
+			domainRoleFunction.setCode(newfunctionCodeFormat);
+		} else {
+			String type = externalAccessRolesService.getFunctionCodeType(domainRoleFunction.getCode());
+			String action = externalAccessRolesService.getFunctionCodeAction(domainRoleFunction.getCode());
+			domainRoleFunction.setType(type);
+			domainRoleFunction.setAction(action);
+		}
+	}
+
 	@RequestMapping(value = { "/portalApi/role_function_list/removeRoleFunction/{appId}" }, method = RequestMethod.POST)
 	public PortalRestResponse<String> removeRoleFunction(HttpServletRequest request, HttpServletResponse response,
 			@RequestBody String roleFunc, @PathVariable("appId") Long appId) throws Exception {
@@ -571,17 +595,12 @@ public class RoleManageController extends EPRestrictedBaseController {
 					String data = roleFunc;
 					boolean getDelFuncResponse = false;
 					CentralV2RoleFunction availableRoleFunction = mapper.readValue(data, CentralV2RoleFunction.class);
-					String code = availableRoleFunction.getType() + "|" + availableRoleFunction.getCode() + "|"
+					String code = availableRoleFunction.getType() + PIPE + availableRoleFunction.getCode() + PIPE
 							+ availableRoleFunction.getAction();
 					CentralV2RoleFunction domainRoleFunction = externalAccessRolesService.getRoleFunction(code,
 							requestedApp.getUebKey());
-					if (domainRoleFunction.getCode().contains("|")) {
-						getDelFuncResponse = externalAccessRolesService
-								.deleteCentralRoleFunction(code, requestedApp);
-					} else {
-						getDelFuncResponse = externalAccessRolesService
-								.deleteCentralRoleFunction(domainRoleFunction.getCode(), requestedApp);
-					}
+					getDelFuncResponse = externalAccessRolesService
+							.deleteCentralRoleFunction(domainRoleFunction.getCode(), requestedApp);
 					if (getDelFuncResponse) {
 						logger.info(EELFLoggerDelegate.applicationLogger,
 								"deleteRoleFunction: succeeded for app {}, role {}", requestedApp.getId(),

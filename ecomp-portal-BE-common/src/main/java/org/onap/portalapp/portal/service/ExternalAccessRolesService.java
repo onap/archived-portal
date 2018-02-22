@@ -433,5 +433,23 @@ public interface ExternalAccessRolesService {
 			ObjectMapper mapper, JSONArray extRole)	throws IOException, JsonParseException, JsonMappingException;
 	
 	public JSONArray getAllUsersByRole(String roleName) throws Exception;
+	
+	/**
+	 * 
+	 * It check function code has any pipes, if found return function type
+	 * 
+	 * @param roleFuncItem
+	 * @param type
+	 * @return function type
+	 */
+	String getFunctionCodeType(String roleFuncItem);
+	
+	/**
+	 * It return function action
+	 * 
+	 * @param roleFuncItem
+	 * @return String action
+	 */
+	String getFunctionCodeAction(String roleFuncItem);
 
 }

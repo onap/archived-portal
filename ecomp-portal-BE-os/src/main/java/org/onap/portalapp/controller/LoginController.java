@@ -130,7 +130,7 @@ public class LoginController extends EPUnRestrictedBaseController implements Log
 		String loginId = root.get("loginId").textValue();
 		String password = root.get("password").textValue();
 		commandBean.setLoginId(loginId);
-		commandBean.setLoginPwd(CipherUtil.encryptPKC(password));
+		commandBean.setLoginPwd(password);
 		
 		HashMap additionalParamsMap = new HashMap();
 		StringBuilder sbAdditionalInfo = new StringBuilder();

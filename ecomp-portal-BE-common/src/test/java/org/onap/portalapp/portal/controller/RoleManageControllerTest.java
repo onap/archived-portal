@@ -332,7 +332,6 @@ public class RoleManageControllerTest {
 		addNewFunc.setCode("Test");
 		addNewFunc.setName("Test");
 		Mockito.when(appService.getApp((long) 1)).thenReturn(NonCentralApp());
-		String roleFun = "{\"name\":\"Test\",\"code\":\"Test\"}";
 		roleManageController.saveRoleFunction(mockedRequest, mockedResponse, addNewFunc, (long) 1);
 	}
 

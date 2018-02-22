@@ -520,8 +520,6 @@ public class ExternalAccessRolesServiceImplTest {
 		appUebkeyParams.put("appKey", app.getUebKey());
 		Mockito.when(dataAccessService.executeNamedQuery("getMyAppDetailsByUebKey", appUebkeyParams, null))
 				.thenReturn(appList);
-		CentralV2RoleFunction expected = new CentralV2RoleFunction(null, "type_code", "test_name", null, "test_type",
-				"*", null);
 		Mockito.when(EcompPortalUtils.getFunctionCode("test_type|type_code|*")).thenReturn("type_code");
 		Mockito.when(EcompPortalUtils.getFunctionType("test_type|type_code|*")).thenReturn("test_type");
 		Mockito.when(EcompPortalUtils.getFunctionAction("test_type|type_code|*")).thenReturn("*");
@@ -535,7 +533,7 @@ public class ExternalAccessRolesServiceImplTest {
 				.thenReturn(getRoleFuncList);
 		CentralV2RoleFunction actual = externalAccessRolesServiceImpl.getRoleFunction("test_type|type_code|*",
 				app.getUebKey());
-		assertEquals(expected.getCode(), actual.getCode());
+		assertEquals(getCenRole.getCode(), actual.getCode());
 	}
 
 	@Test
