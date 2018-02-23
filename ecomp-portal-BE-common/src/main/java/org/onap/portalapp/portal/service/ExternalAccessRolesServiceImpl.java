@@ -513,8 +513,8 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 		String action = "";
 		if (roleFunc.getCode().contains(FUNCTION_PIPE)) {
 			code = EcompPortalUtils.getFunctionCode(roleFunc.getCode());
-			type = getFunctionType(roleFunc.getCode());
-			action = getFunctionAction(roleFunc.getCode());
+			type = getFunctionCodeType(roleFunc.getCode());
+			action = getFunctionCodeAction(roleFunc.getCode());
 		} else {
 			code = roleFunc.getCode();
 			type = roleFunc.getCode().contains("menu") ? "menu" : "url";
@@ -663,8 +663,8 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 				String action = "";
 				if (addFunction.getCode().contains(FUNCTION_PIPE)) {
 					code = EcompPortalUtils.getFunctionCode(addFunction.getCode());
-					type = getFunctionType(addFunction.getCode());
-					action = getFunctionAction(addFunction.getCode());
+					type = getFunctionCodeType(addFunction.getCode());
+					action = getFunctionCodeAction(addFunction.getCode());
 				} else {
 					code = addFunction.getCode();
 					type = addFunction.getCode().contains("menu") ? "menu" : "url";
@@ -720,8 +720,8 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 			String action = "";
 			if (roleFunc.getCode().contains(FUNCTION_PIPE)) {
 				code = EcompPortalUtils.getFunctionCode(roleFunc.getCode());
-				type = getFunctionType(roleFunc.getCode());
-				action = getFunctionAction(roleFunc.getCode());
+				type = getFunctionCodeType(roleFunc.getCode());
+				action = getFunctionCodeAction(roleFunc.getCode());
 			} else {
 				code = roleFunc.getCode();
 				type = roleFunc.getCode().contains("menu") ? "menu" : "url";
@@ -1191,8 +1191,8 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 		List<CentralV2RoleFunction> getRoleFuncList = dataAccessService.executeNamedQuery("getAllRoleFunctions", params, null);
 		for (CentralV2RoleFunction roleFuncItem : getRoleFuncList) {
 			String code = EcompPortalUtils.getFunctionCode(roleFuncItem.getCode());
-			String type = getFunctionType(roleFuncItem.getCode());
-			String action = getFunctionAction(roleFuncItem.getCode());
+			String type = getFunctionCodeType(roleFuncItem.getCode());
+			String action = getFunctionCodeAction(roleFuncItem.getCode());
 			roleFuncItem.setCode(EPUserUtils.decodeFunctionCode(code));
 			roleFuncItem.setType(type);
 			roleFuncItem.setAction(action);
@@ -1202,26 +1202,14 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 	}
 
 
-	/**
-	 * It return function action
-	 * 
-	 * @param roleFuncItem
-	 * @return String action
-	 */
-	private String getFunctionAction(String roleFuncItem) {
+	@Override
+	public String getFunctionCodeAction(String roleFuncItem) {
 		return (!roleFuncItem.contains(FUNCTION_PIPE)) ? "*"
 				: EcompPortalUtils.getFunctionAction(roleFuncItem);
 	}
 
-	/**
-	 * 
-	 * It check function code has any pipes, if found return function type
-	 * 
-	 * @param roleFuncItem
-	 * @param type
-	 * @return function type
-	 */
-	private String getFunctionType(String roleFuncItem) {
+	@Override
+	public String getFunctionCodeType(String roleFuncItem) {
 		String type = null;
 		if ((roleFuncItem.contains(FUNCTION_PIPE) && roleFuncItem.contains("menu"))
 				|| (!roleFuncItem.contains(FUNCTION_PIPE) && roleFuncItem.contains("menu"))) {
@@ -1467,8 +1455,8 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 			for (CentralV2RoleFunction roleFunc : cenRoleFuncList) {
 				String functionCode = EcompPortalUtils.getFunctionCode(roleFunc.getCode());
 				functionCode = EPUserUtils.decodeFunctionCode(functionCode);
-				String type = getFunctionType(roleFunc.getCode());
-				String action = getFunctionAction(roleFunc.getCode());
+				String type = getFunctionCodeType(roleFunc.getCode());
+				String action = getFunctionCodeAction(roleFunc.getCode());
 				CentralV2RoleFunction cenRoleFunc = new CentralV2RoleFunction(role.getId(), functionCode,
 						roleFunc.getName(), null, type, action, null);
 				roleFunctionSet.add(cenRoleFunc);
@@ -1509,15 +1497,14 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 				if (getRoleFuncList.isEmpty()) {
 					return roleFunc;
 				}
+			}
+			if (getRoleFuncList.size() > 1) {
+				CentralV2RoleFunction cenV2RoleFunction = appFunctionListFilter(encodedCode, getRoleFuncList);
+				if (cenV2RoleFunction == null)
+					return roleFunc;
+				roleFunc = checkIfPipesExitsInFunctionCode(cenV2RoleFunction);
 			} else {
-				if (getRoleFuncList.size() > 1) {
-					CentralV2RoleFunction cenV2RoleFunction = appFunctionListFilter(encodedCode, getRoleFuncList);
-					if (cenV2RoleFunction == null)
-						return roleFunc;
-					roleFunc = checkIfPipesExitsInFunctionCode(cenV2RoleFunction);
-				} else {
-					roleFunc = checkIfPipesExitsInFunctionCode(getRoleFuncList.get(0));
-				}
+				roleFunc = getRoleFuncList.get(0);
 			}
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "getRoleFunction: failed", e);
@@ -1693,8 +1680,8 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 			ObjectMapper mapper = new ObjectMapper();
 			ExternalAccessPerms extPerms = new ExternalAccessPerms();
 			String instanceValue = EcompPortalUtils.getFunctionCode(domainCentralRoleFunction.getCode());
-			String checkType = getFunctionType(domainCentralRoleFunction.getCode());
-			String actionValue = getFunctionAction(domainCentralRoleFunction.getCode());
+			String checkType = getFunctionCodeType(domainCentralRoleFunction.getCode());
+			String actionValue = getFunctionCodeAction(domainCentralRoleFunction.getCode());
 			HttpHeaders headers = EcompPortalUtils.base64encodeKeyForAAFBasicAuth();
 			extPerms.setAction(actionValue);
 			extPerms.setInstance(instanceValue);
@@ -3290,8 +3277,8 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 			action = EcompPortalUtils.getFunctionAction(role.getFunctionCd());
 			cenRoleFun = new CentralV2RoleFunction(null, instance, role.getFunctionName(), null, type, action, null);
 		} else{
-			type = getFunctionType(role.getFunctionCd());
-			action = getFunctionAction(role.getFunctionCd());
+			type = getFunctionCodeType(role.getFunctionCd());
+			action = getFunctionCodeAction(role.getFunctionCd());
 			cenRoleFun = new CentralV2RoleFunction(null, role.getFunctionCd(), role.getFunctionName(), null, type, action, null);
 		}
 		return cenRoleFun;

@@ -224,7 +224,7 @@ public enum EPAppMessagesEnum {
 			"ERR540E", "Unexpected Scheduler error", "Details: {0}.", "Please check logs for more information."),
     
     SchedulerInvalidAttributeError(EPErrorCodesEnum.SCHEDULER_INVALID_ATTRIBUTEERROR, ErrorTypeEnum.SYSTEM_ERROR, AlarmSeverityEnum.MAJOR, ErrorSeverityEnum.ERROR,
-			"ERR505E", "Unable to create Scheduler", "Details: {0}.", "Please check logs for more information."),
+			"ERR515E", "Unable to create Scheduler", "Details: {0}.", "Please check logs for more information."),
 
 	;
 	

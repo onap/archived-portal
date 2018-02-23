@@ -124,8 +124,11 @@ app.controller('rolefunctionpopupController',function($scope, confirmBoxService,
 								break;
 							}
 							if (!isEditing) {
-								if (message.availableRoleFunctions[x].code == availableRoleFunction.code) {
-									confirmBoxService.showInformation("Code already exists. Please create a role function with a different code to proceed.");
+								if (message.availableRoleFunctions[x].type == availableRoleFunction.type
+										&& message.availableRoleFunctions[x].code == availableRoleFunction.code
+										&& message.availableRoleFunctions[x].action == availableRoleFunction.action
+									) {
+									confirmBoxService.showInformation("Please make sure code, type and action is unique. Please create a role function with a different code or type or action to proceed.");
 									exists = true;
 									availableRoleFunction.name = $scope.tempText;
 									break;

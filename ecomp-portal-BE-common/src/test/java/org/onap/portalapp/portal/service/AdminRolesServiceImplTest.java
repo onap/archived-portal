@@ -39,6 +39,7 @@ package org.onap.portalapp.portal.service;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -127,6 +128,8 @@ public class AdminRolesServiceImplTest {
 
 	private Long ACCOUNT_ADMIN_ROLE_ID = 999L;
 	
+	private Long ECOMP_APP_ID = 1L;
+	
 	public EPApp mockApp() {
 		EPApp app = new EPApp();
 		app.setName("Test");
@@ -178,7 +181,12 @@ public class AdminRolesServiceImplTest {
 		userAppList.add(epUserApp);
 		Mockito.when(dataAccessService.getList(EPUserApp.class,
 				" where userId = " + user.getId() + " and role.id = " + 999, null, null)).thenReturn(userAppList);
-		adminRolesServiceImpl.getAppsWithAdminRoleStateForUser(user.getOrgUserId());
+		List<EPApp> appsList = new ArrayList<>();
+		appsList.add(app);
+		Mockito.when(dataAccessService.getList(EPApp.class,
+				"  where ( enabled = 'Y' or id = " + ECOMP_APP_ID + ")", null, null)).thenReturn(appsList);
+		AppsListWithAdminRole  actual = adminRolesServiceImpl.getAppsWithAdminRoleStateForUser(user.getOrgUserId());
+		assertNotNull(actual);
 	}
 
 	@SuppressWarnings({ "deprecation", "unchecked" })
