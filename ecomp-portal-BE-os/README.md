@@ -15,6 +15,7 @@ https://www.eclipse.org/m2e-wtp/
 ## Release Notes
 
 Version 2.2
+- [PORTAL-207] Raise 4 % percentage (from 44 to 48) sonar code coverage for ONAP PORTAL
 - [PORTAL-136] Raise JUnit test coverage ONAP Portal to 50% for Beijing 
 - [PORTAL-133] replace ECOMP to ONAP on Contact Us and Get Access page
 - [PORTAL-145] Harden code to address SQL injecton, XSS vulnerabilities

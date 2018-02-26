@@ -323,7 +323,7 @@ public class RoleManageController extends EPRestrictedBaseController {
 						List<CentralV2Role> roles = externalAccessRolesService.getRolesForApp(requestedApp.getUebKey());
 						for (CentralV2Role existRole : roles)
 							if (existRole.getName().equalsIgnoreCase(role.getName()))
-								throw new DuplicateRecordException("role already exists: " + existRole.getName());
+								throw new DuplicateRecordException("Role already exists: " + existRole.getName());
 
 						domainRole = new CentralV2Role();
 						domainRole.setName(role.getName());
@@ -508,12 +508,14 @@ public class RoleManageController extends EPRestrictedBaseController {
 					if(domainRoleFunction.getType() == null || domainRoleFunction.getAction() == null) {
 						addIfTypeActionDoesNotExits(domainRoleFunction);
 					}
+					boolean isSave =  true;
 					if (domainRoleFunction != null && domainRoleFunction.getCode().equals(roleFunc.getCode())
 							&& domainRoleFunction.getType().equals(roleFunc.getType())
 							&& domainRoleFunction.getAction().equals(roleFunc.getAction())) {
 						domainRoleFunction.setName(roleFunc.getName());
 						saveOrUpdateResponse = externalAccessRolesService.saveCentralRoleFunction(domainRoleFunction,
 								requestedApp);
+						isSave = false;
 					} else {
 						roleFunc.setAppId(requestedApp.getId());
 						saveOrUpdateResponse = externalAccessRolesService.saveCentralRoleFunction(roleFunc,
@@ -522,16 +524,14 @@ public class RoleManageController extends EPRestrictedBaseController {
 					if (saveOrUpdateResponse) {
 						EPUser requestedUser = externalAccessRolesService.getUser(user.getOrgUserId()).get(0);
 						EPApp app = externalAccessRolesService.getApp(requestedApp.getUebKey()).get(0);
-						CentralV2RoleFunction function = externalAccessRolesService.getRoleFunction(roleFunc.getCode(),
-								requestedApp.getUebKey());
-						String activityCode = (function.getCode() == null)
+						String activityCode = (isSave)
 								? EcompAuditLog.CD_ACTIVITY_EXTERNAL_AUTH_ADD_FUNCTION
 								: EcompAuditLog.CD_ACTIVITY_EXTERNAL_AUTH_UPDATE_FUNCTION;
 						logger.info(EELFLoggerDelegate.applicationLogger,
-								"saveRoleFunction: succeeded for app {}, function {}", app.getId(), roleFunc.getCode());
+								"saveRoleFunction: succeeded for app {}, function {}", app.getId(), code);
 						AuditLog auditLog = getAuditInfo(requestedUser, activityCode);
 						auditLog.setComments(EcompPortalUtils.truncateString("saveRoleFunction role for app:"
-								+ app.getId() + " and function:'" + roleFunc.getCode() + "'",
+								+ app.getId() + " and function:'" + code + "'",
 								PortalConstants.AUDIT_LOG_COMMENT_SIZE));
 						auditService.logActivity(auditLog, null);
 						MDC.put(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP,
@@ -544,7 +544,7 @@ public class RoleManageController extends EPRestrictedBaseController {
 						logger.info(EELFLoggerDelegate.auditLogger,
 								EPLogUtil.formatAuditLogMessage("RoleManageController.saveRoleFunction", activityCode,
 										String.valueOf(requestedUser.getId()), requestedUser.getOrgUserId(),
-										roleFunc.getCode()));
+										code));
 						MDC.remove(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP);
 						MDC.remove(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP);
 						MDC.remove(SystemProperties.MDC_TIMER);

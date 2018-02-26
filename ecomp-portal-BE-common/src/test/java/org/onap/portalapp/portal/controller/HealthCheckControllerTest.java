@@ -35,69 +35,42 @@
  *
  * ECOMP is a trademark and service mark of AT&T Intellectual Property.
  */
-package org.onap.portalapp.portal.utils;
-
-import static org.junit.Assert.assertEquals;
-
-import java.util.ArrayList;
-import java.util.List;
+package org.onap.portalapp.portal.controller;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.junit.Before;
 import org.junit.Test;
-import org.onap.portalapp.portal.core.MockEPUser;
-import org.onap.portalapp.portal.domain.EPUser;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.MockitoAnnotations;
 import org.onap.portalapp.portal.framework.MockitoTestSuite;
+import org.onap.portalapp.portal.utils.EcompPortalUtils;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
-public class EcompPortalUtilsTest {
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(EcompPortalUtils.class)
+public class HealthCheckControllerTest {
+
+	@Before
+	public void setup() {
+		MockitoAnnotations.initMocks(this);
+	}
+
+	@InjectMocks
+	HealthCheckController healthCheckController = new HealthCheckController();
 
 	MockitoTestSuite mockitoTestSuite = new MockitoTestSuite();
 
 	HttpServletRequest mockedRequest = mockitoTestSuite.getMockedRequest();
 	HttpServletResponse mockedResponse = mockitoTestSuite.getMockedResponse();
-	MockEPUser mockUser = new MockEPUser();
-
 	
 	@Test
-	public void legitimateAttuidSuccessTest() {
-		assertEquals(true, EcompPortalUtils.legitimateUserId("mm016f"));
+	public void healthCheckFailTest() {
+		PowerMockito.mockStatic(EcompPortalUtils.class);
+		healthCheckController.healthCheck(mockedRequest, mockedResponse);
 	}
-
-	@Test
-	public void legitimateAttuidFailureTest() {
-		assertEquals(false, EcompPortalUtils.legitimateUserId("1#@23456"));
-	}
-	
-	
-	@Test
-	public void parsingByRegularExpressionTest() {
-		List<String> expected =  new ArrayList<>();
-		expected.add("test");
-		expected.add("123");
-		assertEquals(expected,EcompPortalUtils.parsingByRegularExpression("test 123"," "));
-	}
-	
-	@Test 
-	public void jsonErrorMessageResponseTest() {
-		String expected = "{\"error\":{\"code\":" + 200 + "," + "\"message\":\"" + "test" + "\"}}";
-		assertEquals(expected,EcompPortalUtils.jsonErrorMessageResponse(200, "test"));
-	}
-	
-	@Test 
-	public void jsonMessageResponseTest() {
-		String expected = "{\"message\":\"test\"}";
-		assertEquals(expected,EcompPortalUtils.jsonMessageResponse("test"));
-	}
-	
-	@Test
-	public void logAndSerializeObjectTest() {
-		EcompPortalUtils.logAndSerializeObject("test", "test", EcompPortalUtils.class);
-	}
-	
-	@Test
-	public void setBadPermissionsForEmptyUserTest() {
-		EcompPortalUtils.setBadPermissions(new EPUser(), mockedResponse, "test");
-	}
-
 }
