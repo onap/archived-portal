@@ -505,7 +505,7 @@ public class RoleManageController extends EPRestrictedBaseController {
 					String code = roleFunc.getType()+PIPE+roleFunc.getCode()+PIPE+roleFunc.getAction();
 					CentralV2RoleFunction domainRoleFunction = externalAccessRolesService.getRoleFunction(code,
 							requestedApp.getUebKey());
-					if(domainRoleFunction.getType() == null || domainRoleFunction.getAction() == null) {
+					if(domainRoleFunction != null && (domainRoleFunction.getType() == null || domainRoleFunction.getAction() == null)) {
 						addIfTypeActionDoesNotExits(domainRoleFunction);
 					}
 					boolean isSave =  true;

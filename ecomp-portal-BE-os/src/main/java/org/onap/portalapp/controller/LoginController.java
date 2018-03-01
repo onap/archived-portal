@@ -200,7 +200,7 @@ public class LoginController extends EPUnRestrictedBaseController implements Log
 		Map<Object, Object> model = new HashMap<Object, Object>();
 		HashMap<Object, Object> additionalParamsMap = new HashMap<Object, Object>();
 		EPLoginBean commandBean = new EPLoginBean();
-		MDC.put(MDC_KEY_REQUEST_ID, getRequestId(request));
+		MDC.put(MDC_KEY_REQUEST_ID, (getRequestId(request)==null || getRequestId(request).isEmpty()) ? UUID.randomUUID().toString():getRequestId(request));
 		// get userId from cookie
 		String orgUserId = SessionCookieUtil.getUserIdFromCookie(request, response);
 		logger.info(EELFLoggerDelegate.debugLogger, "processSingleSignOn: begins with orgUserId {}", orgUserId);
@@ -230,11 +230,11 @@ public class LoginController extends EPUnRestrictedBaseController implements Log
 						additionalParamsMap);
 
 				stopWatch.stop();
-				MDC.put(EPSystemProperties.MDC_TIMER, stopWatch.getTotalTimeMillis() + "ms");
+				MDC.put(EPSystemProperties.MDC_TIMER, String.valueOf(stopWatch.getTotalTimeMillis()));
 				logger.info(EELFLoggerDelegate.debugLogger, "Operation findUser is completed.");
 			} catch (Exception e) {
 				stopWatch.stop();
-				MDC.put(EPSystemProperties.MDC_TIMER, stopWatch.getTotalTimeMillis() + "ms");
+				MDC.put(EPSystemProperties.MDC_TIMER, String.valueOf(stopWatch.getTotalTimeMillis()));
 				logger.info(EELFLoggerDelegate.errorLogger, "processSingleSignOn failed on user " + orgUserId, e);
 			} finally {
 				MDC.remove(EPSystemProperties.MDC_TIMER);

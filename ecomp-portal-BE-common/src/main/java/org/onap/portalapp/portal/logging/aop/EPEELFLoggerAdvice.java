@@ -112,7 +112,7 @@ public class EPEELFLoggerAdvice {
 		MDC.put(className + methodName + EPCommonSystemProperties.METRICSLOG_BEGIN_TIMESTAMP, getCurrentDateTimeUTC());
 		MDC.put(EPCommonSystemProperties.TARGET_ENTITY, EPCommonSystemProperties.ECOMP_PORTAL_BE);
 		MDC.put(EPCommonSystemProperties.TARGET_SERVICE_NAME, methodName);
-		if (MDC.get(Configuration.MDC_KEY_REQUEST_ID) == null){
+		if (MDC.get(Configuration.MDC_KEY_REQUEST_ID) == null || MDC.get(Configuration.MDC_KEY_REQUEST_ID).isEmpty()){
 			String requestId = UUID.randomUUID().toString();
 			MDC.put(Configuration.MDC_KEY_REQUEST_ID, requestId);
 		}
@@ -173,7 +173,7 @@ public class EPEELFLoggerAdvice {
 		if (securityEventType != null && args.length > 0 && args[0] != null && args[0] instanceof HttpServletRequest
 				&& securityEventType == SecurityEventTypeEnum.INCOMING_REST_MESSAGE
 				&& (MDC.get(EPCommonSystemProperties.FULL_URL) == null
-						|| MDC.get(EPCommonSystemProperties.FULL_URL) == "")) {
+				|| MDC.get(EPCommonSystemProperties.FULL_URL).isEmpty())) {
 			HttpServletRequest req = (HttpServletRequest) args[0];
 			this.setHttpRequestBasedDefaultsIntoGlobalLoggingContext(req, securityEventType, methodName);
 		}
@@ -313,7 +313,8 @@ public class EPEELFLoggerAdvice {
 				if (accessingClient != null && accessingClient.trim().length()==0 && (accessingClient.contains("Mozilla")
 						|| accessingClient.contains("Chrome") || accessingClient.contains("Safari"))) {
 					accessingClient = EPCommonSystemProperties.ECOMP_PORTAL_FE;
-				}
+				}else if(accessingClient==null || accessingClient.isEmpty())
+					accessingClient = "Unknown";
 				MDC.put(EPCommonSystemProperties.PARTNER_NAME, accessingClient);
 
 				// Load loginId into MDC context.
@@ -340,9 +341,9 @@ public class EPEELFLoggerAdvice {
 				}
 
 				// Rest Path
-				MDC.put(Configuration.MDC_SERVICE_NAME, restMethod);
+				MDC.put(Configuration.MDC_SERVICE_NAME, (restMethod==null || restMethod.isEmpty()) ? "Unknown" : restMethod);
 				String restPath = req.getServletPath();
-				if (restPath != null && restPath != "") {
+				if (restPath != null && !restPath.isEmpty()) {
 					MDC.put(Configuration.MDC_SERVICE_NAME, restPath);
 				}
 
@@ -359,7 +360,7 @@ public class EPEELFLoggerAdvice {
 				MDC.put(EPCommonSystemProperties.TARGET_SERVICE_NAME, "search");
 			}
 		} else {
-			MDC.put(Configuration.MDC_SERVICE_NAME, restMethod);
+			MDC.put(Configuration.MDC_SERVICE_NAME, (restMethod==null || restMethod.isEmpty()) ? "Unknown" : restMethod);
 			MDC.put(EPCommonSystemProperties.PARTNER_NAME, EPCommonSystemProperties.ECOMP_PORTAL_FE);
 		}
 

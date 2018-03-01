@@ -137,6 +137,11 @@
 			<version>${jacocoVersion}</version>
 			<classifier>runtime</classifier>
 		</dependency>
+		<dependency>
+    		<groupId>org.apache.tomcat.embed</groupId>
+    		<artifactId>tomcat-embed-core</artifactId>
+    		<version>8.5.13</version>
+		</dependency>
 	</dependencies>
 
 	<build>

@@ -9,3 +9,4 @@ node_modules
 app
 .tmp
 client/bower_components
+npm-debug.log

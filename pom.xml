@@ -30,7 +30,7 @@
 		<epsdk.version>2.1.0</epsdk.version>
 		<springframework.version>4.2.2.RELEASE</springframework.version>
 		<hibernate.version>4.3.11.Final</hibernate.version>
-		<fasterxml.version>2.7.4</fasterxml.version>
+		<fasterxml.version>2.9.2</fasterxml.version>
 		<eelf.version>1.0.0</eelf.version>
 		<!-- NOT provided by OParent, unfortunately -->
 		<jacocoVersion>0.7.6.201602180812</jacocoVersion>

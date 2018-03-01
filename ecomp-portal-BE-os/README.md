@@ -36,6 +36,7 @@ Version 2.2
 - [Portal-162] CVE-2015-5211 - Spring - File Upload issue. Upgrade to 4.2.2
 - [Portal-163] NVD - CVE-2016-1000341: bouncycastle issue. Upgrade to 2.4.4
 - [Portal-168] CVE-2015-0254 JSTL-Upgrade to 1.2.3+
+- [Portal-155] Review security issues: portal
 
 Version 1.1.0 (Amsterdam), November 2017
 - [Portal-6] Updates to License and Trademark in the PORTAL Source Code

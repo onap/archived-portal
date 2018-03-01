@@ -37,6 +37,7 @@
  */
 package org.onap.portalapp.portal.controller;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import javax.servlet.http.HttpServletRequest;
@@ -106,7 +107,7 @@ public class MicroserviceProxyControllerTest extends MockitoTestSuite {
 		Mockito.when(microserviceProxyService.proxyToDestination(1, user, mockedRequest))
 				.thenThrow(httpClientErrorException);
 		String acutualString = microserviceProxyController.getMicroserviceProxy(mockedRequest, getMockedResponse(), 1);
-		assertTrue(acutualString.equals("{\"error\":\"\"}"));
+		assertEquals("", acutualString);
 	}
 
 	@Test
@@ -138,6 +139,6 @@ public class MicroserviceProxyControllerTest extends MockitoTestSuite {
 				.thenThrow(httpClientErrorException);
 		String acutualString = microserviceProxyController.getMicroserviceProxyByWidgetId(mockedRequest,
 				getMockedResponse(), 1);
-		assertTrue(acutualString.equals("{\"error\":\"\"}"));
-	}
+		assertEquals("", acutualString);
+		}
 }
