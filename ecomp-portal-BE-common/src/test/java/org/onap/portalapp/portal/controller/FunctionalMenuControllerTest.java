@@ -247,7 +247,7 @@ public class FunctionalMenuControllerTest extends MockitoTestSuite {
 	@Test
 	public void getFunctionalMenuStaticInfoTest(){
 		String fnMenuStaticactualResponse = null;
-		String fnMenuStaticexpectedResponse = "{\"firstName\":\"test\",\"lastName\":\"test\",\"last_login\":\"09/08/2017 03:48:13-0400\",\"userId\":\"guestT\",\"email\":\"test\"}";
+		String fnMenuStaticexpectedResponse = "{\"firstName\":\"test\",\"lastName\":\"test\",\"last_login\":\"09/08/2017 03:48:13 -0400 am\",\"userId\":\"guestT\",\"email\":\"test\"}";
 		String orgUserIdStr = null;
 		
 		EPUser user = mockUser.mockEPUser();

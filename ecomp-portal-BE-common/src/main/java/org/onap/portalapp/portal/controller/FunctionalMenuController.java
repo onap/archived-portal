@@ -553,7 +553,7 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 				EPUser userResult = searchService.searchUserByUserId(orgUserIdStr);
 				emailStr = userResult.getEmail();
 			}
-			SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy hh:mm:ssZ");
+			SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss Z a");
 			Date lastLoginDate = user.getLastLoginDate();
 			if (lastLoginDate == null) {
 				// should never happen
