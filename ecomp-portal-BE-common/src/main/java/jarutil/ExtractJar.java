@@ -38,7 +38,6 @@
 package jarutil;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -48,27 +47,29 @@ import java.io.Writer;
 import java.net.URL;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ExtractJar {
 
-	public static int bufferSize = 8192;
-	public static String JARFILE = "raptor_upgrade.jar";
+	public static final int bufferSize = 8192;
+	public static final String jarFile = "raptor_upgrade.jar";
+	private static final Logger logger = LoggerFactory.getLogger(ExtractJar.class);
 
 	public static void main(String[] args) throws Exception {
 		if (args.length > 0 && args[0] != null && args[0].length() > 0)
 			extractFilesFromJar(args[0]);
 		else {
-			System.out.println("Current Directory is taken as webapp path");
+			logger.info("Current Directory is taken as webapp path");
 			String currentDir = new File(".").getAbsolutePath();
 			extractFilesFromJar(currentDir);
 		}
 	}
 
 	public static void extractFilesFromJar(String directory) throws IOException {
-		// JarFile jar = new JarFile(jarFile);
+	
 		Class clazz = ExtractJar.class;
 		String classContainer = clazz.getProtectionDomain().getCodeSource().getLocation().toString();
-		// System.out.println("classContainer ---------> " + classContainer);
 		URL jarUrl = clazz.getProtectionDomain().getCodeSource().getLocation();
 
 		JarInputStream entryStream = new JarInputStream(jarUrl.openStream());
@@ -78,7 +79,7 @@ public class ExtractJar {
 			if (entry == null)
 				break;
 			if (entry.getName().indexOf("jarutil") < 0) {
-				System.out.println(entry.getName());
+				logger.info(entry.getName());
 				File file = new File(directory, entry.getName());
 				if (entry.isDirectory()) {
 					if (!file.exists())
@@ -115,7 +116,7 @@ public class ExtractJar {
 	}
 
 	public static void copy(InputStream in, OutputStream out, long byteCount) throws IOException {
-		byte buffer[] = new byte[bufferSize];
+		byte[] buffer = new byte[bufferSize];
 		int len = bufferSize;
 		if (byteCount >= 0) {
 			while (byteCount > 0) {
@@ -144,7 +145,7 @@ public class ExtractJar {
 	 * Copy Reader to Writer for byteCount bytes or until EOF or exception.
 	 */
 	public static void copy(Reader in, Writer out, long byteCount) throws IOException {
-		char buffer[] = new char[bufferSize];
+		char[] buffer = new char[bufferSize];
 		int len = bufferSize;
 		if (byteCount >= 0) {
 			while (byteCount > 0) {
