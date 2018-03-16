@@ -19,5 +19,6 @@ Building ONAP Portal SDK Web Applications
 	pulling-db-data
 	google-charts
 	dynamic-content
+	single-signon
 	wrapping-up
 
