@@ -107,7 +107,7 @@ public class MicroserviceProxyControllerTest extends MockitoTestSuite {
 		Mockito.when(microserviceProxyService.proxyToDestination(1, user, mockedRequest))
 				.thenThrow(httpClientErrorException);
 		String acutualString = microserviceProxyController.getMicroserviceProxy(mockedRequest, getMockedResponse(), 1);
-		assertEquals("", acutualString);
+		assertTrue(acutualString.equals("{\"error\":\"\"}"));
 	}
 
 	@Test
@@ -139,6 +139,6 @@ public class MicroserviceProxyControllerTest extends MockitoTestSuite {
 				.thenThrow(httpClientErrorException);
 		String acutualString = microserviceProxyController.getMicroserviceProxyByWidgetId(mockedRequest,
 				getMockedResponse(), 1);
-		assertEquals("", acutualString);
+		assertTrue(acutualString.equals("{\"error\":\"\"}"));
 		}
 }

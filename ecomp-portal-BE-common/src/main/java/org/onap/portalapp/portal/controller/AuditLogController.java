@@ -37,6 +37,10 @@
  */
 package org.onap.portalapp.portal.controller;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.UUID;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.MDC;
@@ -45,6 +49,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.att.eelf.configuration.Configuration;
+
 import org.onap.portalapp.controller.EPRestrictedBaseController;
 import org.onap.portalapp.portal.domain.EPUser;
 import org.onap.portalapp.portal.logging.aop.EPEELFLoggerAdvice;
@@ -56,6 +63,7 @@ import org.onap.portalapp.util.EPUserUtils;
 import org.onap.portalsdk.core.domain.AuditLog;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.onap.portalsdk.core.service.AuditService;
+import org.onap.portalsdk.core.util.SystemProperties;
 
 @RestController
 @RequestMapping("/portalApi/auditLog")
@@ -103,19 +111,34 @@ public class AuditLogController extends EPRestrictedBaseController {
 				AuditLog auditLog = new AuditLog();
 				auditLog.setActivityCode(cd_type);
 				/*
-				 * Check affectedAppId and comment and see if these two values are valid
+				 * Check affectedAppId and comment and see if these two values
+				 * are valid
 				 */
 				if (comment != null && !comment.equals("") && !comment.equals("undefined"))
-					auditLog.setComments(EcompPortalUtils.truncateString(comment, PortalConstants.AUDIT_LOG_COMMENT_SIZE));
+					auditLog.setComments(
+							EcompPortalUtils.truncateString(comment, PortalConstants.AUDIT_LOG_COMMENT_SIZE));
 				if (affectedAppId != null && !affectedAppId.equals("") && !affectedAppId.equals("undefined"))
 					auditLog.setAffectedRecordId(affectedAppId);
 				long userId = EPUserUtils.getUserId(request);
 				auditLog.setUserId(userId);
-				auditService.logActivity(auditLog, null);
-
-				// Log file
 				MDC.put(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP, EPEELFLoggerAdvice.getCurrentDateTimeUTC());
+				MDC.put(EPCommonSystemProperties.PARTNER_NAME, EPCommonSystemProperties.ECOMP_PORTAL_FE);
+				MDC.put(Configuration.MDC_SERVICE_NAME, EPCommonSystemProperties.ECOMP_PORTAL_BE);
+				if (MDC.get(Configuration.MDC_KEY_REQUEST_ID) == null) {
+					String requestId = UUID.randomUUID().toString();
+					MDC.put(Configuration.MDC_KEY_REQUEST_ID, requestId);
+				}
+				// Log file
 				MDC.put(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP, EPEELFLoggerAdvice.getCurrentDateTimeUTC());
+				SimpleDateFormat ecompLogDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+				String beginDateTime = MDC.get(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP);
+				Date beginDate = ecompLogDateFormat.parse(beginDateTime);
+				auditService.logActivity(auditLog, null);
+				String endDateTime = MDC.get(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP);
+				Date endDate = ecompLogDateFormat.parse(endDateTime);
+				String timeDifference = String.format("%d", endDate.getTime() - beginDate.getTime());
+				MDC.put(SystemProperties.MDC_TIMER, timeDifference);
+				MDC.put(EPCommonSystemProperties.STATUS_CODE, "COMPLETE");
 				logger.info(EELFLoggerDelegate.auditLogger, EPLogUtil.formatAuditLogMessage(
 						"AuditLogController.auditLog", cd_type, user.getOrgUserId(), affectedAppId, comment));
 				MDC.remove(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP);
@@ -123,6 +146,13 @@ public class AuditLogController extends EPRestrictedBaseController {
 			}
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "auditLog failed", e);
+			MDC.put(EPCommonSystemProperties.STATUS_CODE, "ERROR");
+		} finally{
+			MDC.remove(Configuration.MDC_SERVICE_NAME);
+			MDC.remove(EPCommonSystemProperties.PARTNER_NAME);
+			MDC.remove(SystemProperties.MDC_TIMER);
+			MDC.remove(Configuration.MDC_KEY_REQUEST_ID);
+			MDC.remove(EPCommonSystemProperties.STATUS_CODE);
 		}
 	}
 

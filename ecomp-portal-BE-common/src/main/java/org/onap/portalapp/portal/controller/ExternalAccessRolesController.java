@@ -209,10 +209,10 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 	@ApiOperation(value = "Gets all role functions for an application for older version.", response = CentralRoleFunction.class, responseContainer="Json")
 	@RequestMapping(value = {
 			"/functions" }, method = RequestMethod.GET, produces = "application/json")
-	public List<RoleFunction> getRoleFunctionsList(HttpServletRequest request, HttpServletResponse response)
+	public List<CentralRoleFunction> getRoleFunctionsList(HttpServletRequest request, HttpServletResponse response)
 			throws Exception {
 		List<CentralV2RoleFunction> answer = null;
-		List<RoleFunction> roleFuncList = null;
+		List<CentralRoleFunction> roleFuncList = null;
 		logger.debug(EELFLoggerDelegate.debugLogger, "Request received for getRoleFunctionsList");
 		try {
 			fieldsValidation(request);
@@ -253,6 +253,7 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 		logger.debug(EELFLoggerDelegate.debugLogger, "Request completed for getV2RoleFunctionsList");
 		return cenRoleFuncList;
 	}	
+	
 
 	@ApiOperation(value = "Gets role information for an application.", response = CentralRole.class, responseContainer="Json")
 	@RequestMapping(value = {
@@ -572,16 +573,32 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 		return new PortalRestResponse<String>(PortalRestStatusEnum.OK, SUCCESSFULLY_DELETED, "Success");
 	}
 	
-	@ApiOperation(value = "Gets active roles for an application.", response = CentralV2Role.class, responseContainer = "Json")
+	@ApiOperation(value = "Gets active roles for an application.", response = CentralRole.class, responseContainer = "Json")
 	@RequestMapping(value = { "/activeRoles" }, method = RequestMethod.GET, produces = "application/json")
-	public  List<CentralV2Role> getActiveRoles(HttpServletRequest request, HttpServletResponse response) throws Exception {
+	public  List<CentralRole> getActiveRoles(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		List<CentralRole> roles = null;
+		try {
+			fieldsValidation(request);
+			List<CentralV2Role> cenRoles= externalAccessRolesService.getActiveRoles(request.getHeader(UEBKEY));
+			roles = externalAccessRolesService.convertV2CentralRoleListToOldVerisonCentralRoleList(cenRoles);
+		} catch (Exception e) {
+			sendErrorResponse(response, e);		
+			logger.error(EELFLoggerDelegate.errorLogger, "getActiveRoles failed", e);
+		}
+		return roles;
+		
+	}
+	
+	@ApiOperation(value = "Gets active roles for an application.", response = CentralV2Role.class, responseContainer = "Json")
+	@RequestMapping(value = { "/v1/activeRoles" }, method = RequestMethod.GET, produces = "application/json")
+	public  List<CentralV2Role> getV2ActiveRoles(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		List<CentralV2Role> cenRole = null;
 		try {
 			fieldsValidation(request);
 			cenRole = externalAccessRolesService.getActiveRoles(request.getHeader(UEBKEY));
 		} catch (Exception e) {
 			sendErrorResponse(response, e);		
-			logger.error(EELFLoggerDelegate.errorLogger, "getActiveRoles failed", e);
+			logger.error(EELFLoggerDelegate.errorLogger, "getV2ActiveRoles failed", e);
 		}
 		return cenRole;
 		
@@ -831,13 +848,12 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 			@PathVariable("loginId") String loginId) throws Exception {
 		EcompUser user = null;
 		ObjectMapper mapper = new ObjectMapper();
-		CentralUser answer = null;
+		String answer = null;
 		try {
 			fieldsValidation(request);
-			answer = externalAccessRolesService.getUserRoles(loginId, request.getHeader(UEBKEY));
+			answer = externalAccessRolesService.getV2UserWithRoles(loginId, request.getHeader(UEBKEY));
 			if (answer != null) {
-				String res = mapper.writeValueAsString(answer);
-                User ecompUser = userservice.userMapper(res);
+                User ecompUser = userservice.userMapper(answer);
 				user = UserUtils.convertToEcompUser(ecompUser);
 			}
 		} catch (Exception e) {

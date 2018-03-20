@@ -193,7 +193,7 @@ public class EPLdapServiceImpl extends FusionService implements EPLdapService {
 				for (NamingEnumeration e = resultAttributes.getAll(); e.hasMore();) { // why the nested loop?
 					Attribute attribute = (Attribute) e.next();
 					for (NamingEnumeration ie = attribute.getAll(); ie.hasMore();) {
-						if (attribute.getID().equalsIgnoreCase("nickname")) {
+						if (attribute.getID().equalsIgnoreCase("givenName")) {
 							user.setFirstName((String) ie.next());
 						} else if (attribute.getID().equalsIgnoreCase("initials")) {
 							user.setMiddleInitial((String) ie.next());

@@ -107,6 +107,7 @@ import org.onap.portalsdk.core.domain.Role;
 import org.onap.portalsdk.core.domain.RoleFunction;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.onap.portalsdk.core.restful.domain.EcompRole;
+import org.onap.portalsdk.core.restful.domain.EcompRoleFunction;
 import org.onap.portalsdk.core.restful.domain.EcompUser;
 import org.onap.portalsdk.core.service.DataAccessService;
 import org.onap.portalsdk.core.util.SystemProperties;
@@ -1324,8 +1325,10 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 						SortedSet<CentralV2RoleFunction> roleFunctionSet = new TreeSet<>();
 						for (CentralV2RoleFunction roleFunc : appRoleFunctionList) {
 							String functionCode = EcompPortalUtils.getFunctionCode(roleFunc.getCode());
+							String type = getFunctionCodeType(roleFunc.getCode());
+							String action = getFunctionCodeAction(roleFunc.getCode());
 							CentralV2RoleFunction cenRoleFunc = new CentralV2RoleFunction(roleFunc.getId(),
-									functionCode, roleFunc.getName(), null, null);
+									functionCode, roleFunc.getName(), null, type, action, null);
 							roleFunctionSet.add(cenRoleFunc);
 						}
 						Long userRoleId = null;
@@ -3080,79 +3083,116 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 	@Override
 	public List<String> getMenuFunctionsList(String uebkey) throws Exception {
 		List<String> appMenuFunctionsList = null;
+		List<String> appMenuFunctionsFinalList = new ArrayList<>();
 		try {
 			EPApp app = getApp(uebkey).get(0);
 			final Map<String, Long> appParams = new HashMap<>();
 			appParams.put(APP_ID, app.getId());
 			appMenuFunctionsList = dataAccessService.executeNamedQuery("getMenuFunctions", appParams, null);
+			for(String appMenuFunction : appMenuFunctionsList) {
+				if(appMenuFunction.contains(FUNCTION_PIPE)) {
+					appMenuFunctionsFinalList.add(EcompPortalUtils.getFunctionCode(appMenuFunction));
+				} else {
+					appMenuFunctionsFinalList.add(appMenuFunction);
+				}
+			}
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "getMenuFunctionsList: Failed", e);
-			return appMenuFunctionsList;
+			return appMenuFunctionsFinalList;
 		}
-		return appMenuFunctionsList;
+		return appMenuFunctionsFinalList;
 	}
 
 	@SuppressWarnings({ "unchecked"})
 	@Override
 	public List<EcompUser> getAllAppUsers(String uebkey) throws Exception {
 		List<String> usersList = new ArrayList<>();
-		List<EcompUser> usersfinalList = new ArrayList<>();
-		try {
-			EPApp app = getApp(uebkey).get(0);
-			final Map<String, Long> appParams = new HashMap<>();
-			appParams.put("appId", app.getId());
-			List<EcompUserRoles> userList = (List<EcompUserRoles>) dataAccessService
-					.executeNamedQuery("ApplicationUserRoles", appParams, null);
-			for (EcompUserRoles ecompUserRole : userList) {
-				boolean found = false;
-				Set<EcompRole> roles = null;
-				for (EcompUser user : usersfinalList) {
-					if (user.getOrgUserId().equals(ecompUserRole.getOrgUserId())) {
-						EcompRole ecompRole = new EcompRole();
-						ecompRole.setId(ecompUserRole.getRoleId());
-						ecompRole.setName(ecompUserRole.getRoleName());
-						roles = user.getRoles();
-						roles.add(ecompRole);
-						user.setRoles(roles);
-						found = true;
-						break;
-					}
-				}
+        List<EcompUser> usersfinalList = new ArrayList<>();
+        try {
+               EPApp app = getApp(uebkey).get(0);
+               final Map<String, Long> appParams = new HashMap<>();
+               appParams.put("appId", app.getId());
+               List<EcompUserRoles> userList = (List<EcompUserRoles>) dataAccessService
+                            .executeNamedQuery("ApplicationUserRoles", appParams, null);
+               for (EcompUserRoles ecompUserRole : userList) {
+                     boolean found = false;
+                     Set<EcompRole> roles = null;
+                     for (EcompUser user : usersfinalList) {
+                            if (user.getOrgUserId().equals(ecompUserRole.getOrgUserId())) {
+                                   EcompRole ecompRole = new EcompRole();
+                                   ecompRole.setId(ecompUserRole.getRoleId());
+                                   ecompRole.setName(ecompUserRole.getRoleName());
+                                   roles = user.getRoles();
+                                   EcompRole role = roles.stream().filter(x -> x.getName().equals(ecompUserRole.getRoleName())).findAny()
+                                                 .orElse(null);
+                                   SortedSet<EcompRoleFunction> roleFunctionSet = new TreeSet<>();
+                                   if(role != null)
+                                   {
+                                          roleFunctionSet = (SortedSet<EcompRoleFunction>) role.getRoleFunctions();
+                                   }
+                                          
+                             String functionCode = EcompPortalUtils.getFunctionCode(ecompUserRole.getFunctionCode());
+                            functionCode = EPUserUtils.decodeFunctionCode(functionCode);
+                            EcompRoleFunction epRoleFunction = new EcompRoleFunction();
+                            epRoleFunction.setName(ecompUserRole.getFunctionName());
+                            epRoleFunction.setCode(EPUserUtils.decodeFunctionCode(functionCode));
+                            epRoleFunction.setType(getFunctionCodeType(ecompUserRole.getFunctionCode()));
+                            epRoleFunction.setAction(getFunctionCodeAction(ecompUserRole.getFunctionCode()));
+                            roleFunctionSet.add(epRoleFunction);
+                        ecompRole.setRoleFunctions(roleFunctionSet);
+                                   roles.add(ecompRole);
+                                   user.setRoles(roles);
+                                   found = true;
+                                   break;
+                            }
+                     }
 
-				if (!found) {
-					EcompUser epUser = new EcompUser();
-					epUser.setOrgId(ecompUserRole.getOrgId());
-					epUser.setManagerId(ecompUserRole.getManagerId());
-					epUser.setFirstName(ecompUserRole.getFirstName());
-					epUser.setLastName(ecompUserRole.getLastName());
-					epUser.setPhone(ecompUserRole.getPhone());
-					epUser.setEmail(ecompUserRole.getEmail());
-					epUser.setOrgUserId(ecompUserRole.getOrgUserId());
-					epUser.setOrgCode(ecompUserRole.getOrgCode());
-					epUser.setOrgManagerUserId(ecompUserRole.getOrgManagerUserId());
-					epUser.setJobTitle(ecompUserRole.getJobTitle());
-					epUser.setLoginId(ecompUserRole.getLoginId());
-					epUser.setActive(true);
-					roles = new HashSet<>();
-					EcompRole ecompRole = new EcompRole();
-					ecompRole.setId(ecompUserRole.getRoleId());
-					ecompRole.setName(ecompUserRole.getRoleName());
-					roles.add(ecompRole);
-					epUser.setRoles(roles);
-					usersfinalList.add(epUser);
-				}
-			}
-			ObjectMapper mapper = new ObjectMapper();
+                     if (!found) {
+                            EcompUser epUser = new EcompUser();
+                            epUser.setOrgId(ecompUserRole.getOrgId());
+                            epUser.setManagerId(ecompUserRole.getManagerId());
+                            epUser.setFirstName(ecompUserRole.getFirstName());
+                            epUser.setLastName(ecompUserRole.getLastName());
+                            epUser.setPhone(ecompUserRole.getPhone());
+                            epUser.setEmail(ecompUserRole.getEmail());
+                            epUser.setOrgUserId(ecompUserRole.getOrgUserId());
+                            epUser.setOrgCode(ecompUserRole.getOrgCode());
+                            epUser.setOrgManagerUserId(ecompUserRole.getOrgManagerUserId());
+                            epUser.setJobTitle(ecompUserRole.getJobTitle());
+                            epUser.setLoginId(ecompUserRole.getLoginId());
+                            epUser.setActive(true);
+                            roles = new HashSet<>();
+                            EcompRole ecompRole = new EcompRole();
+                            ecompRole.setId(ecompUserRole.getRoleId());
+                            ecompRole.setName(ecompUserRole.getRoleName());
+              SortedSet<EcompRoleFunction> roleFunctionSet = new TreeSet<>();
+              
+                            String functionCode = EcompPortalUtils.getFunctionCode(ecompUserRole.getFunctionCode());
+              functionCode = EPUserUtils.decodeFunctionCode(functionCode);
+              EcompRoleFunction epRoleFunction = new EcompRoleFunction();
+              epRoleFunction.setName(ecompUserRole.getFunctionName());
+              epRoleFunction.setCode(EPUserUtils.decodeFunctionCode(functionCode));
+              epRoleFunction.setType(getFunctionCodeType(ecompUserRole.getFunctionCode()));
+              epRoleFunction.setAction(getFunctionCodeAction(ecompUserRole.getFunctionCode()));
+              roleFunctionSet.add(epRoleFunction);
+              ecompRole.setRoleFunctions(roleFunctionSet);
+                            roles.add(ecompRole);
+                            epUser.setRoles(roles);
+                            usersfinalList.add(epUser);
+                     }
+               }
+               ObjectMapper mapper = new ObjectMapper();
 
-			for (EcompUser u1 : usersfinalList) {
-				String str = mapper.writeValueAsString(u1);
-				usersList.add(str);
-			}
-		} catch (Exception e) {
-			logger.error(EELFLoggerDelegate.errorLogger, "getAllUsers failed", e);
-			throw e;
-		}
-		return usersfinalList;
+               for (EcompUser u1 : usersfinalList) {
+                     String str = mapper.writeValueAsString(u1);
+                     usersList.add(str);
+               }
+        } catch (Exception e) {
+               logger.error(EELFLoggerDelegate.errorLogger, "getAllUsers failed", e);
+               throw e;
+        }
+        return usersfinalList;
+
 	}
 	
 
@@ -3304,10 +3344,10 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 	}
 	
 	@Override
-	public List<RoleFunction> convertCentralRoleFunctionToRoleFunctionObject(List<CentralV2RoleFunction> answer) {
-		List<RoleFunction> addRoleFuncList = new ArrayList<>();
+	public List<CentralRoleFunction> convertCentralRoleFunctionToRoleFunctionObject(List<CentralV2RoleFunction> answer) {
+		List<CentralRoleFunction> addRoleFuncList = new ArrayList<>();
 		for(CentralV2RoleFunction cenRoleFunc : answer){
-			RoleFunction setRoleFunc = new RoleFunction();
+			CentralRoleFunction setRoleFunc = new CentralRoleFunction();
 			setRoleFunc.setCode(cenRoleFunc.getCode());
 			setRoleFunc.setName(cenRoleFunc.getName());
 			addRoleFuncList.add(setRoleFunc);
@@ -3324,6 +3364,7 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 			sendUserRoles = convertV2UserRolesToOlderVersion(cenV2User);
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "getUserRoles: failed", e);
+			throw e;
 		}
 		return sendUserRoles;
 	}

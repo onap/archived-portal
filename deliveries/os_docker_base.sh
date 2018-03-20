@@ -24,17 +24,22 @@ NEXUS_REPO=nexus3.onap.org:10003
 # Establish environment variables
 source $(dirname $0)/.env
 
-APPS_VERSION="${NEXUS_REPO}/${EP_IMG_NAME}:${VERSION}"
+APP_VERSION="${NEXUS_REPO}/${EP_IMG_NAME}:${VERSION}"
+SDK_VERSION="${NEXUS_REPO}/${SDK_IMG_NAME}:${VERSION}"
 DB_VERSION="${NEXUS_REPO}/${DB_IMG_NAME}:${VERSION}"
 WMS_VERSION="${NEXUS_REPO}/${WMS_IMG_NAME}:${VERSION}"
 
-APPS_LATEST="${NEXUS_REPO}/${EP_IMG_NAME}:${LATEST}"
+APP_LATEST="${NEXUS_REPO}/${EP_IMG_NAME}:${LATEST}"
+SDK_LATEST="${NEXUS_REPO}/${SDK_IMG_NAME}:${LATEST}"
 DB_LATEST="${NEXUS_REPO}/${DB_IMG_NAME}:${LATEST}"
 WMS_LATEST="${NEXUS_REPO}/${WMS_IMG_NAME}:${LATEST}"
 
 # tag versions
-docker tag ${EP_IMG_NAME}:${PORTAL_TAG} ${APPS_VERSION}
-docker tag ${EP_IMG_NAME}:${PORTAL_TAG} ${APPS_LATEST}
+docker tag ${EP_IMG_NAME}:${PORTAL_TAG} ${APP_VERSION}
+docker tag ${EP_IMG_NAME}:${PORTAL_TAG} ${APP_LATEST}
+
+docker tag ${SDK_IMG_NAME}:${PORTAL_TAG} ${SDK_VERSION}
+docker tag ${SDK_IMG_NAME}:${PORTAL_TAG} ${SDK_LATEST}
 
 docker tag ${DB_IMG_NAME}:${PORTAL_TAG} ${DB_VERSION}
 docker tag ${DB_IMG_NAME}:${PORTAL_TAG} ${DB_LATEST}
@@ -43,8 +48,11 @@ docker tag ${WMS_IMG_NAME}:${PORTAL_TAG} ${WMS_VERSION}
 docker tag ${WMS_IMG_NAME}:${PORTAL_TAG} ${WMS_LATEST}
 
 # push to registry
-docker push ${APPS_VERSION}
-docker push ${APPS_LATEST}
+docker push ${APP_VERSION}
+docker push ${APP_LATEST}
+
+docker push ${SDK_VERSION}
+docker push ${SDK_LATEST}
 
 docker push ${DB_VERSION}
 docker push ${DB_LATEST}

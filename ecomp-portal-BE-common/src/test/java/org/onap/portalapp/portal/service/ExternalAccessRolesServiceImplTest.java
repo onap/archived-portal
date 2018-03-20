@@ -114,7 +114,7 @@ import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ EcompPortalUtils.class, Criterion.class, Restrictions.class, SystemProperties.class,
+@PrepareForTest({ EcompPortalUtils.class, Criterion.class, EPUserUtils.class, Restrictions.class, SystemProperties.class,
 		EPCommonSystemProperties.class })
 public class ExternalAccessRolesServiceImplTest {
 	@Mock
@@ -717,6 +717,8 @@ public class ExternalAccessRolesServiceImplTest {
 	@SuppressWarnings("deprecation")
 	@Test
 	public void getAllAppUsersTest() throws Exception {
+		PowerMockito.mockStatic(EcompPortalUtils.class);
+		PowerMockito.mockStatic(EPUserUtils.class);
 		EPApp app = new EPApp();
 		app.setEnabled(true);
 		app.setId((long) 10);
@@ -737,13 +739,23 @@ public class ExternalAccessRolesServiceImplTest {
 		ecompUserRoles.setOrgUserId("guestT");
 		ecompUserRoles.setRoleId((long) 1);
 		ecompUserRoles.setRoleName("test");
+		ecompUserRoles.setFunctionCode("test_type|test_instance|test_action");
+		ecompUserRoles.setFunctionName("test1");
 		EcompUserRoles ecompUserRoles2 = new EcompUserRoles();
 		ecompUserRoles2.setOrgUserId("guestT");
 		ecompUserRoles2.setRoleId((long) 2);
 		ecompUserRoles2.setRoleName("test new");
+		ecompUserRoles2.setFunctionCode("test_instance2");
+		ecompUserRoles2.setFunctionName("test2");
 		userList.add(ecompUserRoles);
 		userList.add(ecompUserRoles2);
-		Mockito.when(dataAccessService.executeNamedQuery("ApplicationUserRoles", appParams, null)).thenReturn(userList);
+		Mockito.when(EcompPortalUtils.getFunctionCode(ecompUserRoles.getFunctionCode())).thenReturn("test_instance");
+        Mockito.when(EPUserUtils.decodeFunctionCode("test_instance")).thenReturn("test_instance");
+        Mockito.when(EcompPortalUtils.getFunctionCode(ecompUserRoles2.getFunctionCode())).thenReturn("test_instance2");
+        Mockito.when(EPUserUtils.decodeFunctionCode("test_instance2")).thenReturn("test_instance2");
+        Mockito.when(EcompPortalUtils.getFunctionType("test_type|test_instance|test_action")).thenReturn("test_type");
+        Mockito.when(EcompPortalUtils.getFunctionAction("test_type|test_instance|test_action")).thenReturn("test_action");
+        Mockito.when(dataAccessService.executeNamedQuery("ApplicationUserRoles", appParams, null)).thenReturn(userList);
 		List<EcompUser> usersfinalList = externalAccessRolesServiceImpl.getAllAppUsers(app.getUebKey());
 		assertEquals(usersfinalList.get(0).getRoles().size(), 2);
 	}

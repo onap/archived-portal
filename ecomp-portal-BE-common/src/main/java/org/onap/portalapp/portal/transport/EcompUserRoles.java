@@ -97,7 +97,27 @@ public class EcompUserRoles implements Serializable{
 	@Id
 	@Column(name = "active_yn")
 	private boolean active;
+	
+	@Id
+    @Column(name = "function_cd")
+    private String functionCode;
+    @Id
+    @Column(name = "function_name")
+    private String functionName;
+
  
+	public String getFunctionCode() {
+		return functionCode;
+	}
+	public void setFunctionCode(String functionCode) {
+		this.functionCode = functionCode;
+	}
+	public String getFunctionName() {
+		return functionName;
+	}
+	public void setFunctionName(String functionName) {
+		this.functionName = functionName;
+	}
 	public Long getOrgId() {
 		return orgId;
 	}

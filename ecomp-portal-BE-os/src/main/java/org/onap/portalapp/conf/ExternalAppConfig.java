@@ -61,6 +61,7 @@ import org.onap.portalapp.authentication.OpenIdConnectLoginStrategy;
 import org.onap.portalapp.authentication.SimpleLoginStrategy;
 import org.onap.portalapp.controller.core.LogoutController;
 import org.onap.portalapp.controller.core.SDKLoginController;
+import org.onap.portalapp.music.conf.MusicSessionConfig;
 import org.onap.portalapp.portal.domain.EPApp;
 import org.onap.portalapp.portal.domain.EPUser;
 import org.onap.portalapp.portal.domain.EPUserApp;
@@ -100,6 +101,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -119,7 +121,7 @@ import com.google.gson.Gson;
 @Profile("src")
 @EnableAsync
 @EnableScheduling
-
+@Import({ MusicSessionConfig.class })
 public class ExternalAppConfig extends AppConfig implements Configurable {
 
 	private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(ExternalAppConfig.class);

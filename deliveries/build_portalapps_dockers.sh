@@ -119,6 +119,14 @@ DB_DOCKER_CMD="
 "
 $DB_DOCKER_CMD
 
+# Copy cassandra scripts to required directories
+# Portal
+cp $BASEDIR/ecomp-portal-DB-common/*.cql ${DELIVDIR}
+# SDK app
+cp $BASEDIR/sdk/ecomp-sdk/epsdk-app-common/db-scripts/*.cql ${DELIVDIR}
+
+
+
 echo "Build portal docker image"
 PORTAL_DOCKER_CMD="
   docker build -t ${EP_IMG_NAME}:${PORTAL_TAG} ${PROXY_ARGS}

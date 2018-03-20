@@ -51,6 +51,7 @@ import org.onap.portalapp.portal.domain.EPUser;
 import org.onap.portalapp.portal.domain.ExternalRoleDetails;
 import org.onap.portalapp.portal.exceptions.InvalidUserException;
 import org.onap.portalapp.portal.transport.CentralRole;
+import org.onap.portalapp.portal.transport.CentralRoleFunction;
 import org.onap.portalapp.portal.transport.CentralUser;
 import org.onap.portalapp.portal.transport.CentralV2Role;
 import org.onap.portalapp.portal.transport.ExternalRequestFieldsValidator;
@@ -132,11 +133,11 @@ public interface ExternalAccessRolesService {
 	CentralV2Role getRoleInfo(Long roleId, String uebkey) throws Exception;
 	
 	/**
-	 *  It returns the CentralRoleFunction object 
+	 *  It returns the CentralV2RoleFunction object 
 	 *   
 	 * @param functionCode
 	 * @param uebkey 
-	 * @return CentralRoleFunction
+	 * @return CentralV2RoleFunction
 	 * @throws Exception 
 	 */
 	public CentralV2RoleFunction getRoleFunction(String functionCode, String uebkey) throws Exception;
@@ -150,7 +151,7 @@ public interface ExternalAccessRolesService {
 	 * @throws Exception 
 	 */
 	public boolean saveCentralRoleFunction(CentralV2RoleFunction domainCentralRoleFunction, EPApp requestedApp) throws Exception;
-
+	
 	/**
 	 * It deletes role function in the DB
 	 * 
@@ -335,11 +336,11 @@ public interface ExternalAccessRolesService {
 	public  List<EPRole> getGlobalRolesOfPortal();
 	
 	/**
-	 * It converts list of CentralRoleFunction objects to RoleFunction objects
+	 * It converts list of CentralV2RoleFunction objects to older version of CentralRoleFunction objects
 	 * @param answer contains list of CentralRoleFunction objects
-	 * @return List of RoleFunction objects
+	 * @return List of CentralRoleFunction objects
 	 */
-	public List<RoleFunction> convertCentralRoleFunctionToRoleFunctionObject(List<CentralV2RoleFunction> answer);
+	public List<CentralRoleFunction> convertCentralRoleFunctionToRoleFunctionObject(List<CentralV2RoleFunction> answer);
 	
 	/**
 	 * 

@@ -273,19 +273,26 @@ public class DashboardController extends EPRestrictedBaseController {
 				auditLog.setUserId(user.getId());
 				auditLog.setActivityCode(EcompAuditLog.CD_ACTIVITY_SEARCH);
 				auditLog.setComments(EcompPortalUtils.truncateString(searchString, PortalConstants.AUDIT_LOG_COMMENT_SIZE));
-				MDC.put(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP,EPEELFLoggerAdvice.getCurrentDateTimeUTC());		
+				MDC.put(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP,EPEELFLoggerAdvice.getCurrentDateTimeUTC());	
+				MDC.put(EPCommonSystemProperties.PARTNER_NAME, EPCommonSystemProperties.ECOMP_PORTAL_FE);
+				MDC.put(com.att.eelf.configuration.Configuration.MDC_SERVICE_NAME, EPCommonSystemProperties.ECOMP_PORTAL_BE);
 				auditService.logActivity(auditLog, null);
 				MDC.put(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP,EPEELFLoggerAdvice.getCurrentDateTimeUTC());
+				
+				MDC.put(EPCommonSystemProperties.STATUS_CODE, "COMPLETE");
 				EcompPortalUtils.calculateDateTimeDifferenceForLog(MDC.get(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP),MDC.get(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP));
 				logger.info(EELFLoggerDelegate.auditLogger, EPLogUtil.formatAuditLogMessage("DashboardController.PortalRestResponse", 
 						EcompAuditLog.CD_ACTIVITY_SEARCH, user.getOrgUserId(), null, searchString));	
 				MDC.remove(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP);
 				MDC.remove(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP);
 				MDC.remove(SystemProperties.MDC_TIMER);
+				MDC.remove(EPCommonSystemProperties.STATUS_CODE);
 				return new PortalRestResponse<>(PortalRestStatusEnum.OK, "success", results);
 			}
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "searchPortal failed", e);
+			MDC.put(EPCommonSystemProperties.STATUS_CODE, "ERROR");
+			MDC.remove(EPCommonSystemProperties.STATUS_CODE);
 			return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, e.getMessage() + " - check logs.",
 					new HashMap<String, List<SearchResultItem>>());
 		}

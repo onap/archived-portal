@@ -2101,17 +2101,16 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 	<sql-query name="ApplicationUserRoles">
 		<return alias="ApplicationUserRoles" class="org.onap.portalapp.portal.transport.EcompUserRoles" />
 		<![CDATA[ 
-		    select distinct fu.org_id, fu.manager_id, fu.first_name, fu.middle_name, fu.last_name, fu.phone, fu.email, fu.hrid, fu.org_user_id, fu.org_code, fu.org_manager_userid, fu.job_title, fu.login_id, 
-			fu.active_yn , fr.app_role_id, fr.role_name
-			from fn_user fu, fn_role fr, fn_user_role fur
-			where fu.user_id = fur.user_id and fu.active_yn='Y' and fur.role_id = fr.role_id and fr.app_id =:appId and fr.active_yn='Y'
-	     	union
-            select distinct fu.org_id, fu.manager_id, fu.first_name, fu.middle_name, fu.last_name, fu.phone, 
-            fu.email, fu.hrid, fu.org_user_id, fu.org_code, fu.org_manager_userid, fu.job_title, 
-    		fu.login_id, fu.active_yn , fr.role_id, fr.role_name
-    		from fn_user_role a, fn_role fr, fn_user fu 
-    		where a.role_id in (select b.role_id from ep_app_role_function b where b.role_app_id = 1 and b.app_id =:appId) and a.user_id =fu.user_id and a.role_id = fr.role_id and fr.active_yn='Y' and fu.active_yn='Y'
-    		;
+		   select distinct fu.org_id, fu.manager_id, fu.first_name, fu.middle_name, fu.last_name, fu.phone, fu.email, fu.hrid, fu.org_user_id, fu.org_code, fu.org_manager_userid, fu.job_title, fu.login_id, 
+           fu.active_yn , fr.app_role_id, fr.role_name, epr.function_cd , epf.function_name
+           from fn_user fu, fn_role fr, fn_user_role fur, ep_app_role_function epr , ep_app_function epf
+           where fu.user_id = fur.user_id and fu.active_yn='Y' and fur.role_id = fr.role_id and fr.app_id =:appId and fr.active_yn='Y' and epr.function_cd= epf.function_cd and epf.app_id=epr.app_id and fur.role_id=epr.role_id
+           union
+           select distinct fu.org_id, fu.manager_id, fu.first_name, fu.middle_name, fu.last_name, fu.phone, fu.email, fu.hrid, fu.org_user_id, fu.org_code, fu.org_manager_userid, fu.job_title, 
+           fu.login_id, fu.active_yn , fr.role_id, fr.role_name, earf.function_cd , eaf.function_name
+           from fn_user_role a, fn_role fr, fn_user fu , ep_app_role_function earf, ep_app_function eaf
+           where a.role_id in (select b.role_id from ep_app_role_function b where b.role_app_id = 1 and b.app_id =:appId) and a.user_id =fu.user_id and a.role_id = fr.role_id and fr.active_yn='Y' and fu.active_yn='Y'
+           and earf.role_id = a.role_id and earf.function_cd = eaf.function_cd and earf.app_id = eaf.app_id  and earf.role_app_id = 1 and fr.active_yn='Y' and fu.active_yn='Y';
 		]]>
 	</sql-query>
 	

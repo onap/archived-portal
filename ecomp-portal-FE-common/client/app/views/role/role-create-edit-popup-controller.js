@@ -57,7 +57,9 @@ app.controller('roleCreateEditController',function($scope, conf, $http, $modalIn
 			var availableRoleFunction = $scope.roleFunctions[i];
 			availableRoleFunction.selected = false;
 			for(var j=0; j< $scope.role.roleFunctions.length; j++){
-				if($scope.roleFunctions[i].code === $scope.role.roleFunctions[j].code) {
+				if($scope.roleFunctions[i].code === $scope.role.roleFunctions[j].code
+						&& $scope.roleFunctions[i].type === $scope.role.roleFunctions[j].type
+						&& $scope.roleFunctions[i].action === $scope.role.roleFunctions[j].action) {
 					availableRoleFunction.selected = true;
 					console.log(availableRoleFunction.selected);
 				}
@@ -77,7 +79,9 @@ app.controller('roleCreateEditController',function($scope, conf, $http, $modalIn
 			if(!selected) {
 				for(var i=0; i<$scope.finalSelectedRoleFunctions.length; i++){
 					var availableRoleFunction = $scope.finalSelectedRoleFunctions[i];
-					if(availableRoleFunction.code == selectedRoleFunction.code){
+					if(availableRoleFunction.code == selectedRoleFunction.code
+							&& availableRoleFunction.type == selectedRoleFunction.type
+							&& availableRoleFunction.action == selectedRoleFunction.action){
 						$scope.finalSelectedRoleFunctions.splice(i, 1);
 					}
 				}					

@@ -38,6 +38,7 @@
 package org.onap.portalapp.portal.logging.aop;
 
 import java.net.InetAddress;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
@@ -104,7 +105,7 @@ public class EPEELFLoggerAdvice {
 		String className = "";
 		if (passOnArgs.length > 0 && passOnArgs[0] != null)
 			className = passOnArgs[0].toString();
-		String methodName = "";
+		String methodName = EPCommonSystemProperties.ECOMP_PORTAL_BE;
 		if (passOnArgs.length > 1 && passOnArgs[1] != null)
 			methodName = passOnArgs[1].toString();
 
@@ -112,7 +113,7 @@ public class EPEELFLoggerAdvice {
 		MDC.put(className + methodName + EPCommonSystemProperties.METRICSLOG_BEGIN_TIMESTAMP, getCurrentDateTimeUTC());
 		MDC.put(EPCommonSystemProperties.TARGET_ENTITY, EPCommonSystemProperties.ECOMP_PORTAL_BE);
 		MDC.put(EPCommonSystemProperties.TARGET_SERVICE_NAME, methodName);
-		if (MDC.get(Configuration.MDC_KEY_REQUEST_ID) == null || MDC.get(Configuration.MDC_KEY_REQUEST_ID).isEmpty()){
+		if (MDC.get(Configuration.MDC_KEY_REQUEST_ID) == null||MDC.get(Configuration.MDC_KEY_REQUEST_ID).isEmpty()){
 			String requestId = UUID.randomUUID().toString();
 			MDC.put(Configuration.MDC_KEY_REQUEST_ID, requestId);
 		}
@@ -149,7 +150,7 @@ public class EPEELFLoggerAdvice {
 		if (passOnArgs.length > 0 && passOnArgs[0] != null)
 			className = passOnArgs[0].toString();
 		// Method Name
-		String methodName = "";
+		String methodName =  EPCommonSystemProperties.ECOMP_PORTAL_BE;
 		if (passOnArgs.length > 1 && passOnArgs[1] != null)
 			methodName = passOnArgs[1].toString();
 
@@ -160,6 +161,14 @@ public class EPEELFLoggerAdvice {
 		if (MDC.get(EPCommonSystemProperties.TARGET_ENTITY) == null
 				|| MDC.get(EPCommonSystemProperties.TARGET_ENTITY) == "")
 			MDC.put(EPCommonSystemProperties.TARGET_ENTITY, EPCommonSystemProperties.ECOMP_PORTAL_BE);
+		
+		if (MDC.get(Configuration.MDC_KEY_REQUEST_ID) == null||MDC.get(Configuration.MDC_KEY_REQUEST_ID).isEmpty()){
+			String requestId = UUID.randomUUID().toString();
+			MDC.put(Configuration.MDC_KEY_REQUEST_ID, requestId);
+		}
+		MDC.put(EPCommonSystemProperties.PARTNER_NAME, "Unknown");
+		MDC.put(Configuration.MDC_SERVICE_NAME, EPCommonSystemProperties.ECOMP_PORTAL_BE);
+
 
 		MDC.put(EPCommonSystemProperties.METRICSLOG_BEGIN_TIMESTAMP,
 				MDC.get(className + methodName + EPCommonSystemProperties.METRICSLOG_BEGIN_TIMESTAMP));
@@ -173,7 +182,7 @@ public class EPEELFLoggerAdvice {
 		if (securityEventType != null && args.length > 0 && args[0] != null && args[0] instanceof HttpServletRequest
 				&& securityEventType == SecurityEventTypeEnum.INCOMING_REST_MESSAGE
 				&& (MDC.get(EPCommonSystemProperties.FULL_URL) == null
-				|| MDC.get(EPCommonSystemProperties.FULL_URL).isEmpty())) {
+						|| MDC.get(EPCommonSystemProperties.FULL_URL).isEmpty())) {
 			HttpServletRequest req = (HttpServletRequest) args[0];
 			this.setHttpRequestBasedDefaultsIntoGlobalLoggingContext(req, securityEventType, methodName);
 		}
@@ -308,13 +317,12 @@ public class EPEELFLoggerAdvice {
 				MDC.put(Configuration.MDC_KEY_REQUEST_ID, requestId);
 
 				// Load user agent into MDC context, if available.
-				String accessingClient = "Unknown";
-				accessingClient = req.getHeader(SystemProperties.USERAGENT_NAME);
+				String accessingClient = req.getHeader(SystemProperties.USERAGENT_NAME);
+				accessingClient = (accessingClient == null || accessingClient.trim().length()==0)?"Unknown":accessingClient;
 				if (accessingClient != null && accessingClient.trim().length()==0 && (accessingClient.contains("Mozilla")
 						|| accessingClient.contains("Chrome") || accessingClient.contains("Safari"))) {
 					accessingClient = EPCommonSystemProperties.ECOMP_PORTAL_FE;
-				}else if(accessingClient==null || accessingClient.isEmpty())
-					accessingClient = "Unknown";
+				}
 				MDC.put(EPCommonSystemProperties.PARTNER_NAME, accessingClient);
 
 				// Load loginId into MDC context.
@@ -333,7 +341,8 @@ public class EPEELFLoggerAdvice {
 				MDC.put(EPCommonSystemProperties.FULL_URL, EPCommonSystemProperties.UNKNOWN);
 				MDC.put(EPCommonSystemProperties.PROTOCOL, EPCommonSystemProperties.HTTP);
 				restURL = UserUtils.getFullURL(req);
-				if (restURL != null && restURL != "") {
+				//if (restURL != null && restURL != "") {
+				if (restURL != null && restURL.trim().length()>0) {
 					MDC.put(EPCommonSystemProperties.FULL_URL, restURL);
 					if (restURL.toLowerCase().contains("https")) {
 						MDC.put(EPCommonSystemProperties.PROTOCOL, EPCommonSystemProperties.HTTPS);
@@ -341,9 +350,11 @@ public class EPEELFLoggerAdvice {
 				}
 
 				// Rest Path
-				MDC.put(Configuration.MDC_SERVICE_NAME, (restMethod==null || restMethod.isEmpty()) ? "Unknown" : restMethod);
+				MDC.put(Configuration.MDC_SERVICE_NAME, restMethod);
 				String restPath = req.getServletPath();
-				if (restPath != null && !restPath.isEmpty()) {
+				//if (restPath != null && restPath != "") {
+				if (restPath != null && restPath.trim().length()>0) {
+
 					MDC.put(Configuration.MDC_SERVICE_NAME, restPath);
 				}
 
@@ -360,7 +371,7 @@ public class EPEELFLoggerAdvice {
 				MDC.put(EPCommonSystemProperties.TARGET_SERVICE_NAME, "search");
 			}
 		} else {
-			MDC.put(Configuration.MDC_SERVICE_NAME, (restMethod==null || restMethod.isEmpty()) ? "Unknown" : restMethod);
+			MDC.put(Configuration.MDC_SERVICE_NAME, restMethod);
 			MDC.put(EPCommonSystemProperties.PARTNER_NAME, EPCommonSystemProperties.ECOMP_PORTAL_FE);
 		}
 
@@ -398,4 +409,5 @@ public class EPEELFLoggerAdvice {
 	public String getInternalResponseCode() {
 		return MDC.get(EPCommonSystemProperties.RESPONSE_CODE);
 	}
+
 }
