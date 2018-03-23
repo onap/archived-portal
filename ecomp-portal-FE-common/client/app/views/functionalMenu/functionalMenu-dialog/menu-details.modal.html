@@ -60,7 +60,7 @@
 				
             <div class="span6" >
                 <div class="item-label">Title</div>
-                <input id="input-title" ddh-reset ng-readonly="!functionalMenuDetails.formEditable ? 'checked':'' " placeholder="Enter text"class="functionalMenu-height" ng-model="functionalMenuDetails.menutitle" type="text" name="text"/>
+                <input id="input-title" ddh-reset ng-readonly="!functionalMenuDetails.formEditable ? 'checked':'' " placeholder="Enter text"class="functionalMenu-height" ng-model="functionalMenuDetails.menutitle" type="text" name="text" maxlength="100"/>
                 <div id="div-error-conflict" class="error-container" ng-show="functionalMenuDetails.conflictMessages.text">
                     <small id="msg-error-conflict" id="functionalMenuDetails-input-title-conflict" class="err-message" ng-bind="functionalMenuDetails.conflictMessages.text"></small>
                 </div>

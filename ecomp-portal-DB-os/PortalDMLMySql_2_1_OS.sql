@@ -3,7 +3,18 @@
 -- First run the common Opensource DML; then run this file to add The Opensource only data
 USE portal;
 
-set foreign_key_checks=1; 
+set foreign_key_checks=1;
+
+--- update fn_menu for roles
+UPDATE fn_menu
+SET function_cd = 'menu_acc_admin'
+WHERE  label = 'Roles';
+
+--- update fn_menu for users
+UPDATE fn_menu
+SET function_cd = 'menu_acc_admin'
+WHERE label = 'Users';
+
 
 -- fn_user
 Insert into fn_user (USER_ID, ORG_ID, MANAGER_ID,FIRST_NAME,MIDDLE_NAME,LAST_NAME,PHONE,FAX,CELLULAR,EMAIL,ADDRESS_ID,ALERT_METHOD_CD,HRID,ORG_USER_ID,ORG_CODE,LOGIN_ID,LOGIN_PWD,LAST_LOGIN_DATE,ACTIVE_YN,CREATED_ID,CREATED_DATE,MODIFIED_ID,MODIFIED_DATE,IS_INTERNAL_YN,ADDRESS_LINE_1,ADDRESS_LINE_2,CITY,STATE_CD,ZIP_CODE,COUNTRY_CD,LOCATION_CLLI,ORG_MANAGER_USERID,COMPANY,DEPARTMENT_NAME,JOB_TITLE,TIMEZONE,DEPARTMENT,BUSINESS_UNIT,BUSINESS_UNIT_NAME,COST_CENTER,FIN_LOC_CODE,SILO_STATUS) values (1,NULL,NULL,'Demo',NULL,'User',NULL,NULL,NULL,'demo@openecomp.org',NULL,NULL,NULL,'demo',NULL,'demo','4Gl6WL1bmwviYm+XZa6pS1vC0qKXWtn9wcZWdLx61L0=','2016-10-20 15:11:16','Y',NULL,'2016-10-14 21:00:00',1,'2016-10-20 15:11:16','N',NULL,NULL,NULL,'NJ',NULL,'US',NULL,NULL,NULL,NULL,NULL,10,NULL,NULL,NULL,NULL,NULL,NULL);
@@ -89,7 +100,24 @@ insert into ep_app_function (app_id, function_cd, function_name) values
 (1,	'url|saveNotification|*','publish notifications'),
 (1,	'url|url_role.htm|*','role page'),
 (1,	'url|url_welcome.htm|*','welcome page'),
-(1, 'menu|menu_acc_admin|*','Admin Acc Menu');
+(1, 'menu|menu_acc_admin|*','Admin Account Menu'),
+(1,'url|addWebAnalyticsReport|*','Add Web Analytics Report'), 
+(1,'url|appsFullList|*','Apps Full List'),
+(1,'url|centralizedApps|*','Centralized Apps'),
+(1,'url|functionalMenu|*','Functional Menu'),
+(1,'url|getAllWebAnalytics|*','Get All Web Analytics'),
+(1,'url|getFunctionalMenuRole|*','Get Functional Menu Role'),
+(1,'url|getNotificationAppRoles|*','Get Notification App Roles'),
+(1,'url|getUserAppsWebAnalytics|*','Get User Apps Web Analytics'),
+(1,'url|getUserJourneyAnalyticsReport|*','Get User Journey Report'),
+(1,'url|get_roles%2f%2a|*','getRolesOfApp'),
+(1,'url|get_role_functions%2f%2a|*','Get Role Functions'),
+(1,'url|notification_code|*','Notification Code'),
+(1,'url|role_function_list%2fsaveRoleFunction%2f%2a|*','Save Role Function'),
+(1,'url|syncRoles|*','SyncRoles'),
+(1,'url|userAppRoles|*','userAppRoles'),
+(1,'url|userApps|*','User Apps')
+;
 
 
 insert into ep_app_role_function (id, app_id, role_id, function_cd, role_app_id) values
@@ -102,12 +130,24 @@ insert into ep_app_role_function (id, app_id, role_id, function_cd, role_app_id)
 (7, 1, 16, 'menu|menu_logout|*',	null),
 (8, 1, 950, 'url|edit_notification|*', null),
 (9, 1, 950, 'url|getAdminNotifications|*', null),
-(10, 1, 950, 'url|saveNotification|*', null),
-(11, 1, 999, 'url|edit_notification|*', null),
-(12, 1, 999, 'url|getAdminNotifications|*', null),
-(13, 1, 999, 'menu|menu_admin|*', null),
-(14, 1, 1010, 'menu|menu_web_analytics|*', null),
+(10,1, 950, 'url|saveNotification|*', null),
+(11,1, 999,'url|userAppRoles|*','userAppRoles', null),
+(12,1, 999, 'url|getAdminNotifications|*', null),
+(13,1, 999,'url|userApps|*','User Apps'),
+(14,1, 1010, 'menu|menu_web_analytics|*', null),
 (15, 1, 2115, 'menu|menu_web_analytics|*', null),
 (16, 1 , 1, 'menu|menu_acc_admin|*' , null),
 (17, 1 , 999 ,'menu|menu_acc_admin|*', null);
+(18,1,999,'url|centralizedApps|*','Centralized Apps', null),
+(19,1,999,'url|getAllWebAnalytics|*','Get All Web Analytics', null),
+(20,1,999,'url|getFunctionalMenuRole|*','Get Functional Menu Role', null),
+(21,1,999,'url|getNotificationAppRoles|*','Get Notification App Roles', null),
+(22,1,999,'url|getUserAppsWebAnalytics|*','Get User Apps Web Analytics', null),
+(23,1,999,'url|getUserJourneyAnalyticsReport|*','Get User Journey Report', null),
+(24,1,999,'url|get_roles%2f%2a|*','getRolesOfApp', null),
+(25,1,999,'url|get_role_functions%2f%2a|*','Get Role Functions', null),
+(26,1,999,'url|notification_code|*','Notification Code', null),
+(27,1,999,'url|role_function_list%2fsaveRoleFunction%2f%2a|*','Save Role Function', null),
+(28,1,999,'url|syncRoles|*','SyncRoles', null);
+
 commit;    

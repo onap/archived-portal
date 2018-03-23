@@ -1507,7 +1507,12 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 					return roleFunc;
 				roleFunc = checkIfPipesExitsInFunctionCode(cenV2RoleFunction);
 			} else {
-				roleFunc = getRoleFuncList.get(0);
+				// Check even if single record have pipes
+				if (!getRoleFuncList.isEmpty() && getRoleFuncList.get(0).getCode().contains(FUNCTION_PIPE)) {
+					roleFunc = checkIfPipesExitsInFunctionCode(getRoleFuncList.get(0));
+				} else {
+					roleFunc = getRoleFuncList.get(0);
+				}
 			}
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "getRoleFunction: failed", e);
@@ -3434,8 +3439,8 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 	@Override
 	public List<CentralRole> convertV2CentralRoleListToOldVerisonCentralRoleList(List<CentralV2Role> v2CenRoleList) {
 		List<CentralRole> cenRoleList = new ArrayList<>();
-		SortedSet<CentralRoleFunction> cenRoleFuncList = new TreeSet<>();
 			for(CentralV2Role v2CenRole : v2CenRoleList){
+				SortedSet<CentralRoleFunction> cenRoleFuncList = new TreeSet<>();
 				for(CentralV2RoleFunction v2CenRoleFunc: v2CenRole.getRoleFunctions()){
 					CentralRoleFunction roleFunc = new CentralRoleFunction(v2CenRoleFunc.getCode(), v2CenRoleFunc.getName());
 					cenRoleFuncList.add(roleFunc);

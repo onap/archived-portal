@@ -340,7 +340,7 @@
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi</artifactId>
-			<version>3.17</version>
+			<version>3.15</version>
 			<exclusions>
 				<exclusion>
 					<groupId>commons-logging</groupId>
@@ -355,7 +355,7 @@
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi-ooxml</artifactId>
-			<version>3.17</version>
+			<version>3.15</version>
 			<exclusions>
 				<exclusion>
 					<groupId>commons-logging</groupId>
@@ -547,7 +547,7 @@
 		<dependency>
 			<groupId>commons-beanutils</groupId>
 			<artifactId>commons-beanutils</artifactId>
-			<version>1.9.2</version>
+			<version>1.9.3</version>
 		</dependency>
 		<dependency>
 			<groupId>com.ecwid.consul</groupId>
@@ -632,11 +632,6 @@
 		    <artifactId>spring-security-config</artifactId>
 		    <version>${springframework.version}</version>
 	    </dependency>
-		<dependency>
-    		<groupId>org.apache.lucene</groupId>
-    		<artifactId>lucene-queryparser</artifactId>
-    		<version>7.2.1</version>
-		</dependency>
 		<dependency>
     		<groupId>com.thoughtworks.xstream</groupId>
     		<artifactId>xstream</artifactId>

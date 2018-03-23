@@ -533,7 +533,7 @@ public class ExternalAccessRolesServiceImplTest {
 				.thenReturn(getRoleFuncList);
 		CentralV2RoleFunction actual = externalAccessRolesServiceImpl.getRoleFunction("test_type|type_code|*",
 				app.getUebKey());
-		assertEquals(getCenRole.getCode(), actual.getCode());
+		assertEquals("type_code", actual.getCode());
 	}
 
 	@Test

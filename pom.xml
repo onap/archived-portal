@@ -28,7 +28,7 @@
 		<!-- Jenkins should invoke mvn with argument -Dbuild.number=${BUILD_NUMBER} -->
 		<build.number>0</build.number>
 		<epsdk.version>2.2.0-SNAPSHOT</epsdk.version>
-		<springframework.version>4.2.2.RELEASE</springframework.version>
+		<springframework.version>4.2.3.RELEASE</springframework.version>
 		<hibernate.version>4.3.11.Final</hibernate.version>
 		<fasterxml.version>2.8.10</fasterxml.version>
 		<eelf.version>1.0.0</eelf.version>
