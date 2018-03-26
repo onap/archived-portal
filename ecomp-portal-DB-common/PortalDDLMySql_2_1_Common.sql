@@ -11,7 +11,7 @@
 -- -----------------------------------------------------------------------------------------------------------------
 set foreign_key_checks=1; 
 
-create database portal;
+create database portal_os;
 
 use portal;
 
