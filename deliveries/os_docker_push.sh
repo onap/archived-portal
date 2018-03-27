@@ -13,7 +13,11 @@ if [ -z "$PORTAL_VERSION" ]; then
 fi
 
 TIMESTAMP=$(date +%C%y%m%dT%H%M%S)
-export VERSION="${PORTAL_VERSION}-${TIMESTAMP}"
-export LATEST="latest"
+# commenting the following two configurations as lf team preferred the uncommented format below
+#export VERSION="${PORTAL_VERSION}-${TIMESTAMP}"
+#export LATEST="latest"
+
+export VERSION="${PORTAL_VERSION}-STAGING-${TIMESTAMP}"
+export LATEST="${PORTAL_VERSION}-STAGING-latest"
 
 exec ./os_docker_base.sh
