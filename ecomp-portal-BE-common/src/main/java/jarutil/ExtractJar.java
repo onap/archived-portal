@@ -47,14 +47,14 @@ import java.io.Writer;
 import java.net.URL;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
+
 
 public class ExtractJar {
 
 	public static final int bufferSize = 8192;
 	public static final String jarFile = "raptor_upgrade.jar";
-	private static final Logger logger = LoggerFactory.getLogger(ExtractJar.class);
+	private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(ExtractJar.class);
 
 	public static void main(String[] args) throws Exception {
 		if (args.length > 0 && args[0] != null && args[0].length() > 0)
