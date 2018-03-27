@@ -51,11 +51,7 @@ public class ExternalAppInitializer extends  AppInitializer{
   
     @Override
     protected Class<?>[] getServletConfigClasses() {
-//    	Class<?>[] configClasses =  super.getServletConfigClasses();
-//    	Class<?>[] additionalConfigClasses  = Arrays.copyOf(configClasses, configClasses.length);
-//    	addConfigClass(additionalConfigClasses, ExternalAppConfig.class);
-//    	return additionalConfigClasses;
-//    	
+   	
     	return new Class[] {ExternalAppConfig.class};
     }
     
