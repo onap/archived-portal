@@ -128,17 +128,17 @@ public class ExternalAppConfig extends AppConfig implements Configurable {
 
 	@Autowired
 	private DataAccessService dataAccessService;
-	
+
 	@Autowired
 	private UserRolesService userRolesService;
-	
+
 	@Autowired
 	private ExternalAccessRolesService externalAccessRolesService;
 
 	private RegistryAdapter schedulerRegistryAdapter;
 
-	String UEB_APP_KEY = PortalApiProperties.getProperty(PortalApiConstants.UEB_APP_KEY); 
-	
+	String uebAppKey = PortalApiProperties.getProperty(PortalApiConstants.UEB_APP_KEY); 
+
 	public ViewResolver viewResolver() {
 		return super.viewResolver();
 	}
@@ -162,14 +162,14 @@ public class ExternalAppConfig extends AppConfig implements Configurable {
 			MDC.put(MDC_SERVICE_INSTANCE_ID, "");
 			MDC.put(MDC_ALERT_SEVERITY, AlarmSeverityEnum.INFORMATIONAL.severity());
 			MDC.put(MDC_INSTANCE_UUID, SystemProperties.getProperty(SystemProperties.INSTANCE_UUID));
-			if(remotecentralizedsystemaccess.equalsIgnoreCase("true")){
+			if("true".equalsIgnoreCase(remotecentralizedsystemaccess)){
 				importFromExternalAuth();
 			}			
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "init failed", e);
 		}
 	}
-	
+
 	/**
 	 * Does a sync on functions, roles and role functions based on namespace 
 	 * for all the centralized applications between AAF and ONAP, updates
@@ -182,7 +182,7 @@ public class ExternalAppConfig extends AppConfig implements Configurable {
 		List<EPApp> appList;
 		//to get all centralized apps		
 		List<EPApp> centralizedAppList = dataAccessService.executeNamedQuery("getCentralizedApps", null, null);		
-		if(centralizedAppList != null && centralizedAppList.size() > 0){
+		if(centralizedAppList != null && !centralizedAppList.isEmpty()){
 			for(int i = 0; i < centralizedAppList.size(); i++){
 				//syncRoles(does a sync on functions, roles and role functions)
 				externalAccessRolesService.syncApplicationRolesWithEcompDB(centralizedAppList.get(i));
@@ -199,7 +199,7 @@ public class ExternalAppConfig extends AppConfig implements Configurable {
 							for(int k = 0; k < aafUserList.length(); k++){
 								EPUser user = null;
 								List<EPUser> usersList = null;								
-								List<EPUserApp> userRolesList = new ArrayList<EPUserApp>();
+								List<EPUserApp> userRolesList = new ArrayList<>();
 								JSONObject userRole = (JSONObject) aafUserList.get(k);
 								Gson gson = new Gson();
 								ExternalAuthUserRole userRoleObj = gson.fromJson(userRole.toString(), ExternalAuthUserRole.class);
@@ -210,36 +210,32 @@ public class ExternalAppConfig extends AppConfig implements Configurable {
 								Map<String, String> orgUserId = new HashMap<>();
 								orgUserId.put("orgUserIdValue", userRoleObj.getUser());
 								usersList = dataAccessService.executeNamedQuery("epUserAppId", orgUserId, null);
-								if(usersList != null && usersList.size() > 0){
+								if(usersList != null && !usersList.isEmpty()){
 									user = usersList.get(0);
 								}							
 								if(user == null){
 									// add user to fn_user(needs to be revisited after getting user info from AAF PORTAL-172) 								
 								}
-								//for each role and user in that role, check if user exists in fn_user_role. If not, add 
-								/*userRolesList = userRolesService.getUserRolesList(centralizedAppList.get(0).getId(), user.getId(), Long.valueOf(externalRoleDescription.getId()));
-								if(userRolesList == null || userRolesList.isEmpty()){								
-									// add userRole to fn_user_role(needs to be revisited after getting user info from AAF PORTAL-172)
-								}*/
 							}
 						}
-						
+
 					}
 				}
 			}			
 		}
 	}
-			
+
 	public DataAccessService dataAccessService() {
 		return super.dataAccessService();
 	}
 
+	@Override
 	public String[] tileDefinitions() {
 		return super.tileDefinitions();
 	}
 
 	public List<String> addTileDefinitions() {
-		List<String> definitions = new ArrayList<String>();
+		List<String> definitions = new ArrayList<>();
 		definitions.add("/WEB-INF/defs/definitions.xml");
 		return definitions;
 	}
@@ -266,7 +262,7 @@ public class ExternalAppConfig extends AppConfig implements Configurable {
 
 	@Bean
 	public org.onap.portalsdk.core.auth.LoginStrategy coreLoginStrategy() {
-		if (SystemProperties.getProperty(SystemProperties.AUTHENTICATION_MECHANISM).trim().equalsIgnoreCase("OIDC"))
+		if ("OIDC".equalsIgnoreCase(SystemProperties.getProperty(SystemProperties.AUTHENTICATION_MECHANISM).trim()))
 			return new OpenIdConnectLoginStrategy();
 		else
 			return new SimpleLoginStrategy();
@@ -275,7 +271,7 @@ public class ExternalAppConfig extends AppConfig implements Configurable {
 	@Bean
 	public LoginStrategy loginStrategy() {
 
-		if (SystemProperties.getProperty(SystemProperties.AUTHENTICATION_MECHANISM).trim().equalsIgnoreCase("OIDC"))
+		if ("OIDC".equalsIgnoreCase(SystemProperties.getProperty(SystemProperties.AUTHENTICATION_MECHANISM).trim()))
 			return new OpenIdConnectLoginStrategy();
 		else
 			return new SimpleLoginStrategy();
@@ -287,13 +283,6 @@ public class ExternalAppConfig extends AppConfig implements Configurable {
 
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
-		// registry.addInterceptor(new
-		// StaticResourcesInterceptor()).addPathPatterns("/index.htm",
-		// "/applicationsHome", "/widgetsHome", "/admins", "/users",
-		// "/applications", "/widgets");
-		// Excludes login/logout pages and REST endpoints used by other
-		// application servers.
-
 		registry.addInterceptor(sessionTimeoutInterceptor()).excludePathPatterns("/oid-login", "/portalApi/healthCheck",
 				"/portalApi/healthCheck/", "/portalApi/healthCheckSuspend", "/portalApi/healthCheckSuspend/",
 				"/portalApi/healthCheckResume", "/portalApi/healthCheckResume/", "/login_external",
