@@ -91,8 +91,7 @@ public class PostSearchBean extends SearchBase {
 
       setSortBy1("");
       setSortBy1Orig("");
-
-      //setSortByList(...);
+     
     }	// PostSearchBean
 
 
@@ -365,6 +364,7 @@ public class PostSearchBean extends SearchBase {
 		this.postFinancialLocCode = postFinancialLocCode;
 	}
 
+	@Override
 	public void resetSearch() {
           super.resetSearch();
           setUser(new EPUser());
