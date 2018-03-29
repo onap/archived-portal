@@ -6,6 +6,49 @@
 Portal Platform Release Notes
 =============================
 
+Version: 2.1.0
+--------------
+
+:Release Date: 24 May 2018
+ 
+.. toctree::
+    :maxdepth: 1		   
+
+We worked on hardening the ONAP Portal platform by improving code quality and addressing security issues.
+	
+**New Features**
+	* Platform Maturity Guidelines (Highest Priority)
+        * Integrating with MUSIC, OOM, and AAF
+        * 50% JUnit Test Coverage 
+        * Addressing security issues
+    * Bootstrapping of VID roles and tighter integration with AAF (Medium Priority)
+    * Role Centralization capability for framework based partners - design related (Low Priority)
+    * Platform Enhancements - Improved logging, Security Hardening, and SDK Simplification (Low Priority)
+	
+**Bug Fixes**
+    * 
+    *
+    *
+
+**Known Issues**
+	* 
+
+**Security Issues**
+	* 
+
+**Upgrade Notes**
+	* This is the second release.
+	
+**Deprecation Notes**
+	* This is the second release.
+	
+**Other**
+	* Below are the docker images released as part of Portal Platform project:
+	* onap/portal-db:
+	* onap/portal-apps:
+	* onap/portal-wms: 
+
+	
 Version: 1.3.0
 --------------
 
