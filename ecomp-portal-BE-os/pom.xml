@@ -621,6 +621,10 @@
 					<groupId>org.codehaus.jackson</groupId>
 					<artifactId>jackson-mapper-asl</artifactId>
 				</exclusion>
+				<exclusion>
+					<groupId>com.nimbusds</groupId>
+					<artifactId>nimbus-jose-jwt</artifactId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 <!-- 		<dependency>
@@ -663,7 +667,7 @@
 					<artifactId>*</artifactId>
 				</exclusion>
 			</exclusions>
-		</dependency>
+		</dependency> 
 	</dependencies>
 
 	<reporting>

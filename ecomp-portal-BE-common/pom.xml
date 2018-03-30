@@ -625,6 +625,10 @@
              		<groupId>commons-httpclient</groupId>
              		<artifactId>commons-httpclient</artifactId>
             	 </exclusion>
+				 <exclusion>
+        			<groupId>org.beanshell</groupId>
+            		<artifactId>bsh-core</artifactId>
+				 </exclusion>
               </exclusions>
         </dependency>
         <dependency>
