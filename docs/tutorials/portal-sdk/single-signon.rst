@@ -46,3 +46,32 @@ the applications on-boarded to it.
 However, if the application is not interested in single signon feature, then the new application can
 be always be on-boarded as a “Hyperlink only application” which will be opened into a new browser
 rather than the internal Portal’s tab.
+
+Changing the cookie domain
+--------------------------
+
+Changing the single-sign on cookie domain in portal requires both development and config activity:
+
+
+development - change this file and rebuild the front-end
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+::
+
+    ./ecomp-portal-FE-os/client/configurations/integ.json:102:      "cookieDomain": "onap.org"
+
+
+configuration - change this deployment entry
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+::
+
+    ./deliveries/properties_simpledemo/ONAPPORTAL/system.properties:104:ext_central_access_user_domain = @csp.onap.org
+
+
+Apps that are built on the EP-SDK have an entry in a config file that must be changed
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+::
+
+    ./deliveries/properties_simpledemo/ONAPPORTALSDK/system.properties:67:cookie_domain = onap.org
