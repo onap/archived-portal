@@ -101,6 +101,8 @@ services:
     links:
       - portal-db
       - portal-wms
+      - portal-zk
+      - portal-cassandra
     depends_on:
       portal-db:
         condition: service_healthy
@@ -131,6 +133,8 @@ services:
     links:
       - portal-db
       - portal-wms
+      - portal-zk
+      - portal-cassandra
     depends_on:
       portal-db:
         condition: service_healthy
