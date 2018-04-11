@@ -78,7 +78,7 @@ public class SessionCookieUtil {
 	public static void setUpUserIdCookie(HttpServletRequest request,
 			HttpServletResponse response,String userId) throws Exception {
 		logger.info("************** session cookie util set up UserId cookie begins");
-		userId = CipherUtil.encryptPKC(userId,
+		userId = CipherUtil.encrypt(userId,
 				SystemProperties.getProperty(SystemProperties.Decryption_Key));
 		Cookie cookie1 = new Cookie(USER_ID, userId);
 		cookie1.setMaxAge(cookieMaxAge);
@@ -98,7 +98,7 @@ public class SessionCookieUtil {
 				if (cookie.getName().equals(USER_ID))
 					userIdcookie = cookie;
 		if(userIdcookie!=null){
-			userId = CipherUtil.decryptPKC(userIdcookie.getValue(),
+			userId = CipherUtil.decrypt(userIdcookie.getValue(),
 					SystemProperties.getProperty(SystemProperties.Decryption_Key));
 		}
 		
