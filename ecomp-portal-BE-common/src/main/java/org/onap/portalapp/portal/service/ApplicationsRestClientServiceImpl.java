@@ -52,6 +52,7 @@ import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.jaxrs.client.WebClient;
+import org.apache.cxf.jaxrs.impl.ResponseImpl;
 import org.apache.cxf.transport.http.HTTPException;
 import org.onap.portalapp.portal.domain.EPApp;
 import org.onap.portalapp.portal.logging.aop.EPAuditLog;
@@ -221,7 +222,12 @@ public class ApplicationsRestClientServiceImpl implements ApplicationsRestClient
 
 		if (response != null) {
 			verifyResponse(response);
-			String str = response.readEntity(String.class);
+			
+			/* It is not recommendable to use the implementation class org.apache.cxf.jaxrs.impl.ResponseImpl in the code, 
+			but had to force this in-order to prevent conflict with the ResponseImpl class of Jersey Client which 
+			doesn't work as expected. Created Portal-253 for tracking */
+			String str = ((ResponseImpl)response).readEntity(String.class);
+			
 			EcompPortalUtils.logAndSerializeObject(logger, restPath, "GET result =", str);
 			try {
 				t = gson.fromJson(str, clazz);
@@ -239,7 +245,11 @@ public class ApplicationsRestClientServiceImpl implements ApplicationsRestClient
 
 		if (response != null) {
 			verifyResponse(response);
-			String incomingJson = response.readEntity(String.class);
+			
+			/* It is not recommendable to use the implementation class org.apache.cxf.jaxrs.impl.ResponseImpl in the code, 
+			but had to force this in-order to prevent conflict with the ResponseImpl class of Jersey Client which 
+			doesn't work as expected. Created Portal-253 for tracking */
+			String incomingJson = ((ResponseImpl)response).readEntity(String.class);
 			return incomingJson;
 		}
 		
@@ -265,7 +275,7 @@ public class ApplicationsRestClientServiceImpl implements ApplicationsRestClient
 
 		if (response != null) {
 			verifyResponse(response);
-			String str = response.readEntity(String.class);
+			String str = ((ResponseImpl)response).readEntity(String.class);
 			EcompPortalUtils.logAndSerializeObject(logger, restPath, "GET result =", str);
 
 			try {
@@ -331,7 +341,7 @@ public class ApplicationsRestClientServiceImpl implements ApplicationsRestClient
 
 			// String contentType = response.getHeaderString("Content-Type");
 			if (clazz != null) {
-				String str = response.readEntity(String.class);
+				String str = ((ResponseImpl)response).readEntity(String.class);
 				EcompPortalUtils.logAndSerializeObject(logger, restPath, "POST result =", str);
 				try {
 					t = gson.fromJson(str, clazz);
@@ -378,7 +388,7 @@ public class ApplicationsRestClientServiceImpl implements ApplicationsRestClient
 
 			// String contentType = response.getHeaderString("Content-Type");
 			if (clazz != null) {
-				String str = response.readEntity(String.class);
+				String str = ((ResponseImpl)response).readEntity(String.class);
 				EcompPortalUtils.logAndSerializeObject(logger, restPath, "POST result =", str);
 				try {
 					t = gson.fromJson(str, clazz);
@@ -425,7 +435,7 @@ public class ApplicationsRestClientServiceImpl implements ApplicationsRestClient
 
 		if (response != null) {
 			verifyResponse(response);
-			String str = response.readEntity(String.class);
+			String str = ((ResponseImpl)response).readEntity(String.class);
 			EcompPortalUtils.logAndSerializeObject(logger, restPath, "PUT result =", str);
 			try {
 				t = gson.fromJson(str, clazz);

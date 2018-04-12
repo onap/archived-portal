@@ -38,6 +38,8 @@ Version 2.2
 - [Portal-163] NVD - CVE-2016-1000341: bouncycastle issue. Upgrade to 2.4.4
 - [Portal-168] CVE-2015-0254 JSTL-Upgrade to 1.2.3+
 - [Portal-155] Review security issues: portal
+- [Portal-202] Remove files that have GPL or other license issues 	- b2b-library.min.js
+- [Portal-241] To reteieve roles on Users page for sdk(external app)
 
 Version 1.1.0 (Amsterdam), November 2017
 - [Portal-6] Updates to License and Trademark in the PORTAL Source Code
