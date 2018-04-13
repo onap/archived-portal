@@ -37,10 +37,21 @@
  */
 package org.onap.portalapp.portal.transport;
 
+import java.util.Set;
+
 public class RemoteRole {
 
 	private Long id;
 	private String name;
+    private Set roleFunctions;
+
+	public Set getRoleFunctions() {
+		return roleFunctions;
+	}
+
+	public void setRoleFunctions(Set roleFunctions) {
+		this.roleFunctions = roleFunctions;
+	}
 	
 	public Long getId() {
 		return id;
