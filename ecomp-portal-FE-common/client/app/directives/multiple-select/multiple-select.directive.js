@@ -126,6 +126,24 @@ angular.module('ecompApp')
                     }
                     return disp;
                 };
+                
+                scope.getIdTitle = function(){
+                    var disp = '';
+                    if(!scope.ngModel || !scope.ngModel.length) {
+                        return disp;
+                    }
+                    scope.ngModel.forEach(function(item){
+                        if(item[scope.valueAttr]){
+                            disp+=item[scope.nameAttr] + ',';
+                        }
+                    });
+                    if(disp!==''){
+                        disp = disp.slice(0,disp.length-1);
+                    }else{
+                        disp = scope.placeholder;
+                    }
+                    return disp+attrs.uniqueData;
+                };
             }
         };
     });

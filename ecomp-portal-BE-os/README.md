@@ -40,6 +40,7 @@ Version 2.2
 - [Portal-155] Review security issues: portal
 - [Portal-202] Remove files that have GPL or other license issues 	- b2b-library.min.js
 - [Portal-241] To reteieve roles on Users page for sdk(external app)
+- [Portal-256] Fix to make the userRole dynamic on Users modal popup
 
 Version 1.1.0 (Amsterdam), November 2017
 - [Portal-6] Updates to License and Trademark in the PORTAL Source Code
