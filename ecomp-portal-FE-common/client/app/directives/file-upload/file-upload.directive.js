@@ -33,7 +33,7 @@
  *
  * ============LICENSE_END============================================
  *
- * ECOMP is a trademark and service mark of AT&T Intellectual Property.
+ * 
  */
 /**
  * Created by Rui Lu on 12/12/16.

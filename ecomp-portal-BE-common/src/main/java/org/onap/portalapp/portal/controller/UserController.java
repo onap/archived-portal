@@ -33,7 +33,7 @@
  *
  * ============LICENSE_END============================================
  *
- * ECOMP is a trademark and service mark of AT&T Intellectual Property.
+ * 
  */
 package org.onap.portalapp.portal.controller;
 
@@ -70,7 +70,7 @@ public class UserController extends EPRestrictedBaseController {
 	private UserService userService;
 
 	/**
-	 * RESTful service method to get ECOMP Logged in User details.
+	 * RESTful service method to get ONAP Logged in User details.
 	 * 
 	 * @param request
 	 *            HttpServletRequest
@@ -96,7 +96,7 @@ public class UserController extends EPRestrictedBaseController {
 	}
 
 	/**
-	 * RESTful service method to update ECOMP Logged in User in DB.
+	 * RESTful service method to update ONAP Logged in User in DB.
 	 * 
 	 * @param request
 	 *            HttpServletRequest

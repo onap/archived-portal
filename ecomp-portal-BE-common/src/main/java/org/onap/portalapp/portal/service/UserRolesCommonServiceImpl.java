@@ -33,7 +33,7 @@
  *
  * ============LICENSE_END============================================
  *
- * ECOMP is a trademark and service mark of AT&T Intellectual Property.
+ * 
  */
 
 package org.onap.portalapp.portal.service;
@@ -345,7 +345,7 @@ public class UserRolesCommonServiceImpl  {
 						/*
 						 * for local app -- hack - always make sure fn_role
 						 * table's app_id is null and not 1 for primary app in
-						 * this case being ecomp portal app; reason: hibernate
+						 * this case being onap portal app; reason: hibernate
 						 * is rightly setting this to 1 while persisting to
 						 * fn_role as per the mapping but SDK role management
 						 * code expects the app_id to be null as there is no
@@ -761,7 +761,7 @@ public class UserRolesCommonServiceImpl  {
 		for (EPRole externalAppRole : rolesList) {
 
 			// Try to find an existing extern role for the app in the local
-			// ecomp DB. If so, then use its id to update the existing external
+			// onap DB. If so, then use its id to update the existing external
 			// application role record.
 			Long externAppId = externalAppRole.getId();
 			EPRole existingAppRole = epRoleService.getRole(appId, externAppId);
@@ -1574,7 +1574,7 @@ public class UserRolesCommonServiceImpl  {
 		List<RoleInAppForUser> rolesInAppForUser = null;
 		EPApp app = appsService.getApp(appId);
 		try {
-			// for ecomp portal app, no need to make a remote call
+			// for onap portal app, no need to make a remote call
 			List<Role> roleList = new ArrayList<>();
 			if (appId == PortalConstants.PORTAL_APP_ID) {		
 				if(app.getCentralAuth()){
@@ -1629,7 +1629,7 @@ public class UserRolesCommonServiceImpl  {
 			} else{
 				appRoles = applicationsRestClientService.get(EcompRole[].class, appId, "/roles");
 			}
-			// Test this error case, for generating an internal Ecomp Portal
+			// Test this error case, for generating an internal ONAP Portal
 			// error
 			// EcompRole[] appRoles = null;
 			// If there is an exception in the rest client api, then null will

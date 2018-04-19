@@ -33,7 +33,7 @@
  *
  * ============LICENSE_END============================================
  *
- * ECOMP is a trademark and service mark of AT&T Intellectual Property.
+ * 
  */
 package org.onap.portalapp.portal.service;
 
@@ -98,13 +98,13 @@ public class UserRolesServiceImpl extends UserRolesCommonServiceImpl implements 
 	public static void persistExternalRoleInEcompDb(EPRole externalAppRole, Long appId, EPRoleService roleService) {
 		externalAppRole.setAppId(appId);
 		externalAppRole.setAppRoleId(externalAppRole.getId());
-		externalAppRole.setId(null); // We will persist a new role, with ecomp
+		externalAppRole.setId(null); // We will persist a new role, with onap
 										// role id which will be different than
 										// external app role id.
 
 		roleService.saveRole(externalAppRole);
 		logger.debug(EELFLoggerDelegate.debugLogger,
-				String.format("ECOMP persists role from app:%d, app roleId: %d, roleName: %s", appId,
+				String.format("ONAP persists role from app:%d, app roleId: %d, roleName: %s", appId,
 						externalAppRole.getAppRoleId(), externalAppRole.getName()));
 	}
 

@@ -33,7 +33,7 @@
  *
  * ============LICENSE_END============================================
  *
- * ECOMP is a trademark and service mark of AT&T Intellectual Property.
+ * 
  */
 app.controller('rolefunctionpopupController',function($scope, confirmBoxService, message, $http, $modalInstance, RoleService, conf, isEditing) {
 	if (message.availableRoleFunction == null) {

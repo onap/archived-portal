@@ -33,7 +33,7 @@
  *
  * ============LICENSE_END============================================
  *
- * ECOMP is a trademark and service mark of AT&T Intellectual Property.
+ * 
  */
 package org.onap.portalapp.portal.domain;
 
@@ -52,9 +52,9 @@ public class EPRole extends DomainVo {
     private boolean active;
     private Integer priority;
     
-    // ECOMP will identify the specific remote application role id by appID;appRoleId among all the application roles it persists.
-    private Long appId;     // used by ECOMP only 
-    private Long appRoleId; // used by ECOMP only
+    // ONAP will identify the specific remote application role id by appID;appRoleId among all the application roles it persists.
+    private Long appId;     // used by ONAP only 
+    private Long appRoleId; // used by ONAP only
 
     private SortedSet<RoleFunction>     roleFunctions = new TreeSet<RoleFunction>();
     

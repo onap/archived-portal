@@ -33,7 +33,7 @@
  *
  * ============LICENSE_END============================================
  *
- * ECOMP is a trademark and service mark of AT&T Intellectual Property.
+ * 
  */
 package org.onap.portalapp.portal.service;
 
@@ -88,7 +88,7 @@ public class EPRoleFunctionServiceCentralizedImpl implements EPRoleFunctionServi
 		List<RoleFunction> getRoleFuncListOfPortal = new ArrayList<>();
 		final Map<String, Long> params = new HashMap<>();
 		params.put("appId", (long) 1);
-		//Sync all functions from external system into Ecomp portal DB
+		//Sync all functions from external system into ONAP portal DB
 		getRoleFuncList = dataAccessService.executeNamedQuery("getAllRoleFunctions", params, null);
 		for(CentralV2RoleFunction roleFunction : getRoleFuncList)
 		{

@@ -33,7 +33,7 @@
  *
  * ============LICENSE_END============================================
  *
- * ECOMP is a trademark and service mark of AT&T Intellectual Property.
+ * 
  */
 package org.onap.portalapp.portal.controller;
 
@@ -70,7 +70,7 @@ import io.swagger.annotations.ApiOperation;
 
 /**
  * Processes requests from external systems (i.e., not the front-end web UI).
- * First use case is ECOMP Controller, which has to create an admin and onboard
+ * First use case is ONAP Controller, which has to create an admin and onboard
  * itself upon launch of a fresh Portal.
  * 
  * Listens on the "auxapi" path prefix. Provides alternate implementations of

@@ -9,7 +9,7 @@ import javax.persistence.Table;
 
 /**
  * TODO: moved all microservice-related code (domain, controller, service)
- * from ecomp portal Backend to widget microservice
+ * from onap portal Backend to widget microservice
  */
 @Entity
 @Table(name="EP_MICROSERVICE")

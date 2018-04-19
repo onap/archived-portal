@@ -33,7 +33,7 @@
  *
  * ============LICENSE_END============================================
  *
- * ECOMP is a trademark and service mark of AT&T Intellectual Property.
+ * 
  */
 package org.onap.portalapp.portal.controller;
 
@@ -72,7 +72,7 @@ import io.swagger.annotations.ApiOperation;
 
 /**
  * Receives messages from the Collaboration Bus (C-BUS) notification and event
- * brokering tool. Creates notifications for ECOMP Portal users.
+ * brokering tool. Creates notifications for ONAP Portal users.
  */
 @RestController
 @RequestMapping(PortalConstants.REST_AUX_API)

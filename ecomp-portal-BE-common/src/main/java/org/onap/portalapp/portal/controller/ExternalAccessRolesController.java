@@ -33,7 +33,7 @@
  *
  * ============LICENSE_END============================================
  *
- * ECOMP is a trademark and service mark of AT&T Intellectual Property.
+ * 
  */
 package org.onap.portalapp.portal.controller;
 
@@ -170,7 +170,7 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 		try {
 			fieldsValidation(request);	
 			EPApp app = externalAccessRolesService.getApp(request.getHeader(UEBKEY)).get(0);
-			// Sync all roles from external system into Ecomp portal DB
+			// Sync all roles from external system into ONAP portal DB
 			logger.debug(EELFLoggerDelegate.debugLogger, "getRolesForApp: Entering into syncApplicationRolesWithEcompDB");
 			externalAccessRolesService.syncApplicationRolesWithEcompDB(app);
 			logger.debug(EELFLoggerDelegate.debugLogger, "getRolesForApp: Finished syncApplicationRolesWithEcompDB");
@@ -193,7 +193,7 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 		try {
 			fieldsValidation(request);
 			EPApp app = externalAccessRolesService.getApp(request.getHeader(UEBKEY)).get(0);
-			// Sync all roles from external system into Ecomp portal DB
+			// Sync all roles from external system into ONAP portal DB
 			logger.debug(EELFLoggerDelegate.debugLogger, "getV2RolesForApp: Entering into syncApplicationRolesWithEcompDB");
 			externalAccessRolesService.syncApplicationRolesWithEcompDB(app);
 			logger.debug(EELFLoggerDelegate.debugLogger, "getV2RolesForApp: Finished syncApplicationRolesWithEcompDB");
@@ -217,7 +217,7 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 		try {
 			fieldsValidation(request);
 			EPApp app = externalAccessRolesService.getApp(request.getHeader(UEBKEY)).get(0);
-			// Sync all functions from external system into Ecomp portal DB
+			// Sync all functions from external system into ONAP portal DB
 			logger.debug(EELFLoggerDelegate.debugLogger, "getRoleFunctionsList: Entering into syncRoleFunctionFromExternalAccessSystem");
 			externalAccessRolesService.syncRoleFunctionFromExternalAccessSystem(app);
 			logger.debug(EELFLoggerDelegate.debugLogger, "getRoleFunctionsList: Finished syncRoleFunctionFromExternalAccessSystem");
@@ -241,7 +241,7 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 		try {
 			fieldsValidation(request);
 			EPApp app = externalAccessRolesService.getApp(request.getHeader(UEBKEY)).get(0);
-			// Sync all functions from external system into Ecomp portal DB
+			// Sync all functions from external system into ONAP portal DB
 			logger.debug(EELFLoggerDelegate.debugLogger, "getV2RoleFunctionsList: Entering into syncRoleFunctionFromExternalAccessSystem");
 			externalAccessRolesService.syncRoleFunctionFromExternalAccessSystem(app);
 			logger.debug(EELFLoggerDelegate.debugLogger, "getV2RoleFunctionsList: Finished syncRoleFunctionFromExternalAccessSystem");
@@ -876,7 +876,7 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 		try {
 			fieldsValidation(request);
 			EPApp app = externalAccessRolesService.getApp(request.getHeader(UEBKEY)).get(0);
-			// Sync all roles from external system into Ecomp portal DB
+			// Sync all roles from external system into ONAP portal DB
 			logger.debug(EELFLoggerDelegate.debugLogger,
 					"getRolesForApp: Entering into syncApplicationRolesWithEcompDB");
 			externalAccessRolesService.syncApplicationRolesWithEcompDB(app);

@@ -33,7 +33,7 @@
  *
  * ============LICENSE_END============================================
  *
- * ECOMP is a trademark and service mark of AT&T Intellectual Property.
+ * 
  */
 package org.onap.portalapp.portal.ueb;
 
@@ -84,7 +84,7 @@ public class EPUebHelper {
 	}
 
 	//
-	// This should only be called by the ECOMP Portal App, other Apps have just one
+	// This should only be called by the ONAP Portal App, other Apps have just one
 	// publisher and use appPublisher
 	//
 	@SuppressWarnings("unused")

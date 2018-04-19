@@ -33,7 +33,7 @@
  
   ============LICENSE_END============================================
  
-  ECOMP is a trademark and service mark of AT&T Intellectual Property.
+  
   --%>
 <%@ taglib prefix="c"      uri="http://java.sun.com/jsp/jstl/core" %>
 

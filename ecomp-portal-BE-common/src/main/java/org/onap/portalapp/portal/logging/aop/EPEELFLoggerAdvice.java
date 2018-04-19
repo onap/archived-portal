@@ -33,7 +33,7 @@
  *
  * ============LICENSE_END============================================
  *
- * ECOMP is a trademark and service mark of AT&T Intellectual Property.
+ * 
  */
 package org.onap.portalapp.portal.logging.aop;
 
@@ -65,11 +65,11 @@ public class EPEELFLoggerAdvice {
 	private EELFLoggerDelegate adviceLogger = EELFLoggerDelegate.getLogger(EPEELFLoggerAdvice.class);
 
 	/**
-	 * DateTime Format according to the ECOMP Application Logging Guidelines.
+	 * DateTime Format according to the ONAP Application Logging Guidelines.
 	 */
 
 	/**
-	 * @return Current date and time in the format specified by the ECOMP
+	 * @return Current date and time in the format specified by the ONAP
 	 *         Application Logging Guidelines.
 	 */
 	public static String getCurrentDateTimeUTC() {

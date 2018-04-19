@@ -33,7 +33,7 @@
  *
  * ============LICENSE_END============================================
  *
- * ECOMP is a trademark and service mark of AT&T Intellectual Property.
+ * 
  */
 package org.onap.portalapp.portal.service;
 
@@ -260,7 +260,7 @@ public interface ExternalAccessRolesService {
 	Integer bulkUploadRolesFunctions(String uebkey) throws Exception;
 	
 	/**
-	 *  It syncs the roles and rolefunctions to the ecomp DB from AAF
+	 *  It syncs the roles and rolefunctions to the ONAP DB from AAF
 	 * @param app
 	 * @throws Exception
 	 */

@@ -33,7 +33,7 @@
  *
  * ============LICENSE_END============================================
  *
- * ECOMP is a trademark and service mark of AT&T Intellectual Property.
+ * 
  */
 package org.onap.portalapp.portal.controller;
 
@@ -105,7 +105,7 @@ public class PortalAdminController extends EPRestrictedBaseController {
 
 	/**
 	 * RESTful service method to create a new portal admin. Requirement: you
-	 * must be the Ecomp portal super admin user.
+	 * must be the ONAP portal super admin user.
 	 * @param request 
 	 * @param userId 
 	 * @param response 

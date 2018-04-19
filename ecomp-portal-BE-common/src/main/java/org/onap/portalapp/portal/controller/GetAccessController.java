@@ -33,7 +33,7 @@
  *
  * ============LICENSE_END============================================
  *
- * ECOMP is a trademark and service mark of AT&T Intellectual Property.
+ * 
  */
 package org.onap.portalapp.portal.controller;
 
@@ -70,7 +70,7 @@ public class GetAccessController extends EPUnRestrictedBaseController {
 	private GetAccessService getAccessService;
 
 	/**
-	 * Sorts the list by ECOMP function name.
+	 * Sorts the list by ONAP function name.
 	 */
 	private Comparator<GetAccessResult> getAccessComparator = new Comparator<GetAccessResult>() {
 		public int compare(GetAccessResult o1, GetAccessResult o2) {

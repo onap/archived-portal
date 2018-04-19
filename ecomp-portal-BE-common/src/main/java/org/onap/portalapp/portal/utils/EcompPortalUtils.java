@@ -33,7 +33,7 @@
  *
  * ============LICENSE_END============================================
  *
- * ECOMP is a trademark and service mark of AT&T Intellectual Property.
+ * 
  */
 package org.onap.portalapp.portal.utils;
 
@@ -269,7 +269,7 @@ public class EcompPortalUtils {
 
 	public static String getFEErrorString(Boolean internal, int responseCode) {
 		// Return a String like the following:
-		// "Internal Ecomp Error: 500 internal_server_error" or
+		// "Internal Onap Error: 500 internal_server_error" or
 		// "External App Error: 404 not_found"
 		// TODO: create our own Ecomp error codes, starting with 1000 and up.
 		String internalExternalString = internal ? "Ecomp Error: " : "App Error: ";

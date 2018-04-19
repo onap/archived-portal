@@ -33,7 +33,7 @@
  *
  * ============LICENSE_END============================================
  *
- * ECOMP is a trademark and service mark of AT&T Intellectual Property.
+ * 
  */
 package org.onap.portalapp.portal.domain;
 
@@ -568,7 +568,7 @@ public class EPUser extends User {
 
 	
 	/**
-	 * Attention! Not for use in ECOMP
+	 * Attention! Not for use in ONAP
 	 */
 	public SortedSet<EPRole> getAppRoles(EPApp app) {
 		SortedSet<EPRole> roles = new TreeSet<EPRole>();
@@ -589,7 +589,7 @@ public class EPUser extends User {
 	
 
 	/**
-	 * Attention! Not for use in ECOMP
+	 * Attention! Not for use in ONAP
 	 */
 	public SortedSet<EPRole> getEPRoles() {
 		EPApp app = new EPApp();
@@ -599,7 +599,7 @@ public class EPUser extends User {
 	}
 
 	/**
-	 * Attention! Not for use in ECOMP
+	 * Attention! Not for use in ONAP
 	 */
 	public void setEPRoles(SortedSet<EPRole> roles) {
 		EPApp app = new EPApp();
@@ -609,7 +609,7 @@ public class EPUser extends User {
 	}
 
 	/**
-	 * Attention! Not for use in ECOMP
+	 * Attention! Not for use in ONAP
 	 */
 	public void removeEPRole(Long roleId) {
 		SortedSet<EPUserApp> apps = getEPUserApps();
@@ -624,7 +624,7 @@ public class EPUser extends User {
 	}
 
 	/**
-	 * Attention! Not for use in ECOMP
+	 * Attention! Not for use in ONAP
 	 */
 	public void addEPRole(EPRole role) {
 		if (role != null) {

@@ -33,7 +33,7 @@
  *
  * ============LICENSE_END============================================
  *
- * ECOMP is a trademark and service mark of AT&T Intellectual Property.
+ * 
  */
 package org.onap.portalapp.portal.controller;
 
@@ -126,13 +126,13 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 	}
 
 	/**
-	 * RESTful service method to get ECOMP Portal Title.
+	 * RESTful service method to get ONAP Portal Title.
 	 * 
 	 * @param request
 	 *            HttpServletRequest
 	 * @param response
 	 *            HttpServletResponse
-	 * @return PortalRestResponse of ECOMP portal title
+	 * @return PortalRestResponse of ONAP portal title
 	 */
 	@RequestMapping(value = { "/portalApi/ecompTitle" }, method = RequestMethod.GET, produces = "application/json")
 	public PortalRestResponse<String> getECOMPTitle(HttpServletRequest request, HttpServletResponse response) {
@@ -298,7 +298,7 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 
 	/**
 	 * RESTful service method to fetch the details for a functional menu item.
-	 * Requirement: you must be the Ecomp portal super admin user.
+	 * Requirement: you must be the ONAP portal super admin user.
 	 * 
 	 * @param request
 	 *            HttpServletRequest
@@ -334,7 +334,7 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 	/**
 	 * RESTful service method to create a new menu item.
 	 * 
-	 * Requirement: you must be the Ecomp portal super admin user.
+	 * Requirement: you must be the ONAP portal super admin user.
 	 * 
 	 * @param request
 	 *            HttpServletRequest
@@ -366,7 +366,7 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 	/**
 	 * RESTful service method to update an existing menu item
 	 * 
-	 * Requirement: you must be the Ecomp portal super admin user.
+	 * Requirement: you must be the ONAP portal super admin user.
 	 * 
 	 * @param request
 	 *            HttpServletRequest

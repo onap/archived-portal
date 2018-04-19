@@ -33,7 +33,7 @@
  *
  * ============LICENSE_END============================================
  *
- * ECOMP is a trademark and service mark of AT&T Intellectual Property.
+ * 
  */
 package org.onap.portalapp.portal.service;
 
@@ -1085,7 +1085,7 @@ public class EPAppCommonServiceImpl implements EPAppService {
 					// name and keys to the FN_APP table. The App's mailbox
 					// and
 					// keys will be visible to the
-					// admin on the ECOMP portal.
+					// admin on the ONAP portal.
 					// -------------------------------------------------------------------------------------------
 					TopicManager topicManager = new TopicManager() {
 
@@ -1133,7 +1133,7 @@ public class EPAppCommonServiceImpl implements EPAppService {
 					final CambriaIdentityManager im = new CambriaClientBuilders.IdentityManagerBuilder()
 							.usingHosts(Helper.uebUrlList()).build();
 					com.att.nsa.apiClient.credentials.ApiCredential credential = im.createApiKey(user.getEmail(),
-							"ECOMP Portal Owner");
+							"ONAP Portal Owner");
 					String appKey = credential.getApiKey();
 					String appSecret = credential.getApiSecret();
 					String appMailboxName = null;

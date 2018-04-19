@@ -33,7 +33,7 @@
  *
  * ============LICENSE_END============================================
  *
- * ECOMP is a trademark and service mark of AT&T Intellectual Property.
+ * 
  */
 app.controller('roleCreateEditController',function($scope, conf, $http, $modalInstance, confirmBoxService, message, RoleService) {
 	$scope.isGlobalRole = false; 

@@ -33,7 +33,7 @@
  *
  * ============LICENSE_END============================================
  *
- * ECOMP is a trademark and service mark of AT&T Intellectual Property.
+ * 
  */
 package org.onap.portalapp.portal.controller;
 
@@ -115,7 +115,7 @@ public class SharedContextRestController extends EPRestrictedRESTfulBaseControll
 	 * @param request
 	 *            HTTP servlet request
 	 * @param context_id
-	 *            ID that identifies the context, usually the ECOMP Portal
+	 *            ID that identifies the context, usually the ONAP Portal
 	 *            session key.
 	 * @param ckey
 	 *            Key for the key-value pair to fetch
@@ -148,7 +148,7 @@ public class SharedContextRestController extends EPRestrictedRESTfulBaseControll
 	 * @param request
 	 *            HTTP servlet request
 	 * @param context_id
-	 *            ID that identifies the context, usually the ECOMP Portal
+	 *            ID that identifies the context, usually the ONAP Portal
 	 *            session key.
 	 * @return List of shared-context objects as JSON; should have user's first
 	 *         name, last name and email address; null if none found
@@ -190,7 +190,7 @@ public class SharedContextRestController extends EPRestrictedRESTfulBaseControll
 	 * @param request
 	 *            HTTP servlet request
 	 * @param context_id
-	 *            ID that identifies the context, usually the ECOMP Portal
+	 *            ID that identifies the context, usually the ONAP Portal
 	 *            session key.
 	 * @param ckey
 	 *            Key for the key-value pair to test
@@ -224,7 +224,7 @@ public class SharedContextRestController extends EPRestrictedRESTfulBaseControll
 	 * @param request
 	 *            HTTP servlet request
 	 * @param context_id
-	 *            ID that identifies the context, usually the ECOMP Portal
+	 *            ID that identifies the context, usually the ONAP Portal
 	 *            session key.
 	 * @param ckey
 	 *            Key for the key-value pair to remove
@@ -260,7 +260,7 @@ public class SharedContextRestController extends EPRestrictedRESTfulBaseControll
 	 * @param request
 	 *            HTTP servlet request
 	 * @param context_id
-	 *            ID that identifies the context, usually the ECOMP Portal
+	 *            ID that identifies the context, usually the ONAP Portal
 	 *            session key.
 	 * @return JSON with result indicating the number of key-value pairs
 	 *         removed.

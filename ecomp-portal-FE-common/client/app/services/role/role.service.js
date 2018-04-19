@@ -33,7 +33,7 @@
  *
  * ============LICENSE_END============================================
  *
- * ECOMP is a trademark and service mark of AT&T Intellectual Property.
+ * 
  */
 app.factory('RoleService', function ($http, $q, conf,uuid4) {
 	var manageRoleDetails = {};

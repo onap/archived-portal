@@ -33,7 +33,7 @@
  *
  * ============LICENSE_END============================================
  *
- * ECOMP is a trademark and service mark of AT&T Intellectual Property.
+ * 
  */
 package org.onap.portalapp.portal.logging.format;
 
@@ -42,7 +42,7 @@ import com.att.eelf.i18n.EELFResourceManager;
 
 /**
  * 
- * Add ECOMP Portal Specific Error Code Enums here, for generic
+ * Add ONAP Portal Specific Error Code Enums here, for generic
  * ones (ones you think are useful not only Portal but also SDK), add it
  * to the enum class AppMessagesEnum defined in SDK.
  */

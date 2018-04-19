@@ -33,7 +33,7 @@
  *
  * ============LICENSE_END============================================
  *
- * ECOMP is a trademark and service mark of AT&T Intellectual Property.
+ * 
  */
 package org.onap.portalapp.portal.service;
 
@@ -51,23 +51,23 @@ public interface AdminRolesService {
 	public boolean setAppsWithAdminRoleStateForUser(AppsListWithAdminRole newAppsListWithAdminRoles);
 
 	/**
-	 * Attention! User roles in ECOMP PORTAL cannot be managed by this function.
+	 * Attention! User roles in ONAP PORTAL cannot be managed by this function.
 	 * @param user
-	 * @return 'true' if user has Super Administrator role SYS_ADMIN_ROLE_ID (1 for now) in ECOMP PORTAL, 'false' otherwise
+	 * @return 'true' if user has Super Administrator role SYS_ADMIN_ROLE_ID (1 for now) in ONAP PORTAL, 'false' otherwise
 	 */
 	public boolean isSuperAdmin(EPUser user);
 	
 	/**
-	 * Attention! User roles in ECOMP PORTAL cannot be managed by this function.
+	 * Attention! User roles in ONAP PORTAL cannot be managed by this function.
 	 * @param user
-	 * @return 'true' if user has Account Administrator role ACCOUNT_ADMIN_ROLE_ID (999 for now) for any application except ECOMP Portal, 'false' otherwise
+	 * @return 'true' if user has Account Administrator role ACCOUNT_ADMIN_ROLE_ID (999 for now) for any application except ONAP Portal, 'false' otherwise
 	 */
 	public boolean isAccountAdmin(EPUser user);
 
 	/**
-	 * Attention! User roles in ECOMP PORTAL cannot be managed by this function.
+	 * Attention! User roles in ONAP PORTAL cannot be managed by this function.
 	 * @param user
-	 * @return 'true' if user has any remote(!) role within any application (ECOMP Portal roles are not included), 'false' otherwise
+	 * @return 'true' if user has any remote(!) role within any application (ONAP Portal roles are not included), 'false' otherwise
 	 */
 	public boolean isUser(EPUser user);
 

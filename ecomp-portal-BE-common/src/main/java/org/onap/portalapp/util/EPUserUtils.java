@@ -33,7 +33,7 @@
  *
  * ============LICENSE_END============================================
  *
- * ECOMP is a trademark and service mark of AT&T Intellectual Property.
+ * 
  */
 package org.onap.portalapp.util;
 
@@ -263,7 +263,7 @@ public class EPUserUtils {
 			}
 		}
 
-		// Additionally; the account admin role is overloaded between ecomp
+		// Additionally; the account admin role is overloaded between onap
 		// portal and partners; lets also include that
 		Iterator<EPUserApp> appRolesIterator = user.getEPUserApps().iterator();
 		while (appRolesIterator.hasNext()) {

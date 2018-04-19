@@ -33,7 +33,7 @@
  *
  * ============LICENSE_END============================================
  *
- * ECOMP is a trademark and service mark of AT&T Intellectual Property.
+ * 
  */
 package org.onap.portalapp.portal.service;
 
@@ -45,7 +45,7 @@ import org.onap.portalsdk.core.domain.RoleFunction;
 
 public interface EPRoleService {
 	
-	// Used by ECOMP. Get cached role by two columns used by ECOMP only. app id, and external app role id.
+	// Used by ONAP. Get cached role by two columns used by ONAP only. app id, and external app role id.
 	EPRole getRole(Long appId, Long appRoleid);
 	public void saveRole(EPRole domainRole);
 	EPRole getAppRole(String roleName, Long appId);

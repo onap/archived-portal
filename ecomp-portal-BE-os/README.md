@@ -29,7 +29,6 @@ Version 2.2
 - [Portal-121] GUI controls overlapping on app onboarding dialog
 - [Portal-133] Replace ECOMP wording from contact us page with ONAP
 - [Portal-88] unable to deselect widget on Widget catalog page
-- [Portak-19] Replaced the keyword openecomp to onap 
 - [Portal-88] Unable to deselect widget on Widget catalog page
 - [Portal-111] Centralized Role Management Task(Integration to AAF)
 - [PORTAL-157] OpenID connect conflicting with spring security
@@ -38,7 +37,7 @@ Version 2.2
 - [Portal-163] NVD - CVE-2016-1000341: bouncycastle issue. Upgrade to 2.4.4
 - [Portal-168] CVE-2015-0254 JSTL-Upgrade to 1.2.3+
 - [Portal-155] Review security issues: portal
-- [Portal-202] Remove files that have GPL or other license issues 	- b2b-library.min.js
+- [Portal-19] Removed the ecomp keyword from the license text
 - [Portal-241] To reteieve roles on Users page for sdk(external app)
 - [Portal-256] Fix to make the userRole dynamic on Users modal popup
 

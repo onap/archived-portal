@@ -33,7 +33,7 @@
  *
  * ============LICENSE_END============================================
  *
- * ECOMP is a trademark and service mark of AT&T Intellectual Property.
+ * 
  */
 package org.onap.portalapp.portal.utils;
 
@@ -52,7 +52,7 @@ import org.springframework.context.annotation.PropertySources;
 	})
 
 /**
- * Contains properties specific to the ONAP version of the ECOMP Portal.
+ * Contains properties specific to the ONAP version of the ONAP Portal.
  */
 public class EPSystemProperties extends EPCommonSystemProperties {
 	public static final String CONTACT_US_URL = "contact_us_link";

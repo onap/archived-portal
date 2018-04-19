@@ -33,7 +33,7 @@
  *
  * ============LICENSE_END============================================
  *
- * ECOMP is a trademark and service mark of AT&T Intellectual Property.
+ * 
  */
 package org.onap.portalapp.portal.controller;
 
@@ -298,7 +298,7 @@ public class UserRolesController extends EPRestrictedBaseController {
 					response.setStatus(responseCode);
 					feErrorString = EcompPortalUtils.getFEErrorString(false, responseCode);
 				} else if (result == null) {
-					// If the result is null, there was an internal ecomp error
+					// If the result is null, there was an internal onap error
 					// in the service call.
 					response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 					feErrorString = EcompPortalUtils.getFEErrorString(true,

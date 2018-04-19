@@ -20,7 +20,7 @@ import org.springframework.stereotype.Service;
 
 /**
  * TODO: moved all microservice-related code (domain, controller, service)
- * from ecomp portal Backend to widget microservice
+ * from onap portal Backend to widget microservice
  */
 @Service("microserviceService")
 @Transactional

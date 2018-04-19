@@ -33,7 +33,7 @@
  *
  * ============LICENSE_END============================================
  *
- * ECOMP is a trademark and service mark of AT&T Intellectual Property.
+ * 
  */
 package org.onap.portalapp.authentication;
 
@@ -78,7 +78,7 @@ public class SimpleLoginStrategy extends org.onap.portalsdk.core.auth.LoginStrat
 			commandBean.setOrgUserId(orgUserId);
 			commandBean = loginService.findUser(commandBean, (String)request.getAttribute(MenuProperties.MENU_PROPERTIES_FILENAME_KEY), null);
 
-			 // in case authentication has passed but user is not in the ECOMP data base, return a Guest User to the home page.
+			 // in case authentication has passed but user is not in the ONAP data base, return a Guest User to the home page.
 			if (commandBean.getUser() == null) {
 			}
 			else {

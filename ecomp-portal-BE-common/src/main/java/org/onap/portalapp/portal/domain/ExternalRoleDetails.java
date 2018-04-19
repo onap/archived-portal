@@ -33,7 +33,7 @@
  *
  * ============LICENSE_END============================================
  *
- * ECOMP is a trademark and service mark of AT&T Intellectual Property.
+ * 
  */
 package org.onap.portalapp.portal.domain;
 
@@ -46,8 +46,8 @@ public class ExternalRoleDetails implements Comparable {
     private boolean active;
     private Integer priority;
     
-    private Long appId;     // used by ECOMP only 
-    private Long appRoleId; // used by ECOMP only
+    private Long appId;     // used by ONAP only 
+    private Long appRoleId; // used by ONAP only
 
 	private List<EPAppRoleFunction> perms;
 

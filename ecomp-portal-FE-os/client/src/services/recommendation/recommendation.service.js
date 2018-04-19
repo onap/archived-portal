@@ -33,7 +33,7 @@
  *
  * ============LICENSE_END============================================
  *
- * ECOMP is a trademark and service mark of AT&T Intellectual Property.
+ * 
  */
 
 /*As Recommendation code belongs to internal use  Just kept an empty file in order to avoid 404 errors in the browser console */
