@@ -13,7 +13,7 @@ services:
   cli:
     image: ${CLI_IMG_NAME}:${PORTAL_TAG}
     environment:
-      CLI_MODE: 'daemon'
+      OPEN_CLI_MODE: 'daemon'
     ports:
       - 8080:80
       - 9090:8080
