@@ -660,13 +660,6 @@
 			<groupId>org.onap.portal.sdk</groupId>
 			<artifactId>epsdk-music</artifactId>
 			<version>${epsdk.version}</version>
-			<classifier>jar-with-dependencies</classifier>
-			<exclusions>
-				<exclusion>
-					<groupId>org.onap.music</groupId>
-					<artifactId>*</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency> 
 	</dependencies>
 
