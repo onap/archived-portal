@@ -40,6 +40,7 @@ Version 2.2
 - [Portal-155] Review security issues: portal
 - [Portal-19] Removed the ecomp keyword from the license text
 - [Portal-241] To reteieve roles on Users page for sdk(external app)
+- [Portal-220] Fix to delete a portal admin
 - [Portal-256] Fix to make the userRole dynamic on Users modal popup
 
 Version 1.1.0 (Amsterdam), November 2017
