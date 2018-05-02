@@ -1,0 +1,9 @@
+Verified+1: ONAP Jobbuilder <onap-jobbuilder@jenkins.onap.org>
+Code-Review+1: Farhan Mir <fm7890@att.com>
+Code-Review+2: Manoop Talasila <talasila@research.att.com>
+Code-Review+2: Sunder Tattavarada <statta@research.att.com>
+Submitted-by: Sunder Tattavarada <statta@research.att.com>
+Submitted-at: Wed, 02 May 2018 21:12:28 +0000
+Reviewed-on: https://gerrit.onap.org/r/45505
+Project: portal
+Branch: refs/heads/release-2.2.0
