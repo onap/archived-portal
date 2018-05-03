@@ -45,6 +45,7 @@ services:
     environment:
       - CASSUSER=root
       - CASSPASS=Aa123456
+      - JVM_OPTS=-Xmx2536m -Xms2536m
     expose:
       - 7000
       - 7001
@@ -125,7 +126,8 @@ services:
       - $EXTRA_HOST_NAME
     logging:
       driver: json-file
-
+    environment:
+      - CATALINA_OPTS=-Xmx1536m -Xms1536m
   portal-sdk:
     image: ${SDK_IMG_NAME}:${PORTAL_TAG}
     ports:
@@ -149,3 +151,5 @@ services:
       - /start-apache-tomcat.sh
     logging:
       driver: json-file
+    environment:
+      - CATALINA_OPTS=-Xmx1536m -Xms1536m

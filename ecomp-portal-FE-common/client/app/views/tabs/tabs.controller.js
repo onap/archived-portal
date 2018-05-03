@@ -266,7 +266,8 @@
 	    	},false);
     	    
     	    $scope.openModal = function(data){
-    	    	schedulerService.showWidget(data.widgetName,data.widgetData,data.widgetParameter).then(isConfirmed => {});
+    	    	if(data!=null && data!='' && data.widgetData!=null)
+    	    		schedulerService.showWidget(data.widgetName,data.widgetData,data.widgetParameter).then(isConfirmed => {});
     	    }
         }
     }

@@ -15,6 +15,7 @@ https://www.eclipse.org/m2e-wtp/
 ## Release Notes
 
 Version 2.2
+- [PORTAL-255] Scheduler Popup opens when page loads
 - [PORTAL-210] Music jar update
 - [PORTAL-179] wrong menu available to App Admin User
 - [PORTAL-207] Raise 4 % percentage (from 44 to 48) sonar code coverage for ONAP PORTAL
@@ -42,6 +43,7 @@ Version 2.2
 - [Portal-241] To reteieve roles on Users page for sdk(external app)
 - [Portal-220] Fix to delete a portal admin
 - [Portal-256] Fix to make the userRole dynamic on Users modal popup
+- [Portal-211] High memory Usage by Portal, SDK, Cassandra
 
 Version 1.1.0 (Amsterdam), November 2017
 - [Portal-6] Updates to License and Trademark in the PORTAL Source Code
