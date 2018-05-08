@@ -52,6 +52,8 @@ import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+import org.onap.portalsdk.core.util.SystemProperties;
+import org.onap.portalapp.portal.utils.EPSystemProperties;
 
 public class SessionTimeoutInterceptor extends HandlerInterceptorAdapter {
 	EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(SessionTimeoutInterceptor.class);
@@ -79,7 +81,9 @@ public class SessionTimeoutInterceptor extends HandlerInterceptorAdapter {
 			if (!controller.isAccessible()) {
 				try {
 					EPUser user = EPUserUtils.getUserSession(request);
-
+					if (user == null) {
+						throw new SessionExpiredException();
+					}
 					if (request.getRequestURI().indexOf("logout.htm") > -1) {
 						CollaborateList.delUserName(user.getOrgUserId());
 						throw new SessionExpiredException();
@@ -87,6 +91,9 @@ public class SessionTimeoutInterceptor extends HandlerInterceptorAdapter {
 						resetSessionMaxIdleTimeOut(request);
 						CollaborateList.addUserName(user.getOrgUserId());
 					}
+				} catch (SessionExpiredException e) {
+					response.sendRedirect(SystemProperties.getProperty(EPSystemProperties.LOGIN_URL_NO_RET_VAL));
+					return false;
 				} catch (Exception e) {
 					logger.error(EELFLoggerDelegate.errorLogger, "preHandle failed", e);
 					return false;
