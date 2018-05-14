@@ -97,7 +97,8 @@
 		"ecompTitle":"portalApi/ecompTitle",
 		"loggedinUser" : "portalApi/loggedinUser",
 		"modifyLoggedinUser" : "portalApi/modifyLoggedinUser",
-		"centralizedApps": "portalApi/centralizedApps" 
+		"centralizedApps": "portalApi/centralizedApps",
+		"uploadRoleFunction":"portalApi/uploadRoleFunction/:appId" 
 	},
 	"cookieDomain": "onap.org"
 }

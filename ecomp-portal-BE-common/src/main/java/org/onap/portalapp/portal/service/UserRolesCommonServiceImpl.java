@@ -90,6 +90,7 @@ import org.onap.portalapp.portal.transport.FieldsValidator;
 import org.onap.portalapp.portal.transport.FunctionalMenuItem;
 import org.onap.portalapp.portal.transport.FunctionalMenuRole;
 import org.onap.portalapp.portal.transport.RemoteRole;
+import org.onap.portalapp.portal.transport.RemoteRoleV1;
 import org.onap.portalapp.portal.transport.RemoteUserWithRoles;
 import org.onap.portalapp.portal.transport.RoleInAppForUser;
 import org.onap.portalapp.portal.transport.RolesInAppForUser;
@@ -97,6 +98,7 @@ import org.onap.portalapp.portal.transport.UserApplicationRoles;
 import org.onap.portalapp.portal.utils.EPCommonSystemProperties;
 import org.onap.portalapp.portal.utils.EcompPortalUtils;
 import org.onap.portalapp.portal.utils.PortalConstants;
+import org.onap.portalapp.util.SystemType;
 import org.onap.portalsdk.core.domain.Role;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.onap.portalsdk.core.restful.domain.EcompRole;
@@ -139,6 +141,9 @@ public class UserRolesCommonServiceImpl  {
 	
 	@Autowired
 	private ExternalAccessRolesService externalAccessRolesService;
+	
+	@Autowired
+	private AppsCacheService appsCacheService;
 	
 	RestTemplate template = new RestTemplate();
 	
@@ -646,6 +651,24 @@ public class UserRolesCommonServiceImpl  {
 		Set<EcompRole> updatedUserRolesinRemote = constructUsersRemoteAppRoles(roleInAppForUserList);
 		Set<EcompRole> updateUserRolesInEcomp = constructUsersEcompRoles(roleInAppForUserList);
 		String userRolesAsString = mapper.writeValueAsString(updatedUserRolesinRemote);
+        EPApp externalApp = null;
+        SystemType type = SystemType.APPLICATION;
+		externalApp = appsCacheService.getApp(appId);
+		String appBaseUri = null;
+		Set<RemoteRoleV1> updatedUserRolesinRemoteV1 = new TreeSet<>();
+		if (externalApp != null) {
+			 appBaseUri = (type == SystemType.APPLICATION) ? externalApp.getAppRestEndpoint() : "";
+		}
+		if(appBaseUri != null && appBaseUri.endsWith("/api")){
+			for(EcompRole eprole :updatedUserRolesinRemote)
+			{
+				RemoteRoleV1 role = new RemoteRoleV1();
+				role.setId(eprole.getId());
+				role.setName(eprole.getName());
+				updatedUserRolesinRemoteV1.add(role);
+			}
+			userRolesAsString = mapper.writeValueAsString(updatedUserRolesinRemoteV1);
+		}
 		applicationsRestClientService.post(EcompRole.class, appId, userRolesAsString,
 				String.format("/user/%s/roles", userId));
 		// TODO: We should add code that verifies that the post operation did
@@ -962,18 +985,7 @@ public class UserRolesCommonServiceImpl  {
 			ObjectMapper mapper = new ObjectMapper();
 			HttpHeaders headers = EcompPortalUtils.base64encodeKeyForAAFBasicAuth();
 			HttpEntity<String> getUserRolesEntity = new HttpEntity<>(headers);
-			logger.debug(EELFLoggerDelegate.debugLogger, "Connecting to external system to get current user roles");
-			ResponseEntity<String> getResponse = template
-					.exchange(SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_URL)
-							+ "roles/user/" + name, HttpMethod.GET, getUserRolesEntity, String.class);
-			if (getResponse.getStatusCode().value() == 200) {
-				logger.debug(EELFLoggerDelegate.debugLogger, "updateUserRolesInExternalSystem: Finished GET user roles from external system and received user roles {}",
-						getResponse.getBody());
-
-			}else{
-				logger.error(EELFLoggerDelegate.errorLogger, "updateUserRolesInExternalSystem: Failed GET user roles from external system and received user roles {}",getResponse.getBody() );
-				EPLogUtil.logExternalAuthAccessAlarm(logger, getResponse.getStatusCode());
-			}
+			ResponseEntity<String> getResponse = externalAccessRolesService.getUserRolesFromExtAuthSystem(name, getUserRolesEntity);
 			List<ExternalAccessUserRoleDetail> userRoleDetailList = new ArrayList<>();
 			String res = getResponse.getBody();
 			JSONObject jsonObj = null;
@@ -1581,7 +1593,7 @@ public class UserRolesCommonServiceImpl  {
 					List<CentralV2Role> cenRoleList = externalAccessRolesService.getRolesForApp(app.getUebKey());
 					for(CentralV2Role cenRole : cenRoleList){
 						Role role = new Role();
-						role.setActive(cenRole.isActive());
+						role.setActive(cenRole.getActive());
 						role.setId(cenRole.getId());
 						role.setName(cenRole.getName());
 						role.setPriority(cenRole.getPriority());
@@ -1832,6 +1844,7 @@ public class UserRolesCommonServiceImpl  {
 	 * @see org.onap.portalapp.portal.service.UserRolesService#
 	 * getCachedAppRolesForUser(java.lang.Long, java.lang.Long)
 	 */
+	@SuppressWarnings("deprecation")
 	public List<EPUserApp> getCachedAppRolesForUser(Long appId, Long userId) {
 		// Find the records for this user-app combo, if any
 		String filter = " where user_id = " + Long.toString(userId) + " and app_id = " + Long.toString(appId);

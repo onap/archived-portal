@@ -44,6 +44,7 @@ app.controller('roleListController', function ($scope,RoleService, applicationsS
 	$scope.goToUrl = function(roleIdVal) {
 			$state.go("root.role", {"roleId":roleIdVal});
 		}
+	 
 	$scope.toggleRole = function(appId, selected, availableRole) {		
 		var toggleType = null;
 		if(selected) {
@@ -122,8 +123,29 @@ app.controller('roleListController', function ($scope,RoleService, applicationsS
 	    		}); 
 	    	}  
 		};
+		
+		 $scope.openBulkUploadRolesAndFunctionsModal = function(appId) {
+	            var modalInstance = $modal.open({
+	            	templateUrl: 'app/views/role/bulk-upload-dialogs/bulk-upload-role-functions-modal.html',
+	                controller: 'BulkRoleAndFunctionsModalCtrl as bulkRoleAndFunctions',
+	                sizeClass: 'modal-medium',
+	                resolve: {
+	                	message: function () {
+		 		    		var message = {
+		 		    				appid: appId
+		                     };
+		 		          return message;
+		 		        }
+			        }
+	            });         
+	    		modalInstance.result.then(function (confirmed) {
+					if(confirmed == 'confirmed'){
+					   // update role list table
+					}
+				});
+	        };
 				
-		//getCentalizedApps
+		// getCentalizedApps
 		$scope.getCentralizedApps = function(userId) {
 			RoleService.getCentralizedApps(userId).then(res=> {
                if (res.length>0) {
@@ -193,7 +215,7 @@ app.controller('roleListController', function ($scope,RoleService, applicationsS
 		
 		init();
 		
-		//edit Role
+		// edit Role
 		$scope.editRoleModalPopup = function(appId, availableRole) {
 			$scope.editRole = availableRole;
 			if(appId != undefined && availableRole.id != undefined){
@@ -215,7 +237,7 @@ app.controller('roleListController', function ($scope,RoleService, applicationsS
 			 		    				availableRoleFunctions: availableRoleFunctions,
 			 		    				appId: $scope.apps.selectedCentralizedApp,
 			 		    				role: role
-			                     };
+			 		    		};
 			 		          return message;
 			 		        }
 			 		      }
@@ -232,7 +254,7 @@ app.controller('roleListController', function ($scope,RoleService, applicationsS
 			 
 		};
 		
-		//add Role
+		// add Role
 		$scope.addRoleModalPopup = function(appId) {
 			if(appId){
 				var roleId = 0;

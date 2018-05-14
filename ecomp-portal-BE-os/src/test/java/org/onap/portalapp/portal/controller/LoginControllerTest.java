@@ -114,6 +114,7 @@ public class LoginControllerTest {
 	HttpServletResponse mockedResponse = mockitoTestSuite.getMockedResponse();
 
 	NullPointerException nullPointerException = new NullPointerException();
+	private DelegatingServletInputStream dsi;
 
 	@Test
 	public void loginIfAuthNullTest() {
@@ -151,8 +152,8 @@ public class LoginControllerTest {
 		HttpServletResponse response = mock(HttpServletResponse.class);
 		HttpSession session = mock(HttpSession.class);
 		String json = "{\"loginId\":\"test\", \"password\":\"xyz\"}";
-		when(request.getInputStream()).thenReturn(
-				new DelegatingServletInputStream(new ByteArrayInputStream(json.getBytes(StandardCharsets.UTF_8))));
+		dsi = new DelegatingServletInputStream(new ByteArrayInputStream(json.getBytes(StandardCharsets.UTF_8)));
+		when(request.getInputStream()).thenReturn(dsi);
 		when(request.getReader()).thenReturn(new BufferedReader(new StringReader(json)));
 		when(request.getContentType()).thenReturn("application/json");
 		when(request.getCharacterEncoding()).thenReturn("UTF-8");

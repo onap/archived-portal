@@ -15,7 +15,7 @@ https://www.eclipse.org/m2e-wtp/
 ## Release Notes
 
 Version 2.2
-- [PORTAL-255] Scheduler Popup opens when page loads
+- [PORTAL-255] Scheduler popup shows up automatically when users land on home page
 - [PORTAL-210] Music jar update
 - [PORTAL-179] wrong menu available to App Admin User
 - [PORTAL-207] Raise 4 % percentage (from 44 to 48) sonar code coverage for ONAP PORTAL
@@ -31,7 +31,6 @@ Version 2.2
 - [Portal-121] GUI controls overlapping on app onboarding dialog
 - [Portal-133] Replace ECOMP wording from contact us page with ONAP
 - [Portal-88] unable to deselect widget on Widget catalog page
-- [Portal-88] Unable to deselect widget on Widget catalog page
 - [Portal-111] Centralized Role Management Task(Integration to AAF)
 - [PORTAL-157] OpenID connect conflicting with spring security
 - [Portal-174] missing DB statement in DML script(Users, Roles Page fix)
@@ -40,9 +39,10 @@ Version 2.2
 - [Portal-168] CVE-2015-0254 JSTL-Upgrade to 1.2.3+
 - [Portal-155] Review security issues: portal
 - [Portal-19] Removed the ecomp keyword from the license text
-- [Portal-241] To reteieve roles on Users page for sdk(external app)
-- [Portal-220] Fix to delete a portal admin
 - [Portal-256] Fix to make the userRole dynamic on Users modal popup
+- [Portal-241] To reteieve roles on Users page for sdk(external app)
+- [Portal-220] Fix to delete a portal admin, removed the OS test case
+- [Portal-248] Id value fix in in Add App Account Management modal
 - [Portal-211] High memory Usage by Portal, SDK, Cassandra
 
 Version 1.1.0 (Amsterdam), November 2017

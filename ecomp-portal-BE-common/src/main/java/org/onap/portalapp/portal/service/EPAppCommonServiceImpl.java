@@ -47,6 +47,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletResponse;
@@ -82,7 +83,6 @@ import org.onap.portalapp.portal.transport.FieldsValidator;
 import org.onap.portalapp.portal.transport.FunctionalMenuItem;
 import org.onap.portalapp.portal.transport.LocalRole;
 import org.onap.portalapp.portal.transport.OnboardingApp;
-import org.onap.portalapp.portal.ueb.EPUebHelper;
 import org.onap.portalapp.portal.utils.EPCommonSystemProperties;
 import org.onap.portalapp.portal.utils.EcompPortalUtils;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
@@ -118,9 +118,7 @@ public class EPAppCommonServiceImpl implements EPAppService {
 	@Autowired
 	protected SessionFactory sessionFactory;
 	@Autowired
-	private DataAccessService dataAccessService;
-	@Autowired
-	private EPUebHelper epUebHelper;	
+	private DataAccessService dataAccessService;	
 
 	@PostConstruct
 	private void init() {
@@ -666,6 +664,7 @@ public class EPAppCommonServiceImpl implements EPAppService {
 		List<OnboardingApp> onboardingAppsList = new ArrayList<OnboardingApp>();
 		for (EPApp app : apps) {
 			OnboardingApp onboardingApp = new OnboardingApp();
+			app.setAppPassword(EPCommonSystemProperties.APP_DISPLAY_PASSWORD);//to hide password from get request
 			createOnboardingFromApp(app, onboardingApp);
 			onboardingAppsList.add(onboardingApp);
 		}
@@ -680,6 +679,7 @@ public class EPAppCommonServiceImpl implements EPAppService {
 		List<OnboardingApp> onboardingAppsList = new ArrayList<OnboardingApp>();
 		for (EPApp app : apps) {
 			OnboardingApp onboardingApp = new OnboardingApp();
+			app.setAppPassword(EPCommonSystemProperties.APP_DISPLAY_PASSWORD); //to hide password from get request
 			createOnboardingFromApp(app, onboardingApp);
 			onboardingAppsList.add(onboardingApp);
 		}
@@ -1065,8 +1065,78 @@ public class EPAppCommonServiceImpl implements EPAppService {
 			
 		}
 	}
+	
 
 	protected void updateRestrictedApp(Long appId, OnboardingApp onboardingApp, FieldsValidator fieldsValidator,
+			EPUser user) {
+		synchronized (syncRests) {
+			boolean result = false;
+			Session localSession = null;
+			Transaction transaction = null;
+			try {
+				localSession = sessionFactory.openSession();
+				transaction = localSession.beginTransaction();
+				EPApp app;
+				if (appId == null) {
+					app = new EPApp();
+					/*
+					 * In the parent class, the UEB code is responsible for generating the
+					 * keys/secret/mailbox but UEB Messaging is not actually being used currently;
+					 * may be used in future at which point we can just remove this method and
+					 * depend on parent class's method So, using UUID generator to generate the
+					 * unique key instead.
+					 */
+					String uuidStr = UUID.randomUUID().toString();
+					String appKey = uuidStr;
+					String appSecret = uuidStr;
+					String appMailboxName = "ECOMP-PORTAL-OUTBOX";
+					onboardingApp.setUebTopicName(appMailboxName);
+					onboardingApp.setUebKey(appKey);
+					onboardingApp.setUebSecret(appSecret);
+				} else {
+					app = (EPApp) localSession.get(EPApp.class, appId);
+					if (app == null || app.getId() == null) {
+						// App is already deleted!
+						transaction.commit();
+						localSession.close();
+						fieldsValidator.httpStatusCode = new Long(HttpServletResponse.SC_NOT_FOUND);
+						return;
+					}
+				}
+				logger.debug(EELFLoggerDelegate.debugLogger,
+						"updateRestrictedApp: about to call createAppFromOnboarding");
+				createAppFromOnboarding(app, onboardingApp, localSession);
+				logger.debug(EELFLoggerDelegate.debugLogger,
+						"updateRestrictedApp: finished calling createAppFromOnboarding");
+				localSession.saveOrUpdate(app);
+				logger.debug(EELFLoggerDelegate.debugLogger,
+						"updateRestrictedApp: finished calling localSession.saveOrUpdate");
+				// Enable or disable all menu items associated with this app
+				setFunctionalMenuItemsEnabled(localSession, onboardingApp.isEnabled, appId);
+				logger.debug(EELFLoggerDelegate.debugLogger,
+						"updateRestrictedApp: finished calling setFunctionalMenuItemsEnabled");
+				transaction.commit();
+				logger.debug(EELFLoggerDelegate.debugLogger,
+						"updateRestrictedApp: finished calling transaction.commit");
+				result = true;
+			} catch (Exception e) {
+				logger.error(EELFLoggerDelegate.errorLogger, "updateRestrictedApp failed", e);
+				EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeUebRegisterOnboardingAppError, e);
+				EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeDaoSystemError, e);
+				EcompPortalUtils.rollbackTransaction(transaction,
+						"updateRestrictedApp rollback, exception = " + e.toString());
+			} finally {
+				EcompPortalUtils.closeLocalSession(localSession, "updateRestrictedApp");
+			}
+			if (!result) {
+				fieldsValidator.httpStatusCode = new Long(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			}
+		}
+
+	}
+
+	@Deprecated
+	protected void updateRestrictedAppUeb(Long appId, OnboardingApp onboardingApp, FieldsValidator fieldsValidator,
 			EPUser user) {
 		synchronized (syncRests) {
 			boolean result = false;
@@ -1234,7 +1304,6 @@ public class EPAppCommonServiceImpl implements EPAppService {
 						"LR: updateApp: finished calling setFunctionalMenuItemsEnabled");
 				transaction.commit();
 				logger.debug(EELFLoggerDelegate.debugLogger, "LR: updateApp: finished calling transaction.commit");
-				epUebHelper.addPublisher(app);
 				logger.debug(EELFLoggerDelegate.debugLogger,
 						"LR: updateApp: finished calling epUebHelper.addPublisher");
 				result = true;
@@ -1282,7 +1351,7 @@ public class EPAppCommonServiceImpl implements EPAppService {
 		onboardingApp.isOpen = app.getOpen();
 		onboardingApp.isEnabled = app.getEnabled();
 		onboardingApp.username = app.getUsername();
-		onboardingApp.appPassword = decryptedPassword(app.getAppPassword(), app);
+		onboardingApp.appPassword = (app.getAppPassword().equals(EPCommonSystemProperties.APP_DISPLAY_PASSWORD)) ? EPCommonSystemProperties.APP_DISPLAY_PASSWORD :decryptedPassword(app.getAppPassword(), app);
 		onboardingApp.uebTopicName = app.getUebTopicName();
 		onboardingApp.uebKey = app.getUebKey();
 		onboardingApp.uebSecret = app.getUebSecret();
@@ -1313,8 +1382,9 @@ public class EPAppCommonServiceImpl implements EPAppService {
 		app.setOpen(onboardingApp.isOpen);
 		app.setEnabled(onboardingApp.isEnabled);
 		app.setUsername(onboardingApp.username);
+		if(!onboardingApp.appPassword.equals(EPCommonSystemProperties.APP_DISPLAY_PASSWORD))
 		app.setAppPassword(this.encryptedPassword(onboardingApp.appPassword, app));
-		app.setUebTopicName(onboardingApp.uebTopicName);
+		//app.setUebTopicName(onboardingApp.uebTopicName);
 		app.setUebKey(onboardingApp.uebKey);
 		app.setUebSecret(onboardingApp.uebSecret);
 		app.setCentralAuth(onboardingApp.isCentralAuth);

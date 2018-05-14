@@ -60,6 +60,7 @@ import org.onap.portalapp.portal.domain.EPUser;
 import org.onap.portalapp.portal.domain.EcompAuditLog;
 import org.onap.portalapp.portal.ecomp.model.PortalRestResponse;
 import org.onap.portalapp.portal.ecomp.model.PortalRestStatusEnum;
+import org.onap.portalapp.portal.ecomp.model.UploadRoleFunctionExtSystem;
 import org.onap.portalapp.portal.exceptions.DuplicateRecordException;
 import org.onap.portalapp.portal.exceptions.InvalidApplicationException;
 import org.onap.portalapp.portal.exceptions.InvalidRoleException;
@@ -78,7 +79,6 @@ import org.onap.portalapp.portal.utils.PortalConstants;
 import org.onap.portalapp.util.EPUserUtils;
 import org.onap.portalsdk.core.domain.AuditLog;
 import org.onap.portalsdk.core.domain.Role;
-import org.onap.portalsdk.core.domain.RoleFunction;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.onap.portalsdk.core.service.AuditService;
 import org.onap.portalsdk.core.util.SystemProperties;
@@ -194,7 +194,7 @@ public class RoleManageController extends EPRestrictedBaseController {
 				mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 				CentralV2Role domainRole = externalAccessRolesService.getRoleInfo(roleId, requestedApp.getUebKey());
 				// role. toggle active ind
-				boolean active = domainRole.isActive();
+				boolean active = domainRole.getActive();
 				domainRole.setActive(!active);
 
 				String result = mapper.writeValueAsString(domainRole);
@@ -329,6 +329,7 @@ public class RoleManageController extends EPRestrictedBaseController {
 						domainRole = new CentralV2Role();
 						domainRole.setName(role.getName());
 						domainRole.setPriority(role.getPriority());
+						domainRole.setActive(role.getActive());
 						if (role.getChildRoles() != null && role.getChildRoles().size() > 0) {
 							for (Object childRole : childRoles) {
 								domainRole.addChildRole((CentralV2Role) childRole);
@@ -528,27 +529,7 @@ public class RoleManageController extends EPRestrictedBaseController {
 						String activityCode = (isSave)
 								? EcompAuditLog.CD_ACTIVITY_EXTERNAL_AUTH_ADD_FUNCTION
 								: EcompAuditLog.CD_ACTIVITY_EXTERNAL_AUTH_UPDATE_FUNCTION;
-						logger.info(EELFLoggerDelegate.applicationLogger,
-								"saveRoleFunction: succeeded for app {}, function {}", app.getId(), code);
-						AuditLog auditLog = getAuditInfo(requestedUser, activityCode);
-						auditLog.setComments(EcompPortalUtils.truncateString("saveRoleFunction role for app:"
-								+ app.getId() + " and function:'" + code + "'",
-								PortalConstants.AUDIT_LOG_COMMENT_SIZE));
-						auditService.logActivity(auditLog, null);
-						MDC.put(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP,
-								EPEELFLoggerAdvice.getCurrentDateTimeUTC());
-						MDC.put(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP,
-								EPEELFLoggerAdvice.getCurrentDateTimeUTC());
-						EcompPortalUtils.calculateDateTimeDifferenceForLog(
-								MDC.get(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP),
-								MDC.get(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP));
-						logger.info(EELFLoggerDelegate.auditLogger,
-								EPLogUtil.formatAuditLogMessage("RoleManageController.saveRoleFunction", activityCode,
-										String.valueOf(requestedUser.getId()), requestedUser.getOrgUserId(),
-										code));
-						MDC.remove(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP);
-						MDC.remove(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP);
-						MDC.remove(SystemProperties.MDC_TIMER);
+						logExterlaAuthRoleFunctionActivity(code, requestedUser, app, activityCode);
 					}
 				} else
 					throw new NonCentralizedAppException(requestedApp.getName() + " is not Centralized Application");
@@ -563,6 +544,30 @@ public class RoleManageController extends EPRestrictedBaseController {
 			return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, e.getMessage(), "Failure");
 		}
 		return new PortalRestResponse<>(PortalRestStatusEnum.OK, "Saved Successfully!", "Success");
+	}
+	
+	private void logExterlaAuthRoleFunctionActivity(String code, EPUser requestedUser, EPApp app, String activityCode) {
+		logger.info(EELFLoggerDelegate.applicationLogger,
+				"saveRoleFunction: succeeded for app {}, function {}", app.getId(), code);
+		AuditLog auditLog = getAuditInfo(requestedUser, activityCode);
+		auditLog.setComments(EcompPortalUtils.truncateString("saveRoleFunction role for app:"
+				+ app.getId() + " and function:'" + code + "'",
+				PortalConstants.AUDIT_LOG_COMMENT_SIZE));
+		auditService.logActivity(auditLog, null);
+		MDC.put(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP,
+				EPEELFLoggerAdvice.getCurrentDateTimeUTC());
+		MDC.put(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP,
+				EPEELFLoggerAdvice.getCurrentDateTimeUTC());
+		EcompPortalUtils.calculateDateTimeDifferenceForLog(
+				MDC.get(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP),
+				MDC.get(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP));
+		logger.info(EELFLoggerDelegate.auditLogger,
+				EPLogUtil.formatAuditLogMessage("RoleManageController.saveRoleFunction", activityCode,
+						String.valueOf(requestedUser.getId()), requestedUser.getOrgUserId(),
+						code));
+		MDC.remove(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP);
+		MDC.remove(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP);
+		MDC.remove(SystemProperties.MDC_TIMER);
 	}
 
 
@@ -733,7 +738,7 @@ public class RoleManageController extends EPRestrictedBaseController {
 		Iterator<CentralV2Role> availableChildRolesIterator = availableChildRoles.iterator();
 		while (availableChildRolesIterator.hasNext()) {
 			CentralV2Role role = availableChildRolesIterator.next();
-			if (!role.isActive() || allParentRoles.contains(role) || role.getId().equals(roleId)) {
+			if (!role.getActive() || allParentRoles.contains(role) || role.getId().equals(roleId)) {
 				availableChildRolesIterator.remove();
 			}
 		}
@@ -783,5 +788,30 @@ public class RoleManageController extends EPRestrictedBaseController {
 	private void SendErrorForUnauthorizedUser(HttpServletResponse response, EPUser user) throws IOException {
 		EcompPortalUtils.setBadPermissions(user, response, "createAdmin");
 		response.getWriter().write("Unauthorized User");
+	}
+	
+	@RequestMapping(value = { "/portalApi/uploadRoleFunction/{appId}" }, method = RequestMethod.POST, produces = "application/json")
+	public PortalRestResponse<String> bulkUploadRoleFunc(HttpServletRequest request, HttpServletResponse response,
+			@RequestBody UploadRoleFunctionExtSystem data, @PathVariable("appId") Long appId) {
+		EPUser user = EPUserUtils.getUserSession(request);
+		try {
+			EPApp app = appService.getApp(appId);
+			if (isAuthorizedUser(user, app)) {
+				fieldsValidation(app);
+				externalAccessRolesService.bulkUploadRoleFunc(data, app);
+				String activityCode =  EcompAuditLog.CD_ACTIVITY_EXTERNAL_AUTH_UPDATE_ROLE_AND_FUNCTION;
+				String code = data.getName()+","+data.getType()+ PIPE + data.getInstance() + PIPE + data.getAction();
+				logExterlaAuthRoleFunctionActivity(code , user, app, activityCode);
+			} else {
+				logger.info(EELFLoggerDelegate.auditLogger,
+						"RoleManageController.syncRoles, Unauthorized user:" + user.getOrgUserId());
+				EcompPortalUtils.setBadPermissions(user, response, "createAdmin");
+				return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, "Unauthorized User", "Failure");
+			}
+		} catch (Exception e) {
+			logger.error(EELFLoggerDelegate.errorLogger, "Failed bulkUploadRoleFunc!", e);
+			return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, e.getMessage(), "Failed");
+		}
+		return new PortalRestResponse<>(PortalRestStatusEnum.OK, "Uploaded Role Function successfully!", "Success");
 	}
 }

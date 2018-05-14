@@ -12,7 +12,7 @@ INSERT INTO `fn_app` (`app_id`, `app_name`, `app_image_url`, `app_description`, 
 (5, 'Policy', 'images/cache/portal1470452815_67021.png', NULL, NULL, 'http://policy.api.simpledemo.onap.org:8443/onap/policy', NULL, 'http://policy.api.simpledemo.onap.org:8443/onap/api/v2', '', '', NULL, 'okYTaDrhzibcbGVq5mjkVQ==', 'N', 'Y', NULL, 'Default', 'ueb_key', 'ueb_secret', 'ECOMP-PORTAL-OUTBOX', 1,'N',NULL),
 (6, 'Virtual Infrastructure Deployment', 'images/cache/portal-345993588_92550.png', NULL, NULL, 'http://vid.api.simpledemo.onap.org:8080/vid/welcome.htm', NULL, 'http://vid.api.simpledemo.onap.org:8080/vid/api/v2', '', '', NULL, 'okYTaDrhzibcbGVq5mjkVQ==', 'N', 'Y', NULL, 'Default', '2Re7Pvdkgw5aeAUD', 'S31PrbOzGgL4hg4owgtx47Da', 'ECOMP-PORTAL-OUTBOX-90', 1,'N',NULL),
 (7, 'A&AI UI', 'images/cache/portal-345993588_92550.png', NULL, NULL, 'http://aai.api.simpledemo.onap.org:9517/services/aai/webapp/index.html#/viewInspect', NULL, 'http://aai.api.simpledemo.onap.org:9517/api/v2', '', '', NULL, 't1oqm6wCXrGUXUSL8mS7pQ==', 'N', 'Y', NULL, 'aaiui', 'ueb_key', 'ueb_secret', 'ECOMP-PORTAL-OUTBOX', 1,'N',NULL),
-(8, 'CLI', 'images/cache/portal-345993588_92550.png', NULL, NULL, 'http://portal.api.simpledemo.onap.org:8080/', NULL, NULL, '', '', NULL, '', 'Y', 'Y', NULL, '', '', '', '', 1,'N',NULL),
+(8, 'CLI', 'images/cache/portal-345993588_92550.png', NULL, NULL, 'http://portal.api.simpledemo.onap.org:8080/', NULL, NULL, '', '', NULL, '', 'Y', 'Y', NULL, '', '', '', '', 2,'N',NULL),
 (9, 'MSB', 'images/cache/portal-345993588_92550.png', NULL, NULL, 'http://msb-discovery:8080/iui/microservices/default.html', NULL, NULL, '', '', NULL, '', 'Y', 'Y', NULL, '', '', '', '', 2,'N',NULL);
 
 -- insert SDC users user id2-8

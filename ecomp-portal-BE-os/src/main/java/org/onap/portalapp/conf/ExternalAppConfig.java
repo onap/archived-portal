@@ -74,7 +74,6 @@ import org.onap.portalapp.portal.service.ExternalAccessRolesService;
 import org.onap.portalapp.portal.service.UserRolesService;
 import org.onap.portalapp.portal.transport.ExternalAuthUserRole;
 import org.onap.portalapp.portal.transport.ExternalRoleDescription;
-import org.onap.portalapp.portal.ueb.EPUebHelper;
 import org.onap.portalapp.portal.utils.EPCommonSystemProperties;
 import org.onap.portalapp.portal.utils.EPSystemProperties;
 import org.onap.portalapp.scheduler.RegistryAdapter;
@@ -286,7 +285,7 @@ public class ExternalAppConfig extends AppConfig implements Configurable {
 		registry.addInterceptor(sessionTimeoutInterceptor()).excludePathPatterns("/oid-login", "/portalApi/healthCheck",
 				"/portalApi/healthCheck/", "/portalApi/healthCheckSuspend", "/portalApi/healthCheckSuspend/",
 				"/portalApi/healthCheckResume", "/portalApi/healthCheckResume/", "/login_external",
-				"/login_external.htm*", "login", "/login.htm*", "/auxapi/*", "/context/*", "/api*",
+				"/login_external.htm*", "login", "/login.htm*", "/auxapi/**/*", "/context/*", "/api*",
 				"/single_signon.htm", "/single_signon", "/dashboard", "/OpenSourceLogin.htm");
 
 		registry.addInterceptor(portalResourceInterceptor());
@@ -300,11 +299,11 @@ public class ExternalAppConfig extends AppConfig implements Configurable {
 	 * @return New instance of {@link SchedulerFactoryBean}
 	 */
 
-	@Bean
+/*	@Bean
 	public EPUebHelper epUebHelper() {
 		return new EPUebHelper();
 	}
-
+*/
 	@Bean
 	public HealthMonitor healthMonitor() {
 		return new HealthMonitor();

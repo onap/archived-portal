@@ -52,3 +52,5 @@ CREATE TABLE portal.spring_session_attributes (
     AND min_index_interval = 128
     AND read_repair_chance = 0.0
     AND speculative_retry = '99PERCENTILE';  
+
+CREATE TABLE portal.healthcheck (id uuid PRIMARY KEY);

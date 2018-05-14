@@ -35,11 +35,77 @@
  *
  * 
  */
-package org.onap.portalapp.portal.ueb;
+package org.onap.portalapp.portal.transport;
 
-import org.onap.portalsdk.core.onboarding.ueb.UebMsgTypes;
+import java.io.Serializable;
 
-public interface EPUebMsgTypes extends UebMsgTypes {
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 
-	public static final String UEB_MSG_TYPE_HEALTH_CHECK = "uebHealthCheckPing";
+@Entity
+public class CentralizedAppRoles implements Serializable{
+	
+	private static final long serialVersionUID = 6670280863269352495L;
+	@Id
+	@Column(name = "app_id")
+	private Long appId;
+	@Column(name = "auth_namespace")
+	private String appNameSpace;
+	@Column(name = "role_name")
+	private String roleName;
+	@Id
+	@Column(name = "role_id")
+	private Long roleId;
+	
+	
+	/**
+	 * @return the appId
+	 */
+	public Long getAppId() {
+		return appId;
+	}
+	/**
+	 * @param appId the appId to set
+	 */
+	public void setAppId(Long appId) {
+		this.appId = appId;
+	}
+	/**
+	 * @return the appNameSpace
+	 */
+	public String getAppNameSpace() {
+		return appNameSpace;
+	}
+	/**
+	 * @param appNameSpace the appNameSpace to set
+	 */
+	public void setAppNameSpace(String appNameSpace) {
+		this.appNameSpace = appNameSpace;
+	}
+	/**
+	 * @return the roleName
+	 */
+	public String getRoleName() {
+		return roleName;
+	}
+	/**
+	 * @param roleName the roleName to set
+	 */
+	public void setRoleName(String roleName) {
+		this.roleName = roleName;
+	}
+	/**
+	 * @return the roleId
+	 */
+	public Long getRoleId() {
+		return roleId;
+	}
+	/**
+	 * @param roleId the roleId to set
+	 */
+	public void setRoleId(Long roleId) {
+		this.roleId = roleId;
+	}
+	
 }

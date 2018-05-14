@@ -43,9 +43,6 @@ public class ExternalAccessUserRoleDetail {
 	private ExternalRoleDescription description;
 	
 	
-	/**
-	 * 
-	 */
 	public ExternalAccessUserRoleDetail() {
 		super();
 	}
@@ -100,5 +97,12 @@ public class ExternalAccessUserRoleDetail {
 		return true;
 	}
 	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "ExternalAccessUserRoleDetail [name=" + name + ", description=" + description + "]";
+	}
 	
 }

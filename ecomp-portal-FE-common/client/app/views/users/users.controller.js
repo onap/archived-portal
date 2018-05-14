@@ -253,16 +253,6 @@
      	        });
             };
 
-            this.syncRolesFromExternalAuthSystem = (appId) =>{
-            	applicationsService.syncRolesEcompFromExtAuthSystem(appId).then(function(res){
-            		if(res.status == 200){
-            	     confirmBoxService.showInformation('Sync operation completed successfully!').then(isConfirmed => {});          			
-            		} else{
-   	        		 confirmBoxService.showInformation('Sync operation failed for '+app).then(isConfirmed => {});          			
-            		}
-            	});
-            };
-
             $scope.$watch('users.selectedApp.value', (newVal, oldVal) => {
             	if(typeof(newVal) != 'undefined' && !newVal.includes("Select")){
             	  applicationsService.getSingleAppInfo(newVal).then(function(res) {

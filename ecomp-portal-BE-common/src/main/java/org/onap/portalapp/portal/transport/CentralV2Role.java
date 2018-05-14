@@ -150,7 +150,7 @@ public class CentralV2Role implements Serializable, Comparable{
 			this.name = name;
 		}
 
-		public boolean isActive() {
+		public boolean getActive() {
 			return active;
 		}
 

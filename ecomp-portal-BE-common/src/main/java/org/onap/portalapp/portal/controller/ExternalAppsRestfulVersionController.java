@@ -1,0 +1,80 @@
+/*-
+ * ============LICENSE_START==========================================
+ * ONAP Portal
+ * ===================================================================
+ * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ * ===================================================================
+ *
+ * Unless otherwise specified, all software contained herein is licensed
+ * under the Apache License, Version 2.0 (the "License");
+ * you may not use this software except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *             http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Unless otherwise specified, all documentation contained herein is licensed
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
+ * you may not use this documentation except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *             https://creativecommons.org/licenses/by/4.0/
+ *
+ * Unless required by applicable law or agreed to in writing, documentation
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * ============LICENSE_END============================================
+ *
+ */
+package org.onap.portalapp.portal.controller;
+
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.onap.portalapp.annotation.ApiVersion;
+import org.onap.portalapp.portal.logging.aop.EPAuditLog;
+import org.onap.portalapp.portal.transport.EpNotificationItem;
+import org.onap.portalapp.portal.transport.FavoritesFunctionalMenuItemJson;
+import org.onap.portalapp.portal.transport.FunctionalMenuItem;
+import org.onap.portalsdk.core.onboarding.crossapi.PortalAPIResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
+
+@org.springframework.context.annotation.Configuration
+@EnableAspectJAutoProxy
+@EPAuditLog
+@ApiVersion
+public class ExternalAppsRestfulVersionController implements BasicAuthenticationController {
+	
+    @Autowired
+	ExternalAppsRestfulController externalAppsRestfulController = new ExternalAppsRestfulController();
+
+	@ApiVersion(max = "v3", service = "/v3/publishNotification", min = 0,method = "POST")
+	public PortalAPIResponse publishNotification(HttpServletRequest request,HttpServletResponse response, EpNotificationItem notificationItem)
+			throws Exception {
+		return externalAppsRestfulController.publishNotification(request, notificationItem);
+	}
+
+	@ApiVersion(max = "v3", service = "/v3/getFavorites", min = 0,method = "GET")
+	public List<FavoritesFunctionalMenuItemJson> getFavoritesForUser(HttpServletRequest request,
+			HttpServletResponse response) throws Exception {
+		return externalAppsRestfulController.getFavoritesForUser(request, response);
+	}
+	
+	@ApiVersion(max = "v3", service = "/v3/functionalMenuItemsForUser", min = 0,method = "GET")
+	public List<FunctionalMenuItem> getFunctionalMenuItemsForUser(HttpServletRequest request,
+			HttpServletResponse response) throws Exception {
+		return externalAppsRestfulController.getFunctionalMenuItemsForUser(request, response);
+	}
+
+}

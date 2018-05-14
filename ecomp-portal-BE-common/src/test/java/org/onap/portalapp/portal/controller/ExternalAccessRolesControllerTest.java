@@ -51,6 +51,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -89,9 +90,11 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.util.MatcherAssertionErrors;
 import org.springframework.web.client.HttpClientErrorException;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RunWith(PowerMockRunner.class)
@@ -291,42 +294,8 @@ public class ExternalAccessRolesControllerTest {
 		assertEquals(reason, result);
 	}
 
-	@Test(expected = NullPointerException.class)
-	public void saveRoleFunctionIfIsIsNotDeletedTest() throws Exception {
-		List<EPApp> applicationList = new ArrayList<EPApp>();
-		EPApp app = mockApp();
-		applicationList.add(app);
-		Mockito.when(externalAccessRolesService.getApp(mockedRequest.getHeader(uebKey))).thenReturn(applicationList);
-		PortalRestResponse<String> portalRestResponse = null;
-		PortalRestResponse<String> expectedportalRestResponse = new PortalRestResponse<String>();
-		expectedportalRestResponse.setMessage("Invalid uebkey!");
-		expectedportalRestResponse.setResponse("Failed");
-		expectedportalRestResponse.setStatus(PortalRestStatusEnum.ERROR);
-		String data = null;
-		CentralV2RoleFunction centralV2RoleFunction = new CentralV2RoleFunction();
-		Mockito.when(externalAccessRolesService.saveCentralRoleFunction(centralV2RoleFunction, app)).thenReturn(false);
-		portalRestResponse = externalAccessRolesController.saveRoleFunction(mockedRequest, mockedResponse, data);
-		assertEquals(portalRestResponse, expectedportalRestResponse);
-	}
-	
-	@Test(expected = NullPointerException.class)
-	public void saveRoleFunctionExceptionTest() throws Exception {
-		List<EPApp> applicationList = new ArrayList<EPApp>();
-		EPApp app = mockApp();
-		applicationList.add(app);
-		Mockito.when(externalAccessRolesService.getApp(mockedRequest.getHeader(uebKey))).thenReturn(applicationList);
-		PortalRestResponse<String> portalRestResponse = null;
-		PortalRestResponse<String> expectedportalRestResponse = new PortalRestResponse<String>();
-		expectedportalRestResponse.setMessage("Invalid uebkey!");
-		expectedportalRestResponse.setResponse("Failed");
-		expectedportalRestResponse.setStatus(PortalRestStatusEnum.ERROR);
-		portalRestResponse = externalAccessRolesController.saveRoleFunction(mockedRequest, mockedResponse, null);
-		System.out.println(portalRestResponse);
-		assertEquals(portalRestResponse, expectedportalRestResponse);
-	}
-	
-	@Test(expected = NullPointerException.class)
-	public void saveRoleFunctionTest() throws Exception {
+	@Test
+	public void saveRoleFunctionIfIsNotDeletedTest() throws Exception {
 		List<EPApp> applicationList = new ArrayList<EPApp>();
 		EPApp app = mockApp();
 		applicationList.add(app);
@@ -335,13 +304,77 @@ public class ExternalAccessRolesControllerTest {
 		PortalRestResponse<String> expectedportalRestResponse = new PortalRestResponse<String>();
 		expectedportalRestResponse.setMessage(null);
 		expectedportalRestResponse.setResponse("Failed");
-		PortalRestStatusEnum portalRestStatusEnum = null;
-		expectedportalRestResponse.setStatus(portalRestStatusEnum.ERROR);
+		expectedportalRestResponse.setStatus(PortalRestStatusEnum.ERROR);
 		String data = null;
 		CentralV2RoleFunction centralV2RoleFunction = new CentralV2RoleFunction();
-		Mockito.when(externalAccessRolesService.saveCentralRoleFunction(centralV2RoleFunction, app)).thenReturn(true);
+		Mockito.when(mockedRequest.getHeader("uebkey")).thenReturn(uebKey);
+		Mockito.when(externalAccessRolesService.getApp(mockedRequest.getHeader("uebkey"))).thenReturn(applicationList);
+		ResponseEntity<String> response = new ResponseEntity<>(HttpStatus.FOUND);
+		Mockito.when(externalAccessRolesService.getNameSpaceIfExists(applicationList.get(0))).thenReturn(response);
+		Mockito.when(externalAccessRolesService.saveCentralRoleFunction(centralV2RoleFunction, app)).thenReturn(false);
 		portalRestResponse = externalAccessRolesController.saveRoleFunction(mockedRequest, mockedResponse, data);
-		System.out.println(portalRestResponse);
+		assertEquals(portalRestResponse, expectedportalRestResponse);
+	}
+	
+	@Test
+	public void saveRoleFunctionExceptionTest() throws Exception {
+		List<EPApp> applicationList = new ArrayList<EPApp>();
+		EPApp app = mockApp();
+		app.setCentralAuth(true);
+		applicationList.add(app);
+		Mockito.when(externalAccessRolesService.getApp(mockedRequest.getHeader(uebKey))).thenReturn(applicationList);
+		PortalRestResponse<String> portalRestResponse = null;
+		PortalRestResponse<String> expectedportalRestResponse = new PortalRestResponse<String>();
+		expectedportalRestResponse.setMessage(null);
+		expectedportalRestResponse.setResponse("Failed");
+		expectedportalRestResponse.setStatus(PortalRestStatusEnum.ERROR);
+		Mockito.when(mockedRequest.getHeader("uebkey")).thenReturn(uebKey);
+		Mockito.when(externalAccessRolesService.getApp(mockedRequest.getHeader("uebkey"))).thenReturn(applicationList);
+		ResponseEntity<String> response = new ResponseEntity<>(HttpStatus.FOUND);
+		Mockito.when(externalAccessRolesService.getNameSpaceIfExists(applicationList.get(0))).thenReturn(response);
+		portalRestResponse = externalAccessRolesController.saveRoleFunction(mockedRequest, mockedResponse, null);
+		assertEquals(portalRestResponse, expectedportalRestResponse);
+	}
+	
+	@Test
+	public void saveRoleFunctionTest() throws Exception {
+		List<EPApp> applicationList = new ArrayList<EPApp>();
+		EPUser user = mockUser.mockEPUser();
+		List<EPUser> userList = new ArrayList<>();
+		userList.add(user);
+		EPApp app = mockApp();
+		app.setCentralAuth(true);
+		applicationList.add(app);
+		JSONObject roleFunc = new JSONObject();
+		roleFunc.put("type", "test_type");
+		roleFunc.put("code", "test_instance");
+		roleFunc.put("action", "test_action");
+		roleFunc.put("name", "test_name");
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		CentralV2RoleFunction saveRoleFunc = mapper.readValue(roleFunc.toString(), CentralV2RoleFunction.class);
+		saveRoleFunc.setAppId(app.getId());
+		Mockito.when(externalAccessRolesService.getApp(mockedRequest.getHeader(uebKey))).thenReturn(applicationList);
+		PortalRestResponse<String> portalRestResponse = null;
+		PortalRestResponse<String> expectedportalRestResponse = new PortalRestResponse<String>();
+		expectedportalRestResponse.setMessage("Successfully saved!");
+		expectedportalRestResponse.setResponse("Success");
+		PortalRestStatusEnum portalRestStatusEnum = null;
+		expectedportalRestResponse.setStatus(portalRestStatusEnum.OK);
+		Mockito.when(mockedRequest.getHeader("uebkey")).thenReturn(uebKey);
+		Mockito.when(externalAccessRolesService.getApp(mockedRequest.getHeader("uebkey"))).thenReturn(applicationList);
+		ResponseEntity<String> response = new ResponseEntity<>(HttpStatus.FOUND);
+		Mockito.when(externalAccessRolesService.getNameSpaceIfExists(applicationList.get(0))).thenReturn(response);
+		Mockito.when(externalAccessRolesService.getRoleFunction("test_type|test_instance|test_action", app.getUebKey()))
+				.thenReturn(null);
+		Mockito.when(externalAccessRolesService.saveCentralRoleFunction(Matchers.any(CentralV2RoleFunction.class),
+				Matchers.any(EPApp.class))).thenReturn(true);
+		Mockito.when(externalAccessRolesService.getUser(mockedRequest.getHeader(Matchers.anyString())))
+				.thenReturn(userList);
+		Mockito.when(externalAccessRolesService.getApp(mockedRequest.getHeader(Matchers.anyString())))
+				.thenReturn(applicationList);
+		portalRestResponse = externalAccessRolesController.saveRoleFunction(mockedRequest, mockedResponse,
+				roleFunc.toString());
 		assertEquals(portalRestResponse, expectedportalRestResponse);
 	}
 
@@ -547,11 +580,11 @@ public class ExternalAccessRolesControllerTest {
 	public void bulkUploadPartnerFunctionsTest() throws Exception {
 		PortalRestResponse<String> portalRestResponse = null;
 		PortalRestResponse<String> expectedportalRestResponse = new PortalRestResponse<String>();
-		expectedportalRestResponse.setMessage("Successfully added");
+		expectedportalRestResponse.setMessage("Successfully added: '0' functions");
 		expectedportalRestResponse.setResponse("Success");
 		PortalRestStatusEnum portalRestStatusEnum = null;
 		expectedportalRestResponse.setStatus(portalRestStatusEnum.OK);
-		portalRestResponse = externalAccessRolesController.bulkUploadPartnerFunctions(mockedRequest, mockedResponse, null);
+		portalRestResponse = externalAccessRolesController.bulkUploadPartnerFunctions(mockedRequest, mockedResponse);
 		assertEquals(portalRestResponse, expectedportalRestResponse);
 	}
 
@@ -648,12 +681,11 @@ public class ExternalAccessRolesControllerTest {
 	public void bulkUploadPartnerRoleFunctionsTest() throws Exception {
 		PortalRestResponse<String> portalRestResponse = null;
 		PortalRestResponse<String> expectedportalRestResponse = new PortalRestResponse<String>();
-		expectedportalRestResponse.setMessage("Successfully added");
+		expectedportalRestResponse.setMessage("Successfully added: '0' role functions");
 		expectedportalRestResponse.setResponse("Success");
 		PortalRestStatusEnum portalRestStatusEnum = null;
 		expectedportalRestResponse.setStatus(portalRestStatusEnum.OK);
-		List<Role> upload = new ArrayList<>();
-		portalRestResponse = externalAccessRolesController.bulkUploadPartnerRoleFunctions(mockedRequest, mockedResponse,upload);
+		portalRestResponse = externalAccessRolesController.bulkUploadPartnerRoleFunctions(mockedRequest, mockedResponse);
 		assertEquals(portalRestResponse, expectedportalRestResponse);
 	}
 	

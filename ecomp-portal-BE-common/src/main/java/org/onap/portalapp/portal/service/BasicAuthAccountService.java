@@ -98,4 +98,14 @@ public interface BasicAuthAccountService {
 	 * @throws Exception
 	 */
 	void updateBasicAuthAccount(Long accountId, BasicAuthCredentials newCredential) throws Exception;
+	
+	/**
+	 * Returns  BasicAuthenticationAccount 
+	 * 
+	 * @param accountId
+	 * @return BasicAuthCredentials
+	 * @throws Exception
+	 */
+	
+	BasicAuthCredentials getBasicAuthCredentialsById(long id) throws Exception;
 }

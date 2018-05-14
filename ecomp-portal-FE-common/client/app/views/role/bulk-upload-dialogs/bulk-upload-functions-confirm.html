@@ -1,0 +1,135 @@
+<!--
+  ============LICENSE_START==========================================
+  ONAP Portal
+  ===================================================================
+  Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+  ===================================================================
+ 
+  Unless otherwise specified, all software contained herein is licensed
+  under the Apache License, Version 2.0 (the "License");
+  you may not use this software except in compliance with the License.
+  You may obtain a copy of the License at
+ 
+              http://www.apache.org/licenses/LICENSE-2.0
+ 
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+ 
+  Unless otherwise specified, all documentation contained herein is licensed
+  under the Creative Commons License, Attribution 4.0 Intl. (the "License");
+  you may not use this documentation except in compliance with the License.
+  You may obtain a copy of the License at
+ 
+              https://creativecommons.org/licenses/by/4.0/
+ 
+  Unless required by applicable law or agreed to in writing, documentation
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+ 
+  ============LICENSE_END============================================
+ 
+  ECOMP is a trademark and service mark of AT&T Intellectual Property.
+  -->
+<div>
+	<div class="b2b-modal-header">
+		<h2 class="heading-medium" id="newAdmin">Bulk Upload Functions
+			Confirmation</h2>
+		<div class="corner-button in">
+			<button type="button" class="close" aria-label="Close"
+				id="bulk-user-button-close" ng-click="$dismiss('cancel')"></button>
+		</div>
+	</div>
+	<div class="b2b-modal-body">
+
+		<!-- progress indicator -->
+		<div class="upload-instructions" ng-show="isProcessing">
+			{{progressMsg}} <br> <br> <span class="ecomp-spinner"></span>
+		</div>
+
+		<div ng-hide="isProcessing">
+			<div class="upload-instructions">Click OK to upload the valid
+				functions. Invalid or existing functions will be ignored.</div>
+			<p>
+				<span id="required" style="color: Red; font-size: 180%;"
+					visible="false">*</span>Type can only contain alphanumeric
+				characters, dots(.) and underscores(_)
+			</p>
+			<p>
+				<span id="required" style="color: Red; font-size: 180%;"
+					visible="false">*</span>Action can only contain alphanumeric
+				characters, hyphens(-), dots(.) and underscores(_) and single
+				asterisk character(*)
+			</p>
+			<p>
+				<span id="required" style="color: Red; font-size: 180%;"
+					visible="false">*</span>Instance/Code can only contain alphanumeric
+				characters, hyphens(-), dots(.), colons(:), forwardSlash(/) ,
+				asterisk(*) and underscores(_)
+			</p>
+			<p>
+				<span id="required" style="color: Red; font-size: 180%;"
+					visible="false">*</span>Name can only contain alphanumeric
+				characters, spaces, hyphens(-), dots(.) and underscores(_)
+			</p>
+		</div>
+		<div class="c-ecomp-portal-abs-table default"
+			style="height: 250px !important">
+			<table b2b-table table-data="uploadFile"
+				search-string="bulkRoleAndFunctions.searchString"
+				view-per-page="bulkRoleAndFunctions.viewPerPageIgnored"
+				current-page="bulkRoleAndFunctions.currentPageIgnored"
+				total-page="bulkRoleAndFunctions.totalPageIgnored">
+				<thead b2b-table-row type="header">
+					<tr>
+						<th id="th-line" b2b-table-header sortable="false">Line</th>
+						<th id="th-type" b2b-table-header sortable="false">Type</th>
+						<th id="th-instance" b2b-table-header sortable="false">Instance/Code</th>
+						<th id="th-action" b2b-table-header sortable="false">Action</th>
+						<th id="th-name" b2b-table-header sortable="false">Name</th>
+						<th id="th-status" b2b-table-header sortable="false">Status</th>
+					</tr>
+				</thead>
+				<!-- Use track-by="UNIQUE KEY HERE" or leave out if no unique keys in data -->
+				<tbody b2b-table-row type="body" class="table-body"
+					row-repeat="rowData in uploadFile">
+					<tr id="tr-rowData">
+						<td class="td-first" b2b-table-body>
+							<div ng-bind="rowData.line"></div>
+						</td>
+						<td b2b-table-body>
+							<div ng-bind="rowData.type"></div>
+						</td>
+						<td b2b-table-body>
+							<div ng-bind="rowData.instance"></div>
+						</td>
+						<td b2b-table-body>
+							<div ng-bind="rowData.action"></div>
+						</td>
+						<td b2b-table-body>
+							<div ng-bind="rowData.name"></div>
+						</td>
+						<td b2b-table-body>
+							<div ng-bind="rowData.status"></div>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+
+	</div>
+
+</div>
+<div class="b2b-modal-footer">
+	<div class="cta-button-group in">
+		<button id="bulk-user-ok-button" class="btn btn-alt btn-small"
+			ng-class="{disabled: isValidating}" ng-click="updateFunctionsInDB()">Ok</button>
+		<button id="bulk-user-cancel-button" class="btn btn-alt btn-small"
+			ng-click="$dismiss('cancel')">Cancel</button>
+	</div>
+</div>
+</div>

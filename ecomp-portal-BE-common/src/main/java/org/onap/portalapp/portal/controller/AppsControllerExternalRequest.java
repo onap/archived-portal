@@ -53,6 +53,7 @@ import org.onap.portalapp.portal.service.PortalAdminService;
 import org.onap.portalapp.portal.service.UserService;
 import org.onap.portalapp.portal.transport.FieldsValidator;
 import org.onap.portalapp.portal.transport.OnboardingApp;
+import org.onap.portalapp.portal.utils.EPCommonSystemProperties;
 import org.onap.portalapp.portal.utils.EcompPortalUtils;
 import org.onap.portalapp.portal.utils.PortalConstants;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
@@ -212,6 +213,7 @@ public class AppsControllerExternalRequest implements BasicAuthenticationControl
 			@PathVariable("appId") Long appId) {
 		EPApp epApp = appService.getApp(appId);
 		OnboardingApp obApp = new OnboardingApp();
+		epApp.setAppPassword(EPCommonSystemProperties.APP_DISPLAY_PASSWORD); //to hide password from get request
 		appService.createOnboardingFromApp(epApp, obApp);
 		EcompPortalUtils.logAndSerializeObject(logger, "getOnboardAppExternal", "response", obApp);
 		return obApp;

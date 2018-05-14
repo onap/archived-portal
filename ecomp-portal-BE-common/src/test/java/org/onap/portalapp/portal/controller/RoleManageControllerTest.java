@@ -142,6 +142,8 @@ public class RoleManageControllerTest {
 	NullPointerException nullPointerException = new NullPointerException();
 	MockEPUser mockUser = new MockEPUser();
 
+	private DelegatingServletInputStream dsi;
+
 	@Test
 	public void removeRoleRoleFunctionTest() throws Exception {
 
@@ -595,8 +597,9 @@ public class RoleManageControllerTest {
 		roleJson2.put("roleFunctions", roleFunctions);
 		ObjectMapper mapper = new ObjectMapper();
 		JsonNode actualObj = mapper.readTree(roleJson2.toString());
-		Mockito.when(mockedRequest.getInputStream()).thenReturn(new DelegatingServletInputStream(
-				new ByteArrayInputStream(actualObj.toString().getBytes(StandardCharsets.UTF_8))));
+		dsi = new DelegatingServletInputStream(
+				new ByteArrayInputStream(actualObj.toString().getBytes(StandardCharsets.UTF_8)));
+		Mockito.when(mockedRequest.getInputStream()).thenReturn(dsi);
 		Mockito.when(mockedRequest.getReader()).thenReturn(new BufferedReader(new StringReader(actualObj.toString())));
 		Mockito.when(mockedRequest.getContentType()).thenReturn("application/json");
 		Mockito.when(mockedRequest.getCharacterEncoding()).thenReturn("UTF-8");
@@ -647,8 +650,9 @@ public class RoleManageControllerTest {
 		roleJson2.put("roleFunctions", roleFunctions);
 		ObjectMapper mapper = new ObjectMapper();
 		JsonNode actualObj = mapper.readTree(roleJson2.toString());
-		Mockito.when(mockedRequest.getInputStream()).thenReturn(new DelegatingServletInputStream(
-				new ByteArrayInputStream(actualObj.toString().getBytes(StandardCharsets.UTF_8))));
+		dsi = new DelegatingServletInputStream(
+				new ByteArrayInputStream(actualObj.toString().getBytes(StandardCharsets.UTF_8)));
+		Mockito.when(mockedRequest.getInputStream()).thenReturn(dsi);
 		Mockito.when(mockedRequest.getReader()).thenReturn(new BufferedReader(new StringReader(actualObj.toString())));
 		Mockito.when(mockedRequest.getContentType()).thenReturn("application/json");
 		Mockito.when(mockedRequest.getCharacterEncoding()).thenReturn("UTF-8");
@@ -701,8 +705,9 @@ public class RoleManageControllerTest {
 		roleJson2.put("roleFunctions", roleFunctions);
 		ObjectMapper mapper = new ObjectMapper();
 		JsonNode actualObj = mapper.readTree(roleJson2.toString());
-		Mockito.when(mockedRequest.getInputStream()).thenReturn(new DelegatingServletInputStream(
-				new ByteArrayInputStream(actualObj.toString().getBytes(StandardCharsets.UTF_8))));
+		dsi = new DelegatingServletInputStream(
+				new ByteArrayInputStream(actualObj.toString().getBytes(StandardCharsets.UTF_8)));
+		Mockito.when(mockedRequest.getInputStream()).thenReturn(dsi);
 		Mockito.when(mockedRequest.getReader()).thenReturn(new BufferedReader(new StringReader(actualObj.toString())));
 		Mockito.when(mockedRequest.getContentType()).thenReturn("application/json");
 		Mockito.when(mockedRequest.getCharacterEncoding()).thenReturn("UTF-8");

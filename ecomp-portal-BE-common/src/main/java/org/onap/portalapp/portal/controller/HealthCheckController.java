@@ -48,6 +48,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.onap.music.main.MusicUtil;
 import org.onap.portalapp.controller.EPUnRestrictedBaseController;
 import org.onap.portalapp.portal.listener.HealthMonitor;
 import org.onap.portalapp.portal.logging.aop.EPAuditLog;
@@ -177,17 +178,29 @@ public class HealthCheckController extends EPUnRestrictedBaseController {
 				dbInfo.dbPermissions = statusOk;
 			}
 			statusCollection.add(dbInfo);
-
-			HealthStatusInfo uebInfo = new HealthStatusInfo("UEB");
-			if (!HealthMonitor.isUebUp()) {
-				// As per test case review meeting, UEB is considered as
-				// critical as DB. Hence commenting
-				// overallStatus = false;
-				uebInfo.healthCheckStatus = statusDown;
-				uebInfo.description = "Check the logs for more details";
-				EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeUebConnectionError);
+			
+			HealthStatusInfo CassandraStatusInfo = new HealthStatusInfo("Music-Cassandra");
+			//CassandraStatusInfo.hostName = EcompPortalUtils.getMyHostName();
+			CassandraStatusInfo.ipAddress = MusicUtil.getMyCassaHost();
+			
+			if (!HealthMonitor.isCassandraStatusOk()) {
+				overallStatus = false;
+				CassandraStatusInfo.healthCheckStatus = statusDown;
+				CassandraStatusInfo.description = "Check the logs for more details";
+				EPLogUtil.logEcompError(logger, EPAppMessagesEnum.MusicHealthCheckCassandraError);
 			}
-			statusCollection.add(uebInfo);
+			statusCollection.add(CassandraStatusInfo);
+
+			HealthStatusInfo zookeeperStatusInfo = new HealthStatusInfo("Music-zookeeper");
+			//zookeeperStatusInfo.hostName = EcompPortalUtils.getMyHostName();
+			zookeeperStatusInfo.ipAddress = MusicUtil.getMyZkHost();
+			if (!HealthMonitor.isZookeeperStatusOk()) {
+				overallStatus = false;
+				zookeeperStatusInfo.healthCheckStatus = statusDown;
+				zookeeperStatusInfo.description = "Check the logs for more details";
+				EPLogUtil.logEcompError(logger, EPAppMessagesEnum.MusicHealthCheckZookeeperError);
+			}
+			statusCollection.add(zookeeperStatusInfo);
 
 			String json = "";
 			try {

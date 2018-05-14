@@ -49,6 +49,7 @@ import org.onap.portalapp.portal.domain.EPApp;
 import org.onap.portalapp.portal.domain.EPRole;
 import org.onap.portalapp.portal.domain.EPUser;
 import org.onap.portalapp.portal.domain.ExternalRoleDetails;
+import org.onap.portalapp.portal.ecomp.model.UploadRoleFunctionExtSystem;
 import org.onap.portalapp.portal.exceptions.InvalidUserException;
 import org.onap.portalapp.portal.transport.CentralRole;
 import org.onap.portalapp.portal.transport.CentralRoleFunction;
@@ -56,8 +57,8 @@ import org.onap.portalapp.portal.transport.CentralUser;
 import org.onap.portalapp.portal.transport.CentralV2Role;
 import org.onap.portalapp.portal.transport.ExternalRequestFieldsValidator;
 import org.onap.portalsdk.core.domain.Role;
-import org.onap.portalsdk.core.domain.RoleFunction;
 import org.onap.portalsdk.core.restful.domain.EcompUser;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 
@@ -240,7 +241,7 @@ public interface ExternalAccessRolesService {
 	 * @param upload
 	 * @throws Exception
 	 */
-	public void bulkUploadPartnerFunctions(String uebkey, List<RoleFunction> upload) throws Exception;
+	public Integer bulkUploadPartnerFunctions(String uebkey) throws Exception;
 
 	/** 
 	 * It uploads partner application role functions into external auth system
@@ -282,7 +283,7 @@ public interface ExternalAccessRolesService {
 	 * @param roleList
 	 * @throws Exception
 	 */
-	void bulkUploadPartnerRoleFunctions(String uebkey, List<Role> roleList) throws Exception;
+	Integer bulkUploadPartnerRoleFunctions(String uebkey) throws Exception;
 
 	/**
 	 * it deletes all dependency role records 
@@ -452,5 +453,33 @@ public interface ExternalAccessRolesService {
 	 * @return String action
 	 */
 	String getFunctionCodeAction(String roleFuncItem);
+	
+	/**
+	 * 
+	 * Adds function to role in external auth system
+	 * 
+	 * @param data
+	 * @param app
+	 */
+	void bulkUploadRoleFunc(UploadRoleFunctionExtSystem data, EPApp app) throws Exception;
+
+	/**
+	 * 
+	 * Syncs user roles from external auth system to ecomp portal 
+	 * 
+	 * @param orgUserId
+	 * @throws Exception 
+	 */
+	public void syncApplicationUserRolesFromExtAuthSystem(String orgUserId) throws Exception;
+
+	/**
+	 * 
+	 * Gets all user roles from external auth system
+	 * 
+	 * @param orgUserId
+	 * @param getUserRolesEntity
+	 * @return user roles from external auth system 
+	 */
+	ResponseEntity<String> getUserRolesFromExtAuthSystem(String orgUserId, HttpEntity<String> getUserRolesEntity) throws Exception;
 
 }

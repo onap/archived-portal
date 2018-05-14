@@ -40,8 +40,6 @@ package org.onap.portalapp.portal.listener;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
-import org.onap.portalapp.portal.listener.HealthMonitor;
-
 public class HealthMonitorTest {
 
 	@Test

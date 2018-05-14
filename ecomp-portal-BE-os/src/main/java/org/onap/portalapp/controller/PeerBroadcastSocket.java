@@ -82,12 +82,12 @@ public class PeerBroadcastSocket {
 				if (to == null)
 					return;
 				Object toSessionObj = channelMap.get(to);
-				if (toSessionObj != null) {
+				/*if (toSessionObj != null) {
 					Session toSession = null;
 					toSession = (Session) toSessionObj;
 					toSession.getBasicRemote().sendText(message);
 				}
-
+*/
 			} catch (Exception ex) {
 				logger.error(EELFLoggerDelegate.errorLogger, "Failed to send text" + ex.getMessage());
 			}

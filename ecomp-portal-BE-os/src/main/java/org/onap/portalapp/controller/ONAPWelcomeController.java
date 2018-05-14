@@ -80,6 +80,7 @@ public class ONAPWelcomeController extends EPRestrictedBaseController{
 		this.viewName = viewName;
 	}
 	
+	// TODO Need to revisit this as its conflicting with Spring Security; check web.xml's oid-context.xml config
 	//@Resource(name = "namedAdmins")
 	private Set<SubjectIssuerGrantedAuthority> admins;
 	

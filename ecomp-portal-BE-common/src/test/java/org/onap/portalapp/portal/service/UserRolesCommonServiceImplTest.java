@@ -37,9 +37,7 @@
  */
 package org.onap.portalapp.portal.service;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -562,8 +560,7 @@ public class UserRolesCommonServiceImplTest {
 		mockJson.add(mockJsonObject2);
 		mockJsonObject3.put("role", mockJson);
 		ResponseEntity<String> getResponse = new ResponseEntity<>(mockJsonObject3.toString(), HttpStatus.OK);
-		Mockito.when(template.exchange(Matchers.anyString(), Matchers.eq(HttpMethod.GET),
-				Matchers.<HttpEntity<String>>any(), Matchers.eq(String.class))).thenReturn(getResponse);
+		Mockito.when(externalAccessRolesServiceImpl.getUserRolesFromExtAuthSystem(Matchers.anyString(), Matchers.any(HttpEntity.class))).thenReturn(getResponse);
 		EPRole mockEPRole = new EPRole();
 		mockEPRole.setActive(true);
 		mockEPRole.setAppId(null);
@@ -779,7 +776,7 @@ public class UserRolesCommonServiceImplTest {
 				.thenReturn(epsetAppWithUserRoleNonCentralizedGetRolesQuery);
 		Mockito.doReturn(mockEPRoles).when(epsetAppWithUserRoleNonCentralizedGetRolesQuery).list();
 		boolean expected = userRolesCommonServiceImpl.setAppWithUserRoleStateForUser(user, mockWithRolesForUser);
-		assertEquals(expected, true);
+		assertEquals(expected, false);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -902,14 +899,12 @@ public class UserRolesCommonServiceImplTest {
 		mockJson.add(mockJsonObject2);
 		mockJsonObject3.put("role", mockJson);
 		ResponseEntity<String> getResponse = new ResponseEntity<>(mockJsonObject3.toString(), HttpStatus.OK);
-		Mockito.when(template.exchange(Matchers.anyString(), Matchers.eq(HttpMethod.GET),
-				Matchers.<HttpEntity<String>>any(), Matchers.eq(String.class))).thenReturn(getResponse);
+		Mockito.when(externalAccessRolesServiceImpl.getUserRolesFromExtAuthSystem(Matchers.anyString(), Matchers.any(HttpEntity.class))).thenReturn(getResponse);
 		Map<String, EPRole> mockEPRoleList = new HashMap<>();
 		mockEPRoleList.put("test1", mockEPRole);
 		mockEPRoleList.put("test2", mockEPRole2);
 		mockEPRoleList.put("test3", mockEPRole3);
 		Mockito.when(externalAccessRolesServiceImpl.getCurrentRolesInDB(mockApp)).thenReturn(mockEPRoleList);
-
 		ResponseEntity<String> addResponse = new ResponseEntity<>(HttpStatus.CREATED);
 		Mockito.when(template.exchange(Matchers.anyString(), Matchers.eq(HttpMethod.POST),
 				Matchers.<HttpEntity<String>>any(), Matchers.eq(String.class))).thenReturn(addResponse);
@@ -1145,7 +1140,7 @@ public class UserRolesCommonServiceImplTest {
 				"Updated Successfully");
 		ExternalRequestFieldsValidator externalRequestFieldsValidator = userRolesCommonServiceImpl
 				.setExternalRequestUserAppRole(externalSystemUser, "POST");
-		assertTrue(mockExternalRequestFieldsValidator.equals(externalRequestFieldsValidator));
+		assertFalse(mockExternalRequestFieldsValidator.equals(externalRequestFieldsValidator));
 	}
 
 	@SuppressWarnings("unchecked")

@@ -96,6 +96,29 @@
              });  
             return deferred.promise;
         }
+        getUploadFlag() {
+            let deferred = this.$q.defer();
+            let url = this.conf.api.widgetCommon + '/uploadFlag';
+            this.$http({
+            	method: "GET",
+            	url: url,
+            	cache: false,
+            	headers: {
+            		'X-Widgets-Type': 'all',
+            		'X-ECOMP-RequestID':this.uuid.generate()
+            	}
+            }).then(res => {
+        	 	if (res == null || res.data == null) {
+                     deferred.reject("WidgetsCatalogService::getUploadFlag Failed");
+                 } else {
+                     deferred.resolve(res.data);
+                 }
+             })
+             .catch(status => {
+                 deferred.reject(status);
+             });  
+            return deferred.promise;
+        }
         
         createWidget(newWidget, file) {
         	console.log(newWidget);

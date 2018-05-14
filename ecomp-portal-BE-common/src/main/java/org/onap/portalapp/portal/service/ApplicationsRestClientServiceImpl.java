@@ -130,14 +130,14 @@ public class ApplicationsRestClientServiceImpl implements ApplicationsRestClient
 		logger.debug(EELFLoggerDelegate.debugLogger, "http response status=" + status);
 		MDC.put(EPCommonSystemProperties.EXTERNAL_API_RESPONSE_CODE, Integer.toString(status));
 		if (!isHttpSuccess(status)) {
-			String errMsg = "Failed. Status=" + status + "; [" + response.getStatusInfo().getReasonPhrase().toString()
+			String errMsg = "Failed. Status=" + status + "; [" + ((ResponseImpl)response).getStatusInfo().getReasonPhrase().toString()
 					+ "]";
 			URL url = null;
 			try {
 				// must not be null to avoid NPE in HTTPException constructor
 				url = new URL("http://null");
-				if (response.getLocation() != null)
-					url = response.getLocation().toURL();
+				if (((ResponseImpl)response).getLocation() != null)
+					url = ((ResponseImpl)response).getLocation().toURL();
 			} catch (MalformedURLException e) {
 				// never mind. it is only for the debug message.
 				logger.warn(EELFLoggerDelegate.errorLogger, "Failed to build URL", e);
@@ -248,7 +248,7 @@ public class ApplicationsRestClientServiceImpl implements ApplicationsRestClient
 			
 			/* It is not recommendable to use the implementation class org.apache.cxf.jaxrs.impl.ResponseImpl in the code, 
 			but had to force this in-order to prevent conflict with the ResponseImpl class of Jersey Client which 
-			doesn't work as expected. Created Portal-253 for tracking */
+			doesn't work as expected. Created Portal-253 for tracking  */
 			String incomingJson = ((ResponseImpl)response).readEntity(String.class);
 			return incomingJson;
 		}

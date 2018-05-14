@@ -37,11 +37,13 @@
  */
 package org.onap.portalapp.portal.scheduleraux;
 
+import java.lang.reflect.Type;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
 
+import javax.annotation.PostConstruct;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
@@ -49,8 +51,10 @@ import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.cxf.jaxrs.impl.ResponseImpl;
 import org.eclipse.jetty.util.security.Password;
 import org.json.simple.JSONObject;
+import org.onap.portalapp.portal.logging.format.EPAppMessagesEnum;
 import org.onap.portalapp.portal.logging.logic.EPLogUtil;
 import org.onap.portalapp.portal.scheduler.SchedulerProperties;
 import org.onap.portalapp.portal.scheduler.client.HttpBasicClient;
@@ -58,6 +62,14 @@ import org.onap.portalapp.portal.scheduler.policy.rest.RequestDetails;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpClientErrorException;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
 
 public class SchedulerAuxRestInterface extends SchedulerAuxRestInt implements SchedulerAuxRestInterfaceIfc {
 
@@ -77,7 +89,27 @@ public class SchedulerAuxRestInterface extends SchedulerAuxRestInt implements Sc
 		super();
 	}
 
+	Gson gson = null;
+
+	private final ObjectMapper mapper = new ObjectMapper();
+
+	private void init() {
+		logger.debug(EELFLoggerDelegate.debugLogger, "initializing");
+		GsonBuilder builder = new GsonBuilder();
+
+		// Register an adapter to manage the date types as long values
+		builder.registerTypeAdapter(Date.class, new JsonDeserializer<Date>() {
+			public Date deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
+					throws JsonParseException {
+				return new Date(json.getAsJsonPrimitive().getAsLong());
+			}
+		});
+
+		gson = builder.create();
+	}
+	
 	public void initRestClient() {
+		init();
 		final String methodname = "initRestClient()";
 		final String mechId = SchedulerProperties.getProperty(SchedulerProperties.SCHEDULERAUX_CLIENT_MECHID_VAL);
 		final String clientPassword = SchedulerProperties
@@ -234,7 +266,24 @@ public class SchedulerAuxRestInterface extends SchedulerAuxRestInt implements Sc
 					// .header("X-FromAppId", sourceID)
 					.post(Entity.entity(requestDetails, MediaType.APPLICATION_JSON));
 
-			t = (T) cres.readEntity(t.getClass());
+			/* It is not recommendable to use the implementation class org.apache.cxf.jaxrs.impl.ResponseImpl in the code, 
+			but had to force this in-order to prevent conflict with the ResponseImpl class of Jersey Client which 
+			doesn't work as expected. Created Portal-253 for tracking */
+			String str = ((ResponseImpl)cres).readEntity(String.class);
+			
+			try {
+				if(t.getClass().getName().equals(String.class.getName())){
+					t=(T) str;
+					
+				}else{
+					t = (T) gson.fromJson(str, t.getClass());
+				}
+				
+			} catch (Exception e) {
+				EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeInvalidJsonInput, e);
+			}
+			
+			//t = (T) cres.readEntity(t.getClass());
 			if (t.equals("")) {
 				restObject.set(null);
 			} else {

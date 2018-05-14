@@ -49,20 +49,20 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.codec.binary.Hex;
 import org.onap.portalapp.controller.sessionmgt.SessionCommunicationController;
 import org.onap.portalapp.portal.controller.BasicAuthenticationController;
 import org.onap.portalapp.portal.controller.ExternalAppsRestfulController;
 import org.onap.portalapp.portal.controller.SharedContextRestController;
 import org.onap.portalapp.portal.controller.WebAnalyticsExtAppController;
 import org.onap.portalapp.portal.domain.BasicAuthCredentials;
+import org.onap.portalapp.portal.domain.EPApp;
 import org.onap.portalapp.portal.domain.EPEndpoint;
-import org.onap.portalapp.portal.domain.EPRole;
 import org.onap.portalapp.portal.domain.EPUser;
 import org.onap.portalapp.portal.logging.aop.EPEELFLoggerAdvice;
 import org.onap.portalapp.portal.logging.format.EPAppMessagesEnum;
 import org.onap.portalapp.portal.logging.logic.EPLogUtil;
 import org.onap.portalapp.portal.service.BasicAuthenticationCredentialService;
+import org.onap.portalapp.portal.service.ExternalAccessRolesService;
 import org.onap.portalapp.portal.utils.EcompPortalUtils;
 import org.onap.portalapp.service.RemoteWebServiceCallService;
 import org.onap.portalapp.service.sessionmgt.ManageService;
@@ -94,6 +94,8 @@ public class PortalResourceInterceptor extends ResourceInterceptor {
 
 	@Autowired
 	private BasicAuthenticationCredentialService basicAuthService;
+	@Autowired
+	private ExternalAccessRolesService externalAccessRolesService;
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -225,7 +227,8 @@ public class PortalResourceInterceptor extends ResourceInterceptor {
 		uri = uri.substring(uri.indexOf("/", 1));
 
 		final String authHeader = request.getHeader("Authorization");
-
+		final String uebkey = request.getHeader("uebkey");
+		
 		// Unauthorized access due to missing HTTP Authorization request header
 		if (authHeader == null) {
 			final String msg = "no authorization found";
@@ -242,6 +245,26 @@ public class PortalResourceInterceptor extends ResourceInterceptor {
 			return false;
 		}
 
+		if(uebkey !=null && !uebkey.isEmpty())
+		{
+			List<EPApp> app = externalAccessRolesService.getApp(uebkey);
+			EPApp application = null;
+			if (app.isEmpty()) {
+				throw new Exception("Invalid uebkey!");
+			}
+			if (app.size() != 0 && !app.isEmpty()) {
+				application = app.get(0);
+			}
+			if (application != null) {
+				final String appUsername = application.getUsername();
+				final String dbDecryptedPwd = CipherUtil.decryptPKC(application.getAppPassword());
+				if (appUsername.equals(accountNamePassword[0]) && dbDecryptedPwd.equals(accountNamePassword[1])) {
+					return true;
+				}
+			}
+		}
+
+		
 		BasicAuthCredentials creds;
 		try {
 			creds = basicAuthService.getBasicAuthCredentialByUsernameAndPassword(accountNamePassword[0],

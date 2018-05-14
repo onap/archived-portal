@@ -37,12 +37,11 @@
  */
 package org.onap.portalapp.portal.controller;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.drools.core.command.assertion.AssertEquals;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;

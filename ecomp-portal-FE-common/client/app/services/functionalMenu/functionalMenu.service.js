@@ -329,6 +329,135 @@
                 });
             return deferred.promise;
         }
+        
+        saveBulkRole(appId, appRole)
+        {
+             let canceller = this.$q.defer();
+             let isActive = false;
+
+             let cancel = () => {
+                 if(isActive){
+                     this.$log.debug('FunctionalMenuService::saveBulkRole: canceling the request');
+                     canceller.resolve();
+                 }
+             };
+
+             let promise = () => {
+                 let deferred = this.$q.defer();
+                 let url = this.conf.api.saveRole.replace(':appId', appId);
+                 	this.$http({
+                     method: 'POST',
+                     url: url,
+                     cache: false,
+                     data : appRole,
+                     headers: {
+                         'X-ECOMP-RequestID':this.uuid.generate()
+                     }
+             }).then( res => {
+                 if (this.utilsService.isValidJSON(res)== false) {
+                     deferred.reject('UsersService::saveBulkRole: Failed');
+                 } else {
+                     deferred.resolve(res.data);
+                 }
+             })
+             .catch( status => {
+                 deferred.reject(status);
+             });
+
+             return deferred.promise;
+             };
+             
+             return {
+                 cancel: cancel,
+                 promise: promise
+             };
+        }
+        
+        saveBulkFunction(appId, appFunction)
+        {
+             let canceller = this.$q.defer();
+             let isActive = false;
+
+             let cancel = () => {
+                 if(isActive){
+                     this.$log.debug('FunctionalMenuService::saveRoleFunction: canceling the request');
+                     canceller.resolve();
+                 }
+             };
+
+             let promise = () => {
+                 let deferred = this.$q.defer();
+                 let url = this.conf.api.saveRoleFunction.replace(':appId', appId);
+                 	this.$http({
+                     method: 'POST',
+                     url: url,
+                     cache: false,
+                     data : appFunction,
+                     headers: {
+                         'X-ECOMP-RequestID':this.uuid.generate()
+                     }
+             }).then( res => {
+                 if (this.utilsService.isValidJSON(res)== false) {
+                     deferred.reject('UsersService::saveRoleFunction: Failed');
+                 } else {
+                     deferred.resolve(res.data);
+                 }
+             })
+             .catch( status => {
+                 deferred.reject(status);
+             });
+
+             return deferred.promise;
+             };
+             
+             return {
+                 cancel: cancel,
+                 promise: promise
+             };
+        }
+        
+        updateBulkRoleFunction(appId, roleFunction)
+        {
+             let canceller = this.$q.defer();
+             let isActive = false;
+
+             let cancel = () => {
+                 if(isActive){
+                     this.$log.debug('FunctionalMenuService::updateBulkRoleFunction: canceling the request');
+                     canceller.resolve();
+                 }
+             };
+
+             let promise = () => {
+                 let deferred = this.$q.defer();
+                 let url = this.conf.api.uploadRoleFunction.replace(':appId', appId);
+                 	this.$http({
+                     method: 'POST',
+                     url: url,
+                     cache: false,
+                     data : roleFunction,
+                     headers: {
+                         'X-ECOMP-RequestID':this.uuid.generate()
+                     }
+             }).then( res => {
+                 if (this.utilsService.isValidJSON(res)== false) {
+                     deferred.reject('UsersService::updateBulkRoleFunction: Failed');
+                 } else {
+                     deferred.resolve(res.data);
+                 }
+             })
+             .catch( status => {
+                 deferred.reject(status);
+             });
+
+             return deferred.promise;
+             };
+             
+             return {
+                 cancel: cancel,
+                 promise: promise
+             };
+        }
 
 }
     FunctionalMenuService.$inject = ['$q', '$log', '$http', 'conf','uuid4', 'utilsService'];

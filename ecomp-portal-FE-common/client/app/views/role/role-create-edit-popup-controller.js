@@ -63,9 +63,9 @@ app.controller('roleCreateEditController',function($scope, conf, $http, $modalIn
 					availableRoleFunction.selected = true;
 					console.log(availableRoleFunction.selected);
 				}
-			};
+			}
 			$scope.availableRoleFunctions.push(availableRoleFunction);	    
-		};
+		}
 	
 		$scope.toggleRoleFunction = function(selected,selectedRoleFunction){
 			if($scope.roleFunctions){

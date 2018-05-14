@@ -49,7 +49,6 @@ import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.onap.portalsdk.core.onboarding.ueb.UebException;
 import org.onap.portalsdk.core.onboarding.ueb.UebManager;
 import org.onap.portalsdk.core.onboarding.ueb.UebMsg;
-import org.onap.portalsdk.core.service.DataAccessService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.scheduling.annotation.Async;
@@ -124,11 +123,9 @@ public class FunctionalMenuHandler {
 		try {
 			UebManager.getInstance().publishReplyEP(returnMsg, requestMsg.getSourceTopicName());
 		} catch (UebException e) {
-			logger.error(EELFLoggerDelegate.errorLogger,
-					"getFunctionalMenu failed to publish reply", e);
+			logger.error(EELFLoggerDelegate.errorLogger, "getFunctionalMenu failed on UEB exception", e);
 		} catch (Exception e) {
-			logger.error(EELFLoggerDelegate.errorLogger,
-					"getFunctionalMenu failed", e);
+			logger.error(EELFLoggerDelegate.errorLogger, "getFunctionalMenu failed", e);
 		}
 
 		return true;

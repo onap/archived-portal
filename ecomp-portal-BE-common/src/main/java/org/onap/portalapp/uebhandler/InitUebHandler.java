@@ -33,6 +33,7 @@
  *
  * ============LICENSE_END============================================
  *
+ *
  * 
  */
 package org.onap.portalapp.uebhandler;
@@ -58,9 +59,9 @@ public class InitUebHandler {
 
 	// @Autowired
 	private MainUebHandler mainUebHandler;
-
-	public InitUebHandler() {
-
+	
+	public InitUebHandler()	{
+	
 	}
 
 	// @PostConstruct
@@ -68,19 +69,17 @@ public class InitUebHandler {
 		try {
 			String enableListenerThread = PortalApiProperties.getProperty(PortalApiConstants.UEB_LISTENERS_ENABLE);
 			if (enableListenerThread.equalsIgnoreCase("true")) {
-				ConcurrentLinkedQueue<UebMsg> inboxQueue = new ConcurrentLinkedQueue<UebMsg>();
-				UebManager.getInstance().initListener(inboxQueue);
-				mainUebHandler.runHandler(inboxQueue);
-				logger.info(EELFLoggerDelegate.errorLogger, "Returned from initiating mainUebHandler...");
-			} else {
-				logger.info(EELFLoggerDelegate.errorLogger,
-						"Not starting UEB listening thread because ueb_listeners_enable is not set to true in the properties file.");
-			}
-		} catch (Exception e) {
-			logger.error(EELFLoggerDelegate.errorLogger, "initUeb failed", e);
-			logger.info(EELFLoggerDelegate.errorLogger,
-					"Not starting UEB listening thread because property could not be read "
-							+ PortalApiConstants.UEB_LISTENERS_ENABLE + e.getMessage());
+                ConcurrentLinkedQueue<UebMsg> inboxQueue = new ConcurrentLinkedQueue<UebMsg>();
+	    	    UebManager.getInstance().initListener(inboxQueue);
+  		        mainUebHandler.runHandler(inboxQueue);
+	    	    logger.info(EELFLoggerDelegate.errorLogger, "Returned from initiating mainUebHandler...");
+  	        }
+		    else {
+		    	logger.info(EELFLoggerDelegate.errorLogger, "Not starting UEB listening thread because ueb_listeners_enable is not set to true in the properties file.");
+		    }
+		}
+		catch (Exception e) {
+			logger.info(EELFLoggerDelegate.errorLogger, "Not starting UEB listening thread because property could not be read " + PortalApiConstants.UEB_LISTENERS_ENABLE);
 		}
 	}
 }

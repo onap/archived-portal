@@ -513,7 +513,7 @@ public class EcompPortalUtils {
 	
 	/**
 	 * 
-	 * It check whether the external auth namespace is matching with current namepsace exists in local DB
+	 * It check whether the external auth namespace is matching with current namespace exists in local DB
 	 * 
 	 * @param permTypeVal
 	 * @param appNamespaceVal
@@ -523,9 +523,13 @@ public class EcompPortalUtils {
 		String[] typeNamespace = permTypeVal.split("\\.");
 		String[] appNamespace = appNamespaceVal.split("\\.");
 		boolean isNamespaceMatching = true;
-		for (int k = 0; k < appNamespace.length; k++) {
-			if (!appNamespace[k].equals(typeNamespace[k]))
-				isNamespaceMatching = false;
+		if (appNamespace.length <= typeNamespace.length) {
+			for (int k = 0; k < appNamespace.length; k++) {
+				if (!appNamespace[k].equals(typeNamespace[k]))
+					isNamespaceMatching = false;
+			}
+		} else {
+			isNamespaceMatching = false;
 		}
 		return isNamespaceMatching;
 	}

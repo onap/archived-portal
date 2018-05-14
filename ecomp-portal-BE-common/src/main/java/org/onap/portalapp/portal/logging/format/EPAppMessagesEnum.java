@@ -83,7 +83,7 @@ public enum EPAppMessagesEnum {
 	
 	BeRestApiAuthenticationError(EPErrorCodesEnum.BERESTAPIAUTHENTICATIONERROR, ErrorTypeEnum.AUTHENTICATION_PROBLEM, AlarmSeverityEnum.MAJOR, ErrorSeverityEnum.ERROR,
 								"ERR101E", "Rejected an incoming REST API request due to invalid credentials", "", "Please check application credentials defined in Database or properties files."),
-	
+
 	InternalAuthenticationInfo(EPErrorCodesEnum.INTERNALAUTHENTICATIONINFO_ONE_ARGUMENT, ErrorTypeEnum.AUTHENTICATION_PROBLEM, AlarmSeverityEnum.INFORMATIONAL, ErrorSeverityEnum.INFO,
 								"ERR199I", "Internal authentication problem", "Details: {0}.", "Please check the logs for more information."),
 	
@@ -132,6 +132,11 @@ public enum EPAppMessagesEnum {
     BeHttpConnectionError(EPErrorCodesEnum.BEHTTPCONNECTIONERROR_ONE_ARGUMENT, ErrorTypeEnum.CONNECTION_PROBLEM, AlarmSeverityEnum.MAJOR, ErrorSeverityEnum.ERROR,
 								"ERR213E", "It could be that communication to an external application might resulted an exception or failed to reach the external application", 
 								"Details: {0}.", "Please check logs for more information."),
+	MusicHealthCheckZookeeperError(EPErrorCodesEnum.MUSICHEALTHCHECKZOOKEEPERERROR_ONE_ARGUMENT, ErrorTypeEnum.SYSTEM_ERROR, AlarmSeverityEnum.MAJOR, ErrorSeverityEnum.ERROR,
+                                "ERR214E", "Connectivity to Music Cluster -zookeeper server", "Details: {0}.", "Please check zookeeper server list and check the logs for more information"),
+	
+    MusicHealthCheckCassandraError(EPErrorCodesEnum.MUSICHEALTHCHECKCASSANDRAERROR_ONE_ARGUMENT, ErrorTypeEnum.SYSTEM_ERROR, AlarmSeverityEnum.MAJOR, ErrorSeverityEnum.ERROR,
+                                "ERR215E", "Connectivity to Music Cluster -Cassandra server", "Details: {0}.", "Please check Cassandra server list and check the logs for more information"),
     
     InternalConnectionInfo(EPErrorCodesEnum.INTERNALCONNECTIONINFO_ONE_ARGUMENT, ErrorTypeEnum.CONNECTION_PROBLEM, AlarmSeverityEnum.INFORMATIONAL, ErrorSeverityEnum.INFO,
 								"ERR299I", "Internal Connection problem", "Details: {0}.", "Please check logs for more information."),

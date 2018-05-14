@@ -60,6 +60,7 @@
 			<div id="button-create-role" align="left" class="admins-table-btn-create" >
 				<button id="button-create-role" ng-click="addRoleModalPopup(apps.selectedCentralizedApp)" class = "btn btn-alt btn-small">Create</button>
 				<button id="button-sync-role"  ng-show="syncRolesApplied" ng-click="syncRolesFromExternalAuthSystem(apps.selectedCentralizedApp)" class = "btn btn-alt btn-small"><i class="icon-arrows-update-refresh-syncL" aria-hidden="true"></i>&nbsp;Sync Roles</button>
+				<button id="button-bulk-upload" ng-show="syncRolesApplied" ng-click="openBulkUploadRolesAndFunctionsModal(apps.selectedCentralizedApp)" class = "btn btn-alt btn-small"><i class="icon-arrows-upload" aria-hidden="true"></i>&nbsp;Bulk Upload</button>
 			</div>
 			<br>
 			  <div class="property-label">

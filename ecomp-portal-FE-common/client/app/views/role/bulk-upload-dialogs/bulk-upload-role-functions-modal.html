@@ -1,0 +1,105 @@
+<!--
+  ============LICENSE_START==========================================
+  ONAP Portal
+  ===================================================================
+  Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+  ===================================================================
+ 
+  Unless otherwise specified, all software contained herein is licensed
+  under the Apache License, Version 2.0 (the "License");
+  you may not use this software except in compliance with the License.
+  You may obtain a copy of the License at
+ 
+              http://www.apache.org/licenses/LICENSE-2.0
+ 
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+ 
+  Unless otherwise specified, all documentation contained herein is licensed
+  under the Creative Commons License, Attribution 4.0 Intl. (the "License");
+  you may not use this documentation except in compliance with the License.
+  You may obtain a copy of the License at
+ 
+              https://creativecommons.org/licenses/by/4.0/
+ 
+  Unless required by applicable law or agreed to in writing, documentation
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+ 
+  ============LICENSE_END============================================
+ 
+  ECOMP is a trademark and service mark of AT&T Intellectual Property.
+  -->
+<div>
+	<div class="b2b-modal-header">
+		<h2 class="heading-medium" id="newAdmin">Bulk Upload Role-Function</h2>
+		<div class="corner-button in">
+			<button type="button" class="close" aria-label="Close"
+				id="bulkuser-button-close" ng-click="$dismiss('cancel')"></button>
+		</div>
+	</div>
+	<div class="b2b-modal-body">
+		<div class="b2b-modal-body-div">
+			<div ng-show="bulkRoleAndFunctions.step1">
+				<div class="upload-instructions">Select Upload Type:</div>
+				<div class="c-ecomp-portal-abs-select default">
+
+					<select id="bulk-user-dropdown-apps" name="dropdown1" b2b-dropdown
+						ng-model="selectedUploadType.value"  ng-change="changeUploadTypeInstruction(selectedUploadType.value)">
+						<option b2b-dropdown-list
+							option-repeat="d in ngRepeatBulkUploadOptions"
+							value="{{d.value}}">{{d.title}}</option>
+					</select>
+
+				</div>
+			</div>
+
+			<div ng-hide="bulkRoleAndFunctions.step1">
+				<div class="upload-instructions">Select Upload File:</div>
+				<!-- input type=file is difficult to style.
+					 Instead use a label styled as a button. -->
+				<label class="file-label"> <input type="file"
+					file-change="fileChangeHandler($event,files)" ng-model="fileModel" />
+					<span></span>
+				</label>{{selectedFile}}
+				<div class="upload-instructions">
+					File must be .csv or .txt and one entry per line with this format:
+					<p>{{UploadTypeInstruction}}</p>
+				</div>
+			</div>
+
+			<!-- progress indicator in middle -->
+			<div ng-show="isProcessing">
+				<span class="ecomp-spinner"></span>
+			</div>
+			<br>
+		</div>
+	</div>
+	<div class="b2b-modal-footer">
+		<div class="cta-button-group in">
+			<button id="bulk-user-back-button" class="btn btn-alt btn-small"
+				ng-hide="bulkRoleAndFunctions.step1" ng-click="navigateBack()">Back</button>
+			<button id="bulk-user-next-button" class="btn btn-alt btn-small"
+				ng-hide="!bulkRoleAndFunctions.step1"
+				ng-click="!isProcessing && step2()"
+				ng-class="{disabled: isProcessing}">Next</button>
+			<button id="bulk-user-upload-button" class="btn btn-alt btn-small"
+				ng-hide="bulkRoleAndFunctions.step1"
+				ng-click="bulkRoleAndFunctions.fileSelected && confirmUpload(selectedUploadType.value)"
+				ng-class="{disabled: !bulkRoleAndFunctions.fileSelected}">Upload</button>
+			<button id="bulk-user-cancel-button" class="btn btn-alt btn-small"
+				ng-click="$dismiss('cancel')">Cancel</button>
+		</div>
+	</div>
+</div>
+
+<script>
+$(document).ready(function(){
+    $(".ngdialog-close").attr('id','dialog-close');
+});
+</script>

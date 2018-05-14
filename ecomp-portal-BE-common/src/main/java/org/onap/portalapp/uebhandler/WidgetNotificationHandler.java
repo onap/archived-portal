@@ -39,7 +39,6 @@ package org.onap.portalapp.uebhandler;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 import org.onap.portalapp.portal.domain.EPApp;
@@ -100,8 +99,8 @@ public class WidgetNotificationHandler {
 				}
 			} else {
 				logger.error(EELFLoggerDelegate.errorLogger,
-						dateFormat.format(new Date()) + "handleWidgetNotification: user " + requestMsg.getUserId()
-								+ " not found" + " source = " + requestMsg.getSourceTopicName()
+						"handleWidgetNotification: user " + requestMsg.getUserId() + " not found, source = "
+								+ requestMsg.getSourceTopicName()
 								+ ". This widget notification cannot be posted to other widgets");
 			}
 		}

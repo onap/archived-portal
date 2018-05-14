@@ -48,7 +48,6 @@ import javax.ws.rs.core.Response;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
-import org.drools.compiler.lang.DRL5Expressions.neg_operator_key_return;
 import org.eclipse.jetty.util.security.Password;
 import org.json.simple.JSONObject;
 import org.onap.portalapp.portal.logging.logic.EPLogUtil;

@@ -100,74 +100,7 @@ public class EPAppServiceImpl extends EPAppCommonServiceImpl implements EPAppSer
 		return userApps;
 	}
 
-	@Override
-	protected void updateRestrictedApp(Long appId, OnboardingApp onboardingApp, FieldsValidator fieldsValidator,
-			EPUser user) {
-		synchronized (syncRests) {
-			boolean result = false;
-			Session localSession = null;
-			Transaction transaction = null;
-			try {
-				localSession = sessionFactory.openSession();
-				transaction = localSession.beginTransaction();
-				EPApp app;
-				if (appId == null) {
-					app = new EPApp();
-					/*
-					 * In the parent class, the UEB code is responsible for generating the
-					 * keys/secret/mailbox but UEB Messaging is not actually being used currently;
-					 * may be used in future at which point we can just remove this method and
-					 * depend on parent class's method So, using UUID generator to generate the
-					 * unique key instead.
-					 */
-					String uuidStr = UUID.randomUUID().toString();
-					String appKey = uuidStr;
-					String appSecret = uuidStr;
-					String appMailboxName = "ECOMP-PORTAL-OUTBOX";
-					onboardingApp.setUebTopicName(appMailboxName);
-					onboardingApp.setUebKey(appKey);
-					onboardingApp.setUebSecret(appSecret);
-				} else {
-					app = (EPApp) localSession.get(EPApp.class, appId);
-					if (app == null || app.getId() == null) {
-						// App is already deleted!
-						transaction.commit();
-						localSession.close();
-						fieldsValidator.httpStatusCode = new Long(HttpServletResponse.SC_NOT_FOUND);
-						return;
-					}
-				}
-				logger.debug(EELFLoggerDelegate.debugLogger,
-						"updateRestrictedApp: about to call createAppFromOnboarding");
-				createAppFromOnboarding(app, onboardingApp, localSession);
-				logger.debug(EELFLoggerDelegate.debugLogger,
-						"updateRestrictedApp: finished calling createAppFromOnboarding");
-				localSession.saveOrUpdate(app);
-				logger.debug(EELFLoggerDelegate.debugLogger,
-						"updateRestrictedApp: finished calling localSession.saveOrUpdate");
-				// Enable or disable all menu items associated with this app
-				setFunctionalMenuItemsEnabled(localSession, onboardingApp.isEnabled, appId);
-				logger.debug(EELFLoggerDelegate.debugLogger,
-						"updateRestrictedApp: finished calling setFunctionalMenuItemsEnabled");
-				transaction.commit();
-				logger.debug(EELFLoggerDelegate.debugLogger,
-						"updateRestrictedApp: finished calling transaction.commit");
-				result = true;
-			} catch (Exception e) {
-				logger.error(EELFLoggerDelegate.errorLogger, "updateRestrictedApp failed", e);
-				EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeUebRegisterOnboardingAppError, e);
-				EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeDaoSystemError, e);
-				EcompPortalUtils.rollbackTransaction(transaction,
-						"updateRestrictedApp rollback, exception = " + e.toString());
-			} finally {
-				EcompPortalUtils.closeLocalSession(localSession, "updateRestrictedApp");
-			}
-			if (!result) {
-				fieldsValidator.httpStatusCode = new Long(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			}
-		}
 
-	}
 
 	@Override
 	public CambriaTopicManager getTopicManager(List<String> urlList, String key, String secret)

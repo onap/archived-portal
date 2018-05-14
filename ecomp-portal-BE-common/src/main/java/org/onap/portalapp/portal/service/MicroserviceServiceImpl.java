@@ -49,6 +49,7 @@ import org.hibernate.criterion.Restrictions;
 import org.onap.portalapp.portal.domain.MicroserviceData;
 import org.onap.portalapp.portal.domain.MicroserviceParameter;
 import org.onap.portalapp.portal.logging.aop.EPMetricsLog;
+import org.onap.portalapp.portal.utils.EPCommonSystemProperties;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.onap.portalsdk.core.onboarding.util.CipherUtil;
 import org.onap.portalsdk.core.service.DataAccessService;
@@ -105,11 +106,7 @@ public class MicroserviceServiceImpl implements MicroserviceService {
 		List<MicroserviceData> list = (List<MicroserviceData>) dataAccessService.getList(MicroserviceData.class, null);
 		for (int i = 0; i < list.size(); i++) {
 			if (list.get(i).getPassword() != null)
-				try{
-					list.get(i).setPassword(decryptedPassword(list.get(i).getPassword()));
-				} catch(BadPaddingException bpe){
-					logger.error(EELFLoggerDelegate.errorLogger, "Couldn't decrypt - Check decryption key in system.properties - looks wrong. Still going ahead with list population though", bpe);
-				}
+				list.get(i).setPassword(EPCommonSystemProperties.APP_DISPLAY_PASSWORD);  //to hide password from get request
 			list.get(i).setParameterList(getServiceParameters(list.get(i).getId()));
 		}
 		return list;
@@ -149,8 +146,13 @@ public class MicroserviceServiceImpl implements MicroserviceService {
 	public void updateMicroservice(long serviceId, MicroserviceData newService) throws Exception {
 		try {
 			newService.setId(serviceId);
-			if (newService.getPassword() != null)
-				newService.setPassword(encryptedPassword(newService.getPassword()));
+			if (newService.getPassword() != null){
+				if(newService.getPassword().equals(EPCommonSystemProperties.APP_DISPLAY_PASSWORD)){
+					MicroserviceData oldMS = getMicroserviceDataById(serviceId);
+					newService.setPassword(oldMS.getPassword()); // keep the old password
+				}else
+					newService.setPassword(encryptedPassword(newService.getPassword())); //new password
+			}
 			getDataAccessService().saveDomainObject(newService, null);
 			List<MicroserviceParameter> oldService = getServiceParameters(serviceId);
 			boolean foundParam;

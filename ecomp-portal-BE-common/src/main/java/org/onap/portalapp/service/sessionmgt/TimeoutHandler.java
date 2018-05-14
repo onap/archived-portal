@@ -245,6 +245,7 @@ public class TimeoutHandler extends QuartzJobBean {
 			return "";
 		String jSessionKey = (String) attribute;
 		return jSessionKey.split("-")[0];
+		//return jSessionKey;
 	}
 
 	private static ApplicationContext applicationContext;

@@ -37,9 +37,10 @@
  */
 package org.onap.portalapp.portal.domain;
 
+import org.onap.portalsdk.core.domain.support.DomainVo;
 
 @SuppressWarnings("rawtypes")
-public class EPUserApp implements java.io.Serializable, Comparable {
+public class EPUserApp extends DomainVo implements java.io.Serializable, Comparable {
 
 	private static final long serialVersionUID = 1L;
 	

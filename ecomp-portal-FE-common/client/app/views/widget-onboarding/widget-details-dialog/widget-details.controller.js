@@ -242,6 +242,14 @@
                  }).finally(()=> {
                      this.isLoadingTable = false;
                  });
+                
+                widgetsCatalogService.getUploadFlag().then(res => {
+                	this.uploadFlag=res;
+                 }).catch(err => {
+                     $log.error('WidgetOnboardingDetailsModalCtrl::init error: ' + err);
+                 }).finally(()=> {
+                 });
+                
                  getAvailableApps();
                  getAvailableServices();
             };

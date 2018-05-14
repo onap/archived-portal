@@ -178,6 +178,7 @@ public class SharedContextRestClient {
 		} finally {
 			if (response != null)
 				response.close();
+			httpClient.close();
 		}
 		return json;
 	}
@@ -292,6 +293,7 @@ public class SharedContextRestClient {
 		} finally {
 			if (response != null)
 				response.close();
+			httpClient.close();
 		}
 		return responseJson;
 	}

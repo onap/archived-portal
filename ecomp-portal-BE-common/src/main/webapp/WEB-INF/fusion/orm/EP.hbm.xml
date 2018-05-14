@@ -1958,7 +1958,7 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 			]]>
 	</sql-query>
 	
-	<!-- Gets the current user app roles records and requires two parameters  -->
+	<!-- Gets all functions of portal app -->
 	<sql-query name="getAllFunctions">
 		<return alias="allFunctions"
 			class="org.onap.portalsdk.core.domain.RoleFunction" />
@@ -1967,7 +1967,17 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 			;		
 			]]>
 	</sql-query>
-
+	
+	<!-- Gets the current user app roles records and requires two parameters  -->
+	<sql-query name="getPartnerAppFunctions">
+		<return alias="partnerAppFunctions"
+			class="org.onap.portalapp.portal.domain.CentralV2RoleFunction" />
+			<![CDATA[	
+			select * from ep_app_function where app_id =:appId
+			;		
+			]]>
+	</sql-query>
+	
 	<!-- Gets the  all role functions and requires one parameters -->
 	<sql-query name="uploadAllRoleFunctions">
 		<return alias="allRoleFunctions"
@@ -1975,6 +1985,16 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 			<![CDATA[	
 				select fr.function_cd, fn.function_name from fn_role_function fr left outer join fn_function fn on fr.function_cd = fn.function_cd where role_id =:roleId
 				;		
+			]]>
+	</sql-query>
+	
+		<!-- Gets the  all application role functions from ep_app_function table and requires one parameters -->
+	<sql-query name="uploadPartnerRoleFunctions">
+		<return alias="partnerRoleFunctions"
+			class="org.onap.portalapp.portal.transport.BulkUploadRoleFunction" />
+			<![CDATA[	
+				select distinct eprf.function_cd, epfn.function_name from ep_app_role_function eprf left outer join ep_app_function epfn on eprf.function_cd = epfn.function_cd where eprf.role_id =:roleId
+				;	
 			]]>
 	</sql-query>
 
@@ -2020,7 +2040,7 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 	<sql-query name="getCentralizedApps">
 		<return alias="centralizedApps" class="org.onap.portalapp.portal.domain.EPApp" />
 			<![CDATA[
-			select * from fn_app where auth_central = 'Y' and open = 'N';
+			select * from fn_app where auth_central = 'Y' and open = 'N' and auth_namespace is not null
 			;	
 			]]>
 	</sql-query>
@@ -2164,12 +2184,10 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
     <sql-query name="getGlobalRoleWithApplicationRoleFunctions">	
 		<return alias="getGlobalRoleWithApplicationRoleFunctions" class="org.onap.portalapp.portal.transport.GlobalRoleWithApplicationRoleFunction" />   	
 		<![CDATA[
-		
  		select distinct  d.role_id, d.role_name , c.function_cd , e.function_name , d.active_yn , d.priority , c.app_id, c.role_app_id
 		from fn_user_role a, fn_app b, ep_app_role_function c , fn_role d , ep_app_function e
 		where b.app_id = c.app_id and a.app_id = c.role_app_id and b.enabled = 'Y' and c.role_id = d.role_id and d.active_yn='Y' and e.function_cd = c.function_cd and c.app_id= :appId and e.app_id=c.app_id
 		;
- 
  		]]>
 	</sql-query>
 	
@@ -2200,13 +2218,21 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 	<sql-query name="getGlobalRoleForRequestedApp">	
 		<return alias="getGlobalRoleForRequestedApp" class="org.onap.portalapp.portal.transport.GlobalRoleWithApplicationRoleFunction" />   	
 		<![CDATA[
-		
  		select distinct  d.role_id, d.role_name , c.function_cd , e.function_name , d.active_yn , d.priority , c.app_id, c.role_app_id
         from fn_user_role a, fn_app b, ep_app_role_function c , fn_role d , ep_app_function e
         where b.app_id = c.app_id and a.app_id = c.role_app_id and b.enabled = 'Y' and c.role_id = d.role_id and d.active_yn='Y' and e.function_cd = c.function_cd and c.app_id=:requestedAppId and c.role_id =:roleId and e.app_id = c.app_id
         ;
- 
  		]]>
+	</sql-query>
+	
+	<sql-query name="getBulkUploadPartnerGlobalRoleFunctions">	
+		<return alias="bulkUploadPartnerGlobalRoleFunctions" class="org.onap.portalapp.portal.transport.GlobalRoleWithApplicationRoleFunction" />   	
+		<![CDATA[
+		select distinct fr.role_id, fr.role_name, fr.active_yn, fr.priority, epr.function_cd, ep.function_name, ep.app_id, epr.role_app_id
+		from fn_role fr, ep_app_function ep, ep_app_role_function epr
+		where fr.role_id = epr.role_id and ep.function_cd = epr.function_cd and ep.app_id = epr.app_id and  epr.app_id = :appId and epr.role_app_id = 1	
+		;
+		]]>
 	</sql-query>
 	
 	<sql-query name="updateMenuFunctionalAndRoles">	
@@ -2341,23 +2367,46 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 	<sql-query name="getUserRoleOnUserIdAndRoleIdAndAppId">	
 		<return alias="getUserRoleOnUserIdAndRoleIdAndAppId" class="org.onap.portalapp.portal.domain.EPUserApp" />   	
 		<![CDATA[
-		
  		select * from fn_user_role where user_id= :userId 
  		and role_id= :roleId 
  		and app_id= :appId
  		; 
- 
  		]]>
 	</sql-query>
-    
-    <sql-query name="userAppGlobalRoles">
-      <return alias="userAppGlobalRoles" class="org.onap.portalapp.portal.domain.EPRole" />
+
+	<sql-query name="userAppGlobalRoles">
+		<return alias="userAppGlobalRoles"
+			class="org.onap.portalapp.portal.domain.EPRole" />
        <![CDATA[ 
         select fr.role_id , fr.role_name ,fr.active_yn, fr.priority, fr.app_id, fr.app_role_id 
         from fn_user_role a, fn_role fr, fn_user fu 
         where a.role_id in (select b.role_id from ep_app_role_function b where b.role_app_id = 1 and b.app_id =:appId) and a.user_id =fu.user_id and a.role_id = fr.role_id and fr.active_yn='Y' and fu.active_yn='Y' and fu.user_id =:userId
         ;             
-         ]]>
-       </sql-query>
-    
+       ]]>
+	</sql-query>
+
+	<sql-query name="getAllCentralizedAppsRoles">
+		<return alias="allCentralizedAppsRoles"
+			class="org.onap.portalapp.portal.transport.CentralizedAppRoles" />
+       <![CDATA[ 
+        select distinct fa.app_id, fa.auth_namespace, fr.role_name, fr.role_id from fn_app fa,  fn_role fr where fa.auth_central = 'Y' and fa.auth_namespace is not null
+ 		and (fa.app_id = fr.app_id or COALESCE(fr.app_id,1) = fa.app_id) and fr.active_yn = 'Y' order by fa.app_id ;          
+       ]]>
+	</sql-query>
+
+	<sql-query name="getUserCentralizedAppRoles">
+		<return alias="userCentralizedAppRoles"
+			class="org.onap.portalapp.portal.transport.CentralizedAppRoles" />
+       <![CDATA[ 
+		select distinct fur.app_id, fa.auth_namespace, fr.role_name, fur.role_id from fn_user_role fur, fn_app fa, fn_role fr, fn_user fu 
+		where fa.app_id = fur.app_id 
+		and fr.role_id = fur.role_id
+		and fu.user_id = fur.user_id 
+		and fu.ORG_USER_ID = :orgUserId
+		and fa.auth_namespace is not null
+		and fr.active_yn = 'Y'
+		order by role_id;
+		]]>
+	</sql-query>
+	
 </hibernate-mapping>

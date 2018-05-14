@@ -79,7 +79,7 @@ public class CentralRoleTest {
 		assertEquals(centralV2Role.getModifiedId(), new Long(1));
 		assertEquals(centralV2Role.getRowNum(), new Long(1));
 		assertEquals(centralV2Role.getName(), "test");
-		assertEquals(centralV2Role.isActive(), false);
+		assertEquals(centralV2Role.getActive(), false);
 		assertEquals(centralV2Role.getCreated(), null);
 		assertEquals(centralV2Role.getModified(), null);
 		assertEquals(centralV2Role.getRoleFunctions(), null);

@@ -41,11 +41,11 @@ import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.onap.portalapp.portal.utils.MusicCookieCsrfTokenRepository;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.util.matcher.RegexRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
@@ -61,14 +61,12 @@ public class ExternalSecurityConfig extends WebSecurityConfigurerAdapter {
 			@Override
 			public boolean matches(HttpServletRequest request) {
 				if(allowedMethods.matcher(request.getMethod()).matches())
-		            return false;
-		        
+		            return false;   
 				if(requestMatcher.matches(request))
-					return true;
-				
+					return true;			
 				return false;
 			}
 		};
-		http.csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()).requireCsrfProtectionMatcher(csrfRequestMatcher);
+		http.csrf().csrfTokenRepository(MusicCookieCsrfTokenRepository.withHttpOnlyFalse()).requireCsrfProtectionMatcher(csrfRequestMatcher);
 	}
 }

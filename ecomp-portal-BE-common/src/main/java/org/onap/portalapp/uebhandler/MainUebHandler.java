@@ -33,7 +33,7 @@
  *
  * ============LICENSE_END============================================
  *
- * 
+ *
  */
 package org.onap.portalapp.uebhandler;
 
@@ -43,7 +43,7 @@ import java.util.Date;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.onap.portalapp.portal.ueb.EPUebMsgTypes;
-import org.onap.portalapp.portal.utils.EPSystemProperties;
+import org.onap.portalapp.portal.utils.EPCommonSystemProperties;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.onap.portalsdk.core.onboarding.ueb.UebMsg;
 import org.onap.portalsdk.core.onboarding.ueb.UebMsgTypes;
@@ -88,7 +88,7 @@ public class MainUebHandler {
 							dateFormat.format(new Date()) + "<== Received UEB message : " + msg.toString());
 					logger.info(EELFLoggerDelegate.debugLogger,
 							dateFormat.format(new Date()) + "<== Received UEB message : " + msg.toString());
-					MDC.put(EPSystemProperties.PARTNER_NAME, msg.getSourceTopicName());
+					MDC.put(EPCommonSystemProperties.PARTNER_NAME, msg.getSourceTopicName());
 					MDC.put(Configuration.MDC_SERVICE_NAME, msg.getMsgType().toString());
 					switch (msg.getMsgType()) {
 					case UebMsgTypes.UEB_MSG_TYPE_GET_FUNC_MENU: {
@@ -116,7 +116,7 @@ public class MainUebHandler {
 			try {
 				Thread.sleep(10);
 			} catch (InterruptedException e) {
-				logger.error(EELFLoggerDelegate.errorLogger, "runHandler interrupted during sleep", e);
+				logger.error(EELFLoggerDelegate.errorLogger, "runHandler interrupted", e);
 			} catch (Exception e) {
 				logger.error(EELFLoggerDelegate.errorLogger, "runHandler failed", e);
 			}

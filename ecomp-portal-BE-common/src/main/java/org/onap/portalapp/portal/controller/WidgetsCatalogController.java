@@ -49,6 +49,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.onap.portalapp.controller.EPRestrictedBaseController;
 import org.onap.portalapp.portal.domain.EPUser;
 import org.onap.portalapp.portal.domain.MicroserviceParameter;
@@ -62,6 +63,7 @@ import org.onap.portalapp.portal.logging.aop.EPAuditLog;
 import org.onap.portalapp.portal.service.ConsulHealthService;
 import org.onap.portalapp.portal.service.MicroserviceService;
 import org.onap.portalapp.portal.service.WidgetParameterService;
+import org.onap.portalapp.portal.utils.EPCommonSystemProperties;
 import org.onap.portalapp.portal.utils.EcompPortalUtils;
 import org.onap.portalapp.util.EPUserUtils;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
@@ -98,6 +100,8 @@ public class WidgetsCatalogController extends EPRestrictedBaseController {
 	private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(WidgetsCatalogController.class);
 
 	private static final String MS_WIDGET_LOCAL_PORT = "microservices.widget.local.port";
+	
+	private static final String UNAUTHORIZED_OR_FORBIDDEN_FOR_A_DISABLED_USER = "Unauthorized or  Forbidden for a disabled user";
 
 	private RestTemplate template = new RestTemplate();
 
@@ -135,7 +139,7 @@ public class WidgetsCatalogController extends EPRestrictedBaseController {
 			ResponseEntity<List> ans = template.exchange(
 					EcompPortalUtils.widgetMsProtocol() + "://"
 							+ consulHealthService.getServiceLocation(whatService,
-									SystemProperties.getProperty(MS_WIDGET_LOCAL_PORT))
+									SystemProperties.getProperty(EPCommonSystemProperties.MS_WIDGET_LOCAL_PORT))
 							+ "/widget/microservices/widgetCatalog/" + loginName,
 					HttpMethod.GET, new HttpEntity<>(WidgetServiceHeaders.getInstance()), List.class);
 			widgets = ans.getBody();
@@ -155,7 +159,7 @@ public class WidgetsCatalogController extends EPRestrictedBaseController {
 			ResponseEntity<List> ans = template.exchange(
 					EcompPortalUtils.widgetMsProtocol() + "://"
 							+ consulHealthService.getServiceLocation(whatService,
-									SystemProperties.getProperty(MS_WIDGET_LOCAL_PORT))
+									SystemProperties.getProperty(EPCommonSystemProperties.MS_WIDGET_LOCAL_PORT))
 							+ "/widget/microservices/widgetCatalog",
 					HttpMethod.GET, new HttpEntity<>(WidgetServiceHeaders.getInstance()), List.class);
 			widgets = ans.getBody();
@@ -215,7 +219,7 @@ public class WidgetsCatalogController extends EPRestrictedBaseController {
 			respond = template.postForObject(
 					EcompPortalUtils.widgetMsProtocol() + "://"
 							+ consulHealthService.getServiceLocation(whatService,
-									SystemProperties.getProperty(MS_WIDGET_LOCAL_PORT))
+									SystemProperties.getProperty(EPCommonSystemProperties.MS_WIDGET_LOCAL_PORT))
 							+ "/widget/microservices/widgetCatalog/" + widgetId,
 					new HttpEntity<>(multipartRequest, WidgetServiceHeaders.getInstance()), String.class);
 			File f = new File(tmpFolderName + fileName);
@@ -236,6 +240,12 @@ public class WidgetsCatalogController extends EPRestrictedBaseController {
 	@RequestMapping(value = { "/portalApi/microservices/widgetCatalog" }, method = RequestMethod.POST)
 	public String createWidgetCatalog(HttpServletRequest request)
 			throws Exception {
+		
+		if (StringUtils.isNotBlank(SystemProperties.getProperty(EPCommonSystemProperties.MS_WIDGET_UPLOAD_FLAG))
+				&& SystemProperties.getProperty(EPCommonSystemProperties.MS_WIDGET_UPLOAD_FLAG).equalsIgnoreCase("false")) {
+			return UNAUTHORIZED_OR_FORBIDDEN_FOR_A_DISABLED_USER;
+		}
+		
 		MultipartHttpServletRequest mRequest;
 		MultiValueMap<String, Object> multipartRequest = new LinkedMultiValueMap<>();
 		String fileName;
@@ -260,7 +270,7 @@ public class WidgetsCatalogController extends EPRestrictedBaseController {
 			respond = template.postForObject(
 					EcompPortalUtils.widgetMsProtocol() + "://"
 							+ consulHealthService.getServiceLocation(whatService,
-									SystemProperties.getProperty(MS_WIDGET_LOCAL_PORT))
+									SystemProperties.getProperty(EPCommonSystemProperties.MS_WIDGET_LOCAL_PORT))
 							+ "/widget/microservices/widgetCatalog",
 					new HttpEntity<>(multipartRequest, WidgetServiceHeaders.getInstance()), String.class);
 			File f = new File(tmpFolderName + fileName);
@@ -314,7 +324,7 @@ public class WidgetsCatalogController extends EPRestrictedBaseController {
 		Long serviceId = template.exchange(
 				EcompPortalUtils.widgetMsProtocol() + "://"
 						+ consulHealthService.getServiceLocation(whatService,
-								SystemProperties.getProperty(MS_WIDGET_LOCAL_PORT))
+								SystemProperties.getProperty(EPCommonSystemProperties.MS_WIDGET_LOCAL_PORT))
 						+ "/widget/microservices/widgetCatalog/parameters/" + widgetId,
 				HttpMethod.GET, new HttpEntity<>(WidgetServiceHeaders.getInstance()), Long.class).getBody();
 		if (serviceId == null) {
@@ -361,7 +371,7 @@ public class WidgetsCatalogController extends EPRestrictedBaseController {
 				.exchange(
 						EcompPortalUtils.widgetMsProtocol() + "://"
 								+ consulHealthService.getServiceLocation(whatService,
-										SystemProperties.getProperty(MS_WIDGET_LOCAL_PORT))
+										SystemProperties.getProperty(EPCommonSystemProperties.MS_WIDGET_LOCAL_PORT))
 								+ "/widget/microservices/download/" + widgetId,
 						HttpMethod.GET, new HttpEntity<>(WidgetServiceHeaders.getInstance()), byte[].class)
 				.getBody();
@@ -413,5 +423,17 @@ public class WidgetsCatalogController extends EPRestrictedBaseController {
 			return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, "FAILURE", e.getMessage());
 		}
 		return new PortalRestResponse<String>(PortalRestStatusEnum.OK, "SUCCESS", "");
+	}
+	
+	@RequestMapping(value = { "/portalApi/microservices/uploadFlag" }, method = RequestMethod.GET)
+	public String getUploadFlag() {
+	     String uplaodFlag="";
+		try {
+			uplaodFlag = SystemProperties.getProperty(EPCommonSystemProperties.MS_WIDGET_UPLOAD_FLAG);
+		} catch (Exception e) {
+			logger.error(EELFLoggerDelegate.errorLogger, "uploadFlag failed", e);
+			return null;
+		}
+		return uplaodFlag;
 	}
 }

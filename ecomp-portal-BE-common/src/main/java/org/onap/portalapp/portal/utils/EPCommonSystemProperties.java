@@ -91,5 +91,10 @@ public class EPCommonSystemProperties extends SystemProperties {
 	public static final String WIDGET_MS_HOSTNAME 					= "microservices.widget.hostname";
 	
 	public static final String REMOTE_CENTRALIZED_SYSTEM_ACCESS		= "remote_centralized_system_access";
+	
+	public static final String APP_DISPLAY_PASSWORD 				= "*******";
+	
+	public static final String MS_WIDGET_LOCAL_PORT                 = "microservices.widget.local.port";
+	public static final String MS_WIDGET_UPLOAD_FLAG                = "microservices.widget.upload.flag";
 
 }

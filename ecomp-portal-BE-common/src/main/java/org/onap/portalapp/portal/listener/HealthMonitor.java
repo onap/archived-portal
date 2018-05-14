@@ -37,18 +37,29 @@
  */
 package org.onap.portalapp.portal.listener;
 
+import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.zookeeper.ZooKeeper;
+import org.apache.zookeeper.client.FourLetterWordMain;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.onap.music.datastore.PreparedQueryObject;
+import org.onap.music.exceptions.MusicServiceException;
+import org.onap.music.main.MusicCore;
+import org.onap.music.main.MusicUtil;
+import org.onap.portalapp.music.util.MusicProperties;
 import org.onap.portalapp.portal.logging.aop.EPMetricsLog;
 import org.onap.portalapp.portal.logging.format.EPAppMessagesEnum;
 import org.onap.portalapp.portal.logging.logic.EPLogUtil;
-import org.onap.portalapp.portal.ueb.EPUebHelper;
 import org.onap.portalapp.portal.utils.EPCommonSystemProperties;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.onap.portalsdk.core.util.SystemProperties;
@@ -56,19 +67,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.transaction.annotation.Transactional;
 
+
+
+
 @Transactional
 @org.springframework.context.annotation.Configuration
 @EnableAspectJAutoProxy
 @EPMetricsLog
 public class HealthMonitor {
 
-	private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(HealthMonitor.class);
+	
+	ZooKeeper zookeeper = null;
+
+	private static EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(HealthMonitor.class);
 
 	@Autowired
 	private SessionFactory sessionFactory;
 
-	@Autowired
-	private EPUebHelper epUebHelper;
 
 	private static boolean databaseUp;
 	private static boolean uebUp;
@@ -76,7 +91,9 @@ public class HealthMonitor {
 	private static boolean backEndUp;
 	private static boolean dbClusterStatusOk;
 	private static boolean dbPermissionsOk;
-
+	private static boolean zookeeperStatusOk;
+	private static boolean cassandraStatusOk;
+	
 	/**
 	 * Read directly by external classes.
 	 */
@@ -110,13 +127,22 @@ public class HealthMonitor {
 	public static boolean isBackEndUp() {
 		return backEndUp;
 	}
+	
+	public static boolean isZookeeperStatusOk() {
+		return zookeeperStatusOk;
+	}
+
+	public static boolean isCassandraStatusOk() {
+		return cassandraStatusOk;
+	}
 
 	private void monitorEPHealth() throws InterruptedException {
 
 		int numIntervalsDatabaseHasBeenDown = 0;
 		int numIntervalsClusterNotHealthy = 0;
 		int numIntervalsDatabasePermissionsIncorrect = 0;
-		int numIntervalsUebHasBeenDown = 0;
+		int numIntervalsZookeeperNotHealthy = 0;
+		int numIntervalsCassandraNotHealthy = 0;
 
 		logger.debug(EELFLoggerDelegate.debugLogger, "monitorEPHealth thread started");
 
@@ -168,26 +194,47 @@ public class HealthMonitor {
 					numIntervalsDatabasePermissionsIncorrect = 0;
 				}
 			}
+			
+			zookeeperStatusOk = this.checkZookeeperStatus();
+			if (zookeeperStatusOk == false) {
+				if ((numIntervalsZookeeperNotHealthy % numIntervalsBetweenAlerts) == 0) {
+					logger.debug(EELFLoggerDelegate.debugLogger,
+							"monitorEPHealth: cluster nodes down, logging to error log to trigger alert.");
+					EPLogUtil.logEcompError(logger, EPAppMessagesEnum.MusicHealthCheckZookeeperError);
+					numIntervalsZookeeperNotHealthy++;
+				} else {
+					numIntervalsZookeeperNotHealthy = 0;
+				}
+			}
 
+			cassandraStatusOk = this.checkCassandraStatus();
+			if (cassandraStatusOk == false) {
+				if ((numIntervalsCassandraNotHealthy % numIntervalsBetweenAlerts) == 0) {
+					logger.debug(EELFLoggerDelegate.debugLogger,
+							"monitorEPHealth: cluster nodes down, logging to error log to trigger alert.");
+					EPLogUtil.logEcompError(logger, EPAppMessagesEnum.MusicHealthCheckCassandraError);
+					numIntervalsCassandraNotHealthy++;
+				} else {
+					numIntervalsCassandraNotHealthy = 0;
+				}
+			}
+			
 			//
 			// Get UEB status. Publish a bogus message to EP inbox, if 200 OK
 			// returned, status is Up.
 			// If down, signal alert once every X intervals.
 			// EP will ignore this bogus message.
-			//
-			uebUp = this.checkIfUebUp();
-			if (uebUp == false) {
-
-				if ((numIntervalsUebHasBeenDown % numIntervalsBetweenAlerts) == 0) {
-					logger.debug(EELFLoggerDelegate.debugLogger,
-							"monitorEPHealth: UEB down, logging to error log to trigger alert");
-					// Write a Log entry that will generate an alert
-					EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeHealthCheckUebClusterError);
-					numIntervalsUebHasBeenDown++;
-				} else {
-					numIntervalsUebHasBeenDown = 0;
-				}
-			}
+			// Commenting this out as Dependency on UEB is being deprecated
+			/*
+			 * uebUp = this.checkIfUebUp(); if (uebUp == false) {
+			 * 
+			 * if ((numIntervalsUebHasBeenDown % numIntervalsBetweenAlerts) == 0) {
+			 * logger.debug(EELFLoggerDelegate.debugLogger,
+			 * "monitorEPHealth: UEB down, logging to error log to trigger alert"); // Write
+			 * a Log entry that will generate an alert EPLogUtil.logEcompError(logger,
+			 * EPAppMessagesEnum.BeHealthCheckUebClusterError);
+			 * numIntervalsUebHasBeenDown++; } else { numIntervalsUebHasBeenDown = 0; } }
+			 */
 
 			// The front end should be up because the API is called through
 			// proxy front end server.
@@ -309,6 +356,71 @@ public class HealthMonitor {
 		return isUp;
 	}
 
+	private boolean checkZookeeperStatus() {
+
+		String[] zookeeperNodes = MusicUtil.getMyZkHost().split(",");
+		logger.info(EELFLoggerDelegate.applicationLogger, "MusicUtil.getMyZkHost()---- :" + MusicUtil.getMyZkHost());
+		for (int i = 0; i < zookeeperNodes.length; i++) {
+			try {
+				logger.info(EELFLoggerDelegate.applicationLogger, "server ip--zookeeper  :" + zookeeperNodes[i].trim());
+				String[] iport = zookeeperNodes[i].split(":");
+				String zkNodeStatistics = FourLetterWordMain.send4LetterWord(iport[0].trim(),
+						Integer.parseInt(iport[1].trim()), "stat");
+				logger.info(EELFLoggerDelegate.applicationLogger,
+						"Getting Status for Zookeeper zkNodeStatistics :" + zkNodeStatistics);
+				if (StringUtils.isNotBlank(zkNodeStatistics)) {
+					String state = zkNodeStatistics.substring(zkNodeStatistics.indexOf("Mode:"),
+							zkNodeStatistics.indexOf("Node"));
+					logger.info(EELFLoggerDelegate.applicationLogger,
+							"Getting Status for zookeeper :" + zookeeperNodes[i].trim() + ":------:" + state);
+					if (state.contains("leader"))
+						return true;
+				}
+			} catch (Exception e) {
+				logger.error(EELFLoggerDelegate.errorLogger, "ZookeeperStatus Service is not responding", e.getCause());
+			}
+		}
+
+		return false;
+	}
+
+
+	public boolean checkCassandraStatus() {
+		logger.info(EELFLoggerDelegate.applicationLogger, "Getting Status for Cassandra");
+		if (this.getAdminKeySpace()) {
+			return true;
+		} else {
+			logger.error(EELFLoggerDelegate.errorLogger, "Cassandra Service is not responding");
+			return false;
+		}
+	}
+	
+	private Boolean getAdminKeySpace() {
+		String musicKeySpace = MusicProperties.getProperty(MusicProperties.MUSIC_SESSION_KEYSPACE );
+		//deletePortalHealthcheck(musicKeySpace);
+		PreparedQueryObject pQuery = new PreparedQueryObject();
+		pQuery.appendQueryString("insert into  "+musicKeySpace+".healthcheck (id) values (?)");
+		pQuery.addValue(UUID.randomUUID());
+		try {
+			 MusicCore.nonKeyRelatedPut(pQuery, MusicUtil.EVENTUAL);
+		} catch (MusicServiceException e) {
+			logger.error(EELFLoggerDelegate.errorLogger, "getAdminKeySpace() failed", e.getCause());
+			return Boolean.FALSE;
+		}
+			return Boolean.TRUE;
+	}
+
+	
+	private void  deletePortalHealthcheck(String musicKeySpace) {
+		PreparedQueryObject pQuery = new PreparedQueryObject();
+		pQuery.appendQueryString("TRUNCATE  "+musicKeySpace+".healthcheck");
+		try {
+			MusicCore.nonKeyRelatedPut(pQuery, MusicUtil.EVENTUAL);
+		} catch (MusicServiceException e) {
+			logger.error(EELFLoggerDelegate.errorLogger, "deletePortalHealthcheck() failed", e.getCause());
+		}
+	}
+	
 	private boolean checkDatabasePermissions() {
 		boolean isUp = false;
 		Session localSession = null;
@@ -348,17 +460,5 @@ public class HealthMonitor {
 		}
 		return isUp;
 	}
-
-	private boolean checkIfUebUp() {
-		boolean uebUp = false;
-		try {
-			boolean isAvailable = epUebHelper.checkAvailability();
-			boolean messageCanBeSent = epUebHelper.MessageCanBeSentToTopic();
-			uebUp = (isAvailable && messageCanBeSent);
-		} catch (Exception e) {
-			logger.error(EELFLoggerDelegate.errorLogger, "checkIfUebUp failed", e);
-		}
-		return uebUp;
-	}
-
+	
 }

@@ -48,6 +48,7 @@ import org.onap.portalapp.portal.domain.BasicAuthCredentials;
 import org.onap.portalapp.portal.domain.EPEndpoint;
 import org.onap.portalapp.portal.domain.EPEndpointAccount;
 import org.onap.portalapp.portal.logging.aop.EPMetricsLog;
+import org.onap.portalapp.portal.utils.EPCommonSystemProperties;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.onap.portalsdk.core.onboarding.util.CipherUtil;
 import org.onap.portalsdk.core.service.DataAccessService;
@@ -117,8 +118,13 @@ public class BasicAuthAccountServiceImpl implements BasicAuthAccountService{
 	public void updateBasicAuthAccount(Long accountId, BasicAuthCredentials newCredential) throws Exception {
 		try {
 			newCredential.setId(accountId);
-			if (newCredential.getPassword() != null)
-				newCredential.setPassword(encryptedPassword(newCredential.getPassword()));
+			if (newCredential.getPassword() != null){
+				if(newCredential.getPassword().equals(EPCommonSystemProperties.APP_DISPLAY_PASSWORD)){
+					BasicAuthCredentials oldMS = getBasicAuthCredentialsById(accountId);
+					newCredential.setPassword(oldMS.getPassword()); // keep the old password
+				}else
+					newCredential.setPassword(encryptedPassword(newCredential.getPassword())); //new password
+			}
 			getDataAccessService().saveDomainObject(newCredential, null);
 			
 			List<EPEndpoint> endpoints = newCredential.getEndpoints();
@@ -174,7 +180,7 @@ public class BasicAuthAccountServiceImpl implements BasicAuthAccountService{
 		List<BasicAuthCredentials> list = (List<BasicAuthCredentials>) dataAccessService.getList(BasicAuthCredentials.class, null);
 		for (int i = 0; i < list.size(); i++) {
 			if (list.get(i).getPassword() != null)
-				list.get(i).setPassword(decryptedPassword(list.get(i).getPassword()));
+				list.get(i).setPassword(EPCommonSystemProperties.APP_DISPLAY_PASSWORD);
 			list.get(i).setEndpoints(getEPEndpoints(list.get(i).getId()));
 		}
 		return list;
@@ -243,5 +249,23 @@ public class BasicAuthAccountServiceImpl implements BasicAuthAccountService{
 	
 	public DataAccessService getDataAccessService() {
 		return dataAccessService;
+	}
+	
+	@Override
+	public BasicAuthCredentials getBasicAuthCredentialsById(long id) throws Exception {
+		try {
+			@SuppressWarnings("unchecked")
+			List<BasicAuthCredentials> list = (List<BasicAuthCredentials>) dataAccessService
+					.getList(BasicAuthCredentials.class, null);
+			for (BasicAuthCredentials auth : list) {
+				if (auth != null && auth.getId() == id)
+					return auth;
+			}
+		} catch (Exception e) {
+			logger.error(EELFLoggerDelegate.errorLogger, "getBasicAuthCredentialsDataById failed", e);
+			throw e;
+		}
+		return null;
+
 	}
 }

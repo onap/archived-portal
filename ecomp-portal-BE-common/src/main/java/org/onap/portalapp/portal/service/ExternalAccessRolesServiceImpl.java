@@ -70,6 +70,7 @@ import org.onap.portalapp.portal.domain.EPRole;
 import org.onap.portalapp.portal.domain.EPUser;
 import org.onap.portalapp.portal.domain.EPUserApp;
 import org.onap.portalapp.portal.domain.ExternalRoleDetails;
+import org.onap.portalapp.portal.ecomp.model.UploadRoleFunctionExtSystem;
 import org.onap.portalapp.portal.exceptions.DeleteDomainObjectFailedException;
 import org.onap.portalapp.portal.exceptions.ExternalAuthSystemException;
 import org.onap.portalapp.portal.exceptions.InactiveApplicationException;
@@ -89,12 +90,14 @@ import org.onap.portalapp.portal.transport.CentralUserApp;
 import org.onap.portalapp.portal.transport.CentralV2Role;
 import org.onap.portalapp.portal.transport.CentralV2User;
 import org.onap.portalapp.portal.transport.CentralV2UserApp;
+import org.onap.portalapp.portal.transport.CentralizedAppRoles;
 import org.onap.portalapp.portal.transport.EcompUserRoles;
 import org.onap.portalapp.portal.transport.ExternalAccessPerms;
 import org.onap.portalapp.portal.transport.ExternalAccessPermsDetail;
 import org.onap.portalapp.portal.transport.ExternalAccessRole;
 import org.onap.portalapp.portal.transport.ExternalAccessRolePerms;
 import org.onap.portalapp.portal.transport.ExternalAccessUser;
+import org.onap.portalapp.portal.transport.ExternalAccessUserRoleDetail;
 import org.onap.portalapp.portal.transport.ExternalRequestFieldsValidator;
 import org.onap.portalapp.portal.transport.ExternalRoleDescription;
 import org.onap.portalapp.portal.transport.GlobalRoleWithApplicationRoleFunction;
@@ -2418,6 +2421,35 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 				addRoleInExternalSystem(role, app.get(0));
 				rolesListAdded++;
 			}
+			if (!app.get(0).getId().equals(PortalConstants.PORTAL_APP_ID)) {
+				// Add Account Admin role in External AUTH System
+				try {
+					String addAccountAdminRole = "";
+					ExternalAccessRole extRole = new ExternalAccessRole();
+					extRole.setName(app.get(0).getNameSpace() + "." + PortalConstants.ADMIN_ROLE
+							.replaceAll(EcompPortalUtils.EXTERNAL_CENTRAL_AUTH_ROLE_HANDLE_SPECIAL_CHARACTERS, "_"));
+					addAccountAdminRole = mapper.writeValueAsString(extRole);
+					HttpHeaders headers = EcompPortalUtils.base64encodeKeyForAAFBasicAuth();
+					HttpEntity<String> entity = new HttpEntity<>(addAccountAdminRole, headers);
+					template.exchange(
+							SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_URL) + "role",
+							HttpMethod.POST, entity, String.class);
+					rolesListAdded++;
+				} catch (HttpClientErrorException e) {
+					logger.error(EELFLoggerDelegate.errorLogger,
+							"HttpClientErrorException - Failed to create Account Admin role", e);
+					EPLogUtil.logExternalAuthAccessAlarm(logger, e.getStatusCode());
+				} catch (Exception e) {
+					if (e.getMessage().equalsIgnoreCase("409 Conflict")) {
+						logger.error(EELFLoggerDelegate.errorLogger,
+								"bulkUploadRoles: Account Admin Role already exits but does not break functionality",
+								e);
+					} else {
+						logger.error(EELFLoggerDelegate.errorLogger,
+								"bulkUploadRoles: Failed to create Account Admin role", e.getMessage());
+					}
+				}
+			}
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "bulkUploadRoles: failed", e);
 			throw e;
@@ -2488,14 +2520,24 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 	 * @param app
 	 */
 	private void addRoleFunctionsInExternalSystem(BulkUploadRoleFunction addRoleFunc, EPRole role, EPApp app) {
-		String checkType = addRoleFunc.getFunctionCd().contains("menu") ? "menu" : "url";
+		String type = "";
+		String instance = "";
+		String action = "";
+		if(addRoleFunc.getFunctionCd().contains(FUNCTION_PIPE)){
+			type = EcompPortalUtils.getFunctionType(addRoleFunc.getFunctionCd()); 
+			instance = EcompPortalUtils.getFunctionCode(addRoleFunc.getFunctionCd());
+			action = EcompPortalUtils.getFunctionAction(addRoleFunc.getFunctionCd());
+		} else{
+			type = addRoleFunc.getFunctionCd().contains("menu") ? "menu" : "url";
+			instance = addRoleFunc.getFunctionCd();
+			action = "*"; 
+		}
 		ExternalAccessRolePerms extRolePerms = null;
 		ExternalAccessPerms extPerms = null;
 		ObjectMapper mapper = new ObjectMapper();
 		try {
 			HttpHeaders headers = EcompPortalUtils.base64encodeKeyForAAFBasicAuth();
-
-			extPerms = new ExternalAccessPerms(app.getNameSpace() + "." + checkType, addRoleFunc.getFunctionCd(), "*",
+			extPerms = new ExternalAccessPerms(app.getNameSpace() + "." + type, instance, action,
 					addRoleFunc.getFunctionName());
 			extRolePerms = new ExternalAccessRolePerms(extPerms,
 					app.getNameSpace() + "." + role.getName().replaceAll(EcompPortalUtils.EXTERNAL_CENTRAL_AUTH_ROLE_HANDLE_SPECIAL_CHARACTERS, "_"));
@@ -2515,15 +2557,72 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public void bulkUploadPartnerFunctions(String uebkey, List<RoleFunction> roleFunctionsList) throws Exception {
+	public Integer bulkUploadPartnerFunctions(String uebkey) throws Exception {
 		EPApp app = getApp(uebkey).get(0);
-		CentralV2RoleFunction cenRoleFunc = null;
-		for (RoleFunction roleFunction : roleFunctionsList) {
-			cenRoleFunc = new CentralV2RoleFunction(roleFunction.getCode(), roleFunction.getName());
-			addRoleFunctionInExternalSystem(cenRoleFunc, app);
+		final Map<String, Long> params = new HashMap<>();
+		params.put("appId", app.getId());
+		List<CentralV2RoleFunction> roleFuncList = dataAccessService.executeNamedQuery("getPartnerAppFunctions", params,
+				null);
+		Integer functionsAdded = 0;
+		try {
+			for (CentralV2RoleFunction roleFunc : roleFuncList) {
+				addFunctionInExternalSystem(roleFunc, app);
+				functionsAdded++;
+			}
+		} catch (HttpClientErrorException e) {
+			logger.error(EELFLoggerDelegate.errorLogger, "HttpClientErrorException - bulkUploadPartnerFunctions failed", e);
+			EPLogUtil.logExternalAuthAccessAlarm(logger, e.getStatusCode());
+		} catch (Exception e) {
+			logger.error(EELFLoggerDelegate.errorLogger, "bulkUploadPartnerFunctions: failed", e.getMessage(), e);
 		}
+		return functionsAdded;
 	}
+
+	private void addFunctionInExternalSystem(CentralV2RoleFunction roleFunc, EPApp app) throws Exception {
+		ObjectMapper mapper = new ObjectMapper();
+		ExternalAccessPerms extPerms = new ExternalAccessPerms();
+		HttpHeaders headers = EcompPortalUtils.base64encodeKeyForAAFBasicAuth();
+		String type = "";
+		String instance = "";
+		String action = "";
+		if ((roleFunc.getCode().contains(FUNCTION_PIPE))
+				|| (roleFunc.getType() != null && roleFunc.getAction() != null)) {
+			type = EcompPortalUtils.getFunctionType(roleFunc.getCode());
+			instance = EcompPortalUtils.getFunctionCode(roleFunc.getCode());
+			action = EcompPortalUtils.getFunctionAction(roleFunc.getCode());
+		} else {
+			type = roleFunc.getCode().contains("menu") ? "menu" : "url";
+			instance = roleFunc.getCode();
+			action = "*";
+		}
+		try {
+			extPerms.setAction(action);
+			extPerms.setInstance(instance);
+			extPerms.setType(app.getNameSpace() + "." + type);
+			extPerms.setDescription(roleFunc.getName());
+			String addFunction = mapper.writeValueAsString(extPerms);
+			HttpEntity<String> entity = new HttpEntity<>(addFunction, headers);
+			logger.debug(EELFLoggerDelegate.debugLogger, "addFunctionInExternalSystem: {} for POST: {}",
+					CONNECTING_TO_EXTERNAL_AUTH_SYSTEM_LOG_MESSAGE, addFunction);
+			ResponseEntity<String> addPermResponse = template.exchange(
+					SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_URL) + "perm",
+					HttpMethod.POST, entity, String.class);
+			logger.debug(EELFLoggerDelegate.debugLogger,
+					"addFunctionInExternalSystem: Finished adding permission for POST: {} and status code: {} ",
+					addPermResponse.getStatusCode().value(), addFunction);
+		} catch (HttpClientErrorException e) {
+			logger.error(EELFLoggerDelegate.errorLogger,
+					"HttpClientErrorException - Failed to add function in external central auth system", e);
+			EPLogUtil.logExternalAuthAccessAlarm(logger, e.getStatusCode());
+			throw e;
+		} catch (Exception e) {
+			logger.error(EELFLoggerDelegate.errorLogger,
+					"addFunctionInExternalSystem: Failed to add fucntion in external central auth system", e);
+			throw e;
+		}
+	} 
 
 	@Override
 	public void bulkUploadPartnerRoles(String uebkey, List<Role> roleList) throws Exception {
@@ -2535,47 +2634,80 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void bulkUploadPartnerRoleFunctions(String uebkey, List<Role> roleList) throws Exception {
+	public Integer bulkUploadPartnerRoleFunctions(String uebkey) throws Exception {
 		EPApp app = getApp(uebkey).get(0);
-		HttpHeaders headers = EcompPortalUtils.base64encodeKeyForAAFBasicAuth();
-		for (Role role : roleList) {
-			try {
-				Set<RoleFunction> roleFunctionList = role.getRoleFunctions();
-				List<RoleFunction> roleFunctionListNew = new ArrayList<>();
-				ObjectMapper roleFunctionsMapper = new ObjectMapper();
-				Iterator<RoleFunction> itetaror = roleFunctionList.iterator();
-				while (itetaror.hasNext()) {
-					Object nextValue = itetaror.next();
-					RoleFunction roleFunction = roleFunctionsMapper.convertValue(nextValue, RoleFunction.class);
-					roleFunctionListNew.add(roleFunction);
-				}
-				List<RoleFunction> listWithoutDuplicates = roleFunctionListNew.stream().distinct()
-						.collect(Collectors.toList());
-				for (RoleFunction roleFunction : listWithoutDuplicates) {
-					String checkType = roleFunction.getCode().contains("menu") ? "menu" : "url";
-					ExternalAccessRolePerms extRolePerms = null;
-					ExternalAccessPerms extPerms = null;
-					ObjectMapper mapper = new ObjectMapper();
-					extPerms = new ExternalAccessPerms(app.getNameSpace() + "." + checkType, roleFunction.getCode(),
-							"*");
-					extRolePerms = new ExternalAccessRolePerms(extPerms,
-							app.getNameSpace() + "." + role.getName().replaceAll(EcompPortalUtils.EXTERNAL_CENTRAL_AUTH_ROLE_HANDLE_SPECIAL_CHARACTERS, "_"));
-					String updateRolePerms = mapper.writeValueAsString(extRolePerms);
-					HttpEntity<String> entity = new HttpEntity<>(updateRolePerms, headers);
-					template.exchange(SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_URL)
-							+ "role/perm", HttpMethod.PUT, entity, String.class);
-				}
-			} catch (Exception e) {
-				if (e.getMessage().equalsIgnoreCase("409 Conflict")) {
-					logger.error(EELFLoggerDelegate.errorLogger,
-							"bulkUploadPartnerRoleFunctions: RoleFunction already exits but does not break functionality");
-				} else {
-					logger.error(EELFLoggerDelegate.errorLogger, "bulkUploadPartnerRoleFunctions: Failed to addRoleFunctionsInExternalSystem",
-							e);
+		List<EPRole> roles = getAppRoles(app.getId());
+		final Map<String, Long> params = new HashMap<>();
+		Integer roleFunctions = 0;
+		try {
+			for (EPRole role : roles) {
+				params.put("roleId", role.getId());
+				List<BulkUploadRoleFunction> appRoleFunc = dataAccessService.executeNamedQuery("uploadPartnerRoleFunctions",
+						params, null);
+				if (!appRoleFunc.isEmpty()) {
+					for (BulkUploadRoleFunction addRoleFunc : appRoleFunc) {
+						addRoleFunctionsInExternalSystem(addRoleFunc, role, app);
+						roleFunctions++;
+					}
 				}
 			}
-
+			// upload global role functions to ext auth system
+			if(!app.getId().equals(PortalConstants.PORTAL_APP_ID)) {
+				roleFunctions = bulkUploadGlobalRoleFunctions(app, roleFunctions);
+			}
+		} catch(HttpClientErrorException e){
+			logger.error(EELFLoggerDelegate.errorLogger, "HttpClientErrorException - Failed to bulkUploadRolesFunctions", e);
+			EPLogUtil.logExternalAuthAccessAlarm(logger, e.getStatusCode());
+		} catch (Exception e) {
+			logger.error(EELFLoggerDelegate.errorLogger, "bulkUploadRolesFunctions: failed", e);
 		}
+		return roleFunctions;
+	}
+
+	@SuppressWarnings("unchecked")
+	private Integer bulkUploadGlobalRoleFunctions(EPApp app, Integer roleFunctions) throws Exception {
+		try {
+			EPApp portalApp = epAppService.getApp(1l);
+			final Map<String, Long> params = new HashMap<>();
+			params.put("appId", app.getId());
+			List<GlobalRoleWithApplicationRoleFunction> globalRoleFuncs = dataAccessService
+					.executeNamedQuery("getBulkUploadPartnerGlobalRoleFunctions", params, null);
+			ObjectMapper mapper = new ObjectMapper();
+			HttpHeaders headers = EcompPortalUtils.base64encodeKeyForAAFBasicAuth();
+			for (GlobalRoleWithApplicationRoleFunction globalRoleFunc : globalRoleFuncs) {
+				ExternalAccessRolePerms extRolePerms;
+				ExternalAccessPerms extPerms;
+				String type = "";
+				String instance = "";
+				String action = "";
+				if (globalRoleFunc.getFunctionCd().contains(FUNCTION_PIPE)) {
+					type = EcompPortalUtils.getFunctionType(globalRoleFunc.getFunctionCd());
+					instance = EcompPortalUtils.getFunctionCode(globalRoleFunc.getFunctionCd());
+					action = EcompPortalUtils.getFunctionAction(globalRoleFunc.getFunctionCd());
+				} else {
+					type = globalRoleFunc.getFunctionCd().contains("menu") ? "menu" : "url";
+					instance = globalRoleFunc.getFunctionCd();
+					action = "*";
+				}
+				extPerms = new ExternalAccessPerms(app.getNameSpace() + "." + type, instance, action);
+				extRolePerms = new ExternalAccessRolePerms(extPerms, portalApp.getNameSpace() + "." + globalRoleFunc.getRoleName()
+						.replaceAll(EcompPortalUtils.EXTERNAL_CENTRAL_AUTH_ROLE_HANDLE_SPECIAL_CHARACTERS, "_"));
+				String updateRolePerms = mapper.writeValueAsString(extRolePerms);
+				HttpEntity<String> entity = new HttpEntity<>(updateRolePerms, headers);
+				updateRoleFunctionInExternalSystem(updateRolePerms, entity);
+				roleFunctions++;
+			}
+		} catch (HttpClientErrorException e) {
+			logger.error(EELFLoggerDelegate.errorLogger,
+					"HttpClientErrorException - Failed to add role function in external central auth system", e);
+			EPLogUtil.logExternalAuthAccessAlarm(logger, e.getStatusCode());
+			throw e;
+		} catch (Exception e) {
+			logger.error(EELFLoggerDelegate.errorLogger,
+					"bulkUploadGlobalRoleFunctions: Failed to add role fucntion in external central auth system", e);
+			throw e;
+		}
+		return roleFunctions;
 	}
 
 	@Override
@@ -3413,7 +3545,7 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 					CentralRoleFunction cenRoleFunc = new CentralRoleFunction(cenV2RoleFunc.getCode(), cenV2RoleFunc.getName());								
 					cenRoleFunction.add(cenRoleFunc);
 				}
-				CentralRole role = new CentralRole(userApp.getRole().getId(), userApp.getRole().getName(), userApp.getRole().isActive(), userApp.getRole().getPriority(),
+				CentralRole role = new CentralRole(userApp.getRole().getId(), userApp.getRole().getName(), userApp.getRole().getActive(), userApp.getRole().getPriority(),
 						cenRoleFunction);
 				cua.setRole(role);
 				userApps.add(cua);
@@ -3445,7 +3577,7 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 					CentralRoleFunction roleFunc = new CentralRoleFunction(v2CenRoleFunc.getCode(), v2CenRoleFunc.getName());
 					cenRoleFuncList.add(roleFunc);
 				}
-				CentralRole role = new CentralRole(v2CenRole.getId(), v2CenRole.getName(), v2CenRole.isActive(), v2CenRole.getPriority(), cenRoleFuncList);
+				CentralRole role = new CentralRole(v2CenRole.getId(), v2CenRole.getName(), v2CenRole.getActive(), v2CenRole.getPriority(), cenRoleFuncList);
 				cenRoleList.add(role);
 			}		
 		return cenRoleList;
@@ -3481,7 +3613,7 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 			CentralRoleFunction roleFunc = new CentralRoleFunction(v2CenRoleFunc.getCode(), v2CenRoleFunc.getName());
 			cenRoleFuncList.add(roleFunc);
 		}
-		return new CentralRole(v2CenRole.getId(), v2CenRole.getName(), v2CenRole.isActive(), v2CenRole.getPriority(),
+		return new CentralRole(v2CenRole.getId(), v2CenRole.getName(), v2CenRole.getActive(), v2CenRole.getPriority(),
 				cenRoleFuncList);
 	}
 
@@ -3520,4 +3652,207 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 		encodedString = encodedString.replaceAll("\\*", "%"+ Hex.encodeHexString("*".getBytes()));
 		return encodedString;
 	}
+	
+	@Override
+	public void bulkUploadRoleFunc(UploadRoleFunctionExtSystem data, EPApp app) throws Exception {
+		ObjectMapper mapper = new ObjectMapper();
+		HttpHeaders headers = EcompPortalUtils.base64encodeKeyForAAFBasicAuth();
+		try {
+			ExternalAccessRolePerms extRolePerms;
+			ExternalAccessPerms extPerms;
+			extPerms = new ExternalAccessPerms(app.getNameSpace() + "." + data.getType(), encodeFunctionCode(data.getInstance()), data.getAction());
+			String appNameSpace = "";
+			if(data.getIsGlobalRolePartnerFunc()) {
+				appNameSpace =  epAppService.getApp(1l).getNameSpace();
+			} else {
+				appNameSpace =  app.getNameSpace();
+			}
+			extRolePerms = new ExternalAccessRolePerms(extPerms,
+					appNameSpace + "."
+							+ data.getRoleName().replaceAll(
+									EcompPortalUtils.EXTERNAL_CENTRAL_AUTH_ROLE_HANDLE_SPECIAL_CHARACTERS,
+									"_"));
+			String updateRolePerms = mapper.writeValueAsString(extRolePerms);
+			HttpEntity<String> entity = new HttpEntity<>(updateRolePerms, headers);
+			updateRoleFunctionInExternalSystem(updateRolePerms, entity);
+		} catch (HttpClientErrorException e) {
+			logger.error(EELFLoggerDelegate.errorLogger,
+					"HttpClientErrorException - Failed to add role function in external central auth system", e);
+			EPLogUtil.logExternalAuthAccessAlarm(logger, e.getStatusCode());
+			throw e;
+		} catch (Exception e) {
+			logger.error(EELFLoggerDelegate.errorLogger,
+					"addFunctionInExternalSystem: Failed to add role fucntion in external central auth system", e);
+			throw e;
+		}
+		
+	}
+
+	private void updateRoleFunctionInExternalSystem(String updateRolePerms, HttpEntity<String> entity) {
+		logger.debug(EELFLoggerDelegate.debugLogger, "bulkUploadRoleFunc: {} for POST: {}",
+				CONNECTING_TO_EXTERNAL_AUTH_SYSTEM_LOG_MESSAGE, updateRolePerms);
+		ResponseEntity<String> addPermResponse = template.exchange(
+				SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_URL) + "role/perm",
+				HttpMethod.POST, entity, String.class);
+		logger.debug(EELFLoggerDelegate.debugLogger,
+				"bulkUploadRoleFunc: Finished adding permission for POST: {} and status code: {} ",
+				addPermResponse.getStatusCode().value(), updateRolePerms);
+	}
+	
+	@Override
+	public void syncApplicationUserRolesFromExtAuthSystem(String loginId) throws Exception {
+		String name = "";
+		if (EPCommonSystemProperties.containsProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_USER_DOMAIN)) {
+			name = loginId + SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_USER_DOMAIN);
+		}
+		HttpHeaders headers = EcompPortalUtils.base64encodeKeyForAAFBasicAuth();
+		HttpEntity<String> getUserRolesEntity = new HttpEntity<>(headers);
+		ResponseEntity<String> getResponse = getUserRolesFromExtAuthSystem(name, getUserRolesEntity);
+		List<ExternalAccessUserRoleDetail> userRoleDetailList = new ArrayList<>();
+		String res = getResponse.getBody();
+		JSONObject jsonObj = null;
+		JSONArray extRoles = null;
+		if (!res.equals("{}")) {
+			jsonObj = new JSONObject(res);
+			extRoles = jsonObj.getJSONArray("role");
+		}
+		updateUserRolesInLocal(userRoleDetailList, extRoles, loginId);
+	}
+
+	@SuppressWarnings("unchecked")
+	private void updateUserRolesInLocal(List<ExternalAccessUserRoleDetail> userRoleDetailList, JSONArray extRoles,
+			String loginId) throws InvalidUserException {
+		HashMap<String, String> userParams = new HashMap<>();
+		userParams.put("orgUserId", loginId);
+		// Get all centralized applications existing user roles from local
+		List<CentralizedAppRoles> currentUserAppRoles = dataAccessService
+				.executeNamedQuery("getUserCentralizedAppRoles", userParams, null);
+		EPUser user = getUser(loginId).get(0);
+		// Get all centralized applications roles from local
+		HashMap<String, CentralizedAppRoles> cenAppRolesMap = getCentralizedAppRoleList();
+		HashMap<String, CentralizedAppRoles> currentCentralizedUserAppRolesMap = getCurrentUserCentralizedAppRoles(
+				currentUserAppRoles);
+		// Get all centralized applications + admin role from local
+		HashMap<String, EPApp> centralisedAppsMap = getCentralizedAdminAppsInfo();
+		if (extRoles != null) {
+			ExternalAccessUserRoleDetail userRoleDetail = null;
+			for (int i = 0; i < extRoles.length(); i++) {
+				if (!extRoles.getJSONObject(i).getString("name").endsWith(ADMIN)
+						&& !extRoles.getJSONObject(i).getString("name").endsWith(OWNER)) {
+					userRoleDetail = new ExternalAccessUserRoleDetail(extRoles.getJSONObject(i).getString("name"),
+							null);
+					userRoleDetailList.add(userRoleDetail);
+				}
+			}
+			addUserRolesInLocal(userRoleDetailList, user, cenAppRolesMap, currentCentralizedUserAppRolesMap,
+					centralisedAppsMap);
+		}
+	}
+
+	private void addUserRolesInLocal(List<ExternalAccessUserRoleDetail> userRoleDetailList, EPUser user,
+			HashMap<String, CentralizedAppRoles> cenAppRolesMap,
+			HashMap<String, CentralizedAppRoles> currentCentralizedUserAppRolesMap,
+			HashMap<String, EPApp> centralisedAppsMap) {
+		for (ExternalAccessUserRoleDetail extUserRoleDetail : userRoleDetailList) {
+			try {
+				// check if user already has role in local
+				if (!currentCentralizedUserAppRolesMap.containsKey(extUserRoleDetail.getName())) {
+					CentralizedAppRoles getCenAppRole = cenAppRolesMap.get(extUserRoleDetail.getName());
+					if (getCenAppRole != null) {
+						logger.debug(EELFLoggerDelegate.debugLogger, "addUserRolesInLocal: Adding user role from external auth system  {}",
+								extUserRoleDetail.toString());
+						EPUserApp userApp = new EPUserApp();
+						EPApp app = new EPApp();
+						app.setId(getCenAppRole.getAppId());
+						EPRole epRole = new EPRole();
+						epRole.setId(getCenAppRole.getRoleId());
+						userApp.setApp(app);
+						userApp.setUserId(user.getId());
+						userApp.setRole(epRole);
+						dataAccessService.saveDomainObject(userApp, null);
+						logger.debug(EELFLoggerDelegate.debugLogger, "addUserRolesInLocal: Finished user role from external auth system  {}",
+								extUserRoleDetail.toString());
+					} else if (getCenAppRole == null // check if user has app account admin role
+							&& extUserRoleDetail.getName().endsWith(PortalConstants.ADMIN_ROLE.replaceAll(
+									EcompPortalUtils.EXTERNAL_CENTRAL_AUTH_ROLE_HANDLE_SPECIAL_CHARACTERS, "_"))) {
+						EPApp app = centralisedAppsMap.get(extUserRoleDetail.getName());
+						if (app != null) {
+							logger.debug(EELFLoggerDelegate.debugLogger, "addUserRolesInLocal: Adding user role from external auth system  {}",
+									extUserRoleDetail.toString());
+							EPUserApp userApp = new EPUserApp();
+							EPRole epRole = new EPRole();
+							epRole.setId(PortalConstants.ACCOUNT_ADMIN_ROLE_ID);
+							userApp.setApp(app);
+							userApp.setUserId(user.getId());
+							userApp.setRole(epRole);
+							dataAccessService.saveDomainObject(userApp, null);
+							logger.debug(EELFLoggerDelegate.debugLogger, "addUserRolesInLocal: Finished user role from external auth system  {}",
+									extUserRoleDetail.toString());
+						}
+					}
+				}
+			} catch (Exception e) {
+				logger.error(EELFLoggerDelegate.errorLogger,
+						"addUserRolesInLocal - Failed to update user role in local from external auth system {} ",
+						extUserRoleDetail.toString(), e);
+			}
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private HashMap<String, EPApp> getCentralizedAdminAppsInfo() {
+		List<EPApp> centralizedApps = dataAccessService
+				.executeNamedQuery("getCentralizedApps", null, null);
+		HashMap<String, EPApp> centralisedAppsMap = new HashMap<>();
+		for (EPApp cenApp : centralizedApps) {
+			centralisedAppsMap.put(cenApp.getNameSpace()+ "." +
+					PortalConstants.ADMIN_ROLE.replaceAll(
+							EcompPortalUtils.EXTERNAL_CENTRAL_AUTH_ROLE_HANDLE_SPECIAL_CHARACTERS, "_"), cenApp);
+		}
+		return centralisedAppsMap;
+	}
+
+	private HashMap<String, CentralizedAppRoles> getCurrentUserCentralizedAppRoles(
+			List<CentralizedAppRoles> currentUserAppRoles) {
+		HashMap<String, CentralizedAppRoles> currentCentralizedUserAppRolesMap = new HashMap<>();
+		for (CentralizedAppRoles cenAppUserRole : currentUserAppRoles) {
+			currentCentralizedUserAppRolesMap.put(
+					cenAppUserRole.getAppNameSpace() + "." + cenAppUserRole.getRoleName()
+							.replaceAll(EcompPortalUtils.EXTERNAL_CENTRAL_AUTH_ROLE_HANDLE_SPECIAL_CHARACTERS, "_"),
+							cenAppUserRole);
+		}
+		return currentCentralizedUserAppRolesMap;
+	}
+
+	@SuppressWarnings("unchecked")
+	private HashMap<String, CentralizedAppRoles> getCentralizedAppRoleList() {
+		List<CentralizedAppRoles> centralizedAppRoles = dataAccessService
+				.executeNamedQuery("getAllCentralizedAppsRoles", null, null);
+		HashMap<String, CentralizedAppRoles> cenAppRolesMap = new HashMap<>();
+		for (CentralizedAppRoles CentralizedAppRole : centralizedAppRoles) {
+			cenAppRolesMap.put(
+					CentralizedAppRole.getAppNameSpace() + "." + CentralizedAppRole.getRoleName()
+							.replaceAll(EcompPortalUtils.EXTERNAL_CENTRAL_AUTH_ROLE_HANDLE_SPECIAL_CHARACTERS, "_"),
+					CentralizedAppRole);
+		}
+		return cenAppRolesMap;
+	}
+	
+	@Override
+	public ResponseEntity<String> getUserRolesFromExtAuthSystem(String name, HttpEntity<String> getUserRolesEntity) {
+		logger.debug(EELFLoggerDelegate.debugLogger, "Connecting to external system to get current user roles");
+		ResponseEntity<String> getResponse = template
+				.exchange(SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_URL)
+						+ "roles/user/" + name, HttpMethod.GET, getUserRolesEntity, String.class);
+		if (getResponse.getStatusCode().value() == 200) {
+			logger.debug(EELFLoggerDelegate.debugLogger, "getAllUserRoleFromExtAuthSystem: Finished GET user roles from external system and received user roles {}",
+					getResponse.getBody());
+
+		}else{
+			logger.error(EELFLoggerDelegate.errorLogger, "getAllUserRoleFromExtAuthSystem: Failed GET user roles from external system and received user roles {}",getResponse.getBody() );
+			EPLogUtil.logExternalAuthAccessAlarm(logger, getResponse.getStatusCode());
+		}
+		return getResponse;
+	}
+
 }
