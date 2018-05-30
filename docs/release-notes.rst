@@ -6,10 +6,10 @@
 Portal Platform Release Notes
 =============================
 
-Version: 2.1.0
+Version: 2.2.0
 --------------
 
-:Release Date: 24 May 2018
+:Release Date: 7 June 2018
 
 .. toctree::
     :maxdepth: 1
@@ -38,7 +38,7 @@ We worked on hardening the ONAP Portal platform by improving code quality and ad
         * Not able to delete portal admin user
         * Add support to connect with AAF Runtime
         * Portal's SDK UI documentation in ONAP wiki needs samples
-        * The Portal/SDK fn_user table has encrypted passwords that need to hange to using a hash algorithm
+        * The Portal/SDK fn_user table has encrypted passwords that need to be changed to use a hash algorithm
         * UI cleanup needed: on adding entries to News Widget and display on Application Onboarding page
 
 **Security Issues**
@@ -52,11 +52,12 @@ We worked on hardening the ONAP Portal platform by improving code quality and ad
 
 **Other**
         * Below are the docker images released as part of Portal Platform project:
-        * onap/portal-db:v2.1.0
-        * onap/portal-apps:v2.1.0
-        * onap/portal-wms:v2.1.0
+        * onap/portal-db:v2.2.0
+        * onap/portal-apps:v2.2.0
+        * onap/portal-wms:v2.2.0
         * onap//music/music-cassandra:v3.0
         * zookeeper:v3.4.0
+        * portal/sdk - (Release branch: "release-2.2.0")
 
 Version: 1.3.0
 --------------
