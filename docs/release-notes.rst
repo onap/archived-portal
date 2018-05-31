@@ -9,7 +9,7 @@ Portal Platform Release Notes
 Version: 2.2.0
 --------------
 
-:Release Date: 7 June 2018
+:Release Date: 2018-06-07
 
 .. toctree::
     :maxdepth: 1
@@ -41,8 +41,16 @@ We worked on hardening the ONAP Portal platform by improving code quality and ad
         * The Portal/SDK fn_user table has encrypted passwords that need to be changed to use a hash algorithm
         * UI cleanup needed: on adding entries to News Widget and display on Application Onboarding page
 
-**Security Issues**
-        * https://wiki.onap.org/pages/viewpage.action?pageId=27689089
+**Security Notes**
+
+PORTAL code has been formally scanned during build time using NexusIQ and all Critical vulnerabilities have been addressed, items that remain open have been assessed for risk and determined to be false positive. The PORTAL open Critical security vulnerabilities and their risk assessment have been documented as part of the `project <https://wiki.onap.org/pages/viewpage.action?pageId=27689089>`_.
+
+Quick Links:
+ 	- `PORTAL project page <https://wiki.onap.org/display/DW/Portal+Platform+Project>`_
+
+ 	- `Passing Badge information for PORTAL <https://bestpractices.coreinfrastructure.org/en/projects/1441>`_
+
+ 	- `Project Vulnerability Review Table for PORTAL <https://wiki.onap.org/pages/viewpage.action?pageId=27689089>`_
 
 **Upgrade Notes**
         * Upgrades to Portal platform can be performed using Heat based installation scripts available under demo repository.
@@ -62,7 +70,7 @@ We worked on hardening the ONAP Portal platform by improving code quality and ad
 Version: 1.3.0
 --------------
 
-:Release Date: 16 November 2017
+:Release Date: 2017-11-16
 
 The ONAP Portal is a platform that provides the ability to integrate different ONAP applications into a centralized Portal Core. The platform seed code is improved with below listed enhancements in this release. This is technically the first release of ONAP Portal Platform, previous release was the seed code contribution. As such, the defects fixed in this release were raised during the course of the release and while its integration testing. Anything not closed is captured below under Known Issues. If you want to review the defects fixed in the Amsterdam release, refer to Jira (jira.onap.org).
 
