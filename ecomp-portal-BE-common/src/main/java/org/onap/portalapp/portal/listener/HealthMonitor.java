@@ -37,11 +37,8 @@
  */
 package org.onap.portalapp.portal.listener;
 
-import java.io.IOException;
-import java.util.HashSet;
+import java.time.Instant;
 import java.util.List;
-import java.util.Set;
-import java.util.UUID;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -93,6 +90,7 @@ public class HealthMonitor {
 	private static boolean dbPermissionsOk;
 	private static boolean zookeeperStatusOk;
 	private static boolean cassandraStatusOk;
+	private static String APPLICATION = "Portal";
 	
 	/**
 	 * Read directly by external classes.
@@ -194,30 +192,33 @@ public class HealthMonitor {
 					numIntervalsDatabasePermissionsIncorrect = 0;
 				}
 			}
-			
-			zookeeperStatusOk = this.checkZookeeperStatus();
-			if (zookeeperStatusOk == false) {
-				if ((numIntervalsZookeeperNotHealthy % numIntervalsBetweenAlerts) == 0) {
-					logger.debug(EELFLoggerDelegate.debugLogger,
-							"monitorEPHealth: cluster nodes down, logging to error log to trigger alert.");
-					EPLogUtil.logEcompError(logger, EPAppMessagesEnum.MusicHealthCheckZookeeperError);
-					numIntervalsZookeeperNotHealthy++;
-				} else {
-					numIntervalsZookeeperNotHealthy = 0;
+			org.onap.portalapp.music.util.MusicUtil MusicUtilSDK = new org.onap.portalapp.music.util.MusicUtil();
+			if(MusicUtilSDK.isMusicEnable()){
+				zookeeperStatusOk = this.checkZookeeperStatus();
+				if (zookeeperStatusOk == false) {
+					if ((numIntervalsZookeeperNotHealthy % numIntervalsBetweenAlerts) == 0) {
+						logger.debug(EELFLoggerDelegate.debugLogger,
+								"monitorEPHealth: cluster nodes down, logging to error log to trigger alert.");
+						EPLogUtil.logEcompError(logger, EPAppMessagesEnum.MusicHealthCheckZookeeperError);
+						numIntervalsZookeeperNotHealthy++;
+					} else {
+						numIntervalsZookeeperNotHealthy = 0;
+					}
 				}
-			}
 
-			cassandraStatusOk = this.checkCassandraStatus();
-			if (cassandraStatusOk == false) {
-				if ((numIntervalsCassandraNotHealthy % numIntervalsBetweenAlerts) == 0) {
-					logger.debug(EELFLoggerDelegate.debugLogger,
-							"monitorEPHealth: cluster nodes down, logging to error log to trigger alert.");
-					EPLogUtil.logEcompError(logger, EPAppMessagesEnum.MusicHealthCheckCassandraError);
-					numIntervalsCassandraNotHealthy++;
-				} else {
-					numIntervalsCassandraNotHealthy = 0;
+				cassandraStatusOk = this.checkCassandraStatus();
+				if (cassandraStatusOk == false) {
+					if ((numIntervalsCassandraNotHealthy % numIntervalsBetweenAlerts) == 0) {
+						logger.debug(EELFLoggerDelegate.debugLogger,
+								"monitorEPHealth: cluster nodes down, logging to error log to trigger alert.");
+						EPLogUtil.logEcompError(logger, EPAppMessagesEnum.MusicHealthCheckCassandraError);
+						numIntervalsCassandraNotHealthy++;
+					} else {
+						numIntervalsCassandraNotHealthy = 0;
+					}
 				}
 			}
+			
 			
 			//
 			// Get UEB status. Publish a bogus message to EP inbox, if 200 OK
@@ -396,30 +397,23 @@ public class HealthMonitor {
 	}
 	
 	private Boolean getAdminKeySpace() {
-		String musicKeySpace = MusicProperties.getProperty(MusicProperties.MUSIC_SESSION_KEYSPACE );
-		//deletePortalHealthcheck(musicKeySpace);
+		String musicKeySpace = MusicProperties.getProperty(MusicProperties.MUSIC_SESSION_KEYSPACE);
+		Instant creationTime = Instant.now();
 		PreparedQueryObject pQuery = new PreparedQueryObject();
-		pQuery.appendQueryString("insert into  "+musicKeySpace+".healthcheck (id) values (?)");
-		pQuery.addValue(UUID.randomUUID());
+		pQuery.appendQueryString(
+				"UPDATE " + musicKeySpace + ".health_check  SET creation_time = ? WHERE primary_id = ?");
+		pQuery.addValue(creationTime.toString());
+		pQuery.addValue(APPLICATION);
 		try {
-			 MusicCore.nonKeyRelatedPut(pQuery, MusicUtil.EVENTUAL);
+			MusicCore.nonKeyRelatedPut(pQuery, MusicUtil.ATOMIC);
+			MusicCore.nonKeyRelatedPut(pQuery, MusicUtil.CRITICAL);
 		} catch (MusicServiceException e) {
-			logger.error(EELFLoggerDelegate.errorLogger, "getAdminKeySpace() failed", e.getCause());
 			return Boolean.FALSE;
 		}
-			return Boolean.TRUE;
+		return Boolean.TRUE;
+
 	}
 
-	
-	private void  deletePortalHealthcheck(String musicKeySpace) {
-		PreparedQueryObject pQuery = new PreparedQueryObject();
-		pQuery.appendQueryString("TRUNCATE  "+musicKeySpace+".healthcheck");
-		try {
-			MusicCore.nonKeyRelatedPut(pQuery, MusicUtil.EVENTUAL);
-		} catch (MusicServiceException e) {
-			logger.error(EELFLoggerDelegate.errorLogger, "deletePortalHealthcheck() failed", e.getCause());
-		}
-	}
 	
 	private boolean checkDatabasePermissions() {
 		boolean isUp = false;
