@@ -70,10 +70,10 @@ Next, we need to run several SQL statements in the repository:
 
 ::
 
-    mysql -proot -uroot < sdk/ecomp-sdk/epsdk-app-common/db-scripts/EcompSdkDDLMySql_1707_Common.sql
-    mysql -proot -uroot < sdk/ecomp-sdk/epsdk-app-common/db-scripts/EcompSdkDMLMySql_1707_Common.sql
-    mysql -proot -uroot < sdk/ecomp-sdk/epsdk-app-os/db-scripts/EcompSdkDDLMySql_1707_OS.sql
-    mysql -proot -uroot < sdk/ecomp-sdk/epsdk-app-os/db-scripts/EcompSdkDMLMySql_1707_OS.sql
+    mysql -proot -uroot < sdk/ecomp-sdk/epsdk-app-common/db-scripts/EcompSdkDDLMySql_2_2_Common.sql
+    mysql -proot -uroot < sdk/ecomp-sdk/epsdk-app-common/db-scripts/EcompSdkDMLMySql_2_2_Common.sql
+    mysql -proot -uroot < sdk/ecomp-sdk/epsdk-app-os/db-scripts/EcompSdkDDLMySql_2_2_OS.sql
+    mysql -proot -uroot < sdk/ecomp-sdk/epsdk-app-os/db-scripts/EcompSdkDMLMySql_2_2_OS.sql
 
 
 Using 'root' for both your MySQL username and password is just about the worst security policy imaginable. For anything other than temporary setups (very temporary), please choose reasonable user names and hard-to-guess passwords.
