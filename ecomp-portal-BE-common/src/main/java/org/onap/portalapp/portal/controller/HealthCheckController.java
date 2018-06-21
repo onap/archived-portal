@@ -179,28 +179,31 @@ public class HealthCheckController extends EPUnRestrictedBaseController {
 			}
 			statusCollection.add(dbInfo);
 			
-			HealthStatusInfo CassandraStatusInfo = new HealthStatusInfo("Music-Cassandra");
-			//CassandraStatusInfo.hostName = EcompPortalUtils.getMyHostName();
-			CassandraStatusInfo.ipAddress = MusicUtil.getMyCassaHost();
-			
-			if (!HealthMonitor.isCassandraStatusOk()) {
-				overallStatus = false;
-				CassandraStatusInfo.healthCheckStatus = statusDown;
-				CassandraStatusInfo.description = "Check the logs for more details";
-				EPLogUtil.logEcompError(logger, EPAppMessagesEnum.MusicHealthCheckCassandraError);
-			}
-			statusCollection.add(CassandraStatusInfo);
+			org.onap.portalapp.music.util.MusicUtil MusicUtilSDK = new org.onap.portalapp.music.util.MusicUtil();
+			if(MusicUtilSDK.isMusicEnable()){
+				HealthStatusInfo CassandraStatusInfo = new HealthStatusInfo("Music-Cassandra");
+				//CassandraStatusInfo.hostName = EcompPortalUtils.getMyHostName();
+				CassandraStatusInfo.ipAddress = MusicUtil.getMyCassaHost();
+				
+				if (!HealthMonitor.isCassandraStatusOk()) {
+					overallStatus = false;
+					CassandraStatusInfo.healthCheckStatus = statusDown;
+					CassandraStatusInfo.description = "Check the logs for more details";
+					EPLogUtil.logEcompError(logger, EPAppMessagesEnum.MusicHealthCheckCassandraError);
+				}
+				statusCollection.add(CassandraStatusInfo);
 
-			HealthStatusInfo zookeeperStatusInfo = new HealthStatusInfo("Music-zookeeper");
-			//zookeeperStatusInfo.hostName = EcompPortalUtils.getMyHostName();
-			zookeeperStatusInfo.ipAddress = MusicUtil.getMyZkHost();
-			if (!HealthMonitor.isZookeeperStatusOk()) {
-				overallStatus = false;
-				zookeeperStatusInfo.healthCheckStatus = statusDown;
-				zookeeperStatusInfo.description = "Check the logs for more details";
-				EPLogUtil.logEcompError(logger, EPAppMessagesEnum.MusicHealthCheckZookeeperError);
+				HealthStatusInfo zookeeperStatusInfo = new HealthStatusInfo("Music-zookeeper");
+				//zookeeperStatusInfo.hostName = EcompPortalUtils.getMyHostName();
+				zookeeperStatusInfo.ipAddress = MusicUtil.getMyZkHost();
+				if (!HealthMonitor.isZookeeperStatusOk()) {
+					overallStatus = false;
+					zookeeperStatusInfo.healthCheckStatus = statusDown;
+					zookeeperStatusInfo.description = "Check the logs for more details";
+					EPLogUtil.logEcompError(logger, EPAppMessagesEnum.MusicHealthCheckZookeeperError);
+				}
+				statusCollection.add(zookeeperStatusInfo);
 			}
-			statusCollection.add(zookeeperStatusInfo);
 
 			String json = "";
 			try {
