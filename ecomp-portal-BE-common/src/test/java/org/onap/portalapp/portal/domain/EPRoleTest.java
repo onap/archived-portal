@@ -35,39 +35,74 @@
  *
  * 
  */
+
 package org.onap.portalapp.portal.domain;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.junit.Test;
 import org.onap.portalapp.portal.domain.EPRole;
+import org.onap.portalsdk.core.domain.RoleFunction;
+import org.onap.portalsdk.core.restful.domain.EcompRoleFunction;
 
 public class EPRoleTest {
 
-	public EPRole mockEPRole(){
-		EPRole epRole = new EPRole();
-		
-		epRole.setName("test");
-		epRole.setActive(false);
-		epRole.setPriority(1);
-		epRole.setAppId((long)1);
-		epRole.setAppRoleId((long)1);
-		   
-		return epRole;
-	}
 	
 	@Test
-	public void epRoleTest(){
-		EPRole epRole = mockEPRole();
+	public void testEpRole() {
+		EPRole role=new EPRole();
+		role.setActive(true);
+		role.setAppId(1l);
+		role.setAppRoleId(2l);
+		role.setId(3l);
+		role.setName("TEST_ADMIN");
+		SortedSet<EPRole> childRoles = new TreeSet<EPRole>();
+		EPRole child=new EPRole();
+		child.setActive(true);
+		child.setAppId(1l);
+		child.setAppRoleId(3l);
+		child.setId(6l);
+		child.setName("TEST_USER");
+		childRoles.add(child);
+		role.setChildRoles(childRoles);
+		SortedSet<EPRole> parentRoles = new TreeSet<EPRole>();
+		EPRole parent=new EPRole();
+		parent.setActive(true);
+		parent.setAppId(1l);
+		parent.setAppRoleId(3l);
+		parent.setId(6l);
+		parent.setName("TEST_USER");
+		parentRoles.add(parent);
+		role.setParentRoles(parentRoles);
 		
-		assertEquals(epRole.getName(), "test");
-		assertEquals(epRole.getActive(), false);
-		assertEquals(epRole.getPriority().toString(),"1");
-		assertEquals(epRole.getAppId(), new Long(1));
-		assertEquals(epRole.getAppRoleId(), new Long(1));
-		
-		assertEquals(epRole.toString(), "[Id = null, name = test]");
-
+		SortedSet<RoleFunction> rolefunction = new TreeSet<RoleFunction>();
+		RoleFunction function=new RoleFunction();
+		function.setAction("Test");;
+		function.setCode("code");
+		rolefunction.add(function);
+		role.setRoleFunctions(rolefunction);
+		role.setPriority(5);
+		role.setAppRoleId(3l);
+		assertEquals(3l, role.getAppRoleId().longValue());
+		assertNotNull(role.getChildRoles());
+		assertNotNull(role.getParentRoles());
+		assertNotNull(role.getRoleFunctions());
+		role.compareTo(role);
+		assertEquals(1l, role.getAppId().longValue());
+		assertEquals("TEST_ADMIN",role.getName());
+		role.removeChildRole(6l);
+		role.removeParentRole(6l);
+		assertEquals(role.toString(), "[Id = 3, name = TEST_ADMIN]");
+		role.removeRoleFunction("code");
+		role.addChildRole(child);
+		role.addParentRole(parent);
+		role.addRoleFunction(function);
 		
 	}
+	
 }
+

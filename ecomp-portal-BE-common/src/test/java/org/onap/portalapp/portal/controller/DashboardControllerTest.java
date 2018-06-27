@@ -41,6 +41,7 @@ import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -48,6 +49,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -58,8 +60,10 @@ import org.mockito.MockitoAnnotations;
 import org.onap.portalapp.portal.controller.DashboardController;
 import org.onap.portalapp.portal.core.MockEPUser;
 import org.onap.portalapp.portal.domain.EPUser;
+import org.onap.portalapp.portal.domain.EcompAuditLog;
 import org.onap.portalapp.portal.ecomp.model.PortalRestResponse;
 import org.onap.portalapp.portal.ecomp.model.PortalRestStatusEnum;
+import org.onap.portalapp.portal.ecomp.model.SearchResultItem;
 import org.onap.portalapp.portal.framework.MockitoTestSuite;
 import org.onap.portalapp.portal.service.AdminRolesService;
 import org.onap.portalapp.portal.service.AdminRolesServiceImpl;
@@ -68,12 +72,18 @@ import org.onap.portalapp.portal.service.DashboardSearchServiceImpl;
 import org.onap.portalapp.portal.transport.CommonWidget;
 import org.onap.portalapp.portal.transport.CommonWidgetMeta;
 import org.onap.portalapp.portal.utils.EPCommonSystemProperties;
+import org.onap.portalapp.portal.utils.EcompPortalUtils;
+import org.onap.portalapp.portal.utils.PortalConstants;
 import org.onap.portalapp.util.EPUserUtils;
+import org.onap.portalsdk.core.domain.AuditLog;
 import org.onap.portalsdk.core.domain.support.CollaborateList;
+import org.onap.portalsdk.core.service.AuditService;
+import org.onap.portalsdk.core.service.AuditServiceImpl;
 import org.onap.portalsdk.core.util.SystemProperties;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.springframework.beans.factory.annotation.Autowired;
 
 
 @RunWith(PowerMockRunner.class)
@@ -83,11 +93,19 @@ public class DashboardControllerTest {
 	@Mock
 	DashboardSearchService searchService = new DashboardSearchServiceImpl();
 	
+	/*@Mock
+	AuditService auditService = new AuditServiceImpl();*/
+	
 	@InjectMocks
 	DashboardController dashboardController = new DashboardController();
 
 	@Mock
 	AdminRolesService adminRolesService = new AdminRolesServiceImpl();
+	
+	@Autowired
+	AuditService auditService;
+	
+	
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
@@ -213,13 +231,8 @@ public class DashboardControllerTest {
 		CommonWidget commonWidget = new CommonWidget("EVENTS", "http://test.com", "testTitle", "testcontent", "2017-07-01", 1);
 		widgetList.add(commonWidget);
 		CommonWidgetMeta commonWidgetMeta= new CommonWidgetMeta("EVENTS", widgetList);
-		
-				    
-				
-	/*	commonWidgetMeta.setItems(widgetList);
-		
-		commonWidgetMeta.setCategory("EVENTS");*/
-		
+		commonWidgetMeta.setItems(widgetList);		
+		commonWidgetMeta.setCategory("EVENTS");		
 		PortalRestResponse<String> expectedData = new PortalRestResponse<String>();
 		expectedData.setStatus(PortalRestStatusEnum.OK);
 		expectedData.setMessage("success");
@@ -247,6 +260,21 @@ public class DashboardControllerTest {
 		PortalRestResponse<String> actualResponse = dashboardController.saveWidgetData(commonWidget, mockedRequest, mockedResponse);
 		assertEquals(expectedData,actualResponse);
 		
+	}
+	
+	@Test
+	public void saveWidgetDataTitleTest() throws IOException {				
+		CommonWidget commonWidget = mockCommonWidget();	
+		commonWidget.setId((long)1);
+		commonWidget.setContent("test");
+		commonWidget.setTitle("test");
+		PortalRestResponse<String> expectedData = new PortalRestResponse<String>();
+		expectedData.setStatus(PortalRestStatusEnum.ERROR);
+		expectedData.setMessage("Invalid category: test");
+		expectedData.setResponse(null);
+		Mockito.when(adminRolesService.isSuperAdmin(Matchers.anyObject())).thenReturn(true);
+		PortalRestResponse<String> actualResponse = dashboardController.saveWidgetData(commonWidget, mockedRequest, mockedResponse);
+		assertEquals(expectedData.getMessage(),actualResponse.getMessage());
 	}
 	
 	@Test
@@ -464,4 +492,135 @@ public class DashboardControllerTest {
 		PortalRestResponse<List<String>> actualResponse = dashboardController.activeUsers(mockedRequest);
 		assertTrue(actualResponse.getStatus().compareTo(PortalRestStatusEnum.ERROR) == 0);
 	}
+	@Test
+	public void searchPortalTestWhenSearchStringIsNull(){
+		EPUser user = mockUser.mockEPUser();
+		user.setLoginId("test");
+		user.setId(1L);
+		String searchString = null;
+		//user.setLoginId("test");
+		PortalRestResponse<List<String>> expectedData = new PortalRestResponse<List<String>>();
+		expectedData.setStatus(PortalRestStatusEnum.ERROR);
+		expectedData.setMessage("null - check logs.");
+		expectedData.setResponse(Matchers.any());  
+		
+		PowerMockito.mockStatic(EPUserUtils.class);
+		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
+		PortalRestResponse<Map<String, List<SearchResultItem>>> expectedResult = new PortalRestResponse<Map<String, List<SearchResultItem>>>();
+		expectedResult.setMessage("null - check logs.");
+		expectedResult.setResponse(null);
+		expectedResult.setStatus(PortalRestStatusEnum.ERROR);
+		//Mockito.doNothing().when(auditService).logActivity(auditLog, null);
+
+		//Mockito.when(auditService.logActivity(auditLog, null).;
+		//Mockito.when(searchService.searchResults(user.getLoginId(), searchString )).thenReturn((Map<String, List<SearchResultItem>>) expectedResult);
+		PortalRestResponse<Map<String, List<SearchResultItem>>> actualResponse = dashboardController.searchPortal(mockedRequest, null);
+		assertTrue(actualResponse.getStatus().compareTo(PortalRestStatusEnum.ERROR) == 0);
+	}
+	
+	@Test
+	public void searchPortalTest(){
+		EPUser user = null;
+		String searchString = null;
+		//user.setLoginId("test");
+		PortalRestResponse<List<String>> expectedData = new PortalRestResponse<List<String>>();
+		expectedData.setStatus(PortalRestStatusEnum.ERROR);
+		expectedData.setMessage("null - check logs.");
+		expectedData.setResponse(Matchers.any());  
+		
+		PowerMockito.mockStatic(EPUserUtils.class);
+		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
+		PortalRestResponse<Map<String, List<SearchResultItem>>> expectedResult = new PortalRestResponse<Map<String, List<SearchResultItem>>>();
+		expectedResult.setMessage("null - check logs.");
+		expectedResult.setResponse(null);
+		expectedResult.setStatus(PortalRestStatusEnum.ERROR);
+		//Mockito.doNothing().when(auditService).logActivity(auditLog, null);
+
+		//Mockito.when(auditService.logActivity(auditLog, null).;
+		//Mockito.when(searchService.searchResults(user.getLoginId(), searchString )).thenReturn((Map<String, List<SearchResultItem>>) expectedResult);
+		PortalRestResponse<Map<String, List<SearchResultItem>>> actualResponse = dashboardController.searchPortal(mockedRequest, null);
+		assertTrue(actualResponse.getStatus().compareTo(PortalRestStatusEnum.ERROR) == 0);
+	}
+	@Test
+	public void searchPortalTestWithException(){
+		EPUser user = mockUser.mockEPUser();
+		user.setLoginId("test");
+		user.setId(1L);
+		
+		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
+		String searchString = "test";
+		List<SearchResultItem> searchResultItemList = new ArrayList<SearchResultItem>();
+		SearchResultItem searchResultItem = new SearchResultItem();
+
+		searchResultItem.setId((long) 1);
+		searchResultItem.setCategory("test");
+		searchResultItem.setName("test_name");
+		searchResultItem.setTarget("test_target");
+		searchResultItem.setUuid("test_UUId");
+		searchResultItemList.add(searchResultItem);
+		Map<String, List<SearchResultItem>> expectedResultMap = new HashMap<String, List<SearchResultItem>>();
+		expectedResultMap.put(searchString, searchResultItemList);
+		
+		AuditLog auditLog = new AuditLog();
+		auditLog.setUserId(1L);
+		auditLog.setActivityCode("test");
+		auditLog.setComments("test");
+		PortalRestResponse<Map<String, List<SearchResultItem>>> expectedResult = new PortalRestResponse<Map<String, List<SearchResultItem>>>();
+		expectedResult.setMessage("null - check logs.");
+		expectedResult.setResponse(null);
+		expectedResult.setStatus(PortalRestStatusEnum.ERROR);
+		//Mockito.doNothing().when(auditService).logActivity(auditLog, null);
+
+		//Mockito.when(auditService.logActivity(auditLog, null).;
+		Mockito.when(searchService.searchResults(user.getLoginId(), searchString)).thenReturn(expectedResultMap);
+		PortalRestResponse<Map<String, List<SearchResultItem>>> actualResult = dashboardController.searchPortal(mockedRequest, searchString);
+				
+		assertTrue(expectedResult.getStatus().compareTo(PortalRestStatusEnum.ERROR) == 0);
+
+	}
+	
+	@Test
+	public void searchPortalUserNullTest(){
+		EPUser user = null;
+		PortalRestResponse<Map<String, List<SearchResultItem>>> expectedData = new PortalRestResponse<Map<String, List<SearchResultItem>>>();
+		expectedData.setMessage("searchPortal: User object is null? - check logs");
+		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);		
+		PortalRestResponse<Map<String, List<SearchResultItem>>> actualData = dashboardController.searchPortal(mockedRequest, null);
+		assertEquals(actualData.getMessage(), expectedData.getMessage());
+	}
+	
+	@Test
+	public void searchPortalsearchStringNullTest(){
+		EPUser user = mockUser.mockEPUser();
+		String searchString = null;
+		PortalRestResponse<Map<String, List<SearchResultItem>>> expectedData = new PortalRestResponse<Map<String, List<SearchResultItem>>>();
+		expectedData.setMessage("searchPortal: String string is null");
+		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);		
+		PortalRestResponse<Map<String, List<SearchResultItem>>> actualData = dashboardController.searchPortal(mockedRequest, searchString);
+		assertEquals(actualData.getMessage(), expectedData.getMessage());
+	}
+	@Ignore
+	@Test
+	public void searchPortalsearchStringTest(){
+		EPUser user = mockUser.mockEPUser();
+		String searchString = "test";
+		PortalRestResponse<Map<String, List<SearchResultItem>>> expectedData = new PortalRestResponse<Map<String, List<SearchResultItem>>>();
+		expectedData.setMessage("success");
+		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);	
+		Mockito.doNothing().when(auditService).logActivity(null, null);
+		PortalRestResponse<Map<String, List<SearchResultItem>>> actualData = dashboardController.searchPortal(mockedRequest, searchString);
+		assertEquals(actualData.getMessage(), expectedData.getMessage());
+	}
+	//@Ignore
+	@Test
+	public void searchPortalsearchStringExceptionTest(){
+		EPUser user = mockUser.mockEPUser();
+		String searchString = "test";
+		PortalRestResponse<Map<String, List<SearchResultItem>>> expectedData = new PortalRestResponse<Map<String, List<SearchResultItem>>>();
+		expectedData.setMessage("searchPortal: String string is null");
+		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);		
+		Mockito.when(dashboardController.searchPortal(mockedRequest, searchString)).thenThrow(nullPointerException);
+	}
+	
+	
 }

@@ -80,4 +80,39 @@ public class AppsListWithAdminRoleTest {
 		assertEquals(appsListWithAdminRole.hashCode(), appsListWithAdminRole1.hashCode());
 		assertEquals(appsListWithAdminRole.toString(), "AppsListWithAdminRole [orgUserId=test, appsRoles=[AppNameIdIsAdmin [id=null, appName=null, isAdmin=null, restrictedApp=null]]]");
 	}
+	
+	@Test
+	public void appsListWithAdminRoleTest1(){
+		AppsListWithAdminRole appsListWithAdminRole = mockAppsListWithAdminRole();
+		AppsListWithAdminRole appsListWithAdminRole1 = new AppsListWithAdminRole();
+		ArrayList<AppNameIdIsAdmin> appsRoles = new ArrayList<AppNameIdIsAdmin>();
+		AppNameIdIsAdmin appNameIdIsAdmin = new AppNameIdIsAdmin();
+		appsRoles.add(appNameIdIsAdmin);
+		appsListWithAdminRole1.setOrgUserId(null);
+		appsListWithAdminRole1.setAppsRoles(null);
+		assertFalse(appsListWithAdminRole.equals(appsListWithAdminRole1));
+	}
+	
+	@Test
+	public void appsListWithAdminRoleTest2(){
+		AppsListWithAdminRole appsListWithAdminRole = mockAppsListWithAdminRole();
+		appsListWithAdminRole.setOrgUserId(null);
+		appsListWithAdminRole.setAppsRoles(null);
+		AppsListWithAdminRole appsListWithAdminRole1 = new AppsListWithAdminRole();
+		
+		ArrayList<AppNameIdIsAdmin> appsRoles = new ArrayList<AppNameIdIsAdmin>();
+		AppNameIdIsAdmin appNameIdIsAdmin = new AppNameIdIsAdmin();
+		appsRoles.add(appNameIdIsAdmin);
+		
+		appsListWithAdminRole1.setOrgUserId(null);
+		appsListWithAdminRole1.setAppsRoles(null);
+				
+		assertEquals(appsListWithAdminRole.getOrgUserId(), null);
+		assertEquals(appsListWithAdminRole.getAppsRoles(), null);
+		
+		assertTrue(appsListWithAdminRole.equals(appsListWithAdminRole1));
+		assertEquals(appsListWithAdminRole.hashCode(), appsListWithAdminRole1.hashCode());
+		assertEquals(appsListWithAdminRole.toString(), "AppsListWithAdminRole [orgUserId=null, appsRoles=null]");
+	}
+	
 }

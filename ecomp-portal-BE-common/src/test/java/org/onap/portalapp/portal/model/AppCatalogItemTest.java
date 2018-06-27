@@ -2,7 +2,7 @@
  * ============LICENSE_START==========================================
  * ONAP Portal
  * ===================================================================
- * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2018 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
@@ -66,7 +66,208 @@ public class AppCatalogItemTest {
 
 		assertEquals(appCatalogItem.toString(), "AppCatalogItem [id=null, name=null, access=null, select=null, pending=null]");
 		assertEquals(appCatalogItem.hashCode(), appCatalogItem1.hashCode());
-		assertTrue(appCatalogItem.equals(appCatalogItem1));
-		
+		assertTrue(appCatalogItem.equals(appCatalogItem1));		
+	}
+	
+	@Test
+	public void hashCodeTest(){
+		AppCatalogItem appCatalogItem = new AppCatalogItem();
+		appCatalogItem.setAccess(true);
+		appCatalogItem.setAlternateUrl("test");
+		appCatalogItem.setDescription("test");
+		appCatalogItem.setId(123L);
+		appCatalogItem.setImageUrl("test");
+		appCatalogItem.setName("test");
+		appCatalogItem.setNotes("test");
+		appCatalogItem.setOpen(false);
+		appCatalogItem.setPending(false);
+		appCatalogItem.setRestricted(false);
+		appCatalogItem.setSelect(false);
+		appCatalogItem.setUrl("test");
+		appCatalogItem.hashCode();
+	}
+	
+	@Test
+	public void equalsTest(){
+		AppCatalogItem appCatalogItem = new AppCatalogItem();
+		AppCatalogItem appCatalogItem1 = new AppCatalogItem();		
+		appCatalogItem.equals(appCatalogItem1);
+	}
+	
+	@Test
+	public void equalsTest1(){
+		AppCatalogItem appCatalogItem = new AppCatalogItem();
+		AppCatalogItem appCatalogItem1 = new AppCatalogItem();
+		appCatalogItem.setAccess(true);
+		appCatalogItem.setAlternateUrl("test");
+		appCatalogItem.setDescription("test");
+		appCatalogItem.setId(123L);
+		appCatalogItem.setImageUrl("test");
+		appCatalogItem.setName("test");
+		appCatalogItem.setNotes("test");
+		appCatalogItem.setOpen(false);
+		appCatalogItem.setPending(false);
+		appCatalogItem.setRestricted(false);
+		appCatalogItem.setSelect(false);
+		appCatalogItem.setUrl("test");
+		appCatalogItem.equals(appCatalogItem1);
+	}
+	
+	@Test
+	public void equalsTest2(){
+		AppCatalogItem appCatalogItem = new AppCatalogItem();
+		AppCatalogItem appCatalogItem1 = new AppCatalogItem();
+		appCatalogItem.setAlternateUrl("test");
+		appCatalogItem.setDescription("test");
+		appCatalogItem.setId(123L);
+		appCatalogItem.setImageUrl("test");
+		appCatalogItem.setName("test");
+		appCatalogItem.setNotes("test");
+		appCatalogItem.setOpen(false);
+		appCatalogItem.setPending(false);
+		appCatalogItem.setRestricted(false);
+		appCatalogItem.setSelect(false);
+		appCatalogItem.setUrl("test");
+		appCatalogItem.equals(appCatalogItem1);
+	}
+	
+	@Test
+	public void equalsTest3(){
+		AppCatalogItem appCatalogItem = new AppCatalogItem();
+		AppCatalogItem appCatalogItem1 = new AppCatalogItem();
+		appCatalogItem.setDescription("test");
+		appCatalogItem.setId(123L);
+		appCatalogItem.setImageUrl("test");
+		appCatalogItem.setName("test");
+		appCatalogItem.setNotes("test");
+		appCatalogItem.setOpen(false);
+		appCatalogItem.setPending(false);
+		appCatalogItem.setRestricted(false);
+		appCatalogItem.setSelect(false);
+		appCatalogItem.setUrl("test");
+		appCatalogItem.equals(appCatalogItem1);
+	}
+	
+	@Test
+	public void equalsTest4(){
+		AppCatalogItem appCatalogItem = new AppCatalogItem();
+		AppCatalogItem appCatalogItem1 = new AppCatalogItem();
+		appCatalogItem.setId(123L);
+		appCatalogItem.setImageUrl("test");
+		appCatalogItem.setName("test");
+		appCatalogItem.setNotes("test");
+		appCatalogItem.setOpen(false);
+		appCatalogItem.setPending(false);
+		appCatalogItem.setRestricted(false);
+		appCatalogItem.setSelect(false);
+		appCatalogItem.setUrl("test");
+		appCatalogItem.equals(appCatalogItem1);
+	}
+	
+	@Test
+	public void equalsTest5(){
+		AppCatalogItem appCatalogItem = new AppCatalogItem();
+		AppCatalogItem appCatalogItem1 = new AppCatalogItem();
+		appCatalogItem.setImageUrl("test");
+		appCatalogItem.setName("test");
+		appCatalogItem.setNotes("test");
+		appCatalogItem.setOpen(false);
+		appCatalogItem.setPending(false);
+		appCatalogItem.setRestricted(false);
+		appCatalogItem.setSelect(false);
+		appCatalogItem.setUrl("test");
+		appCatalogItem.equals(appCatalogItem1);
+	}
+	
+	@Test
+	public void equalsTest6(){
+		AppCatalogItem appCatalogItem = new AppCatalogItem();
+		AppCatalogItem appCatalogItem1 = new AppCatalogItem();
+		appCatalogItem.setName("test");
+		appCatalogItem.setNotes("test");
+		appCatalogItem.setOpen(false);
+		appCatalogItem.setPending(false);
+		appCatalogItem.setRestricted(false);
+		appCatalogItem.setSelect(false);
+		appCatalogItem.setUrl("test");
+		appCatalogItem.equals(appCatalogItem1);
+	}
+	
+	@Test
+	public void equalsTest7(){
+		AppCatalogItem appCatalogItem = new AppCatalogItem();
+		AppCatalogItem appCatalogItem1 = new AppCatalogItem();
+		appCatalogItem.setNotes("test");
+		appCatalogItem.setOpen(false);
+		appCatalogItem.setPending(false);
+		appCatalogItem.setRestricted(false);
+		appCatalogItem.setSelect(false);
+		appCatalogItem.setUrl("test");
+		appCatalogItem.equals(appCatalogItem1);
+	}
+	
+	@Test
+	public void equalsTest8(){
+		AppCatalogItem appCatalogItem = new AppCatalogItem();
+		AppCatalogItem appCatalogItem1 = new AppCatalogItem();
+		appCatalogItem.setOpen(false);
+		appCatalogItem.setPending(false);
+		appCatalogItem.setRestricted(false);
+		appCatalogItem.setSelect(false);
+		appCatalogItem.setUrl("test");
+		appCatalogItem.equals(appCatalogItem1);
+	}
+	
+	@Test
+	public void equalsTest9(){
+		AppCatalogItem appCatalogItem = new AppCatalogItem();
+		AppCatalogItem appCatalogItem1 = new AppCatalogItem();
+		appCatalogItem.setPending(false);
+		appCatalogItem.setRestricted(false);
+		appCatalogItem.setSelect(false);
+		appCatalogItem.setUrl("test");
+		appCatalogItem.equals(appCatalogItem1);
+	}
+	
+	@Test
+	public void equalsTest10(){
+		AppCatalogItem appCatalogItem = new AppCatalogItem();
+		AppCatalogItem appCatalogItem1 = new AppCatalogItem();
+		appCatalogItem.setRestricted(false);
+		appCatalogItem.setSelect(false);
+		appCatalogItem.setUrl("test");
+		appCatalogItem.equals(appCatalogItem1);
+	}
+	
+	@Test
+	public void equalsTest11(){
+		AppCatalogItem appCatalogItem = new AppCatalogItem();
+		AppCatalogItem appCatalogItem1 = new AppCatalogItem();
+		appCatalogItem.setSelect(false);
+		appCatalogItem.setUrl("test");
+		appCatalogItem.equals(appCatalogItem1);
+	}
+	
+	@Test
+	public void equalsTest12(){
+		AppCatalogItem appCatalogItem = new AppCatalogItem();
+		AppCatalogItem appCatalogItem1 = new AppCatalogItem();
+		appCatalogItem.setUrl("test");
+		appCatalogItem.equals(appCatalogItem1);
+	}
+	
+	@Test
+	public void equalsTest13(){
+		AppCatalogItem appCatalogItem = new AppCatalogItem();
+		AppCatalogItem appCatalogItem1 = new AppCatalogItem();
+		appCatalogItem.setUrl("test");
+		appCatalogItem.equals(appCatalogItem1);
+	}
+	
+	@Test
+	public void equalsTest14(){
+		AppCatalogItem appCatalogItem = new AppCatalogItem();
+		AppCatalogItem appCatalogItem1 = new AppCatalogItem();
+		appCatalogItem.equals(appCatalogItem1);
 	}
 }

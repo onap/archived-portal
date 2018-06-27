@@ -39,6 +39,7 @@ package org.onap.portalapp.command;
 
 import static org.junit.Assert.*;
 
+import org.apache.bcel.generic.AASTORE;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.onap.portalapp.command.PostSearchBean;
@@ -55,8 +56,11 @@ public class PostSearchBeanTest {
 	
 	PostSearchBean postSearchBean = new PostSearchBean();
 	EPUser user = mockUser.mockEPUser();
+	EPUser userOrig=mockUser.mockEPUser();
+	postSearchBean.setUserOrig(userOrig);
+	
 	postSearchBean.setUser(user);
-	postSearchBean.setUserOrig(null);
+	//postSearchBean.setUserOrig(null);
 	postSearchBean.setSelected(null);
 	postSearchBean.setHrid(null);
 	postSearchBean.setPostUserId(null);
@@ -85,6 +89,19 @@ public class PostSearchBeanTest {
 	postSearchBean.setPostSiloStatus(null);
 	postSearchBean.setPostFinancialLocCode(null);
 	postSearchBean.setPostManagerUserId(null);
+	postSearchBean.setPostHrid(null);
+	postSearchBean.setPostCompany(null);
+	postSearchBean.setFirstName(null);
+	postSearchBean.setLastName(null);
+	postSearchBean.setOrgUserId(null);
+	postSearchBean.setEmail(null);
+	postSearchBean.setFirstNameOrig(null);
+	postSearchBean.setLastNameOrig(null);
+	postSearchBean.setHridOrig(null);
+	postSearchBean.setOrgUserIdOrig(null);
+	postSearchBean.setOrgCodeOrig(null);
+	postSearchBean.setEmailOrig(null);
+	postSearchBean.setOrgManagerUserIdOrig(null);
 	return postSearchBean;
 	}
     
@@ -94,7 +111,7 @@ public class PostSearchBeanTest {
 	 PostSearchBean postSearchBean = mockPostSearchBean();
 	 EPUser user = mockUser.mockEPUser();
 	 assertEquals(postSearchBean.getUser().getActive(), user.getActive());
-	 assertNull(postSearchBean.getUserOrig());
+	 assertNotNull(postSearchBean.getUserOrig());
 	 assertNull(postSearchBean.getSelected());
 	 assertNull(postSearchBean.getHrid());
 	 assertNull(postSearchBean.getPostOrgUserId());
@@ -123,6 +140,20 @@ public class PostSearchBeanTest {
 	 assertNull(postSearchBean.getPostSiloStatus());
 	 assertNull(postSearchBean.getPostFinancialLocCode());
 	 assertNull(postSearchBean.getPostManagerUserId());
+	 assertNull(postSearchBean.getPostHrid());
+	 assertNull(postSearchBean.getPostCompany());
+	 assertNull(postSearchBean.getFirstName());
+	 assertNull(postSearchBean.getLastName());
+
+	 assertNull(postSearchBean.getOrgUserId());
+	 assertNull(postSearchBean.getEmail());
+	 assertNull(postSearchBean.getFirstNameOrig());
+	 assertNull(postSearchBean.getLastNameOrig());
+	 assertNull(postSearchBean.getHridOrig());
+	 assertNull(postSearchBean.getOrgUserIdOrig());
+	 assertNull(postSearchBean.getOrgCodeOrig());
+	 assertNull(postSearchBean.getEmailOrig());
+	 assertNull(postSearchBean.getOrgManagerUserIdOrig());
  }
 	 
 	 @Test
@@ -144,6 +175,20 @@ public class PostSearchBeanTest {
 	 {
 		 mockPostSearchBean.setUser(null);
 		 mockPostSearchBean.setUserOrig(null);
+		 assertFalse(mockPostSearchBean.isCriteriaUpdated());
+	 }
+	 
+	 @Test
+	 public void isCriteriaUpdatedIfUserOrgigTest()
+	 {
+		// mockPostSearchBean.setUser(null);
+		 mockPostSearchBean.setUserOrig(null);
+		 assertTrue(mockPostSearchBean.isCriteriaUpdated());
+	 }
+	 
+	 @Test
+	 public void isCriteriaUpdatedIfUserTest1()
+	 {
 		 assertFalse(mockPostSearchBean.isCriteriaUpdated());
 	 }
  

@@ -89,35 +89,34 @@ public class EPRoleServiceImplTest {
 
 	@Test
 	public void getAvailableChildRolesIfRoleIdIsNullTest() {
+		Long roleId = (long)123;
 		List<EPRole> roleList = new ArrayList<>();
+		EPRole epRole = new EPRole();
 		EPRole role = new EPRole();
 		EPRole role1 = new EPRole();
 		role.addChildRole(role1);
 		roleList.add(role);
 		Mockito.when(dataAccessService.getList(EPRole.class, null)).thenReturn(roleList);
+		Mockito.when(dataAccessService.getDomainObject(EPRole.class, roleId, null)).thenReturn(epRole);
 		List<EPRole> expectedRoleList = ePRoleServiceImpl.getAvailableChildRoles(null);
 		assertEquals(roleList, expectedRoleList);
 	}
 
-	// @Test
-	// public void getAvailableChildRolesIfRoleIdNotNullTest()
-	// {
-	// List<EPRole> roleList = new ArrayList<>();
-	// EPRole role = new EPRole();
-	// EPRole role1= new EPRole();
-	// role.addChildRole(role1);
-	// roleList.add(role);
-	// Mockito.when(dataAccessService.getDomainObject(EPRole.class, 1,
-	// null)).thenReturn(role);
-	// Mockito.when(dataAccessService.getList(EPRole.class,
-	// null)).thenReturn(roleList);
-	//
-	// List<EPRole> expectedRoleList =
-	// ePRoleServiceImpl.getAvailableChildRoles((long) 1);
-	// System.out.println(expectedRoleList);
-	// assertEquals(roleList,expectedRoleList);
-	// }
-	//
+	@Test
+	public void getAvailableChildRolesIfRoleIdTest() {
+		Long roleId = (long)123;
+		List<EPRole> roleList = new ArrayList<>();
+		EPRole epRole = new EPRole();
+		EPRole role = new EPRole();
+		EPRole role1 = new EPRole();
+		role.addChildRole(role1);
+		roleList.add(role);
+		Mockito.when(dataAccessService.getList(EPRole.class, null)).thenReturn(roleList);
+		Mockito.when(dataAccessService.getDomainObject(EPRole.class, roleId, null)).thenReturn(epRole);
+		List<EPRole> expectedRoleList = ePRoleServiceImpl.getAvailableChildRoles(roleId);
+		assertEquals(roleList, expectedRoleList);
+	}
+	
 	@Test
 	public void getRoleFunctionTest() {
 		RoleFunction roleFunction = new RoleFunction();

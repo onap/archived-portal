@@ -49,6 +49,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -167,16 +168,18 @@ public class PortalAdminControllerTest extends MockitoTestSuite{
         assertEquals(actualFieldValidator,expectedFieldValidator);
 
 	}
+	
+
 		
-//	@Test
-//	public void createPortalAdminIfUserIsNullTest()
-//	{
-//		//EPUser user = null;
-//		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(null);
-//		String sbcid = "null";
-//		assertNull(portalAdminController.createPortalAdmin(mockedRequest, sbcid, mockedResponse));
-//
-//	}
+	@Test
+	public void createPortalAdminIfUserIsNullTest()
+	{
+		EPUser user = null;
+		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(null);
+		String sbcid = "null";
+		assertNull(portalAdminController.createPortalAdmin(mockedRequest, sbcid, mockedResponse));
+
+	}
 	
 	@Test
 	public void createPortalAdminIfUserIsSuperAdminTest()
@@ -186,6 +189,87 @@ public class PortalAdminControllerTest extends MockitoTestSuite{
 		Mockito.when(adminRolesService.isSuperAdmin(user)).thenReturn(false);
 		String sbcid = "Test";
 		assertNull(portalAdminController.createPortalAdmin(mockedRequest, sbcid, mockedResponse));
+
+	}
+	
+	@Test
+	public void deletePortalAdminTest()
+	{
+		EPUser user = mockUser.mockEPUser();
+		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
+		List<PortalAdmin> expectedPortalAdminsList = new ArrayList<PortalAdmin>();
+		Mockito.when(adminRolesService.isSuperAdmin(user)).thenReturn(true);
+	    Mockito.when(portalAdminService.deletePortalAdmin(12L)).thenReturn(null);
+         FieldsValidator actualPortalAdminsList =  portalAdminController.deletePortalAdmin(mockedRequest, "test", mockedResponse);
+         assertNull(actualPortalAdminsList);
+
+	}
+	
+	@Test
+	public void deletePortalAdminTest1()
+	{
+		EPUser user = mockUser.mockEPUser();
+		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
+		String sbcid = "Test";
+		List<PortalAdmin> expectedPortalAdminsList = new ArrayList<PortalAdmin>();
+		Mockito.when(adminRolesService.isSuperAdmin(user)).thenReturn(false);
+	    Mockito.when(portalAdminService.deletePortalAdmin(112L)).thenReturn(null);
+         FieldsValidator actualPortalAdminsList =  portalAdminController.deletePortalAdmin(mockedRequest, "112-1", mockedResponse);
+         assertNull(actualPortalAdminsList);
+
+	}
+	
+	@Test
+	public void deletePortalAdminTest2()
+	{
+		EPUser user = mockUser.mockEPUser();
+		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
+	
+		FieldsValidator expectedFieldValidator = new FieldsValidator();
+		expectedFieldValidator.setHttpStatusCode((long) 200);
+		expectedFieldValidator.setFields(null);
+		expectedFieldValidator.setErrorCode(null);
+		FieldsValidator actualFieldValidator = new FieldsValidator();
+		//String sbcid = "Test";
+		Long userId=123L;
+		Mockito.when(adminRolesService.isSuperAdmin(user)).thenReturn(true);
+		Mockito.when(portalAdminService.deletePortalAdmin(userId)).thenReturn(expectedFieldValidator);
+		actualFieldValidator = portalAdminController.deletePortalAdmin(mockedRequest,"123-Test" , mockedResponse);
+        assertEquals(actualFieldValidator,expectedFieldValidator);
+
+	}
+
+	@Test
+	public void getRolesByAppsTest()
+	{
+		EPUser user = mockUser.mockEPUser();
+		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
+		List<EPRole> expectedgetAppsList = new ArrayList<EPRole>();
+		EPRole epRole= new EPRole();
+		epRole.setName("Test");
+		epRole.setActive(true);
+		epRole.setPriority(1);
+		epRole.setAppId(12L);
+		epRole.setId(1111L);
+		expectedgetAppsList.add(epRole);
+		Mockito.when(adminRolesService.getRolesByApp(user,12L)).thenReturn(expectedgetAppsList);
+		//Mockito.when(portalAdminService.deletePortalAdmin(userId)).thenReturn(expectedFieldValidator);
+		List<EPRole> actualgetAppsList = portalAdminController.getRolesByApp(mockedRequest,12L , mockedResponse);
+        assertEquals(actualgetAppsList,expectedgetAppsList);
+
+	}
+
+	@Test
+	public void getRolesByAppsWhenUserIsNullTest()
+	{
+		EPUser user = mockUser.mockEPUser();
+		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(null);
+		List<EPRole> expectedgetAppsList = new ArrayList<EPRole>();
+		EPRole epRole= new EPRole();
+		expectedgetAppsList.add(epRole);
+		Mockito.when(adminRolesService.getRolesByApp(user,12L)).thenReturn(expectedgetAppsList);
+		List<EPRole> actualgetAppsList = portalAdminController.getRolesByApp(mockedRequest,12L , mockedResponse);
+        assertNull(actualgetAppsList);
 
 	}
 			

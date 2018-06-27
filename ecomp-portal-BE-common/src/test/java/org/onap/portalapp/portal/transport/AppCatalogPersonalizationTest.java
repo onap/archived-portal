@@ -39,6 +39,8 @@ package org.onap.portalapp.portal.transport;
 
 import static org.junit.Assert.*;
 
+import java.util.Date;
+
 import org.junit.Test;
 import org.onap.portalapp.portal.transport.AppCatalogPersonalization;
 
@@ -58,6 +60,45 @@ public class AppCatalogPersonalizationTest {
 		
 		assertEquals(appCatalogPersonalization.hashCode(), appCatalogPersonalization1.hashCode());
 		assertTrue(appCatalogPersonalization.equals(appCatalogPersonalization1));
+	}
+	
+	@Test
+	public void unt_hashCodeTest(){
+		AppCatalogPersonalization appCatalogPersonalization=new AppCatalogPersonalization();
+		appCatalogPersonalization.setAppId(123L);
+		appCatalogPersonalization.setPending(true);
+		appCatalogPersonalization.setSelect(true);
+		AppCatalogPersonalization appCatalogPersonalization1 = new AppCatalogPersonalization();
+		appCatalogPersonalization1.setAppId(123L);
+		appCatalogPersonalization1.setPending(true);
+		appCatalogPersonalization1.setSelect(true);
+		assertEquals(appCatalogPersonalization.hashCode(), appCatalogPersonalization1.hashCode());
+		assertTrue(appCatalogPersonalization.equals(appCatalogPersonalization1));
+		
+	}
+	
+	@Test
+	public void appCatalogPersonalizationTestwithAppId(){
+		AppCatalogPersonalization appCatalogPersonalization = mockAppCatalogPersonalization();
+		AppCatalogPersonalization appCatalogPersonalization1 = new AppCatalogPersonalization();
+		appCatalogPersonalization1.setAppId(123L);
+		assertFalse(appCatalogPersonalization.equals(appCatalogPersonalization1));
+	}
+	
+	@Test
+	public void appCatalogPersonalizationTestwithpending(){
+		AppCatalogPersonalization appCatalogPersonalization = mockAppCatalogPersonalization();
+		AppCatalogPersonalization appCatalogPersonalization1 = new AppCatalogPersonalization();
+		appCatalogPersonalization1.setPending(true);
+		assertFalse(appCatalogPersonalization.equals(appCatalogPersonalization1));
+	}
+	
+	@Test
+	public void appCatalogPersonalizationTestwithSelect(){
+		AppCatalogPersonalization appCatalogPersonalization = mockAppCatalogPersonalization();
+		AppCatalogPersonalization appCatalogPersonalization1 = new AppCatalogPersonalization();
+		appCatalogPersonalization1.setSelect(true);
+		assertFalse(appCatalogPersonalization.equals(appCatalogPersonalization1));
 	}
 
 }

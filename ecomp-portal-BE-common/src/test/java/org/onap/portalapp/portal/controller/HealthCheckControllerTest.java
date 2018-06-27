@@ -74,4 +74,23 @@ public class HealthCheckControllerTest {
 		PowerMockito.mockStatic(EcompPortalUtils.class);
 		healthCheckController.healthCheck(mockedRequest, mockedResponse);
 	}
+	
+	@Test
+	public void healthCheckFailTest1() {
+		PowerMockito.mockStatic(EcompPortalUtils.class);
+		healthCheckController.healthCheckSuspend(mockedRequest, mockedResponse);
+	}
+	
+	@Test
+	public void healthCheckResumeTest() {
+		PowerMockito.mockStatic(EcompPortalUtils.class);
+		healthCheckController.healthCheckResume(mockedRequest, mockedResponse);
+	}
+	
+	@Test
+	public void healthCheckPingTest() {
+		PowerMockito.mockStatic(EcompPortalUtils.class);
+		healthCheckController.ping(mockedRequest, mockedResponse);
+	}
+	
 }
