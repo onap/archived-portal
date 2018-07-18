@@ -80,6 +80,7 @@ import org.onap.portalapp.portal.transport.EPWidgetsSortPreference;
 import org.onap.portalapp.portal.transport.FieldsValidator;
 import org.onap.portalapp.portal.transport.LocalRole;
 import org.onap.portalapp.portal.transport.OnboardingApp;
+import org.onap.portalapp.portal.utils.EcompPortalUtils;
 import org.onap.portalapp.util.EPUserUtils;
 import org.onap.portalsdk.core.util.SystemProperties;
 import org.onap.portalsdk.core.web.support.AppUtils;
@@ -950,6 +951,58 @@ public class AppsControllerTest extends MockitoTestSuite{
 		Mockito.when(appService.transformAppsToEcompApps(appService.getAppsOrderByName(user))).thenReturn(listOfApps);
 		List<EcompApp> listOfActualApps = 	appsController.getUserAppsOrderBySortPref(mockedRequest, mockedResponse);
 		assertEquals(listOfActualApps.size(), 1);
+	}
+	
+	@Test
+	public void getSingleAppInfoWithExceptionTest (){
+		EPApp epApp=new EPApp();
+		epApp.setName("test");
+		epApp.setId(1L);
+		//EPApp listOfApps = new ArrayList<EcompApp>();
+		
+		//EcompApp app = new EcompApp();
+		//listOfApps.add(app);
+		EPUser user = mockUser.mockEPUser();
+		String appName="test";
+		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
+		Mockito.when(mockedRequest.getParameter("mparams")).thenReturn("M");
+		Mockito.when(appService.getAppDetailByAppName(appName)).thenReturn(epApp);
+		EPApp listOfActualApps = 	appsController.getSingleAppInfo(mockedRequest, mockedResponse);
+		//assertEquals(listOfActualApps,epApp);
+		assertNull(listOfActualApps);
+	}
+	
+	@Test
+	public void getSingleAppInfoTest (){
+		EPApp epApp=new EPApp();
+		epApp.setName("test");
+		epApp.setId(1L);
+		EPUser user = mockUser.mockEPUser();
+		Mockito.when(mockedRequest.getParameter("appParam")).thenReturn("test");
+		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
+		Mockito.when(mockedRequest.getParameter("mparams")).thenReturn("M");
+		Mockito.when(appService.getAppDetailByAppName("test")).thenReturn(epApp);
+		Mockito.when(adminRolesService.isSuperAdmin(user)).thenReturn(true);
+
+		EPApp listOfActualApps = 	appsController.getSingleAppInfo(mockedRequest, mockedResponse);
+		//assertEquals(listOfActualApps,epApp);
+		assertEquals(listOfActualApps,epApp);
+	}
+	
+	
+	@Test
+	public void getSingleAppInfoByIdTest(){
+		EPApp epApp=new EPApp();
+		epApp.setName("test");
+		epApp.setId(1L);
+		EPUser user = mockUser.mockEPUser();
+		Mockito.when(mockedRequest.getParameter("appParam")).thenReturn("123");
+		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
+		Mockito.when(mockedRequest.getParameter("mparams")).thenReturn("M");
+		Mockito.when(appService.getApp(123L)).thenReturn(epApp);
+		Mockito.when(adminRolesService.isSuperAdmin(user)).thenReturn(true);
+		EPApp listOfActualApps = 	appsController.getSingleAppInfoById(mockedRequest, mockedResponse);
+		assertEquals(listOfActualApps,epApp);
 	}
 	
 }

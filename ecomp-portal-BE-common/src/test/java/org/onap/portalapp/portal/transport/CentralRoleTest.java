@@ -37,14 +37,20 @@
  */
 package org.onap.portalapp.portal.transport;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
+
+import java.util.Date;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.junit.Test;
 
 public class CentralRoleTest {
 
-	public CentralV2Role mockCentralRole(){
+	CentralRole centralRole=new CentralRole();
+	
+	
+	/*public CentralV2Role mockCentralRole(){
 		CentralV2Role centralV2Role = new CentralV2Role((long)1, null, null, (long)1, (long)1, (long)1,
 				"test", false, 1, null,	null, null);
 	    
@@ -90,7 +96,109 @@ public class CentralRoleTest {
 		assertTrue(centralV2Role.equals(centralRole1));
 		assertEquals(centralV2Role, centralRole1);
 		assertEquals(centralRole2, new CentralV2Role((long)1, "test"));
+	}*/
+	
+	@Test
+	public void unt_centralRoleConstructorTest(){
+		 centralRole=new CentralRole(null, null, null, null, null, null, null, false, null, null, null, null);
+		assertEquals(false, centralRole.isActive());
 	}
 	
+	@Test
+	public void unt_centralRoleConstructor2Test(){
+		 centralRole=new CentralRole(null, null, false, null, null);
+		assertEquals(false, centralRole.isActive());
+	}
+	
+	@Test
+	public void unt_IdTest(){
+		Long defaultValue=123L;
+		centralRole.setId(defaultValue);
+		assertEquals(defaultValue, centralRole.getId());
+	}
+	
+	@Test
+	public void unt_createdTest(){
+		Date defaultValue=new Date();
+		centralRole.setCreated(defaultValue);
+		assertEquals(defaultValue, centralRole.getCreated());
+	}
+	
+	@Test
+	public void unt_modifiedTest(){
+		Date defaultValue=new Date();
+		centralRole.setModified(defaultValue);
+		assertEquals(defaultValue, centralRole.getModified());
+	}
+	
+	@Test
+	public void unt_modifiedIdTest(){
+		Long defaultValue=123L;
+		centralRole.setModifiedId(defaultValue);
+		assertEquals(defaultValue, centralRole.getModifiedId());
+	}
+	
+	@Test
+	public void unt_createdIdTest(){
+		Long defaultValue=123L;
+		centralRole.setCreatedId(defaultValue);
+		assertEquals(defaultValue, centralRole.getCreatedId());
+	}
+	
+	@Test
+	public void unt_rowNumTest(){
+		Long defaultValue=123L;
+		centralRole.setRowNum(defaultValue);
+		assertEquals(defaultValue, centralRole.getRowNum());
+	}
+	
+	@Test
+	public void unt_nameTest(){
+		String defaultValue="test";
+		centralRole.setName(defaultValue);
+		assertEquals(defaultValue, centralRole.getName());
+	}
+	
+	@Test
+	public void unt_activeTest(){
+		Boolean defaultValue=false;
+		centralRole.setActive(defaultValue);
+		assertEquals(defaultValue, centralRole.isActive());
+	}
+	
+	@Test
+	public void unt_priorityTest(){
+		Integer defaultValue=123;
+		centralRole.setPriority(defaultValue);
+		assertEquals(defaultValue, centralRole.getPriority());
+	}
+	
+	@Test
+	public void unt_getRoleFunctionsTest(){
+		//Integer defaultValue=123;
+		SortedSet<CentralRoleFunction> roleFunctions = new TreeSet<>();
+		CentralRoleFunction centralRoleFunction=new CentralRoleFunction();
+		roleFunctions.add(centralRoleFunction);
+		centralRole.setRoleFunctions(roleFunctions);
+		assertNotNull(centralRole.getRoleFunctions());
+	}
+	
+	@Test
+	public void unt_childRolesTest(){
+		//Integer defaultValue=123;
+		SortedSet<CentralRole> centralRoles=new TreeSet<>();
+		//CentralRole centralRole=new CentralRole();
+		//centralRoles.add(centralRole);
+		centralRole.setChildRoles(centralRoles);
+		assertNotNull(centralRole.getChildRoles());
+	}
+	
+	@Test
+	public void unt_parentRolesTest(){
+		//Integer defaultValue=123;
+		SortedSet<CentralRole> centralRoles=new TreeSet<>();
+		centralRole.setParentRoles(centralRoles);
+		assertNotNull(centralRole.getParentRoles());
+	}
 	
 }

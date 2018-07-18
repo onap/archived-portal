@@ -2,7 +2,7 @@
  * ============LICENSE_START==========================================
  * ONAP Portal
  * ===================================================================
- * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2018 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
@@ -57,20 +57,26 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.onap.portalapp.portal.core.MockEPUser;
+import org.onap.portalapp.portal.domain.AdminUserApp;
+import org.onap.portalapp.portal.domain.AdminUserApplications;
 import org.onap.portalapp.portal.domain.AppIdAndNameTransportModel;
 import org.onap.portalapp.portal.domain.AppsResponse;
 import org.onap.portalapp.portal.domain.EPApp;
 import org.onap.portalapp.portal.domain.EPUser;
+import org.onap.portalapp.portal.domain.EPUserAppRolesRequest;
 import org.onap.portalapp.portal.domain.EPUserAppsManualSortPreference;
 import org.onap.portalapp.portal.domain.EPUserAppsSortPreference;
 import org.onap.portalapp.portal.domain.EPWidgetsManualSortPreference;
 import org.onap.portalapp.portal.domain.EcompApp;
 import org.onap.portalapp.portal.domain.UserRole;
 import org.onap.portalapp.portal.domain.UserRoles;
+import org.onap.portalapp.portal.ecomp.model.AppCatalogItem;
+import org.onap.portalapp.portal.transport.EPAppsManualPreference;
 import org.onap.portalapp.portal.transport.EPAppsSortPreference;
 import org.onap.portalapp.portal.transport.EPDeleteAppsManualSortPref;
 import org.onap.portalapp.portal.transport.EPWidgetsSortPreference;
@@ -107,6 +113,9 @@ public class EPAppCommonServiceImplTest {
 	@Mock
 	AdminRolesServiceImpl adminRolesServiceImpl = new AdminRolesServiceImpl();
 
+	/*@Mock
+	EPAppServiceImpl epAppServiceImpl = new EPAppServiceImpl();*/
+	
 	@Mock
 	SessionFactory sessionFactory;
 
@@ -115,6 +124,8 @@ public class EPAppCommonServiceImplTest {
 
 	@Mock
 	Transaction transaction;
+	
+	NullPointerException nullPointerException = new NullPointerException();
 
 	@Before
 	public void setup() {
@@ -157,7 +168,7 @@ public class EPAppCommonServiceImplTest {
 		app.setAppType(1);
 		return app;
 	}
-
+	
 	@Test
 	public void getUserAsAdminAppsTest() {
 		EPApp mockApp = mockApp();
@@ -178,18 +189,38 @@ public class EPAppCommonServiceImplTest {
 
 	@Test
 	public void getUserAsAdminAppsTestException() {
+		List<EPApp> expected = new ArrayList<>();
 		EPUser user = mockUser.mockEPUser();
 		String sql = "SELECT * FROM FN_APP join FN_USER_ROLE ON FN_USER_ROLE.APP_ID=FN_APP.APP_ID where "
 				+ "FN_USER_ROLE.USER_ID=" + user.getId() + " AND FN_USER_ROLE.ROLE_ID=" + ACCOUNT_ADMIN_ROLE_ID
 				+ " AND FN_APP.ENABLED = 'Y'";
 		Mockito.doThrow(new NullPointerException()).when(dataAccessService).executeSQLQuery(sql, EPApp.class, null);
-		Mockito.when(adminRolesServiceImpl.isAccountAdmin(user)).thenReturn(true);
+		Mockito.when(adminRolesServiceImpl.isAccountAdmin(user)).thenReturn(false);
 		List<EPApp> actual = epAppCommonServiceImpl.getUserAsAdminApps(user);
-		assertNull(actual);
+		assertEquals(expected, actual);
 	}
 
 	@Test
 	public void getUserByOrgUserIdAsAdminAppsTest() {
+		EPApp mockApp = mockApp();
+		EPApp mockApp2 = mockApp();
+		mockApp2.setId(2l);
+		EPUser user = mockUser.mockEPUser();
+		List<EPApp> expected = new ArrayList<>();
+		expected.add(mockApp);
+		expected.add(mockApp2);
+		String format = "SELECT * FROM FN_APP app INNER JOIN FN_USER_ROLE userrole ON userrole.APP_ID=app.APP_ID "
+				+ "INNER JOIN FN_USER user on user.USER_ID = userrole.USER_ID "
+				+ "WHERE user.org_user_id = '%s' AND userrole.ROLE_ID=" + ACCOUNT_ADMIN_ROLE_ID
+				+ " AND FN_APP.ENABLED = 'Y'";
+		String sql = String.format(format, user.getOrgUserId());
+		Mockito.when(dataAccessService.executeSQLQuery(sql, EPApp.class, null)).thenReturn(expected);
+		List<EPApp> actual = epAppCommonServiceImpl.getUserByOrgUserIdAsAdminApps(user.getOrgUserId());
+		assertEquals(expected, actual);
+	}
+	
+	@Test
+	public void getUserByOrgUserIdAsAdminAppsTest1() {
 		EPApp mockApp = mockApp();
 		EPApp mockApp2 = mockApp();
 		mockApp2.setId(2l);
@@ -727,6 +758,23 @@ public class EPAppCommonServiceImplTest {
 	}
 
 	@Test
+	public void saveAppsSortPreferenceExceptionTest() {
+		EPUser user = mockUser.mockEPUser();
+		final Map<String, Long> params = new HashMap<>();
+		params.put("userId", user.getId());
+		Mockito.doThrow(new NullPointerException()).when(dataAccessService).executeNamedQuery(Matchers.anyString(), Matchers.anyMap(), Matchers.anyMap());
+		FieldsValidator expected = new FieldsValidator();
+		expected.setHttpStatusCode(500l);
+		//expected.setHttpStatusCode(Long.valueOf(HttpServletResponse.SC_OK));
+		EPAppsSortPreference mockEPAppsSortPreference = new EPAppsSortPreference();
+		mockEPAppsSortPreference.setIndex(1);
+		mockEPAppsSortPreference.setTitle("Last Used");
+		mockEPAppsSortPreference.setValue("L");
+		FieldsValidator actual = epAppCommonServiceImpl.saveAppsSortPreference(mockEPAppsSortPreference, user);
+		assertEquals(expected.getHttpStatusCode(), actual.getHttpStatusCode());
+	}
+	
+	@Test
 	public void getUserAppsSortTypePreferenceTest() {
 		EPUser user = mockUser.mockEPUser();
 		final Map<String, Long> params = new HashMap<>();
@@ -808,5 +856,581 @@ public class EPAppCommonServiceImplTest {
 		FieldsValidator expected = new FieldsValidator();
 		expected.setHttpStatusCode(500l);
 		assertEquals(expected, actual);
+	}
+
+    @SuppressWarnings("unchecked")
+	@Test
+	public void getAppDetailByAppNameTest(){
+		String appName = "test";
+		EPApp expectedResult = mockApp();
+		List<EPApp> appList = new ArrayList<>();
+		appList.add(expectedResult);
+		final Map<String, String> params = new HashMap<String, String>();
+		params.put("appName", expectedResult.getName());
+		Mockito.when((List<EPApp>) dataAccessService.executeNamedQuery("getAppDetailsByAppName", params, null))
+				.thenReturn(appList);
+		EPApp actualResult = epAppCommonServiceImpl.getAppDetailByAppName(appName);
+		assertEquals(expectedResult, actualResult);
+	}
+	
+    @SuppressWarnings("unchecked")
+	@Test
+	public void getAppDetailByAppNameExceptionTest(){
+		String appName = null;
+		EPApp expectedResult = null;
+		List<EPApp> appList = new ArrayList<>();
+		appList.add(expectedResult);
+		final Map<String, String> params = new HashMap<String, String>();
+		params.put("appName", null);
+		Mockito.when((List<EPApp>) dataAccessService.executeNamedQuery("getAppDetailsByAppName", params, null))
+				.thenReturn(appList);
+		EPApp actualResult = epAppCommonServiceImpl.getAppDetailByAppName(appName);
+		assertEquals(expectedResult, actualResult);
+	}
+    
+    @SuppressWarnings("unchecked")
+	@Test
+    public void getAppsForSuperAdminAndAccountAdminTest(){
+    	String sql = "SELECT app.APP_ID, app.APP_NAME, app.APP_TYPE FROM FN_APP app "
+				+ "where app.ENABLED = 'Y' AND app.app_type = 1";
+    	EPUser user = mockUser.mockEPUser();
+    	List<AppIdAndNameTransportModel> expected = null;
+    	Mockito.when(adminRolesServiceImpl.isSuperAdmin(user)).thenReturn(true);
+    	Mockito.when(adminRolesServiceImpl.isAccountAdmin(user)).thenReturn(true);
+    	List<AppIdAndNameTransportModel> actual = null;
+    	Mockito.when((List<AppIdAndNameTransportModel>) dataAccessService.executeSQLQuery(sql, AppIdAndNameTransportModel.class, null))
+																			.thenReturn(actual);
+    	actual = epAppCommonServiceImpl.getAppsForSuperAdminAndAccountAdmin(user);
+    	assertEquals(expected, actual);
+    }
+    
+    @SuppressWarnings("unchecked")
+   	@Test
+       public void getAppsForSuperAdminAndNotAccountAdminTest(){
+       	String sql = "SELECT app.APP_ID, app.APP_NAME, app.APP_TYPE FROM FN_APP app "
+   				+ "where app.ENABLED = 'Y' AND app.app_type = 1";
+       	EPUser user = mockUser.mockEPUser();
+       	List<AppIdAndNameTransportModel> expected = new ArrayList<AppIdAndNameTransportModel>();
+       	Mockito.when(adminRolesServiceImpl.isSuperAdmin(user)).thenReturn(false);
+       	Mockito.when(adminRolesServiceImpl.isAccountAdmin(user)).thenReturn(true);
+       	List<AppIdAndNameTransportModel> actual = null;
+       	Mockito.when((List<AppIdAndNameTransportModel>) dataAccessService.executeSQLQuery(sql, AppIdAndNameTransportModel.class, null))
+   																			.thenReturn(actual);
+       	actual = epAppCommonServiceImpl.getAppsForSuperAdminAndAccountAdmin(user);
+       	assertEquals(expected, actual);
+       }
+    
+    @SuppressWarnings("unchecked")
+	@Test
+    public void getAppsForAdminAndAccountAdminTest(){
+    	String sql = "SELECT app.APP_ID, app.APP_NAME, app.APP_TYPE FROM FN_APP app "
+				+ "where app.ENABLED = 'Y' AND app.app_type = 1";
+    	EPUser user = mockUser.mockEPUser();
+    	List<AppIdAndNameTransportModel> expected = null;
+    	Mockito.when(adminRolesServiceImpl.isSuperAdmin(user)).thenReturn(true);
+    	List<AppIdAndNameTransportModel> actual = null;
+    	Mockito.when((List<AppIdAndNameTransportModel>) dataAccessService.executeSQLQuery(sql, AppIdAndNameTransportModel.class, null))
+																			.thenReturn(actual);
+    	actual = epAppCommonServiceImpl.getAppsForSuperAdminAndAccountAdmin(user);
+    	assertEquals(expected, actual);
+    }
+    
+    @Test
+    public void getAppsForSuperAdminAndAccountAdminExceptionTest(){
+    	String sql = "SELECT app.APP_ID, app.APP_NAME, app.APP_TYPE FROM FN_APP app "
+				+ "where app.ENABLED = 'Y' AND app.app_type = 1";
+    	EPUser user = mockUser.mockEPUser();
+    	List<AppIdAndNameTransportModel> expected = new ArrayList<AppIdAndNameTransportModel>();
+    	Mockito.when(adminRolesServiceImpl.isSuperAdmin(user)).thenReturn(true);
+    	List<AppIdAndNameTransportModel> actual = null;
+    	Mockito.doThrow(new NullPointerException()).when(dataAccessService).executeSQLQuery(sql, AppIdAndNameTransportModel.class, null);
+    	actual = epAppCommonServiceImpl.getAppsForSuperAdminAndAccountAdmin(user);
+    	assertEquals(expected, actual);
+    }
+    
+    @Test
+    public void getDataAccessServiceTest(){
+    	assertEquals(epAppCommonServiceImpl.getDataAccessService(), epAppCommonServiceImpl.getDataAccessService());
+    }
+    
+    @SuppressWarnings("unchecked")
+	@Test
+    public void getAppsAdminsTest(){
+    	List<AdminUserApplications> expected = new ArrayList<AdminUserApplications>();
+    	List<AdminUserApplications> actual = null;
+    	List<AdminUserApp> list = new ArrayList<AdminUserApp>();
+    	Map<String, String> params = new HashMap<>();
+    	params.put("accountAdminRoleId", ACCOUNT_ADMIN_ROLE_ID);
+    	Mockito.when((List<AdminUserApp>) dataAccessService.executeNamedQuery("getAppsAdmins", params, null)).thenReturn(list);
+    	actual = epAppCommonServiceImpl.getAppsAdmins();
+    	assertEquals(expected, actual);
+    }
+    
+    @Test
+    public void getAppsAdminsExceptionTest(){
+    	List<AdminUserApplications> expected = null;
+    	List<AdminUserApplications> actual = null;
+    	Map<String, String> params = new HashMap<>();
+    	params.put("accountAdminRoleId", ACCOUNT_ADMIN_ROLE_ID);
+    	Mockito.doThrow(new NullPointerException()).when(dataAccessService).executeNamedQuery("getAppsAdmins", params, null);
+    	actual = epAppCommonServiceImpl.getAppsAdmins();
+    	assertEquals(expected, actual);
+    }
+    
+	@SuppressWarnings("unchecked")
+	@Test
+    public void getAppsAdminsAggregateResultsTest(){
+    	List<AdminUserApplications> expected = new ArrayList<AdminUserApplications>();
+    	AdminUserApp adminUserApp = new AdminUserApp();
+    	AdminUserApplications adminUserApplications = new AdminUserApplications(adminUserApp);
+    	expected.add(adminUserApplications);
+    	List<AdminUserApplications> actual = null;
+    	List<AdminUserApp> list = new ArrayList<AdminUserApp>();
+    	AdminUserApp adminUserApp1 = new AdminUserApp();
+    	list.add(adminUserApp1);
+    	Map<String, String> params = new HashMap<>();
+    	params.put("accountAdminRoleId", ACCOUNT_ADMIN_ROLE_ID);
+    	Mockito.when((List<AdminUserApp>) dataAccessService.executeNamedQuery("getAppsAdmins", params, null)).thenReturn(list);
+    	actual = epAppCommonServiceImpl.getAppsAdmins();
+    	assertEquals(expected.size(), actual.size());
+    }
+	
+	@SuppressWarnings("unchecked")
+	@Test
+	public void getUserAppsTest(){
+		String sql ="";
+		EPApp epApp = new EPApp();
+		epApp.setOpen(false);
+		List<EPApp> expected = new ArrayList<EPApp>();		
+		List<EPApp> list = new ArrayList<EPApp>();
+		EPUser epUser = new EPUser();
+		list.add(epApp);
+		Mockito.when((List<EPApp>) dataAccessService.executeSQLQuery(sql, EPApp.class, null)).thenReturn(list);
+		List<EPApp> actual = epAppCommonServiceImpl.getUserApps(epUser);
+		assertEquals(expected.size(), actual.size());
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Test
+	public void getUserAppsUserGuestTest(){
+		String sql ="";
+		List<EPApp> expected = new ArrayList<EPApp>();		
+		List<EPApp> list = new ArrayList<EPApp>();
+		EPUser epUser = new EPUser();
+		epUser.setGuest(true);
+		Mockito.when((List<EPApp>) dataAccessService.executeSQLQuery(sql, EPApp.class, null)).thenReturn(list);
+		List<EPApp> actual = epAppCommonServiceImpl.getUserApps(epUser);
+		assertEquals(expected.size(), actual.size());
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Test
+	public void getPersAdminAppsTest(){
+		List<EPApp> expected = new ArrayList<EPApp>();
+		final Map<String, Long> params = new HashMap<>();
+		params.put("userId", (long)123);
+		EPUser epUser = new EPUser();
+		List<EPApp> list = new ArrayList<EPApp>();
+		Mockito.when((List<EPApp>) dataAccessService.executeNamedQuery("getPersAdminApps", params, null)).thenReturn(list);
+		List<EPApp> actual = epAppCommonServiceImpl.getPersAdminApps(epUser);
+		assertEquals(expected, actual);
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Test
+	public void getPersUserAppsTest(){
+		List<EPApp> expected = new ArrayList<EPApp>();
+		EPUser epUser = new EPUser();
+		final Map<String, Long> params = new HashMap<>();
+		params.put("userId", (long)123);
+		List<EPApp> list = new ArrayList<EPApp>();
+		Mockito.when((List<EPApp>) dataAccessService.executeNamedQuery("getPersUserApps", params, null)).thenReturn(list);
+		List<EPApp> actual = epAppCommonServiceImpl.getPersUserApps(epUser);
+		assertEquals(expected, actual);
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Test
+	public void getUserAppCatalogTest(){
+		List<AppCatalogItem> expected = new ArrayList<AppCatalogItem>();
+		EPUser epUser = new EPUser();
+		final Map<String, Long> params = new HashMap<>();
+		params.put("userId", (long)123);
+		List<AppCatalogItem> list = new ArrayList<AppCatalogItem>();
+		Mockito.when((List<AppCatalogItem>) dataAccessService.executeNamedQuery("getUserAppCatalog", params, null)).thenReturn(list);
+		List<AppCatalogItem> actual = epAppCommonServiceImpl.getUserAppCatalog(epUser);
+		assertEquals(expected, actual);
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Test
+	public void getAdminAppCatalogTest(){
+		List<AppCatalogItem> expected = new ArrayList<AppCatalogItem>();
+		EPUser epUser = new EPUser();
+		final Map<String, Long> params = new HashMap<>();
+		params.put("userId", (long)123);
+		List<AppCatalogItem> list = new ArrayList<AppCatalogItem>();
+		Mockito.when((List<AppCatalogItem>) dataAccessService.executeNamedQuery("getAdminAppCatalog", params, null)).thenReturn(list);
+		List<AppCatalogItem> actual = epAppCommonServiceImpl.getAdminAppCatalog(epUser);
+		assertEquals(expected, actual);
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Test
+	public void getAppsOrderByNameTest(){
+		List<EPApp> expected = new ArrayList<EPApp>();
+		EPUser epUser = new EPUser();
+		List<EPApp> list = new ArrayList<EPApp>();
+		final Map<String, Long> params = new HashMap<>();
+		params.put("userId", (long)123);
+		Mockito.when(adminRolesServiceImpl.isSuperAdmin(epUser)).thenReturn(true);
+		Mockito.when((List<EPApp>) dataAccessService.executeNamedQuery("getPersAdminAppsOrderByName", params, null)).thenReturn(list);
+		List<EPApp> actual = epAppCommonServiceImpl.getAppsOrderByName(epUser);
+		assertEquals(expected, actual);
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Test
+	public void getAppsOrderByNameNotSuperAdminTest(){
+		List<EPApp> expected = new ArrayList<EPApp>();
+		EPUser epUser = new EPUser();
+		List<EPApp> list = new ArrayList<EPApp>();
+		final Map<String, Long> params = new HashMap<>();
+		params.put("userId", (long)123);
+		Mockito.when(adminRolesServiceImpl.isSuperAdmin(epUser)).thenReturn(false);
+		Mockito.when((List<EPApp>) dataAccessService.executeNamedQuery("getPersAdminAppsOrderByName", params, null)).thenReturn(list);
+		List<EPApp> actual = epAppCommonServiceImpl.getAppsOrderByName(epUser);
+		assertEquals(expected, actual);
+	}
+	
+	@Test
+	public void getAppsOrderByNameExceptionTest(){
+		List<EPApp> expected = null;
+		EPUser epUser = new EPUser();
+		final Map<String, Long> params = new HashMap<>();
+		params.put("userId", null);
+		Mockito.when(adminRolesServiceImpl.isSuperAdmin(epUser)).thenReturn(true);
+		Mockito.doThrow(new NullPointerException()).when(dataAccessService).executeNamedQuery(Matchers.anyString(), Matchers.anyMap(), Matchers.anyMap());
+		//Mockito.when((List<EPApp>) dataAccessService.executeNamedQuery(Matchers.anyString(), Matchers.anyMap(), Matchers.anyMap())).thenReturn(list);
+		List<EPApp> actual = epAppCommonServiceImpl.getAppsOrderByName(epUser);
+		assertEquals(expected, actual);
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Test
+	public void getAppsOrderByLastUsedTest(){
+		List<EPApp> expected = new ArrayList<EPApp>();
+		EPUser epUser = new EPUser();
+		List<EPApp> list = new ArrayList<EPApp>();
+		final Map<String, Long> params = new HashMap<>();
+		params.put("userId", (long)123);
+		Mockito.when(adminRolesServiceImpl.isSuperAdmin(epUser)).thenReturn(true);
+		Mockito.when((List<EPApp>) dataAccessService.executeNamedQuery("getAdminAppsOrderByLastUsed", params, null)).thenReturn(list);
+		List<EPApp> actual = epAppCommonServiceImpl.getAppsOrderByLastUsed(epUser);
+		assertEquals(expected, actual);		
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Test
+	public void getAppsOrderByLastUsedNotSuperAdminTest(){
+		List<EPApp> expected = new ArrayList<EPApp>();
+		EPUser epUser = new EPUser();
+		List<EPApp> list = new ArrayList<EPApp>();
+		final Map<String, Long> params = new HashMap<>();
+		params.put("userId", (long)123);
+		Mockito.when(adminRolesServiceImpl.isSuperAdmin(epUser)).thenReturn(false);
+		Mockito.when((List<EPApp>) dataAccessService.executeNamedQuery("getAdminAppsOrderByLastUsed", params, null)).thenReturn(list);
+		List<EPApp> actual = epAppCommonServiceImpl.getAppsOrderByLastUsed(epUser);
+		assertEquals(expected, actual);		
+	}
+	
+	@Test
+	public void getAppsOrderByLastUsedExceptionTest(){
+		List<EPApp> expected = new ArrayList<EPApp>();
+		EPUser epUser = new EPUser();
+		final Map<String, Long> params = new HashMap<>();
+		params.put("userId", null);
+		Mockito.doThrow(new NullPointerException()).when(dataAccessService).executeNamedQuery(Matchers.anyString(), Matchers.anyMap(), Matchers.anyMap());
+		List<EPApp> actual = epAppCommonServiceImpl.getAppsOrderByLastUsed(epUser);
+		assertEquals(expected, actual);		
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Test
+	public void getAppsOrderByMostUsedTest(){
+		List<EPApp> expected = new ArrayList<EPApp>();
+		EPUser epUser = new EPUser();
+		List<EPApp> list = new ArrayList<EPApp>();
+		final Map<String, Long> params = new HashMap<>();
+		params.put("userId", (long)123);
+		Mockito.when(adminRolesServiceImpl.isSuperAdmin(epUser)).thenReturn(true);
+		Mockito.when((List<EPApp>) dataAccessService.executeNamedQuery("getAppsOrderByMostUsed", params, null)).thenReturn(list);
+		List<EPApp> actual = epAppCommonServiceImpl.getAppsOrderByMostUsed(epUser);
+		assertEquals(expected, actual);		
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Test
+	public void getAppsOrderByMostUsedNotSuperAdminTest(){
+		List<EPApp> expected = new ArrayList<EPApp>();
+		EPUser epUser = new EPUser();
+		List<EPApp> list = new ArrayList<EPApp>();
+		final Map<String, Long> params = new HashMap<>();
+		params.put("userId", (long)123);
+		Mockito.when(adminRolesServiceImpl.isSuperAdmin(epUser)).thenReturn(false);
+		Mockito.when((List<EPApp>) dataAccessService.executeNamedQuery("getAppsOrderByMostUsed", params, null)).thenReturn(list);
+		List<EPApp> actual = epAppCommonServiceImpl.getAppsOrderByMostUsed(epUser);
+		assertEquals(expected, actual);		
+	}
+	
+	@Test
+	public void getAppsOrderByMostUsedExceptionTest(){
+		List<EPApp> expected = new ArrayList<EPApp>();
+		EPUser epUser = new EPUser();
+		final Map<String, Long> params = new HashMap<>();
+		params.put("userId", null);
+		Mockito.doThrow(new NullPointerException()).when(dataAccessService).executeNamedQuery(Matchers.anyString(), Matchers.anyMap(), Matchers.anyMap());
+		List<EPApp> actual = epAppCommonServiceImpl.getAppsOrderByMostUsed(epUser);
+		assertEquals(expected, actual);		
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Test
+	public void getAppsOrderByManualTest(){
+		List<EPApp> expected = new ArrayList<EPApp>();
+		EPUser epUser = new EPUser();
+		List<EPApp> list = new ArrayList<EPApp>();
+		final Map<String, Long> params = new HashMap<>();
+		params.put("userId", (long)123);
+		Mockito.when(adminRolesServiceImpl.isSuperAdmin(epUser)).thenReturn(true);
+		Mockito.when((List<EPApp>) dataAccessService.executeNamedQuery("getAdminAppsOrderByManual", params, null)).thenReturn(list);
+		List<EPApp> actual = epAppCommonServiceImpl.getAppsOrderByManual(epUser);
+		assertEquals(expected, actual);	
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Test
+	public void getAppsOrderByManualSuperAdminTest(){
+		List<EPApp> expected = new ArrayList<EPApp>();
+		EPUser epUser = new EPUser();
+		List<EPApp> list = new ArrayList<EPApp>();
+		final Map<String, Long> params = new HashMap<>();
+		params.put("userId", (long)123);
+		Mockito.when(adminRolesServiceImpl.isSuperAdmin(epUser)).thenReturn(false);
+		Mockito.when((List<EPApp>) dataAccessService.executeNamedQuery("getAdminAppsOrderByManual", params, null)).thenReturn(list);
+		List<EPApp> actual = epAppCommonServiceImpl.getAppsOrderByManual(epUser);
+		assertEquals(expected, actual);	
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Test
+	public void getAppsOrderByManualExceptionTest(){
+		List<EPApp> expected = new ArrayList<EPApp>();
+		EPUser epUser = new EPUser();
+		List<EPApp> list = new ArrayList<EPApp>();
+		final Map<String, Long> params = new HashMap<>();
+		params.put("userId", null);
+		Mockito.when(adminRolesServiceImpl.isSuperAdmin(epUser)).thenReturn(true);
+		Mockito.doThrow(new NullPointerException()).when(dataAccessService).executeNamedQuery(Matchers.anyString(), Matchers.anyMap(), Matchers.anyMap());
+		List<EPApp> actual = epAppCommonServiceImpl.getAppsOrderByManual(epUser);
+		assertEquals(expected, actual);	
+	}
+	
+	@SuppressWarnings("deprecation")
+	@Test
+	public void getOnboardingAppsTest(){
+		List<EPApp> apps = new ArrayList<EPApp>();
+		List<OnboardingApp> expected = new ArrayList<OnboardingApp>();
+		Mockito.when(dataAccessService.getList(EPApp.class, " where id!=" + ECOMP_APP_ID, null, null)).thenReturn(apps);
+		List<OnboardingApp> actual = epAppCommonServiceImpl.getOnboardingApps();
+		assertEquals(expected, actual);	
+	}
+	
+	@Test
+	public void getEnabledNonOpenOnboardingAppsTest(){
+		List<OnboardingApp> expected = new ArrayList<OnboardingApp>();
+		List<OnboardingApp> actual = epAppCommonServiceImpl.getEnabledNonOpenOnboardingApps();
+		assertEquals(expected, actual);	
+	}
+	
+	@Test
+	public void addOnboardingAppTest(){
+		FieldsValidator expected = new FieldsValidator();
+		expected.setHttpStatusCode(400l);
+		EPUser epUser = new EPUser();
+		OnboardingApp onboardingApp = new OnboardingApp();
+		onboardingApp.setRestrictedApp(true);
+		FieldsValidator actual = epAppCommonServiceImpl.addOnboardingApp(onboardingApp, epUser);
+		assertEquals(expected.getHttpStatusCode(), actual.getHttpStatusCode());	
+	}
+	
+	@Test
+	public void deleteOnboardingAppTest(){
+		FieldsValidator expected = new FieldsValidator();
+		expected.setHttpStatusCode(403l);
+		EPUser epUser = new EPUser();
+		Long appId = (long) 123;
+		OnboardingApp onboardingApp = new OnboardingApp();
+		onboardingApp.setRestrictedApp(true);
+		FieldsValidator actual = epAppCommonServiceImpl.deleteOnboardingApp(epUser, appId);
+		assertEquals(expected.getHttpStatusCode(), actual.getHttpStatusCode());	
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Test
+	public void deleteOnboardingAppSuperAdminTest(){
+		FieldsValidator expected = new FieldsValidator();
+		expected.setHttpStatusCode(200l);
+		EPUser epUser = new EPUser();
+		Long appId = (long) 123;
+		OnboardingApp onboardingApp = new OnboardingApp();
+		onboardingApp.setRestrictedApp(true);
+		Mockito.when(adminRolesServiceImpl.isSuperAdmin(epUser)).thenReturn(true);
+		final Map<String, Long> params = new HashMap<>();
+		params.put("app_id", (long)123);
+		EPUserAppRolesRequest epUserAppRolesRequest = new EPUserAppRolesRequest();
+		epUserAppRolesRequest.setUserId((long)123);
+		List<EPUserAppRolesRequest> list= new ArrayList<>();
+		list.add(epUserAppRolesRequest);
+		Mockito.when((List<EPUserAppRolesRequest>) dataAccessService.executeNamedQuery("getRequestIdsForApp", params, null)).thenReturn(list);
+		FieldsValidator actual = epAppCommonServiceImpl.deleteOnboardingApp(epUser, appId);
+		assertEquals(expected.getHttpStatusCode(), actual.getHttpStatusCode());	
+	}
+	
+	@Test(expected=NullPointerException.class)
+	public void deleteOnboardingAppExceptionTest(){
+		FieldsValidator expected = new FieldsValidator();
+		expected.setHttpStatusCode(200l);
+		EPUser epUser = new EPUser();
+		//Long appId = (long) 123;
+		List<EPUserAppRolesRequest> epUserAppRolesRequestList= new ArrayList<>();
+		OnboardingApp onboardingApp = new OnboardingApp();
+		onboardingApp.setRestrictedApp(true);
+		Mockito.when(adminRolesServiceImpl.isSuperAdmin(epUser)).thenReturn(true);
+		final Map<String, Long> params = new HashMap<>();
+		params.put("app_id", null);
+		Mockito.when(dataAccessService.executeNamedQuery(Matchers.anyString(), Matchers.anyMap(), Matchers.anyMap())).thenThrow(nullPointerException);
+		Mockito.when(dataAccessService.executeNamedQuery( "getRequestIdsForApp", params, null)).thenReturn(epUserAppRolesRequestList);
+		//Mockito.doThrow(new NullPointerException()).when(dataAccessService).executeNamedQuery(Matchers.anyString(), Matchers.anyMap(), Matchers.anyMap());
+		FieldsValidator actual = epAppCommonServiceImpl.deleteOnboardingApp(epUser, null);
+		assertEquals(expected.getHttpStatusCode(), actual.getHttpStatusCode());	
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Test
+	public void saveAppsSortManualAppIdNullTest(){
+		List<EPUserAppsManualSortPreference> epUserAppsManualSortPreferenceList = new ArrayList<EPUserAppsManualSortPreference>();
+		EPAppsManualPreference epAppsManualPreference = new EPAppsManualPreference();
+		epAppsManualPreference.setAddRemoveApps(true);
+		epAppsManualPreference.setAppid((long)123);
+		FieldsValidator expected = new FieldsValidator();
+		expected.setHttpStatusCode(200l);
+		final Map<String, Long> params = new HashMap<>();
+		params.put("userId", (long)123);
+		EPUser epUser = new EPUser();
+		List<EPAppsManualPreference> list = new ArrayList<EPAppsManualPreference>();
+		list.add(epAppsManualPreference);
+		Mockito.when(dataAccessService.executeNamedQuery("userAppsManualSortPrfQuery", params, null)).thenReturn(epUserAppsManualSortPreferenceList);
+		FieldsValidator actual = epAppCommonServiceImpl.saveAppsSortManual(list, epUser);
+		assertEquals(expected.getHttpStatusCode(), actual.getHttpStatusCode());
+	}
+	
+	@Test
+	public void saveAppsSortManualExceptionTest(){
+		FieldsValidator expected = new FieldsValidator();
+		expected.setHttpStatusCode(500l);
+		final Map<String, Long> params = new HashMap<>();
+		params.put("userId", (long)123);
+		EPUser epUser = new EPUser();
+		List<EPAppsManualPreference> list = new ArrayList<EPAppsManualPreference>();
+		Mockito.doThrow(new NullPointerException()).when(dataAccessService).executeNamedQuery(Matchers.anyString(), Matchers.anyMap(), Matchers.anyMap());
+		FieldsValidator actual = epAppCommonServiceImpl.saveAppsSortManual(list, epUser);
+		assertEquals(expected.getHttpStatusCode(), actual.getHttpStatusCode());
+	}
+	
+	@Test
+	public void getUserProfileForLeftMenuNullListTest(){
+		UserRole userRole =new UserRole();
+		userRole.setFirstName("test");
+		UserRoles  expected = null;
+		UserRoles  actual = epAppCommonServiceImpl.getUserProfileForLeftMenu("123");
+		assertEquals(expected, actual);
+	}
+	
+	@Test
+	public void getUserProfileForLeftMenuTest(){		
+		final Map<String, String> params = new HashMap<>();
+		params.put("org_user_id", "test");
+		UserRole userRole =new UserRole();
+		userRole.setFirstName("test");
+		UserRoles  expected = null;
+		List<UserRole> list = new ArrayList<UserRole>();
+		list.add(userRole);
+		Mockito.when(dataAccessService.executeNamedQuery( "getUserRolesForLeftMenu", params, null)).thenReturn(list);
+		UserRoles  actual = epAppCommonServiceImpl.getUserProfileForLeftMenu("123");
+		assertEquals(expected, actual);
+	}
+	
+	@Test
+	public void getUserProfileForRolesLeftMenuNullListTest(){
+		UserRoles expected = null;
+		List<UserRole> userRoleList = new ArrayList<UserRole>();
+		final Map<String, String> params = new HashMap<>();
+		params.put("org_user_id", "test");
+		Mockito.when(dataAccessService.executeNamedQuery( "getRolesForLeftMenu", params, null)).thenReturn(userRoleList);
+		UserRoles  actual = epAppCommonServiceImpl.getUserProfileForRolesLeftMenu("test");
+		assertEquals(expected, actual);
+	}
+	
+	@Test
+	public void getUserProfileForRolesLeftMenuTest(){		
+		UserRole userRole = new UserRole();
+		userRole.setRoleId((long)123);
+		userRole.setOrgUserId("test");
+		userRole.setUser_Id((long)1);
+		List<UserRole> userRoleList = new ArrayList<UserRole>();
+		userRoleList.add(userRole);
+		UserRoles expected = new UserRoles(userRole);
+		final Map<String, String> params = new HashMap<>();
+		params.put("org_user_id", "test");
+		Mockito.when(dataAccessService.executeNamedQuery( "getRolesForLeftMenu", params, null)).thenReturn(userRoleList);
+		UserRoles  actual = epAppCommonServiceImpl.getUserProfileForRolesLeftMenu("test");
+		assertEquals(expected.getOrgUserId(), actual.getOrgUserId());
+	}
+	
+	@Test
+	public void getUserProfileNormalizedForLeftMenuNullListTest(){
+		EPUser epUser = new EPUser();
+		List<String> list = new ArrayList<String>();
+		list.add("Guest");
+		UserRole userRole = new UserRole();
+		userRole.setFirstName("GuestT");
+		userRole.setLastName("GuestT");
+		userRole.setOrgUserId("guestT");
+		userRole.setRoleId(1l);
+		userRole.setRoleName("Test");
+		userRole.setUser_Id(-1l);
+		UserRoles expected = new UserRoles(userRole);
+		expected.setRoles(list);
+		UserRoles actual = epAppCommonServiceImpl.getUserProfileNormalizedForLeftMenu(epUser);
+		assertEquals(expected.getRoles(), actual.getRoles());
+	}
+	
+	@Test
+	public void getUserProfileNormalizedForRolesLeftMenuTest(){
+		EPUser epUser = new EPUser();
+		List<String> list = new ArrayList<String>();
+		list.add("Guest");
+		UserRole userRole = new UserRole();
+		userRole.setFirstName("GuestT");
+		userRole.setLastName("GuestT");
+		userRole.setOrgUserId("guestT");
+		userRole.setRoleId(1l);
+		userRole.setRoleName("Test");
+		userRole.setUser_Id(-1l);
+		UserRoles expected = new UserRoles(userRole);
+		expected.setRoles(list);
+		UserRoles actual = epAppCommonServiceImpl.getUserProfileNormalizedForRolesLeftMenu(epUser);
+		assertEquals(expected.getRoles(), actual.getRoles());
 	}
 }

@@ -64,15 +64,18 @@ import org.onap.portalapp.portal.domain.EPUser;
 import org.onap.portalapp.portal.exceptions.RoleFunctionException;
 import org.onap.portalapp.portal.framework.MockitoTestSuite;
 import org.onap.portalapp.portal.service.EPRoleFunctionServiceCentralizedImpl;
+import org.onap.portalapp.portal.utils.EPCommonSystemProperties;
+import org.onap.portalapp.portal.utils.EcompPortalUtils;
+import org.onap.portalapp.util.EPUserUtils;
 import org.onap.portalsdk.core.domain.RoleFunction;
 import org.onap.portalsdk.core.service.DataAccessService;
 import org.onap.portalsdk.core.util.SystemProperties;
+import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest(SystemProperties.class)
-@Ignore
+@PrepareForTest({EcompPortalUtils.class})
 public class EPRoleFunctionServiceCentralizedImplTest {
 
 	
@@ -96,7 +99,7 @@ public class EPRoleFunctionServiceCentralizedImplTest {
 
 	HttpServletRequest mockedRequest = mockitoTestSuite.getMockedRequest();
 	
-	@Test(expected = NullPointerException.class)
+	@Test
 	public void getRoleFunctions()
 	{
 		List<CentralV2RoleFunction> getRoleFuncList = new ArrayList<>();
@@ -107,6 +110,7 @@ public class EPRoleFunctionServiceCentralizedImplTest {
 		getRoleFuncListOfPortal.add(roleFunction);
 		final Map<String, Long> params = new HashMap<>();
 		params.put("appId", (long) 1);
+		PowerMockito.mockStatic(EcompPortalUtils.class);
 		Mockito.when(dataAccessService.executeNamedQuery("getAllRoleFunctions", params, null)).thenReturn(getRoleFuncList);
 		List<RoleFunction> expectedGetRoleFuncListOfPortal = ePRoleFunctionServiceCentralizedImpl.getRoleFunctions();
 		assertEquals(expectedGetRoleFuncListOfPortal.size(),getRoleFuncListOfPortal.size());

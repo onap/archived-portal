@@ -188,6 +188,21 @@ public class AdminRolesServiceImplTest {
 		AppsListWithAdminRole  actual = adminRolesServiceImpl.getAppsWithAdminRoleStateForUser(user.getOrgUserId());
 		assertNotNull(actual);
 	}
+	
+	@Test
+	public void getAppsWithAdminRoleStateForUserTestWithException() {
+		EPUser user = mockUser.mockEPUser();
+		EPApp app = mockApp();
+		app.setId(1l);
+		List<EPUser> users = new ArrayList<>();
+		users.add(user);
+		Map<String, String> userParams = new HashMap<>();
+		userParams.put("org_user_id", user.getOrgUserId());
+		Mockito.when(dataAccessService.executeNamedQuery("getEPUserByOrgUserId", userParams, null)).thenReturn(users);
+		AppsListWithAdminRole  actual = adminRolesServiceImpl.getAppsWithAdminRoleStateForUser(user.getOrgUserId());
+
+		
+	}
 
 	@SuppressWarnings({ "deprecation", "unchecked" })
 	@Test

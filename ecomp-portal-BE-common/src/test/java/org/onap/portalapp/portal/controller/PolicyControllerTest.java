@@ -143,6 +143,56 @@ public class PolicyControllerTest {
 
 	}
 	
+	@SuppressWarnings("unchecked")
+	@Test
+	public void getPolicyInfoTestException() throws Exception {
 
+		JSONObject jsonObject = Mockito.mock(JSONObject.class);
+		PowerMockito.mockStatic(SchedulerAuxRestInterfaceFactory.class);
+		PowerMockito.mockStatic(SchedulerProperties.class);
+		SchedulerAuxRestInterfaceIfc policyRestInterface = Mockito.mock(SchedulerAuxRestInterfaceIfc.class);
+		PowerMockito.mockStatic(SchedulerAuxUtil.class);
+		// RestObject restObj=Mockito.mock(RestObject.class);
+		SchedulerAuxResponseWrapper policyWrapper = Mockito.mock(SchedulerAuxResponseWrapper.class);
+		PowerMockito.when(SchedulerAuxUtil.wrapResponse(Matchers.any(RestObject.class))).thenReturn(policyWrapper);
+		Mockito.when(policyWrapper.getResponse()).thenReturn("Success");
+		Mockito.when(policyWrapper.getStatus()).thenReturn(200);
+
+		PowerMockito.when(SchedulerAuxRestInterfaceFactory.getInstance()).thenReturn(policyRestInterface);
+		/*Mockito.doNothing().when(policyRestInterface).Post(Matchers.anyString(), Matchers.anyObject(),
+				Matchers.anyString(), Matchers.anyString(), Matchers.anyObject());*/
+		Mockito.doThrow(new NullPointerException()).when(policyRestInterface).Post(Matchers.anyString(), Matchers.anyObject(),
+				Matchers.anyString(), Matchers.anyString(), Matchers.anyObject());
+
+
+		ResponseEntity<String> responsePolicy = policyController.getPolicyInfo(mockedRequest);
+		Assert.assertEquals(responsePolicy.getStatusCode(), HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void getPolicyInfoTestException1() throws Exception {
+
+		JSONObject jsonObject = Mockito.mock(JSONObject.class);
+		PowerMockito.mockStatic(SchedulerAuxRestInterfaceFactory.class);
+		PowerMockito.mockStatic(SchedulerProperties.class);
+		SchedulerAuxRestInterfaceIfc policyRestInterface = Mockito.mock(SchedulerAuxRestInterfaceIfc.class);
+		PowerMockito.mockStatic(SchedulerAuxUtil.class);
+		// RestObject restObj=Mockito.mock(RestObject.class);
+		SchedulerAuxResponseWrapper policyWrapper = Mockito.mock(SchedulerAuxResponseWrapper.class);
+		PowerMockito.when(SchedulerAuxUtil.wrapResponse(Matchers.any(RestObject.class))).thenReturn(policyWrapper);
+		Mockito.when(policyWrapper.getResponse()).thenReturn("Bad Request");
+		Mockito.when(policyWrapper.getStatus()).thenReturn(400);
+
+		PowerMockito.when(SchedulerAuxRestInterfaceFactory.getInstance()).thenReturn(policyRestInterface);
+		Mockito.doNothing().when(policyRestInterface).Post(Matchers.anyString(), Matchers.anyObject(),
+				Matchers.anyString(), Matchers.anyString(), Matchers.anyObject());
+		/*Mockito.doThrow(new NullPointerException()).when(policyRestInterface).Post(Matchers.anyString(), Matchers.anyObject(),
+				Matchers.anyString(), Matchers.anyString(), Matchers.anyObject());*/
+
+
+		ResponseEntity<String> responsePolicy = policyController.getPolicyInfo(mockedRequest);
+		Assert.assertEquals(responsePolicy.getStatusCode(), HttpStatus.BAD_REQUEST);
+	}
 
 }

@@ -2,7 +2,7 @@
  * ============LICENSE_START==========================================
  * ONAP Portal
  * ===================================================================
- * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2018 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
@@ -38,6 +38,8 @@
 package org.onap.portalapp.portal.transport;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Test;
 import org.onap.portalapp.portal.transport.CentralApp;
 import org.onap.portalapp.portal.transport.CentralV2Role;
@@ -68,11 +70,27 @@ public class CentralUserAppTest {
 		CentralApp app1 = new CentralApp((long)1, null, null, (long)1, (long)1, (long)1, "test", "test", "test", "test", "test", "test", "test", "test", "test", 
 				"test", "test", "test", "test", null, "test", "test", "test", "test");
 		
+		
 		CentralV2Role role1 = new CentralV2Role();
 		
 		assertEquals(centralV2UserApp.getUserId(), new Long(1));
 		assertEquals(centralV2UserApp.getPriority(), new Short((short) 123));
 		assertEquals(centralV2UserApp.getApp(), app1);
 		assertEquals(centralV2UserApp.getRole(), role1);
+	}
+	
+	@Test
+	public void unt_hashCodeTest(){
+		AppCatalogPersonalization appCatalogPersonalization=new AppCatalogPersonalization();
+		appCatalogPersonalization.setAppId(123L);
+		appCatalogPersonalization.setPending(true);
+		appCatalogPersonalization.setSelect(true);
+		AppCatalogPersonalization appCatalogPersonalization1 = new AppCatalogPersonalization();
+		appCatalogPersonalization1.setAppId(123L);
+		appCatalogPersonalization1.setPending(true);
+		appCatalogPersonalization1.setSelect(true);
+		assertEquals(appCatalogPersonalization.hashCode(), appCatalogPersonalization1.hashCode());
+		assertTrue(appCatalogPersonalization.equals(appCatalogPersonalization1));
+		
 	}
 }

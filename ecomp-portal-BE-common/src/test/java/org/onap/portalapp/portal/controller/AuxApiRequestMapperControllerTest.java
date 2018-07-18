@@ -113,6 +113,19 @@ public class AuxApiRequestMapperControllerTest {
 		Mockito.when(mockedRequest.getMethod()).thenReturn("GET");
 		assertNull(auxApiRequestMapperController.getUser(mockedRequest, mockedResponse, "test12"));
 	}
+	
+	@Test
+	public void getUserTestWithException() throws Exception {
+		Mockito.when(mockedRequest.getRequestURI()).thenReturn("/auxapi/v3/roles");
+		Mockito.when(mockedRequest.getHeader("MinorVersion")).thenReturn("0");
+		Map<String, Object> beans = new HashMap<>();
+		beans.put("bean1", rolesController);
+		Mockito.when(context.getBeansWithAnnotation(ApiVersion.class)).thenReturn(beans);
+		PowerMockito.mockStatic(AopUtils.class);
+		Mockito.when(AopUtils.isAopProxy(Matchers.anyObject())).thenReturn(false);
+		Mockito.when(mockedRequest.getMethod()).thenReturn("GET");
+		assertNull(auxApiRequestMapperController.getUser(mockedRequest, mockedResponse, "test12"));
+	}
 
 	@Test
 	public void getRolesTest() throws Exception {

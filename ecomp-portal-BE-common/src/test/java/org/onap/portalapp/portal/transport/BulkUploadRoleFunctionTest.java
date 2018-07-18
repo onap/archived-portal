@@ -68,5 +68,9 @@ public class BulkUploadRoleFunctionTest {
 		assertEquals(bulkUploadRoleFunction.hashCode(), bulkUploadRoleFunction1.hashCode());
 		assertTrue(bulkUploadRoleFunction.equals(bulkUploadRoleFunction1));
 		
+		BulkUploadRoleFunction bulkUploadRoleFunction2=new BulkUploadRoleFunction();
+		assertFalse(bulkUploadRoleFunction2.equals(bulkUploadRoleFunction1));
+		assertNotEquals(bulkUploadRoleFunction2.hashCode(), bulkUploadRoleFunction1.hashCode());
+		
 	}
 }

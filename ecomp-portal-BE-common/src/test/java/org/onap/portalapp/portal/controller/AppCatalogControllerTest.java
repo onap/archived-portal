@@ -277,5 +277,62 @@ public class AppCatalogControllerTest extends MockitoTestSuite {
 		assertEquals(expectedFieldValidator, actualFieldValidator);
 
 	}
+	
+	@Test
+	public void putAppCatalogSelectionTestWithException() throws IOException {
+
+		AppCatalogPersonalization persRequest = new AppCatalogPersonalization();
+		persRequest.setAppId((long) 1);
+		persRequest.setPending(false);
+		persRequest.setSelect(false);
+
+		EPUser user = mockUser.mockEPUser();
+
+		FieldsValidator expectedFieldValidator = new FieldsValidator();
+
+		FieldsValidator actualFieldValidator = new FieldsValidator();
+		List<FieldName> fields = new ArrayList<>();
+		;
+
+		expectedFieldValidator.setHttpStatusCode((long) 200);
+		expectedFieldValidator.setFields(fields);
+		expectedFieldValidator.setErrorCode(null);
+
+		EPApp app = new EPApp();
+
+		app.setName("Test");
+		app.setImageUrl("test");
+		app.setDescription("test");
+		app.setNotes("test");
+		app.setUrl("test");
+		app.setId((long) 1);
+		app.setAppRestEndpoint("test");
+		app.setAlternateUrl("test");
+		app.setName("test");
+		app.setMlAppName("test");
+		app.setMlAppAdminId("test");
+		app.setUsername("test");
+		app.setAppPassword("test");
+		app.setOpen(false);
+		app.setEnabled(false);
+		app.setUebKey("test");
+		app.setUebSecret("test");
+		app.setUebTopicName("test");
+		app.setAppType(1);
+
+		Mockito.when(appService.getApp(persRequest.getAppId())).thenReturn(app);
+
+		HttpSession session = mockedRequest.getSession();
+		session.setAttribute(SystemProperties.getProperty(SystemProperties.USER_ATTRIBUTE_NAME), user);
+
+		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
+		Mockito.doNothing().when(persUserAppService).setPersUserAppValue(user, null, persRequest.getSelect(),
+				persRequest.getPending());
+
+		actualFieldValidator = appCatalogController.putAppCatalogSelection(mockedRequest, persRequest, mockedResponse);
+
+		assertEquals(expectedFieldValidator, actualFieldValidator);
+
+	}
 
 }
