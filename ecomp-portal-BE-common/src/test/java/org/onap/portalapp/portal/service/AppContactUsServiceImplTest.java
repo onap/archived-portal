@@ -49,6 +49,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -66,16 +67,10 @@ public class AppContactUsServiceImplTest {
 
 	
      @Mock
-	 DataAccessService dataAccessService = new DataAccessServiceImpl();
+	 DataAccessService dataAccessService ;
     
      @Mock
-     AppContactUsService AppContactUsService = new AppContactUsServiceImpl();
-     
-     @Before
- 	public void setup() {
- 		MockitoAnnotations.initMocks(this);
- 	}
- 	
+     AppContactUsService AppContactUsService ;
      @InjectMocks
      AppContactUsServiceImpl appContactUsServiceImpl = new AppContactUsServiceImpl();
 
@@ -83,6 +78,13 @@ public class AppContactUsServiceImplTest {
 
  	HttpServletRequest mockedRequest = mockitoTestSuite.getMockedRequest();
  	HttpServletResponse mockedResponse = mockitoTestSuite.getMockedResponse();
+     
+     @Before
+ 	public void setup() {
+ 		MockitoAnnotations.initMocks(this);
+ 	}
+ 	
+   
  	NullPointerException nullPointerException = new NullPointerException();
  	
  	
@@ -140,6 +142,7 @@ public class AppContactUsServiceImplTest {
  		assertEquals(expectedcontactUsItemList, contactUsItemList); 		
  	}
  	
+ 	
  	@Test
  	public void getAppCategoryFunctionsTest() throws Exception
  	{
@@ -172,13 +175,39 @@ public class AppContactUsServiceImplTest {
 		appContactUsServiceImpl.saveAppContactUs(contactUsModelList);
  	}
  	
+ 	@Test
+ 	public void saveAppContacts()throws Exception {
+ 		
+ 		List<AppContactUsItem> contactUsModelList = new ArrayList<>();
+ 		AppContactUsItem appContactUsItem= new AppContactUsItem();
+ 		appContactUsItem.setAppId((long) 1);
+ 		contactUsModelList.add(appContactUsItem);
+ 		HashMap<String, Object> map = new HashMap<String, Object>();
+ 		
+ 		Mockito.when(dataAccessService.getDomainObject(AppContactUs.class,
+						appContactUsItem.getAppId(), map)).thenReturn(appContactUsItem);
+ 		
+ 		Mockito.when(dataAccessService.getDomainObject(EPApp.class, appContactUsItem.getAppId(), map)).thenReturn(getApp());
+ 		appContactUsServiceImpl.saveAppContactUs(contactUsModelList);
+ 	}
+ 	
  	@Test(expected = java.lang.NullPointerException.class)
- 	public void deleteContactUsTest() throws Exception
+ 	public void deleteContactUs_error_Test() throws Exception
  	{
  		HashMap<String, Object> map = new HashMap<String, Object>();
 		AppContactUs contactUs = new AppContactUs();
 		Mockito.when((AppContactUs) dataAccessService.getDomainObject(AppContactUs.class, 1, map)).thenReturn(contactUs);
 		appContactUsServiceImpl.deleteContactUs((long) 1);
+ 	}
+ 	@Test(expected=Exception.class)
+ 	public void deleteContactUsTest()throws Exception {
+ 		HashMap<String, Object> map = new HashMap<String, Object>();
+ 		
+ 		AppContactUs contactUs = new AppContactUs();
+ 		contactUs.setId(1l);
+ 		Mockito.when(dataAccessService.getDomainObject(AppContactUs.class,
+ 				contactUs.getId(), map)).thenReturn(contactUs);
+ 		appContactUsServiceImpl.deleteContactUs(	contactUs.getId());
  	}
  	
 }

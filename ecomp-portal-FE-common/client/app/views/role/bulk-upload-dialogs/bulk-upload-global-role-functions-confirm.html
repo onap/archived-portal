@@ -33,7 +33,7 @@
  
   ============LICENSE_END============================================
  
-  ECOMP is a trademark and service mark of AT&T Intellectual Property.
+  
   -->
 <div>
 	<div class="b2b-modal-header">
@@ -50,8 +50,13 @@
 		<div class="upload-instructions" ng-show="isProcessing">
 			{{progressMsg}} <br> <br> <span class="ecomp-spinner"></span>
 		</div>
+		
+		<div class="upload-instructions"
+				ng-show="isProcessedRecords">
+				{{conformMsg}}
+			</div>
 
-		<div ng-hide="isProcessing">
+		<div ng-hide="isProcessing || isProcessedRecords">
 			<div class="upload-instructions">Click OK to upload the valid
 				requests. Invalid requests will be ignored.</div>
 			<div class="c-ecomp-portal-abs-table default"
@@ -109,6 +114,7 @@
 		<div class="cta-button-group in">
 			<button id="bulk-user-ok-button" class="btn btn-alt btn-small"
 				ng-class="{disabled: isValidating}"
+				ng-disabled="isProcessedRecords"
 				ng-click="updateGlobalRoleFunctionsInDB()">Ok</button>
 			<button id="bulk-user-cancel-button" class="btn btn-alt btn-small"
 				ng-click="$dismiss('cancel')">Cancel</button>

@@ -38,6 +38,7 @@
 package org.onap.portalapp.portal.transport;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
@@ -46,12 +47,51 @@ import org.onap.portalapp.portal.transport.CentralV2Role;
 import org.onap.portalapp.portal.transport.CentralV2UserApp;
 
 public class CentralUserAppTest {
+	
+	private static final Long ID=1l;
+	private static final String TEST="test";
+	
+	private CentralUserApp buildCentralUserApp() {
+		CentralUserApp app=new CentralUserApp();
+		app.setUserId(ID);
+		app.setPriority((short)1);
+		CentralApp centralApp=new CentralApp();
+		centralApp.setName(TEST);
+		CentralRole role=new CentralRole();
+		role.setName(TEST);
+		app.setApp(centralApp);
+		app.setRole(role);
+		
+		return app;
+	}
+	
+	
+	@Test
+	public void test() {
+		CentralUserApp app1=buildCentralUserApp();
+		CentralUserApp app=new CentralUserApp();
+		app.setApp(app1.getApp());
+		app.setPriority(app1.getPriority());
+		app.setRole(app1.getRole());
+		app.setUserId(app1.getUserId());
+		assertEquals(app.hashCode(), app1.hashCode());
+		app.compareTo(app1);
+		assertTrue(app.equals(app1));
+		assertFalse(app.equals(null));
+		app.setRole(null);
+		assertFalse(app.equals(app1));
+		app.setRole(app1.getRole());
+		app.getRole().setName("test2");
+		
+		assertTrue(app.equals(app1));
+		
+	}
 
 	public CentralV2UserApp mockCentralUserApp(){
 		CentralV2UserApp centralV2UserApp = new CentralV2UserApp();
 				
-		CentralApp app = new CentralApp((long)1, null, null, (long)1, (long)1, (long)1, "test", "test", "test", "test", "test", "test", "test", "test", "test", 
-				"test", "test", "test", "test", null, "test", "test", "test", "test");
+		CentralApp app = new CentralApp((long)1, null, null,ID,ID,ID, TEST, TEST, TEST, TEST, TEST, TEST, TEST, TEST, TEST, 
+				TEST, TEST, TEST, TEST, null, TEST, TEST, TEST, TEST);
 		
 		CentralV2Role role = new CentralV2Role();
 		 
@@ -63,12 +103,14 @@ public class CentralUserAppTest {
 		return centralV2UserApp;
 	}
 	
+	
+	
 	@Test
 	public void centralUserAppTest(){
 		CentralV2UserApp centralV2UserApp = mockCentralUserApp();
 		
-		CentralApp app1 = new CentralApp((long)1, null, null, (long)1, (long)1, (long)1, "test", "test", "test", "test", "test", "test", "test", "test", "test", 
-				"test", "test", "test", "test", null, "test", "test", "test", "test");
+		CentralApp app1 = new CentralApp((long)1, null, null,ID,ID,ID, TEST, TEST, TEST, TEST, TEST, TEST, TEST, TEST, TEST, 
+				TEST, TEST, TEST, TEST, null, TEST, TEST, TEST, TEST);
 		
 		
 		CentralV2Role role1 = new CentralV2Role();

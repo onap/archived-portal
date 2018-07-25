@@ -2,7 +2,7 @@
  * ============LICENSE_START==========================================
  * ONAP Portal
  * ===================================================================
- * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2017-2018 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
@@ -38,15 +38,17 @@
 package org.onap.portalapp.portal.logging.aop;
 
 import java.net.InetAddress;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.onap.portalapp.portal.domain.EPApp;
 import org.onap.portalapp.portal.domain.EPUser;
+import org.onap.portalapp.portal.service.AppsCacheService;
 import org.onap.portalapp.portal.utils.EPCommonSystemProperties;
+import org.onap.portalapp.portal.utils.EcompPortalUtils;
 import org.onap.portalapp.util.EPUserUtils;
 import org.onap.portalsdk.core.exception.SessionExpiredException;
 import org.onap.portalsdk.core.logging.format.AlarmSeverityEnum;
@@ -56,6 +58,7 @@ import org.onap.portalsdk.core.util.SystemProperties;
 import org.onap.portalsdk.core.util.SystemProperties.SecurityEventTypeEnum;
 import org.onap.portalsdk.core.web.support.UserUtils;
 import org.slf4j.MDC;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.att.eelf.configuration.Configuration;
 
@@ -63,6 +66,9 @@ import com.att.eelf.configuration.Configuration;
 public class EPEELFLoggerAdvice {
 
 	private EELFLoggerDelegate adviceLogger = EELFLoggerDelegate.getLogger(EPEELFLoggerAdvice.class);
+	
+	@Autowired
+	AppsCacheService appCacheService;
 
 	/**
 	 * DateTime Format according to the ONAP Application Logging Guidelines.
@@ -166,7 +172,11 @@ public class EPEELFLoggerAdvice {
 			String requestId = UUID.randomUUID().toString();
 			MDC.put(Configuration.MDC_KEY_REQUEST_ID, requestId);
 		}
-		MDC.put(EPCommonSystemProperties.PARTNER_NAME, "Unknown");
+
+		if (MDC.get(EPCommonSystemProperties.PARTNER_NAME) == null|| MDC.get(EPCommonSystemProperties.PARTNER_NAME).isEmpty()){
+			MDC.put(EPCommonSystemProperties.PARTNER_NAME, "Unknown");
+		}
+		
 		MDC.put(Configuration.MDC_SERVICE_NAME, EPCommonSystemProperties.ECOMP_PORTAL_BE);
 
 
@@ -310,62 +320,18 @@ public class EPEELFLoggerAdvice {
 					&& securityEventType != SecurityEventTypeEnum.LDAP_PHONEBOOK_USER_SEARCH
 					&& securityEventType != SecurityEventTypeEnum.INCOMING_UEB_MESSAGE) {
 				// Load the RequestID (aka TrasactionId) into MDC context.
-				String requestId = UserUtils.getRequestId(req);
-				if (requestId == null||requestId.trim().length()==0) {
-					requestId = UUID.randomUUID().toString();
-				}
-				MDC.put(Configuration.MDC_KEY_REQUEST_ID, requestId);
+				loadRequestId(req);
+				
+				loadPartnerName(req);
 
-				// Load user agent into MDC context, if available.
-				String accessingClient = req.getHeader(SystemProperties.USERAGENT_NAME);
-				accessingClient = (accessingClient == null || accessingClient.trim().length()==0)?"Unknown":accessingClient;
-				if (accessingClient != null && accessingClient.trim().length()==0 && (accessingClient.contains("Mozilla")
-						|| accessingClient.contains("Chrome") || accessingClient.contains("Safari"))) {
-					accessingClient = EPCommonSystemProperties.ECOMP_PORTAL_FE;
-				}
-				MDC.put(EPCommonSystemProperties.PARTNER_NAME, accessingClient);
+				loadLoginId(req);
 
-				// Load loginId into MDC context.
-				EPUser user = null;
-				try {
-					user = EPUserUtils.getUserSession(req);
-				} catch (SessionExpiredException se) {
-					adviceLogger.debug(EELFLoggerDelegate.debugLogger,
-							"setHttpRequestBasedDefaultsIntoGlobalLoggingContext: No user found in session");
-				}
+				loadUrlProtocol(req);
 
-				MDC.put(EPCommonSystemProperties.MDC_LOGIN_ID, (user != null ? user.getOrgUserId() : "NoUser"));
+				loadServicePath(req, restMethod);
 
-				// Rest URL & Protocol
-				String restURL = "";
-				MDC.put(EPCommonSystemProperties.FULL_URL, EPCommonSystemProperties.UNKNOWN);
-				MDC.put(EPCommonSystemProperties.PROTOCOL, EPCommonSystemProperties.HTTP);
-				restURL = UserUtils.getFullURL(req);
-				//if (restURL != null && restURL != "") {
-				if (restURL != null && restURL.trim().length()>0) {
-					MDC.put(EPCommonSystemProperties.FULL_URL, restURL);
-					if (restURL.toLowerCase().contains("https")) {
-						MDC.put(EPCommonSystemProperties.PROTOCOL, EPCommonSystemProperties.HTTPS);
-					}
-				}
-
-				// Rest Path
-				MDC.put(Configuration.MDC_SERVICE_NAME, restMethod);
-				String restPath = req.getServletPath();
-				//if (restPath != null && restPath != "") {
-				if (restPath != null && restPath.trim().length()>0) {
-
-					MDC.put(Configuration.MDC_SERVICE_NAME, restPath);
-				}
-
-				// Client IPAddress i.e. IPAddress of the remote host who is
-				// making this request.
-				String clientIPAddress = "";
-				clientIPAddress = req.getHeader("X-FORWARDED-FOR");
-				if (clientIPAddress == null) {
-					clientIPAddress = req.getRemoteAddr();
-				}
-				MDC.put(EPCommonSystemProperties.CLIENT_IP_ADDRESS, clientIPAddress);
+				loadClientAddress(req);
+				
 			} else if (securityEventType == SecurityEventTypeEnum.LDAP_PHONEBOOK_USER_SEARCH) {
 				MDC.put(EPCommonSystemProperties.TARGET_ENTITY, "Phonebook");
 				MDC.put(EPCommonSystemProperties.TARGET_SERVICE_NAME, "search");
@@ -385,6 +351,105 @@ public class EPEELFLoggerAdvice {
 			adviceLogger.error(EELFLoggerDelegate.errorLogger,
 					"setHttpRequestBasedDefaultsIntoGlobalLoggingContext failed", e);
 		}
+	}
+
+	private void loadClientAddress(HttpServletRequest req) {
+		// Client IPAddress i.e. IPAddress of the remote host who is
+		// making this request.
+		String clientIPAddress = "";
+		clientIPAddress = req.getHeader("X-FORWARDED-FOR");
+		if (clientIPAddress == null) {
+			clientIPAddress = req.getRemoteAddr();
+		}
+		MDC.put(EPCommonSystemProperties.CLIENT_IP_ADDRESS, clientIPAddress);
+	}
+
+	private void loadServicePath(HttpServletRequest req, String restMethod) {
+		// Rest Path
+		MDC.put(Configuration.MDC_SERVICE_NAME, restMethod);
+		String restPath = req.getServletPath();
+		//if (restPath != null && restPath != "") {
+		if (restPath != null && restPath.trim().length()>0) {
+
+			MDC.put(Configuration.MDC_SERVICE_NAME, restPath);
+		}
+	}
+
+	private void loadUrlProtocol(HttpServletRequest req) {
+		// Rest URL & Protocol
+		String restURL = "";
+		MDC.put(EPCommonSystemProperties.FULL_URL, EPCommonSystemProperties.UNKNOWN);
+		MDC.put(EPCommonSystemProperties.PROTOCOL, EPCommonSystemProperties.HTTP);
+		restURL = UserUtils.getFullURL(req);
+		//if (restURL != null && restURL != "") {
+		if (restURL != null && restURL.trim().length()>0) {
+			MDC.put(EPCommonSystemProperties.FULL_URL, restURL);
+			if (restURL.toLowerCase().contains("https")) {
+				MDC.put(EPCommonSystemProperties.PROTOCOL, EPCommonSystemProperties.HTTPS);
+			}
+		}
+	}
+
+	private void loadRequestId(HttpServletRequest req) {
+		String requestId = UserUtils.getRequestId(req);
+		if (requestId == null||requestId.trim().length()==0) {
+			requestId = UUID.randomUUID().toString();
+		}
+		MDC.put(Configuration.MDC_KEY_REQUEST_ID, requestId);
+	}
+
+	private void loadLoginId(HttpServletRequest req) {
+		// Load loginId into MDC context.
+		String loginId = "NoUser";
+
+		try {
+			EPUser user = EPUserUtils.getUserSession(req);
+			loginId = (user != null ? user.getOrgUserId(): loginId);
+		} catch (SessionExpiredException se) {
+			adviceLogger.debug(EELFLoggerDelegate.debugLogger,
+					"setHttpRequestBasedDefaultsIntoGlobalLoggingContext: No user found in session");
+		}
+		
+		// try fetching from username in header
+		final String nameHeader = req.getHeader(EPCommonSystemProperties.USERNAME);
+		if (nameHeader != null) {
+			loginId = nameHeader;
+		}
+		
+		// try fetching from BasicAuth info
+		final String authHeader = req.getHeader(EPCommonSystemProperties.AUTHORIZATION);
+		if (authHeader != null) {
+			String[] accountNamePassword = EcompPortalUtils.getUserNamePassword(authHeader);
+			if (accountNamePassword != null && accountNamePassword.length == 2) {
+				loginId = accountNamePassword[0];
+			}
+
+		}
+		
+		MDC.put(EPCommonSystemProperties.MDC_LOGIN_ID, loginId );
+
+	}
+
+	private void loadPartnerName(HttpServletRequest req) {
+		
+
+		// Load user agent into MDC context, if available.
+		String accessingClient = req.getHeader(SystemProperties.USERAGENT_NAME);
+		accessingClient = (accessingClient == null || accessingClient.trim().length()==0)?"Unknown":accessingClient;
+		if (accessingClient != null && accessingClient.trim().length()==0 && (accessingClient.contains("Mozilla")
+				|| accessingClient.contains("Chrome") || accessingClient.contains("Safari"))) {
+			accessingClient = EPCommonSystemProperties.ECOMP_PORTAL_FE;
+		}
+		MDC.put(EPCommonSystemProperties.PARTNER_NAME, accessingClient);
+		
+		// try get the Partner name from uebkey
+		String uebVal = req.getHeader(EPCommonSystemProperties.UEB_KEY);
+		if(uebVal != null) {
+			EPApp appRecord = appCacheService.getAppFromUeb(uebVal);
+			MDC.put(EPCommonSystemProperties.PARTNER_NAME, appRecord.getName());
+		}
+		
+		
 	}
 
 	/**

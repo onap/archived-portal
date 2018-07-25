@@ -2,7 +2,7 @@
  * ============LICENSE_START==========================================
  * ONAP Portal
  * ===================================================================
- * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2017-2018 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
@@ -219,7 +219,7 @@ public class WebAnalyticsExtAppController extends EPRestrictedRESTfulBaseControl
 		if (appKeyValue == null || appKeyValue.equals("")) {
 			logger.error(EELFLoggerDelegate.errorLogger, " App Key unavailable; Proceeding with null app name");
 		} else {
-			EPApp appRecord = appCacheService.getAppForAnalytics(appKeyValue);
+			EPApp appRecord = appCacheService.getAppFromUeb(appKeyValue);
 			if (appRecord == null) {
 				logger.error(EELFLoggerDelegate.errorLogger, " App could not be found for the key " + appKeyValue);
 			} else

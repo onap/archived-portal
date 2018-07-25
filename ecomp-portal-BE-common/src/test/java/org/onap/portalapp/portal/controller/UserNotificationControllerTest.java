@@ -2,7 +2,7 @@
  * ============LICENSE_START==========================================
  * ONAP Portal
  * ===================================================================
- * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2017-2018 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
@@ -56,9 +56,9 @@ import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.onap.portalapp.portal.controller.UserNotificationController;
 import org.onap.portalapp.portal.core.MockEPUser;
 import org.onap.portalapp.portal.domain.EPUser;
+import org.onap.portalapp.portal.domain.EcompAppRole;
 import org.onap.portalapp.portal.ecomp.model.PortalRestResponse;
 import org.onap.portalapp.portal.ecomp.model.PortalRestStatusEnum;
 import org.onap.portalapp.portal.framework.MockitoTestSuite;
@@ -68,6 +68,7 @@ import org.onap.portalapp.portal.service.UserNotificationService;
 import org.onap.portalapp.portal.service.UserNotificationServiceImpl;
 import org.onap.portalapp.portal.transport.EpNotificationItem;
 import org.onap.portalapp.portal.transport.EpNotificationItemVO;
+import org.onap.portalapp.portal.transport.EpRoleNotificationItem;
 import org.onap.portalapp.portal.transport.FunctionalMenuRole;
 import org.onap.portalapp.util.EPUserUtils;
 import org.onap.portalsdk.core.util.SystemProperties;
@@ -278,4 +279,56 @@ public class UserNotificationControllerTest {
 		assertTrue(actualPortalRestResponse.equals(expectedPortalRestResponse));
 	}
 
+	@Test
+	public void notificationRead() {
+		PowerMockito.mockStatic(UserUtils.class);		
+		Mockito.when(UserUtils.getUserId(mockedRequest)).thenReturn(1);
+		userNotificationController.notificationRead("1", mockedRequest);
+	}
+	
+	@Test
+	public void notificationRead_Error() {
+		PowerMockito.mockStatic(UserUtils.class);		
+		Mockito.when(UserUtils.getUserId(mockedRequest)).thenReturn(1);
+		userNotificationController.notificationRead("Test", mockedRequest);
+	}
+	
+	@Test
+	public void getNotificationHistory() {
+		PowerMockito.mockStatic(EPUserUtils.class);
+		EPUser user = mockUser.mockEPUser();
+		HttpSession session = mockedRequest.getSession();
+		session.setAttribute("user", user);
+		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
+		userNotificationController.getNotificationHistory(mockedRequest, mockedResponse);
+	}
+	
+	@Test
+	public void testGetRoles() {
+		
+		List<EpRoleNotificationItem> NotifRoles =new ArrayList<>();
+		EpRoleNotificationItem epRole=new EpRoleNotificationItem();
+		epRole.setId(1l);
+		
+		Mockito.when(userNotificationService.getNotificationRoles(1l)).thenReturn(NotifRoles);
+		userNotificationController.testGetRoles(mockedRequest, 1l);
+		
+		
+	}
+	
+	@Test
+	public void getNotificationAppRoles() {
+		List<EcompAppRole> epAppRoleList =new ArrayList<>();
+		Mockito.when(userNotificationService.getAppRoleList()).thenReturn(epAppRoleList);
+		userNotificationController.getNotificationAppRoles(mockedRequest, mockedResponse);
+	}
+	
+	
+	@Test
+	public void getMessageRecipients() {
+		
+		Mockito.when(userNotificationService.getMessageRecipients(1l)).thenReturn(new ArrayList<>());
+		userNotificationController.getMessageRecipients(1l);
+	}
+	
 }

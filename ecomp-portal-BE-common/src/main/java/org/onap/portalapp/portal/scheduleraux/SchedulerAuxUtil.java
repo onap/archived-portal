@@ -82,24 +82,5 @@ public class SchedulerAuxUtil {
 		return (w);
 	}
 	
-	public static <T> String convertPojoToString ( T t ) throws com.fasterxml.jackson.core.JsonProcessingException {
-		
-		String methodName = "convertPojoToString";
-		ObjectMapper mapper = new ObjectMapper();
-		String r_json_str = "";
-	    if ( t != null ) {
-		    try {
-		    	r_json_str = mapper.writeValueAsString(t);
-		    }
-		    catch ( com.fasterxml.jackson.core.JsonProcessingException j ) {
-		    	logger.debug(EELFLoggerDelegate.debugLogger,dateFormat.format(new Date()) + "<== " +  methodName + " Unable to parse object as json");
-		    }
-	    }
-	    return (r_json_str);
-	}
 	
-	
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub		
-	}
 }

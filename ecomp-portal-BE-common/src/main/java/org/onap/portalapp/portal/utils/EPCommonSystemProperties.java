@@ -2,7 +2,7 @@
  * ============LICENSE_START==========================================
  * ONAP Portal
  * ===================================================================
- * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2017-2018 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
@@ -96,5 +96,8 @@ public class EPCommonSystemProperties extends SystemProperties {
 	
 	public static final String MS_WIDGET_LOCAL_PORT                 = "microservices.widget.local.port";
 	public static final String MS_WIDGET_UPLOAD_FLAG                = "microservices.widget.upload.flag";
-
+	public static final String UEB_KEY								= "uebkey";
+	public static final String AUTHORIZATION 						= "Authorization";
+	public static final String USERNAME 						    = "username";
+	
 }

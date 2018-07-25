@@ -42,19 +42,23 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
+import java.io.StreamCorruptedException;
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.onap.portalapp.music.conf.MusicSession;
 import org.onap.portalapp.music.service.MusicService;
-import org.onap.portalapp.music.util.MusicCleanUp;
-import org.onap.portalapp.music.util.MusicProperties;
-import org.onap.portalapp.music.util.MusicUtil;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -69,6 +73,8 @@ public class MusicUtilTest {
 	ResultSet result = Mockito.mock(ResultSet.class);
 
 	Row rw = Mockito.mock(Row.class);
+	@Mock
+	ByteBuffer buffer;
 	
 	@Before
 	public void setUp() throws Exception {
@@ -100,6 +106,46 @@ public class MusicUtilTest {
 		Mockito.doReturn(rows.get(0)).when(result).one();
 		assertNotNull(MusicUtil.musicRestResponseDataParsing(result, "CREATION_TIME"));
 	}
+	
+	@Test(expected=StreamCorruptedException.class)
+	public void musicRestResponseDataParsingTestBytes() throws Exception {
+		List<Row> rows = new ArrayList<Row>();
+		//ByteBuffer byteBuffer = ByteBuffer.allocate(6);
+		ByteBuffer buff = Charset.forName("UTF-8").encode("Hello, World!");
+		Mockito.when(rw.getBytes("attribute_bytes")).thenReturn(buff);
+		rows.add(rw);
+		Mockito.doReturn(rows.get(0)).when(result).one();
+		assertNotNull(MusicUtil.musicRestResponseDataParsing(result, "TEST"));
+	}
+	
+	@Test
+	public void testMusicSerialize()throws Exception {
+		String data="TEST";
+		MusicUtil.musicSerialize(data);
+		
+		
+	}
+	@Test
+	public void testParseMetaData()throws Exception {
+		
+		Mockito.when(rw.getString("primary_id")).thenReturn("TestSession");
+		Mockito.when(rw.getString("creation_time")).thenReturn("2018-07-03T10:15:30.00Z");
+		Mockito.when(rw.getString("last_access_time")).thenReturn("2018-07-05T10:15:30.00Z");
+		Mockito.when(rw.getString("max_inactive_interval")).thenReturn("PT20.345S");
+		MusicSession session=MusicUtil.parseMetaData(rw);
+		assertNotNull(session);
+		
+	}
+	
+	@Test
+	public void testMusicSerializeMusicCompress()throws Exception {
+		PowerMockito.when(MusicProperties.getProperty(MusicProperties.MUSIC_SERIALIZE_COMPRESS)).thenReturn("true");
+		String data="TEST";
+		MusicUtil.musicSerialize(data);
+		
+		
+	}
+	
 
 	@Test
 	public void getMusicExcludedAPITest() {

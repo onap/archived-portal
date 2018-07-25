@@ -2,7 +2,7 @@
  * ============LICENSE_START==========================================
  * ONAP Portal
  * ===================================================================
- * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2017-2018 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
@@ -48,9 +48,10 @@ public class CentralAppTest {
 	
 	CentralApp centralApp=new CentralApp();
 
+	private static final String TEST="test";
 	public CentralApp mockCentralApp(){
-		CentralApp centralApp = new CentralApp((long)1, null, null, (long)1, (long)1, (long)1, "test", "test", "test", "test", "test", "test", "test", "test", "test", 
-				"test", "test", "test", "test", null, "test", "test", "test", "test");
+		CentralApp centralApp = new CentralApp((long)1, null, null, (long)1, (long)1, (long)1, TEST, TEST, TEST, TEST, TEST, TEST, TEST, TEST, TEST, 
+				TEST, TEST, TEST, TEST, null, TEST, TEST, TEST, TEST);
 				return centralApp;
 	}
 	
@@ -58,33 +59,67 @@ public class CentralAppTest {
 	public void centralAppTest(){
 		CentralApp centralApp = mockCentralApp();
 		
-		CentralApp centralApp1 =  new CentralApp((long)1, null, null, (long)1, (long)1, (long)1, "test", "test", "test", "test", "test", "test", "test", "test", "test", 
-				"test", "test", "test", "test", null, "test", "test", "test", "test");
+		CentralApp centralApp1 = buildCentralApp();
 		
 		assertEquals(centralApp.getId(), new Long(1));
 		assertEquals(centralApp.getCreatedId(), new Long(1));
 		assertEquals(centralApp.getModifiedId(), new Long(1));
 		assertEquals(centralApp.getRowNum(), new Long(1));
-		assertEquals(centralApp.getName(), "test");
-		assertEquals(centralApp.getImageUrl(), "test");
-		assertEquals(centralApp.getDescription(), "test");
-		assertEquals(centralApp.getNotes(), "test");
-		assertEquals(centralApp.getUrl(), "test");
-		assertEquals(centralApp.getAlternateUrl(), "test");
-		assertEquals(centralApp.getRestEndpoint(), "test");
-		assertEquals(centralApp.getMlAppName(), "test");
-		assertEquals(centralApp.getMlAppAdminId(), "test");
-		assertEquals(centralApp.getMotsId(), "test");
-		assertEquals(centralApp.getAppPassword(), "test");
-		assertEquals(centralApp.getOpen(), "test");
-		assertEquals(centralApp.getEnabled(), "test");
-		assertEquals(centralApp.getUsername(), "test");
-		assertEquals(centralApp.getUebKey(), "test");
-		assertEquals(centralApp.getUebSecret(), "test");
-		assertEquals(centralApp.getUebTopicName(), "test");
+		assertEquals(centralApp.getName(), TEST);
+		assertEquals(centralApp.getImageUrl(), TEST);
+		assertEquals(centralApp.getDescription(), TEST);
+		assertEquals(centralApp.getNotes(), TEST);
+		assertEquals(centralApp.getUrl(), TEST);
+		assertEquals(centralApp.getAlternateUrl(), TEST);
+		assertEquals(centralApp.getRestEndpoint(), TEST);
+		assertEquals(centralApp.getMlAppName(), TEST);
+		assertEquals(centralApp.getMlAppAdminId(), TEST);
+		assertEquals(centralApp.getMotsId(), TEST);
+		assertEquals(centralApp.getAppPassword(), TEST);
+		assertEquals(centralApp.getOpen(), TEST);
+		assertEquals(centralApp.getEnabled(), TEST);
+		assertEquals(centralApp.getUsername(), TEST);
+		assertEquals(centralApp.getUebKey(), TEST);
+		assertEquals(centralApp.getUebSecret(), TEST);
+		assertEquals(centralApp.getUebTopicName(), TEST);
 		
 		assertTrue(centralApp.equals(centralApp1));
 		assertEquals(centralApp.hashCode(), centralApp1.hashCode());
+	}
+	
+	private CentralApp buildCentralApp() {
+		CentralApp centralApp =  new CentralApp();
+		centralApp.setId(1l);
+		centralApp.setCreatedId(1l);
+		centralApp.setModifiedId(1l);
+		centralApp.setRowNum(1l);
+		centralApp.setName(TEST);
+		centralApp.setImageUrl(TEST);
+		centralApp.setDescription(TEST);
+		centralApp.setNotes(TEST);
+		centralApp.setUrl(TEST);
+		centralApp.setAlternateUrl(TEST);
+		centralApp.setRestEndpoint(TEST);
+		centralApp.setMlAppAdminId(TEST);
+		centralApp.setMlAppName(TEST);
+		centralApp.setMotsId(TEST);
+		centralApp.setAppPassword(TEST);
+		centralApp.setOpen(TEST);
+		centralApp.setEnabled(TEST);
+		centralApp.setUsername(TEST);
+		centralApp.setUebKey(TEST);
+		centralApp.setUebSecret(TEST);
+		centralApp.setUebTopicName(TEST);
+		
+		
+		
+		
+		
+		
+		
+		
+		return centralApp;
+		
 	}
 	
 	

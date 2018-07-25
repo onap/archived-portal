@@ -2,7 +2,7 @@
  * ============LICENSE_START==========================================
  * ONAP Portal
  * ===================================================================
- * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2017-2018 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
@@ -482,6 +482,7 @@ public class UserRolesCommonServiceImpl  {
 							oldAppRole.setName(role.getName());
 							localSession.update(oldAppRole);
 						}
+						oldAppRole.setActive(true);
 						newRolesMap.remove(oldAppRole.getAppRoleId());
 					} else {
 						obsoleteRoles.add(oldAppRole);
@@ -817,16 +818,7 @@ public class UserRolesCommonServiceImpl  {
 	private EPUser addRemoteUser(List<RoleInAppForUser> roleInAppForUserList, String userId, EPApp app, ObjectMapper mapper, SearchService searchService, ApplicationsRestClientService applicationsRestClientService) throws Exception{
 		EPUser addRemoteUser = null;
 		if (remoteUserShouldBeCreated(roleInAppForUserList)) {
-			
 			createNewUserOnRemoteApp(userId, app, applicationsRestClientService, searchService, mapper, isAppUpgradeVersion(app));
-			// If we succeed, we know that the new user was
-			// persisted on remote app.
-			addRemoteUser = getUserFromApp(userId, app, applicationsRestClientService);
-			if (addRemoteUser == null) {
-				logger.error(EELFLoggerDelegate.errorLogger,
-						"Failed to persist new user: " + userId + " in remote app. appId = " + app.getId());
-				// return null;
-			}
 		}
 		return addRemoteUser;
 	}
@@ -890,14 +882,12 @@ public class UserRolesCommonServiceImpl  {
 
 				// if centralized app
 				if (app.getCentralAuth()) {
-					// We should add If user does not exist in remote application
 					if (!app.getId().equals(PortalConstants.PORTAL_APP_ID)) {
-						EPUser remoteAppUser = null;
-						remoteAppUser = checkIfRemoteUserExits(userId, app, applicationsRestClientService);
-
-						if (remoteAppUser == null) {
+						try {
 							addRemoteUser(roleInAppForUserList, userId, app, mapper, searchService,
 									applicationsRestClientService);
+						} catch (Exception e) {
+							logger.debug(EELFLoggerDelegate.debugLogger, e.getMessage());
 						}
 					}
 					

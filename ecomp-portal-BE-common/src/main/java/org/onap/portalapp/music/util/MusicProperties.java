@@ -2,7 +2,7 @@
  * ============LICENSE_START==========================================
  * ONAP Portal
  * ===================================================================
- * Copyright © 2018 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2018 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
@@ -186,4 +186,40 @@ public class MusicProperties {
 		}
 		return true;
 	}
+	
+	/**
+	 * Tests whether a property value is available for the specified key.
+	 * 
+	 * @param key
+	 *            Property key
+	 * @return True if the key is known, otherwise false.
+	 */
+/*	public static boolean containsProperty(String key) {
+		return environment.containsProperty(key);
+	}*/
+
+	/**
+	 * Returns the property value associated with the given key (never
+	 * {@code null}), after trimming any trailing space.
+	 * 
+	 * @param key
+	 *            Property key
+	 * @return Property value; the empty string if the environment was not
+	 *         autowired, which should never happen.
+	 * @throws IllegalStateException
+	 *             if the key is not found
+	 */
+/*	public static String getProperty(String key) {
+		String value = "";
+		if (environment == null) {
+		//	logger.error(EELFLoggerDelegate.errorLogger, "getProperty: environment is null, should never happen!");
+		} else {
+			value = environment.getRequiredProperty(key);
+			// java.util.Properties preserves trailing space
+			if (value != null)
+				value = value.trim();
+		}
+		return value;
+	}*/
+
 }

@@ -33,7 +33,7 @@
  *
  * ============LICENSE_END============================================
  *
- * ECOMP is a trademark and service mark of AT&T Intellectual Property.
+ * 
  */
 /**
  * bulk upload role-functions controller
@@ -86,7 +86,9 @@
     			// Enable modal controls
     			this.step1 = true;
     			
-    			this.fileSelected = false; 			
+    			this.fileSelected = false; 	
+    			
+    			$scope.isProcessedRecords = false;
     		}; // init
     		
     		// Answers a function that compares properties with the specified name.
@@ -124,6 +126,8 @@
 		 */
     		$scope.readValidateFile = (typeUpload) => {
     			$scope.isProcessing = true;
+    			$scope.conformMsg = '';
+    			$scope.isProcessedRecords = true;
     			$scope.progressMsg = 'Reading upload file...';
     			var reader = new FileReader();
     			reader.onload = function(event) {
@@ -148,9 +152,11 @@
 			    	    					$log.debug('BulkRoleAndFunctionsModalCtrl::readValidateFile inner-then ends');
 			    	    			$scope.progressMsg = 'Done.';
 			    	    			$scope.isProcessing = false;
+			    	    			$scope.isProcessedRecords = false;
 		    					}, function(error) {
 		                        	$log.error('BulkUserModalCtrl::readValidateFile: failed retrieving app roles info');
 		                        	$scope.isProcessing = false;
+		                        	$scope.isProcessedRecords = false;
 		                        });
     				} else if (typeUpload === 'roleFunctions'){
     					$scope.uploadFile = $filter('csvToRoleFuncObj')(reader.result);
@@ -179,9 +185,11 @@
 			    	    					$log.debug('BulkRoleAndFunctionsModalCtrl::readValidateFile inner-then ends');
 			    	    			$scope.progressMsg = 'Done.';
 			    	    			$scope.isProcessing = false;
+			    	    			$scope.isProcessedRecords = false;
 		    					}, function(error) {
 		                        	$log.error('BulkUserModalCtrl::readValidateFile: failed retrieving app roles info');
 		                        	$scope.isProcessing = false;
+		                        	$scope.isProcessedRecords = false;
 		                        });
     					},
                         function(error) {
@@ -210,10 +218,12 @@
     	    	    					$log.debug('BulkRoleAndFunctionsModalCtrl::readValidateFile inner-then ends');
     	    	    			$scope.progressMsg = 'Done.';
     	    	    			$scope.isProcessing = false;
+    	    	    			$scope.isProcessedRecords = false;
     					},
                         function(error) {
                         	$log.error('BulkUserModalCtrl::readValidateFile: failed retrieving app functions info');
                         	$scope.isProcessing = false;
+                        	$scope.isProcessedRecords = false;
                         }
                         );
     				} else if(typeUpload === 'globalRoleFunctions'){
@@ -248,9 +258,11 @@
     			    	    					$log.debug('BulkRoleAndFunctionsModalCtrl::readValidateFile inner-then ends');
     			    	    			$scope.progressMsg = 'Done.';
     			    	    			$scope.isProcessing = false;
+    			    	    			$scope.isProcessedRecords = false;
     		    					}, function(error) {
     		                        	$log.error('BulkUserModalCtrl::readValidateFile: failed retrieving app roles info');
     		                        	$scope.isProcessing = false;
+    		                        	$scope.isProcessedRecords = false;
     		                        });
         					},
                             function(error) {
@@ -478,6 +490,8 @@
 		 */
     		$scope.updateFunctionsInDB = () => {
     			$scope.isProcessing = true;
+    			$scope.conformMsg = '';
+    			$scope.isProcessedRecords = true;
     			$scope.progressMsg = 'Sending requests to application..';
     			if (debug)
     				$log.debug('BulkRoleAndFunctionsModalCtrl::updateFunctionsInDB: request length is ' + appUserRolesRequest.length);
@@ -514,11 +528,10 @@
     			
             	 // Run all the promises
             	 $q.all(promises).then(function(){
+            		 $scope.conformMsg  = 'Processed ' + numberFunctionsSucceeded + ' records.';
             		 $scope.isProcessing = false;
-            		 confirmBoxService.showInformation('Processed ' + numberFunctionsSucceeded + ' records.').then(isConfirmed => {
-            			 // Close the upload-confirm dialog
-            			 ngDialog.close();
-            		 });
+            		 $scope.isProcessedRecords = true;
+            		 $scope.uploadFile = [];
             	 });
              }; // updateFunctionsInDB
              
@@ -530,6 +543,8 @@
      		 */
          		$scope.updateRolesInDB = () => {
          			$scope.isProcessing = true;
+         			$scope.conformMsg = '';
+        			$scope.isProcessedRecords = true;
          			$scope.progressMsg = 'Sending requests to application..';
          			if (debug)
          				$log.debug('BulkRoleAndFunctionsModalCtrl::updateRolesInDB: request length is ' + appUserRolesRequest.length);
@@ -579,11 +594,13 @@
          			
                  	 // Run all the promises
                  	 $q.all(promises).then(function(){
-                 		 $scope.isProcessing = false;
-                 		 confirmBoxService.showInformation('Processed ' + numberRolesSucceeded + ' records. Please sync roles').then(isConfirmed => {
-                 			 // Close the upload-confirm dialog
-                 			 ngDialog.close();
-                 		 });
+                 		if(numberRolesSucceeded == 0){
+                     		 $scope.conformMsg  = 'Processed ' + numberRolesSucceeded + ' records';
+                 		 }else{
+                     		 $scope.conformMsg  = 'Processed ' + numberRolesSucceeded + ' records. Please sync roles to reflect in portal';
+                 		 }                		 $scope.isProcessing = false;
+                		 $scope.isProcessedRecords = true;
+                		 $scope.uploadFile = [];
                  	 });
                   }; // updateRolesInDB
                   
@@ -594,6 +611,8 @@
      		 */
          		$scope.updateRoleFunctionsInDB = () => {
          			$scope.isProcessing = true;
+         			$scope.conformMsg = '';
+        			$scope.isProcessedRecords = true;
         			$scope.progressMsg = 'Sending requests to application..';
         			if (debug)
         				$log.debug('BulkRoleAndFunctionsModalCtrl::updateRoleFunctionsInDB: request length is ' + appUserRolesRequest.length);
@@ -632,11 +651,13 @@
         			
                 	 // Run all the promises
                 	 $q.all(promises).then(function(){
-                		 $scope.isProcessing = false;
-                		 confirmBoxService.showInformation('Processed ' + numberRoleFunctionSucceeded + ' records. Please sync roles to reflect in portal').then(isConfirmed => {
-                			 // Close the upload-confirm dialog
-                			 ngDialog.close();
-                		 });
+                		 if(numberRoleFunctionSucceeded == 0){
+                      		 $scope.conformMsg  = 'Processed ' + numberRoleFunctionSucceeded + ' records';
+                  		 }else{
+                      		 $scope.conformMsg  = 'Processed ' + numberRoleFunctionSucceeded + ' records. Please sync roles to reflect in portal';
+                  		 }                		 $scope.isProcessing = false;
+                		 $scope.isProcessedRecords = true;
+                		 $scope.uploadFile = [];
                 	 });
                   }; // updateRoleFunctionsInDB
                   
@@ -647,6 +668,8 @@
           		 */
               		$scope.updateGlobalRoleFunctionsInDB = () => {
               			$scope.isProcessing = true;
+              			$scope.conformMsg = '';
+            			$scope.isProcessedRecords = true;
               			$scope.progressMsg = 'Sending requests to application..';
               			if (debug)
               				$log.debug('BulkRoleAndFunctionsModalCtrl::updateGlobalRoleFunctionsInDB: request length is ' + appUserRolesRequest.length);
@@ -685,11 +708,14 @@
               			
                       	 // Run all the promises
                       	 $q.all(promises).then(function(){
-                      		 $scope.isProcessing = false;
-                      		 confirmBoxService.showInformation('Processed ' + numberGlobalRoleFunctionSucceeded + ' records. Please sync roles to reflect in portal').then(isConfirmed => {
-                      			 // Close the upload-confirm dialog
-                      			 ngDialog.close();
-                      		 });
+                      		 if(numberGlobalRoleFunctionSucceeded == 0){
+                          		 $scope.conformMsg  = 'Processed ' + numberGlobalRoleFunctionSucceeded + ' records';
+                      		 }else{
+                          		 $scope.conformMsg  = 'Processed ' + numberGlobalRoleFunctionSucceeded + ' records. Please sync roles to reflect in portal';
+                      		 }
+                    		 $scope.isProcessing = false;
+                    		 $scope.isProcessedRecords = true;
+                    		 $scope.uploadFile = [];
                       	 });
                        }; // updateGlobalRoleFunctionsInDB
                        

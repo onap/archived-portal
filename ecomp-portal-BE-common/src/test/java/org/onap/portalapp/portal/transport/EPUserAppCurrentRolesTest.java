@@ -38,6 +38,7 @@
 package org.onap.portalapp.portal.transport;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
@@ -45,16 +46,19 @@ import org.onap.portalapp.portal.transport.EPUserAppCurrentRoles;
 
 public class EPUserAppCurrentRolesTest {
 
-	public EPUserAppCurrentRoles mockEPUserAppCurrentRoles(){
+	private static final String TEST="test";
+	private static final Long ID=1l;
+	private  EPUserAppCurrentRoles mockEPUserAppCurrentRoles(){
 		EPUserAppCurrentRoles epUserAppCurrentRoles = new EPUserAppCurrentRoles();
 			
-		epUserAppCurrentRoles.setRoleName("test");
-		epUserAppCurrentRoles.setUserId((long)1);
-		epUserAppCurrentRoles.setPriority("test");
-		epUserAppCurrentRoles.setRoleId((long)1);
+		epUserAppCurrentRoles.setRoleName(TEST);
+		epUserAppCurrentRoles.setUserId(ID);
+		epUserAppCurrentRoles.setPriority(TEST);
+		epUserAppCurrentRoles.setRoleId(ID);
 		
 		return epUserAppCurrentRoles;
 	}
+	
 	
 	@Test
 	public void epUserAppCurrentRolesTest(){
@@ -62,17 +66,22 @@ public class EPUserAppCurrentRolesTest {
 		
 		EPUserAppCurrentRoles epUserAppCurrentRoles1 = new EPUserAppCurrentRoles();
 		
-		epUserAppCurrentRoles1.setRoleName("test");
-		epUserAppCurrentRoles1.setUserId((long)1);
-		epUserAppCurrentRoles1.setPriority("test");
-		epUserAppCurrentRoles1.setRoleId((long)1);
+		epUserAppCurrentRoles1.setRoleName(epUserAppCurrentRoles.getRoleName());
+		epUserAppCurrentRoles1.setUserId(epUserAppCurrentRoles.getUserId());
+		epUserAppCurrentRoles1.setPriority(epUserAppCurrentRoles.getPriority());
+		epUserAppCurrentRoles1.setRoleId(epUserAppCurrentRoles.getRoleId());
 		
-		assertEquals(epUserAppCurrentRoles.getRoleName(), "test");
-		assertEquals(epUserAppCurrentRoles.getUserId(), new Long(1));
-		assertEquals(epUserAppCurrentRoles.getRoleId(), new Long(1));
-		assertEquals(epUserAppCurrentRoles.getPriority(), "test");
 		assertEquals(epUserAppCurrentRoles.hashCode(), epUserAppCurrentRoles1.hashCode());
 		assertTrue(epUserAppCurrentRoles.equals(epUserAppCurrentRoles1));
+		assertFalse(epUserAppCurrentRoles1.equals(null));
+		epUserAppCurrentRoles1.setUserId(null);
+		assertFalse(epUserAppCurrentRoles1.equals(epUserAppCurrentRoles));
+		epUserAppCurrentRoles1.setRoleName(null);
+		assertFalse(epUserAppCurrentRoles1.equals(epUserAppCurrentRoles));
+		epUserAppCurrentRoles1.setRoleId(null);
+		assertFalse(epUserAppCurrentRoles1.equals(epUserAppCurrentRoles));
+		epUserAppCurrentRoles1.setPriority(null);
+		assertFalse(epUserAppCurrentRoles1.equals(epUserAppCurrentRoles));
 		
 	}
 }

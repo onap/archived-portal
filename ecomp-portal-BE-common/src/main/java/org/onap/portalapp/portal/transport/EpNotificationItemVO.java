@@ -197,10 +197,6 @@ public class EpNotificationItemVO extends DomainVo {
 		this.createdDate = createdDate;
 	}
 
-	public static long getSerialversionuid() {
-		return serialVersionUID;
-	}
-
 	
 	public String getMsgSource() {
 		return msgSource;

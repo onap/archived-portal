@@ -2,7 +2,7 @@
  * ============LICENSE_START==========================================
  * ONAP Portal
  * ===================================================================
- * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2017-2018 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
@@ -405,7 +405,6 @@ public class HealthMonitor {
 		pQuery.addValue(creationTime.toString());
 		pQuery.addValue(APPLICATION);
 		try {
-			MusicCore.nonKeyRelatedPut(pQuery, MusicUtil.ATOMIC);
 			MusicCore.nonKeyRelatedPut(pQuery, MusicUtil.CRITICAL);
 		} catch (MusicServiceException e) {
 			return Boolean.FALSE;

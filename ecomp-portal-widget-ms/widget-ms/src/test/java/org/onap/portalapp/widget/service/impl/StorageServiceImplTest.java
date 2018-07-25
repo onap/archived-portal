@@ -39,6 +39,8 @@ package org.onap.portalapp.widget.service.impl;
 
 import static org.mockito.Mockito.when;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -176,6 +178,61 @@ public void testcheckZipFileInvalid() {
 	//	when(criteria.list()).thenReturn(widgetFiles);
 		when(widgetCatalogService.getWidgetCatalog(2l)).thenReturn(catalog);
 		storageServiceImpl.getWidgetCatalogContent(2l);
+		
+	}
+	
+	@Test(expected=IllegalArgumentException.class)
+	public void testSaveMultiPartFile() {
+		MockMultipartFile mockMultipartFile = new MockMultipartFile(
+			    "fileData",
+			    "test.zip",
+			    "text/plain",
+			    "test".getBytes());
+		
+		WidgetCatalog catalog=new WidgetCatalog();
+		catalog.setServiceId(2l);
+		catalog.setName("test");
+		
+		storageServiceImpl.save(mockMultipartFile, catalog, 2l);
+		
+		
+	}
+	
+	@Test(expected=IllegalArgumentException.class)
+	public void testInitSave()throws Exception {
+		MockMultipartFile mockMultipartFile = new MockMultipartFile(
+			    "fileData",
+			    "test.zip",
+			    "text/plain",
+			    "test".getBytes());
+		File convFile = new File(mockMultipartFile.getOriginalFilename());
+		FileOutputStream fos = new FileOutputStream(convFile);
+		fos.write(mockMultipartFile.getBytes());
+		fos.close();
+		WidgetCatalog catalog=new WidgetCatalog();
+		catalog.setServiceId(2l);
+		catalog.setName("test");
+		storageServiceImpl.initSave(convFile, catalog, 2l);
+		convFile.delete();
+		
+		
+	}
+	
+	@Test
+	public void testWidgetFramework()throws Exception {
+		List<WidgetFile> widgetFiles=new ArrayList<>();
+		WidgetFile file=new WidgetFile();
+		file.setCss("test".getBytes());
+		file.setController("test function() Test".getBytes());
+		file.setMarkup("Test".getBytes());
+		file.setFramework("test".getBytes());
+		widgetFiles.add(file);
+	
+		when(sessionFactory.getCurrentSession()).thenReturn(currentSession);
+		when(currentSession.beginTransaction()).thenReturn(transaction);
+		when(currentSession.createCriteria(WidgetFile.class)).thenReturn(criteria);
+		when(criteria.list()).thenReturn(widgetFiles);
+		storageServiceImpl.getWidgetFramework(2l);
 		
 	}
 	

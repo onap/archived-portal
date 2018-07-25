@@ -2,7 +2,7 @@
  * ============LICENSE_START==========================================
  * ONAP Portal
  * ===================================================================
- * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2017-2018 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
@@ -73,47 +73,46 @@ public class AppsCacheServiceImple implements AppsCacheService {
 		}
 	}
 	
-	CacheConfiguration appConf = null;
-	CacheConfiguration analyticsAppConf = null;
+	CacheConfiguration quickRefreshCacheConf = null;
+	CacheConfiguration slowRefreshCacheConf = null;
 	
 	
 	private static volatile Map<Long, EPApp> appsMap;
-	private static volatile Map<String, EPApp> anlyticsAppsMap;
+	private static volatile Map<String, EPApp> uebAppsMap;
 	
 	@PostConstruct
 	public void init() {
-		appConf = new CacheConfiguration(0, 10);
-		analyticsAppConf = new CacheConfiguration(0, 3600);
+		quickRefreshCacheConf = new CacheConfiguration(0, 120);
+		slowRefreshCacheConf = new CacheConfiguration(0, 3600);
 		
-		this.refreshAppsMap(appConf);
+		this.refreshAppsMap(quickRefreshCacheConf);
 	}
 
-	private Map<Long, EPApp> refreshAppsMap(CacheConfiguration conf) {
+	private void refreshAppsMap(CacheConfiguration conf) {
 		long now = System.currentTimeMillis();
 		
 		if(noNeedToUpdate(now, conf))
-			return null;
+			return;
 		
 		synchronized (this) {
 			if(noNeedToUpdate(now, conf))
-				return null;
+				return;
 			List<EPApp> allApps = appsService.getAppsFullList();
 			Map<Long, EPApp> newAppsMap = new HashMap<Long, EPApp>();
 			for (EPApp app : allApps) {
 				newAppsMap.put(app.getId(), app);
 			}
 			
-			Map<String, EPApp> newAnalyticsAppsMap = new HashMap<String, EPApp>();
+			Map<String, EPApp> newUebAppsMap = new HashMap<String, EPApp>();
 			for (EPApp app : allApps) {
-				newAnalyticsAppsMap.put(app.getUebKey(), app);
+				newUebAppsMap.put(app.getUebKey(), app);
 			}
 			// Switch cache with the new one.
 			appsMap = newAppsMap;
-			anlyticsAppsMap = newAnalyticsAppsMap;
+			uebAppsMap = newUebAppsMap;
 			conf.updateTime = now;
 		}
 		
-		return appsMap;
 	}
 
 	private boolean noNeedToUpdate(long now, CacheConfiguration conf) {
@@ -127,7 +126,7 @@ public class AppsCacheServiceImple implements AppsCacheService {
 
 	@Override
 	public String getAppEndpoint(Long appId) {
-		refreshAppsMap(appConf);
+		refreshAppsMap(quickRefreshCacheConf);
 		EPApp app = appsMap.get(appId);
 		if(app != null)
 			return app.getAppRestEndpoint();
@@ -136,7 +135,7 @@ public class AppsCacheServiceImple implements AppsCacheService {
 	
 	@Override
 	public EPApp getApp(Long appId) {
-		refreshAppsMap(appConf);
+		refreshAppsMap(quickRefreshCacheConf);
 		EPApp app = appsMap.get(appId);
 		if(app != null)
 			return app;
@@ -144,9 +143,14 @@ public class AppsCacheServiceImple implements AppsCacheService {
 	}
 	
 	@Override
-	public EPApp getAppForAnalytics(String appKey) {
-		refreshAppsMap(analyticsAppConf);
-		EPApp app = anlyticsAppsMap.get(appKey);
+	public EPApp getAppFromUeb(String appKey) {
+		return 	getAppFromUeb(appKey,0);	
+	}
+	
+	@Override
+	public EPApp getAppFromUeb(String appKey, Integer quickCacheRefresh) {
+		refreshAppsMap(quickCacheRefresh == 1 ? quickRefreshCacheConf:slowRefreshCacheConf);
+		EPApp app = uebAppsMap.get(appKey);
 		if(app != null)
 			return app;
 		return null;		

@@ -2,7 +2,7 @@
  * ============LICENSE_START==========================================
  * ONAP Portal
  * ===================================================================
- * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2017-2018 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
@@ -356,48 +356,6 @@ public class ApplicationsRestClientServiceImpl implements ApplicationsRestClient
 	@Override
 	public <T> T post(Class<T> clazz, long appId, Object payload, String restPath) throws HTTPException {
 		return post( clazz, appId, payload, restPath, SystemType.APPLICATION);
-	}
-
-	//@Override
-	public <T> T postForClass(Class<T> clazz, long appId, Object payload, String restPath, Class<T> forClass) throws HTTPException {
-		WebClient client = null;
-		Response response = null;
-		T t = null;
-		logger.debug(EELFLoggerDelegate.debugLogger, "Entering to createClientForApp method for payload: {} and restPath: {} and appId: {}", payload.toString(), restPath, appId);
-		client = createClientForApp(appId, restPath);
-		EcompPortalUtils.logAndSerializeObject(logger, restPath, "POST request =", payload);
-		logger.debug(EELFLoggerDelegate.debugLogger, "Finished createClientForApp method for payload: {} and restPath: {} and appId: {}", payload.toString(), restPath, appId);
-		try {
-			if (client != null) {
-				logger.debug(EELFLoggerDelegate.debugLogger, "Entering to POST for payload: {} and restPath: {} and appId: {}", payload.toString(), restPath, appId);
-				response = client.post(payload);
-				logger.debug(EELFLoggerDelegate.debugLogger, "Finished to POST for payload: {} and restPath: {} and appId: {}", payload.toString(), restPath, appId);
-			} else {
-				logger.error(EELFLoggerDelegate.errorLogger,
-						"Unable to create the Webclient to make the '" + restPath + "' API call.");
-			}
-		} catch (Exception e) {
-			MDC.put(EPCommonSystemProperties.EXTERNAL_API_RESPONSE_CODE,
-					Integer.toString(HttpServletResponse.SC_INTERNAL_SERVER_ERROR));
-			EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeRestApiGeneralError, e);
-			logger.error(EELFLoggerDelegate.errorLogger, "Exception occurred while making the POST REST API call", e);
-		}
-
-		if (response != null) {
-			verifyResponse(response);
-
-			// String contentType = response.getHeaderString("Content-Type");
-			if (clazz != null) {
-				String str = ((ResponseImpl)response).readEntity(String.class);
-				EcompPortalUtils.logAndSerializeObject(logger, restPath, "POST result =", str);
-				try {
-					t = gson.fromJson(str, clazz);
-				} catch (Exception e) {
-					EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeInvalidJsonInput, e);
-				}
-			}
-		}
-		return t;
 	}
 
 	

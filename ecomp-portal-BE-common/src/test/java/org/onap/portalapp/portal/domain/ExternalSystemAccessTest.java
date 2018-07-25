@@ -2,7 +2,7 @@
  * ============LICENSE_START==========================================
  * ONAP Portal
  * ===================================================================
- * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2017-2018 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
@@ -38,9 +38,10 @@
 package org.onap.portalapp.portal.domain;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
-import org.onap.portalapp.portal.domain.ExternalSystemAccess;
 
 public class ExternalSystemAccessTest {
 	
@@ -52,13 +53,23 @@ public class ExternalSystemAccessTest {
 		
 		return externalSystemAccess;
 	}
+	
+	
 
 	@Test
 	public void externalSystemAccessTest(){
-		ExternalSystemAccess externalSystemAccess = mockExternalSystemAccess();
+		ExternalSystemAccess externalSystem=mockExternalSystemAccess();
+		ExternalSystemAccess externalSystemAccess = new ExternalSystemAccess("test", false);
+		externalSystemAccess.setKey(externalSystem.getKey());
+		externalSystemAccess.setAccessValue(externalSystem.getAccessValue());
+		assertEquals(externalSystemAccess.hashCode(), externalSystem.hashCode());
+		assertTrue(externalSystemAccess.equals(externalSystem));
+		assertFalse(externalSystemAccess.equals(null));
 		
-		assertEquals(externalSystemAccess.getKey(), "test");
-		assertEquals(externalSystemAccess.getAccessValue(), false);
+		externalSystemAccess.setKey(null);
+		assertFalse(externalSystemAccess.equals(externalSystem));
+		externalSystemAccess.setAccessValue(null);
+		assertFalse(externalSystemAccess.equals(externalSystem));
 	}
 }
 

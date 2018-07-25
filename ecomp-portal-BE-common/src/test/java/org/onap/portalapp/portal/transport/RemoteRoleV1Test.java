@@ -2,7 +2,7 @@
  * ============LICENSE_START==========================================
  * ONAP Portal
  * ===================================================================
- * Copyright © 2017 AT&T Intellectual Property. All rights reserved.
+ * Copyright © 2017-2018 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
@@ -39,6 +39,7 @@ package org.onap.portalapp.portal.transport;
 
 //@RunWith(PowerMockRunner.class)
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -68,6 +69,36 @@ public class RemoteRoleV1Test {
 		assertEquals(ID, remoteRoleV1.getId());
 		assertEquals(NAME, remoteRoleV1.getName());
 	}
+	
+	@Test
+	public void testRemoteRole() {
+		RemoteRoleV1 remoteRoleV1=buildRemoteRoleV1();
+		RemoteRoleV1 remoteRole=new RemoteRoleV1();
+		RemoteRoleV1 remoteRoleV2=remoteRoleV1;
+		remoteRole.setId(ID);
+		remoteRole.setName(NAME);
+		
+		assertEquals(remoteRole.hashCode(), remoteRoleV1.hashCode());	
+		remoteRole.compareTo(remoteRoleV1);
+		assertTrue(remoteRole.equals(remoteRoleV1));
+		assertFalse(remoteRole.equals(null));
+		remoteRole.setName(null);
+		assertFalse(remoteRole.equals(remoteRoleV1));
+		remoteRole.setId(null);
+		assertFalse(remoteRole.equals(remoteRoleV1));
+		assertTrue(remoteRoleV2.equals(remoteRoleV1));
+		
+	}
+	
+	private RemoteRoleV1 buildRemoteRoleV1() {
+		
+		RemoteRoleV1 remoteRole=new RemoteRoleV1();
+		remoteRole.setId(ID);
+		remoteRole.setName(NAME);
+		return remoteRole;
+	}
+	
+	
 	
 	@Test
 	public void remoteRoleV1Test(){

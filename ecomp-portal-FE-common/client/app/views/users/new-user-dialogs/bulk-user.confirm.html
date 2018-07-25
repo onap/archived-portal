@@ -53,8 +53,14 @@
 				<br>
 				<span class="ecomp-spinner"></span>
 			</div>
+			
+			<!-- progress indicator -->
+			<div class="upload-instructions"
+				ng-show="isProcessedRecords">
+				{{conformMsg}}
+			</div>
 
-			<div ng-hide="isProcessing">
+			<div ng-hide="isProcessing || isProcessedRecords">
 				<div class="upload-instructions">
 				Click OK to upload the valid requests. 
 				Invalid requests will be ignored.</div>
@@ -101,7 +107,7 @@
 		</div>
 		<div class="b2b-modal-footer">	
 			<div class="cta-button-group in">	
-				<button id="bulk-user-ok-button" class="btn btn-alt btn-small" ng-class="{disabled: isValidating}"
+				<button id="bulk-user-ok-button" class="btn btn-alt btn-small" ng-disabled="isProcessedRecords"  ng-class="{disabled: isValidating}"
 					ng-click="updateDB()">Ok</button>
 				<button id="bulk-user-cancel-button" class="btn btn-alt btn-small" ng-click="$dismiss('cancel')">Cancel</button>		
 			</div>

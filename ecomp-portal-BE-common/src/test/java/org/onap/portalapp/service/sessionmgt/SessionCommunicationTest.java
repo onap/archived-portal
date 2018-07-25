@@ -2,7 +2,7 @@
  * ============LICENSE_START==========================================
  * ONAP Portal
  * ===================================================================
- * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2017-2018 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
@@ -52,6 +52,9 @@ import org.onap.portalapp.portal.transport.OnboardingApp;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.slf4j.MDC;
+
+import com.att.eelf.configuration.Configuration;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({URL.class, HttpURLConnection.class})
@@ -137,5 +140,12 @@ public class SessionCommunicationTest {
 		PowerMockito.when(huc.getResponseCode()).thenReturn(200);
 		Boolean actual = sessionCommunication.timeoutSession(app, "test");
 		assertTrue(actual);
-	}	
+	}
+	
+	@Test
+	public void clear() {
+		
+		sessionCommunication.clear(true);
+		
+	}
 }

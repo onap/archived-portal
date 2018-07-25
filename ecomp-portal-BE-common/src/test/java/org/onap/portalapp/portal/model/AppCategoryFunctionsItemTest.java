@@ -38,20 +38,25 @@
 package org.onap.portalapp.portal.model;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.onap.portalapp.portal.ecomp.model.AppCategoryFunctionsItem;
 
 public class AppCategoryFunctionsItemTest {
+	
+	private static final String TEST="test";
 
-	public AppCategoryFunctionsItem mockAppCategoryFunctionsItem(){
+	private  AppCategoryFunctionsItem mockAppCategoryFunctionsItem(){
 		AppCategoryFunctionsItem appCategoryFunctionsItem = new AppCategoryFunctionsItem();
 		
-		appCategoryFunctionsItem.setRowId("test");
-		appCategoryFunctionsItem.setAppId("test");
-		appCategoryFunctionsItem.setApplication("test");
-		appCategoryFunctionsItem.setFunctions("test");
+		appCategoryFunctionsItem.setRowId(TEST);
+		appCategoryFunctionsItem.setAppId(TEST);
+		appCategoryFunctionsItem.setApplication(TEST);
+		appCategoryFunctionsItem.setFunctions(TEST);
+		appCategoryFunctionsItem.setCategory(TEST);
 		
 		return appCategoryFunctionsItem;
 	}
@@ -62,18 +67,28 @@ public class AppCategoryFunctionsItemTest {
 		
 		AppCategoryFunctionsItem appCategoryFunctionsItem1 = new AppCategoryFunctionsItem();
 		
-		appCategoryFunctionsItem1.setRowId("test");
-		appCategoryFunctionsItem1.setAppId("test");
-		appCategoryFunctionsItem1.setApplication("test");
-		appCategoryFunctionsItem1.setFunctions("test");
-		
-		assertEquals(appCategoryFunctionsItem.getRowId(), appCategoryFunctionsItem1.getRowId());
-		assertEquals(appCategoryFunctionsItem.getAppId(), appCategoryFunctionsItem1.getAppId());
-		assertEquals(appCategoryFunctionsItem.getApplication(), appCategoryFunctionsItem1.getApplication());
-		assertEquals(appCategoryFunctionsItem.getFunctions(), appCategoryFunctionsItem1.getFunctions());
-		assertEquals(appCategoryFunctionsItem.toString(), "AppCategoryFunctionsItem [rowId=test, appId=test, application=test, category=null, functions=test]");
+		appCategoryFunctionsItem1.setRowId(appCategoryFunctionsItem.getRowId());
+		appCategoryFunctionsItem1.setAppId(appCategoryFunctionsItem.getAppId());
+		appCategoryFunctionsItem1.setApplication(appCategoryFunctionsItem.getApplication());
+		appCategoryFunctionsItem1.setFunctions(appCategoryFunctionsItem.getFunctions());
+		appCategoryFunctionsItem1.setCategory(appCategoryFunctionsItem.getCategory());
+		assertNotNull(appCategoryFunctionsItem.toString());
 		assertEquals(appCategoryFunctionsItem.hashCode(), appCategoryFunctionsItem1.hashCode());
-		assertTrue(appCategoryFunctionsItem.equals(appCategoryFunctionsItem1));
+		assertTrue(appCategoryFunctionsItem1.equals(appCategoryFunctionsItem));
+		
+		assertFalse(appCategoryFunctionsItem1.equals(null));
+		appCategoryFunctionsItem1.setRowId(null);
+		assertFalse(appCategoryFunctionsItem1.equals(appCategoryFunctionsItem));
+		appCategoryFunctionsItem1.setFunctions(null);
+		assertFalse(appCategoryFunctionsItem1.equals(appCategoryFunctionsItem));
+		appCategoryFunctionsItem1.setCategory(null);
+		assertFalse(appCategoryFunctionsItem1.equals(appCategoryFunctionsItem));
+		appCategoryFunctionsItem1.setApplication(null);
+		
+		assertFalse(appCategoryFunctionsItem1.equals(appCategoryFunctionsItem));
+appCategoryFunctionsItem1.setAppId(null);
+		
+		assertFalse(appCategoryFunctionsItem1.equals(appCategoryFunctionsItem));
 
 	}
 }

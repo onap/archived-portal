@@ -2,7 +2,7 @@
  * ============LICENSE_START==========================================
  * ONAP Portal
  * ===================================================================
- * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2017-2018 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
@@ -128,7 +128,9 @@ public class UserServiceImpl implements UserService {
 				logger.error(EELFLoggerDelegate.errorLogger, "getUserByUserId failed", e);
 			} finally {
 				try {
+					if(in!=null) {
 					in.close();
+					}
 					con.disconnect();
 				} catch (IOException e) {
 					logger.error(EELFLoggerDelegate.errorLogger, "getUserByUserId 2 failed", e);
@@ -185,8 +187,9 @@ public class UserServiceImpl implements UserService {
 
 				in = new BufferedReader(new InputStreamReader(con.getInputStream(), "UTF-8"));
 				String inputLine;
-				while ((inputLine = in.readLine()) != null)
+				while ((inputLine = in.readLine()) != null) {
 					response.append(inputLine);
+				}
 				JSONObject jObject = new JSONObject(response.toString()); // json
 				JSONArray jsonUsers = jObject.getJSONArray("response"); // get data object
 				for (int i = 0; i < jsonUsers.length(); i++) {
@@ -220,8 +223,10 @@ public class UserServiceImpl implements UserService {
 				logger.error(EELFLoggerDelegate.errorLogger, "getUserByFirstLastName failed", e);
 			} finally {
 				try {
+					if(in!=null) {
 					in.close();
 					con.disconnect();
+					}
 				} catch (IOException e) {
 					logger.error(EELFLoggerDelegate.errorLogger, "getUserByFirstLastName 2 failed", e);
 				}

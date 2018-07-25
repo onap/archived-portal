@@ -2,7 +2,7 @@
  * ============LICENSE_START==========================================
  * ONAP Portal
  * ===================================================================
- * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2017-2018 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
@@ -61,8 +61,10 @@ import org.onap.portalapp.portal.domain.EPUser;
 import org.onap.portalapp.portal.logging.aop.EPEELFLoggerAdvice;
 import org.onap.portalapp.portal.logging.format.EPAppMessagesEnum;
 import org.onap.portalapp.portal.logging.logic.EPLogUtil;
+import org.onap.portalapp.portal.service.AppsCacheService;
 import org.onap.portalapp.portal.service.BasicAuthenticationCredentialService;
 import org.onap.portalapp.portal.service.ExternalAccessRolesService;
+import org.onap.portalapp.portal.utils.EPCommonSystemProperties;
 import org.onap.portalapp.portal.utils.EcompPortalUtils;
 import org.onap.portalapp.service.RemoteWebServiceCallService;
 import org.onap.portalapp.service.sessionmgt.ManageService;
@@ -79,8 +81,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.method.HandlerMethod;
 
 public class PortalResourceInterceptor extends ResourceInterceptor {
-	private static final String APP_KEY = "uebkey";
-
+	
 	private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(PortalResourceInterceptor.class);
 
 	@Autowired
@@ -88,6 +89,9 @@ public class PortalResourceInterceptor extends ResourceInterceptor {
 
 	@Autowired
 	private ManageService manageService;
+	
+	@Autowired
+	AppsCacheService appCacheService;
 
 	@Autowired
 	private EPEELFLoggerAdvice epAdvice;
@@ -167,7 +171,7 @@ public class PortalResourceInterceptor extends ResourceInterceptor {
 				String secretKey = null;
 				try {
 					epAdvice.loadServletRequestBasedDefaults(request, SecurityEventTypeEnum.INCOMING_REST_MESSAGE);
-					if (!remoteWebServiceCallService.verifyRESTCredential(secretKey, request.getHeader(APP_KEY),
+					if (!remoteWebServiceCallService.verifyRESTCredential(secretKey, request.getHeader(EPCommonSystemProperties.UEB_KEY),
 							request.getHeader("username"), request.getHeader("password"))) {
 						throw new UrlAccessRestrictedException();
 					}
@@ -180,7 +184,7 @@ public class PortalResourceInterceptor extends ResourceInterceptor {
 			}
 
 			if (controllerObj instanceof WebAnalyticsExtAppController) {
-				if (!remoteWebServiceCallService.verifyAppKeyCredential(request.getHeader(APP_KEY))) {
+				if (!remoteWebServiceCallService.verifyAppKeyCredential(request.getHeader(EPCommonSystemProperties.UEB_KEY))) {
 					logger.error(EELFLoggerDelegate.errorLogger,
 							"preHandle: failed to verify app key for web analytics call");
 					throw new UrlAccessRestrictedException();
@@ -226,8 +230,8 @@ public class PortalResourceInterceptor extends ResourceInterceptor {
 		String uri = request.getRequestURI().toString();
 		uri = uri.substring(uri.indexOf("/", 1));
 
-		final String authHeader = request.getHeader("Authorization");
-		final String uebkey = request.getHeader("uebkey");
+		final String authHeader = request.getHeader(EPCommonSystemProperties.AUTHORIZATION);
+		final String uebkey = request.getHeader(EPCommonSystemProperties.UEB_KEY);
 		
 		// Unauthorized access due to missing HTTP Authorization request header
 		if (authHeader == null) {
@@ -237,7 +241,7 @@ public class PortalResourceInterceptor extends ResourceInterceptor {
 			return false;
 		}
 
-		String[] accountNamePassword = getUserNamePassword(authHeader);
+		String[] accountNamePassword = EcompPortalUtils.getUserNamePassword(authHeader);
 		if (accountNamePassword == null || accountNamePassword.length != 2) {
 			final String msg = "failed to get username and password from Atuhorization header";
 			logger.debug(EELFLoggerDelegate.debugLogger, "checkBasicAuth: {}", msg);
@@ -247,15 +251,11 @@ public class PortalResourceInterceptor extends ResourceInterceptor {
 
 		if(uebkey !=null && !uebkey.isEmpty())
 		{
-			List<EPApp> app = externalAccessRolesService.getApp(uebkey);
-			EPApp application = null;
-			if (app.isEmpty()) {
+			EPApp application = appCacheService.getAppFromUeb(uebkey,1);
+			if (application == null) {
 				throw new Exception("Invalid uebkey!");
 			}
-			if (app.size() != 0 && !app.isEmpty()) {
-				application = app.get(0);
-			}
-			if (application != null) {
+			else {
 				final String appUsername = application.getUsername();
 				final String dbDecryptedPwd = CipherUtil.decryptPKC(application.getAppPassword());
 				if (appUsername.equals(accountNamePassword[0]) && dbDecryptedPwd.equals(accountNamePassword[1])) {
@@ -315,13 +315,6 @@ public class PortalResourceInterceptor extends ResourceInterceptor {
 
 		// Made it to the end!
 		return true;
-	}
-
-	private String[] getUserNamePassword(String authValue) {
-		String base64Credentials = authValue.substring("Basic".length()).trim();
-		String credentials = new String(Base64.getDecoder().decode(base64Credentials), Charset.forName("UTF-8"));
-		final String[] values = credentials.split(":", 2);
-		return values;
 	}
 
 	@SuppressWarnings("unused")

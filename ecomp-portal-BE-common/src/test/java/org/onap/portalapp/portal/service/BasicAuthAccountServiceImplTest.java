@@ -175,4 +175,17 @@ public class BasicAuthAccountServiceImplTest {
 		basicAuthAccountServiceImpl.deleteEndpointAccout(1l);
 		
 	}
+	
+	@Test
+	public void getBasicAuthCredentialsById() throws Exception{
+		List<BasicAuthCredentials> list = new ArrayList<>();
+		BasicAuthCredentials basicAuthCredentials = new BasicAuthCredentials();
+		basicAuthCredentials.setPassword("password");
+		basicAuthCredentials.setId(1l);
+		list.add(basicAuthCredentials);
+		Mockito.when((List<BasicAuthCredentials>) dataAccessService.getList(BasicAuthCredentials.class, null))
+		.thenReturn(list);
+		basicAuthAccountServiceImpl.getBasicAuthCredentialsById(1l);
+		
+	}
 }

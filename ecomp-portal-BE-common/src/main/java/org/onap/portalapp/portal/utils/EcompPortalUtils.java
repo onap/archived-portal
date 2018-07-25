@@ -2,7 +2,7 @@
  * ============LICENSE_START==========================================
  * ONAP Portal
  * ===================================================================
- * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2017-2018 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
@@ -40,8 +40,10 @@ package org.onap.portalapp.portal.utils;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 
@@ -564,4 +566,18 @@ public class EcompPortalUtils {
 		       return false;
 		    }
 		  }
+	  /**
+	   * 
+	   *  It retrieves account information from input String
+	   * 
+	   * @param authValue
+	   * @return Array of Account information
+	   * 
+	   */
+	  public static String[] getUserNamePassword(String authValue) {
+			String base64Credentials = authValue.substring("Basic".length()).trim();
+			String credentials = new String(Base64.getDecoder().decode(base64Credentials), Charset.forName("UTF-8"));
+			final String[] values = credentials.split(":", 2);
+			return values;
+		}
 }

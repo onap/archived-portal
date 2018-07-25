@@ -2,7 +2,7 @@
  * ============LICENSE_START==========================================
  * ONAP Portal
  * ===================================================================
- * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2017-2018 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
@@ -854,7 +854,7 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 	@RequestMapping(value = { "/v2/user/{loginId}" }, method = RequestMethod.GET, produces = "application/json")
 	public String getEcompUser(HttpServletRequest request, HttpServletResponse response,
 			@PathVariable("loginId") String loginId) throws Exception {
-		EcompUser user = null;
+		EcompUser user = new EcompUser();
 		ObjectMapper mapper = new ObjectMapper();
 		String answer = null;
 		try {
@@ -868,10 +868,7 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 			sendErrorResponse(response, e);	
 			logger.error(EELFLoggerDelegate.errorLogger, "getEcompUser failed", e);
 		}
-		if (user != null) {
-			return mapper.writeValueAsString(user);
-		}
-		return null;
+		return mapper.writeValueAsString(user);
 	}
 
 	@ApiOperation(value = "Gets user ecomp role for an application.", response = CentralUser.class, responseContainer = "List")

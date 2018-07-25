@@ -2,7 +2,7 @@
  * ============LICENSE_START==========================================
  * ONAP Portal
  * ===================================================================
- * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2017-2018 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
@@ -56,5 +56,7 @@ public interface AppsCacheService {
 	 */
 	String getAppEndpoint(Long appId);
 
-	EPApp getAppForAnalytics(String appKey);
+	EPApp getAppFromUeb(String appKey);
+
+	EPApp getAppFromUeb(String appKey, Integer quickCacheRefresh);
 }

@@ -39,44 +39,46 @@ package org.onap.portalapp.portal.transport;
 
 //@RunWith(PowerMockRunner.class)
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import org.junit.Before;
 import org.junit.Test;
 
 public class RemoteRoleTest {
-	RemoteRole remoteRole;
+	
 	private String NAME = "test";
     private Long ID = 12L;
     private Set<String> ROLEFUNCTIONS = new HashSet<String>();
     
-	@Before
-	public void setUp() {
-		remoteRole = new RemoteRole();
+    @Test
+    public void test() {
+    	RemoteRole rr=buildRemoteRole();
+    	RemoteRole	remoteRole = new RemoteRole();
+    	remoteRole.setRoleFunctions(rr.getRoleFunctions());
+		remoteRole.setName(rr.getName());
+		remoteRole.setId(rr.getId());
+		assertNotNull(remoteRole.toString());
+    	assertEquals(remoteRole.hashCode(), rr.hashCode());
+    	assertTrue(remoteRole.equals(rr));
+    	assertFalse(remoteRole.equals(null));
+    	remoteRole.setName(null);
+    	assertFalse(remoteRole.equals(rr));
+    	remoteRole.setId(null);
+    	assertFalse(remoteRole.equals(rr));
+    }
+	
+	private RemoteRole  buildRemoteRole() {
+		RemoteRole	remoteRole = new RemoteRole();
 		remoteRole.setRoleFunctions(ROLEFUNCTIONS);
 		remoteRole.setName(NAME);
 		remoteRole.setId(ID);
+		return remoteRole;
 	}
 	
 	
-	@Test
-	public void testNotNull() {
-		assertNotNull(remoteRole);
-	}
-	
-	@Test
-	public void testRemoteRoleProperties() {
-		assertEquals(ROLEFUNCTIONS, remoteRole.getRoleFunctions());
-		assertEquals(ID, remoteRole.getId());
-		assertEquals(NAME, remoteRole.getName());
-	}
-	
-	@Test
-	public void testequals() {
-		assertEquals(true, remoteRole.equals(remoteRole));
-	}
 	
 }

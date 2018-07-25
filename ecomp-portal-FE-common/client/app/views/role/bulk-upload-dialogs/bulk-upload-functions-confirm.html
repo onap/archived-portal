@@ -33,7 +33,7 @@
  
   ============LICENSE_END============================================
  
-  ECOMP is a trademark and service mark of AT&T Intellectual Property.
+  
   -->
 <div>
 	<div class="b2b-modal-header">
@@ -50,8 +50,13 @@
 		<div class="upload-instructions" ng-show="isProcessing">
 			{{progressMsg}} <br> <br> <span class="ecomp-spinner"></span>
 		</div>
+		
+		<div class="upload-instructions"
+				ng-show="isProcessedRecords">
+				{{conformMsg}}
+			</div>
 
-		<div ng-hide="isProcessing">
+		<div ng-hide="isProcessing || isProcessedRecords">
 			<div class="upload-instructions">Click OK to upload the valid
 				functions. Invalid or existing functions will be ignored.</div>
 			<p>
@@ -77,7 +82,7 @@
 				characters, spaces, hyphens(-), dots(.) and underscores(_)
 			</p>
 		</div>
-		<div class="c-ecomp-portal-abs-table default"
+		<div ng-hide="isProcessing || isProcessedRecords" class="c-ecomp-portal-abs-table default"
 			style="height: 250px !important">
 			<table b2b-table table-data="uploadFile"
 				search-string="bulkRoleAndFunctions.searchString"
@@ -127,7 +132,7 @@
 <div class="b2b-modal-footer">
 	<div class="cta-button-group in">
 		<button id="bulk-user-ok-button" class="btn btn-alt btn-small"
-			ng-class="{disabled: isValidating}" ng-click="updateFunctionsInDB()">Ok</button>
+			ng-disabled="isProcessedRecords" ng-class="{disabled: isValidating}" ng-click="updateFunctionsInDB()">Ok</button>
 		<button id="bulk-user-cancel-button" class="btn btn-alt btn-small"
 			ng-click="$dismiss('cancel')">Cancel</button>
 	</div>

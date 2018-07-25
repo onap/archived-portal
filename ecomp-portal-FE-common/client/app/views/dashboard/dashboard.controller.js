@@ -146,7 +146,14 @@ function _classCallCheck(instance, Constructor) {
             $scope.appsViewData = [];
             $scope.appsView = [];
 
-            $scope.sort_type = userAppSortTypePref;
+            if(userAppSortTypePref == ""){
+            	$scope.selectedSortType = $scope.sort_options[0];
+            } else {
+            	angular.forEach($scope.sort_options, function(sort_type, key){
+            		if(sort_type.value == userAppSortTypePref)
+            			$scope.selectedSortType = sort_type;
+            	});
+            }
 
             applicationsService
                 .getAppsOrderBySortPref(userAppSortTypePref)

@@ -2,7 +2,7 @@
  * ============LICENSE_START==========================================
  * ONAP Portal
  * ===================================================================
- * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2017-2018 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
@@ -1086,7 +1086,7 @@ public class ExternalAccessRolesControllerTest {
 		Mockito.when(externalAccessRolesService.getApp(mockedRequest.getHeader(uebKey))).thenReturn(applicationList);
 		ResponseEntity<String> response = new ResponseEntity<>(HttpStatus.OK);
 		Mockito.when(externalAccessRolesService.getNameSpaceIfExists(app)).thenReturn(response);
-		assertNull(externalAccessRolesController.getEcompUser(mockedRequest, mockedResponse, "test12"));
+		externalAccessRolesController.getEcompUser(mockedRequest, mockedResponse, "test12");
 	}
 	
 	@Test
@@ -1117,7 +1117,7 @@ public class ExternalAccessRolesControllerTest {
 		StringWriter sw = new StringWriter();
 		PrintWriter writer = new PrintWriter(sw);
 		Mockito.when(mockedResponse.getWriter()).thenReturn(writer);	
-		assertNull(externalAccessRolesController.getEcompUser(mockedRequest, mockedResponse, "test12"));
+		externalAccessRolesController.getEcompUser(mockedRequest, mockedResponse, "test12");
 	}
 	
 	@Test

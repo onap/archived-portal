@@ -2,7 +2,7 @@
  * ============LICENSE_START==========================================
  * ONAP Portal
  * ===================================================================
- * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2017-2018 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
@@ -61,6 +61,7 @@ import org.onap.portalapp.portal.framework.MockitoTestSuite;
 import org.onap.portalapp.portal.service.AdminRolesService;
 import org.onap.portalapp.portal.service.SearchService;
 import org.onap.portalapp.portal.service.UserRolesService;
+import org.onap.portalapp.portal.transport.AppNameIdIsAdmin;
 import org.onap.portalapp.portal.transport.AppWithRolesForUser;
 import org.onap.portalapp.portal.transport.AppsListWithAdminRole;
 import org.onap.portalapp.portal.transport.FieldsValidator;
@@ -166,6 +167,132 @@ public class UserRolesControllerTest extends MockitoTestSuite {
 		assertEquals(expectedFieldValidator.getFields(), actualFieldsValidator.getFields());
 
 	}
+	@Test
+	public void testPutAppWithUserRoleStateForUser() {
+		AppWithRolesForUser appWithRolesForUser =buildAppwithRoles();
+		EPUser user = mockUser.mockEPUser();
+		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
+		Mockito.when(adminRolesService.isSuperAdmin(user)).thenReturn(false);
+		Mockito.when(adminRolesService.isAccountAdmin(user)).thenReturn(true);
+		Mockito.when(userRolesService.setAppWithUserRoleStateForUser(user, appWithRolesForUser)).thenReturn(true);
+		userRolesController.putAppWithUserRoleStateForUser(mockedRequest, appWithRolesForUser, mockedResponse);	
+		
+	}
+	
+	@Test
+	public void testPutAppWithUserRoleStateForSuperAdminUser() {
+		AppsListWithAdminRole adminRoleUser=buildAdminRoleUser();
+		
+		EPUser user = mockUser.mockEPUser();
+		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
+		Mockito.when(adminRolesService.isSuperAdmin(user)).thenReturn(true);
+		Mockito.when(adminRolesService.isAccountAdmin(user)).thenReturn(true);
+		Mockito.when(adminRolesService.setAppsWithAdminRoleStateForUser( adminRoleUser)).thenReturn(true);
+		userRolesController.putAppsWithAdminRoleStateForUser(mockedRequest, adminRoleUser, mockedResponse);	
+		
+	}
+	
+	
+	
+	@Test
+	public void testPutAppWithUserRoleStateForAdminUser() {
+		AppsListWithAdminRole adminRoleUser=buildAdminRoleUser();
+		
+		EPUser user = mockUser.mockEPUser();
+		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
+		Mockito.when(adminRolesService.isSuperAdmin(user)).thenReturn(false);
+		Mockito.when(adminRolesService.isAccountAdmin(user)).thenReturn(true);
+		Mockito.when(adminRolesService.setAppsWithAdminRoleStateForUser( adminRoleUser)).thenReturn(true);
+		userRolesController.putAppsWithAdminRoleStateForUser(mockedRequest, adminRoleUser, mockedResponse);	
+		
+	}
+	@Test
+	public void testPutAppWithUserRoleStateForStandardUser() {
+		AppWithRolesForUser appWithRolesForUser =buildAppwithRoles();
+		EPUser user = mockUser.mockEPUser();
+		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
+		Mockito.when(adminRolesService.isSuperAdmin(user)).thenReturn(false);
+		Mockito.when(adminRolesService.isAccountAdmin(user)).thenReturn(false);
+		userRolesController.putAppWithUserRoleStateForUser(mockedRequest, appWithRolesForUser, mockedResponse);	
+		
+	}
+	
+	@Test
+	public void testPutAppWithUserRoleRequest() {
+		AppWithRolesForUser appWithRolesForUser =buildAppwithRoles();
+		EPUser user = mockUser.mockEPUser();
+		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
+		FieldsValidator fieldsValidator=new FieldsValidator();
+		fieldsValidator.setHttpStatusCode(200l);
+		Mockito.when(userRolesService.putUserAppRolesRequest(appWithRolesForUser, user)).thenReturn(fieldsValidator);
+		userRolesController.putAppWithUserRoleRequest(mockedRequest, appWithRolesForUser, mockedResponse);	
+		
+	}
+	
+	@Test
+	public void testPutAppWithUserRoleBadRequest() {
+		AppWithRolesForUser appWithRolesForUser =buildAppwithRoles();
+		EPUser user = mockUser.mockEPUser();
+		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);		
+		userRolesController.putAppWithUserRoleRequest(mockedRequest, appWithRolesForUser, mockedResponse);	
+		
+	}
+	
+	private AppsListWithAdminRole buildAdminRoleUser() {
+		AppsListWithAdminRole adminRoleUser=new AppsListWithAdminRole();
+		ArrayList<AppNameIdIsAdmin> roles=new ArrayList<>();
+		
+		AppNameIdIsAdmin adminAppRole=new AppNameIdIsAdmin();
+		adminAppRole.setAppName("test");
+		adminAppRole.setIsAdmin(true);
+		adminAppRole.setRestrictedApp(false);
+		
+		
+		AppNameIdIsAdmin adminAppRole1=new AppNameIdIsAdmin();
+		adminAppRole1.setAppName("Sample");
+		adminAppRole1.setIsAdmin(true);
+		adminAppRole1.setRestrictedApp(true);
+		
+		
+		AppNameIdIsAdmin adminAppRole2=new AppNameIdIsAdmin();
+		adminAppRole2.setAppName("testSample");
+		adminAppRole2.setIsAdmin(false);
+		adminAppRole2.setRestrictedApp(true);
+		roles.add(adminAppRole);
+		roles.add(adminAppRole1);
+		roles.add(adminAppRole2);
+		adminRoleUser.setAppsRoles(roles);
+		
+		
+		return adminRoleUser;
+		
+		
+	}
+	
+	private AppWithRolesForUser buildAppwithRoles() {
+		AppWithRolesForUser appWithRolesForUser = new AppWithRolesForUser();
+		List<RoleInAppForUser> listofRoles = new ArrayList<RoleInAppForUser>();
+
+		appWithRolesForUser.setOrgUserId("guest");
+		appWithRolesForUser.setAppId((long) 550);
+		appWithRolesForUser.setAppName("D2 Services Analytics Dashboard");
+		appWithRolesForUser.setAppRoles(listofRoles);
+
+		RoleInAppForUser roleInAppForUser = new RoleInAppForUser();
+		roleInAppForUser.setIsApplied(false);
+		roleInAppForUser.setRoleId((long) 1);
+		roleInAppForUser.setRoleName("System Administrator");
+
+		RoleInAppForUser roleInAppForUser1 = new RoleInAppForUser();
+		roleInAppForUser1.setIsApplied(true);
+		roleInAppForUser1.setRoleId((long) 16);
+		roleInAppForUser1.setRoleName("Standard User");
+
+		listofRoles.add(roleInAppForUser);
+		listofRoles.add(roleInAppForUser1);
+		appWithRolesForUser.setAppRoles(listofRoles);
+		return appWithRolesForUser;
+	}
 	
 	@Test
 	public void getPhoneBookSearchResultBadPermissionsTest() {
@@ -199,7 +326,7 @@ public class UserRolesControllerTest extends MockitoTestSuite {
 		actualResult = userRolesController.getPhoneBookSearchResult(mockedRequest, searchString, mockedResponse);
 		assertEquals(expectedResult, actualResult);
 	
-	}
+	}	
 	
 	@Test
 	public void getPhoneBookSearchResultTest() {

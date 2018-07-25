@@ -40,7 +40,7 @@
         "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
         "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 
-<!-- Publishes mappings and queries specific to the ECOMP Portal application. -->
+<!-- Publishes mappings and queries specific to the ONAP Portal application. -->
 <hibernate-mapping package="org.onap.portalapp.portal.domain">
 
 	<!-- Widget class mapping details -->

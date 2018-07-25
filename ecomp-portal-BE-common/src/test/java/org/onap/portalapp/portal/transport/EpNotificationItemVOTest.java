@@ -37,47 +37,81 @@
  */
 package org.onap.portalapp.portal.transport;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
 
 import org.junit.Test;
-import org.onap.portalapp.portal.transport.EpNotificationItemVO;
 
 public class EpNotificationItemVOTest {
+	
+	private static final String TEST="test";
+	private static final Integer ID=1;
+	private static final Long EP_ID=1l;
+	private static final Date  DATE=new Date();
+	private static final Character CHARACTER='a';
 
 	public EpNotificationItemVO mockEpNotificationItemVO(){
 		EpNotificationItemVO epNotificationItemVO = new EpNotificationItemVO();
 				
-		epNotificationItemVO.setNotificationId(1);
-		epNotificationItemVO.setIsForOnlineUsers('a');
-		epNotificationItemVO.setIsForAllRoles('a');
-		epNotificationItemVO.setActiveYn('a');
-		epNotificationItemVO.setMsgHeader("test");
-		epNotificationItemVO.setMsgDescription("test");
-		epNotificationItemVO.setMsgSource("test");
+		epNotificationItemVO.setNotificationId(ID);
+		epNotificationItemVO.setIsForOnlineUsers(CHARACTER);
+		epNotificationItemVO.setIsForAllRoles(CHARACTER);
+		epNotificationItemVO.setActiveYn(CHARACTER);
+		epNotificationItemVO.setMsgHeader(TEST);
+		epNotificationItemVO.setMsgDescription(TEST);
+		epNotificationItemVO.setMsgSource(TEST);
+		epNotificationItemVO.setStartTime(DATE);
+		epNotificationItemVO.setEndTime(DATE);
 		epNotificationItemVO.setPriority(1);
 		epNotificationItemVO.setCreatorId(1);
-		epNotificationItemVO.setLoginId("test");
-		epNotificationItemVO.setNotificationHyperlink("test");
+		epNotificationItemVO.setCreatedDate(DATE);
+		epNotificationItemVO.setLoginId(TEST);
+		epNotificationItemVO.setNotificationHyperlink(TEST);
+		epNotificationItemVO.setId(EP_ID);
+		epNotificationItemVO.setCreated(DATE);
+		epNotificationItemVO.setModified(DATE);
+		epNotificationItemVO.setCreatedId(EP_ID);
+		epNotificationItemVO.setModifiedId(EP_ID);
+		epNotificationItemVO.setRowNum(EP_ID);
+		
+		epNotificationItemVO.setAuditUserId(EP_ID);
+		epNotificationItemVO.setAuditTrail(null);
+			
 		
 		 return epNotificationItemVO;
 	}
 	
 	@Test
 	public void epNotificationItemVOTest(){
-		EpNotificationItemVO epNotificationItemVO = mockEpNotificationItemVO();
+		EpNotificationItemVO epNotification = mockEpNotificationItemVO();
 		
-		assertEquals(epNotificationItemVO.getNotificationId().toString(), "1");
-		/*assertEquals(epNotificationItemVO.getIsForOnlineUsers(), 'a');
-		assertEquals(epNotificationItemVO.getIsForAllRoles(), 'a');
-		assertEquals(epNotificationItemVO.getActiveYn(), 'a');*/
-		assertEquals(epNotificationItemVO.getMsgHeader(), "test");
-		assertEquals(epNotificationItemVO.getMsgDescription(), "test");
-		assertEquals(epNotificationItemVO.getMsgSource(), "test");
-		assertEquals(epNotificationItemVO.getPriority().toString(), "1");
-		assertEquals(epNotificationItemVO.getCreatorId().toString(), "1");
-		assertEquals(epNotificationItemVO.getLoginId(), "test");
-		assertEquals(epNotificationItemVO.getNotificationHyperlink(), "test");
+		EpNotificationItemVO epNotificationItemVO =new EpNotificationItemVO();
+		
+		epNotificationItemVO.setNotificationId(epNotification.getNotificationId());
+		epNotificationItemVO.setIsForOnlineUsers(epNotification.getIsForOnlineUsers());
+		epNotificationItemVO.setIsForAllRoles(epNotification.getIsForAllRoles());
+		epNotificationItemVO.setActiveYn(epNotification.getActiveYn());
+		epNotificationItemVO.setMsgHeader(epNotification.getMsgHeader());
+		epNotificationItemVO.setMsgDescription(epNotification.getMsgDescription());
+		epNotificationItemVO.setMsgSource(epNotification.getMsgSource());
+		epNotificationItemVO.setStartTime(epNotification.getStartTime());
+		epNotificationItemVO.setEndTime(epNotification.getEndTime());
+		epNotificationItemVO.setPriority(epNotification.getPriority());
+		epNotificationItemVO.setCreatorId(epNotification.getCreatorId());
+		epNotificationItemVO.setCreatedDate(epNotification.getCreatedDate());
+		epNotificationItemVO.setLoginId(epNotification.getLoginId());
+		epNotificationItemVO.setNotificationHyperlink(epNotification.getNotificationHyperlink());
+		epNotificationItemVO.setId(epNotification.getId());
+		epNotificationItemVO.setCreated(epNotification.getCreated());
+		epNotificationItemVO.setModified(epNotification.getModified());
+		epNotificationItemVO.setCreatedId(epNotification.getCreatedId());
+		epNotificationItemVO.setModifiedId(epNotification.getModifiedId());
+		epNotificationItemVO.setRowNum(epNotification.getRowNum());
+		
+		epNotificationItemVO.setAuditUserId(epNotification.getAuditUserId());
+		epNotificationItemVO.setAuditTrail(epNotification.getAuditTrail());
+		
+		
 	}
 }

@@ -38,8 +38,11 @@ We worked on hardening the ONAP Portal platform by improving code quality and ad
         * Not able to delete portal admin user
         * Add support to connect with AAF Runtime
         * Portal's SDK UI documentation in ONAP wiki needs samples
-        * The Portal/SDK fn_user table has encrypted passwords that need to be changed to use a hash algorithm
+        * The Portal/SDK fn_user table has encrypted passwords that need to hange to using a hash algorithm
         * UI cleanup needed: on adding entries to News Widget and display on Application Onboarding page
+
+**Security Issues**
+        * https://wiki.onap.org/pages/viewpage.action?pageId=27689089
 
 **Security Notes**
 

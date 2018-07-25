@@ -65,6 +65,8 @@
 
     			// Flag that indicates background work is proceeding
     			$scope.isProcessing = true;
+    			
+    			$scope.isProcessedRecords = false;
 
     			// Load user's admin applications
     			applicationsService.getAdminApps().promise().then(apps => {
@@ -91,9 +93,11 @@
                         $scope.selectedApplication = $scope.adminApps[0];
                     }
     				$scope.isProcessing = false;
+    				$scope.isProcessedRecords = false;
                 }).catch(err => {
                     $log.error('BulkUserModalCtrl::init: getAdminApps threw', err);
                 	$scope.isProcessing = false;
+                	$scope.isProcessedRecords = false;
                 });
     			
     		}; // init
@@ -149,6 +153,8 @@
     		 */
     		$scope.readValidateFile = () => {
     			$scope.isProcessing = true;
+    			$scope.conformMsg = '';
+    			$scope.isProcessedRecords = true;
     			$scope.progressMsg = 'Reading upload file..';
     			var reader = new FileReader();
     			reader.onload = function(event) {
@@ -192,22 +198,26 @@
 	    							$log.debug('BulkUserModalCtrl::readValidateFile inner-then ends');
 	    						$scope.progressMsg = 'Done.';
 	    						$scope.isProcessing = false;
+	    						$scope.isProcessedRecords = false;
                     		},
                     		function(error) {
                     			$log.error('BulkUserModalCtrl::readValidateFile: failed retrieving user-app roles');
 	    						$scope.isProcessing = false;
+	    						$scope.isProcessedRecords = false;
                     		}
                     		); // then of app promises
                     	},
                     	function(error) {
                     		$log.error('BulkUserModalCtrl::readValidateFile: failed retrieving user info');
                     		$scope.isProcessing = false;
+                    		$scope.isProcessedRecords = false;
                     	}
                     	); // then of user promises
                     },
                     function(error) {
                     	$log.error('BulkUserModalCtrl::readValidateFile: failed retrieving app role info');
                     	$scope.isProcessing = false;
+                    	$scope.isProcessedRecords = false;
                     }
                     ); // then of role promise
            
@@ -443,6 +453,8 @@
     		 */
     		$scope.updateDB = () => {
     			$scope.isProcessing = true;
+    			$scope.conformMsg = '';
+    			$scope.isProcessedRecords = true;
     			$scope.progressMsg = 'Sending requests to application..';
     			if (debug)
     				$log.debug('BulkUserModalCtrl::updateDB: request length is ' + appUserRolesRequest.length);
@@ -476,11 +488,11 @@
     			
             	 // Run all the promises
             	 $q.all(promises).then(function(){
+            		 $scope.conformMsg  = 'Processed ' + numberUsersSucceeded + ' users.';
             		 $scope.isProcessing = false;
-            		 confirmBoxService.showInformation('Processed ' + numberUsersSucceeded + ' users.').then(isConfirmed => {
-            			 // Close the upload-confirm dialog
-            			 ngDialog.close();
-            		 });
+            		 $scope.isProcessedRecords = true;
+            		 $scope.uploadFile = [];
+            		
             	 });
              }; // updateDb
              

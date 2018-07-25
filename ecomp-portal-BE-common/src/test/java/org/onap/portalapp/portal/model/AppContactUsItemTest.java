@@ -2,7 +2,7 @@
  * ============LICENSE_START==========================================
  * ONAP Portal
  * ===================================================================
- * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2017-2018 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
@@ -38,6 +38,8 @@
 package org.onap.portalapp.portal.model;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
@@ -45,42 +47,53 @@ import org.onap.portalapp.portal.ecomp.model.AppContactUsItem;
 
 public class AppContactUsItemTest {
 	
+	private static final String TEST="test";
+	
 	public AppContactUsItem mockAppContactUsItem(){
 		AppContactUsItem appContactUsItem = new AppContactUsItem();
 				
 		appContactUsItem.setAppId((long)1);
-		appContactUsItem.setAppName("test");
-		appContactUsItem.setDescription("test");
-		appContactUsItem.setContactName("test");
-		appContactUsItem.setContactEmail("test");
-		appContactUsItem.setUrl("test");
-		appContactUsItem.setActiveYN("test");
+		appContactUsItem.setAppName(TEST);
+		appContactUsItem.setDescription(TEST);
+		appContactUsItem.setContactName(TEST);
+		appContactUsItem.setContactEmail(TEST);
+		appContactUsItem.setUrl(TEST);
+		appContactUsItem.setActiveYN(TEST);
 		
 		return appContactUsItem;
 	}
 
+	
 	@Test
 	public void appContactUsItemTest(){
-		AppContactUsItem appContactUsItem = mockAppContactUsItem();
+		AppContactUsItem appContactUsItem1 = mockAppContactUsItem();
 		
-		AppContactUsItem appContactUsItem1 = new AppContactUsItem();
-		appContactUsItem1.setAppId((long)1);
-		appContactUsItem1.setAppName("test");
-		appContactUsItem1.setDescription("test");
-		appContactUsItem1.setContactName("test");
-		appContactUsItem1.setContactEmail("test");
-		appContactUsItem1.setUrl("test");
-		appContactUsItem1.setActiveYN("test");
+		AppContactUsItem appContactUsItem = new AppContactUsItem();
+		appContactUsItem.setAppId(appContactUsItem1.getAppId());
+		appContactUsItem.setAppName(appContactUsItem1.getAppName());
+		appContactUsItem.setDescription(appContactUsItem1.getDescription());
+		appContactUsItem.setContactName(appContactUsItem1.getContactName());
+		appContactUsItem.setContactEmail(appContactUsItem1.getContactEmail());
+		appContactUsItem.setUrl(appContactUsItem1.getUrl());
+		appContactUsItem.setActiveYN(appContactUsItem1.getActiveYN());
+		assertNotNull(appContactUsItem.toString());
 		
-		assertEquals(appContactUsItem.getAppId(), appContactUsItem1.getAppId());
-		assertEquals(appContactUsItem.getAppName(), appContactUsItem1.getAppName());
-		assertEquals(appContactUsItem.getDescription(), appContactUsItem1.getDescription());
-		assertEquals(appContactUsItem.getContactName(), appContactUsItem1.getContactName());
-		assertEquals(appContactUsItem.getContactEmail(), appContactUsItem1.getContactEmail());
-		assertEquals(appContactUsItem.getUrl(), appContactUsItem1.getUrl());
-		assertEquals(appContactUsItem.getActiveYN(), appContactUsItem1.getActiveYN());
-		assertEquals(appContactUsItem.toString(), "AppContactUsItem [appId=1, appName=test, description=test, contactName=test, contactEmail=test, url=test, activeYN=test]");
 		assertEquals(appContactUsItem.hashCode(), appContactUsItem1.hashCode());
 		assertTrue(appContactUsItem.equals(appContactUsItem1));
+		assertFalse(appContactUsItem.equals(null));
+		appContactUsItem.setUrl(null);
+		assertFalse(appContactUsItem.equals(appContactUsItem1));
+		appContactUsItem.setDescription(null);
+		assertFalse(appContactUsItem.equals(appContactUsItem1));
+		appContactUsItem.setContactName(null);
+		assertFalse(appContactUsItem.equals(appContactUsItem1));
+		appContactUsItem.setContactEmail(null);
+		assertFalse(appContactUsItem.equals(appContactUsItem1));
+		appContactUsItem.setAppName(null);
+		assertFalse(appContactUsItem.equals(appContactUsItem1));
+		appContactUsItem.setAppId(null);
+		assertFalse(appContactUsItem.equals(appContactUsItem1));
+		appContactUsItem.setActiveYN(null);
+		assertFalse(appContactUsItem.equals(appContactUsItem1));
 	}
 }

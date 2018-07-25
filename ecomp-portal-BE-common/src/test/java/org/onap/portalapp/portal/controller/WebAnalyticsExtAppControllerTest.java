@@ -2,7 +2,7 @@
  * ============LICENSE_START==========================================
  * ONAP Portal
  * ===================================================================
- * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2017-2018 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
@@ -87,6 +87,9 @@ public class WebAnalyticsExtAppControllerTest {
 
 	@Mock
 	AuditService auditService = new AuditServiceImpl();
+	@Mock
+	Analytics analytics;
+	
 
 //	@Mock 
 //	InputStream analyticsFileStream;
@@ -142,6 +145,30 @@ public class WebAnalyticsExtAppControllerTest {
 		PortalAPIResponse	actualPortalAPIResponse = 	webAnalyticsExtAppController.storeAnalyticsScript(mockedRequest, analytics);
 		assertTrue(expectedPortalAPIResponse.getMessage().equals(actualPortalAPIResponse.getMessage()));
 		assertTrue(expectedPortalAPIResponse.getStatus().equals(actualPortalAPIResponse.getStatus()));	
+	}
+	
+	@Test
+	public void storeAnalyticsScriptIfAnalyticsTest() throws Exception
+	{
+		PortalAPIResponse	expectedPortalAPIResponse = new PortalAPIResponse(true, "ok");		
+		expectedPortalAPIResponse.setMessage("success");
+		EPApp appRecord =new EPApp();
+		appRecord.setName("test");
+		Mockito.when(mockedRequest.getHeader("uebkey")).thenReturn("test");
+		Mockito.when(analytics.getUserid()).thenReturn("test");
+		Mockito.when(analytics.getFunction()).thenReturn("test");
+		PortalAPIResponse	actualPortalAPIResponse = 	webAnalyticsExtAppController.storeAnalyticsScript(mockedRequest, analytics);
+		assertTrue(expectedPortalAPIResponse.getMessage().equals(actualPortalAPIResponse.getMessage()));
+		assertTrue(expectedPortalAPIResponse.getStatus().equals(actualPortalAPIResponse.getStatus()));	
+	}
+	
+	
+	@Test
+	public void testGetAnalyticsScript()throws Exception {
+		PowerMockito.mockStatic(SystemProperties.class);
+		Mockito.when(SystemProperties.getProperty("frontend_url")).thenReturn("http://www.ecomp.com/test");
+		 webAnalyticsExtAppController.getAnalyticsScript(mockedRequest);
+		
 	}
 		
 }

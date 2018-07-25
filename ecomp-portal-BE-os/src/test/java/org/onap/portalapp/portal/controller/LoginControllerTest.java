@@ -2,7 +2,7 @@
  * ============LICENSE_START==========================================
  * ONAP Portal
  * ===================================================================
- * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2017-2018 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
@@ -41,6 +41,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mockito.Matchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -49,6 +52,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -72,6 +76,7 @@ import org.onap.portalapp.portal.service.EPRoleService;
 import org.onap.portalapp.portal.service.SharedContextService;
 import org.onap.portalapp.portal.utils.EPCommonSystemProperties;
 import org.onap.portalapp.service.EPProfileService;
+import org.onap.portalapp.util.SessionCookieUtil;
 import org.onap.portalsdk.core.domain.MenuData;
 import org.onap.portalsdk.core.onboarding.util.CipherUtil;
 import org.onap.portalsdk.core.util.SystemProperties;
@@ -81,11 +86,15 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.mock.web.DelegatingServletInputStream;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.servlet.ModelAndView;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ SystemProperties.class, CipherUtil.class, AppUtils.class, UserUtils.class, EPCommonSystemProperties.class})
+@PrepareForTest({ SystemProperties.class, CipherUtil.class, AppUtils.class, UserUtils.class, EPCommonSystemProperties.class,SessionCookieUtil.class})
 public class LoginControllerTest {
+	
+	private MockMvc mockMvc;
 
 	@Mock
 	EPProfileService service;
@@ -97,13 +106,17 @@ public class LoginControllerTest {
 	EPRoleService roleService;
 	@Mock
 	EPRoleFunctionService ePRoleFunctionService;
+	
+	@Mock
+	Cookie cookie;
 
 	@InjectMocks
-	LoginController loginController = new LoginController();
+	LoginController loginController;
 
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
+		mockMvc = MockMvcBuilders.standaloneSetup(loginController).build();
 	}
 
 	MockEPUser mockUser = new MockEPUser();
@@ -123,6 +136,9 @@ public class LoginControllerTest {
 		ModelAndView result = loginController.login(mockedRequest);
 		assertEquals(result.getViewName(), "openIdLogin");
 	}
+	
+	
+	
 
 	@Test
 	public void loginIfAuthOIDCTest() {
@@ -138,6 +154,30 @@ public class LoginControllerTest {
 		when(SystemProperties.getProperty(SystemProperties.AUTHENTICATION_MECHANISM)).thenReturn("Test");
 		ModelAndView result = loginController.login(mockedRequest);
 		assertEquals(result.getViewName(), "login");
+	}
+	
+	@Test
+	public void processSign()throws Exception {
+		mockMvc.perform(get("/process_csp"))//.header("Authorization", basic_auth))
+		.andExpect(status().is3xxRedirection());
+		//processSingleSignOn
+		
+	}
+	
+	@Test
+	public void processSingleSign()throws Exception {
+		PowerMockito.mockStatic(SessionCookieUtil.class);
+
+		when(SessionCookieUtil.getUserIdFromCookie(mockedRequest, mockedResponse)).thenReturn("user");
+		when(cookie.getName()).thenReturn("UserId");
+		when(cookie.getValue()).thenReturn("user");
+	
+	
+		mockMvc.perform(get("/processSingleSignOn").cookie(cookie))
+		
+		.andExpect(status().is3xxRedirection());
+	
+	
 	}
 
 	@Test

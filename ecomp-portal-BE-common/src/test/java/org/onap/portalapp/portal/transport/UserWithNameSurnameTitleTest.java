@@ -43,14 +43,33 @@ import org.junit.Test;
 import org.onap.portalapp.portal.transport.UserWithNameSurnameTitle;
 
 public class UserWithNameSurnameTitleTest {
+	
+	private static final String TEST="test";
 
 	@Test
 	public void userWithNameSurnameTitleTest(){
 		
-		UserWithNameSurnameTitle userWithNameSurnameTitle = new UserWithNameSurnameTitle("test", "test", "test", "test");
+		UserWithNameSurnameTitle user=buildUserWithNameSurnameTitle();
 		
-		assertEquals(userWithNameSurnameTitle, new UserWithNameSurnameTitle("test", "test", "test", "test"));
-		assertEquals(userWithNameSurnameTitle.hashCode(), new UserWithNameSurnameTitle("test", "test", "test", "test").hashCode());
-		assertTrue(userWithNameSurnameTitle.equals(new UserWithNameSurnameTitle("test", "test", "test", "test")));
+		UserWithNameSurnameTitle userWithNameSurnameTitle = new UserWithNameSurnameTitle(TEST, TEST, TEST, TEST);
+		assertEquals(user.hashCode(), userWithNameSurnameTitle.hashCode());
+		assertTrue(user.equals(userWithNameSurnameTitle));
+		assertFalse(user.equals(null));
+		UserWithNameSurnameTitle userWithNameSurnameTitle1 = new UserWithNameSurnameTitle(null, TEST, TEST, TEST);
+		assertFalse(userWithNameSurnameTitle1.equals(user));
+		userWithNameSurnameTitle1 = new UserWithNameSurnameTitle(null, TEST, null, TEST);
+		assertFalse(userWithNameSurnameTitle1.equals(user));
+		 userWithNameSurnameTitle1 = new UserWithNameSurnameTitle(null, TEST, null, null);
+		 assertFalse(userWithNameSurnameTitle1.equals(user));
+		 userWithNameSurnameTitle1 = new UserWithNameSurnameTitle(null, null, null, null);
+		 assertFalse(userWithNameSurnameTitle1.equals(user));
+		
+		
+	}
+	
+	private UserWithNameSurnameTitle buildUserWithNameSurnameTitle() {
+		
+		UserWithNameSurnameTitle userWithNameSurnameTitle=new UserWithNameSurnameTitle(TEST, TEST, TEST, TEST);
+		return userWithNameSurnameTitle;
 	}
 }

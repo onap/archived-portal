@@ -2,7 +2,7 @@
  * ============LICENSE_START==========================================
  * ONAP Portal
  * ===================================================================
- * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2017-2018 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
@@ -51,7 +51,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -70,6 +69,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 @PrepareForTest({Criterion.class, Restrictions.class, CipherUtil.class, EPCommonSystemProperties.class, SystemProperties.class, Restrictions.class})
 public class MicroserviceServiceImplTest {
 	
+	private static final String TEST="test";
 	@Mock
 	DataAccessService dataAccessService = new DataAccessServiceImpl();
 
@@ -204,4 +204,72 @@ public class MicroserviceServiceImplTest {
 		List<MicroserviceData> actual = microserviceServiceImpl.getMicroserviceData();
 		assertNotNull(actual);
 	}
+	
+	@Test
+	public void updateMicroservice()throws Exception {
+		
+		List<MicroserviceParameter> microserviceParameters = new ArrayList<>();
+		MicroserviceParameter microserviceParameter = new MicroserviceParameter();
+		microserviceParameter.setId(1l);
+		microserviceParameter.setPara_key(TEST);
+		microserviceParameter.setPara_value(TEST);
+		microserviceParameters.add(microserviceParameter);
+		List<Criterion> restrictionsList = new ArrayList<Criterion>();
+		
+		PowerMockito.mockStatic(Restrictions.class);
+		PowerMockito.mockStatic(CipherUtil.class);
+		Criterion serviceIdCriterion = Restrictions.eq("serviceId", 1l);
+		restrictionsList.add(serviceIdCriterion);
+		PowerMockito.mockStatic(SystemProperties.class);
+		Mockito.when(SystemProperties.getProperty(SystemProperties.Decryption_Key)).thenReturn(TEST);
+		Mockito.when(CipherUtil.encryptPKC(TEST, TEST)).thenReturn(TEST);
+		
+		Mockito.when((List<MicroserviceParameter>) dataAccessService.getList(MicroserviceParameter.class, null, restrictionsList, null)).thenReturn(microserviceParameters);
+		microserviceServiceImpl.updateMicroservice(1l, buildData());
+		
+	}
+	
+	@Test
+	public void getParametersById() {
+		List<Criterion> restrictionsList = new ArrayList<Criterion>();
+		PowerMockito.mockStatic(Restrictions.class);
+		PowerMockito.mockStatic(CipherUtil.class);
+		Criterion serviceIdCriterion = Restrictions.eq("serviceId", 1l);
+		restrictionsList.add(serviceIdCriterion);
+		Mockito.when((List<MicroserviceParameter>) dataAccessService.getList(MicroserviceParameter.class, null, restrictionsList, null)).thenReturn(buildData().getParameterList());
+		
+		List<MicroserviceParameter> parameters=	microserviceServiceImpl.getParametersById(1l);
+		assertEquals(TEST, parameters.get(0).getPara_key());
+	}
+	
+	@Test
+	public void deleteMicroservice()throws Exception {
+		microserviceServiceImpl.deleteMicroservice(1l);
+		
+	}
+	
+	
+	public MicroserviceData buildData() {
+		MicroserviceData microserviceData=new MicroserviceData();
+		microserviceData.setId((long)1);
+		microserviceData.setName(TEST);
+		microserviceData.setActive(TEST);
+		microserviceData.setDesc(TEST);
+		microserviceData.setAppId((long)1);
+		microserviceData.setUrl(TEST);
+		microserviceData.setSecurityType(TEST);
+		microserviceData.setUsername(TEST);
+		microserviceData.setPassword(TEST);
+		
+		List<MicroserviceParameter> microserviceParameters = new ArrayList<>();
+		MicroserviceParameter microserviceParameter = new MicroserviceParameter();
+		microserviceParameter.setId(1l);
+		microserviceParameter.setPara_key(TEST);
+		microserviceParameter.setPara_value(TEST);
+		microserviceParameters.add(microserviceParameter);
+		microserviceData.setParameterList(microserviceParameters);
+		
+		return microserviceData;
+	}
+	
 }

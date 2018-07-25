@@ -53,4 +53,5 @@ CREATE TABLE portal.spring_session_attributes (
     AND read_repair_chance = 0.0
     AND speculative_retry = '99PERCENTILE';  
 
-CREATE TABLE portal.healthcheck (id uuid PRIMARY KEY);
+CREATE TABLE portal.health_check (primary_id text PRIMARY KEY, creation_time text);
+insert into portal.health_check (primary_id,creation_time) values ('ECOMPPortal-25927','2018-05-25T20:14:39.408Z');

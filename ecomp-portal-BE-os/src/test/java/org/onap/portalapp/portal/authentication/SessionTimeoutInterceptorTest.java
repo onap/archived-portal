@@ -38,22 +38,34 @@
 package org.onap.portalapp.portal.authentication;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.onap.portalapp.authentication.LoginStrategy;
 import org.onap.portalapp.authentication.SimpleLoginStrategy;
 import org.onap.portalapp.controller.EPFusionBaseController;
+import org.onap.portalapp.portal.domain.EPUser;
 import org.onap.portalapp.portal.framework.MockitoTestSuite;
 import org.onap.portalapp.portal.interceptor.SessionTimeoutInterceptor;
+import org.onap.portalapp.util.EPUserUtils;
+import org.onap.portalsdk.core.controller.FusionBaseController;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.web.method.HandlerMethod;
 
+
+@RunWith(PowerMockRunner.class)
+@PrepareForTest({ EPUserUtils.class})
 public class SessionTimeoutInterceptorTest {
 
 	
@@ -63,6 +75,9 @@ public class SessionTimeoutInterceptorTest {
 	@Mock
 	EPFusionBaseController ePFusionBaseController = new EPFusionBaseController() {
 	};
+	
+	@Mock
+	FusionBaseController fusionBaseController;
 	
 	@Mock
 	HandlerMethod handlerMethod;
@@ -87,6 +102,49 @@ public class SessionTimeoutInterceptorTest {
 	
 	@Test
 	public void preHandleTestIfMethodIsinstanceOfHandlerMethod() throws Exception{
+		
+		EPUser user=new EPUser();
+		user.setOrgUserId("test");
 		assertFalse(sessionTimeoutInterceptor.preHandle(mockedRequest, mockedResponse, handlerMethod));
+
+		when(handlerMethod.getBean()).thenReturn(fusionBaseController);
+		when(fusionBaseController.isAccessible()).thenReturn(false);
+		PowerMockito.mockStatic(EPUserUtils.class);
+		
+		PowerMockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
+		assertFalse(sessionTimeoutInterceptor.preHandle(mockedRequest, mockedResponse, handlerMethod));
+		
+	}
+	
+	@Test
+	public void preHandleTestLogout() throws Exception{
+		
+		EPUser user=new EPUser();
+		user.setOrgUserId("test");
+		when(mockedRequest.getRequestURI()).thenReturn("http://logout.html");
+
+		when(handlerMethod.getBean()).thenReturn(fusionBaseController);
+		when(fusionBaseController.isAccessible()).thenReturn(false);
+		PowerMockito.mockStatic(EPUserUtils.class);
+		
+		PowerMockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
+		assertFalse(sessionTimeoutInterceptor.preHandle(mockedRequest, mockedResponse, handlerMethod));
+		
+	}
+	
+	@Test
+	public void preHandleTestLogin() throws Exception{
+		
+		EPUser user=new EPUser();
+		user.setOrgUserId("test");
+		when(mockedRequest.getRequestURI()).thenReturn("http://login.html");
+
+		when(handlerMethod.getBean()).thenReturn(fusionBaseController);
+		when(fusionBaseController.isAccessible()).thenReturn(false);
+		PowerMockito.mockStatic(EPUserUtils.class);
+		
+		PowerMockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
+		assertTrue(sessionTimeoutInterceptor.preHandle(mockedRequest, mockedResponse, handlerMethod));
+		
 	}
 }
