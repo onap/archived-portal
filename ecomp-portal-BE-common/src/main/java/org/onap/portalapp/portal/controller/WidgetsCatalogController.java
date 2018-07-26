@@ -377,32 +377,38 @@ public class WidgetsCatalogController extends EPRestrictedBaseController {
 				.getBody();
 
 		File downloadFile = File.createTempFile("temp", ".zip");
-		FileOutputStream stream = new FileOutputStream(downloadFile.getPath());
-		stream.write(byteFile);
-		stream.close();
-
-		FileInputStream inputStream = new FileInputStream(downloadFile);
-		String mimeType = context.getMimeType(downloadFile.getPath());
-		if (mimeType == null) {
-			mimeType = "application/octet-stream";
+		try(FileOutputStream stream = new FileOutputStream(downloadFile.getPath())){
+			stream.write(byteFile);
+		}catch(Exception e)
+		{
+			logger.error(EELFLoggerDelegate.errorLogger, "doDownload failed", e);
+			throw e;
 		}
 
-		response.setContentType(mimeType);
-		response.setContentLength((int) downloadFile.length());
-		String headerKey = "Content-Disposition";
-		String headerValue = String.format("attachment; filename=\"%s\"", downloadFile.getName());
-		downloadFile.delete();
-		response.setHeader(headerKey, headerValue);
+		try(FileInputStream inputStream = new FileInputStream(downloadFile);
+			OutputStream outStream = response.getOutputStream()){
+			String mimeType = context.getMimeType(downloadFile.getPath());
+			if (mimeType == null) {
+				mimeType = "application/octet-stream";
+			}
 
-		OutputStream outStream = response.getOutputStream();
-		byte[] buffer = new byte[32 * 1024];
-		int bytesRead;
-		while ((bytesRead = inputStream.read(buffer)) != -1) {
-			outStream.write(buffer, 0, bytesRead);
+			response.setContentType(mimeType);
+			response.setContentLength((int) downloadFile.length());
+			String headerKey = "Content-Disposition";
+			String headerValue = String.format("attachment; filename=\"%s\"", downloadFile.getName());
+			downloadFile.delete();
+			response.setHeader(headerKey, headerValue);
+	
+			byte[] buffer = new byte[32 * 1024];
+			int bytesRead;
+			while ((bytesRead = inputStream.read(buffer)) != -1) {
+				outStream.write(buffer, 0, bytesRead);
+			}
+		}catch(Exception e)
+		{
+			logger.error(EELFLoggerDelegate.errorLogger, "doDownload failed", e);
+			throw e;
 		}
-
-		inputStream.close();
-		outStream.close();
 	}
 
 	@RequestMapping(value = { "/portalApi/microservices/parameters" }, method = RequestMethod.POST)

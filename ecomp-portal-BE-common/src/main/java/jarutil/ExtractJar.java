@@ -72,47 +72,50 @@ public class ExtractJar {
 		String classContainer = clazz.getProtectionDomain().getCodeSource().getLocation().toString();
 		URL jarUrl = clazz.getProtectionDomain().getCodeSource().getLocation();
 
-		JarInputStream entryStream = new JarInputStream(jarUrl.openStream());
-		JarEntry entry;
-		while (true) {
-			entry = entryStream.getNextJarEntry();
-			if (entry == null)
-				break;
-			if (entry.getName().indexOf("jarutil") < 0) {
-				logger.info(entry.getName());
-				File file = new File(directory, entry.getName());
-				if (entry.isDirectory()) {
-					if (!file.exists())
-						file.mkdirs();
-				} else {
-					// make directory (some jars don't list dirs)
-					File dir = new File(file.getParent());
-					if (!dir.exists())
-						dir.mkdirs();
-					if (file.exists())
-						file.delete();
-					// Make file
-					FileOutputStream fout = new FileOutputStream(file);
-					copy(entryStream, fout);
-					fout.close();
-
-					// touch the file.
-					if (entry.getTime() >= 0)
-						file.setLastModified(entry.getTime());
+		try(JarInputStream entryStream = new JarInputStream(jarUrl.openStream())){
+			JarEntry entry;
+			while (true) {
+				entry = entryStream.getNextJarEntry();
+				if (entry == null)
+					break;
+				if (entry.getName().indexOf("jarutil") < 0) {
+					logger.info(entry.getName());
+					File file = new File(directory, entry.getName());
+					if (entry.isDirectory()) {
+						if (!file.exists())
+							file.mkdirs();
+					} else {
+						// make directory (some jars don't list dirs)
+						File dir = new File(file.getParent());
+						if (!dir.exists())
+							dir.mkdirs();
+						if (file.exists())
+							file.delete();
+						// Make file
+						FileOutputStream fout = new FileOutputStream(file);
+						copy(entryStream, fout);
+						fout.close();
+	
+						// touch the file.
+						if (entry.getTime() >= 0)
+							file.setLastModified(entry.getTime());
+					}
+	
 				}
-
+				entryStream.closeEntry();
 			}
-			entryStream.closeEntry();
+			System.out.println("************************************************");
+			System.out.println("*                                              *");
+			System.out.println("*                                              *");
+			System.out.println("*          RAPTOR SETUP COMPLETE.              *");
+			System.out.println("*                                              *");
+			System.out.println("*         Thank you for upgrading.             *");
+			System.out.println("*                                              *");
+			System.out.println("************************************************");
+		}catch(Exception e) {
+			logger.error("Exception in extractFilesFromJar",e);
 		}
-		entryStream.close();
-		System.out.println("************************************************");
-		System.out.println("*                                              *");
-		System.out.println("*                                              *");
-		System.out.println("*          RAPTOR SETUP COMPLETE.              *");
-		System.out.println("*                                              *");
-		System.out.println("*         Thank you for upgrading.             *");
-		System.out.println("*                                              *");
-		System.out.println("************************************************");
+		
 	}
 
 	public static void copy(InputStream in, OutputStream out, long byteCount) throws IOException {

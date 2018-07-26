@@ -114,18 +114,13 @@ public class InitializationServiceImpl implements InitializationService {
 			long widgetId = widgetCatalogService.saveWidgetCatalog(newWidget);
 
 			File tmpZipFile = new File("/tmp/" + fileLocation);
-			InputStream fileInputStream = null;
-			OutputStream outputStream = null;
-			try {
-				fileInputStream = this.getClass().getClassLoader().getResourceAsStream(fileLocation);
-				outputStream = new FileOutputStream(tmpZipFile);
+			try(OutputStream outputStream = new FileOutputStream(tmpZipFile);
+				InputStream fileInputStream = this.getClass().getClassLoader().getResourceAsStream(fileLocation)) {
 				int read = 0;
 				byte[] bytes = new byte[4096];
 				while ((read = fileInputStream.read(bytes)) != -1) {
 					outputStream.write(bytes, 0, read);
 				}
-				outputStream.close();
-				fileInputStream.close();
 			} catch (Exception e) {
 				logger.error(
 						"Exception occurred while performing InitializationServiceImpl.initCommonWidget in widget microservices. Details:", e);
