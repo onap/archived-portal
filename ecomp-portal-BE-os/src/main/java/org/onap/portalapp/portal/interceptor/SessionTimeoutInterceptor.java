@@ -92,6 +92,8 @@ public class SessionTimeoutInterceptor extends HandlerInterceptorAdapter {
 						CollaborateList.addUserName(user.getOrgUserId());
 					}
 				} catch (SessionExpiredException e) {
+					String message=e.getMessage();
+					logger.error(EELFLoggerDelegate.errorLogger,message, e);
 					response.sendRedirect(SystemProperties.getProperty(EPSystemProperties.LOGIN_URL_NO_RET_VAL));
 					return false;
 				} catch (Exception e) {
