@@ -157,7 +157,7 @@ public class SchedulerRestInterface implements SchedulerRestInterfaceIfc {
 				client = HttpsBasicClient.getClient();
 			}
 		} catch (Exception e) {
-			logger.debug(EELFLoggerDelegate.debugLogger, "Unable to initialize rest client");
+			logger.debug(EELFLoggerDelegate.debugLogger, "Unable to initialize rest client",e.getMessage());
 
 		}
 		logger.debug(EELFLoggerDelegate.debugLogger, "Client Initialized");
