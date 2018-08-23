@@ -3,6 +3,8 @@
  * ONAP Portal
  * ===================================================================
  * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ * 
+ * Modifications Copyright (C) 2018 IBM.
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
@@ -372,20 +374,21 @@ public class PostSearchBean extends SearchBase {
 
 
 	public boolean isCriteriaUpdated() {
+	  final boolean flag = true;
           if(user==null&&userOrig==null)
             return false;
           else if(user==null||userOrig==null)
             return true;
-          else
-            return (! (
-                Utilities.nvl(user.getFirstName()).equals(Utilities.nvl(userOrig.getFirstName()))&&
-                Utilities.nvl(user.getLastName()).equals(Utilities.nvl(userOrig.getLastName()))&&
-                //Utilities.nvl(user.getHrid()).equals(Utilities.nvl(userOrig.getHrid()))&&
-                Utilities.nvl(user.getOrgUserId()).equals(Utilities.nvl(userOrig.getOrgUserId()))&&
-                Utilities.nvl(user.getOrgCode()).equals(Utilities.nvl(userOrig.getOrgCode()))&&
-                Utilities.nvl(user.getEmail()).equals(Utilities.nvl(userOrig.getEmail()))&&
-                Utilities.nvl(user.getOrgManagerUserId()).equals(Utilities.nvl(userOrig.getOrgManagerUserId()))&&
-                true));
+          else {
+        	      boolean value = Utilities.nvl(user.getFirstName()).equals(Utilities.nvl(userOrig.getFirstName()))&&
+                      Utilities.nvl(user.getLastName()).equals(Utilities.nvl(userOrig.getLastName()))&&
+                      //Utilities.nvl(user.getHrid()).equals(Utilities.nvl(userOrig.getHrid()))&&
+                      Utilities.nvl(user.getOrgUserId()).equals(Utilities.nvl(userOrig.getOrgUserId()))&&
+                      Utilities.nvl(user.getOrgCode()).equals(Utilities.nvl(userOrig.getOrgCode()))&&
+                      Utilities.nvl(user.getEmail()).equals(Utilities.nvl(userOrig.getEmail()))&&
+                      Utilities.nvl(user.getOrgManagerUserId()).equals(Utilities.nvl(userOrig.getOrgManagerUserId()));
+            return (!(value && flag));
+          }
        } // isCriteriaUpdated
 
 }	// PostSearchBean
