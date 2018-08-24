@@ -3,6 +3,8 @@
  * ONAP Portal
  * ===================================================================
  * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ * 
+ * Modifications Copyright (C) 2018 IBM.
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
@@ -52,11 +54,11 @@ import org.springframework.context.annotation.Configuration;
 public class NotificationCleanupConfig implements ApplicationContextAware {
 	
 	// Once every 10 minutes should be adequate
-	public final static int CLEANUP_PERIOD_MINUTES = 10;
+	public static final int CLEANUP_PERIOD_MINUTES = 10;
 	
 	private static ApplicationContext applicationContext;
 
-	public void setApplicationContext(ApplicationContext context) throws BeansException {
+	public void setApplicationContext(ApplicationContext context) {
 		applicationContext = context;
 	}
 
@@ -69,7 +71,7 @@ public class NotificationCleanupConfig implements ApplicationContextAware {
 	public void StartSchedular() {
 		TimerTask task = new NotificationCleanup();
 		Timer timer = new Timer();
-		timer.schedule(task, 1000, CLEANUP_PERIOD_MINUTES * 60 * 1000);
+		timer.schedule(task, 1000, (long) CLEANUP_PERIOD_MINUTES * 60 * 1000);
 	}
 
 	@Bean
