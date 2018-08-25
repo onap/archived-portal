@@ -3,6 +3,8 @@
  * ONAP Portal
  * ===================================================================
  * Copyright (C) 2017-2018 AT&T Intellectual Property. All rights reserved.
+ * 
+ * Modification Copyright (C) 2018 IBM.
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
@@ -320,7 +322,7 @@ public class PortalResourceInterceptor extends ResourceInterceptor {
 	@SuppressWarnings("unused")
 	private String decrypted(String encrypted) throws Exception {
 		String result = "";
-		if (encrypted != null & encrypted.length() > 0) {
+		if (encrypted != null && encrypted.length() > 0) {
 			try {
 				result = CipherUtil.decryptPKC(encrypted, SystemProperties.getProperty(SystemProperties.Decryption_Key));
 			} catch (Exception e) {
@@ -333,7 +335,7 @@ public class PortalResourceInterceptor extends ResourceInterceptor {
 
 	private String encrypted(String decryptedPwd) throws Exception {
 		String result = "";
-		if (decryptedPwd != null & decryptedPwd.length() > 0) {
+		if (decryptedPwd != null && decryptedPwd.length() > 0) {
 			try {
 				result = CipherUtil.encryptPKC(decryptedPwd,
 						SystemProperties.getProperty(SystemProperties.Decryption_Key));
