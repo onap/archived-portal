@@ -897,8 +897,8 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 	 * @throws Exception
 	 */
 	@SuppressWarnings("unchecked")
-	@Transactional(rollbackFor = Exception.class)
-	private boolean addRoleInEcompDB(Role addRoleInDB, EPApp app) throws Exception {		
+        @Transactional(rollbackFor = Exception.class)
+	public boolean addRoleInEcompDB(Role addRoleInDB, EPApp app) throws Exception {		
 		boolean result = false;
 		EPRole epRole = null;
 		Set<RoleFunction> roleFunctionList = addRoleInDB.getRoleFunctions();
