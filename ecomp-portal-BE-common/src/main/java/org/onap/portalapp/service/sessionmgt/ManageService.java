@@ -81,7 +81,7 @@ public class ManageService implements PortalTimeoutHandler.SessionCommInf {
 			cal = new CronExpression(cronExpressionStr);
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(EELFLoggerDelegate.errorLogger, "fetchSessionSlotCheckInterval failed.", e);
 		}
 		final Date nowTime = Calendar.getInstance().getTime();
 		Date nextTime = cal.getNextValidTimeAfter(nowTime);
