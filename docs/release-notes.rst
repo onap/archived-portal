@@ -6,6 +6,37 @@
 Portal Platform Release Notes
 =============================
 
+Version: 2.3.0
+--------------
+:Release Date: XXXX-XX-XX
+
+.. toctree::
+    :maxdepth: 1
+
+We worked on SDK upgrade to integrate with AAF.
+
+**New Features**
+        * Portal SDK (2.4.0)
+        	* Use of Semantic Versioning - V3 is the supported version 
+        	* Integration with AAF via REST; Supports both SDK and Framework Applicaitons
+        	
+**Bug Fixes**
+
+
+**Known Issues**
+
+**Security Issues**
+
+**Security Notes**
+
+**Upgrade Notes**
+
+**Deprecation Notes**
+
+**Other**
+       * portal/sdk - (Release branch: "release-2.4.0")
+        
+
 Version: 2.2.0
 --------------
 
