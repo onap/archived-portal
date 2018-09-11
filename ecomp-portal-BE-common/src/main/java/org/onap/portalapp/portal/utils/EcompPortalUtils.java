@@ -80,6 +80,9 @@ public class EcompPortalUtils {
 	// It is a regular expression used for while creating a External Central Auth Role 
 	public static final String EXTERNAL_CENTRAL_AUTH_ROLE_HANDLE_SPECIAL_CHARACTERS = "([^A-Z^a-z^0-9^\\.^%^(^)^=^:])";
 	
+	// regex for alphanumeric , dashes and underscore
+		public static final String SEARCH_USERS_REGEX = "(^[a-zA-Z0-9_-]*$)";
+
 	/**
 	 * @param orgUserId
 	 *            User ID to validate
