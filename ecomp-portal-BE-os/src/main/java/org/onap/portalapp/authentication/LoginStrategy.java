@@ -3,6 +3,8 @@
  * ONAP Portal
  * ===================================================================
  * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ * 
+ * Modifications Copyright (C) 2018 IBM.
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
@@ -40,6 +42,7 @@ package org.onap.portalapp.authentication;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+@FunctionalInterface
 public interface LoginStrategy {
 	public boolean login(HttpServletRequest request, HttpServletResponse response)  throws Exception;
 }
