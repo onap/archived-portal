@@ -221,7 +221,7 @@ public class BasicAuthAccountServiceImpl implements BasicAuthAccountService{
 	
 	private String decryptedPassword(String encryptedPwd) throws Exception {
 		String result = "";
-		if (encryptedPwd != null & encryptedPwd.length() > 0) {
+		if (encryptedPwd != null && encryptedPwd.length() > 0) {
 			try {
 				result = CipherUtil.decryptPKC(encryptedPwd,
 						SystemProperties.getProperty(SystemProperties.Decryption_Key));
@@ -235,7 +235,7 @@ public class BasicAuthAccountServiceImpl implements BasicAuthAccountService{
 
 	private String encryptedPassword(String decryptedPwd) throws Exception {
 		String result = "";
-		if (decryptedPwd != null & decryptedPwd.length() > 0) {
+		if (decryptedPwd != null && decryptedPwd.length() > 0) {
 			try {
 				result = CipherUtil.encryptPKC(decryptedPwd,
 						SystemProperties.getProperty(SystemProperties.Decryption_Key));
