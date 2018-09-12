@@ -115,7 +115,8 @@ public class MusicUtil {
 				oos.flush();
 			}
 		} catch (IOException e) {
-			logger.error(EELFLoggerDelegate.errorLogger, "Failed to serialize ");
+			String message="Failed to serialize ";
+			logger.error(EELFLoggerDelegate.errorLogger, message, e);
 		}
 		return ByteBuffer.wrap(bo.toByteArray());
 	}
