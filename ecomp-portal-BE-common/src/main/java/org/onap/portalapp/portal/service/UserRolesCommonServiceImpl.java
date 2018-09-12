@@ -887,7 +887,8 @@ public class UserRolesCommonServiceImpl  {
 							addRemoteUser(roleInAppForUserList, userId, app, mapper, searchService,
 									applicationsRestClientService);
 						} catch (Exception e) {
-							logger.debug(EELFLoggerDelegate.debugLogger, e.getMessage());
+							String message=e.getMessage();
+							logger.error(EELFLoggerDelegate.errorLogger, message, e);
 						}
 					}
 					
