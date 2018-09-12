@@ -101,9 +101,9 @@ public class StorageServiceImpl implements StorageService {
 			String fileLocation = file.getOriginalFilename();
 			logger.debug("StorageServiceImpl.checkZipFile: store the widget to:" + fileLocation);
 			convFile = new File(fileLocation);
-			FileOutputStream fos = new FileOutputStream(convFile);
-			fos.write(file.getBytes());
-			fos.close();
+			try(FileOutputStream fos = new FileOutputStream(convFile)){
+				fos.write(file.getBytes());
+			}
 			map = unzipper.unzip_db(fileLocation, ".", "tempWidgets");
 			convFile.delete();
 		} catch (IOException e) {
@@ -137,9 +137,9 @@ public class StorageServiceImpl implements StorageService {
 			String fileLocation = file.getOriginalFilename();
 			logger.debug("StorageServiceImpl.save: store the widget to:" + fileLocation);
 			convFile = new File(fileLocation);
-			FileOutputStream fos = new FileOutputStream(convFile);
-			fos.write(file.getBytes());
-			fos.close();
+			try(FileOutputStream fos = new FileOutputStream(convFile)){
+				fos.write(file.getBytes());
+			}
 			map = unzipper.unzip_db(fileLocation, ".", "tempWidgets");
 			convFile.delete();
 		} catch (IOException e) {
@@ -183,35 +183,29 @@ public class StorageServiceImpl implements StorageService {
 		widgetFile.setName(newWidget.getName());
 		widgetFile.setWidgetId(widgetId);
 
-		InputStream fileInputStream = this.getClass().getClassLoader().getResourceAsStream("framework-template.js");
+		
 
 		String sb = null;
-		try {
+		try(InputStream fileInputStream = this.getClass().getClassLoader().getResourceAsStream("framework-template.js")) {
 			byte[] bytes = new byte[fileInputStream.available()];
-			fileInputStream.read(bytes);
-			sb = new String(bytes, "UTF-8");
+			if(fileInputStream.read(bytes) > 0) {
+				sb = new String(bytes, "UTF-8");
+			}
 		} catch (IOException e) {
 			logger.error("StorageServiceImpl.save: Failed to load framework-template.js file ", e);
-			e.printStackTrace();
-		} finally {
-			if (fileInputStream != null) {
-				try {
-					fileInputStream.close();
-				} catch (IOException e) {
-					logger.error("StorageServiceImpl.update: Failed to close the fileInputStream ", e);
-				}
-			}
 		}
 
 		String namespace = "Portal" + widgetId + "Widget";
 		String controllerName = "Portal" + widgetId + "Ctrl";
 		String cssName = "portal" + widgetId + "-css-ready";
 		String colorArg1 = "color: #fff";
-		String framework = sb.replaceAll("ARGUMENT1", namespace).replaceAll("ARGUMENT2", controllerName)
-				.replaceAll("ARGUMENT3", cssName).replaceAll("CSS_ARG1", colorArg1)
-				.replaceAll("MICROSERVICE_ID", newWidget.getServiceId().toString())
-				.replaceAll("WIDGET_ID", Long.toString(widgetId));
-
+		String framework="";
+		if(sb!=null) {
+			framework = sb.replaceAll("ARGUMENT1", namespace).replaceAll("ARGUMENT2", controllerName)
+					.replaceAll("ARGUMENT3", cssName).replaceAll("CSS_ARG1", colorArg1)
+					.replaceAll("MICROSERVICE_ID", newWidget.getServiceId().toString())
+					.replaceAll("WIDGET_ID", Long.toString(widgetId));
+		}
 		widgetFile.setFramework(framework.getBytes());
 
 		final byte[] controllerLoc = map.get(WidgetConstant.WIDGET_CONTROLLER_LOCATION);
@@ -277,9 +271,9 @@ public class StorageServiceImpl implements StorageService {
 			String fileLocation = file.getOriginalFilename();
 			logger.debug("StorageServiceImpl.update: store the widget to:" + fileLocation);
 			convFile = new File(fileLocation);
-			FileOutputStream fos = new FileOutputStream(convFile);
-			fos.write(file.getBytes());
-			fos.close();
+			try(FileOutputStream fos = new FileOutputStream(convFile)){
+				fos.write(file.getBytes());
+			}
 			map = unzipper.unzip_db(fileLocation, ".", "tempWidgets");
 			convFile.delete();
 		} catch (IOException e) {
@@ -289,34 +283,27 @@ public class StorageServiceImpl implements StorageService {
 		}
 		WidgetFile widgetFile = getWidgetFile(widgetId);
 
-		InputStream fileInputStream = this.getClass().getClassLoader().getResourceAsStream("framework-template.js");
 		String sb = null;
-		try {
+		try(InputStream fileInputStream = this.getClass().getClassLoader().getResourceAsStream("framework-template.js")){
 			byte[] bytes = new byte[fileInputStream.available()];
-			fileInputStream.read(bytes);
-			sb = new String(bytes, "UTF-8");
+			if(fileInputStream.read(bytes) > 0) {
+				sb = new String(bytes, "UTF-8");
+			}
 		} catch (IOException e) {
 			logger.error("StorageServiceImpl.save: Failed to load framework-template.js file ", e);
-			e.printStackTrace();
-		} finally {
-			if (fileInputStream != null) {
-				try {
-					fileInputStream.close();
-				} catch (IOException e) {
-					logger.error("StorageServiceImpl.update: Failed to close the fileInputStream ", e);
-					e.printStackTrace();
-				}
-			}
 		}
 
 		String namespace = "Portal" + widgetId + "Widget";
 		String controllerName = "Portal" + widgetId + "Ctrl";
 		String cssName = "portal" + widgetId + "-css-ready";
 		String colorArg1 = "color: #fff";
-		String framework = sb.replaceAll("ARGUMENT1", namespace).replaceAll("ARGUMENT2", controllerName)
-				.replaceAll("ARGUMENT3", cssName).replaceAll("CSS_ARG1", colorArg1)
-				.replaceAll("MICROSERVICE_ID", newWidget.getServiceId().toString())
-				.replaceAll("WIDGET_ID", Long.toString(widgetId));
+		String framework="";
+		if(sb!=null) {
+			framework = sb.replaceAll("ARGUMENT1", namespace).replaceAll("ARGUMENT2", controllerName)
+					.replaceAll("ARGUMENT3", cssName).replaceAll("CSS_ARG1", colorArg1)
+					.replaceAll("MICROSERVICE_ID", newWidget.getServiceId().toString())
+					.replaceAll("WIDGET_ID", Long.toString(widgetId));
+		}
 		widgetFile.setFramework(framework.getBytes());
 
 		String javascript = new String(map.get(WidgetConstant.WIDGET_CONTROLLER_LOCATION));
@@ -441,53 +428,53 @@ public class StorageServiceImpl implements StorageService {
 
 		String styles = getWidgetCSS(widgetId).replaceAll(cssName, widget.getName() + "-css-ready");
 		File f = File.createTempFile("temp", ".zip");
-		ZipOutputStream out = new ZipOutputStream(new FileOutputStream(f));
-		ZipEntry e = new ZipEntry(widget.getName() + "/styles/styles.css");
-		out.putNextEntry(new ZipEntry(widget.getName() + "/"));
-		out.putNextEntry(new ZipEntry(widget.getName() + "/styles/"));
-		out.putNextEntry(e);
-		byte[] data = styles.getBytes();
-		out.write(data, 0, data.length);
-
-		String widgetData = namespace + "=" + namespace + "||{};" + "var res = " + namespace + ".widgetData;";
-		String javascript = getWidgetController(widgetId).replace(widgetData, "").replace(namespace + ".controller =",
-				"");
-
-		String functionHeader = javascript.substring(javascript.indexOf("function"), javascript.indexOf(")") + 1);
-		javascript = javascript.replaceFirst(controllerName, widget.getName() + "Ctrl");
-		String functionParam = functionHeader.substring(functionHeader.indexOf("(") + 1, functionHeader.indexOf(")"));
-		StringBuilder injectStr = new StringBuilder().append("[");
-		List<String> paramList = Arrays.asList(functionParam.split(","));
-		for (int i = 0; i < paramList.size(); i++) {
-			if (i == paramList.size() - 1)
-				injectStr.append("'" + paramList.get(i).trim() + "'];");
-			else
-				injectStr.append("'" + paramList.get(i).trim() + "',");
+		try(ZipOutputStream out = new ZipOutputStream(new FileOutputStream(f))){
+			ZipEntry e = new ZipEntry(widget.getName() + "/styles/styles.css");
+			out.putNextEntry(new ZipEntry(widget.getName() + "/"));
+			out.putNextEntry(new ZipEntry(widget.getName() + "/styles/"));
+			out.putNextEntry(e);
+			byte[] data = styles.getBytes();
+			out.write(data, 0, data.length);
+	
+			String widgetData = namespace + "=" + namespace + "||{};" + "var res = " + namespace + ".widgetData;";
+			String javascript = getWidgetController(widgetId).replace(widgetData, "").replace(namespace + ".controller =",
+					"");
+	
+			String functionHeader = javascript.substring(javascript.indexOf("function"), javascript.indexOf(")") + 1);
+			javascript = javascript.replaceFirst(controllerName, widget.getName() + "Ctrl");
+			String functionParam = functionHeader.substring(functionHeader.indexOf("(") + 1, functionHeader.indexOf(")"));
+			StringBuilder injectStr = new StringBuilder().append("[");
+			List<String> paramList = Arrays.asList(functionParam.split(","));
+			for (int i = 0; i < paramList.size(); i++) {
+				if (i == paramList.size() - 1)
+					injectStr.append("'" + paramList.get(i).trim() + "'];");
+				else
+					injectStr.append("'" + paramList.get(i).trim() + "',");
+			}
+			javascript = javascript.replace(";" + namespace + ".controller.$inject = " + injectStr.toString(), "");
+	
+			e = new ZipEntry(widget.getName() + "/js/controller.js");
+			out.putNextEntry(new ZipEntry(widget.getName() + "/js/"));
+			out.putNextEntry(e);
+			data = javascript.getBytes();
+			out.write(data, 0, data.length);
+	
+			String html = getWidgetMarkup(widgetId).replaceFirst(controllerName, widget.getName() + "Ctrl");
+	
+			// new
+			// String(map.get(WidgetConstant.WIDGET_MARKUP_LOCATION)).replaceFirst(functionName,
+			// controllerName);;
+	
+			e = new ZipEntry(widget.getName() + "/markup/markup.html");
+			out.putNextEntry(new ZipEntry(widget.getName() + "/markup/"));
+			out.putNextEntry(e);
+			data = html.getBytes();
+			out.write(data, 0, data.length);
+			out.closeEntry();
+			byte[] result = Files.readAllBytes(Paths.get(f.getPath()));
+			f.delete();
+			return result;
 		}
-		javascript = javascript.replace(";" + namespace + ".controller.$inject = " + injectStr.toString(), "");
-
-		e = new ZipEntry(widget.getName() + "/js/controller.js");
-		out.putNextEntry(new ZipEntry(widget.getName() + "/js/"));
-		out.putNextEntry(e);
-		data = javascript.getBytes();
-		out.write(data, 0, data.length);
-
-		String html = getWidgetMarkup(widgetId).replaceFirst(controllerName, widget.getName() + "Ctrl");
-
-		// new
-		// String(map.get(WidgetConstant.WIDGET_MARKUP_LOCATION)).replaceFirst(functionName,
-		// controllerName);;
-
-		e = new ZipEntry(widget.getName() + "/markup/markup.html");
-		out.putNextEntry(new ZipEntry(widget.getName() + "/markup/"));
-		out.putNextEntry(e);
-		data = html.getBytes();
-		out.write(data, 0, data.length);
-		out.closeEntry();
-		out.close();
-		byte[] result = Files.readAllBytes(Paths.get(f.getPath()));
-		f.delete();
-		return result;
 	}
 
 }
