@@ -3,6 +3,8 @@
  * ONAP Portal
  * ===================================================================
  * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ * 
+ * Modifications Copyright (C) 2018 IBM.
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
@@ -38,18 +40,18 @@
 package org.onap.portalapp.model;
 
 public class Result {
-	private String result;
+	private String results;
 	
 	public Result(String result) {
-		this.result = result;
+		this.results = result;
 	}
 
 	public String getResult() {
-		return result;
+		return results;
 	}
 
 	public void setResult(String result) {
-		this.result = result;
+		this.results = result;
 	}
 	
 }
