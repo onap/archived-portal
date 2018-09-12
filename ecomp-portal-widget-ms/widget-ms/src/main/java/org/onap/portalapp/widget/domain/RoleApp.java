@@ -37,24 +37,8 @@ public class RoleApp implements Serializable{
 	
 	@JsonIgnore
 	@ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}, mappedBy="widgetRoles")
-	private Set<WidgetCatalog> widgets;
+	private transient  Set<WidgetCatalog> widgets;
 
-	/*@PreRemove
-	private void removeGroupsFromUsers() {
-	    for (WidgetCatalog w : widgets) {
-	        w.getWidgetRoles().remove(this);
-	    }
-	}*/
-	
-	/*@ManyToOne
-	@JoinColumn(name = "WIDGET_ID", nullable = false)
-	WidgetCatalog widgetCatalog;*/
-
-	//@JsonIgnore
-	//@ManyToMany(mappedBy = "widgetRoles")
-	//@ManyToMany(fetch = FetchType.EAGER, mappedBy = "widgetRoles")
-	//private Set<WidgetCatalog> widgets  = new HashSet<WidgetCatalog>();
-	
 	public Long getRoleId() {
 		return roleId;
 	}
