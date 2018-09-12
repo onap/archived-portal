@@ -3,6 +3,8 @@
  * ONAP Portal
  * ===================================================================
  * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ * 
+ * Modifications Copyright (C) 2018 IBM.
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
@@ -36,6 +38,3 @@
  * 
  */
 package org.onap.portalapp.controller;
-
-import java.util.HashMap;
-import java.util.Map;
