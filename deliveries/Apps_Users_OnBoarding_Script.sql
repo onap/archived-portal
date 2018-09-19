@@ -10,7 +10,7 @@ INSERT INTO `fn_app` (`app_id`, `app_name`, `app_image_url`, `app_description`, 
 (3, 'DMaaP Bus Ctrl', 'images/cache/portal944583064_80711.png', NULL, NULL, 'http://portal.api.simpledemo.onap.org:8989/ECOMPDBCAPP/dbc#/dmaap', NULL, 'http://portal.api.simpledemo.onap.org:8989/ECOMPDBCAPP/api/v2', '', '', NULL, 'okYTaDrhzibcbGVq5mjkVQ==', 'N', 'N', NULL, 'Default', 'ueb_key', 'ueb_secret', 'ECOMP-PORTAL-OUTBOX', 1,'N',NULL),
 (4, 'SDC', 'images/cache/portal956868231_53879.png', NULL, NULL, 'http://sdc.api.simpledemo.onap.org:8181/sdc1/portal', NULL, 'http://sdc.api.simpledemo.onap.org:8080/api/v2', '', '', NULL, 'j85yNhyIs7zKYbR1VlwEfNhS6b7Om4l0Gx5O8931sCI=', 'N', 'Y', NULL, 'Default', 'ueb_key', 'ueb_secret', 'ECOMP-PORTAL-OUTBOX', 1,'N',NULL), 
 (5, 'Policy', 'images/cache/portal1470452815_67021.png', NULL, NULL, 'http://policy.api.simpledemo.onap.org:8443/onap/policy', NULL, 'http://policy.api.simpledemo.onap.org:8443/onap/api/v2', '', '', NULL, 'okYTaDrhzibcbGVq5mjkVQ==', 'N', 'Y', NULL, 'Default', 'ueb_key', 'ueb_secret', 'ECOMP-PORTAL-OUTBOX', 1,'N',NULL),
-(6, 'Virtual Infrastructure Deployment', 'images/cache/portal-345993588_92550.png', NULL, NULL, 'http://vid.api.simpledemo.onap.org:8080/vid/welcome.htm', NULL, 'http://vid.api.simpledemo.onap.org:8080/vid/api/v2', '', '', NULL, 'okYTaDrhzibcbGVq5mjkVQ==', 'N', 'Y', NULL, 'Default', '2Re7Pvdkgw5aeAUD', 'S31PrbOzGgL4hg4owgtx47Da', 'ECOMP-PORTAL-OUTBOX-90', 1,'N',NULL),
+(6, 'Virtual Infrastructure Deployment', 'images/cache/portal-345993588_92550.png', NULL, NULL, 'https://vid.api.simpledemo.onap.org:8443/vid/welcome.htm', NULL, 'https://vid.api.simpledemo.onap.org:8443/vid/api/v2', '', '', NULL, 'okYTaDrhzibcbGVq5mjkVQ==', 'N', 'Y', NULL, 'Default', '2Re7Pvdkgw5aeAUD', 'S31PrbOzGgL4hg4owgtx47Da', 'ECOMP-PORTAL-OUTBOX-90', 1,'N',NULL),
 (7, 'A&AI UI', 'images/cache/portal-345993588_92550.png', NULL, NULL, 'http://aai.api.simpledemo.onap.org:9517/services/aai/webapp/index.html#/viewInspect', NULL, 'http://aai.api.simpledemo.onap.org:9517/api/v2', '', '', NULL, 't1oqm6wCXrGUXUSL8mS7pQ==', 'N', 'Y', NULL, 'aaiui', 'ueb_key', 'ueb_secret', 'ECOMP-PORTAL-OUTBOX', 1,'N',NULL),
 (8, 'CLI', 'images/cache/portal-345993588_92550.png', NULL, NULL, 'http://portal.api.simpledemo.onap.org:8080/', NULL, NULL, '', '', NULL, '', 'Y', 'Y', NULL, '', '', '', '', 1,'N',NULL),
 (9, 'MSB', 'images/cache/portal-345993588_92550.png', NULL, NULL, 'http://msb-iag:80/iui/microservices/index.html', NULL, NULL, '', '', NULL, '', 'Y', 'Y', NULL, '', '', '', '', 2,'N',NULL);
@@ -44,7 +44,7 @@ Insert into fn_user_role (USER_ID,ROLE_ID,PRIORITY,APP_ID) values (6,16,null,4);
 Insert into fn_user_role (USER_ID,ROLE_ID,PRIORITY,APP_ID) values (7,16,null,4);
 Insert into fn_user_role (USER_ID,ROLE_ID,PRIORITY,APP_ID) values (8,16,null,4);
 
--- insert VID users id9-11 
+-- insert VID users id9-11
 
 Insert into fn_user (USER_ID, ORG_ID, MANAGER_ID,FIRST_NAME,MIDDLE_NAME,LAST_NAME,PHONE,FAX,CELLULAR,EMAIL,ADDRESS_ID,ALERT_METHOD_CD,HRID,ORG_USER_ID,ORG_CODE,LOGIN_ID,LOGIN_PWD,LAST_LOGIN_DATE,ACTIVE_YN,CREATED_ID,CREATED_DATE,MODIFIED_ID,MODIFIED_DATE,IS_INTERNAL_YN,ADDRESS_LINE_1,ADDRESS_LINE_2,CITY,STATE_CD,ZIP_CODE,COUNTRY_CD,LOCATION_CLLI,ORG_MANAGER_USERID,COMPANY,DEPARTMENT_NAME,JOB_TITLE,TIMEZONE,DEPARTMENT,BUSINESS_UNIT,BUSINESS_UNIT_NAME,COST_CENTER,FIN_LOC_CODE,SILO_STATUS) values (9,NULL,NULL,'vid1',NULL,'user',NULL,NULL,NULL,'vid1@onap.org',NULL,NULL,NULL,'vid1',NULL,'vid1','4Gl6WL1bmwviYm+XZa6pS1vC0qKXWtn9wcZWdLx61L0=','2016-10-20 15:11:16','Y',NULL,'2016-10-14 21:00:00',1,'2016-10-20 15:11:16','N',NULL,NULL,NULL,'NJ',NULL,'US',NULL,NULL,NULL,NULL,NULL,10,NULL,NULL,NULL,NULL,NULL,NULL);
 Insert into fn_user (USER_ID, ORG_ID, MANAGER_ID,FIRST_NAME,MIDDLE_NAME,LAST_NAME,PHONE,FAX,CELLULAR,EMAIL,ADDRESS_ID,ALERT_METHOD_CD,HRID,ORG_USER_ID,ORG_CODE,LOGIN_ID,LOGIN_PWD,LAST_LOGIN_DATE,ACTIVE_YN,CREATED_ID,CREATED_DATE,MODIFIED_ID,MODIFIED_DATE,IS_INTERNAL_YN,ADDRESS_LINE_1,ADDRESS_LINE_2,CITY,STATE_CD,ZIP_CODE,COUNTRY_CD,LOCATION_CLLI,ORG_MANAGER_USERID,COMPANY,DEPARTMENT_NAME,JOB_TITLE,TIMEZONE,DEPARTMENT,BUSINESS_UNIT,BUSINESS_UNIT_NAME,COST_CENTER,FIN_LOC_CODE,SILO_STATUS) values (10,NULL,NULL,'vid2',NULL,'user',NULL,NULL,NULL,'vid2@onap.org',NULL,NULL,NULL,'vid2',NULL,'vid2','4Gl6WL1bmwviYm+XZa6pS1vC0qKXWtn9wcZWdLx61L0=','2016-10-20 15:11:16','Y',NULL,'2016-10-14 21:00:00',1,'2016-10-20 15:11:16','N',NULL,NULL,NULL,'NJ',NULL,'US',NULL,NULL,NULL,NULL,NULL,10,NULL,NULL,NULL,NULL,NULL,NULL);
@@ -56,7 +56,7 @@ Insert into fn_user_role (USER_ID,ROLE_ID,PRIORITY,APP_ID) values (9,16,null,6);
 Insert into fn_user_role (USER_ID,ROLE_ID,PRIORITY,APP_ID) values (10,16,null,6);
 Insert into fn_user_role (USER_ID,ROLE_ID,PRIORITY,APP_ID) values (11,16,null,6);
 
--- insert AAI UI users id12 
+-- insert AAI UI users id12
 
 Insert into fn_user (USER_ID, ORG_ID, MANAGER_ID,FIRST_NAME,MIDDLE_NAME,LAST_NAME,PHONE,FAX,CELLULAR,EMAIL,ADDRESS_ID,ALERT_METHOD_CD,HRID,ORG_USER_ID,ORG_CODE,LOGIN_ID,LOGIN_PWD,LAST_LOGIN_DATE,ACTIVE_YN,CREATED_ID,CREATED_DATE,MODIFIED_ID,MODIFIED_DATE,IS_INTERNAL_YN,ADDRESS_LINE_1,ADDRESS_LINE_2,CITY,STATE_CD,ZIP_CODE,COUNTRY_CD,LOCATION_CLLI,ORG_MANAGER_USERID,COMPANY,DEPARTMENT_NAME,JOB_TITLE,TIMEZONE,DEPARTMENT,BUSINESS_UNIT,BUSINESS_UNIT_NAME,COST_CENTER,FIN_LOC_CODE,SILO_STATUS) values (12,NULL,NULL,'steve',NULL,'user',NULL,NULL,NULL,'steve@onap.org',NULL,NULL,NULL,'steve',NULL,'steve','4Gl6WL1bmwviYm+XZa6pS1vC0qKXWtn9wcZWdLx61L0=','2017-05-19 15:11:16','Y',NULL,'2017-05-19 21:00:00',1,'2017-05-19 15:11:16','N',NULL,NULL,NULL,'NJ',NULL,'US',NULL,NULL,NULL,NULL,NULL,10,NULL,NULL,NULL,NULL,NULL,NULL);
 
@@ -64,7 +64,7 @@ Insert into fn_user (USER_ID, ORG_ID, MANAGER_ID,FIRST_NAME,MIDDLE_NAME,LAST_NAM
 
 Insert into fn_user_role (USER_ID,ROLE_ID,PRIORITY,APP_ID) values (12,16,null,7);
 
--- insert fn_roles for the on boarded apps 
+-- insert fn_roles for the on boarded apps
 insert into fn_role values(1000,'System Administrator','Y',1,2,1); -- SDK from 999 to 1
 insert into fn_role values(1001,'Standard User','Y',1,2,16); -- SDK
 insert into fn_role values(1002,'System Administrator','Y',1,3,1); -- DMaap from 999 to 1
@@ -72,7 +72,7 @@ insert into fn_role values(1003,'Standard User','Y',1,3,16); -- DMaap
 insert into fn_role values(1004,'ADMIN','Y',1,4,0); -- SDC from 999 to 1
 insert into fn_role values(1005,'TESTOR','Y',1,4,1); -- SDC
 insert into fn_role values(1006,'System Administrator','Y',1,5,1); -- Policy from 999 to 1
-insert into fn_role values(1007,'Standard User','Y',1,5,16); -- Policy 
+insert into fn_role values(1007,'Standard User','Y',1,5,16); -- Policy
 insert into fn_role values(1008,'System Administrator','Y',1,6,1); -- VID from 999 to 1
 insert into fn_role values(1009,'Standard User','Y',1,6,16); -- VID
 
@@ -113,7 +113,7 @@ INSERT IGNORE INTO `fn_app_contact_us` (app_id, contact_name, contact_email, url
 	"Service Design and Creation (SDC).");
 INSERT IGNORE INTO `fn_app_contact_us` (app_id, contact_name, contact_email, url, active_yn, description) VALUES (
 	(select min(app_id) from fn_app where app_name like "%Policy%"),
-	"Policy Team","policy@lists.onap.org","https://wiki.onap.org/display/DW/Approved+Projects",NULL, 
+	"Policy Team","policy@lists.onap.org","https://wiki.onap.org/display/DW/Approved+Projects",NULL,
 	"Policy.");
 INSERT IGNORE INTO `fn_app_contact_us` (app_id, contact_name, contact_email, url, active_yn, description) VALUES (
 	(select min(app_id) from fn_app where app_name like "%DMaaP Bus%"),
@@ -134,7 +134,7 @@ INSERT IGNORE INTO `fn_app_contact_us` (app_id, contact_name, contact_email, url
 INSERT IGNORE INTO `fn_app_contact_us` (app_id, contact_name, contact_email, url, active_yn, description) VALUES (
 	(select min(app_id) from fn_app where app_name like "%CLI%"),
 	"CLI Team","onap-discuss@lists.onap.org","https://wiki.onap.org/display/DW/Approved+Projects",NULL,
-	"CLI Application");	
+	"CLI Application");
 -- end new 1610.2
 
 --
@@ -177,7 +177,7 @@ INSERT INTO `fn_menu_functional` (`menu_id`,`column_num`,`text`,`parent_menu_id`
 INSERT INTO `fn_menu_functional` (`menu_id`,`column_num`,`text`,`parent_menu_id`,`url`,`active_yn`,`image_src`) VALUES (313,3,'View a Resource/Service/Product',20,'http://sdc.api.simpledemo.onap.org:8181/sdc1/portal#/catalog','Y',NULL);
 INSERT INTO `fn_menu_functional` (`menu_id`,`column_num`,`text`,`parent_menu_id`,`url`,`active_yn`,`image_src`) VALUES (317,1,'Message Bus Management',6,'http://portal.api.simpledemo.onap.org:8989/ECOMPDBCAPP/dbc#/dmaap','Y',NULL);
 INSERT INTO `fn_menu_functional` (`menu_id`,`column_num`,`text`,`parent_menu_id`,`url`,`active_yn`,`image_src`) VALUES (318,1,'Infrastructure Provisioning',3,'','Y',NULL);
-INSERT INTO `fn_menu_functional` (`menu_id`,`column_num`,`text`,`parent_menu_id`,`url`,`active_yn`,`image_src`) VALUES (319,1,'Infrastructure VNF Provisioning',318,'http://vid.api.simpledemo.onap.org:8080/vid/welcome.htm','Y',NULL);
+INSERT INTO `fn_menu_functional` (`menu_id`,`column_num`,`text`,`parent_menu_id`,`url`,`active_yn`,`image_src`) VALUES (319,1,'Infrastructure VNF Provisioning',318,'https://vid.api.simpledemo.onap.org:8443/vid/welcome.htm','Y',NULL);
 --
 -- Data for table fn_menu_functional_ancestors
 --
