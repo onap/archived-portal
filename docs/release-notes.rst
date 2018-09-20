@@ -1,6 +1,6 @@
 .. This work is licensed under a Creative Commons Attribution 4.0 International License.
 .. http://creativecommons.org/licenses/by/4.0
-.. Copyright 2017-2018 AT&T Intellectual Property.  All rights reserved.
+.. Copyright 2017-2018 AT&T Intellectual Property.  All rights reserved
 
 
 Portal Platform Release Notes
@@ -8,34 +8,56 @@ Portal Platform Release Notes
 
 Version: 2.3.0
 --------------
-:Release Date: XXXX-XX-XX
+:Release Date: 2018-11-15
 
 .. toctree::
     :maxdepth: 1
 
-We worked on SDK upgrade to integrate with AAF.
+We worked on SDK upgrade to integrate with AAF. We completed Architecture review for Portal and use case UI to support multi-language.
 
 **New Features**
-        * Portal SDK (2.4.0)
-        	* Use of Semantic Versioning - V3 is the supported version 
-        	* Integration with AAF via REST; Supports both SDK and Framework Applicaitons
+		* Platform Maturity Guidelines - Integrating with OOM
+		* SDK upgrade to integrate with AAF
+		    * Use of Semantic Versioning - V3 is the supported version 
+        	* Integration with AAF via REST; Supports both SDK and Framework Applications 
+		* 65% JUnit Test Coverage
+		* Addressing security issues
+		* Internationalization language support - design related
+		* Reporting feature enhancement in portal/sdk - design and partial code changes
+		* Platform Enhancements - Improved logging, docker separation, and SDK Simplification
         	
 **Bug Fixes**
-
+		* Improved exception handling in reporting feature and also in login feature while getting a lock from Zookeeper.
+		* Improved documentation to get access to Portal through port 8989.
+		* Fixed Sonar reported critical issues.
+		* Improved OOM deployment 30235 external port mapping for portal-sdk.
 
 **Known Issues**
-
+			
 **Security Issues**
+	* https://wiki.onap.org/pages/viewpage.action?pageId=35522356
 
 **Security Notes**
+
+PORTAL code has been formally scanned during build time using NexusIQ and all Critical vulnerabilities have been addressed, items that remain open have been assessed for risk and determined to be false positive. The PORTAL open Critical security vulnerabilities and their risk assessment have been documented as part of the `project <https://wiki.onap.org/pages/viewpage.action?pageId=27689089>`_.
+
+Quick Links:
+ 	- `PORTAL project page <https://wiki.onap.org/display/DW/Portal+Platform+Project>`_
+
+ 	- `Passing Badge information for PORTAL <https://bestpractices.coreinfrastructure.org/en/projects/1441>`_
+
+ 	- `Project Vulnerability Review Table for PORTAL <https://wiki.onap.org/pages/viewpage.action?pageId=27689089>`_
 
 **Upgrade Notes**
 
 **Deprecation Notes**
 
 **Other**
-       * portal/sdk - (Release branch: "release-2.4.0")
-        
+        * Below are the docker images released as part of Portal Platform project:
+        * onap/portal-db:v2.3.0
+        * onap/portal-apps:v2.3.0
+        * onap/portal-wms:v2.3.0
+        * portal/sdk - (Release branch: "release-2.4.0")   
 
 Version: 2.2.0
 --------------
@@ -64,12 +86,12 @@ We worked on hardening the ONAP Portal platform by improving code quality and ad
         * Upgraded software packages to resolve security issues
 
 **Known Issues**
-        * Need  to upgrade to new encrypt/decrypt algorithm in coordination with Partnering apps
+        * Need to upgrade to new encrypt/decrypt algorithm in coordination with Partnering apps
         * Logging needs improvement
         * Not able to delete portal admin user
         * Add support to connect with AAF Runtime
         * Portal's SDK UI documentation in ONAP wiki needs samples
-        * The Portal/SDK fn_user table has encrypted passwords that need to hange to using a hash algorithm
+        * The Portal/SDK fn_user table has encrypted passwords that need to change to using a hash algorithm
         * UI cleanup needed: on adding entries to News Widget and display on Application Onboarding page
 
 **Security Issues**
@@ -121,13 +143,13 @@ The ONAP Portal is a platform that provides the ability to integrate different O
         * Fixed search and remove bugs in Widget Onboarding.
         * Fixed issues in the Application Onboarding.
         * Fixed issues in the Microservice Onboarding.
-        * Fixed deplyoment scripts and streamlined the reference variables.
+        * Fixed deployment scripts and streamlined the reference variables.
 
 **Known Issues**
         * `PORTAL-140 <https://jira.onap.org/browse/PORTAL-140>`_ - Portal role synch error with partner apps.
 
 **Security Issues**
-        * The issue "`PORTAL-137 <https://jira.onap.org/browse/PORTAL-137>`_ -Enhance Authentication" is fixed in Portal and in its SDK. The Portal team recommend partnering apps like Policy, VID, AAI, SDC to upgrade to SDK's 1.3.2 or latest version to address the login vulnerability.
+        * The issue "`PORTAL-137 <https://jira.onap.org/browse/PORTAL-137>`_ -Enhance Authentication" is fixed in Portal and in its SDK. The Portal team recommend partnering apps like Policy, VID, AAI, and SDC to upgrade to SDK's 1.3.2 or latest version to address the login vulnerability.
 
 **Upgrade Notes**
         * This is an initial release.
