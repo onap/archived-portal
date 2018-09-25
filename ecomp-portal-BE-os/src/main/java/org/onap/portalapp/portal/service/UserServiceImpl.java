@@ -159,9 +159,12 @@ public class UserServiceImpl implements UserService {
 
 			List list = null;
 			StringBuffer criteria = new StringBuffer();
-			if (firstName != null)
+			if (firstName != null && lastName != null)
+				criteria.append(" where first_name = '").append(firstName).append("' and last_name = '")
+						.append(lastName).append("'");
+			else if (firstName != null)
 				criteria.append(" where first_name = '").append(firstName).append("'");
-			if (lastName != null)
+			else if (lastName != null)
 				criteria.append(" where last_name = '").append(lastName).append("'");
 			list = getDataAccessService().getList(EPUser.class, criteria.toString(), null, null);
 			return (list == null || list.size() == 0) ? null : list;

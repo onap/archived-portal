@@ -11,6 +11,7 @@ ARG PORTAL_WAR=build/ecompportal-be-os.war
 ARG FE_DIR=build/public
 ARG HTTP_PROXY
 ARG HTTPS_PROXY
+# ARG PORTAL_CERT=truststoreONAPall.jks
 
 # Just variables, never passed in
 ARG TOMCAT=apache-tomcat-8.0.37
@@ -31,6 +32,7 @@ RUN rm ${TOMCATTAR}
 # Remove manager and sample apps
 RUN rm -fr ${TOMCAT}/webapps/[a-z]*
 RUN mkdir -p /opt
+COPY ${SERVERXML} ${TOMCAT}/conf
 RUN mv ${TOMCAT} /opt
 
 WORKDIR ${TOMCATHOME}/webapps

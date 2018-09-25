@@ -1,17 +1,39 @@
-/*
- * Copyright 2012-2016 the original author or authors.
+/*-
+ * ============LICENSE_START==========================================
+ * ONAP Portal
+ * ===================================================================
+ * Copyright (C) 2018 AT&T Intellectual Property. All rights reserved.
+ * ===================================================================
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
+ * Unless otherwise specified, all software contained herein is licensed
+ * under the Apache License, Version 2.0 (the "License");
+ * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *             http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * Unless otherwise specified, all documentation contained herein is licensed
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
+ * you may not use this documentation except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *             https://creativecommons.org/licenses/by/4.0/
+ *
+ * Unless required by applicable law or agreed to in writing, documentation
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * ============LICENSE_END============================================
+ *
+ * 
  */
 
 package org.onap.portalapp.portal.utils;
@@ -35,8 +57,7 @@ public final class MusicCookieCsrfTokenRepository implements CsrfTokenRepository
 	static final String CSRF_PARAMETER_NAME = "_csrf";
 	static final String EP_SERVICE = "EPService";
 	CookieCsrfTokenRepository cookieRepo = null;
-	private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(MusicService.class);
-
+	private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(MusicCookieCsrfTokenRepository.class);
 	public MusicCookieCsrfTokenRepository() {
 	}
 	
@@ -64,12 +85,14 @@ public final class MusicCookieCsrfTokenRepository implements CsrfTokenRepository
 		if(cookieRepoToken==null){ // if cookieRepo does not has the token, check the cassandra for the values stored by other tomcats
 			try { // todo this part of the code needs to be replaced with out depending on EPService cookie
 				String sessionId = getSessionIdFromCookie(request);
+				if(sessionId == null) 
+					return null;
 				String token = MusicService.getAttribute(CSRF_COOKIE_NAME, sessionId);
 				if (token==null || !StringUtils.hasLength(token)) 
 					return null;
 				cookieRepoToken = new DefaultCsrfToken(CSRF_HEADER_NAME, CSRF_PARAMETER_NAME , token); 
 			} catch (Exception e) {
-				logger.error(EELFLoggerDelegate.errorLogger, "Error while calling csrf saveToken" , e);
+				logger.error(EELFLoggerDelegate.errorLogger, "Error while calling csrf loadToken" , e);
 			}
 		}
 		return cookieRepoToken;

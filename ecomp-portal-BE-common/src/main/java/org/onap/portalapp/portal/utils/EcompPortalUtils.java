@@ -58,7 +58,6 @@ import org.onap.portalapp.portal.logging.format.EPAppMessagesEnum;
 import org.onap.portalapp.portal.logging.logic.EPLogUtil;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.onap.portalsdk.core.onboarding.util.CipherUtil;
-import org.onap.portalsdk.core.onboarding.util.PortalApiConstants;
 import org.onap.portalsdk.core.util.SystemProperties;
 import org.slf4j.MDC;
 import org.springframework.http.HttpHeaders;
@@ -80,9 +79,6 @@ public class EcompPortalUtils {
 	// It is a regular expression used for while creating a External Central Auth Role 
 	public static final String EXTERNAL_CENTRAL_AUTH_ROLE_HANDLE_SPECIAL_CHARACTERS = "([^A-Z^a-z^0-9^\\.^%^(^)^=^:])";
 	
-	// regex for alphanumeric , dashes and underscore
-		public static final String SEARCH_USERS_REGEX = "(^[a-zA-Z0-9_-]*$)";
-
 	/**
 	 * @param orgUserId
 	 *            User ID to validate

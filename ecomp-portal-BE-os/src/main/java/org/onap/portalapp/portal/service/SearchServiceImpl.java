@@ -2,7 +2,7 @@
  * ============LICENSE_START==========================================
  * ONAP Portal
  * ===================================================================
- * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2017-2018 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
@@ -79,18 +79,13 @@ public class SearchServiceImpl implements SearchService {
 	public String searchUsersInFnTable(String searchString) {
 		String orgUserId = null;
 		List<String> tokens = EcompPortalUtils.parsingByRegularExpression(searchString, " ");
-		for (int i = 0; i < tokens.size(); i++) { // find userid if possible and remove it from tokens
-			if (tokens.get(i).matches(".*\\d+.*")) {
-				orgUserId = tokens.get(i);
-				tokens.remove(i);
-			}
-		}
 		while (tokens.size() > 2) { // we use no more then first 2 tokens (userId is removed, see above)
 			tokens.remove(tokens.size() - 1);
 		}
 		EPUser attrUser = new EPUser();
 		attrUser.setOrgUserId(orgUserId);
-		List<UserWithNameSurnameTitle> resultOfSearch = new ArrayList<UserWithNameSurnameTitle>(), resultOfAdditionalSearch = null;
+		List<UserWithNameSurnameTitle> resultOfSearch = new ArrayList<UserWithNameSurnameTitle>(), resultOfAdditionalSearch = null,
+				resultOfSearchUserId = new ArrayList<UserWithNameSurnameTitle>();
 		if (tokens.size() == 2) {
 			attrUser.setFirstName(tokens.get(0));
 			attrUser.setLastName(tokens.get(1));
@@ -107,6 +102,7 @@ public class SearchServiceImpl implements SearchService {
 		} else if (tokens.size() == 1) {
 			attrUser.setFirstName(tokens.get(0));
 			resultOfSearch = this.searchUsersByName(attrUser);
+			resultOfSearchUserId = this.searchUsersByUserId(attrUser);
 			resultOfSearch = this.removeWrongFirstNames(resultOfSearch, tokens.get(0));
 			if (resultOfSearch.size() < maxSizeOfSearchResult) {
 				attrUser.setFirstName(null);
@@ -114,12 +110,11 @@ public class SearchServiceImpl implements SearchService {
 				resultOfAdditionalSearch = this.searchUsersByName(attrUser);
 				resultOfAdditionalSearch = this.removeWrongLastNames(resultOfAdditionalSearch, tokens.get(0));
 			}
-		} else if (orgUserId != null) {
-			resultOfSearch = this.searchUsersByUserId(attrUser);
 		}
 		if (resultOfAdditionalSearch != null) {
 			resultOfSearch.addAll(resultOfAdditionalSearch);
 		}
+		resultOfSearch.addAll(resultOfSearchUserId);
 		resultOfSearch = this.cutSearchResultToMaximumSize(resultOfSearch);
 		ObjectMapper mapper = new ObjectMapper();
 		String result = "[]";

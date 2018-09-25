@@ -125,13 +125,14 @@ cp $BASEDIR/ecomp-portal-DB-common/*.cql ${DELIVDIR}
 # SDK app
 cp $BASEDIR/sdk/ecomp-sdk/epsdk-app-common/db-scripts/*.cql ${DELIVDIR}
 
-
+# Build Docker Images
 
 echo "Build portal docker image"
 PORTAL_DOCKER_CMD="
   docker build -t ${EP_IMG_NAME}:${PORTAL_TAG} ${PROXY_ARGS}
     --build-arg FE_DIR=$BUILD_REL/public
     --build-arg PORTAL_WAR=$BUILD_REL/portal-be-os.war
+    --build-arg SERVERXML=${DELIVDIR}/server.xml
     -f $PORTAL_DOCKERFILE .
 "
 $PORTAL_DOCKER_CMD

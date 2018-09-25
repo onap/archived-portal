@@ -39,9 +39,9 @@ package org.onap.portalapp.portal.service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
+import org.onap.portalapp.portal.service.SearchService;
+import org.onap.portalapp.portal.service.SearchServiceImpl;
 import org.onap.portalapp.portal.domain.EPUser;
 import org.onap.portalapp.portal.logging.aop.EPMetricsLog;
 import org.onap.portalapp.portal.transport.UserWithNameSurnameTitle;
@@ -74,10 +74,8 @@ public class SearchServiceImpl implements SearchService {
 	public String searchUsersInPhoneBook(String searchString) {
 		String orgUserId = null;
 		List<String> tokens = EcompPortalUtils.parsingByRegularExpression(searchString, " ");
-		Pattern pattern = Pattern.compile(EcompPortalUtils.SEARCH_USERS_REGEX);
 		for (int i = 0; i < tokens.size(); i++) { // find orgUserId if possible and remove it from tokens
-			Matcher matcher = pattern.matcher(tokens.get(i));
-			if (matcher.matches()) {
+			if (tokens.get(i).matches(".*\\d+.*")) {
 				orgUserId = tokens.get(i);
 				tokens.remove(i);
 			}

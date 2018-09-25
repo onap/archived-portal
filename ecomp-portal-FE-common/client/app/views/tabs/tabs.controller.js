@@ -2,7 +2,7 @@
  * ============LICENSE_START==========================================
  * ONAP Portal
  * ===================================================================
- * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2017-2018 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
@@ -77,6 +77,7 @@
             }
             // Add tab to the end of the array
             var addTab = function (title, content) {
+            	
             	if($scope.tabs.length===tabLimit){
             		//alert
             		confirmBoxService.showInformation('You have reached your maximum limit of tabs allowed.').then(isConfirmed => {});
@@ -279,11 +280,18 @@
             restrict: "E",
             templateUrl: 'app/views/tabs/tabframe.html',
             link: function(scope, element) {
-            	           	
-            	//var iframeId = "#tabframe-" + scope.$parent.tab.title.split(' ').join('-');
+  	
+            	var iframeId = "tabframe-" + scope.$parent.tab.title.split(' ').join('-');
+            	var iframeVal = scope.$parent.tab.content;// +  "| trusted";
+            	if(iframeId != 'tabframe-Home') {
+            		sessionStorage.setItem("currentTabFrameId",iframeId);
+            		sessionStorage.setItem("currentTabFrameVal",iframeVal);
+            	}
+            	//console.log(document.getElementById(sessionStorage.getItem("currentTabFrameId")));
+            	
             	// jQuery(iframeId).load(function() {
-            	//        alert("hello");
-            	//    }); //.attr("src",'{{tab.content | trusted}}' ); //src='{{tab.content | trusted}}'
+            	  //      alert("hello");
+            	//   }); //.attr("src",'{{tab.content | trusted}}' ); //src='{{tab.content | trusted}}'
             	// jQuery(iframeId).attr('src', '{{tab.content | trusted}}');
             	 
             	//element.childNodes[0].on('load', function() {
@@ -350,3 +358,20 @@ function isCascadeFrame(ref) {
 		   window.location = "unKnownError";
 		   }
 }
+
+function loadFrame() {
+	
+		var interval = setInterval(function() {
+			
+			if(sessionStorage.getItem("currentTabFrameId") == null && sessionStorage.getItem("currentTabFrameVal") == null)
+				clearInterval(interval);
+			else if(document.getElementById(sessionStorage.getItem("currentTabFrameId")).src != sessionStorage.getItem("currentTabFrameVal")) {
+            	document.getElementById(sessionStorage.getItem("currentTabFrameId")).src = sessionStorage.getItem("currentTabFrameVal");
+				sessionStorage.removeItem("currentTabFrameId");
+            	sessionStorage.removeItem("currentTabFrameVal");
+            	clearInterval(interval);
+			}
+			},1000);
+
+	
+	}

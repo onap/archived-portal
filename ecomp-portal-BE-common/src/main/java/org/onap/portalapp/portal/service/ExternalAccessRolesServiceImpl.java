@@ -867,23 +867,8 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 		ObjectMapper mapper = new ObjectMapper();
 		String addNewRole = "";
 		ExternalAccessRole extRole = new ExternalAccessRole();
-		List<EPRole> role = null;
-		String addDesc = null;
-		Map<String, String> extSystemUpdateRole = new LinkedHashMap<>();
-		if (app.getId().equals(PortalConstants.PORTAL_APP_ID)) {
-			role = getPortalAppRoleInfo(addRole.getId());
-		} else {
-			role = getPartnerAppRoleInfo(addRole.getId(), app);
-		}
-		extSystemUpdateRole.put(ID, String.valueOf(role.get(0).getId()));
-		extSystemUpdateRole.put(ROLE_NAME, String.valueOf(addRole.getName()));
-		extSystemUpdateRole.put(ACTIVE, String.valueOf(role.get(0).getActive()));
-		extSystemUpdateRole.put(PRIORITY, String.valueOf(role.get(0).getPriority()));
-		extSystemUpdateRole.put(APP_ID, String.valueOf(role.get(0).getAppId()));
-		extSystemUpdateRole.put(APP_ROLE_ID, String.valueOf(role.get(0).getAppRoleId()));
-		addDesc = mapper.writeValueAsString(extSystemUpdateRole);
 		extRole.setName(app.getNameSpace() + "." + addRole.getName().replaceAll(EcompPortalUtils.EXTERNAL_CENTRAL_AUTH_ROLE_HANDLE_SPECIAL_CHARACTERS, "_"));
-		extRole.setDescription(addDesc);
+		extRole.setDescription(String.valueOf(addRole.getName()));
 		addNewRole = mapper.writeValueAsString(extRole);
 		return addNewRole;
 	}
@@ -897,7 +882,7 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 	 * @throws Exception
 	 */
 	@SuppressWarnings("unchecked")
-        @Transactional(rollbackFor = Exception.class)
+	@Transactional(rollbackFor = Exception.class)
 	public boolean addRoleInEcompDB(Role addRoleInDB, EPApp app) throws Exception {		
 		boolean result = false;
 		EPRole epRole = null;
@@ -2738,7 +2723,7 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 			applicationRolesList = getAppRoles(app.getId());
 			List<String> applicationRoleIdList = new ArrayList<>();
 			for (EPRole applicationRole : applicationRolesList) {
-				applicationRoleIdList.add(applicationRole.getName());
+				applicationRoleIdList.add(applicationRole.getName().replaceAll(EcompPortalUtils.EXTERNAL_CENTRAL_AUTH_ROLE_HANDLE_SPECIAL_CHARACTERS, "_"));
 			}
 
 			List<EPRole> roleListToBeAddInEcompDB = new ArrayList<>();
@@ -2915,30 +2900,27 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 			throws IOException {
 		List<ExternalRoleDetails> externalRoleDetailsList = new ArrayList<>();
 		ExternalRoleDescription ApplicationRole = new ExternalRoleDescription();
-		ExternalAccessPerms externalAccessPerms = new ExternalAccessPerms(); 
+		ExternalAccessPerms externalAccessPerms = new ExternalAccessPerms();
 		List<String> functionCodelist = new ArrayList<>();
+		Map<String, EPRole> curRolesMap = getCurrentRolesInDB(app);
+
 		for (int i = 0; i < extRole.length(); i++) {
 			ExternalRoleDetails externalRoleDetail = new ExternalRoleDetails();
 			EPAppRoleFunction ePAppRoleFunction = new EPAppRoleFunction();
 			JSONObject Role = (JSONObject) extRole.get(i);
-			if (!extRole.getJSONObject(i).has(EXTERNAL_AUTH_ROLE_DESCRIPTION)) {
-				ApplicationRole.setActive("true");
-				ApplicationRole.setAppId(IS_NULL_STRING);
-				ApplicationRole.setPriority(IS_NULL_STRING);
-				ApplicationRole.setAppRoleId(IS_NULL_STRING);
-				String roleName = extRole.getJSONObject(i).getString(ROLE_NAME);
-				ApplicationRole.setName(roleName.substring(app.getNameSpace().length() + 1));
-			} else {
+			String roleName = extRole.getJSONObject(i).getString(ROLE_NAME);
+			ApplicationRole.setName(roleName.substring(app.getNameSpace().length() + 1));
+			if (extRole.getJSONObject(i).has(EXTERNAL_AUTH_ROLE_DESCRIPTION)) {
 				String desc = extRole.getJSONObject(i).getString(EXTERNAL_AUTH_ROLE_DESCRIPTION);
-				ApplicationRole = mapper.readValue(desc, ExternalRoleDescription.class);
+				ApplicationRole.setName(desc);
 			}
-
 			SortedSet<ExternalAccessPerms> externalAccessPermsOfRole = new TreeSet<>();
 			if (extRole.getJSONObject(i).has(EXTERNAL_AUTH_PERMS)) {
 				JSONArray extPerm = (JSONArray) Role.get(EXTERNAL_AUTH_PERMS);
 				for (int j = 0; j < extPerm.length(); j++) {
 					JSONObject perms = extPerm.getJSONObject(j);
-					boolean isNamespaceMatching = EcompPortalUtils.checkNameSpaceMatching(perms.getString("type"), app.getNameSpace());
+					boolean isNamespaceMatching = EcompPortalUtils.checkNameSpaceMatching(perms.getString("type"),
+							app.getNameSpace());
 					if (isNamespaceMatching) {
 						externalAccessPerms = new ExternalAccessPerms(perms.getString("type"),
 								perms.getString("instance"), perms.getString("action"));
@@ -2949,46 +2931,33 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 
 				}
 			}
-
-			if (ApplicationRole.getActive().equals(IS_NULL_STRING)) {
-				externalRoleDetail.setActive(false);
-			} else {
-				externalRoleDetail.setActive(Boolean.parseBoolean(ApplicationRole.getActive()));
-			}
+			externalRoleDetail.setActive(true);
 			externalRoleDetail.setName(ApplicationRole.getName());
-
-			if (ApplicationRole.getAppId().equals(IS_NULL_STRING) && app.getId() == 1) {
+			if (app.getId() == 1) {
 				externalRoleDetail.setAppId(null);
-			} else if (ApplicationRole.getAppId().equals(IS_NULL_STRING)) {
+			} else {
 				externalRoleDetail.setAppId(app.getId());
-			} else {
-				externalRoleDetail.setAppId(Long.parseLong(ApplicationRole.getAppId()));
 			}
-
-			if (ApplicationRole.getPriority().equals(IS_NULL_STRING)) {
-				externalRoleDetail.setPriority(null);
-			} else {
-				externalRoleDetail.setPriority(Integer.parseInt(ApplicationRole.getPriority()));
-			}
-
-			if (ApplicationRole.getAppRoleId().equals(IS_NULL_STRING) && app.getId() == 1) {
-				externalRoleDetail.setAppRoleId(null);
-			}
-
+			// get role functions from DB
+			EPRole currRole = curRolesMap.get(ApplicationRole.getName()
+					.replaceAll(EcompPortalUtils.EXTERNAL_CENTRAL_AUTH_ROLE_HANDLE_SPECIAL_CHARACTERS, "_"));
+			Long roleId = null;
+			if (currRole != null)
+				roleId = currRole.getId();
 			// get role functions from DB
 			final Map<String, EPAppRoleFunction> roleFunctionsMap = new HashMap<>();
-			if (!ApplicationRole.getId().equals(IS_NULL_STRING)) {
-				final Map<String, Long> appRoleFuncsParams = new  HashMap<>();
+			final Map<String, Long> appRoleFuncsParams = new HashMap<>();
+			if (roleId != null) {
 				appRoleFuncsParams.put("appId", app.getId());
-				appRoleFuncsParams.put("roleId", Long.valueOf(ApplicationRole.getId()));
-				List<EPAppRoleFunction> appRoleFunctions = dataAccessService.executeNamedQuery("getAppRoleFunctionOnRoleIdandAppId", appRoleFuncsParams, null);
+				appRoleFuncsParams.put("roleId", roleId);
+				List<EPAppRoleFunction> appRoleFunctions = dataAccessService
+						.executeNamedQuery("getAppRoleFunctionOnRoleIdandAppId", appRoleFuncsParams, null);
 				if (!appRoleFunctions.isEmpty()) {
 					for (EPAppRoleFunction roleFunc : appRoleFunctions) {
 						roleFunctionsMap.put(roleFunc.getCode(), roleFunc);
 					}
 				}
 			}
-
 			if (!externalAccessPermsOfRole.isEmpty()) {
 				// Adding functions to role
 				for (ExternalAccessPerms externalpermission : externalAccessPermsOfRole) {
@@ -3000,22 +2969,24 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 						EPAppRoleFunction checkRoleFunctionPipeExits = roleFunctionsMap.get(funcCode);
 						if (checkRoleFunctionPipeExits == null) {
 							try {
-								final Map<String, String> appFuncsParams = new  HashMap<>();
+								final Map<String, String> appFuncsParams = new HashMap<>();
 								appFuncsParams.put("appId", String.valueOf(app.getId()));
 								appFuncsParams.put("functionCd", externalpermission.getInstance());
 								logger.debug(EELFLoggerDelegate.debugLogger,
 										"SyncApplicationRolesWithEcompDB: Adding function to the role: {}",
 										externalpermission.getInstance());
 								List<CentralV2RoleFunction> roleFunction = null;
-								roleFunction = dataAccessService.executeNamedQuery("getAppFunctionOnCodeAndAppId", appFuncsParams, null);
+								roleFunction = dataAccessService.executeNamedQuery("getAppFunctionOnCodeAndAppId",
+										appFuncsParams, null);
 								if (roleFunction.isEmpty()) {
 									appFuncsParams.put("functionCd", funcCode);
-									roleFunction = dataAccessService.executeNamedQuery("getAppFunctionOnCodeAndAppId", appFuncsParams, null);
+									roleFunction = dataAccessService.executeNamedQuery("getAppFunctionOnCodeAndAppId",
+											appFuncsParams, null);
 								}
 								if (!roleFunction.isEmpty()) {
 									EPAppRoleFunction apRoleFunction = new EPAppRoleFunction();
 									apRoleFunction.setAppId(app.getId());
-									apRoleFunction.setRoleId(Long.parseLong(ApplicationRole.getId()));
+									apRoleFunction.setRoleId(roleId);
 									apRoleFunction.setCode(roleFunction.get(0).getCode());
 									dataAccessService.saveDomainObject(apRoleFunction, null);
 								}
@@ -3089,7 +3060,7 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 	 */
 	private EPRole convertExternalRoleDetailstoEpRole(ExternalRoleDetails externalRoleDetails) {
 		EPRole role = new EPRole();
-		role.setActive(externalRoleDetails.isActive());
+		role.setActive(true);
 		role.setAppId(externalRoleDetails.getAppId());
 		role.setAppRoleId(externalRoleDetails.getAppRoleId());
 		role.setName(externalRoleDetails.getName());

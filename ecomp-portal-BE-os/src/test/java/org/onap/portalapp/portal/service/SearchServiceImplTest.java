@@ -2,7 +2,7 @@
  * ============LICENSE_START==========================================
  * ONAP Portal
  * ===================================================================
- * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2017-2018 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
@@ -37,7 +37,8 @@
  */
 package org.onap.portalapp.portal.service;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,8 +56,6 @@ import org.mockito.MockitoAnnotations;
 import org.onap.portalapp.portal.domain.EPUser;
 import org.onap.portalapp.portal.framework.MockEPUser;
 import org.onap.portalapp.portal.framework.MockitoTestSuite;
-import org.onap.portalapp.portal.service.SearchServiceImpl;
-import org.onap.portalapp.portal.service.UserService;
 import org.onap.portalapp.portal.transport.UserWithNameSurnameTitle;
 import org.onap.portalapp.portal.utils.EcompPortalUtils;
 import org.powermock.api.mockito.PowerMockito;
@@ -105,19 +104,18 @@ public class SearchServiceImplTest {
 	PowerMockito.mockStatic(EcompPortalUtils.class);
 	List<String> list = new ArrayList<>();
 	String str = "Test";
-	String str2 = "Test new";
-	String str1 = "Test new1";
+	String str1 = "Testnew";
 	list.add(str);
 	list.add(str1);
-	list.add(str2);
-	Mockito.when(EcompPortalUtils.parsingByRegularExpression("Test", " ")).thenReturn(list);
+	Mockito.when(EcompPortalUtils.parsingByRegularExpression("Test Testnew", " ")).thenReturn(list);
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	List<EPUser> userList = new ArrayList();
 	EPUser user = mockUser.mockEPUser();
-	user.setLastName("Test new");
+	user.setLastName("Testnew");
 	userList.add(user);
-	Mockito.when( this.userService.getUserByFirstLastName("Test","Test new")).thenReturn(userList);
-	String result = searchServiceImpl.searchUsersInPhoneBook("Test");
-	assertEquals("[{\"orgUserId\":\"guestT\",\"firstName\":\"test\",\"lastName\":\"Test new\",\"jobTitle\":null}]" , result);
+	Mockito.when( this.userService.getUserByFirstLastName("Test","Testnew")).thenReturn(userList);
+	String result = searchServiceImpl.searchUsersInPhoneBook("Test Testnew");
+	assertEquals("[{\"orgUserId\":\"guestT\",\"firstName\":\"test\",\"lastName\":\"Testnew\",\"jobTitle\":null}]" , result);
 	}
 	
 	

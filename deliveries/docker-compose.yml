@@ -99,6 +99,7 @@ services:
       - 8989:8080
       - 8010:8009
       - 8006:8005
+      - 8443:8443
     links:
       - portal-db
       - portal-wms
@@ -116,7 +117,9 @@ services:
       - ${PROPS_DIR}/ONAPPORTAL/music.properties:${WEBAPPS_DIR}/ONAPPORTAL/WEB-INF/classes/music.properties
       - ${PROPS_DIR}/ONAPPORTAL/openid-connect.properties:${WEBAPPS_DIR}/ONAPPORTAL/WEB-INF/classes/openid-connect.properties
       - ${PROPS_DIR}/ONAPPORTAL/logback.xml:${WEBAPPS_DIR}/ONAPPORTAL/WEB-INF/classes/logback.xml
-      - ${LOGS_DIR}:/opt/apache-tomcat-8.0.37/logs
+      - ./${TOMCAT_TRUST}:${TOMCAT_DIR}/${TOMCAT_TRUST}
+      - ./${TOMCAT_KEY}:${TOMCAT_DIR}/${TOMCAT_KEY}
+      - ${LOGS_DIR}:${TOMCAT_DIR}/logs
     command:
       - /start-apache-tomcat.sh
       # see comments in .env file
@@ -128,6 +131,10 @@ services:
       driver: json-file
     environment:
       - CATALINA_OPTS=-Xmx1536m -Xms1536m
+      - javax.net.ssl.keyStore=${TOMCAT_DIR}/${TOMCAT_TRUST} 
+      - javax.net.ssl.keyStorePassword=${CERT_PWD}
+      - javax.net.ssl.trustStore=${TOMCAT_DIR}/${TOMCAT_TRUST}
+      - javax.net.ssl.trustStorePassword=${CERT_PWD}
   portal-sdk:
     image: ${SDK_IMG_NAME}:${PORTAL_TAG}
     ports:
@@ -146,7 +153,7 @@ services:
       - ${PROPS_DIR}/ONAPPORTALSDK/portal.properties:${WEBAPPS_DIR}/ONAPPORTALSDK/WEB-INF/classes/portal.properties
       - ${PROPS_DIR}/ONAPPORTALSDK/music.properties:${WEBAPPS_DIR}/ONAPPORTALSDK/WEB-INF/classes/music.properties
       - ${PROPS_DIR}/ONAPPORTALSDK/logback.xml:${WEBAPPS_DIR}/ONAPPORTALSDK/WEB-INF/classes/logback.xml
-      - ${LOGS_DIR}:/opt/apache-tomcat-8.0.37/logs
+      - ${LOGS_DIR}:${TOMCAT_DIR}/logs
     command:
       - /start-apache-tomcat.sh
     logging:

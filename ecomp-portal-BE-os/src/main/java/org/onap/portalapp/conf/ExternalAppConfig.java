@@ -161,9 +161,10 @@ public class ExternalAppConfig extends AppConfig implements Configurable {
 			MDC.put(MDC_SERVICE_INSTANCE_ID, "");
 			MDC.put(MDC_ALERT_SEVERITY, AlarmSeverityEnum.INFORMATIONAL.severity());
 			MDC.put(MDC_INSTANCE_UUID, SystemProperties.getProperty(SystemProperties.INSTANCE_UUID));
-			if("true".equalsIgnoreCase(remotecentralizedsystemaccess)){
-				importFromExternalAuth();
-			}			
+			
+			//			if("true".equalsIgnoreCase(remotecentralizedsystemaccess)){
+			//				importFromExternalAuth();
+			//			}			
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "init failed", e);
 		}
@@ -174,7 +175,10 @@ public class ExternalAppConfig extends AppConfig implements Configurable {
 	 * for all the centralized applications between AAF and ONAP, updates
 	 * fn_user and fn_user_role with user information from AAF.
 	 * 
+	 * This is being handled in AAF directly, so it has been deprecated
+	 * 
 	 */
+	@Deprecated
 	private void importFromExternalAuth() throws Exception {
 		JSONArray aafAppRoles = new JSONArray();
 		JSONArray aafUserList = new JSONArray();

@@ -15,6 +15,15 @@ INSERT INTO `fn_app` (`app_id`, `app_name`, `app_image_url`, `app_description`, 
 (8, 'CLI', 'images/cache/portal-345993588_92550.png', NULL, NULL, 'http://portal.api.simpledemo.onap.org:8080/', NULL, NULL, '', '', NULL, '', 'Y', 'Y', NULL, '', '', '', '', 1,'N',NULL),
 (9, 'MSB', 'images/cache/portal-345993588_92550.png', NULL, NULL, 'http://msb-iag:80/iui/microservices/index.html', NULL, NULL, '', '', NULL, '', 'Y', 'Y', NULL, '', '', '', '', 2,'N',NULL);
 
+-- aaf centralize
+
+update fn_app set auth_central = 'Y' , auth_namespace = 'org.onap.portal' where app_id = 1;
+update fn_app set auth_central = 'Y' , auth_namespace = 'org.onap.sdc' where app_id = 4;
+update fn_app set auth_central = 'Y' , auth_namespace = 'org.onap.policy' where app_id = 5;
+update fn_app set auth_central = 'Y' , auth_namespace = 'org.onap.vid' where app_id = 6;
+update fn_app set auth_central = 'Y' , auth_namespace = 'org.onap.aai' where app_id = 7;
+
+
 -- insert SDC users user id2-8
 
 Insert into fn_user (USER_ID, ORG_ID, MANAGER_ID,FIRST_NAME,MIDDLE_NAME,LAST_NAME,PHONE,FAX,CELLULAR,EMAIL,ADDRESS_ID,ALERT_METHOD_CD,HRID,ORG_USER_ID,ORG_CODE,LOGIN_ID,LOGIN_PWD,LAST_LOGIN_DATE,ACTIVE_YN,CREATED_ID,CREATED_DATE,MODIFIED_ID,MODIFIED_DATE,IS_INTERNAL_YN,ADDRESS_LINE_1,ADDRESS_LINE_2,CITY,STATE_CD,ZIP_CODE,COUNTRY_CD,LOCATION_CLLI,ORG_MANAGER_USERID,COMPANY,DEPARTMENT_NAME,JOB_TITLE,TIMEZONE,DEPARTMENT,BUSINESS_UNIT,BUSINESS_UNIT_NAME,COST_CENTER,FIN_LOC_CODE,SILO_STATUS) values (2,NULL,NULL,'Jimmy',NULL,'Hendrix',NULL,NULL,NULL,'admin@onap.org',NULL,NULL,NULL,'jh0003',NULL,'jh0003','4Gl6WL1bmwviYm+XZa6pS1vC0qKXWtn9wcZWdLx61L0=','2016-10-20 15:11:16','Y',NULL,'2016-10-14 21:00:00',1,'2016-10-20 15:11:16','N',NULL,NULL,NULL,'NJ',NULL,'US',NULL,NULL,NULL,NULL,NULL,10,NULL,NULL,NULL,NULL,NULL,NULL);
