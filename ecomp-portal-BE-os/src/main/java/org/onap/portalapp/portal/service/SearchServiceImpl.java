@@ -39,12 +39,10 @@ package org.onap.portalapp.portal.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.onap.portalapp.portal.domain.EPUser;
 import org.onap.portalapp.portal.logging.aop.EPMetricsLog;
-import org.onap.portalapp.portal.service.SearchService;
-import org.onap.portalapp.portal.service.SearchServiceImpl;
-import org.onap.portalapp.portal.service.UserService;
 import org.onap.portalapp.portal.transport.UserWithNameSurnameTitle;
 import org.onap.portalapp.portal.utils.EcompPortalUtils;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
@@ -75,15 +73,14 @@ public class SearchServiceImpl implements SearchService {
 		return searchUsersInFnTable(searchString);
 	}
 	
+	
 	@Override
 	public String searchUsersInFnTable(String searchString) {
-		String orgUserId = null;
 		List<String> tokens = EcompPortalUtils.parsingByRegularExpression(searchString, " ");
 		while (tokens.size() > 2) { // we use no more then first 2 tokens (userId is removed, see above)
 			tokens.remove(tokens.size() - 1);
 		}
 		EPUser attrUser = new EPUser();
-		attrUser.setOrgUserId(orgUserId);
 		List<UserWithNameSurnameTitle> resultOfSearch = new ArrayList<UserWithNameSurnameTitle>(), resultOfAdditionalSearch = null,
 				resultOfSearchUserId = new ArrayList<UserWithNameSurnameTitle>();
 		if (tokens.size() == 2) {
@@ -101,6 +98,7 @@ public class SearchServiceImpl implements SearchService {
 			}
 		} else if (tokens.size() == 1) {
 			attrUser.setFirstName(tokens.get(0));
+			attrUser.setOrgUserId(tokens.get(0));
 			resultOfSearch = this.searchUsersByName(attrUser);
 			resultOfSearchUserId = this.searchUsersByUserId(attrUser);
 			resultOfSearch = this.removeWrongFirstNames(resultOfSearch, tokens.get(0));
@@ -115,6 +113,7 @@ public class SearchServiceImpl implements SearchService {
 			resultOfSearch.addAll(resultOfAdditionalSearch);
 		}
 		resultOfSearch.addAll(resultOfSearchUserId);
+		resultOfSearch.stream().distinct().collect(Collectors.toList());
 		resultOfSearch = this.cutSearchResultToMaximumSize(resultOfSearch);
 		ObjectMapper mapper = new ObjectMapper();
 		String result = "[]";
@@ -126,7 +125,6 @@ public class SearchServiceImpl implements SearchService {
 		return result;
 	}
 
-	
 	@SuppressWarnings("rawtypes")
 	public List<UserWithNameSurnameTitle> searchUsersByUserId(EPUser attrUser) {
 		List<UserWithNameSurnameTitle> foundUsers = new ArrayList<UserWithNameSurnameTitle>();

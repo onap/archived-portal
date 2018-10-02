@@ -86,7 +86,7 @@ public class EcompPortalUtils {
 	 *         otherwise
 	 */
 	public static boolean legitimateUserId(String orgUserId) {
-		return orgUserId.matches("^[a-zA-Z0-9]+$");
+		return orgUserId.matches("^[a-zA-Z0-9/_/-/@]+$");
 	}
 
 	/**

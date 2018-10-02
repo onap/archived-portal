@@ -78,6 +78,10 @@
         		   var warningMsg = "Passwords do not match, please try again.";
         		   confirmBoxService.showInformation(warningMsg).then(isConfirmed => {return;});
         		   return;
+        	   } else if(/[^a-zA-Z0-9\-\@\_]/.test(this.newUser.loginId)){
+        		   var warningMsg = "Login ID should not contain special characters except '@', '-', and '_'.";
+        		   confirmBoxService.showInformation(warningMsg).then(isConfirmed => {return;});
+        		   return;
         	   }
         	   else {
         		   // check password length complexity.
