@@ -4,6 +4,8 @@
  * ===================================================================
  * Copyright © 2018 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
+ *  Modifications Copyright © 2018 IBM.
+ * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
  * under the Apache License, Version 2.0 (the "License");
@@ -47,35 +49,45 @@ import ch.qos.logback.core.spi.FilterReply;
 
 public class CustomLoggingFilterTest {
 
-	@Test
-	public void  decideTest(){
-		ILoggingEvent event = Mockito.mock(ILoggingEvent.class);
-		Mockito.when(event.getLevel()).thenReturn(Level.ERROR);
-		Mockito.when(event.getThreadName()).thenReturn("UEBConsumerThread");
-		Mockito.when(event.getLoggerName()).thenReturn("org.onap.nsa");
-		CustomLoggingFilter customLoggingFilter =  new CustomLoggingFilter();
-		 FilterReply reply = customLoggingFilter.decide(event);
-		 Assert.assertEquals( FilterReply.DENY, reply);
-	}
-	
-	@Test
-	public void  decideNEUTRALTest(){
-		ILoggingEvent event = Mockito.mock(ILoggingEvent.class);
-		Mockito.when(event.getLevel()).thenReturn(Level.ERROR);
-		Mockito.when(event.getThreadName()).thenReturn("UEBConsumerThread");
-		Mockito.when(event.getLoggerName()).thenReturn("test");
-		CustomLoggingFilter customLoggingFilter =  new CustomLoggingFilter();
-		 FilterReply reply = customLoggingFilter.decide(event);
-		 Assert.assertEquals( FilterReply.NEUTRAL, reply);
-	}
-	
-	@Test
-	public void  decideExceptionTest(){
-		ILoggingEvent event = Mockito.mock(ILoggingEvent.class);
-		Mockito.when(event.getLevel()).thenReturn(Level.ERROR);
-		Mockito.when(event.getThreadName()).thenReturn("UEBConsumerThread");
-		CustomLoggingFilter customLoggingFilter =  new CustomLoggingFilter();
-		 FilterReply reply = customLoggingFilter.decide(event);
-		 Assert.assertEquals( FilterReply.NEUTRAL, reply);
-	}
+    @Test
+    public void  decideTest(){
+        ILoggingEvent event = Mockito.mock(ILoggingEvent.class);
+        Mockito.when(event.getLevel()).thenReturn(Level.ERROR);
+        Mockito.when(event.getThreadName()).thenReturn("UEBConsumerThread");
+        Mockito.when(event.getLoggerName()).thenReturn("org.onap.nsa");
+        CustomLoggingFilter customLoggingFilter =  new CustomLoggingFilter();
+        FilterReply reply = customLoggingFilter.decide(event);
+        Assert.assertEquals( FilterReply.DENY, reply);
+    }
+    
+    @Test
+    public void  decideNEUTRALTest(){
+        ILoggingEvent event = Mockito.mock(ILoggingEvent.class);
+        Mockito.when(event.getLevel()).thenReturn(Level.ERROR);
+        Mockito.when(event.getThreadName()).thenReturn("UEBConsumerThread");
+        Mockito.when(event.getLoggerName()).thenReturn("test");
+        CustomLoggingFilter customLoggingFilter =  new CustomLoggingFilter();
+        FilterReply reply = customLoggingFilter.decide(event);
+        Assert.assertEquals( FilterReply.NEUTRAL, reply);
+    }
+    
+    @Test
+    public void  decideExceptionTest(){
+        ILoggingEvent event = Mockito.mock(ILoggingEvent.class);
+        Mockito.when(event.getLevel()).thenReturn(Level.ERROR);
+        Mockito.when(event.getThreadName()).thenReturn("UEBConsumerThread");
+        CustomLoggingFilter customLoggingFilter =  new CustomLoggingFilter();
+        FilterReply reply = customLoggingFilter.decide(event);
+        Assert.assertEquals( FilterReply.NEUTRAL, reply);
+    }
+    
+    @Test
+    public void  decideExceptionTestWithLevelWarn(){
+        ILoggingEvent event = Mockito.mock(ILoggingEvent.class);
+        Mockito.when(event.getLevel()).thenReturn(Level.WARN);
+        Mockito.when(event.getThreadName()).thenReturn("org.apache.http");
+        CustomLoggingFilter customLoggingFilter =  new CustomLoggingFilter();
+        FilterReply reply = customLoggingFilter.decide(event);
+        Assert.assertEquals( FilterReply.NEUTRAL, reply);
+    }
 }
