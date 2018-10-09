@@ -4,6 +4,8 @@
  * ===================================================================
  * Copyright (C) 2018 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
+ *  Modifications Copyright © 2018 IBM.
+ * ================================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
  * under the Apache License, Version 2.0 (the "License");
@@ -45,25 +47,41 @@ import org.junit.Test;
 
 public class BEPropertyTest {
 
-	
-	private static final String TEST="test";
-	
-	@Test
-	public  void test() {
-		BEProperty property=new BEProperty(TEST, TEST);
-		BEProperty beProperty=new BEProperty(TEST, TEST);
-		BEProperty be=property;
-		
-		beProperty.setKey(property.getKey());
-		beProperty.setValue(property.getValue());
-		
-		assertEquals(property.hashCode(), beProperty.hashCode());
-		assertTrue(beProperty.equals(property));
-		assertTrue(be.equals(property));
-		assertFalse(be.equals(null));
-		be.setValue(null);
-		assertTrue(be.equals(property));
-		be.setKey(null);
-		assertTrue(be.equals(property));
-	}
+    
+    private static final String TEST="test";
+    
+    @Test
+    public  void test() {
+        BEProperty property=new BEProperty(TEST, TEST);
+        BEProperty beProperty=new BEProperty(TEST, TEST);
+        BEProperty be=property;
+        
+        beProperty.setKey(property.getKey());
+        beProperty.setValue(property.getValue());
+        
+        assertEquals(property.hashCode(), beProperty.hashCode());
+        assertTrue(beProperty.equals(property));
+        assertTrue(be.equals(property));
+        assertFalse(be.equals(null));
+        be.setValue(null);
+        assertTrue(be.equals(property));
+        be.setKey(null);
+        assertTrue(be.equals(property));
+        
+        assertFalse(property.equals(this));
+        
+        property.setKey(null);
+        beProperty.setKey("notnull");
+        assertFalse(property.equals(beProperty));
+        assertFalse(beProperty.equals(property));
+        
+        property.setKey("notnull");
+        beProperty.setKey("notnull");
+        property.setValue(null);
+        beProperty.setValue("notnull");
+        assertFalse(property.equals(beProperty));
+        assertFalse(beProperty.equals(property));
+        
+        
+    }
 }
