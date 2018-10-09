@@ -98,7 +98,7 @@
 		"loggedinUser" : "http://localhost:8080/ecompportal/portalApi/loggedinUser",
 		"modifyLoggedinUser" : "http://localhost:8080/ecompportal/portalApi/modifyLoggedinUser",
 		"centralizedApps": "http:/localhost:8080/ecompportal/portalApi/centralizedApps",
-		"uploadRoleFunction":"http://www.ecomp.att.com:8080/ecompportal-att/portalApi/uploadRoleFunction/:appId"
+		"uploadRoleFunction":"http://localhost:8080/ecompportal/portalApi/uploadRoleFunction/:appId"
 	},
 	"cookieDomain": "onap.org"
 }

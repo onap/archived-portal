@@ -43,7 +43,7 @@ export LOGS_DIR=./logs
 mkdir -p $LOGS_DIR
 
 # Make inter-app communication work in dev3
-export EXTRA_HOST_IP="135.207.161.175"
+export EXTRA_HOST_IP=localhost
 export EXTRA_HOST_NAME="portal.api.simpledemo.onap.org"
 
 # (re)start containers
