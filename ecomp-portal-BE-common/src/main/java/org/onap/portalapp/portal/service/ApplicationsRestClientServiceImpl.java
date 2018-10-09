@@ -207,8 +207,8 @@ public class ApplicationsRestClientServiceImpl implements ApplicationsRestClient
 			client.header(SystemProperties.USERAGENT_NAME, EPCommonSystemProperties.ECOMP_PORTAL_BE);
 			
 			logger.debug(EELFLoggerDelegate.debugLogger,
-					String.format("App %d found, baseUri=[%s], Headers: [%s=%s, %s=%s, %s=%s]", appSystemId, appBaseUri,
-							APP_USERNAME_HEADER, username, PASSWORD_HEADER, encriptedPwd, BASIC_AUTHENTICATION_HEADER, encodingStr));
+					String.format("App %d found, baseUri=[%s], Headers: [%s=%s]", appSystemId, appBaseUri,
+							APP_USERNAME_HEADER, username));
 
 			return client;
 		}

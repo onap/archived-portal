@@ -823,6 +823,72 @@ public class UserRolesCommonServiceImpl  {
 		return addRemoteUser;
 	}
 	
+	
+	private EPUser pushRemoteUser(List<RoleInAppForUser> roleInAppForUserList, String userId, EPApp app,
+			ObjectMapper mapper, SearchService searchService,
+			ApplicationsRestClientService applicationsRestClientService) throws Exception {
+		EPUser addRemoteUser = null;
+		if (remoteUserShouldBeCreated(roleInAppForUserList)) {
+			pushUserOnRemoteApp(userId, app, applicationsRestClientService, searchService, mapper,
+					isAppUpgradeVersion(app), roleInAppForUserList);
+		}
+		return addRemoteUser;
+	}
+
+	protected void pushUserOnRemoteApp(String userId, EPApp app,
+			ApplicationsRestClientService applicationsRestClientService, SearchService searchService,
+			ObjectMapper mapper, boolean postOpenSource, List<RoleInAppForUser> roleInAppForUserList) throws Exception {
+
+		EPUser client = searchService.searchUserByUserId(userId);
+
+		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+		if (client == null) {
+			String msg = "cannot create user " + userId + ", because he/she cannot be found in phonebook.";
+			logger.error(EELFLoggerDelegate.errorLogger, msg);
+			throw new Exception(msg);
+		}
+
+		client.setLoginId(userId);
+		client.setActive(true);
+		roleInAppForUserList.removeIf(role -> role.isApplied.equals(false));
+		Set<EcompRole> userRolesInRemoteApp = constructUsersRemoteAppRoles(roleInAppForUserList);
+		SortedSet<Role> roles = new TreeSet<>();
+		List<EPRole> getAppRoles = getAppRoles(app.getId());
+		for (EcompRole epRole : userRolesInRemoteApp) {
+			Role role = new Role();
+			EPRole appRole = getAppRoles.stream()
+					  .filter(applicationRole -> epRole.getId().equals(applicationRole.getId()))
+					  .findAny()
+					  .orElse(null);
+			if(appRole != null)
+			role.setId(appRole.getAppRoleId());
+			role.setName(epRole.getName());
+			roles.add(role);
+		}
+		client.setRoles(roles);
+		String userInString = null;
+		userInString = mapper.writerFor(EPUser.class).writeValueAsString(client);
+		logger.debug(EELFLoggerDelegate.debugLogger,
+				"about to post a client to remote application, users json = " + userInString);
+		applicationsRestClientService.post(EPUser.class, app.getId(), userInString, String.format("/user/%s", userId));
+
+	}
+	
+	
+	public List<EPRole> getAppRoles(Long appId) throws Exception {
+		List<EPRole> applicationRoles = null;
+		final Map<String, Long> appParams = new HashMap<>();
+		try {
+				appParams.put("appId", appId);
+				applicationRoles = dataAccessService.executeNamedQuery("getPartnerAppRolesList", appParams, null);
+		} catch (Exception e) {
+			logger.error(EELFLoggerDelegate.errorLogger, "getAppRoles: failed", e);
+			throw e;
+		}
+		return applicationRoles;
+	}
+	
 	/**
 	 * It checks whether the remote user exists or not
 	 * if exits returns user object else null
@@ -883,16 +949,12 @@ public class UserRolesCommonServiceImpl  {
 				// if centralized app
 				if (app.getCentralAuth()) {
 					if (!app.getId().equals(PortalConstants.PORTAL_APP_ID)) {
-						try {
-							addRemoteUser(roleInAppForUserList, userId, app, mapper, searchService,
+							pushRemoteUser(roleInAppForUserList, userId, app, mapper, searchService,
 									applicationsRestClientService);
-						} catch (Exception e) {
-							String message=e.getMessage();
-							logger.error(EELFLoggerDelegate.errorLogger, message, e);
-						}
 					}
 					
-					Set<EcompRole> userRolesInLocalApp = postUsersRolesToLocalApp(roleInAppForUserList, mapper,
+					
+					Set<EcompRole>  userRolesInLocalApp = postUsersRolesToLocalApp(roleInAppForUserList, mapper,
 							applicationsRestClientService, appId, userId);
 					RolesInAppForUser rolesInAppForUser = constructRolesInAppForUserUpdate(userId, appId,
 							userRolesInLocalApp);

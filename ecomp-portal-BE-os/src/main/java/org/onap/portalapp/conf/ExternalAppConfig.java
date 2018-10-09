@@ -162,23 +162,15 @@ public class ExternalAppConfig extends AppConfig implements Configurable {
 			MDC.put(MDC_ALERT_SEVERITY, AlarmSeverityEnum.INFORMATIONAL.severity());
 			MDC.put(MDC_INSTANCE_UUID, SystemProperties.getProperty(SystemProperties.INSTANCE_UUID));
 			
-			//			if("true".equalsIgnoreCase(remotecentralizedsystemaccess)){
-			//				importFromExternalAuth();
-			//			}			
+			if("true".equalsIgnoreCase(remotecentralizedsystemaccess)){
+				importFromExternalAuth();
+			}			
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "init failed", e);
 		}
 	}
 
-	/**
-	 * Does a sync on functions, roles and role functions based on namespace 
-	 * for all the centralized applications between AAF and ONAP, updates
-	 * fn_user and fn_user_role with user information from AAF.
-	 * 
-	 * This is being handled in AAF directly, so it has been deprecated
-	 * 
-	 */
-	@Deprecated
+	
 	private void importFromExternalAuth() throws Exception {
 		JSONArray aafAppRoles = new JSONArray();
 		JSONArray aafUserList = new JSONArray();
@@ -195,8 +187,8 @@ public class ExternalAppConfig extends AppConfig implements Configurable {
 					for(int j = 0; j < aafAppRoles.length(); j++){
 						ObjectMapper mapper = new ObjectMapper();
 						String name = aafAppRoles.getJSONObject(j).getString("name");
-						String desc = aafAppRoles.getJSONObject(j).getString("description");
-						ExternalRoleDescription externalRoleDescription = mapper.readValue(desc, ExternalRoleDescription.class);
+						//String desc = aafAppRoles.getJSONObject(j).getString("description");
+						//ExternalRoleDescription externalRoleDescription = mapper.readValue(desc, ExternalRoleDescription.class);
 						aafUserList = externalAccessRolesService.getAllUsersByRole(name);	
 						if(aafUserList != null && aafUserList.length() > 0){
 							for(int k = 0; k < aafUserList.length(); k++){

@@ -2,7 +2,7 @@
  * ============LICENSE_START==========================================
  * ONAP Portal
  * ===================================================================
- * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2017-2018 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
@@ -42,7 +42,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
-import org.onap.portalapp.portal.transport.ExternalRoleDescription;
 
 public class ExternalRoleDescriptionTest {
 
@@ -51,49 +50,17 @@ public class ExternalRoleDescriptionTest {
 	@Test
 	public void externalRoleDescriptionTest(){
 		ExternalRoleDescription extRole=mockExternalRoleDescription();
-		
 		ExternalRoleDescription externalRoleDescription = new ExternalRoleDescription();
-		 externalRoleDescription.setId(extRole.getId());
 		    externalRoleDescription.setName(extRole.getName());
-		    externalRoleDescription.setActive(extRole.getActive());
-		    externalRoleDescription.setPriority(extRole.getPriority());
-		    externalRoleDescription.setAppId(extRole.getAppId());
-		    externalRoleDescription.setAppRoleId(extRole.getAppRoleId());
-		
-		assertEquals(externalRoleDescription.getId(), TEST);
 		assertEquals(externalRoleDescription.getName(), TEST);
-		assertEquals(externalRoleDescription.getActive(), TEST);
-		assertEquals(externalRoleDescription.getPriority(), TEST);
-		assertEquals(externalRoleDescription.getAppId(), TEST);
-		assertEquals(externalRoleDescription.getAppRoleId(), TEST);
 		assertEquals(externalRoleDescription.hashCode(), extRole.hashCode());
 		assertTrue(externalRoleDescription.equals(extRole));
-		
-		assertFalse(externalRoleDescription.equals(null));
-		externalRoleDescription.setPriority(null);
-		assertFalse(externalRoleDescription.equals(extRole));
 		externalRoleDescription.setName(null);
-		assertFalse(externalRoleDescription.equals(extRole));
-		externalRoleDescription.setId(null);
-		assertFalse(externalRoleDescription.equals(extRole));
-		externalRoleDescription.setAppRoleId(null);
-		assertFalse(externalRoleDescription.equals(extRole));
-		externalRoleDescription.setAppId(null);
-		assertFalse(externalRoleDescription.equals(extRole));
-		externalRoleDescription.setActive(null);
 		assertFalse(externalRoleDescription.equals(extRole));
 	}
 	private ExternalRoleDescription mockExternalRoleDescription(){
-		
 		ExternalRoleDescription externalRoleDescription = new ExternalRoleDescription();
-			    
-	    externalRoleDescription.setId(TEST);
 	    externalRoleDescription.setName(TEST);
-	    externalRoleDescription.setActive(TEST);
-	    externalRoleDescription.setPriority(TEST);
-	    externalRoleDescription.setAppId(TEST);
-	    externalRoleDescription.setAppRoleId(TEST);
-	    
 		return externalRoleDescription;
 	}
 	

@@ -44,6 +44,8 @@ Version 2.2
 - [Portal-220] Fix to delete a portal admin, removed the OS test case
 - [Portal-248] Id value fix in in Add App Account Management modal
 - [Portal-211] High memory Usage by Portal, SDK, Cassandra
+- [Portal-202] Remove files that have GPL or other license issues - b2b-library.min.js
+- [Portal-432]Push userroles even if the app is centralized(ASDC)
 
 Version 1.1.0 (Amsterdam), November 2017
 - [Portal-6] Updates to License and Trademark in the PORTAL Source Code

@@ -2,7 +2,7 @@
  * ============LICENSE_START==========================================
  * ONAP Portal
  * ===================================================================
- * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2017-2018 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
@@ -217,6 +217,8 @@ app.controller('roleListController', function ($scope,RoleService, applicationsS
 		
 		// edit Role
 		$scope.editRoleModalPopup = function(appId, availableRole) {
+			if(!availableRole.active)
+				 return confirmBoxService.showInformation('Edit is disabled! Please toggle the role to activate it.').then(isConfirmed => {});
 			$scope.editRole = availableRole;
 			if(appId != undefined && availableRole.id != undefined){
 				RoleService.getRole(appId, availableRole.id).then(function(data){	

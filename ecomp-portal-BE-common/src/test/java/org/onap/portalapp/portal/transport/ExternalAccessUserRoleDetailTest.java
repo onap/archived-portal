@@ -2,7 +2,7 @@
  * ============LICENSE_START==========================================
  * ONAP Portal
  * ===================================================================
- * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2017-2018 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
@@ -48,13 +48,7 @@ public class ExternalAccessUserRoleDetailTest {
 	public ExternalAccessUserRoleDetail mockExternalAccessUserRoleDetail(){
 		
 		ExternalRoleDescription externalRoleDescription = new ExternalRoleDescription();
-		externalRoleDescription.setId("test");
 		externalRoleDescription.setName("test");
-		externalRoleDescription.setActive("test");
-		externalRoleDescription.setPriority("test");
-		externalRoleDescription.setAppId("test");
-		externalRoleDescription.setAppRoleId("test");
-			    
 		ExternalAccessUserRoleDetail externalAccessUserRoleDetail = new ExternalAccessUserRoleDetail("test", externalRoleDescription);
 		
 		externalAccessUserRoleDetail.setName("test");
@@ -67,12 +61,7 @@ public class ExternalAccessUserRoleDetailTest {
 		ExternalAccessUserRoleDetail externalAccessUserRoleDetail = mockExternalAccessUserRoleDetail();
 		
 		ExternalRoleDescription externalRoleDescription1 = new ExternalRoleDescription();
-		externalRoleDescription1.setId("test");
 		externalRoleDescription1.setName("test");
-		externalRoleDescription1.setActive("test");
-		externalRoleDescription1.setPriority("test");
-		externalRoleDescription1.setAppId("test");
-		externalRoleDescription1.setAppRoleId("test");
 			    
 		ExternalAccessUserRoleDetail externalAccessUserRoleDetail1 = new ExternalAccessUserRoleDetail("test", externalRoleDescription1);
 		
