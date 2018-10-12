@@ -841,6 +841,7 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 				if (EcompPortalUtils.checkIfRemoteCentralAccessAllowed()) {
 					addNewRoleInExternalSystem(getRoleCreated, app);
 				}
+				result = true;
 			} else { // if role already exists then update it
 				EPRole globalRole = null;
 				List<EPRole> applicationRoles;
@@ -2819,9 +2820,6 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 			JSONObject Role = (JSONObject) extRole.get(i);
 			String name = extRole.getJSONObject(i).getString(ROLE_NAME);
 			String actualRoleName = name.substring(app.getNameSpace().length() + 1); 
-			if (extRole.getJSONObject(i).has(EXTERNAL_AUTH_ROLE_DESCRIPTION)) {
-				actualRoleName = extRole.getJSONObject(i).getString(EXTERNAL_AUTH_ROLE_DESCRIPTION);
-			}
 			SortedSet<ExternalAccessPerms> externalAccessPermsOfRole = new TreeSet<>();
 			if (extRole.getJSONObject(i).has(EXTERNAL_AUTH_PERMS)) {
 				JSONArray extPerm = (JSONArray) Role.get(EXTERNAL_AUTH_PERMS);
