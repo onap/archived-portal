@@ -2621,7 +2621,6 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 			JSONArray extRole = getAppRolesJSONFromExtAuthSystem(app);
 			
 			logger.debug(EELFLoggerDelegate.debugLogger, "Entering into getExternalRoleDetailsList");
-			//refactoring done
 			List<ExternalRoleDetails> externalRoleDetailsList = getExternalRoleDetailsList(app,
 					mapper, extRole);
 			
@@ -2648,11 +2647,6 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 			logger.debug(EELFLoggerDelegate.debugLogger, "Entering into inactiveRolesNotInExternalAuthSystem");
 			// Check if roles exits in external Access system and if not make inactive in DB
 			inactiveRolesNotInExternalAuthSystem(app, finalRoleList, applicationRolesList);
-
-			logger.debug(EELFLoggerDelegate.debugLogger, "Entering into checkAndUpdateRoleInDB");
-			// It checks properties in the external auth system app role description and updates role in local
-			checkAndUpdateRoleInDB(app, finalRoleList);
-
 			logger.debug(EELFLoggerDelegate.debugLogger, "Entering into addNewRoleInEcompDBUpdateDescInExtAuthSystem");
 			// Add new roles in DB and updates role description in External Auth System 
 			addNewRoleInEcompDBUpdateDescInExtAuthSystem(app, roleListToBeAddInEcompDB);
@@ -2721,52 +2715,6 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 
 	/**
 	 * 
-	 * It checks description in External Auth System if found any changes updates in DB
-	 * 
-	 * @param app
-	 * @param finalRoleList contains list of External Auth System roles list which is converted to EPRole
-	 */
-	@SuppressWarnings("unchecked")
-	private void checkAndUpdateRoleInDB(EPApp app, List<EPRole> finalRoleList) {
-		for (EPRole roleItem : finalRoleList) {
-			final Map<String, String> roleParams = new HashMap<>();
-			List<EPRole> currentList = null;
-			roleParams.put(APP_ROLE_NAME_PARAM, roleItem.getName());
-			if (app.getId() == 1) {
-				currentList = dataAccessService.executeNamedQuery(GET_PORTAL_APP_ROLES_QUERY, roleParams, null);
-			} else {
-				roleParams.put(APP_ID, app.getId().toString());
-				currentList = dataAccessService.executeNamedQuery(GET_ROLE_TO_UPDATE_IN_EXTERNAL_AUTH_SYSTEM, roleParams, null);
-			}
-
-			if (!currentList.isEmpty()) {
-				try {
-					Boolean aafRoleActive;
-					Boolean localRoleActive;
-					boolean result;
-					aafRoleActive = Boolean.valueOf(roleItem.getActive());
-					localRoleActive = Boolean.valueOf(currentList.get(0).getActive());
-					result = aafRoleActive.equals(localRoleActive);
-					EPRole updateRole = currentList.get(0);
-
-					if (!result) {
-						updateRole.setActive(roleItem.getActive());
-						dataAccessService.saveDomainObject(updateRole, null);
-					}
-					if (roleItem.getPriority() != null
-							&& !currentList.get(0).getPriority().equals(roleItem.getPriority())) {
-						updateRole.setPriority(roleItem.getPriority());
-						dataAccessService.saveDomainObject(updateRole, null);
-					}
-				} catch (Exception e) {
-					logger.error(EELFLoggerDelegate.errorLogger,
-							"syncApplicationRolesWithEcompDB: Failed to update role ", e);
-				}
-			}
-		}
-	}
-	/**
-	 * 
 	 * It de-activates application roles in DB if not present in External Auth system  
 	 * 
 	 * @param app
@@ -2785,7 +2733,7 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 				final Map<String, String> extRoleParams = new HashMap<>();
 				List<EPRole> roleList = null;
 				extRoleParams.put(APP_ROLE_NAME_PARAM, role.getName());
-				if (!checkRolesInactive.containsKey(role.getName())) {
+				if (!checkRolesInactive.containsKey(role.getName().replaceAll(EcompPortalUtils.EXTERNAL_CENTRAL_AUTH_ROLE_HANDLE_SPECIAL_CHARACTERS, "_"))) {
 					if (app.getId() == 1) {
 						roleList = dataAccessService.executeNamedQuery(GET_PORTAL_APP_ROLES_QUERY, extRoleParams, null);
 					} else {
