@@ -69,6 +69,12 @@ Insert into fn_lu_activity (ACTIVITY_CD,ACTIVITY) values ('apa','Add Portal Admi
 Insert into fn_lu_activity (ACTIVITY_CD,ACTIVITY) values ('dpa','Delete Portal Admin');
 Insert into fn_lu_activity (ACTIVITY_CD,ACTIVITY) values ('uaa','Update Account Admin');
 Insert into fn_lu_activity (ACTIVITY_CD,ACTIVITY) values ('uu','Update User');
+Insert into fn_lu_activity (ACTIVITY_CD,ACTIVITY) values ('eaaf','External auth add function');                            
+Insert into fn_lu_activity (ACTIVITY_CD,ACTIVITY) values ('eaar','External auth add role');
+Insert into fn_lu_activity (ACTIVITY_CD,ACTIVITY) values ('eadf','External auth delete function');
+Insert into fn_lu_activity (ACTIVITY_CD,ACTIVITY) values ('eadr','External auth delete role');
+Insert into fn_lu_activity (ACTIVITY_CD,ACTIVITY) values ('eauf','External auth update function');
+Insert into fn_lu_activity (ACTIVITY_CD,ACTIVITY) values ('eaurf','External auth update role and function');
 
 -- FN_LU_MENU_SET
 Insert into fn_lu_menu_set (MENU_SET_CD,MENU_SET_NAME) values ('APP','Application Menu');
