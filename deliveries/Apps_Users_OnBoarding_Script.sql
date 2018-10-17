@@ -13,7 +13,7 @@ INSERT INTO `fn_app` (`app_id`, `app_name`, `app_image_url`, `app_description`, 
 (6, 'Virtual Infrastructure Deployment', 'images/cache/portal-345993588_92550.png', NULL, NULL, 'https://vid.api.simpledemo.onap.org:8443/vid/welcome.htm', NULL, 'http://vid.api.simpledemo.onap.org:8080/vid/api/v2', '', '', NULL, '2VxipM8Z3SETg32m3Gp0FvKS6zZ2uCbCw46WDyK6T5E', 'N', 'Y', NULL, 'Default', '2Re7Pvdkgw5aeAUD', 'S31PrbOzGgL4hg4owgtx47Da', 'ECOMP-PORTAL-OUTBOX-90', 1,'N',NULL),
 (7, 'A&AI UI', 'images/cache/portal-345993588_92550.png', NULL, NULL, 'http://aai.api.simpledemo.onap.org:9517/services/aai/webapp/index.html#/viewInspect', NULL, 'http://aai.api.simpledemo.onap.org:9517/api/v2', '', '', NULL, 't1oqm6wCXrGUXUSL8mS7pQ==', 'N', 'Y', NULL, 'aaiui', 'ueb_key', 'ueb_secret', 'ECOMP-PORTAL-OUTBOX', 1,'N',NULL),
 (8, 'CLI', 'images/cache/portal-345993588_92550.png', NULL, NULL, 'http://portal.api.simpledemo.onap.org:8080/', NULL, NULL, '', '', NULL, '', 'Y', 'Y', NULL, '', '', '', '', 1,'N',NULL),
-(9, 'MSB', 'images/cache/portal-345993588_92550.png', NULL, NULL, 'http://msb-iag:80/iui/microservices/index.html', NULL, NULL, '', '', NULL, '', 'Y', 'Y', NULL, '', '', '', '', 2,'N',NULL);
+(9, 'MSB', 'images/cache/portal-345993588_92550.png', NULL, NULL, 'http://msb.api.simpledemo.onap.org:80/iui/microservices/default.html', NULL, NULL, '', '', NULL, '', 'Y', 'Y', NULL, '', '', '', '', 2,'N',NULL);
 
 -- aaf centralize
 
