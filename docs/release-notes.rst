@@ -16,37 +16,41 @@ Version: 2.3.0
 We worked on SDK upgrade to integrate with AAF. We completed Architecture review for Portal and use case UI to support multi-language.
 
 **New Features**
-		* Platform Maturity Guidelines - Integrating with OOM
-		* SDK upgrade to integrate with AAF
-		    * Use of Semantic Versioning - V3 is the supported version 
-        	* Integration with AAF via REST; Supports both SDK and Framework Applications 
-		* 65% JUnit Test Coverage
-		* Addressing security issues
-		* Internationalization language support - design related
-		* Reporting feature enhancement in portal/sdk - design and partial code changes
-		* Platform Enhancements - Improved logging, docker separation, and SDK Simplification
-        	
+        * Platform Maturity Guidelines - Integrating with OOM
+        * SDK upgrade to integrate with AAF
+            * Use of Semantic Versioning - V3 is the supported version
+            * Integration with AAF via REST; Supports both SDK and Framework Applications
+        * 65% JUnit Test Coverage
+        * Addressing security issues
+        * Internationalization language support - design related
+        * Reporting feature enhancement in portal/sdk - design and partial code changes
+        * Platform Enhancements - Improved logging, docker separation, and SDK Simplification
+           
 **Bug Fixes**
-		* Improved exception handling in reporting feature and also in login feature while getting a lock from Zookeeper.
-		* Improved documentation to get access to Portal through port 8989.
-		* Fixed Sonar reported critical issues.
-		* Improved OOM deployment 30235 external port mapping for portal-sdk.
+        * Improved exception handling in reporting feature and also in login feature while getting a lock from Zookeeper.
+        * Improved documentation to get access to Portal through port 8989.
+        * Fixed Sonar reported critical issues.
+        * Improved OOM deployment 30235 external port mapping for portal-sdk.
 
 **Known Issues**
-			
+        * Mismatch while displaying active online user in Portal.
+        * UI misaligned on updating widgets in Portal.
+        * On Logout redirect landing page needs to be corrected.
+        * Functional Menu change requires manual refresh.
+       
 **Security Issues**
-	* https://wiki.onap.org/pages/viewpage.action?pageId=35522356
+    * https://wiki.onap.org/pages/viewpage.action?pageId=35522356
 
 **Security Notes**
 
 PORTAL code has been formally scanned during build time using NexusIQ and all Critical vulnerabilities have been addressed, items that remain open have been assessed for risk and determined to be false positive. The PORTAL open Critical security vulnerabilities and their risk assessment have been documented as part of the `project <https://wiki.onap.org/pages/viewpage.action?pageId=27689089>`_.
 
 Quick Links:
- 	- `PORTAL project page <https://wiki.onap.org/display/DW/Portal+Platform+Project>`_
+     - `PORTAL project page <https://wiki.onap.org/display/DW/Portal+Platform+Project>`_
 
- 	- `Passing Badge information for PORTAL <https://bestpractices.coreinfrastructure.org/en/projects/1441>`_
+     - `Passing Badge information for PORTAL <https://bestpractices.coreinfrastructure.org/en/projects/1441>`_
 
- 	- `Project Vulnerability Review Table for PORTAL <https://wiki.onap.org/pages/viewpage.action?pageId=27689089>`_
+     - `Project Vulnerability Review Table for PORTAL <https://wiki.onap.org/pages/viewpage.action?pageId=27689089>`_
 
 **Upgrade Notes**
 
@@ -54,10 +58,10 @@ Quick Links:
 
 **Other**
         * Below are the docker images released as part of Portal Platform project:
-        * onap/portal-db:v2.3.0
-        * onap/portal-apps:v2.3.0
-        * onap/portal-wms:v2.3.0
-        * portal/sdk - (Release branch: "release-2.4.0")   
+        * onap/portal-db:2.3.0
+        * onap/portal-apps:2.3.0
+        * onap/portal-wms:2.3.0
+        * portal/sdk - (Release branch: "release-2.4.0")  
 
 Version: 2.2.0
 --------------
@@ -102,11 +106,11 @@ We worked on hardening the ONAP Portal platform by improving code quality and ad
 PORTAL code has been formally scanned during build time using NexusIQ and all Critical vulnerabilities have been addressed, items that remain open have been assessed for risk and determined to be false positive. The PORTAL open Critical security vulnerabilities and their risk assessment have been documented as part of the `project <https://wiki.onap.org/pages/viewpage.action?pageId=27689089>`_.
 
 Quick Links:
- 	- `PORTAL project page <https://wiki.onap.org/display/DW/Portal+Platform+Project>`_
+     - `PORTAL project page <https://wiki.onap.org/display/DW/Portal+Platform+Project>`_
 
- 	- `Passing Badge information for PORTAL <https://bestpractices.coreinfrastructure.org/en/projects/1441>`_
+     - `Passing Badge information for PORTAL <https://bestpractices.coreinfrastructure.org/en/projects/1441>`_
 
- 	- `Project Vulnerability Review Table for PORTAL <https://wiki.onap.org/pages/viewpage.action?pageId=27689089>`_
+     - `Project Vulnerability Review Table for PORTAL <https://wiki.onap.org/pages/viewpage.action?pageId=27689089>`_
 
 **Upgrade Notes**
         * Upgrades to Portal platform can be performed using Heat based installation scripts available under demo repository.
