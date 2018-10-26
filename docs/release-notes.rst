@@ -53,15 +53,18 @@ Quick Links:
      - `Project Vulnerability Review Table for PORTAL <https://wiki.onap.org/pages/viewpage.action?pageId=27689089>`_
 
 **Upgrade Notes**
-
+        * For https Apps onboarded to portal, a certificate has to be downloaded in the browser when first trying to access the landing page of the App.
+        * For onboarded Apps using http (since Portal is using https) the browser asks the user to click to Proceed to the unsafe URL.
+		
 **Deprecation Notes**
 
 **Other**
         * Below are the docker images released as part of Portal Platform project:
-        * onap/portal-db:2.3.0
-        * onap/portal-apps:2.3.0
-        * onap/portal-wms:2.3.0
-        * portal/sdk - (Release branch: "release-2.4.0")  
+        * onap/portal-app:2.3.1
+        * onap/portal-db:2.3.1
+        * onap/portal-sdk:2.3.1
+        * onap/portal-wms:2.3.1
+        * portal/sdk java artifacts - (Release branch: “release-2.4.0”)  
 
 Version: 2.2.0
 --------------
