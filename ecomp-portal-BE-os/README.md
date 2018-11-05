@@ -21,7 +21,7 @@ Version 2.2
 - [PORTAL-207] Raise 4 % percentage (from 44 to 48) sonar code coverage for ONAP PORTAL
 - [PORTAL-136] Raise JUnit test coverage ONAP Portal to 50% for Beijing 
 - [PORTAL-133] replace ECOMP to ONAP on Contact Us and Get Access page
-- [PORTAL-145] Harden code to address SQL injecton, XSS vulnerabilities
+- [PORTAL-145] Harden code to address SQL injection, XSS vulnerabilities
 - [PORTAL-156] Left menu are showing web analytics items and missing plus icons on Account Details page
 - [Portal-148] ONAP Portal Beijing does not accept logins; currently OIDC code is disabled; please check the web.xml
   Long term solution is being worked on.
@@ -40,7 +40,7 @@ Version 2.2
 - [Portal-155] Review security issues: portal
 - [Portal-19] Removed the ecomp keyword from the license text
 - [Portal-256] Fix to make the userRole dynamic on Users modal popup
-- [Portal-241] To reteieve roles on Users page for sdk(external app)
+- [Portal-241] To retrieve roles on Users page for sdk(external app)
 - [Portal-220] Fix to delete a portal admin, removed the OS test case
 - [Portal-248] Id value fix in in Add App Account Management modal
 - [Portal-211] High memory Usage by Portal, SDK, Cassandra
