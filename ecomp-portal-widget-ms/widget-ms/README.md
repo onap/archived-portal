@@ -121,7 +121,7 @@ Build 1702.3.78, 9 Feb 2017
 - US799260 Added the three new widgets in dashboard-widgets folder; removed all testing logs in all widgets; fixed a bug in widget-test
 
 Build 1702.3.75, 07 Feb 2017
-DE267061 - Removed a hardcoded intance of loginId used in the query. 
+DE267061 - Removed a hardcoded instance of loginId used in the query. 
 
 Build 1702.3.73, 06 Feb 2017
 DE267061 - Fixed - user should only see widgets that were uploaded against app/roles that they have OR if they were uploaded by checking All Users checkbox. 
@@ -135,7 +135,7 @@ Build 1702.3.71, 5 Feb 2017
 - DE262610 Widget Microservice logging is not following EELF guidelines
 - DE262800 Issues with widget name this requires database modifications
 - DE263090 Issues with widget roles 
-- US799260 BE now 'discovers' widget-service using Consul. If consul is not running, it fallbacks to the current implemenation which is https://localhost and the port of your choosing in system.properties - Ex: localhost:8082
+- US799260 BE now 'discovers' widget-service using Consul. If consul is not running, it fallbacks to the current implementation which is https://localhost and the port of your choosing in system.properties - Ex: localhost:8082
 - US799260 Fix delete feature for the three special widgets news, events, resources	widget can have spaces in its name
 - US799260 Widget feature:
   + Add the editing feature in widgetOnboarding page
