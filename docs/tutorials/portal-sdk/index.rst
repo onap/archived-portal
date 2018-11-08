@@ -16,6 +16,7 @@ Building ONAP Portal SDK Web Applications
 	creating
 	setting-up-db
 	your-angularjs-app
+	your-angular-app
 	pulling-db-data
 	google-charts
 	dynamic-content
