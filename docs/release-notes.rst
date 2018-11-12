@@ -8,7 +8,7 @@ Portal Platform Release Notes
 
 Version: 2.3.0
 --------------
-:Release Date: 2018-11-15
+:Release Date: 2018-11-30
 
 .. toctree::
     :maxdepth: 1
