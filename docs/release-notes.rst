@@ -25,6 +25,7 @@ We worked on SDK upgrade to integrate with AAF. We completed Architecture review
         * Internationalization language support - design related
         * Reporting feature enhancement in portal/sdk - design and partial code changes
         * Platform Enhancements - Improved logging, docker separation, and SDK Simplification
+        * Angular 5 upgraded with sample POC in SDK to build rich UI
            
 **Bug Fixes**
         * Improved exception handling in reporting feature and also in login feature while getting a lock from Zookeeper.
@@ -37,20 +38,17 @@ We worked on SDK upgrade to integrate with AAF. We completed Architecture review
         * UI misaligned on updating widgets in Portal.
         * On Logout redirect landing page needs to be corrected.
         * Functional Menu change requires manual refresh.
-       
-**Security Issues**
-    * https://wiki.onap.org/pages/viewpage.action?pageId=35522356
 
 **Security Notes**
 
-PORTAL code has been formally scanned during build time using NexusIQ and all Critical vulnerabilities have been addressed, items that remain open have been assessed for risk and determined to be false positive. The PORTAL open Critical security vulnerabilities and their risk assessment have been documented as part of the `project <https://wiki.onap.org/pages/viewpage.action?pageId=27689089>`_.
+PORTAL code has been formally scanned during build time using NexusIQ and all Critical vulnerabilities have been addressed, items that remain open have been assessed for risk and determined to be false positive. The PORTAL open Critical security vulnerabilities and their risk assessment have been documented as part of the `project <https://wiki.onap.org/pages/viewpage.action?pageId=35522356>`_.
 
 Quick Links:
      - `PORTAL project page <https://wiki.onap.org/display/DW/Portal+Platform+Project>`_
 
      - `Passing Badge information for PORTAL <https://bestpractices.coreinfrastructure.org/en/projects/1441>`_
 
-     - `Project Vulnerability Review Table for PORTAL <https://wiki.onap.org/pages/viewpage.action?pageId=27689089>`_
+     - `Project Vulnerability Review Table for PORTAL <https://wiki.onap.org/pages/viewpage.action?pageId=35522356>`_
 
 **Upgrade Notes**
         * For https Apps onboarded to portal, a certificate has to be downloaded in the browser when first trying to access the landing page of the App.
