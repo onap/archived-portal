@@ -3,6 +3,8 @@
  * ONAP Portal
  * ===================================================================
  * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ *
+ * Modifications Copyright © 2018 IBM.
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
@@ -218,10 +220,6 @@ public class ExternalAppConfig extends AppConfig implements Configurable {
 				}
 			}			
 		}
-	}
-
-	public DataAccessService dataAccessService() {
-		return super.dataAccessService();
 	}
 
 	@Override
