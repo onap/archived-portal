@@ -3,6 +3,8 @@
  * ONAP Portal
  * ===================================================================
  * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ *
+ * Modifications Copyright © 2018 IBM.
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
@@ -60,15 +62,7 @@ public class ExternalAppInitializer extends  AppInitializer{
         a[a.length - 1] = e;
         return a;
     }
-  
-    /*
-     * URL request will direct to the Spring dispatcher for processing
-     */
-    @Override
-    protected String[] getServletMappings() {
-       return super.getServletMappings();
-    }
- 
+    
 }
 
 
