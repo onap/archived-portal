@@ -3,6 +3,8 @@
  * ONAP Portal
  * ===================================================================
  * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ *
+ * Modifications Copyright (C) 2019 IBM.
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
@@ -81,7 +83,7 @@ public class SessionCommunicationController  extends EPRestrictedRESTfulBaseCont
 	@ApiOperation(value = "Extends session timeout values for all on-boarded applications.",
     response = Boolean.class)
 	@RequestMapping(value={"/extendSessionTimeOuts"}, method = RequestMethod.POST)
-	public Boolean extendSessionTimeOuts(HttpServletRequest request, HttpServletResponse response, @RequestParam String sessionMap) throws Exception {
+	public Boolean extendSessionTimeOuts(HttpServletRequest request, HttpServletResponse response, @RequestParam String sessionMap) {
 		manageService.extendSessionTimeOuts(sessionMap);
 		
 		return true;
