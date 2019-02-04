@@ -16,7 +16,7 @@ COPY ${DB_SCRIPT_DIR}/PortalDMLMySql_2_1_OS.sql     /docker-entrypoint-initdb.d/
 # Do not copy the onboarding script here; it's mounted as a volume
 
 # SDK App DDL and DML
-COPY ${DB_SCRIPT_DIR}/EcompSdkDDLMySql_2_2_Common.sql       /docker-entrypoint-initdb.d/
-COPY ${DB_SCRIPT_DIR}/EcompSdkDDLMySql_2_2_OS.sql           /docker-entrypoint-initdb.d/
-COPY ${DB_SCRIPT_DIR}/EcompSdkDMLMySql_2_2_Common.sql       /docker-entrypoint-initdb.d/
-COPY ${DB_SCRIPT_DIR}/EcompSdkDMLMySql_2_2_OS.sql           /docker-entrypoint-initdb.d/
+COPY ${DB_SCRIPT_DIR}/EcompSdkDDLMySql_2_5_Common.sql       /docker-entrypoint-initdb.d/
+COPY ${DB_SCRIPT_DIR}/EcompSdkDDLMySql_2_5_OS.sql           /docker-entrypoint-initdb.d/
+COPY ${DB_SCRIPT_DIR}/EcompSdkDMLMySql_2_5_Common.sql       /docker-entrypoint-initdb.d/
+COPY ${DB_SCRIPT_DIR}/EcompSdkDMLMySql_2_5_OS.sql           /docker-entrypoint-initdb.d/
