@@ -76,7 +76,7 @@ public abstract class EPFusionBaseController extends FusionBaseController {
 	@ModelAttribute("menu")
 	public Map<String, Object> messages(HttpServletRequest request) {
 		HttpSession session = null;
-		Map<String, Object> model = new HashMap<String, Object>();
+		Map<String, Object> model = new HashMap<>();
 		session = request.getSession();
 		EPUser user = EPUserUtils.getUserSession(request);
 		if (session != null && user != null) {
