@@ -3,6 +3,8 @@
  * ONAP Portal
  * ===================================================================
  * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ *
+ * Modifications Copyright © 2018 IBM.
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
@@ -104,7 +106,7 @@ public abstract class EPFusionBaseController extends FusionBaseController {
 			parentData.setAction(menu.getAction());
 			parentData.setImageSrc(menu.getImageSrc());
 			parentList.add(parentData);
-			List<MenuData> tempList = new ArrayList<MenuData>();
+			List<MenuData> tempList = new ArrayList<>();
 			for (Object o : menu.getChildMenus()) {
 				MenuData m = (MenuData) o;
 				MenuData data = new MenuData();
