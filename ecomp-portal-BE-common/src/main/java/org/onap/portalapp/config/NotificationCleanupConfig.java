@@ -3,8 +3,9 @@
  * ONAP Portal
  * ===================================================================
  * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ *
  * 
- * Modifications Copyright (C) 2018 IBM.
+ * Modifications Copyright © 2018 IBM.
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
@@ -39,16 +40,14 @@
  */
 package org.onap.portalapp.config;
 
-import java.util.Timer;
-import java.util.TimerTask;
-
-import javax.annotation.PostConstruct;
-
-import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import javax.annotation.PostConstruct;
+import java.util.Timer;
+import java.util.TimerTask;
 
 @Configuration
 public class NotificationCleanupConfig implements ApplicationContextAware {
