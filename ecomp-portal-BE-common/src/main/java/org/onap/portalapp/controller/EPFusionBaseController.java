@@ -95,7 +95,7 @@ public abstract class EPFusionBaseController extends FusionBaseController {
 
 	public Map<String, Object> setMenu(Set<MenuData> menuResult) throws Exception {
 		ObjectMapper mapper = new ObjectMapper();
-		List<List<MenuData>> childItemList = new ArrayList<List<MenuData>>();
+		List<List<MenuData>> childItemList = new ArrayList<>();
 		
 		List<MenuData> parentList = new ArrayList<>();
 		
