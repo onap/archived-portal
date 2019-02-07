@@ -69,6 +69,7 @@ public abstract class EPFusionBaseController extends FusionBaseController {
 		return true;
 	}
 
+	@Override
 	public boolean isRESTfulCall() {
 		return true;
 	}
