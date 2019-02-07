@@ -97,7 +97,7 @@ public abstract class EPFusionBaseController extends FusionBaseController {
 		ObjectMapper mapper = new ObjectMapper();
 		List<List<MenuData>> childItemList = new ArrayList<List<MenuData>>();
 		
-		List<MenuData> parentList = new ArrayList<MenuData>();
+		List<MenuData> parentList = new ArrayList<>();
 		
 		Map<String, Object> model = new HashMap<>();
 		for (MenuData menu : menuResult) {
