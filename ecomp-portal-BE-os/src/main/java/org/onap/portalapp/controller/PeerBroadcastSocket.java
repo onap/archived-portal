@@ -3,6 +3,8 @@
  * ONAP Portal
  * ===================================================================
  * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ *
+ * Modifications Copyright (C) 2019 IBM.
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
@@ -55,7 +57,7 @@ public class PeerBroadcastSocket {
 
 	EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(PeerBroadcastSocket.class);
 
-	public static Map<String, Object> channelMap = new Hashtable<String, Object>();
+	public final static Map<String, Object> channelMap = new Hashtable<String, Object>();
 	public Map<String, String> sessionMap = new Hashtable<String, String>();
 	ObjectMapper mapper = new ObjectMapper();
 
