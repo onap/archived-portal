@@ -6,6 +6,18 @@
 Portal Platform Release Notes
 =============================
 
+Version: 2.3.1
+--------------
+:Release Date: 2019-01-31
+
+.. toctree::
+    :maxdepth: 1
+
+This is the official release notes for the Casablanca Maintenance.
+
+**Bug Fixes**
+        * During installation Maria DB can now be accessed from within the portal-db container. The fix was made in OOM scripts to handle the db issue identified in the previous release.
+
 Version: 2.3.0
 --------------
 :Release Date: 2018-11-30
@@ -26,7 +38,7 @@ We worked on SDK upgrade to integrate with AAF. We completed Architecture review
         * Reporting feature enhancement in portal/sdk - design and partial code changes
         * Platform Enhancements - Improved logging, docker separation, and SDK Simplification
         * Angular 5 upgraded with sample POC in SDK to build rich UI
-           
+
 **Bug Fixes**
         * Improved exception handling in reporting feature and also in login feature while getting a lock from Zookeeper.
         * Improved documentation to get access to Portal through port 8989.
@@ -53,7 +65,7 @@ Quick Links:
 **Upgrade Notes**
         * For https Apps onboarded to portal, a certificate has to be downloaded in the browser when first trying to access the landing page of the App.
         * For onboarded Apps using http (since Portal is using https) the browser asks the user to click to Proceed to the unsafe URL.
-		
+
 **Deprecation Notes**
 
 **Other**
@@ -62,7 +74,7 @@ Quick Links:
         * onap/portal-db:2.3.1
         * onap/portal-sdk:2.3.1
         * onap/portal-wms:2.3.1
-        * portal/sdk java artifacts - (Release branch: “release-2.4.0”)  
+        * portal/sdk java artifacts - (Release branch: “release-2.4.0”)
 
 Version: 2.2.0
 --------------
