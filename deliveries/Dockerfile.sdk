@@ -1,7 +1,7 @@
 # Dockerfile for image with ONAP Portal SDK demo app
 
 # Yields an image 823 MB
-FROM frolvlad/alpine-oraclejdk8:slim
+FROM openjdk:8-alpine
 # Yields an image 1.4 GB
 # FROM openjdk:8-jdk
 

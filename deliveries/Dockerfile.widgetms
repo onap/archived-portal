@@ -1,7 +1,7 @@
 # Large image
 # FROM openjdk:8-jdk
 # Tiny image; it includes java and nc
-FROM frolvlad/alpine-oraclejdk8:slim
+FROM openjdk:8-alpine
 
 # Arguments are supplied by build script;
 # the defaults below only support testing
