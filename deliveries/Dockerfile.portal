@@ -1,5 +1,23 @@
 # Dockerfile for image with ONAP Portal
 
+# Multistage to be able to have SDK war content and not war itself
+FROM busybox:latest AS war-decompress
+
+# Arguments are supplied by build.sh script
+# the defaults below only support testing
+ARG PORTAL_WAR=build/ecompportal-be-os.war
+ARG FE_DIR=build/public
+
+# Just variables, never passed in
+ARG PORTALCONTEXT=ONAPPORTAL
+
+RUN mkdir ${PORTALCONTEXT}
+
+# Portal has many parts
+COPY $PORTAL_WAR ${PORTALCONTEXT}
+RUN cd ${PORTALCONTEXT} && unzip -q *.war && rm *.war
+COPY ${FE_DIR} ${PORTALCONTEXT}/public
+
 # Yields an image 823 MB
 FROM openjdk:8-alpine
 # Yields an image 1.4 GB
@@ -14,7 +32,8 @@ ARG HTTPS_PROXY
 # ARG PORTAL_CERT=truststoreONAPall.jks
 
 # Just variables, never passed in
-ARG TOMCAT=apache-tomcat-8.0.37
+ARG TOMCAT_VERSION=8.0.37
+ARG TOMCAT=apache-tomcat-${TOMCAT_VERSION}
 ARG TOMCATTAR=${TOMCAT}.tar.gz
 ARG TOMCATHOME=/opt/${TOMCAT}
 ARG PORTALCONTEXT=ONAPPORTAL
@@ -26,22 +45,14 @@ RUN if [ ! -z ${HTTP_PROXY} ]; then echo "Acquire::http::proxy  \"${HTTP_PROXY}\
 
 # Install Tomcat.  This image already has curl.
 WORKDIR /tmp
-RUN wget -q http://archive.apache.org/dist/tomcat/tomcat-8/v8.0.37/bin/apache-tomcat-8.0.37.tar.gz
-RUN tar -xzf ${TOMCATTAR}
-RUN rm ${TOMCATTAR}
-# Remove manager and sample apps
-RUN rm -fr ${TOMCAT}/webapps/*
-RUN mkdir -p /opt
-COPY ${SERVERXML} ${TOMCAT}/conf
-RUN mv ${TOMCAT} /opt
+RUN wget -q http://archive.apache.org/dist/tomcat/tomcat-8/v${TOMCAT_VERSION}/bin/${TOMCATTAR} && \
+    tar -xzf ${TOMCATTAR} && \
+    rm ${TOMCATTAR} &&\
+    rm -fr ${TOMCAT}/webapps/* &&\
+    mkdir -p /opt &&\
+    mv ${TOMCAT} /opt
 
-WORKDIR ${TOMCATHOME}/webapps
-RUN mkdir ${PORTALCONTEXT}
-
-# Portal has many parts
-COPY $PORTAL_WAR ${PORTALCONTEXT}
-RUN cd ${PORTALCONTEXT} && unzip -q *.war && rm *.war
-COPY ${FE_DIR} ${PORTALCONTEXT}/public
+COPY --from=war-decompress /${PORTALCONTEXT} ${TOMCATHOME}/webapps/${PORTALCONTEXT}/
 
 VOLUME ${TOMCATHOME}/logs
 

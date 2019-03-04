@@ -1,21 +1,37 @@
 # Dockerfile for image with ONAP Portal SDK demo app
 
+# Multistage to be able to have SDK war content and not war itself
+FROM busybox:latest AS war-decompress
+
+# Arguments are supplied by build.sh script
+# the defaults below only support testing
+ARG SDK_WAR=build/epsdk-app-os.war
+
+# Just variables, never passed in
+ARG SDKCONTEXT=ONAPPORTALSDK
+
+RUN mkdir ${SDKCONTEXT}
+
+# SDK app has only a war
+COPY $SDK_WAR ${SDKCONTEXT}
+RUN cd ${SDKCONTEXT} && unzip -q *.war && rm *.war
+
+
 # Yields an image 823 MB
 FROM openjdk:8-alpine
 # Yields an image 1.4 GB
 # FROM openjdk:8-jdk
-
-# Arguments are supplied by build.sh script
-# the defaults below only support testing
 ARG SDK_WAR=build/epsdk-app-os.war
 ARG HTTP_PROXY
 ARG HTTPS_PROXY
 
 # Just variables, never passed in
-ARG TOMCAT=apache-tomcat-8.0.37
+ARG TOMCAT_VERSION=8.0.37
+ARG TOMCAT=apache-tomcat-${TOMCAT_VERSION}
 ARG TOMCATTAR=${TOMCAT}.tar.gz
 ARG TOMCATHOME=/opt/${TOMCAT}
 ARG SDKCONTEXT=ONAPPORTALSDK
+
 
 ENV http_proxy $HTTP_PROXY
 ENV https_proxy $HTTPS_PROXY
@@ -23,21 +39,16 @@ RUN if [ ! -z ${HTTP_PROXY} ]; then echo "Acquire::http::proxy  \"${HTTP_PROXY}\
     if [ ! -z ${HTTPS_PROXY} ]; then echo "Acquire::https::proxy \"${HTTPS_PROXY}\";" >> /etc/apt/apt.conf; fi
 
 # Install Tomcat.  This image already has curl.
-WORKDIR /tmp
-RUN wget -q http://archive.apache.org/dist/tomcat/tomcat-8/v8.0.37/bin/apache-tomcat-8.0.37.tar.gz
-RUN tar -xzf ${TOMCATTAR}
-RUN rm ${TOMCATTAR}
 # Remove manager and sample apps
-RUN rm -fr ${TOMCAT}/webapps/[a-z]*
-RUN mkdir -p /opt
-RUN mv ${TOMCAT} /opt
+WORKDIR /tmp
+RUN wget -q http://archive.apache.org/dist/tomcat/tomcat-8/v${TOMCAT_VERSION}/bin/${TOMCATTAR} && \
+    tar -xzf ${TOMCATTAR} && \
+    rm ${TOMCATTAR} &&\
+    rm -fr ${TOMCAT}/webapps/[a-z]* &&\
+    mkdir -p /opt &&\
+    mv ${TOMCAT} /opt
 
-WORKDIR ${TOMCATHOME}/webapps
-RUN mkdir ${SDKCONTEXT}
-
-# SDK app has only a war
-COPY $SDK_WAR ${SDKCONTEXT}
-RUN cd ${SDKCONTEXT} && unzip -q *.war && rm *.war
+COPY --from=war-decompress /${SDKCONTEXT} ${TOMCATHOME}/webapps/${SDKCONTEXT}/
 
 VOLUME ${TOMCATHOME}/logs
 
