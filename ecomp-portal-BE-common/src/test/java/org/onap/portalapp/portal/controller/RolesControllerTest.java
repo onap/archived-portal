@@ -36,6 +36,7 @@
  */
 package org.onap.portalapp.portal.controller;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import java.util.ArrayList;
@@ -51,7 +52,10 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.onap.portalapp.portal.core.MockEPUser;
+import org.onap.portalapp.portal.ecomp.model.PortalRestResponse;
+import org.onap.portalapp.portal.ecomp.model.PortalRestStatusEnum;
 import org.onap.portalapp.portal.framework.MockitoTestSuite;
+import org.onap.portalapp.portal.service.ExternalAccessRolesService;
 import org.onap.portalsdk.core.domain.Role;
 
 public class RolesControllerTest {
@@ -66,6 +70,9 @@ public class RolesControllerTest {
 
 	@Mock
 	ExternalAccessRolesController externalAccessRolesController;
+
+	@Mock
+	private ExternalAccessRolesService externalAccessRolesService;
 
 	MockEPUser mockUser = new MockEPUser();
 	MockitoTestSuite mockitoTestSuite = new MockitoTestSuite();
@@ -221,6 +228,33 @@ public class RolesControllerTest {
 		Mockito.when(externalAccessRolesController.getEcompRolesOfApplication(mockedRequest, mockedResponse))
 				.thenReturn(null);
 		assertNull(rolesController.getEcompRolesOfApplication(mockedRequest, mockedResponse));
+	}
+
+	@Test
+	public void updateAppRoleDescriptionTest() throws Exception {
+		Integer result = 1;
+		PortalRestResponse<String> portalRestResponse = null;
+		PortalRestResponse<String> expectedportalRestResponse = new PortalRestResponse<String>();
+		expectedportalRestResponse.setMessage("Successfully updated app role descriptions: '1'");
+		expectedportalRestResponse.setResponse("Success");
+		expectedportalRestResponse.setStatus(PortalRestStatusEnum.OK);
+		Mockito.when(externalAccessRolesService.updateAppRoleDescription(mockedRequest.getHeader("uebkey")))
+				.thenReturn(result);
+		portalRestResponse = rolesController.updateAppRoleDescription(mockedRequest, mockedResponse);
+		assertEquals(portalRestResponse, expectedportalRestResponse);
+	}
+
+	@Test
+	public void updateAppRoleDescriptionExceptionTest() throws Exception {
+		PortalRestResponse<String> portalRestResponse = null;
+		PortalRestResponse<String> expectedportalRestResponse = new PortalRestResponse<String>();
+		expectedportalRestResponse.setMessage("updateAppRoleDescription: null");
+		expectedportalRestResponse.setResponse("Failure");
+		expectedportalRestResponse.setStatus(PortalRestStatusEnum.ERROR);
+		Mockito.when(externalAccessRolesService.updateAppRoleDescription(mockedRequest.getHeader("uebkey")))
+				.thenThrow(new NullPointerException());
+		portalRestResponse = rolesController.updateAppRoleDescription(mockedRequest, mockedResponse);
+		assertEquals(portalRestResponse, expectedportalRestResponse);
 	}
 
 }

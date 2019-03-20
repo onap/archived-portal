@@ -63,6 +63,7 @@ import org.onap.portalapp.portal.domain.AdminUserApplications;
 import org.onap.portalapp.portal.domain.AppIdAndNameTransportModel;
 import org.onap.portalapp.portal.domain.AppsResponse;
 import org.onap.portalapp.portal.domain.EPApp;
+import org.onap.portalapp.portal.domain.EPRole;
 import org.onap.portalapp.portal.domain.EPUser;
 import org.onap.portalapp.portal.domain.EPUserAppRolesRequest;
 import org.onap.portalapp.portal.domain.EPUserAppRolesRequestDetail;
@@ -143,12 +144,15 @@ public class EPAppCommonServiceImpl implements EPAppService {
 				EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeDaoSystemError, e);
 				return null;
 			}
+			
 		} else {
 			logger.error(EELFLoggerDelegate.errorLogger,
 					"getUserAsAdminApps: only Account Admin may invoke this function!");
 			return new ArrayList<EPApp>();
 		}
 	}
+	
+	
 
 	@Override
 	public List<EPApp> getUserByOrgUserIdAsAdminApps(String orgUserId) {
@@ -195,7 +199,7 @@ public class EPAppCommonServiceImpl implements EPAppService {
 			ecompApp.setUrl(app.getUrl());
 			ecompApp.setAlternateUrl(app.getAlternateUrl());
 			ecompApp.setUebTopicName(app.getUebTopicName());
-			ecompApp.setUebKey(app.getUebKey());
+			//ecompApp.setUebKey(app.getUebKey());
 			ecompApp.setUebSecret(app.getUebSecret());
 			ecompApp.setEnabled(app.getEnabled());
 			ecompApp.setCentralAuth(app.getCentralAuth());
@@ -216,25 +220,66 @@ public class EPAppCommonServiceImpl implements EPAppService {
 		}
 	}
 
+	
+	
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<AppIdAndNameTransportModel> getAdminApps(EPUser user) {
-		if (adminRolesService.isAccountAdmin(user)) {
-			String format = "SELECT app.APP_ID, app.APP_NAME, app.APP_TYPE FROM FN_APP app inner join FN_USER_ROLE userrole ON userrole.APP_ID=app.APP_ID "
-					+ "where userrole.USER_ID = %d AND userrole.ROLE_ID=" + ACCOUNT_ADMIN_ROLE_ID
-					+ " AND (app.ENABLED = 'Y' OR app.APP_ID=1)";
-			String sql = String.format(format, user.getId());
-			// sql += " AND app.APP_REST_ENDPOINT IS NOT NULL AND
-			// app.APP_REST_ENDPOINT <> ''";
-			logQuery(sql);
+
+		if (adminRolesService.isAccountAdmin(user) && adminRolesService.isRoleAdmin(user)) {
+			final Map<String, Long> params = new HashMap<>();
+			params.put("userId", user.getId());
+			List applicationRoleswithAccountandRoleadmin = dataAccessService
+					.executeNamedQuery("getApplicationsofTheUserwithAdminAndRoleAdmin", params, null);
 			try {
-				return dataAccessService.executeSQLQuery(sql, AppIdAndNameTransportModel.class, null);
+				return applicationRoleswithAccountandRoleadmin;
 			} catch (Exception e) {
 				EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeDaoSystemError, e);
 				logger.error(EELFLoggerDelegate.errorLogger,
-						"Exception occurred while fetching the adminApps for user " + user.getLoginId(), e);
+						"Exception occurred while fetching the list of user who has type account and role approver "
+								+ user.getLoginId(),
+						e);
 			}
 		}
+
+		else {
+			if (adminRolesService.isAccountAdmin(user)) {
+				String format = "SELECT app.APP_ID, app.APP_NAME, app.APP_TYPE FROM FN_APP app inner join FN_USER_ROLE userrole ON userrole.APP_ID=app.APP_ID "
+						+ "where userrole.USER_ID = %d AND userrole.ROLE_ID=" + ACCOUNT_ADMIN_ROLE_ID
+						+ " AND (app.ENABLED = 'Y' OR app.APP_ID=1)";
+				String sql = String.format(format, user.getId());
+				logQuery(sql);
+				try {
+					return dataAccessService.executeSQLQuery(sql, AppIdAndNameTransportModel.class, null);
+				} catch (Exception e) {
+					EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeDaoSystemError, e);
+					logger.error(EELFLoggerDelegate.errorLogger,
+							"Exception occurred while fetching the adminApps for user " + user.getLoginId(), e);
+				}
+
+			}
+
+			if (adminRolesService.isRoleAdmin(user)) {
+				final Map<String, Long> params = new HashMap<>();
+				params.put("userId", user.getId());
+				List applicationRoles = dataAccessService.executeNamedQuery("getApplicationsofTheUserContainsApprover",
+						params, null);
+
+				try {
+					return applicationRoles;
+				} catch (Exception e) {
+					EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeDaoSystemError, e);
+					logger.error(EELFLoggerDelegate.errorLogger,
+							"Exception occurred while fetching the list of user who has type approver "
+									+ user.getLoginId(),
+							e);
+				}
+
+			}
+		}
+		// sql += " AND app.APP_REST_ENDPOINT IS NOT NULL AND
+		// app.APP_REST_ENDPOINT <> ''";
+
 		return new ArrayList<AppIdAndNameTransportModel>();
 	}
 
@@ -444,17 +489,40 @@ public class EPAppCommonServiceImpl implements EPAppService {
 
 	protected FieldsValidator onboardingAppFieldsChecker(OnboardingApp onboardingApp) {
 		FieldsValidator fieldsValidator = new FieldsValidator();
+		if(onboardingApp.isCentralAuth){
 		if (onboardingApp.name == null || onboardingApp.name.length() == 0 || onboardingApp.url == null
 				|| onboardingApp.url.length() == 0 || onboardingApp.restrictedApp == null
 				|| onboardingApp.isOpen == null || onboardingApp.isEnabled == null
 				|| (onboardingApp.id != null && onboardingApp.id.equals(ECOMP_APP_ID))
-				// For a normal app (appType==1), these fields must be filled
+				// For a normal app (appType == PortalConstants.PortalAppId),
+				// these fields must be filled
 				// in.
 				// For a restricted app (appType==2), they will be empty.
-				|| ((!onboardingApp.restrictedApp)
-						&& (onboardingApp.username == null || onboardingApp.username.length() == 0
-								|| onboardingApp.appPassword == null || onboardingApp.appPassword.length() == 0))) {
+				|| ((!onboardingApp.restrictedApp) && (onboardingApp.myLoginsAppName == null
+						|| onboardingApp.myLoginsAppName.length() == 0 || onboardingApp.myLoginsAppOwner == null
+						|| onboardingApp.myLoginsAppOwner.length() == 0 || onboardingApp.username == null
+						|| onboardingApp.username.length() == 0 ))) {
 			fieldsValidator.httpStatusCode = new Long(HttpServletResponse.SC_BAD_REQUEST);
+		}
+		}else{
+
+			if (onboardingApp.name == null || onboardingApp.name.length() == 0 || onboardingApp.url == null
+					|| onboardingApp.url.length() == 0 || onboardingApp.restrictedApp == null
+					|| onboardingApp.isOpen == null || onboardingApp.isEnabled == null
+					|| (onboardingApp.id != null && onboardingApp.id.equals(ECOMP_APP_ID))
+					// For a normal app (appType == PortalConstants.PortalAppId),
+					// these fields must be filled
+					// in.
+					// For a restricted app (appType==2), they will be empty.
+					|| ((!onboardingApp.restrictedApp) && (onboardingApp.myLoginsAppName == null
+							|| onboardingApp.myLoginsAppName.length() == 0 || onboardingApp.myLoginsAppOwner == null
+							|| onboardingApp.myLoginsAppOwner.length() == 0 || onboardingApp.username == null
+							|| onboardingApp.username.length() == 0 || onboardingApp.appPassword == null
+							|| onboardingApp.appPassword.length() == 0))) {
+				fieldsValidator.httpStatusCode = new Long(HttpServletResponse.SC_BAD_REQUEST);
+			}
+			
+			
 		}
 		return fieldsValidator;
 	}

@@ -64,11 +64,12 @@ public interface UserRolesService {
 	 *            ID of row in fn_user
 	 * @param extRequestValue
 	 *            set to false if request is from users page otherwise true
+	 * @param  
 	 * @return List<RoleInAppForUser>
 	 */
-	public List<RoleInAppForUser> getAppRolesForUser(Long appId, String userId, Boolean extRequestValue);
+	public List<RoleInAppForUser> getAppRolesForUser(Long appId, String userId, Boolean extRequestValue, EPUser user );
 
-	public boolean setAppWithUserRoleStateForUser(EPUser user, AppWithRolesForUser newAppRolesForUser);
+	public ExternalRequestFieldsValidator setAppWithUserRoleStateForUser(EPUser user, AppWithRolesForUser newAppRolesForUser);
 
 	public List<UserApplicationRoles> getUsersFromAppEndpoint(Long appId) throws HTTPException;
 

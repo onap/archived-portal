@@ -102,7 +102,7 @@ public class UserControllerTest extends MockitoTestSuite {
 		PortalRestResponse<ProfileDetail> response = userController.getLoggedinUser(mockedRequest);
 		assertEquals(response, expectedResponse);
 	}
-
+	
 	@Test
 	public void getLoggedinUserTest() throws Exception {
 		EPUser epUser = mockUser.mockEPUser();

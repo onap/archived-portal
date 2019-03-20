@@ -64,6 +64,10 @@ public interface AdminRolesService {
 	 */
 	public boolean isAccountAdmin(EPUser user);
 
+	
+	public boolean isRoleAdmin(EPUser user);
+	
+	
 	/**
 	 * Attention! User roles in ONAP PORTAL cannot be managed by this function.
 	 * @param user

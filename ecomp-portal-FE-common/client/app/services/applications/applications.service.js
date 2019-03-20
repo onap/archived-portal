@@ -639,8 +639,8 @@
               }).then( res => {
                      // If response comes back as a redirected HTML page which IS NOT a success
                  	// But don't declare an empty list to be an error.
-                     if (res == null || res.data == null || _this13.utilsService.isValidJSON(res.data) == false) {
-                         deferred.reject("ApplicationsService::syncRolesEcompFromExtAuthSystem Failed");
+                     if (res == null || res.data == null || _this13.utilsService.isValidJSON(res.data) == false ||  res.data.status == 'ERROR') {
+                         deferred.reject("ApplicationsService::syncRolesEcompFromExtAuthSystem Failed"  + res.data.message);
                      } else {
                          deferred.resolve(res);
                      }

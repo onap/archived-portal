@@ -656,7 +656,7 @@ public class RoleManageController extends EPRestrictedBaseController {
 	public List<CentralizedApp> getCentralizedAppRoles(HttpServletRequest request, HttpServletResponse response, String userId) throws IOException {
 		EPUser user = EPUserUtils.getUserSession(request);
 		List<CentralizedApp> applicationsList = null;
-			if (adminRolesService.isAccountAdmin(user) || adminRolesService.isSuperAdmin(user)) {
+			if (adminRolesService.isAccountAdmin(user) || adminRolesService.isSuperAdmin(user) || adminRolesService.isRoleAdmin(user)) {
 				applicationsList = externalAccessRolesService.getCentralizedAppsOfUser(userId);
 			} else {
 				logger.info(EELFLoggerDelegate.auditLogger,
@@ -769,7 +769,7 @@ public class RoleManageController extends EPRestrictedBaseController {
 		app.getUebKey();
 		List<EPApp> appInfo = externalAccessRolesService.getApp(app.getUebKey());
 		if(appInfo.isEmpty()){
-			throw new InvalidApplicationException("Invalid uebkey");
+			throw new InvalidApplicationException("Invalid credentials");
 		}
 		if(!appInfo.isEmpty() && EcompPortalUtils.checkIfRemoteCentralAccessAllowed() && appInfo.get(0).getCentralAuth()){
 			ResponseEntity<String> response = externalAccessRolesService.getNameSpaceIfExists(appInfo.get(0));

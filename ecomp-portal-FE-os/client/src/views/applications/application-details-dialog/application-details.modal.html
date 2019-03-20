@@ -138,7 +138,7 @@
 							</div>
 						</div>
 					</div>
-					<div class="property required"
+					<!-- <div class="property required"
 						ng-show="!appDetails.app.restrictedApp">
 						<div id="pwd-property-label" class="property-label">Password</div>
 						<input type="password" id="input-mylogins-password"
@@ -154,6 +154,12 @@
 									required</small>
 							</div>
 						</div>
+					</div> -->
+					<div class="property" ng-show="!appDetails.app.restrictedApp">
+						<div id="pwd-property-label" class="property-label">Password</div>
+						<input type="password" id="input-mylogins-password"
+							ng-model="appDetails.app.appPassword" autocomplete="new-password"
+							name="appPassword" maxlength="256"/>
 					</div>
 					<div class="property" ng-show="!appDetails.app.restrictedApp">
 						<div id="pwd-property-label" class="property-label">Name
@@ -173,15 +179,27 @@
 							image-upload-resize-max-height="300"
 							image-upload-resize-max-width="360"
 							image-upload-resize-quality="0.7"
-							image-upload-api="appDetails.imageApi" style="height: 24px;" />
+							image-upload-api="appDetails.imageApi" style="height: 24px;" 
+							file-change="appImageHandler($event,files)" />
+						<div id="app-error-image-upload-type" class="error-container"
+							ng-show="appImageTypeError" class="ng-hide">
+							<div class="error-container">
+								 <small id="error-app-invalid-image-size" class="err-message">File must be an image</small>
+							</div>
+						</div> 
+							file-change="appImageHandler($event,files)" />
+						<div id="app-error-image-upload-type" class="error-container"
+							ng-show="appImageTypeError" class="ng-hide">
+							<div class="error-container">
+								 <small id="error-app-invalid-image-size" class="err-message">File must be an image</small>
+							</div>
+						</div>
 
 						<div id="app-error-image-upload" class="error-container"
 							ng-show="appForm.appImage.$dirty">
 							<div ng-messages="appForm.appImage.$error"
 								class="error-container">
-								<small id="error-app-invalid-image" class="err-message"
-									ng-message="mimeType">Uploaded file must be an image</small> <small
-									id="error-app-invalid-image-size" class="err-message"
+								<small id="error-app-invalid-image-size" class="err-message"
 									ng-message="imageSize">Image file must be smaller than
 									1MB</small>
 							</div>

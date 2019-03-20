@@ -43,6 +43,7 @@ import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
@@ -247,9 +248,13 @@ public class EcompPortalUtils {
 	// This method might be just for testing purposes.
 	public static void setExternalAppResponseCode(int responseCode) {
 		try {
-			String code = String.valueOf(responseCode);
+			/*String code = String.valueOf(responseCode);
 			MDC.put(EPCommonSystemProperties.EXTERNAL_API_RESPONSE_CODE,code );
-			code=StringUtils.EMPTY;
+			code=StringUtils.EMPTY;*/
+			String code = Integer.toString(responseCode);
+			MDC.put(EPCommonSystemProperties.EXTERNAL_API_RESPONSE_CODE,code );
+			char[] chars=code.toCharArray();
+	        Arrays.fill(chars, ' ');
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "setExternalAppResponseCode failed", e);
 		}

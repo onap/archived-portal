@@ -39,12 +39,9 @@ package org.onap.portalapp.portal.scheduleraux;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import org.glassfish.jersey.client.ClientResponse;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class SchedulerAuxUtil {
 	

@@ -2,7 +2,8 @@
  * ============LICENSE_START==========================================
  * ONAP Portal
  * ===================================================================
- * Copyright © 2018 IBM Intellectual Property. All rights reserved.
+ * Copyright (C) 2018 AT&T Intellectual Property. All rights reserved.
+ * Modifications Copyright © 2018 IBM.
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed

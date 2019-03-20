@@ -38,7 +38,7 @@
 'use strict';
 (function () {
     class WidgetOnboardingDetailsModalCtrl {
-        constructor($scope, $log, $interval, applicationsService, adminsService, microserviceService, widgetsCatalogService, errorMessageByCode, ECOMP_URL_REGEX, $window,userProfileService, confirmBoxService, $cookies,items) {
+        constructor($scope, $timeout, $log, $interval, applicationsService, adminsService, microserviceService, widgetsCatalogService, errorMessageByCode, ECOMP_URL_REGEX, $window,userProfileService, confirmBoxService, $cookies,items) {
      	    
     	    this.appUpdate = function(){
     	    	this.hasSelectedApp = false;
@@ -398,12 +398,46 @@
             		});
             	}
             };
+            // Caches the file name supplied by the event handler.
+        	$scope.widgetFileHandler = (event, files) => {
+        		if(files[0]){
+        			var fileName = files[0].name;
+                    var validFormats = ['zip'];
+                    //Get file extension
+                    var ext = fileName.substring(fileName.lastIndexOf('.') + 1).toLowerCase(); 
+                    //Check for valid format
+                    if(validFormats.indexOf(ext) == -1){
+                    	document.getElementById('widget-onboarding-details-upload-file').value = null;
+                        $scope.widgetFileTypeError=true;
+                        $timeout(function(){
+                        	$scope.widgetFileTypeError=false;
+                        }, 5000);
+                    }
+        		}
+        	}; // file change handler
+        	
             init();
             $scope.$on('$stateChangeStart', e => {
                 e.preventDefault();
             });
         }
     }
-    WidgetOnboardingDetailsModalCtrl.$inject = ['$scope', '$log', '$interval', 'applicationsService', 'adminsService', 'microserviceService', 'widgetsCatalogService', 'errorMessageByCode', 'ECOMP_URL_REGEX', '$window','userProfileService', 'confirmBoxService', '$cookies','items'];
+    WidgetOnboardingDetailsModalCtrl.$inject = ['$scope', '$timeout', '$log', '$interval', 'applicationsService', 'adminsService', 'microserviceService', 'widgetsCatalogService', 'errorMessageByCode', 'ECOMP_URL_REGEX', '$window','userProfileService', 'confirmBoxService', '$cookies','items'];
     angular.module('ecompApp').controller('WidgetOnboardingDetailsModalCtrl', WidgetOnboardingDetailsModalCtrl);
+    
+    angular.module('ecompApp').directive('fileChange', ['$parse', function($parse){
+    	return {
+    		require: 'ngModel',
+    	    restrict: 'A',
+    	    link : function($scope, element, attrs, ngModel) {
+    	    	var attrHandler = $parse(attrs['fileChange']);
+    	    	var handler=function(e) {
+    	    		$scope.$apply(function() {
+    	    			attrHandler($scope, { $event:e, files:e.target.files } );
+    	    		});
+    	    	};
+    	    	element[0].addEventListener('change',handler,false);
+    	   }
+    	}
+    }]);
 })(); 

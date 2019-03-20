@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.onap.portal</groupId>
 		<artifactId>onap-portal-parent</artifactId>
-		<version>2.3.0</version>
+		<version>2.5.0</version>
 	</parent>
 
 	<artifactId>portal-be-common</artifactId>
@@ -86,7 +86,7 @@
 			</plugin>
 
 		</plugins>
-
+	
 		<testResources>
 			<testResource>
 				<directory>src/test/java</directory>
@@ -117,6 +117,22 @@
 	</build>
 
 	<dependencies>
+	<dependency>
+		<groupId>org.onap.aaf.authz</groupId>
+		<artifactId>aaf-cadi-aaf</artifactId>
+		<version>2.1.7</version>
+		<exclusions>
+			<exclusion>
+				<groupId>gso</groupId>
+				<artifactId>GLCookieDecryption</artifactId>
+			</exclusion>
+		</exclusions>
+	</dependency>
+	<dependency>
+		<groupId>org.onap.aaf.authz</groupId>
+		<artifactId>aaf-cadi-core</artifactId>
+		<version>2.1.7</version>
+	</dependency>
 		<dependency>
 			<groupId>com.att.eelf</groupId>
 			<artifactId>eelf-core</artifactId>
@@ -659,7 +675,7 @@
 	    <dependency>
 		    <groupId>org.onap.music</groupId>
 		    <artifactId>MUSIC</artifactId>
-		    <version>2.5.5</version>
+		    <version>2.5.8</version>
 		    <exclusions> 
 				<exclusion> 
 					  <groupId>com.sun.jersey</groupId> 

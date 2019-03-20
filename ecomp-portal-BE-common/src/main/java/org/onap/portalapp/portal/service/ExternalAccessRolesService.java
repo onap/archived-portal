@@ -40,6 +40,7 @@ package org.onap.portalapp.portal.service;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.hibernate.Session;
 import org.json.JSONArray;
@@ -51,12 +52,14 @@ import org.onap.portalapp.portal.domain.EPUser;
 import org.onap.portalapp.portal.domain.ExternalRoleDetails;
 import org.onap.portalapp.portal.ecomp.model.UploadRoleFunctionExtSystem;
 import org.onap.portalapp.portal.exceptions.InvalidUserException;
+import org.onap.portalapp.portal.exceptions.RoleFunctionException;
 import org.onap.portalapp.portal.transport.CentralRole;
 import org.onap.portalapp.portal.transport.CentralRoleFunction;
 import org.onap.portalapp.portal.transport.CentralUser;
 import org.onap.portalapp.portal.transport.CentralV2Role;
 import org.onap.portalapp.portal.transport.ExternalRequestFieldsValidator;
 import org.onap.portalsdk.core.domain.Role;
+import org.onap.portalsdk.core.restful.domain.EcompRole;
 import org.onap.portalsdk.core.restful.domain.EcompUser;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
@@ -387,7 +390,7 @@ public interface ExternalAccessRolesService {
 	 * @param app
 	 * @return List of EPRole objects
 	 */
-	Map<String, EPRole> getCurrentRolesInDB(EPApp app);
+	Map<String, EPRole> getAppRoleNamesWithUnderscoreMap(EPApp app);
     
 	
 	/**
@@ -481,5 +484,36 @@ public interface ExternalAccessRolesService {
 	 * @return user roles from external auth system 
 	 */
 	ResponseEntity<String> getUserRolesFromExtAuthSystem(String orgUserId, HttpEntity<String> getUserRolesEntity) throws Exception;
+
+	/**
+	 * 
+	 * Updates app role description in external auth system
+	 * 
+	 * @param uebkey
+	 * @return number of updates
+	 */
+	public Integer updateAppRoleDescription(String uebkey);
+
+	/**
+	 * Creates centralRoleObject
+	 * @param app
+	 * @param roleInfo
+	 * @param roleList
+	 * @param params
+	 * @return returns List<CentralV2Role>
+	 * @throws RoleFunctionException
+	 */
+	public List<CentralV2Role> createCentralRoleObject(List<EPApp> app, List<EPRole> roleInfo,
+			List<CentralV2Role> roleList, Map<String, Long> params) throws RoleFunctionException;
+	
+	/**
+	 * 
+	 * @param uebkey
+	 * @param loginId
+	 * @param CurrentUserRoles
+	 * @return returns list of user roles
+	 * @throws Exception
+	 */
+	public List<EcompRole> missingUserApplicationRoles(String uebkey, String loginId, Set<EcompRole> CurrentUserRoles) throws Exception;
 
 }

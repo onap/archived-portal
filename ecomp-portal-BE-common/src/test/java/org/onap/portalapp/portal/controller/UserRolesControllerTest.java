@@ -174,7 +174,7 @@ public class UserRolesControllerTest extends MockitoTestSuite {
 		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
 		Mockito.when(adminRolesService.isSuperAdmin(user)).thenReturn(false);
 		Mockito.when(adminRolesService.isAccountAdmin(user)).thenReturn(true);
-		Mockito.when(userRolesService.setAppWithUserRoleStateForUser(user, appWithRolesForUser)).thenReturn(true);
+		Mockito.when(userRolesService.setAppWithUserRoleStateForUser(user, appWithRolesForUser)).thenReturn(null);
 		userRolesController.putAppWithUserRoleStateForUser(mockedRequest, appWithRolesForUser, mockedResponse);	
 		
 	}

@@ -39,9 +39,7 @@
  */
 package org.onap.portalapp.portal.interceptor;
 
-import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -51,6 +49,8 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.mockito.internal.stubbing.answers.ThrowsException;
+import org.onap.aaf.cadi.CadiWrap;
 import org.onap.portalapp.controller.sessionmgt.SessionCommunicationController;
 import org.onap.portalapp.portal.controller.BasicAuthenticationController;
 import org.onap.portalapp.portal.controller.ExternalAppsRestfulController;
@@ -63,6 +63,7 @@ import org.onap.portalapp.portal.domain.EPUser;
 import org.onap.portalapp.portal.logging.aop.EPEELFLoggerAdvice;
 import org.onap.portalapp.portal.logging.format.EPAppMessagesEnum;
 import org.onap.portalapp.portal.logging.logic.EPLogUtil;
+import org.onap.portalapp.portal.service.AdminRolesService;
 import org.onap.portalapp.portal.service.AppsCacheService;
 import org.onap.portalapp.portal.service.BasicAuthenticationCredentialService;
 import org.onap.portalapp.portal.service.ExternalAccessRolesService;
@@ -76,7 +77,10 @@ import org.onap.portalsdk.core.exception.UrlAccessRestrictedException;
 import org.onap.portalsdk.core.interceptor.ResourceInterceptor;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.onap.portalsdk.core.onboarding.listener.PortalTimeoutHandler;
+import org.onap.portalsdk.core.onboarding.util.AuthUtil;
 import org.onap.portalsdk.core.onboarding.util.CipherUtil;
+import org.onap.portalsdk.core.onboarding.util.PortalApiConstants;
+import org.onap.portalsdk.core.onboarding.util.PortalApiProperties;
 import org.onap.portalsdk.core.util.SystemProperties;
 import org.onap.portalsdk.core.util.SystemProperties.SecurityEventTypeEnum;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -97,11 +101,12 @@ public class PortalResourceInterceptor extends ResourceInterceptor {
 
 	@Autowired
 	private EPEELFLoggerAdvice epAdvice;
+	
+	@Autowired
+	private AdminRolesService adminRolesService;
 
 	@Autowired
 	private BasicAuthenticationCredentialService basicAuthService;
-	@Autowired
-	private ExternalAccessRolesService externalAccessRolesService;
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -145,10 +150,12 @@ public class PortalResourceInterceptor extends ResourceInterceptor {
 							// trivial
 							// call; otherwise, if it is, then check for the
 							// access
-							if (matchRoleFunctions(portalApiPath, allRoleFunctions)
-									&& !matchRoleFunctions(portalApiPath, roleFunctions)) {
-								EPUser user = (EPUser) request.getSession().getAttribute(
-										SystemProperties.getProperty(SystemProperties.USER_ATTRIBUTE_NAME));
+							EPUser user = (EPUser) request.getSession().getAttribute(
+									SystemProperties.getProperty(SystemProperties.USER_ATTRIBUTE_NAME));
+							//RoleAdmin check is being added because the role belongs to partner application 
+							//inorder to access portal api's, bypassing this with isRoleAdmin Check
+							if ((matchRoleFunctions(portalApiPath, allRoleFunctions)
+									&& !matchRoleFunctions(portalApiPath, roleFunctions)) && !adminRolesService.isRoleAdmin(user)) {
 								logger.error(EELFLoggerDelegate.errorLogger,
 										"preHandle: User {} not authorized for path {} ", user.getOrgUserId(),
 										portalApiPath);
@@ -234,90 +241,132 @@ public class PortalResourceInterceptor extends ResourceInterceptor {
 
 		final String authHeader = request.getHeader(EPCommonSystemProperties.AUTHORIZATION);
 		final String uebkey = request.getHeader(EPCommonSystemProperties.UEB_KEY);
-		
-		// Unauthorized access due to missing HTTP Authorization request header
-		if (authHeader == null) {
-			final String msg = "no authorization found";
-			logger.debug(EELFLoggerDelegate.debugLogger, "checkBasicAuth: {}", msg);
-			sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, msg);
-			return false;
-		}
+		try{
+			CadiWrap wrapReq = (CadiWrap) request;
+				logger.debug(EELFLoggerDelegate.debugLogger, "Entering in the loop as the uri contains auxapi : {}");
+				String nameSpace=PortalApiProperties.getProperty(PortalApiConstants.AUTH_NAMESPACE);
+				logger.debug(EELFLoggerDelegate.debugLogger, "namespace form the portal properties : {}",nameSpace);
+				Boolean accessallowed=AuthUtil.isAccessAllowed(request, nameSpace);
+				logger.debug(EELFLoggerDelegate.debugLogger, "AccessAllowed for the request and namespace : {}",accessallowed);
+				if(accessallowed){
+					logger.debug(EELFLoggerDelegate.debugLogger, "AccessAllowed is allowed: {}",accessallowed);
 
-		String[] accountNamePassword = EcompPortalUtils.getUserNamePassword(authHeader);
-		if (accountNamePassword == null || accountNamePassword.length != 2) {
-			final String msg = "failed to get username and password from Atuhorization header";
-			logger.debug(EELFLoggerDelegate.debugLogger, "checkBasicAuth: {}", msg);
-			sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, msg);
-			return false;
-		}
+					//String[] accountNamePassword = EcompPortalUtils.getUserNamePassword(authHeader);
+					//check ueb condition
+					if(uebkey !=null && !uebkey.isEmpty())
+					{
+						EPApp application = appCacheService.getAppFromUeb(uebkey,1);
+						if (application == null) {
+							throw new Exception("Invalid credentials!");
+						}
+						else {
+							final String appUsername = application.getUsername();
+							logger.debug(EELFLoggerDelegate.debugLogger, "appUsername : {}",appUsername);
 
-		if(uebkey !=null && !uebkey.isEmpty())
-		{
-			EPApp application = appCacheService.getAppFromUeb(uebkey,1);
-			if (application == null) {
-				throw new Exception("Invalid uebkey!");
+							String[] accountNamePassword = EcompPortalUtils.getUserNamePassword(authHeader);
+							logger.debug(EELFLoggerDelegate.debugLogger, "accountNamePassword : {}",accountNamePassword);
+
+							if (accountNamePassword == null || accountNamePassword.length != 2) {
+								final String msg = "failed to get username and password from Atuhorization header";
+								logger.debug(EELFLoggerDelegate.debugLogger, "checkBasicAuth Username and password failed to get: {}", msg);
+								sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, msg);
+								return false;
+							}
+							if (appUsername.equals(accountNamePassword[0])) {
+								return true;
+							}else{
+								final String msg = "failed to match the UserName from the application ";
+								logger.debug(EELFLoggerDelegate.debugLogger, "failed to match the UserName from the application checkBasicAuth Username and password failed to get: {}", msg);
+								sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, msg);
+								return false;
+							}
+						}
+					}
+
+					return true;	
+				}
+				if(!accessallowed){
+					final String msg = "no authorization found";
+					logger.debug(EELFLoggerDelegate.debugLogger, "checkBasicAuth when no accessallowed: {}", msg);
+					sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, msg);
+					return false;
+				}
+				return false;
+			
+		}catch(ClassCastException e){
+			logger.debug(EELFLoggerDelegate.debugLogger, "Entering in the classcastexception block if the UN is not the mechid : {}");
+
+			
+			// Unauthorized access due to missing HTTP Authorization request header
+			if (authHeader == null) {
+				final String msg = "no authorization found";
+				logger.debug(EELFLoggerDelegate.debugLogger, "checkBasicAuth: {}", msg);
+				sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, msg);
+				return false;
 			}
-			else {
-				final String appUsername = application.getUsername();
-				final String dbDecryptedPwd = CipherUtil.decryptPKC(application.getAppPassword());
-				if (appUsername.equals(accountNamePassword[0]) && dbDecryptedPwd.equals(accountNamePassword[1])) {
-					return true;
+
+			String[] accountNamePassword = EcompPortalUtils.getUserNamePassword(authHeader);
+			if (accountNamePassword == null || accountNamePassword.length != 2) {
+				final String msg = "failed to get username and password from Atuhorization header";
+				logger.debug(EELFLoggerDelegate.debugLogger, "checkBasicAuth: {}", msg);
+				sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, msg);
+				return false;
+			}
+
+			if(uebkey !=null && !uebkey.isEmpty())
+			{
+				EPApp application = appCacheService.getAppFromUeb(uebkey,1);
+				if (application == null) {
+					throw new Exception("Invalid credentials!");
+				}
+				else {
+					final String appUsername = application.getUsername();
+					final String dbDecryptedPwd = CipherUtil.decryptPKC(application.getAppPassword());
+					if (appUsername.equals(accountNamePassword[0]) && dbDecryptedPwd.equals(accountNamePassword[1])) {
+						return true;
+					}
 				}
 			}
-		}
 
-		
-		BasicAuthCredentials creds;
-		try {
-			creds = basicAuthService.getBasicAuthCredentialByUsernameAndPassword(accountNamePassword[0],
-					accountNamePassword[1]);
-		} catch (Exception e) {
-			logger.error(EELFLoggerDelegate.errorLogger, "checkBasicAuth failed to get credentials", e);
-			final String msg = "Failed while getting basic authentication credential: ";
-			sendErrorResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, msg);
-			throw e;
-		}
-
-		// Unauthorized access due to invalid credentials (username and
-		// password)
-		if (creds == null || !creds.getUsername().equals(accountNamePassword[0])) {
-			final String msg = "Unauthorized: Access denied";
-			logger.debug(EELFLoggerDelegate.debugLogger, "checkBasicAuth: {}", msg);
-			sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, msg);
-			return false;
-		}
-
-		// Unauthorized access due to inactive account
-		if (creds.getIsActive().equals("N")) {
-			final String msg = "Unauthorized: The account is inactive";
-			logger.debug(EELFLoggerDelegate.debugLogger, "checkBasicAuth: {}", msg);
-			sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, msg);
-			return false;
-		}
-		boolean isAllowedEp = false;
-		for (EPEndpoint ep : creds.getEndpoints()) {
-			if (ep.getName().equals(uri)) {
-				isAllowedEp = true;
-				break;
+			
+			BasicAuthCredentials creds;
+			try {
+				creds = basicAuthService.getBasicAuthCredentialByUsernameAndPassword(accountNamePassword[0],
+						accountNamePassword[1]);
+			} catch (Exception e1) {
+				logger.error(EELFLoggerDelegate.errorLogger, "checkBasicAuth failed to get credentials", e1);
+				final String msg = "Failed while getting basic authentication credential: ";
+				sendErrorResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, msg);
+				throw e1;
 			}
+
+			// Unauthorized access due to invalid credentials (username and
+			// password)
+			if (creds == null || !creds.getUsername().equals(accountNamePassword[0])) {
+				final String msg = "Unauthorized: Access denied";
+				logger.debug(EELFLoggerDelegate.debugLogger, "checkBasicAuth: {}", msg);
+				sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, msg);
+				return false;
+			}
+
+			// Unauthorized access due to inactive account
+			if (creds.getIsActive().equals("N")) {
+				final String msg = "Unauthorized: The account is inactive";
+				logger.debug(EELFLoggerDelegate.debugLogger, "checkBasicAuth: {}", msg);
+				sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, msg);
+				return false;
+			}
+		
+		}catch (Exception e2) {
+			logger.error(EELFLoggerDelegate.errorLogger, "checkBasicAuth failed to get credentials for some other exception", e2);
+			final String msg = "Failed while getting basic authentication credential for some other exception: ";
+			sendErrorResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, msg);
+			throw e2;
 		}
-
-		// If user doesn't specify any endpoint, allow all endpoints for that
-		// account
-		if (creds.getEndpoints().size() == 0)
-			isAllowedEp = true;
-
-		// Unauthorized access due to the invalid endpoints
-		if (!isAllowedEp) {
-			final String msg = "Unauthorized: Endpoint access denied";
-			logger.debug(EELFLoggerDelegate.debugLogger, "checkBasicAuth: {}", msg);
-			sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, msg);
-			return false;
-		}
-
-		// Made it to the end!
 		return true;
-	}
+
+
+}
 
 	@SuppressWarnings("unused")
 	private String decrypted(String encrypted) throws Exception {
@@ -380,8 +429,11 @@ public class PortalResourceInterceptor extends ResourceInterceptor {
 		}
 		return false;
 	}
+	
+	
 
 	protected void handleSessionUpdates(HttpServletRequest request) {
 		PortalTimeoutHandler.handleSessionUpdatesNative(request, null, null, null, null, manageService);
 	}
+	
 }

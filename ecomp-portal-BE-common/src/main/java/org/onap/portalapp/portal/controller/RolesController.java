@@ -41,21 +41,21 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.onap.aaf.cadi.aaf.AAFPermission;
 import org.onap.portalapp.annotation.ApiVersion;
 import org.onap.portalapp.portal.domain.CentralV2RoleFunction;
 import org.onap.portalapp.portal.ecomp.model.PortalRestResponse;
+import org.onap.portalapp.portal.ecomp.model.PortalRestStatusEnum;
 import org.onap.portalapp.portal.logging.aop.EPAuditLog;
-import org.onap.portalapp.portal.transport.CentralUser;
+import org.onap.portalapp.portal.service.ExternalAccessRolesService;
 import org.onap.portalapp.portal.transport.CentralV2Role;
 import org.onap.portalsdk.core.domain.Role;
-import org.onap.portalsdk.core.domain.RoleFunction;
+import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
+import org.onap.portalsdk.core.onboarding.util.AuthUtil;
 import org.onap.portalsdk.core.restful.domain.EcompRole;
 import org.onap.portalsdk.core.restful.domain.EcompUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 
 import io.swagger.annotations.ApiOperation;
 
@@ -64,14 +64,23 @@ import io.swagger.annotations.ApiOperation;
 @EPAuditLog
 @ApiVersion
 public class RolesController implements BasicAuthenticationController {
+	
+	private static EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(RolesController.class);
+
 
 	final String LOGINID_PATTERN = "/v3/user/[a-zA-Z0-9]{1,25}$";
 	final String FUNCTION_CD_PATTERN = "/v3/function/[a-zA-Z0-9_-]{1,75}$";
 
 	final String DELETE_ROLEFUNCTION = "/v3/roleFunction/[a-zA-Z0-9_-]{1,75}$";
+	
+	private static final String UEBKEY = "uebkey";
+	
+	@Autowired
+	private ExternalAccessRolesService externalAccessRolesService;
 
 	@Autowired
 	ExternalAccessRolesController externalAccessRolesController = new ExternalAccessRolesController();
+	
 
 	@ApiOperation(value = "Gets roles for an application which is upgraded to newer version.", response = CentralV2Role.class, responseContainer = "Json")
 	@ApiVersion(max = "v3", service = "/v3/roles", min = 0, method = "GET")
@@ -192,6 +201,22 @@ public class RolesController implements BasicAuthenticationController {
 	public List<String> getMenuFunctions(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		return externalAccessRolesController.getMenuFunctions(request, response);
 	}
+	
+	@ApiVersion(max = "v3", service = "/v3/update/app/roleDescription", min = 0, method = "PUT")
+	public PortalRestResponse<String> updateAppRoleDescription(HttpServletRequest request, HttpServletResponse response)
+			throws Exception {
+		Integer updatedRoleDesc = 0;
+		try {
+			updatedRoleDesc = externalAccessRolesService.updateAppRoleDescription(request.getHeader(UEBKEY));
+		} catch (Exception e) {
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			logger.error(EELFLoggerDelegate.errorLogger, "updateAppRoleDescription: failed!", e);
+			return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR,
+					"updateAppRoleDescription: " + e.getMessage(), "Failure");
+		}
+		return new PortalRestResponse<String>(PortalRestStatusEnum.OK,
+				"Successfully updated app role descriptions: '" + updatedRoleDesc + "'", "Success");
+	}
 
 	@ApiVersion(max = "v4", service = "/v4/user/[a-zA-Z0-9]{1,25}$", min = 0, method = "GET")
 	public String getEcompUser(HttpServletRequest request, HttpServletResponse response, String loginId)
@@ -203,5 +228,11 @@ public class RolesController implements BasicAuthenticationController {
 	public List<EcompRole> getEcompRolesOfApplication(HttpServletRequest request, HttpServletResponse response)
 			throws Exception {
 		return externalAccessRolesController.getEcompRolesOfApplication(request, response);
+	}
+	
+	@ApiVersion(max = "v3", service = "/v3/systemUser", min = 0, method = "GET")
+	public List<AAFPermission> getSystemUser(HttpServletRequest request, HttpServletResponse response) 
+			throws Exception {
+		return AuthUtil.getAAFPermissions(request);
 	}
 }

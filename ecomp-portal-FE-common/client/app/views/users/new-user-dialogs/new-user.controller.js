@@ -193,7 +193,7 @@
                             this.numberAppsSucceeded++;
                         }).catch(err => {
                         	$log.error(err);                       
-                            var errorMessage = 'Failed to update the user application roles: ' + err.status;
+                            var errorMessage = 'Failed to update the user application roles: ' + err;
                             if(err.status == 504){ 
                             	this.numberAppsSucceeded++;
                             	errorMessage = 'Request is being processed, please check back later!';

@@ -80,6 +80,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 @RestController
 @EnableAspectJAutoProxy
 @EPAuditLog
@@ -174,8 +177,8 @@ public class AppsController extends EPRestrictedBaseController {
 		EPUser user = EPUserUtils.getUserSession(request);
 		List<AppIdAndNameTransportModel> adminApps = null;
 
-		try {
-			if (!adminRolesService.isAccountAdmin(user)) {
+		try {			
+			if (!adminRolesService.isAccountAdmin(user) && !adminRolesService.isRoleAdmin(user) ) {
 				EcompPortalUtils.setBadPermissions(user, response, "getAdminApps");
 			} else {
 				adminApps = appService.getAdminApps(user);
@@ -206,7 +209,7 @@ public class AppsController extends EPRestrictedBaseController {
 		List<AppIdAndNameTransportModel> adminApps = null;
 
 		try {
-			if (!adminRolesService.isSuperAdmin(user) && !adminRolesService.isAccountAdmin(user)) {
+			if (!adminRolesService.isSuperAdmin(user) && !adminRolesService.isAccountAdmin(user) && !adminRolesService.isRoleAdmin(user) ) {
 				EcompPortalUtils.setBadPermissions(user, response, "getAdminApps");
 			} else {
 				adminApps = appService.getAppsForSuperAdminAndAccountAdmin(user);
@@ -689,11 +692,14 @@ public class AppsController extends EPRestrictedBaseController {
 	public FieldsValidator putOnboardingApp(HttpServletRequest request,
 			@RequestBody OnboardingApp modifiedOnboardingApp, HttpServletResponse response) {
 		FieldsValidator fieldsValidator = null;
+		EPUser user = null;
+		EPApp oldEPApp = null;
 		try {
-			EPUser user = EPUserUtils.getUserSession(request);
+			user = EPUserUtils.getUserSession(request);
 			if (!adminRolesService.isSuperAdmin(user)) {
 				EcompPortalUtils.setBadPermissions(user, response, "putOnboardingApp");
 			} else {
+				oldEPApp = appService.getApp(modifiedOnboardingApp.id);
 				modifiedOnboardingApp.normalize();
 				fieldsValidator = appService.modifyOnboardingApp(modifiedOnboardingApp, user);
 				response.setStatus(fieldsValidator.httpStatusCode.intValue());
@@ -701,7 +707,16 @@ public class AppsController extends EPRestrictedBaseController {
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "putOnboardingApps failed", e);
 		}
-
+		if(response.getStatus()==200) {
+			try {
+				String oldvaluesAsJson = new ObjectMapper().writeValueAsString(oldEPApp);
+				String newvaluesAsJson = new ObjectMapper().writeValueAsString(modifiedOnboardingApp);
+				logger.info(EELFLoggerDelegate.auditLogger, "/portalApi/onboardingApps, old values ="+oldvaluesAsJson);
+				logger.info(EELFLoggerDelegate.auditLogger, "/portalApi/onboardingApps, loginId="+user.getLoginId()+", new values ="+newvaluesAsJson);
+			} catch (JsonProcessingException e) {
+				logger.error(EELFLoggerDelegate.errorLogger, "putOnboardingApps failed", e);
+			}
+		}
 		EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/onboardingApps", "PUT result =",
 				response.getStatus());
 		return fieldsValidator;

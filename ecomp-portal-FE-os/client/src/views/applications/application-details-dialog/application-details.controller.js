@@ -38,7 +38,7 @@
 'use strict';
 (function () {
     class AppDetailsModalCtrl {
-        constructor($scope, $log, applicationsService, errorMessageByCode,
+    	constructor($scope, $log, $timeout, applicationsService, errorMessageByCode,
                     ECOMP_URL_REGEX,userProfileService, $cookies, confirmBoxService,items) {
 //            let emptyImg = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
             // empty image should really be empty, or it causes problems for the back end
@@ -173,14 +173,26 @@
 
             this.saveChanges = () => {
                 //if valid..
-            	 if(((angular.isUndefined(this.app.name) || !this.app.name)&&(angular.isUndefined(this.app.url) || !this.app.url)
-            			 &&(angular.isUndefined(this.app.username) || !this.app.username)&&(angular.isUndefined(this.app.appPassword) || !this.app.appPassword))) {
-            		 confirmBoxService.showInformation('Please fill in all required fields').then(isConfirmed => {});
-                     return;
-                 }else if(!((angular.isUndefined(this.app.name) || !!this.app.name)&&(angular.isUndefined(this.app.url) || !!this.app.url))){
-                     confirmBoxService.showInformation('Please fill in all required fields').then(isConfirmed => {});
-                     return;
-                 }
+            	if(this.app.isCentralAuth){
+                    //if valid..
+                	 if(((angular.isUndefined(this.app.myLoginsAppName) || !this.app.myLoginsAppName)&&(angular.isUndefined(this.app.myLoginsAppOwner) || !this.app.myLoginsAppOwner)&&(angular.isUndefined(this.app.name) || !this.app.name)&&(angular.isUndefined(this.app.url) || !this.app.url)
+                			 &&(angular.isUndefined(this.app.username) || !this.app.username))) {
+                		 confirmBoxService.showInformation('Please fill in all required fields').then(isConfirmed => {});
+                         return;
+                     }else if(!((angular.isUndefined(this.app.name) || !!this.app.name)&&(angular.isUndefined(this.app.url) || !!this.app.url))){
+                         confirmBoxService.showInformation('Please fill in all required fields').then(isConfirmed => {});
+                         return;
+                     }
+                	}else{
+                		 if(((angular.isUndefined(this.app.myLoginsAppName) || !this.app.myLoginsAppName)||(angular.isUndefined(this.app.myLoginsAppOwner) || !this.app.myLoginsAppOwner)||(angular.isUndefined(this.app.name) || !this.app.name)||(angular.isUndefined(this.app.url) || !this.app.url)
+                    			 ||(angular.isUndefined(this.app.username) || !this.app.username)||(angular.isUndefined(this.app.appPassword) || !this.app.appPassword))) {
+                    		 confirmBoxService.showInformation('Please fill in all required fields along with password as the app is not centralized').then(isConfirmed => {});
+                             return;
+                         }else if(!((angular.isUndefined(this.app.name) || !!this.app.name)&&(angular.isUndefined(this.app.url) || !!this.app.url))){
+                             confirmBoxService.showInformation('Please fill in all required fields').then(isConfirmed => {});
+                             return;
+                         }
+                	}
                 this.isSaving = true;
                 // For a restricted app, null out all irrelevant fields
                 if (this.app.restrictedApp) {
@@ -263,6 +275,23 @@
                 }
             	
             };
+            
+         // Caches the file name supplied by the event handler.
+        	$scope.appImageHandler = (event, files) => {
+        		if(files[0]){
+        			var fileName = files[0].name;
+                    var validFormats = ['jpg', 'jpeg', 'bmp', 'gif', 'png'];
+                    //Get file extension
+                    var ext = fileName.substring(fileName.lastIndexOf('.') + 1).toLowerCase(); 
+                    //Check for valid format
+                    if(validFormats.indexOf(ext) == -1){
+                        $scope.appImageTypeError=true;
+                        $timeout(function(){
+                        	$scope.appImageTypeError=false;
+                        }, 5000);
+                    }
+        		}
+        	}; // file change handler
 
 
             init();
@@ -293,7 +322,7 @@
             });
         }
     }
-    AppDetailsModalCtrl.$inject = ['$scope', '$log', 'applicationsService', 'errorMessageByCode',
+    AppDetailsModalCtrl.$inject = ['$scope', '$log', '$timeout', 'applicationsService', 'errorMessageByCode',
         'ECOMP_URL_REGEX','userProfileService','$cookies', 'confirmBoxService','items'];
     angular.module('ecompApp').controller('AppDetailsModalCtrl', AppDetailsModalCtrl);
 })();

@@ -44,6 +44,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.Enumeration;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ReadListener;
@@ -128,31 +129,51 @@ public class SecurityXssFilter extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
+		StringBuilder requestURL = new StringBuilder(request.getRequestURL().toString());
+	    String queryString = request.getQueryString();
+	    String requestUrl = "";
+	    if (queryString == null) {
+	    	requestUrl = requestURL.toString();
+	    } else {
+	    	requestUrl = requestURL.append('?').append(queryString).toString();
+	    }
+	    validateRequest(requestUrl, response);
+		StringBuilder headerValues = new StringBuilder();
+		Enumeration<String> headerNames = request.getHeaderNames();
+		while (headerNames.hasMoreElements()) {
+			String key = (String) headerNames.nextElement();
+			String value = request.getHeader(key);
+			headerValues.append(value);
+		}
+		validateRequest(headerValues.toString(), response);
 		if (validateRequestType(request)) {
 			request = new RequestWrapper(request);
 			String requestData = IOUtils.toString(request.getInputStream(), StandardCharsets.UTF_8.toString());
-			try {
-				if (StringUtils.isNotBlank(requestData) && validator.denyXSS(requestData)) {
-					response.setContentType(APPLICATION_JSON);
-					response.setStatus(HttpStatus.SC_BAD_REQUEST);
-					response.getWriter().write(ERROR_BAD_REQUEST);
-					throw new SecurityException(ERROR_BAD_REQUEST);
-				}
-			} catch (Exception e) {
-				logger.error(EELFLoggerDelegate.errorLogger, "doFilterInternal() failed due to BAD_REQUEST", e);
-				response.getWriter().close();
-				return;
-			}
+			validateRequest(requestData, response);
 			filterChain.doFilter(request, response);
 
 		} else {
 			filterChain.doFilter(request, response);
 		}
-
 	}
 
 	private boolean validateRequestType(HttpServletRequest request) {
 		return (request.getMethod().equalsIgnoreCase("POST") || request.getMethod().equalsIgnoreCase("PUT")
 				|| request.getMethod().equalsIgnoreCase("DELETE"));
+	}
+	
+	private void validateRequest(String text, HttpServletResponse response) throws IOException {
+		try {
+			if (StringUtils.isNotBlank(text) && validator.denyXSS(text)) {
+				response.setContentType(APPLICATION_JSON);
+				response.setStatus(HttpStatus.SC_BAD_REQUEST);
+				response.getWriter().write(ERROR_BAD_REQUEST);
+				throw new SecurityException(ERROR_BAD_REQUEST);
+			}
+		} catch (Exception e) {
+			logger.error(EELFLoggerDelegate.errorLogger, "doFilterInternal() failed due to BAD_REQUEST", e);
+			response.getWriter().close();
+			return;
+		}
 	}
 }

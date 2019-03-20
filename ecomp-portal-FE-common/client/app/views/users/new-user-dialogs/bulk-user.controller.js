@@ -134,8 +134,17 @@
     		
     		// Caches the file name supplied by the event handler.
     		$scope.fileChangeHandler = (event, files) => {
-    			this.fileSelected = true;
-    			this.fileToRead = files[0];
+    			var fileName = files[0].name;
+	            var validFormats = ['csv', 'txt'];
+	            //Get file extension
+	            var ext = fileName.substring(fileName.lastIndexOf('.') + 1).toLowerCase(); 
+	            //Check for valid format
+	            if(validFormats.indexOf(ext) == -1){
+	            	this.fileSelected = false;
+	            }else{
+	            	this.fileSelected = true;
+	                this.fileToRead = files[0];
+	            }
     			if (debug)
     				$log.debug("BulkUserModalCtrl::fileChangeHandler: file is ", this.fileToRead);
     		}; // file change handler

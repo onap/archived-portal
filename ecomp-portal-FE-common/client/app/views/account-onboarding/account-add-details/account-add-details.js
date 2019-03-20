@@ -41,9 +41,11 @@
         constructor($scope, $log, $interval, basicAuthAccountService, $modalInstance, errorMessageByCode, ECOMP_URL_REGEX, $window, confirmBoxService, $cookies,items) {
          
            this.addEndpoint = () => {
-           	  this.account.endpointList.push({
+        	   confirmBoxService.showInformation('Please add the roles to this Username/MechId through AAF Screen ').then(isConfirmed => {});
+               return;
+           	 /* this.account.endpointList.push({
            		  valid: true
-           	  }); 
+           	  }); */
            }
             let init = () => {
             	this.account = [];

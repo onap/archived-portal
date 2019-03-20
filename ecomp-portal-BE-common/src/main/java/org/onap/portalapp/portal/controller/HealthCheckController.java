@@ -164,12 +164,12 @@ public class HealthCheckController extends EPUnRestrictedBaseController {
 				EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeDaoSystemError);
 			}
 
-			if (!HealthMonitor.isClusterStatusOk()) {
-				dbInfo.dbClusterStatus = "Problem, check the logs for more details";
-				EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeDaoSystemError);
-			} else {
-				dbInfo.dbClusterStatus = statusOk;
-			}
+//			if (!HealthMonitor.isClusterStatusOk()) {
+//				dbInfo.dbClusterStatus = "Problem, check the logs for more details";
+//				EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeDaoSystemError);
+//			} else {
+//				dbInfo.dbClusterStatus = statusOk;
+//			}
 
 			if (!HealthMonitor.isDatabasePermissionsOk()) {
 				dbInfo.dbPermissions = "Problem, check the logs for more details";

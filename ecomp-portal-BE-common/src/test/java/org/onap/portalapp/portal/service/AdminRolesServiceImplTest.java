@@ -432,8 +432,11 @@ public class AdminRolesServiceImplTest {
 		epUserApp.setUserId(1l);
 		userApps.add(epUserApp);
 		user.setUserApps(userApps);
-		Mockito.when((EPUser) dataAccessService.getDomainObject(Matchers.any(), Matchers.anyLong(), Matchers.anyMap()))
-				.thenReturn(user);
+		List<Integer> userAdminApps =  new ArrayList<>();
+		userAdminApps.add(1);
+		userAdminApps.add(2);
+		Mockito.when(dataAccessService.executeNamedQuery(Matchers.anyString(), Matchers.anyMap(), Matchers.anyMap()))
+				.thenReturn(userAdminApps);
 		boolean actual = adminRolesServiceImpl.isAccountAdminOfApplication(user, app);
 		assertTrue(actual);
 	}

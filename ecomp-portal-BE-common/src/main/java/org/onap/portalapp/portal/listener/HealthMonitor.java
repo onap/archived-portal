@@ -86,7 +86,6 @@ public class HealthMonitor {
 	private static boolean uebUp;
 	private static boolean frontEndUp;
 	private static boolean backEndUp;
-	private static boolean dbClusterStatusOk;
 	private static boolean dbPermissionsOk;
 	private static boolean zookeeperStatusOk;
 	private static boolean cassandraStatusOk;
@@ -104,10 +103,6 @@ public class HealthMonitor {
 
 	public static boolean isDatabaseUp() {
 		return databaseUp;
-	}
-
-	public static boolean isClusterStatusOk() {
-		return dbClusterStatusOk;
 	}
 
 	public static boolean isDatabasePermissionsOk() {
@@ -143,6 +138,7 @@ public class HealthMonitor {
 		int numIntervalsCassandraNotHealthy = 0;
 
 		logger.debug(EELFLoggerDelegate.debugLogger, "monitorEPHealth thread started");
+        
 
 		long sleepInterval = (Long
 				.valueOf(SystemProperties.getProperty(EPCommonSystemProperties.HEALTH_POLL_INTERVAL_SECONDS)) * 1000);
@@ -151,8 +147,10 @@ public class HealthMonitor {
 		logger.debug(EELFLoggerDelegate.debugLogger,
 				"monitorEPHealth: Polling health every " + sleepInterval + " milliseconds. Alerting every "
 						+ (sleepInterval * numIntervalsBetweenAlerts) / 1000 + " seconds when component remains down.");
-
+		
 		while (true) {
+			logger.debug(EELFLoggerDelegate.debugLogger,
+					"monitorEPHealth: Test Connection to all");
 			//
 			// Get DB status. If down, signal alert once every X intervals.
 			//
@@ -169,18 +167,6 @@ public class HealthMonitor {
 				}
 			}
 
-			dbClusterStatusOk = this.checkClusterStatus();
-			if (dbClusterStatusOk == false) {
-				if ((numIntervalsClusterNotHealthy % numIntervalsBetweenAlerts) == 0) {
-					logger.debug(EELFLoggerDelegate.debugLogger,
-							"monitorEPHealth: cluster nodes down, logging to error log to trigger alert.");
-					EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeHealthCheckMySqlError);
-					numIntervalsClusterNotHealthy++;
-				} else {
-					numIntervalsClusterNotHealthy = 0;
-				}
-			}
-
 			dbPermissionsOk = this.checkDatabasePermissions();
 			if (dbPermissionsOk == false) {
 				if ((numIntervalsDatabasePermissionsIncorrect % numIntervalsBetweenAlerts) == 0) {
@@ -194,7 +180,9 @@ public class HealthMonitor {
 			}
 			org.onap.portalapp.music.util.MusicUtil MusicUtilSDK = new org.onap.portalapp.music.util.MusicUtil();
 			if(MusicUtilSDK.isMusicEnable()){
+
 				zookeeperStatusOk = this.checkZookeeperStatus();
+
 				if (zookeeperStatusOk == false) {
 					if ((numIntervalsZookeeperNotHealthy % numIntervalsBetweenAlerts) == 0) {
 						logger.debug(EELFLoggerDelegate.debugLogger,
@@ -279,7 +267,8 @@ public class HealthMonitor {
 					monitorEPHealth();
 				} catch (InterruptedException e) {
 					logger.debug(EELFLoggerDelegate.debugLogger, "healthMonitorThread interrupted", e);
-				} catch (Exception e) {
+				} 
+				catch (Exception e) {
 					logger.error(EELFLoggerDelegate.errorLogger, "healthMonitorThread failed", e);
 				}
 			}
@@ -323,36 +312,6 @@ public class HealthMonitor {
 		} finally {
 			if (localSession != null)
 				localSession.close();
-		}
-		return isUp;
-	}
-
-	private boolean checkClusterStatus() {
-		boolean isUp = false;
-		Session localSession = null;
-		try {
-			localSession = sessionFactory.openSession();
-			if (localSession != null) {
-				// If all nodes are unhealthy in a cluster, this will throw an
-				// exception
-				String sql = "select * from mysql.user";
-				Query query = localSession.createSQLQuery(sql);
-				@SuppressWarnings("unchecked")
-				List<String> queryList = query.list();
-				if (queryList != null) {
-					isUp = true;
-				}
-			}
-		} catch (Exception e) {
-			logger.error(EELFLoggerDelegate.errorLogger, "checkClusterStatus failed", e);
-			if ((e.getCause() != null) && (e.getCause().getMessage() != null)) {
-				logger.error(EELFLoggerDelegate.errorLogger, "checkClusterStatus failure cause", e.getCause());
-			}
-			isUp = false;
-		} finally {
-			if (localSession != null) {
-				localSession.close();
-			}
 		}
 		return isUp;
 	}

@@ -43,6 +43,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -107,7 +109,7 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 
 	private static final String SUCCESSFULLY_DELETED = "Successfully Deleted";
 
-	private static final String INVALID_UEB_KEY = "Invalid uebkey!";
+	private static final String INVALID_UEB_KEY = "Invalid credentials!";
 
 	private static final String LOGIN_ID = "LoginId";
 	
@@ -770,7 +772,7 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 			addedRoleFunctions = externalAccessRolesService.bulkUploadPartnerRoleFunctions(request.getHeader(UEBKEY));
 		} catch (Exception e) {
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			logger.error(EELFLoggerDelegate.errorLogger, "bulkUploadRoles failed", e);
+			logger.error(EELFLoggerDelegate.errorLogger, "bulkUploadPartnerRoleFunctions failed", e);
 			return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, "Failed to bulkUploadPartnerRoleFunctions", "Failed");
 		}
 		return new PortalRestResponse<String>(PortalRestStatusEnum.OK, "Successfully added: '"+addedRoleFunctions + "' role functions", "Success");
@@ -859,10 +861,16 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 		String answer = null;
 		try {
 			fieldsValidation(request);
+			
 			answer = externalAccessRolesService.getV2UserWithRoles(loginId, request.getHeader(UEBKEY));
 			if (answer != null) {
                 User ecompUser = userservice.userMapper(answer);
 				user = UserUtils.convertToEcompUser(ecompUser);
+			    List<EcompRole> missingRolesOfUser = externalAccessRolesService.missingUserApplicationRoles(request.getHeader(UEBKEY), loginId, user.getRoles());
+				if (missingRolesOfUser.size() > 0) {
+					Set<EcompRole> roles = new TreeSet<EcompRole>(missingRolesOfUser);
+					user.getRoles().addAll(roles);
+				}
 			}
 		} catch (Exception e) {
 			sendErrorResponse(response, e);	

@@ -170,14 +170,16 @@ app.controller('roleListController', function ($scope,RoleService, applicationsS
 		
 		   $scope.syncRolesFromExternalAuthSystem = function(appId){
            	applicationsService.syncRolesEcompFromExtAuthSystem(appId).then(function(res){
-           		if(res.status == 200){
+           		if(res.data != null || res.data.status != null || res.data.status == 'OK'){
            	     confirmBoxService.showInformation('Sync operation completed successfully!').then(isConfirmed => {
            	    	$scope.getRolesForSelectedCentralizedApp(appId);
            	     });          			
            		} else{
-  	        		 confirmBoxService.showInformation('Sync operation failed for '+app).then(isConfirmed => {});          			
+  	        		 confirmBoxService.showInformation('Sync operation failed for '+app + res.data.message).then(isConfirmed => {});          			
            		}
-           	});
+           	}).catch(err=> {
+				confirmBoxService.showInformation("Sync operation failed for: " + err);
+			}); 
            };
            
 				
@@ -218,7 +220,7 @@ app.controller('roleListController', function ($scope,RoleService, applicationsS
 		// edit Role
 		$scope.editRoleModalPopup = function(appId, availableRole) {
 			if(!availableRole.active)
-				 return confirmBoxService.showInformation('Edit is disabled! Please toggle the role to activate it.').then(isConfirmed => {});
+				 return confirmBoxService.showInformation('Edit is diabled! Please toggle the role to activate it.').then(isConfirmed => {});
 			$scope.editRole = availableRole;
 			if(appId != undefined && availableRole.id != undefined){
 				RoleService.getRole(appId, availableRole.id).then(function(data){	
@@ -259,7 +261,7 @@ app.controller('roleListController', function ($scope,RoleService, applicationsS
 		// add Role
 		$scope.addRoleModalPopup = function(appId) {
 			if(appId){
-				var roleId = 0;
+				var roleId = -1;
 				RoleService.getRole(appId, roleId).then(function(data){	
 					var response = JSON.parse(data.data);					
 					var role = JSON.parse(response.role);

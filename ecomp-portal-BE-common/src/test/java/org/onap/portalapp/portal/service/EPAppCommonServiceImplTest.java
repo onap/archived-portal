@@ -590,6 +590,10 @@ public class EPAppCommonServiceImplTest {
 		onboardApp.thumbnail = "test123imgthumbnail";
 		onboardApp.username = "test123";
 		onboardApp.appPassword = "test123";
+		onboardApp.isCentralAuth=true;
+		onboardApp.myLoginsAppName="test123";
+		onboardApp.myLoginsAppOwner="test123";
+		
 		List<Criterion> restrictionsList1 = new ArrayList<Criterion>();
 		Criterion idCrit = Restrictions.eq("id", onboardApp.id);
 		Criterion urlCrit = Restrictions.eq("url", onboardApp.url);
@@ -1259,7 +1263,9 @@ public class EPAppCommonServiceImplTest {
 		expected.setHttpStatusCode(400l);
 		EPUser epUser = new EPUser();
 		OnboardingApp onboardingApp = new OnboardingApp();
+
 		onboardingApp.setRestrictedApp(true);
+		onboardingApp.isCentralAuth=false;
 		FieldsValidator actual = epAppCommonServiceImpl.addOnboardingApp(onboardingApp, epUser);
 		assertEquals(expected.getHttpStatusCode(), actual.getHttpStatusCode());	
 	}

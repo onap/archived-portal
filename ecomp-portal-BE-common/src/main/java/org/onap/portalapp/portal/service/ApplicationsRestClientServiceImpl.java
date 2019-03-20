@@ -63,6 +63,7 @@ import org.onap.portalapp.portal.utils.EPCommonSystemProperties;
 import org.onap.portalapp.portal.utils.EcompPortalUtils;
 import org.onap.portalapp.util.SystemType;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
+import org.onap.portalsdk.core.onboarding.exception.CipherUtilException;
 import org.onap.portalsdk.core.onboarding.util.CipherUtil;
 import org.onap.portalsdk.core.util.SystemProperties;
 import org.slf4j.MDC;
@@ -125,12 +126,12 @@ public class ApplicationsRestClientServiceImpl implements ApplicationsRestClient
 	}
 
 	@EPMetricsLog
-	private void verifyResponse(Response response) throws HTTPException {
+	private void verifyResponse(Response response,String restPath) throws HTTPException {
 		int status = response.getStatus();
 		logger.debug(EELFLoggerDelegate.debugLogger, "http response status=" + status);
 		MDC.put(EPCommonSystemProperties.EXTERNAL_API_RESPONSE_CODE, Integer.toString(status));
 		if (!isHttpSuccess(status)) {
-			String errMsg = "Failed. Status=" + status + "; [" + ((ResponseImpl)response).getStatusInfo().getReasonPhrase().toString()
+			String errMsg = "Failed. Status=" + status + restPath +"; [" + ((ResponseImpl)response).getStatusInfo().getReasonPhrase().toString()
 					+ "]";
 			URL url = null;
 			try {
@@ -142,7 +143,7 @@ public class ApplicationsRestClientServiceImpl implements ApplicationsRestClient
 				// never mind. it is only for the debug message.
 				logger.warn(EELFLoggerDelegate.errorLogger, "Failed to build URL", e);
 			}
-			logger.error(EELFLoggerDelegate.errorLogger, "http response failed. " + errMsg + "; url=" + url);
+			logger.error(EELFLoggerDelegate.errorLogger, "http response failed. " + restPath + errMsg + "; url=" + url);
 			EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeIncorrectHttpStatusError);
 			throw new HTTPException(status, errMsg, url);
 		}
@@ -157,6 +158,8 @@ public class ApplicationsRestClientServiceImpl implements ApplicationsRestClient
 		return createClientFor(appId, restPath, SystemType.APPLICATION);
 	}
 
+	
+	
 	//TODO Need to implement the mylogins once the endpoint is confirmed
 	@EPMetricsLog
 	private WebClient createClientFor(long appSystemId, String restPath, SystemType type) {
@@ -173,6 +176,7 @@ public class ApplicationsRestClientServiceImpl implements ApplicationsRestClient
 			String appBaseUri = (type == SystemType.APPLICATION) ? externalApp.getAppRestEndpoint() : "";
 			String username = (type == SystemType.APPLICATION) ? externalApp.getUsername(): "";
 			String encriptedPwd = (type == SystemType.APPLICATION) ? externalApp.getAppPassword(): "";
+
 			String appName = (type == SystemType.APPLICATION) ? externalApp.getName(): "";
 			String decreptedAppPwd = StringUtils.EMPTY;
 
@@ -185,31 +189,59 @@ public class ApplicationsRestClientServiceImpl implements ApplicationsRestClient
 			MDC.put(EPCommonSystemProperties.TARGET_ENTITY, appName);
 			MDC.put(EPCommonSystemProperties.TARGET_SERVICE_NAME, restPath);
 
+			if(!encriptedPwd.isEmpty() || encriptedPwd != null || StringUtils.isEmpty(encriptedPwd)){
 			try {
 				decreptedAppPwd = CipherUtil.decryptPKC(encriptedPwd,
 						SystemProperties.getProperty(SystemProperties.Decryption_Key));
 			} catch (Exception e) {
 				logger.error(EELFLoggerDelegate.errorLogger, "createClientFor failed to decrypt", e);
 			}
-			
+			}
 			WebClient client = createClientForPath(appBaseUri, restPath);
+			
+			
+			if(externalApp.getAppPassword().isEmpty() || externalApp.getAppPassword()==null){
+				logger.debug(EELFLoggerDelegate.debugLogger, "Entering in the externalApp get app password contains null : {}");
+
+				externalApp = appsCacheService.getApp(1L);
+				logger.debug(EELFLoggerDelegate.debugLogger, "external App Information : {}",externalApp);
+
+				String mechidUsername=externalApp.getUsername();
+				logger.debug(EELFLoggerDelegate.debugLogger, "external App mechidUsername Information : {}",mechidUsername);
+
+				String password=externalApp.getAppPassword();
+				String decreptedexternalAppPwd = StringUtils.EMPTY;
+				try {
+					decreptedexternalAppPwd = CipherUtil.decryptPKC(password,
+							SystemProperties.getProperty(SystemProperties.Decryption_Key));
+				} catch (CipherUtilException e) {
+					logger.error(EELFLoggerDelegate.errorLogger, "failed to decreptedexternalAppPwd when external app pwd is null", e);
+				}
+				
+				username =mechidUsername;
+				decreptedAppPwd = decreptedexternalAppPwd;
+			
+			}else{
+				logger.debug(EELFLoggerDelegate.debugLogger, "Entering in the externalApp get app password  is not null : {}" );
 
 			// support basic authentication for some partners
 			String encoding = Base64.getEncoder().encodeToString((username + ":" + decreptedAppPwd).getBytes());
 			String encodingStr = "Basic " + encoding;
 			client.header(BASIC_AUTHENTICATION_HEADER, encodingStr);
-
+			}
+			
 			// But still keep code downward compatible for non compliant apps
 			client.header(APP_USERNAME_HEADER, username);
 			client.header(PASSWORD_HEADER, decreptedAppPwd);
 
+			String encoding = Base64.getEncoder().encodeToString((username + ":" + decreptedAppPwd).getBytes());
+			String encodingStr = "Basic " + encoding;
+			client.header(BASIC_AUTHENTICATION_HEADER, encodingStr);
 			client.header(SystemProperties.ECOMP_REQUEST_ID, MDC.get(MDC_KEY_REQUEST_ID));
 			client.header(SystemProperties.USERAGENT_NAME, EPCommonSystemProperties.ECOMP_PORTAL_BE);
-			
 			logger.debug(EELFLoggerDelegate.debugLogger,
-					String.format("App %d found, baseUri=[%s], Headers: [%s=%s]", appSystemId, appBaseUri,
+					String.format("check the partner application URL App %d found, baseUri=[%s], Headers: [%s=%s]", appSystemId, appBaseUri,
 							APP_USERNAME_HEADER, username));
-
 			return client;
 		}
 		return null;
@@ -221,8 +253,8 @@ public class ApplicationsRestClientServiceImpl implements ApplicationsRestClient
 		Response response = getResponse(appId, restPath);
 
 		if (response != null) {
-			verifyResponse(response);
-			
+			//verifyResponse(response);
+			verifyResponse(response,restPath);
 			/* It is not recommendable to use the implementation class org.apache.cxf.jaxrs.impl.ResponseImpl in the code, 
 			but had to force this in-order to prevent conflict with the ResponseImpl class of Jersey Client which 
 			doesn't work as expected. Created Portal-253 for tracking */
@@ -244,8 +276,8 @@ public class ApplicationsRestClientServiceImpl implements ApplicationsRestClient
 		Response response = getResponse(appId, restPath);
 
 		if (response != null) {
-			verifyResponse(response);
-			
+			//verifyResponse(response);
+			verifyResponse(response,restPath);
 			/* It is not recommendable to use the implementation class org.apache.cxf.jaxrs.impl.ResponseImpl in the code, 
 			but had to force this in-order to prevent conflict with the ResponseImpl class of Jersey Client which 
 			doesn't work as expected. Created Portal-253 for tracking  */
@@ -274,7 +306,8 @@ public class ApplicationsRestClientServiceImpl implements ApplicationsRestClient
 		Response response = getResponse(appId, restPath);
 
 		if (response != null) {
-			verifyResponse(response);
+			//verifyResponse(response);
+			verifyResponse(response,restPath);
 			String str = ((ResponseImpl)response).readEntity(String.class);
 			EcompPortalUtils.logAndSerializeObject(logger, restPath, "GET result =", str);
 
@@ -313,6 +346,7 @@ public class ApplicationsRestClientServiceImpl implements ApplicationsRestClient
 	}
 	
 	
+	@SuppressWarnings({ "unchecked", "null" })
 	@Override
 	public <T> T post(Class<T> clazz, long appId, Object payload, String restPath, SystemType type) throws HTTPException {
 		WebClient client = null;
@@ -337,14 +371,16 @@ public class ApplicationsRestClientServiceImpl implements ApplicationsRestClient
 		}
 
 		if (response != null) {
-			verifyResponse(response);
-
+			//verifyResponse(response);
+			verifyResponse(response,restPath);
 			// String contentType = response.getHeaderString("Content-Type");
 			if (clazz != null) {
 				String str = ((ResponseImpl)response).readEntity(String.class);
 				EcompPortalUtils.logAndSerializeObject(logger, restPath, "POST result =", str);
 				try {
-					t = gson.fromJson(str, clazz);
+					t = (T) gson.fromJson(str, t.getClass());
+
+					//t = gson.fromJson(str, clazz);
 				} catch (Exception e) {
 					EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeInvalidJsonInput, e);
 				}
@@ -392,7 +428,8 @@ public class ApplicationsRestClientServiceImpl implements ApplicationsRestClient
 		}
 
 		if (response != null) {
-			verifyResponse(response);
+			//verifyResponse(response);
+			verifyResponse(response,restPath);
 			String str = ((ResponseImpl)response).readEntity(String.class);
 			EcompPortalUtils.logAndSerializeObject(logger, restPath, "PUT result =", str);
 			try {

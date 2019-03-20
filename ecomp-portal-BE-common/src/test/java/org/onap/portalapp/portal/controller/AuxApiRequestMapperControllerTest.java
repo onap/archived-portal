@@ -36,7 +36,9 @@
  */
 package org.onap.portalapp.portal.controller;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -56,7 +58,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.onap.portalapp.annotation.ApiVersion;
-import org.onap.portalapp.controller.sessionmgt.SessionCommunicationController;
 import org.onap.portalapp.controller.sessionmgt.SessionCommunicationVersionController;
 import org.onap.portalapp.externalsystemapproval.model.ExternalSystemUser;
 import org.onap.portalapp.portal.domain.EPUser;
@@ -666,4 +667,23 @@ public class AuxApiRequestMapperControllerTest {
 		Mockito.when(mockedRequest.getMethod()).thenReturn("GET");
 		assertNull(auxApiRequestMapperController.getFunctionalMenuItemsForUser(mockedRequest, mockedResponse));
 	}
+	
+	@Test
+	public void updateAppRoleDescriptionApiTest() throws Exception {
+		Mockito.when(mockedRequest.getRequestURI()).thenReturn("/auxapi/v3/update/app/roleDescription");
+		PortalRestResponse<String> expectedportalRestResponse = new PortalRestResponse<String>();
+		expectedportalRestResponse.setMessage("updateAppRoleDescription: null");
+		expectedportalRestResponse.setResponse("Failure");
+		expectedportalRestResponse.setStatus(PortalRestStatusEnum.ERROR);
+		Mockito.when(mockedRequest.getHeader("MinorVersion")).thenReturn("0");
+		Map<String, Object> beans = new HashMap<>();
+		beans.put("bean1", rolesController);
+		Mockito.when(context.getBeansWithAnnotation(ApiVersion.class)).thenReturn(beans);
+		PowerMockito.mockStatic(AopUtils.class);
+		Mockito.when(AopUtils.isAopProxy(Matchers.anyObject())).thenReturn(false);
+		Mockito.when(mockedRequest.getMethod()).thenReturn("PUT");
+		assertEquals(auxApiRequestMapperController.updateAppRoleDescription(mockedRequest, mockedResponse),
+				expectedportalRestResponse);
+	}
+
 }

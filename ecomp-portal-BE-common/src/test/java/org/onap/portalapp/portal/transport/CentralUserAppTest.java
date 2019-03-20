@@ -54,7 +54,7 @@ public class CentralUserAppTest {
 	private CentralUserApp buildCentralUserApp() {
 		CentralUserApp app=new CentralUserApp();
 		app.setUserId(ID);
-		app.setPriority((short)1);
+		app.setPriority((Integer)1);
 		CentralApp centralApp=new CentralApp();
 		centralApp.setName(TEST);
 		CentralRole role=new CentralRole();
@@ -98,7 +98,7 @@ public class CentralUserAppTest {
 		centralV2UserApp.setUserId((long)1);
 		centralV2UserApp.setApp(app);
 		centralV2UserApp.setRole(role);
-		centralV2UserApp.setPriority((short) 123);
+		centralV2UserApp.setPriority((Integer) 123);
 		
 		return centralV2UserApp;
 	}
@@ -116,7 +116,7 @@ public class CentralUserAppTest {
 		CentralV2Role role1 = new CentralV2Role();
 		
 		assertEquals(centralV2UserApp.getUserId(), new Long(1));
-		assertEquals(centralV2UserApp.getPriority(), new Short((short) 123));
+		assertEquals(centralV2UserApp.getPriority(), new Integer((Integer) 123));
 		assertEquals(centralV2UserApp.getApp(), app1);
 		assertEquals(centralV2UserApp.getRole(), role1);
 	}

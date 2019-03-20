@@ -39,11 +39,20 @@ package org.onap.portalapp.portal.transport;
 
 public class ExternalRoleDescription {
 
-	private String  name;
-    
+	private String name;
+
+	public ExternalRoleDescription() {
+		super();
+	}
+
+	public ExternalRoleDescription(String name) {
+		this.name = name;
+	}
+
 	public String getName() {
 		return name;
 	}
+
 	public void setName(String name) {
 		this.name = name;
 	}
@@ -55,6 +64,7 @@ public class ExternalRoleDescription {
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		return result;
 	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -71,8 +81,5 @@ public class ExternalRoleDescription {
 			return false;
 		return true;
 	}
-	
-	
-    
-    
+
 }

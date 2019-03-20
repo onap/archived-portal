@@ -51,6 +51,7 @@ import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.onap.aaf.cadi.aaf.AAFPermission;
 import org.onap.portalapp.annotation.ApiVersion;
 import org.onap.portalapp.externalsystemapproval.model.ExternalSystemUser;
 import org.onap.portalapp.portal.domain.CentralV2RoleFunction;
@@ -887,4 +888,31 @@ public class AuxApiRequestMapperController implements ApplicationContextAware, B
 		return fnMenuItems;
 	}
 
+	
+	@ApiOperation(value = "Gets MechId roles", response = String.class, responseContainer = "List")
+	@RequestMapping(value = { "/v3/systemUser" }, method = RequestMethod.GET, produces = "application/json")
+	public List<AAFPermission> getSystemUserPerms(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		List<AAFPermission> permsList = null;
+		Map<String, Object> res = getMethod(request, response);
+		try {
+			permsList = (List<AAFPermission>) invokeMethod(res, request, response);
+		} catch (Exception e) {
+			logger.error(EELFLoggerDelegate.errorLogger, "getSystemUserPerms failed", e);
+		}
+		return permsList;
+	}
+	
+	@ApiOperation(value = "Update role description in external auth system for an application.", response = PortalRestResponse.class, responseContainer = "Json")
+	@RequestMapping(value = { "/v3/update/app/roleDescription" }, method = RequestMethod.PUT, produces = "application/json")
+	public  PortalRestResponse<String> updateAppRoleDescription(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		PortalRestResponse<String> result = null;
+		Map<String, Object> res = getMethod(request, response);
+		try {
+			result = (PortalRestResponse<String>) invokeMethod(res, request, response);
+			return result;
+		} catch (Exception e) {
+			logger.error(EELFLoggerDelegate.errorLogger, "updateAppRoleDescription failed", e);
+			return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, e.getMessage(), "Failed");
+		}
+	}
 }

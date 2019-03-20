@@ -99,7 +99,8 @@ public class SchedulerController extends EPRestrictedBaseController {
 			String startTimeRequest = requestDateFormat.format(startingTime);
 			logger.debug(EELFLoggerDelegate.debugLogger, "Controller Scheduler GET Timeslots for startTimeRequest: ",
 					startTimeRequest);
-			logger.debug(EELFLoggerDelegate.debugLogger, "Original Request : \n ", scheduler_request);
+			logger.debug(EELFLoggerDelegate.debugLogger, "Original Request = {} ", scheduler_request);
+
 			String path = SchedulerProperties.getProperty(SchedulerProperties.SCHEDULER_GET_TIME_SLOTS)
 					+ scheduler_request;
 
@@ -107,7 +108,7 @@ public class SchedulerController extends EPRestrictedBaseController {
 
 			Date endTime = new Date();
 			String endTimeRequest = requestDateFormat.format(endTime);
-			logger.debug(EELFLoggerDelegate.debugLogger, "Controller Scheduler - GET for EndTimeRequest",
+			logger.debug(EELFLoggerDelegate.debugLogger, "Controller Scheduler - GET for EndTimeRequest = {}",
 					endTimeRequest);
 			return (new ResponseEntity<String>(schedulerResWrapper.getResponse(),
 					HttpStatus.valueOf(schedulerResWrapper.getStatus())));
@@ -134,12 +135,12 @@ public class SchedulerController extends EPRestrictedBaseController {
 
 			schedulerRestController.Get(str, uuid, path, restObjStr);
 			GetTimeSlotsWrapper schedulerRespWrapper = SchedulerUtil.getTimeSlotsWrapResponse(restObjStr);
-			logger.debug(EELFLoggerDelegate.debugLogger, "Get Time Slots Request END : Response: ",
+			logger.debug(EELFLoggerDelegate.debugLogger, "Get Time Slots Request END : Response: {}",
 					schedulerRespWrapper.getResponse());
 			if (schedulerRespWrapper.getStatus() != 200 && schedulerRespWrapper.getStatus() != 204
 					&& schedulerRespWrapper.getStatus() != 202) {
 				String message = String.format(
-						" getTimeslots Information failed . SchedulerResponseWrapper for gettimeslots: %s", schedulerRespWrapper.getResponse());
+						" getTimeslots Information failed . SchedulerResponseWrapper for gettimeslots: {}", schedulerRespWrapper.getResponse());
 				logger.error(EELFLoggerDelegate.errorLogger, message);
 				EPLogUtil.schedulerAccessAlarm(logger, schedulerRespWrapper.getStatus());
 
@@ -167,11 +168,11 @@ public class SchedulerController extends EPRestrictedBaseController {
 			String uuid = UUID.randomUUID().toString();
 
 			scheduler_request.put("scheduleId", uuid);
-			logger.debug(EELFLoggerDelegate.debugLogger, "UUID : ", uuid);
+			logger.debug(EELFLoggerDelegate.debugLogger, "UUID = {} ", uuid);
 
 			// adding uuid to the request payload
 			scheduler_request.put("scheduleId", uuid);
-			logger.debug(EELFLoggerDelegate.debugLogger, "Original Request ", scheduler_request.toString());
+			logger.debug(EELFLoggerDelegate.debugLogger, "Original Request = {}", scheduler_request.toString());
 
 			String path = SchedulerProperties
 					.getProperty(SchedulerProperties.SCHEDULER_CREATE_NEW_VNF_CHANGE_INSTANCE_VAL) + uuid;
@@ -180,7 +181,7 @@ public class SchedulerController extends EPRestrictedBaseController {
 
 			Date endTime = new Date();
 			String endTimeRequest = requestDateFormat.format(endTime);
-			logger.debug(EELFLoggerDelegate.debugLogger, "Controller Scheduler - POST", endTimeRequest);
+			logger.debug(EELFLoggerDelegate.debugLogger, "Controller Scheduler - POST= {}", endTimeRequest);
 
 			return new ResponseEntity<String>(responseWrapper.getResponse(),
 					HttpStatus.valueOf(responseWrapper.getStatus()));
@@ -214,7 +215,7 @@ public class SchedulerController extends EPRestrictedBaseController {
 
 			PostCreateNewVnfWrapper responseWrapper = SchedulerUtil.postCreateNewVnfWrapResponse(restObjStr);
 
-			logger.debug(EELFLoggerDelegate.debugLogger, " Post Create New Vnf Scheduling Request END : Response: ",
+			logger.debug(EELFLoggerDelegate.debugLogger, " Post Create New Vnf Scheduling Request END : Response = {}",
 					responseWrapper.getResponse());
 			if (responseWrapper.getStatus() != 200 && responseWrapper.getStatus() != 202 && responseWrapper.getStatus() != 204) {
 				logger.error(EELFLoggerDelegate.errorLogger, "PostCreateNewVnfWrapper Information failed", responseWrapper.getResponse());
@@ -235,15 +236,15 @@ public class SchedulerController extends EPRestrictedBaseController {
 		try {
 			Date startingTime = new Date();
 			String startTimeRequest = requestDateFormat.format(startingTime);
-			logger.debug(EELFLoggerDelegate.debugLogger, " Controller Scheduler POST : submit_vnf_change_timeslots",
+			logger.debug(EELFLoggerDelegate.debugLogger, " Controller Scheduler POST : submit_vnf_change_timeslots = {}",
 					startTimeRequest);
 
 			// Generating uuid
 			String uuid = (String) scheduler_request.get("scheduleId");
-			logger.debug(EELFLoggerDelegate.debugLogger, "UUID : ", uuid);
+			logger.debug(EELFLoggerDelegate.debugLogger, "UUID = {} ", uuid);
 
 			scheduler_request.remove("scheduleId");
-			logger.debug(EELFLoggerDelegate.debugLogger, "Original Request for the schedulerId: ",
+			logger.debug(EELFLoggerDelegate.debugLogger, "Original Request for the schedulerId= {} ",
 					scheduler_request.toString());
 
 			String path = SchedulerProperties.getProperty(SchedulerProperties.SCHEDULER_SUBMIT_NEW_VNF_CHANGE)
@@ -254,7 +255,7 @@ public class SchedulerController extends EPRestrictedBaseController {
 
 			Date endTime = new Date();
 			String endTimeRequest = requestDateFormat.format(endTime);
-			logger.debug(EELFLoggerDelegate.debugLogger, " Controller Scheduler - POST Submit for end time request",
+			logger.debug(EELFLoggerDelegate.debugLogger, " Controller Scheduler - POST Submit for end time request= {}",
 					endTimeRequest);
 
 			return (new ResponseEntity<String>(responseWrapper.getResponse(),HttpStatus.valueOf(responseWrapper.getStatus())));
@@ -289,7 +290,7 @@ public class SchedulerController extends EPRestrictedBaseController {
 
 			PostSubmitVnfChangeTimeSlotsWrapper responseWrapper = SchedulerUtil
 					.postSubmitNewVnfWrapResponse(restObjStr);
-			logger.debug(EELFLoggerDelegate.debugLogger, "Post Submit Scheduling Request END : Response = ",
+			logger.debug(EELFLoggerDelegate.debugLogger, "Post Submit Scheduling Request END : Response = {}",
 					responseWrapper.getResponse());
 			if (responseWrapper.getStatus() != 200 && responseWrapper.getStatus() != 202
 					&& responseWrapper.getStatus() != 204) {
@@ -336,7 +337,10 @@ public class SchedulerController extends EPRestrictedBaseController {
 				else
 					throw new Exception(entry.getKey() + errorMsg);
 			}
+			logger.debug(EELFLoggerDelegate.debugLogger, " portalRestResponse - getSchedulerConstant= {}",
+					map);
 			portalRestResponse = new PortalRestResponse<Map<String, String>>(PortalRestStatusEnum.OK, "success", map);
+			
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "getSchedulerConstant failed", e);
 			portalRestResponse = new PortalRestResponse<Map<String, String>>(PortalRestStatusEnum.ERROR, e.getMessage(),

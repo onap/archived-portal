@@ -55,7 +55,7 @@ var app = angular.module('ecompApp', [
         'oc.lazyLoad',
         'b2b.att'
     ])
-    .config(($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider, ngDialogProvider, $controllerProvider, hammerDefaultOptsProvider) => {
+    .config(($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider, ngDialogProvider, $controllerProvider, hammerDefaultOptsProvider, $sanitizeProvider) => {
     	app.controllerProvider = $controllerProvider;
         $urlRouterProvider.otherwise('/error404');
         $locationProvider.html5Mode(true);
@@ -102,13 +102,14 @@ var app = angular.module('ecompApp', [
                 'responseError': function (rejection) {
                     $log.error('Interceptor rejection: ' + JSON.stringify(rejection));
                     var $state = $injector.get('$state');
+                    var $sanitize = $injector.get('$sanitize');
                     switch (rejection.status) {
                         case 401:
                             var globalLoginUrl = rejection.headers()['global-login-url'];
                             if (globalLoginUrl) {
-                                window.location = globalLoginUrl +
+                            	window.location = $sanitize(globalLoginUrl +
                                     (globalLoginUrl.indexOf('?') === -1 ? '?' : '') +
-                                    '&retUrl=' + encodeURI(window.location);
+                                    '&retUrl=' + encodeURI(window.location));
                                 return;
                             }
                             break;

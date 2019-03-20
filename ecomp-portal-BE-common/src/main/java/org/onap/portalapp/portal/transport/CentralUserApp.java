@@ -46,7 +46,7 @@ public class CentralUserApp implements Serializable, Comparable {
 	private Long userId;
 	private CentralApp app;
 	private CentralRole role;
-	private Short priority;
+	private Integer priority;
 
 	/**
 	 * @return the userId
@@ -96,7 +96,7 @@ public class CentralUserApp implements Serializable, Comparable {
 	/**
 	 * @return the priority
 	 */
-	public Short getPriority() {
+	public Integer getPriority() {
 		return priority;
 	}
 
@@ -104,7 +104,7 @@ public class CentralUserApp implements Serializable, Comparable {
 	 * @param priority
 	 *            the priority to set
 	 */
-	public void setPriority(Short priority) {
+	public void setPriority(Integer priority) {
 		this.priority = priority;
 	}
 

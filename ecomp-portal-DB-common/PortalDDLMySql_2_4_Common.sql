@@ -601,7 +601,7 @@ create table fn_app (
   ml_app_name varchar(50) not null default '?',
   ml_app_admin_id varchar(7) not null default '?',
   mots_id int(11) default null,
-  app_password varchar(256) not null default '?',
+  app_password varchar(256) default null,
   open char(1) default 'N',
   enabled char(1) default 'Y',
   thumbnail mediumblob null default null,
@@ -1124,7 +1124,7 @@ CREATE TABLE ep_microservice (
 	endpoint_url VARCHAR(200) NULL DEFAULT NULL,
 	security_type VARCHAR(50) NULL DEFAULT NULL,
 	username VARCHAR(50) NULL DEFAULT NULL,
-	password VARCHAR(50) NOT NULL,
+	password VARCHAR(50) NULL DEFAULT NULL,
 	active CHAR(1) NOT NULL DEFAULT 'Y',
 	PRIMARY KEY (id),
 	CONSTRAINT FK_FN_APP_EP_MICROSERVICE FOREIGN KEY (appId) REFERENCES fn_app (app_id)
@@ -1280,7 +1280,7 @@ create table  ep_endpoints_basic_auth_account (
 CREATE TABLE ep_app_function (
 app_id INT(11) NOT NULL,
 function_cd VARCHAR(250) NOT NULL,
-function_name VARCHAR(250) NOT NULL,
+function_name VARCHAR(500) NOT NULL,
 PRIMARY KEY (function_cd, app_id),
 INDEX fk_ep_app_function_app_id (app_id),
 CONSTRAINT fk_ep_app_function_app_id FOREIGN KEY (app_id) REFERENCES fn_app (app_id)

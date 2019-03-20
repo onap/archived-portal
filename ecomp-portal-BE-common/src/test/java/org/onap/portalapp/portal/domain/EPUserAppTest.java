@@ -77,7 +77,7 @@ public class EPUserAppTest {
         user.setUserId((long)1);
         user.setApp(epApp);
         user.setRole(epRole);
-        user.setPriority((short)32767);
+        user.setPriority((Integer)32767);
         
         
         return user;
@@ -113,7 +113,7 @@ public class EPUserAppTest {
         
         assertEquals(user.getUserId(),Long.valueOf(1));
         assertEquals(user.getApp(), epApp); 
-        assertEquals(user.getPriority().getClass(), Short.class);
+        assertEquals(user.getPriority().getClass(), Integer.class);
     
         assertEquals(user.toString(), "[u: 1; a: null, r: null; appRoleId: 1]");
         

@@ -59,7 +59,7 @@ public class EcompUserAppRoles implements Serializable {
 	private Long userId;
 	@Id
 	@Column(name="priority")
-	private String priority ;
+	private Integer priority ;
 	@Id
 	@Column(name="role_id")
 	private Long roleId;
@@ -78,10 +78,10 @@ public class EcompUserAppRoles implements Serializable {
 	public void setUserId(Long userId) {
 		this.userId = userId;
 	}
-	public String getPriority() {
+	public Integer getPriority() {
 		return priority;
 	}
-	public void setPriority(String priority) {
+	public void setPriority(Integer priority) {
 		this.priority = priority;
 	}
 	public Long getRoleId() {

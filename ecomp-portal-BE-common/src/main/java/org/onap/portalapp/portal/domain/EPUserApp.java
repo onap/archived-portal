@@ -47,7 +47,7 @@ public class EPUserApp extends DomainVo implements java.io.Serializable, Compara
 	private Long userId;
 	private EPApp app;
 	private EPRole role;
-	private Short priority;
+	private Integer priority;
 	
 	public EPUserApp() {
 	}
@@ -94,11 +94,11 @@ public class EPUserApp extends DomainVo implements java.io.Serializable, Compara
 		this.role = role;
 	}
 		
-	public Short getPriority() {
-		return this.priority;
+	public Integer getPriority() {
+		return (this.priority == null) ? 1 : priority;
 	}
 
-	public void setPriority(Short priority) {
+	public void setPriority(Integer priority) {
 		this.priority = priority;
 	}
 

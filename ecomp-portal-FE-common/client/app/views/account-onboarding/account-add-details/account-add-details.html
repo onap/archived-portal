@@ -61,6 +61,10 @@ padding-bottom:15px;
 .account-property{
 padding-top:10px;
 }
+
+.add-label-right{
+opacity: 0.6
+} 
 </style>
 
 <div>
@@ -147,7 +151,7 @@ padding-top:10px;
 				<div class="add-endpoint-item">
 					<div class="item-label add-label-left">Add Endpoint</div>
 					<div class="icon-add add-label-right" id="accountAddDetails-button-accordion"
-						ng-click="accountAddDetails.addEndpoint()"><span class="icon-primary-accordion-plus"></span></div>
+						ng-click="accountAddDetails.addEndpoint()" ng-disabled="true"><span class="icon-primary-accordion-plus"></span></div>
 				</div>
 				<div class="item">
 					<div class="item-label"

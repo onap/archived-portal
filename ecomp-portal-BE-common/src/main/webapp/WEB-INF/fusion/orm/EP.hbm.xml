@@ -287,8 +287,8 @@
 			<key-many-to-one name="role"
 				class="org.onap.portalapp.portal.domain.EPRole" column="role_id" />
 		</composite-id>
-		<property name="priority" type="java.lang.Short">
-			<column name="priority" precision="4" scale="0" />
+		<property name="priority">
+			<column name="priority" default="1" precision="4" scale="0" />
 		</property>
 	</class>
 
@@ -1947,7 +1947,7 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 			class="org.onap.portalapp.portal.transport.EPUserAppCurrentRoles" />
 			<![CDATA[
 			
-			select distinct fu.role_id, fr.user_id, fu.role_name, fu.priority from fn_role fu left outer join fn_user_role fr ON fu.role_id = fr.role_id and fu.app_id = fr.app_id and fr.role_id != 999 where fu.app_id =:appId and fr.user_id =:userId
+			select distinct fu.role_id, fr.user_id, fu.role_name, fu.priority from fn_role fu left outer join fn_user_role fr ON fu.role_id = fr.role_id and fu.app_id = fr.app_id and fr.role_id != 999 where fu.app_id =:appId and fr.user_id =:userId and fu.active_yn='Y' 
 			;		
 			]]>
 	</sql-query>
@@ -2077,6 +2077,51 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 			);
 			]]>
 	</sql-query>
+	
+	<sql-query name="getRoleFunctionsOfUserforAlltheApplications">
+			<![CDATA[
+			select distinct ep.function_cd from fn_user_role fu, ep_app_role_function ep, ep_app_function ea
+			where fu.role_id = ep.role_id 
+			and fu.app_id = ep.app_id
+			and fu.user_id =:userId 
+			and ea.function_cd = ep.function_cd
+		   	and exists
+			(
+			select fa.app_id from fn_user fu, fn_user_role ur, fn_app fa where fu.user_id =:userId and fu.user_id = ur.user_id
+			and ur.app_id = fa.app_id and fa.enabled = 'Y'
+			);
+			]]>
+	</sql-query>
+	
+	<sql-query name="getApplicationsofTheUserwithAdminAndRoleAdmin">
+	<return alias="getApplicationsofTheUserwithAdminAndRoleAdmin" class="org.onap.portalapp.portal.domain.AppIdAndNameTransportModel" />
+			<![CDATA[
+			SELECT app.APP_ID, app.APP_NAME, app.APP_TYPE FROM FN_APP app 
+			inner join FN_USER_ROLE userrole ON userrole.APP_ID=app.APP_ID 
+			where userrole.USER_ID = :userId AND userrole.ROLE_ID=999 AND (app.ENABLED = 'Y' OR app.APP_ID=1)
+			UNION
+			SELECT DISTINCT app.APP_ID, app.app_name, app.APP_TYPE FROM fn_user user 
+					INNER JOIN fn_user_role user_role ON user.USER_ID = user_role.USER_ID 
+					 INNER JOIN fn_role role ON role.ROLE_ID = user_role.ROLE_ID  
+		        INNER JOIN fn_app app ON app.app_id= user_role.app_id and (app.enabled='Y'  or app.app_id=1) 
+		        INNER JOIN ep_app_role_function appfunction ON  appfunction.app_id = app.app_id and appfunction.role_id=role.ROLE_ID and (appfunction.function_cd like '%APPROVER%')
+		        WHERE user.user_id = :userId ;
+			]]>
+	</sql-query>
+	
+	<sql-query name="getApplicationsofTheUserContainsApprover">
+	<return alias="getApplicationsofTheUserContainsApprover" class="org.onap.portalapp.portal.domain.AppIdAndNameTransportModel" />
+			<![CDATA[
+			SELECT DISTINCT app.APP_ID, app.APP_TYPE, app.app_name FROM fn_user user 
+					INNER JOIN fn_user_role user_role ON user.USER_ID = user_role.USER_ID 
+					 INNER JOIN fn_role role ON role.ROLE_ID = user_role.ROLE_ID  
+		        INNER JOIN fn_app app ON app.app_id= user_role.app_id and (app.enabled='Y'  or app.app_id=1) 
+		        INNER JOIN ep_app_role_function appfunction ON  appfunction.app_id = app.app_id and appfunction.role_id=role.ROLE_ID and (appfunction.function_cd like '%APPROVER%')
+		        WHERE user.user_id = :userId ;
+			]]>
+	</sql-query>
+	
+	
 	
 	<sql-query name="getUserRolesForLeftMenu">
 			<return alias="getUserRolesListForLeftMenu" class="org.onap.portalapp.portal.domain.UserRole" />
@@ -2414,5 +2459,50 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 		order by role_id;
 		]]>
 	</sql-query>
+	<sql-query name="getAprroverRoleFunctionsOfUser">
+		<![CDATA[
+		select distinct ep.function_cd from fn_user_role fu, ep_app_role_function ep, ep_app_function ea
+		where fu.role_id = ep.role_id
+		and fu.app_id = ep.app_id
+		and fu.user_id =:userId
+		and ea.function_cd = ep.function_cd and ea.function_cd like 'approver|%'
+		and exists
+		(
+		select fa.app_id from fn_user fu, fn_user_role ur, fn_app fa where fu.user_id =:userId and fu.user_id = ur.user_id
+		and ur.app_id = fa.app_id and fa.enabled = 'Y'
+		);
+		]]>
+</sql-query>
+<sql-query name="getUserApproverRoles">
+		<![CDATA[
+		select distinct fr.role_name from fn_user_role fu, ep_app_role_function ep, ep_app_function ea, fn_role fr
+		where fu.role_id = ep.role_id
+		and fu.app_id = ep.app_id
+		and fu.user_id = :userId
+		and fu.role_id = fr.role_id and fr.active_yn='Y'
+		and ea.function_cd = ep.function_cd and ea.function_cd like 'approver|%'
+		and exists
+		(
+		select fa.app_id from fn_user fu, fn_user_role ur, fn_app fa where fu.user_id =:userId and fu.user_id = ur.user_id
+		and ur.app_id = fa.app_id and fa.enabled = 'Y'
+		);
+		]]>
+</sql-query>
+<sql-query name="getAdminAppsForTheUser">
+		<![CDATA[
+		select fa.app_id  from fn_user_role ur,fn_app fa where ur.user_id =:userId and ur.app_id=fa.app_id and ur.role_id= 999 and (fa.enabled = 'Y' || fa.app_id=1)
+
 	
+		]]>
+</sql-query>
+
+
+<sql-query name="getUserRoleOnUserIdAndAppId">	
+		<return alias="getUserRoleOnUserIdAndAppId" class="org.onap.portalapp.portal.domain.EPRole" />   	
+		<![CDATA[
+		
+		select fr.role_id , fr.role_name ,fr.active_yn, fr.priority, fr.app_id, fr.app_role_id  FROM fn_role fr, fn_user_role fur WHERE fr.role_id = fur.role_id AND fur.user_id= :userId AND fur.app_id = :appId AND fr.active_yn='Y'
+ 		
+ 		]]>
+	</sql-query>
 </hibernate-mapping>

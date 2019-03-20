@@ -538,9 +538,10 @@ public class EPUser extends User {
 		SortedSet<EPRole> roles = new TreeSet<EPRole>();
 		SortedSet<EPUserApp> userAppRoles = getEPUserApps();
 		
-		logger.debug(EELFLoggerDelegate.debugLogger, "In EPUser.getAppEPRoles() - userApps = ", userAppRoles.size());
+		logger.debug(EELFLoggerDelegate.debugLogger, "In EPUser.getAppEPRoles() - userApps = {} ", userAppRoles.size());
 
 		Iterator<EPUserApp> userAppRolesIterator = userAppRoles.iterator();
+
 		EPUserApp userAppRole = null;
 		// getting default app
 		while (userAppRolesIterator.hasNext()) {
@@ -561,7 +562,7 @@ public class EPUser extends User {
 				}				
 			}
 		}
-		logger.debug(EELFLoggerDelegate.debugLogger, "In EPUser.getAppEPRoles() - roles = ", roles.size());
+		logger.debug(EELFLoggerDelegate.debugLogger, "In EPUser.getAppEPRoles() - roles = {}" , roles.size());
 
 		return roles;
 	}

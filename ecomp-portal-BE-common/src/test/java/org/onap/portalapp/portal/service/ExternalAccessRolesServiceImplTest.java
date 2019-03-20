@@ -143,6 +143,13 @@ public class ExternalAccessRolesServiceImplTest {
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
+		PowerMockito.mockStatic(EPCommonSystemProperties.class);
+		PowerMockito.mockStatic(PortalConstants.class);
+		PowerMockito.mockStatic(EcompPortalUtils.class);
+		PowerMockito.mockStatic(SystemProperties.class);
+		PowerMockito.mockStatic(EPUserUtils.class);
+		PowerMockito.mockStatic(Restrictions.class);
+		PowerMockito.mockStatic(Criterion.class);
 		Mockito.when(sessionFactory.openSession()).thenReturn(session);
 		Mockito.when(session.beginTransaction()).thenReturn(transaction);
 	}
@@ -258,9 +265,6 @@ public class ExternalAccessRolesServiceImplTest {
 	@Test
 	public void addRoleTest() throws Exception {
 		HttpHeaders headers = new HttpHeaders();
-		PowerMockito.mockStatic(EcompPortalUtils.class);
-		PowerMockito.mockStatic(SystemProperties.class);
-		PowerMockito.mockStatic(EPCommonSystemProperties.class);
 		String uebKey = "test-ueb-key";
 		Role role = new Role();
 		role.setId((long) 25);
@@ -296,9 +300,6 @@ public class ExternalAccessRolesServiceImplTest {
 	@Test
 	public void addRoleMethodNotAllowedTest() throws Exception {
 		HttpHeaders headers = new HttpHeaders();
-		PowerMockito.mockStatic(EcompPortalUtils.class);
-		PowerMockito.mockStatic(SystemProperties.class);
-		PowerMockito.mockStatic(EPCommonSystemProperties.class);
 		Role role = new Role();
 		role.setId((long) 25);
 		EPApp app = mockApp();
@@ -355,9 +356,6 @@ public class ExternalAccessRolesServiceImplTest {
 
 	@Test
 	public void deleteCentralRoleFunctionTest() throws Exception {
-		PowerMockito.mockStatic(EcompPortalUtils.class);
-		PowerMockito.mockStatic(SystemProperties.class);
-		PowerMockito.mockStatic(EPCommonSystemProperties.class);
 		final Map<String, String> params = new HashMap<>();
 		EPApp app = mockApp();
 		params.put("functionCode", "menu_fun_code");
@@ -511,9 +509,6 @@ public class ExternalAccessRolesServiceImplTest {
 
 	@Test
 	public void getRoleFunctionTest() throws Exception {
-		PowerMockito.mockStatic(EcompPortalUtils.class);
-		PowerMockito.mockStatic(EPCommonSystemProperties.class);
-		PowerMockito.mockStatic(SystemProperties.class);
 		EPApp app = mockApp();
 		List<EPApp> appList = new ArrayList<>();
 		appList.add(app);
@@ -539,9 +534,6 @@ public class ExternalAccessRolesServiceImplTest {
 
 	@Test
 	public void getRoleFunctionMutilpleFilterTest() throws Exception {
-		PowerMockito.mockStatic(EcompPortalUtils.class);
-		PowerMockito.mockStatic(EPCommonSystemProperties.class);
-		PowerMockito.mockStatic(SystemProperties.class);
 		EPApp app = mockApp();
 		List<EPApp> appList = new ArrayList<>();
 		appList.add(app);
@@ -718,8 +710,6 @@ public class ExternalAccessRolesServiceImplTest {
 	@SuppressWarnings("deprecation")
 	@Test
 	public void getAllAppUsersTest() throws Exception {
-		PowerMockito.mockStatic(EcompPortalUtils.class);
-		PowerMockito.mockStatic(EPUserUtils.class);
 		EPApp app = new EPApp();
 		app.setEnabled(true);
 		app.setId((long) 10);
@@ -928,7 +918,6 @@ public class ExternalAccessRolesServiceImplTest {
 
 	@Test
 	public void saveRoleForPortalApplicationNewTest() throws Exception {
-		PowerMockito.mockStatic(EcompPortalUtils.class);
 		EPApp app = mockApp();
 		app.setId(1l);
 		Role addRoleTest = new Role();
@@ -969,9 +958,6 @@ public class ExternalAccessRolesServiceImplTest {
 
 	@Test
 	public void saveRoleForPortalApplicationUpdateTest() throws Exception {
-		PowerMockito.mockStatic(EPCommonSystemProperties.class);
-		PowerMockito.mockStatic(EcompPortalUtils.class);
-		PowerMockito.mockStatic(SystemProperties.class);
 		EPApp app = mockApp();
 		app.setId(1l);
 		Role addRoleTest = new Role();
@@ -1095,9 +1081,6 @@ public class ExternalAccessRolesServiceImplTest {
 
 	@Test
 	public void saveRoleExitsInDbButNotInExtAuthSystemTest() throws Exception {
-		PowerMockito.mockStatic(EPCommonSystemProperties.class);
-		PowerMockito.mockStatic(EcompPortalUtils.class);
-		PowerMockito.mockStatic(SystemProperties.class);
 		EPApp app = mockApp();
 		app.setId(1l);
 		Role addRoleTest = new Role();
@@ -1196,9 +1179,6 @@ public class ExternalAccessRolesServiceImplTest {
 
 	@Test
 	public void saveGlobalRoleForPortalApplicationUpdateTest() throws Exception {
-		PowerMockito.mockStatic(EPCommonSystemProperties.class);
-		PowerMockito.mockStatic(EcompPortalUtils.class);
-		PowerMockito.mockStatic(SystemProperties.class);
 		EPApp app = mockApp();
 		app.setId(1l);
 		Role addRoleTest = new Role();
@@ -1322,9 +1302,6 @@ public class ExternalAccessRolesServiceImplTest {
 
 	@Test
 	public void saveRoleForPartnerApplicationUpdateTest() throws Exception {
-		PowerMockito.mockStatic(EPCommonSystemProperties.class);
-		PowerMockito.mockStatic(EcompPortalUtils.class);
-		PowerMockito.mockStatic(SystemProperties.class);
 		EPApp app = mockApp();
 		app.setId(2l);
 		Role addRoleTest = new Role();
@@ -1458,9 +1435,6 @@ public class ExternalAccessRolesServiceImplTest {
 
 	@Test
 	public void saveGlobalRoleFunctionsForPartnerApplicationUpdateTest() throws Exception {
-		PowerMockito.mockStatic(EPCommonSystemProperties.class);
-		PowerMockito.mockStatic(EcompPortalUtils.class);
-		PowerMockito.mockStatic(SystemProperties.class);
 		EPApp app = mockApp();
 		app.setId(2l);
 		Role addRoleTest = new Role();
@@ -1601,9 +1575,6 @@ public class ExternalAccessRolesServiceImplTest {
 
 	@Test
 	public void syncRoleFunctionFromExternalAccessSystemTest() {
-		PowerMockito.mockStatic(EPCommonSystemProperties.class);
-		PowerMockito.mockStatic(EcompPortalUtils.class);
-		PowerMockito.mockStatic(SystemProperties.class);
 		EPApp app = mockApp();
 		app.setId(2l);
 		JSONObject mockJsonObjectFinalPerm = new JSONObject();
@@ -1771,9 +1742,6 @@ public class ExternalAccessRolesServiceImplTest {
 
 	@Test
 	public void syncApplicationRolesWithEcompDBTest() {
-		PowerMockito.mockStatic(EPCommonSystemProperties.class);
-		PowerMockito.mockStatic(EcompPortalUtils.class);
-		PowerMockito.mockStatic(SystemProperties.class);
 		EPApp app = mockApp();
 		app.setId(2l);
 		JSONObject mockJsonObjectRole = new JSONObject();
@@ -1904,9 +1872,6 @@ public class ExternalAccessRolesServiceImplTest {
 
 	@Test
 	public void deleteDependencyRoleRecord() throws Exception {
-		PowerMockito.mockStatic(EPCommonSystemProperties.class);
-		PowerMockito.mockStatic(EcompPortalUtils.class);
-		PowerMockito.mockStatic(SystemProperties.class);
 		SQLQuery SqlQuery = Mockito.mock(SQLQuery.class);
 		EPApp app = mockApp();
 		app.setId(2l);
@@ -1947,9 +1912,6 @@ public class ExternalAccessRolesServiceImplTest {
 
 	@Test
 	public void deleteDependencyRoleRecordForPortal() throws Exception {
-		PowerMockito.mockStatic(EPCommonSystemProperties.class);
-		PowerMockito.mockStatic(EcompPortalUtils.class);
-		PowerMockito.mockStatic(SystemProperties.class);
 		SQLQuery SqlQuery = Mockito.mock(SQLQuery.class);
 		EPApp app = mockApp();
 		app.setId(1l);
@@ -1989,9 +1951,6 @@ public class ExternalAccessRolesServiceImplTest {
 
 	@Test
 	public void bulkUploadFunctionsTest() throws Exception {
-		PowerMockito.mockStatic(EPCommonSystemProperties.class);
-		PowerMockito.mockStatic(EcompPortalUtils.class);
-		PowerMockito.mockStatic(SystemProperties.class);
 		EPApp app = mockApp();
 		app.setId(2l);
 		List<EPApp> appList = new ArrayList<>();
@@ -2031,9 +1990,6 @@ public class ExternalAccessRolesServiceImplTest {
 
 	@Test
 	public void bulkUploadRolesTest() throws Exception {
-		PowerMockito.mockStatic(EPCommonSystemProperties.class);
-		PowerMockito.mockStatic(EcompPortalUtils.class);
-		PowerMockito.mockStatic(SystemProperties.class);
 		EPApp app = mockApp();
 		app.setId(2l);
 		List<EPApp> appList = new ArrayList<>();
@@ -2093,9 +2049,6 @@ public class ExternalAccessRolesServiceImplTest {
 
 	@Test
 	public void bulkUploadUserRolesTest() throws Exception {
-		PowerMockito.mockStatic(EPCommonSystemProperties.class);
-		PowerMockito.mockStatic(EcompPortalUtils.class);
-		PowerMockito.mockStatic(SystemProperties.class);
 		EPApp app = mockApp();
 		app.setId(2l);
 		EPUser user = mockUser.mockEPUser();
@@ -2163,12 +2116,6 @@ public class ExternalAccessRolesServiceImplTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void getActiveRolesTest() throws Exception {
-		PowerMockito.mockStatic(EPCommonSystemProperties.class);
-		PowerMockito.mockStatic(EcompPortalUtils.class);
-		PowerMockito.mockStatic(SystemProperties.class);
-		PowerMockito.mockStatic(EPUserUtils.class);
-		PowerMockito.mockStatic(Restrictions.class);
-		PowerMockito.mockStatic(Criterion.class);
 		EPApp app = mockApp();
 		app.setId(1l);
 		List<EPApp> appList = new ArrayList<>();
@@ -2232,9 +2179,6 @@ public class ExternalAccessRolesServiceImplTest {
 
 	@Test
 	public void bulkUploadRolesFunctionsTest() throws Exception {
-		PowerMockito.mockStatic(EPCommonSystemProperties.class);
-		PowerMockito.mockStatic(EcompPortalUtils.class);
-		PowerMockito.mockStatic(SystemProperties.class);
 		EPApp app = mockApp();
 		List<EPApp> appList = new ArrayList<>();
 		final Map<String, String> appUebkeyParams = new HashMap<>();
@@ -2287,9 +2231,6 @@ public class ExternalAccessRolesServiceImplTest {
 
 	@Test
 	public void bulkUploadPartnerRoleFunctionsTest() throws Exception {
-		PowerMockito.mockStatic(EPCommonSystemProperties.class);
-		PowerMockito.mockStatic(EcompPortalUtils.class);
-		PowerMockito.mockStatic(SystemProperties.class);
 		EPApp app = mockApp();
 		List<EPApp> appList = new ArrayList<>();
 		final Map<String, String> appUebkeyParams = new HashMap<>();
@@ -2429,7 +2370,6 @@ public class ExternalAccessRolesServiceImplTest {
 	
 	@Test
 	public void bulkUploadRoleFuncTest() throws Exception {
-		PowerMockito.mockStatic(EcompPortalUtils.class);
 		EPApp app = mockApp();
 		UploadRoleFunctionExtSystem  data = new UploadRoleFunctionExtSystem();
 		data.setRoleName("test");
@@ -2446,7 +2386,6 @@ public class ExternalAccessRolesServiceImplTest {
 	
 	@Test
 	public void bulkUploadGlobalRoleFuncTest() throws Exception {
-		PowerMockito.mockStatic(EcompPortalUtils.class);
 		EPApp app = mockApp();
 		EPApp portalApp = mockApp();
 		portalApp.setId(1L);
@@ -2466,7 +2405,6 @@ public class ExternalAccessRolesServiceImplTest {
 	
 	@Test(expected = HttpClientErrorException.class)
 	public void bulkUploadRoleFuncExcpetionTest() throws Exception {
-		PowerMockito.mockStatic(EcompPortalUtils.class);
 		UploadRoleFunctionExtSystem  data = new UploadRoleFunctionExtSystem();
 		data.setRoleName("test");
 		data.setType("test");
@@ -2482,10 +2420,6 @@ public class ExternalAccessRolesServiceImplTest {
 	
 	@Test
 	public void syncApplicationUserRolesFromExtAuthSystemTest() throws Exception {
-		PowerMockito.mockStatic(EcompPortalUtils.class);
-		PowerMockito.mockStatic(EPCommonSystemProperties.class);
-		PowerMockito.mockStatic(PortalConstants.class);
-		PowerMockito.mockStatic(SystemProperties.class);
 		Mockito.when(EcompPortalUtils.base64encodeKeyForAAFBasicAuth()).thenReturn(new HttpHeaders());
 		Mockito.when(EPCommonSystemProperties.containsProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_USER_DOMAIN)).thenReturn(true);
 		JSONObject mockJsonObjectRole = new JSONObject();
@@ -2548,6 +2482,59 @@ public class ExternalAccessRolesServiceImplTest {
 		Mockito.when(dataAccessService
 		.executeNamedQuery("getAllCentralizedAppsRoles", null, null)).thenReturn(centralizedAppRoles);
 		externalAccessRolesServiceImpl.syncApplicationUserRolesFromExtAuthSystem(user.getOrgUserId());
+	}
+	
+	@Test
+	public void updateAppRoleDescriptionTest() {
+		EPApp app = mockUpdateAppRoleDescription();
+		ResponseEntity<String> postResponse = new ResponseEntity<>(HttpStatus.OK);
+		Mockito.when(template.exchange(Matchers.anyString(), Matchers.eq(HttpMethod.PUT),
+				Matchers.<HttpEntity<String>>any(), Matchers.eq(String.class))).thenReturn(postResponse);
+		Integer actual = externalAccessRolesServiceImpl.updateAppRoleDescription(app.getUebKey());
+		Integer expected = 1;
+		assertEquals(expected, actual);
+	}
+	
+	@Test
+	public void updateAppRoleDescriptionExceptionTest() {
+		EPApp app = mockUpdateAppRoleDescription();
+		Mockito.when(template.exchange(Matchers.anyString(), Matchers.eq(HttpMethod.PUT),
+				Matchers.<HttpEntity<String>>any(), Matchers.eq(String.class))).thenThrow(new HttpClientErrorException(HttpStatus.NOT_ACCEPTABLE));
+		Integer actual = externalAccessRolesServiceImpl.updateAppRoleDescription(app.getUebKey());
+		Integer expected = 0;
+		assertEquals(expected, actual);
+	}
+	
+	@Test
+	public void updateAppRoleDescriptionExceptionTest2() throws Exception {
+		EPApp app = mockUpdateAppRoleDescription();
+		Mockito.when(EcompPortalUtils.base64encodeKeyForAAFBasicAuth()).thenThrow(new NullPointerException());
+		Integer actual = externalAccessRolesServiceImpl.updateAppRoleDescription(app.getUebKey());
+		Integer expected = 0;
+		assertEquals(expected, actual);
+	}
+
+	private EPApp mockUpdateAppRoleDescription() {
+		EPApp app = mockApp();
+		app.setId(2l);
+		List<EPApp> appList = new ArrayList<>();
+		final Map<String, String> appUebkeyParams = new HashMap<>();
+		appList.add(app);
+		appUebkeyParams.put("appKey", app.getUebKey());
+		Mockito.when(dataAccessService.executeNamedQuery("getMyAppDetailsByUebKey", appUebkeyParams, null))
+				.thenReturn(appList);
+		List<EPRole> epRoleList = new ArrayList<>();
+		EPRole getEPRole = new EPRole();
+		getEPRole.setName("Test");
+		getEPRole.setId(2l);
+		getEPRole.setAppRoleId(2l);
+		getEPRole.setActive(true);
+		epRoleList.add(getEPRole);
+		final Map<String, Long> appParams = new HashMap<>();
+		appParams.put("appId", app.getId());
+		Mockito.when(dataAccessService.executeNamedQuery("getPartnerAppRolesList", appParams, null))
+		.thenReturn(epRoleList);
+		return app;
 	}
 	
 }

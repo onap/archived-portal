@@ -38,10 +38,15 @@
 package org.onap.portalapp.portal.service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedSet;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
@@ -51,6 +56,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.onap.portalapp.portal.domain.CentralV2RoleFunction;
 import org.onap.portalapp.portal.domain.EPApp;
 import org.onap.portalapp.portal.domain.EPRole;
 import org.onap.portalapp.portal.domain.EPUser;
@@ -62,11 +68,15 @@ import org.onap.portalapp.portal.logging.format.EPAppMessagesEnum;
 import org.onap.portalapp.portal.logging.logic.EPLogUtil;
 import org.onap.portalapp.portal.transport.AppNameIdIsAdmin;
 import org.onap.portalapp.portal.transport.AppsListWithAdminRole;
+import org.onap.portalapp.portal.transport.EPUserAppCurrentRoles;
 import org.onap.portalapp.portal.transport.ExternalAccessUser;
 import org.onap.portalapp.portal.utils.EPCommonSystemProperties;
 import org.onap.portalapp.portal.utils.EcompPortalUtils;
 import org.onap.portalapp.portal.utils.PortalConstants;
+import org.onap.portalapp.util.EPUserUtils;
+import org.onap.portalsdk.core.domain.RoleFunction;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
+import org.onap.portalsdk.core.restful.domain.EcompRole;
 import org.onap.portalsdk.core.service.DataAccessService;
 import org.onap.portalsdk.core.util.SystemProperties;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,6 +101,7 @@ public class AdminRolesServiceImpl implements AdminRolesService {
 	private Long SYS_ADMIN_ROLE_ID = 1L;
 	private Long ACCOUNT_ADMIN_ROLE_ID = 999L;
 	private Long ECOMP_APP_ID = 1L;
+	public static final String TYPE_APPROVER = "approver";
 
 	private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(AdminRolesServiceImpl.class);
 
@@ -102,6 +113,8 @@ public class AdminRolesServiceImpl implements AdminRolesService {
 	private SearchService searchService;
 	@Autowired
 	private EPAppService appsService;
+	@Autowired
+	private ExternalAccessRolesService externalAccessRolesService;
 
 	private RestTemplate template = new RestTemplate();
 
@@ -434,9 +447,22 @@ public class AdminRolesServiceImpl implements AdminRolesService {
 			EPUser currentUser = user != null
 					? (EPUser) dataAccessService.getDomainObject(EPUser.class, user.getId(), null)
 					: null;
+			
+			final Map<String, Long> userParams = new HashMap<>();
+			userParams.put("userId", user.getId());	
+			logger.debug(EELFLoggerDelegate.debugLogger, "Is account admin for user {}", user.getId());
+			List<Integer> userAdminApps = new ArrayList<>();
+
+			userAdminApps =dataAccessService.executeNamedQuery("getAdminAppsForTheUser", userParams, null);
+			logger.debug(EELFLoggerDelegate.debugLogger, "Is account admin for userAdminApps() - for user {}, found userAdminAppsSize {}", user.getOrgUserId(), userAdminApps.size());
+
+
 			if (currentUser != null && currentUser.getId() != null) {
 				for (EPUserApp userApp : currentUser.getEPUserApps()) {
-					if (userApp.getRole().getId().equals(ACCOUNT_ADMIN_ROLE_ID)) {
+
+					
+					if (userApp.getRole().getId().equals(ACCOUNT_ADMIN_ROLE_ID)||(userAdminApps.size()>1)) {
+						logger.debug(EELFLoggerDelegate.debugLogger, "Is account admin for userAdminApps() - for user {}, found Id {}", user.getOrgUserId(), userApp.getRole().getId());
 						// Account Administrator sees only the applications
 						// he/she is Administrator
 						return true;
@@ -446,6 +472,55 @@ public class AdminRolesServiceImpl implements AdminRolesService {
 		} catch (Exception e) {
 			EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeDaoSystemError, e);
 			logger.error(EELFLoggerDelegate.errorLogger, "Exception occurred while executing isAccountAdmin operation",
+					e);
+		}
+		return false;
+	}
+	
+	
+	public boolean isRoleAdmin(EPUser user) {
+		try {
+			logger.debug(EELFLoggerDelegate.debugLogger, "Checking if user has isRoleAdmin access");
+
+			EPUser currentUser = user != null
+					? (EPUser) dataAccessService.getDomainObject(EPUser.class, user.getId(), null)
+					: null;
+					final Map<String, Long> userParams = new HashMap<>();
+					userParams.put("userId", user.getId());	
+					List<RoleFunction> roleFunctionSet = new ArrayList<>();
+
+					List getRoleFuncListOfUser = dataAccessService.executeNamedQuery("getRoleFunctionsOfUserforAlltheApplications", userParams, null);
+					logger.debug(EELFLoggerDelegate.debugLogger, "Checking if user has isRoleAdmin access :: getRoleFuncListOfUser" , getRoleFuncListOfUser);
+					Set<String> getRoleFuncListOfPortalSet = new HashSet<>(getRoleFuncListOfUser);
+					Set<String> getRoleFuncListOfPortalSet1=new HashSet<>();
+					Set<String> roleFunSet = new HashSet<>();
+					roleFunSet = getRoleFuncListOfPortalSet.stream().filter(x -> x.contains("|")).collect(Collectors.toSet());
+					if (roleFunSet.size() > 0)
+						for (String roleFunction : roleFunSet) {
+							//String roleFun = EcompPortalUtils.getFunctionCode(roleFunction);
+							String roleFun = EcompPortalUtils.getFunctionCode(roleFunction);
+							String type = externalAccessRolesService.getFunctionCodeType(roleFunction);
+							//getRoleFuncListOfPortalSet.remove(roleFunction);
+							getRoleFuncListOfPortalSet1.add(type);
+						}
+				
+					
+					
+					for (String rolefunc : getRoleFuncListOfPortalSet1) {
+						logger.debug(EELFLoggerDelegate.debugLogger, "Checking if user has approver rolefunction" , rolefunc);
+				        if (rolefunc.equalsIgnoreCase(TYPE_APPROVER)) {
+							logger.debug(EELFLoggerDelegate.debugLogger, "Checking if user has approver rolefunction" , rolefunc);
+				            return true;
+				        }else{
+						       return false;
+
+				        }
+				    }
+			       
+		
+		} catch (Exception e) {
+			EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeDaoSystemError, e);
+			logger.error(EELFLoggerDelegate.errorLogger, "Exception occurred while executing isRoleAdmin operation",
 					e);
 		}
 		return false;
@@ -490,24 +565,24 @@ public class AdminRolesServiceImpl implements AdminRolesService {
 
 	@Override
 	public boolean isAccountAdminOfApplication(EPUser user, EPApp app) {
+		Boolean isApplicationAccountAdmin=false;
 		try {
-			EPUser currentUser = user != null
-					? (EPUser) dataAccessService.getDomainObject(EPUser.class, user.getId(), null) : null;
-			if (currentUser != null && currentUser.getId() != null) {
-				SortedSet<EPUserApp> userApps = currentUser.getEPUserApps();
-				EPUserApp userApp = userApps.stream()
-						.filter(x -> x.getRole().getId().equals(PortalConstants.ACCOUNT_ADMIN_ROLE_ID)
-								&& x.getApp().getId().equals(app.getId()))
-						.findAny().orElse(null);
-				if (userApp != null) {
-					return true;
-				}
-			}
-		} catch (Exception e) {
+					final Map<String, Long> userParams = new HashMap<>();
+					userParams.put("userId", user.getId());	
+					logger.debug(EELFLoggerDelegate.debugLogger, "Is account admin for user {}", user.getId());
+					List<Integer> userAdminApps = new ArrayList<>();
+					userAdminApps =dataAccessService.executeNamedQuery("getAdminAppsForTheUser", userParams, null);
+					if(userAdminApps.size()>=1){
+					isApplicationAccountAdmin=userAdminApps.contains((int) (long) app.getId());
+					logger.debug(EELFLoggerDelegate.debugLogger, "Is account admin for user is true{} ,appId {}", user.getId(),app.getId());
+					}					
+			} catch (Exception e) {
 			EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeDaoSystemError, e);
 			logger.error(EELFLoggerDelegate.errorLogger,
 					"Exception occurred while executing isAccountAdminOfApplication operation", e);
 		}
-		return false;
+		logger.debug(EELFLoggerDelegate.debugLogger, "In AdminRolesServiceImpl() - isAccountAdminOfApplication = {} and userId ={} ", isApplicationAccountAdmin, user.getOrgUserId());
+		return isApplicationAccountAdmin;
+
 	}
 }

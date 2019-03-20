@@ -14,6 +14,9 @@ https://www.eclipse.org/m2e-wtp/
 
 ## Release Notes
 
+version 2.5
+- [PORTAL-319] Integrate with CADI AAF
+
 Version 2.2
 - [PORTAL-255] Scheduler popup shows up automatically when users land on home page
 - [PORTAL-210] Music jar update

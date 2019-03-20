@@ -67,8 +67,8 @@
 											b2b-table-header key="{{header.value}}"
 											sortable="{{header.isSortable}}">{{header.name}}</th>
 
-										<th id="account-catalog-th-header-endpoints" b2b-table-header
-											key="endpoints" sortable="false">Endpoints</th>
+										<!-- <th id="account-catalog-th-header-endpoints" b2b-table-header
+											key="endpoints" sortable="false">Endpoints</th> -->
 
 										<th id="account-catalog-th-header-delete" b2b-table-header
 											sortable="false">Delete</th>
@@ -85,7 +85,7 @@
 												ng-bind="rowData[header.value]"></div>
 										</td>
 
-										<td b2b-table-body
+										<!-- <td b2b-table-body
 											ng-click="accountOnboarding.openAddNewAccountModal(rowData)">
 											<div ng-show="rowData.endpoints.length > 0">
 												<div ng-repeat="row in rowData.endpoints">
@@ -95,7 +95,7 @@
 											</div>
 											<div ng-hide="rowData.endpoints.length > 0">All
 												endpoints</div>
-										</td>
+										</td> -->
 
 										<td b2b-table-body>
 											<div id="account-onboarding-div-delete-{{$index}}"

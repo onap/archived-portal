@@ -45,6 +45,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.onap.portalapp.controller.EPRestrictedRESTfulBaseController;
 import org.onap.portalapp.portal.domain.EPApp;
 import org.onap.portalapp.portal.domain.EcompAuditLog;
@@ -138,6 +139,25 @@ public class WebAnalyticsExtAppController extends EPRestrictedRESTfulBaseControl
 	@RequestMapping(value = { "/analytics" }, method = RequestMethod.GET, produces = "application/javascript")
 	public String getAnalyticsScript(HttpServletRequest request) throws Exception {
 		String responseText = "";
+		EPApp app = null;
+		String version = "";
+		try {
+			app = getApp(request);
+		} catch (Exception e) {
+			logger.error(EELFLoggerDelegate.errorLogger,
+					" Error retrieving Application to capture app name for analytics; Proceeding with empty app name");
+		}
+		if (app != null) {
+			String restEndPoint = app.getAppRestEndpoint();
+			if(restEndPoint.indexOf("/api")!=-1) {
+				version = restEndPoint.substring(restEndPoint.indexOf("/api")+4);
+			}
+		}
+		String END_POINT = "/storeAnalytics";
+		if(StringUtils.isNotBlank(version)) {
+			END_POINT = version + "/storeAnalytics";
+		}
+
 		final String fileName = "analytics.txt";
 		InputStream analyticsFileStream = null;
 		try {
@@ -152,8 +172,8 @@ public class WebAnalyticsExtAppController extends EPRestrictedRESTfulBaseControl
 
 		String feURLContext = SystemProperties.getProperty("frontend_url");
 		String feURL = feURLContext.substring(0, feURLContext.lastIndexOf('/'));
-
 		responseText = responseText.replace("PORTAL_ENV_URL", feURL);
+		responseText = responseText.replace("$END_POINT", END_POINT);
 		return responseText;
 	}
 
@@ -215,18 +235,23 @@ public class WebAnalyticsExtAppController extends EPRestrictedRESTfulBaseControl
 	}
 
 	protected String getAppName(HttpServletRequest request, String appName) {
+		
+		EPApp appRecord = getApp(request);
+		if (appRecord != null) {
+			appName = appRecord.getName();
+		}
+		return appName;
+	}
+	
+	protected EPApp getApp(HttpServletRequest request) {
 		String appKeyValue = request.getHeader(APP_KEY);
+		EPApp appRecord = null;
 		if (appKeyValue == null || appKeyValue.equals("")) {
 			logger.error(EELFLoggerDelegate.errorLogger, " App Key unavailable; Proceeding with null app name");
 		} else {
-			EPApp appRecord = appCacheService.getAppFromUeb(appKeyValue);
-			if (appRecord == null) {
-				logger.error(EELFLoggerDelegate.errorLogger, " App could not be found for the key " + appKeyValue);
-			} else
-				appName = appRecord.getName();
-
+			 appRecord = appCacheService.getAppFromUeb(appKeyValue);
 		}
-		return appName;
+		return appRecord;
 	}
 
 	protected void storeAuxAnalytics(Analytics analyticsMap, String appName) {
@@ -253,5 +278,5 @@ public class WebAnalyticsExtAppController extends EPRestrictedRESTfulBaseControl
 				HttpMethod.POST, entity, String.class);
 		out.addCallback(successCallback, failureCallback);
 	}
-
+	
 }

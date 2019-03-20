@@ -150,8 +150,13 @@
 				<div>
 					<input id="widget-onboarding-details-upload-file"
 						file-model="widgetOnboardingDetails.widget.file" type="file"
-						class="widget-onboarding-details-upload-file ht" />
-
+						class="widget-onboarding-details-upload-file ht" 
+						ng-model="widgetDetails.widgetFile"
+						file-change="widgetFileHandler($event,files)"/> 
+					<div class="error-container"
+						ng-show="widgetFileTypeError" class="ng-hide">
+						<div class="err-message">File must be .zip</div>
+					</div>
 
 					<div class="error-container"
 						ng-show="widgetOnboardingDetails.widget.file == undefined && !widgetOnboardingDetails.isEditMode">

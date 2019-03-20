@@ -49,7 +49,7 @@ public class EcompUserAppRolesTest {
 			
 		ecompUserAppRoles.setAppId("test");
 		ecompUserAppRoles.setUserId((long)1);
-		ecompUserAppRoles.setPriority("test");
+		ecompUserAppRoles.setPriority((Integer) 123);
 		ecompUserAppRoles.setRoleId((long)1);
 		ecompUserAppRoles.setRoleName("test");
 		
@@ -62,7 +62,7 @@ public class EcompUserAppRolesTest {
 		EcompUserAppRoles ecompUserAppRoles = mockEcompUserAppRoles();
 		
 		assertEquals(ecompUserAppRoles.getAppId(), "test");
-		assertEquals(ecompUserAppRoles.getPriority(), "test");
+		assertEquals(ecompUserAppRoles.getPriority(), new Integer((Integer) 123));
 		assertEquals(ecompUserAppRoles.getRoleName(), "test");
 		assertEquals(ecompUserAppRoles.getUserId(), new Long(1));
 		assertEquals(ecompUserAppRoles.getRoleId(), new Long(1));

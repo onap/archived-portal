@@ -65,6 +65,8 @@ import org.onap.portalapp.portal.service.UserRolesService;
 import org.onap.portalapp.portal.transport.AppNameIdIsAdmin;
 import org.onap.portalapp.portal.transport.AppWithRolesForUser;
 import org.onap.portalapp.portal.transport.AppsListWithAdminRole;
+import org.onap.portalapp.portal.transport.EpNotificationItem;
+import org.onap.portalapp.portal.transport.ExternalRequestFieldsValidator;
 import org.onap.portalapp.portal.transport.FieldsValidator;
 import org.onap.portalapp.portal.transport.RoleInAppForUser;
 import org.onap.portalapp.portal.transport.UserApplicationRoles;
@@ -80,6 +82,7 @@ import org.onap.portalsdk.core.util.SystemProperties;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -123,7 +126,7 @@ public class UserRolesController extends EPRestrictedBaseController {
 			HttpServletResponse response) {
 		EPUser user = EPUserUtils.getUserSession(request);
 		String searchResult = null;
-		if (!adminRolesService.isSuperAdmin(user) && !adminRolesService.isAccountAdmin(user)) {
+		if (!adminRolesService.isSuperAdmin(user) && !adminRolesService.isAccountAdmin(user) && !adminRolesService.isRoleAdmin(user)  ) {
 			EcompPortalUtils.setBadPermissions(user, response, "getPhoneBookSearchResult");
 		} else {
 			searchString = searchString.trim();
@@ -227,6 +230,7 @@ public class UserRolesController extends EPRestrictedBaseController {
 			}
 		}else{
 			logger.error(EELFLoggerDelegate.errorLogger, "putAppWithUserRoleStateForUser: putAppsWithAdminRoleStateForUser result is null");
+			fieldsValidator.httpStatusCode = new Long(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		}
 		
 		logger.info(EELFLoggerDelegate.errorLogger, newAppRoles.toString());
@@ -286,12 +290,14 @@ public class UserRolesController extends EPRestrictedBaseController {
 		EPUser user = EPUserUtils.getUserSession(request);
 		List<RoleInAppForUser> result = null;
 		String feErrorString = "";
-		if (!adminRolesService.isAccountAdmin(user)) {
+		if (!adminRolesService.isAccountAdmin(user) && !adminRolesService.isRoleAdmin(user) ) {
+			logger.debug(EELFLoggerDelegate.debugLogger, "getAppRolesForUser: Accountadminpermissioncheck {}, RoleAdmincheck {}", adminRolesService.isAccountAdmin(user) , adminRolesService.isRoleAdmin(user));
 			EcompPortalUtils.setBadPermissions(user, response, "getAppRolesForUser");
 			feErrorString = EcompPortalUtils.getFEErrorString(true, response.getStatus());
 		} else {
 			if (EcompPortalUtils.legitimateUserId(orgUserId)) {
-				result = userRolesService.getAppRolesForUser(appid, orgUserId, extRequestValue);
+				result = userRolesService.getAppRolesForUser(appid, orgUserId, extRequestValue, user);
+				logger.debug(EELFLoggerDelegate.debugLogger, "getAppRolesForUser: result {}, appId {}", result , appid);
 				int responseCode = EcompPortalUtils.getExternalAppResponseCode();
 				if (responseCode != 0 && responseCode != 200) {
 					// external error
@@ -342,9 +348,10 @@ public class UserRolesController extends EPRestrictedBaseController {
 
 	@RequestMapping(value = { "/portalApi/userAppRoles" }, method = {
 			RequestMethod.PUT }, produces = "application/json")
-	public FieldsValidator putAppWithUserRoleStateForUser(HttpServletRequest request,
+	public PortalRestResponse<String> putAppWithUserRoleStateForUser(HttpServletRequest request,
 			@RequestBody AppWithRolesForUser newAppRolesForUser, HttpServletResponse response) {
-		FieldsValidator fieldsValidator = new FieldsValidator();
+		//FieldsValidator fieldsValidator = new FieldsValidator();
+		PortalRestResponse<String> portalResponse = new PortalRestResponse<>();
 		StringBuilder sbUserApps = new StringBuilder();
 		if (newAppRolesForUser != null) {
 			sbUserApps.append("User '" + newAppRolesForUser.orgUserId);
@@ -364,14 +371,17 @@ public class UserRolesController extends EPRestrictedBaseController {
 		logger.info(EELFLoggerDelegate.applicationLogger, "putAppWithUserRoleStateForUser: {}", sbUserApps.toString());
 
 		EPUser user = EPUserUtils.getUserSession(request);
-		boolean changesApplied = false;
-		if (!adminRolesService.isAccountAdmin(user)) {
+		//boolean changesApplied = false;
+		ExternalRequestFieldsValidator changesApplied = null;
+
+		if (!adminRolesService.isAccountAdmin(user) && !adminRolesService.isRoleAdmin(user) ) {
 			EcompPortalUtils.setBadPermissions(user, response, "putAppWithUserRoleStateForUser");
 		} else if(newAppRolesForUser==null){
 			logger.error(EELFLoggerDelegate.errorLogger, "putAppWithUserRoleStateForUser: newAppRolesForUser is null");
 		} else{
-			changesApplied = userRolesService.setAppWithUserRoleStateForUser(user, newAppRolesForUser);
-			if (changesApplied) {
+			changesApplied= userRolesService.setAppWithUserRoleStateForUser(user, newAppRolesForUser);
+			try{
+				if (changesApplied.isResult()) {
 				logger.info(EELFLoggerDelegate.applicationLogger,
 						"putAppWithUserRoleStateForUser: succeeded for app {}, user {}", newAppRolesForUser.appId,
 						newAppRolesForUser.orgUserId);
@@ -395,17 +405,25 @@ public class UserRolesController extends EPRestrictedBaseController {
 				MDC.remove(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP);
 				MDC.remove(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP);
 				MDC.remove(SystemProperties.MDC_TIMER);
-			} else {
+				portalResponse = new PortalRestResponse<>(PortalRestStatusEnum.OK,"success",null);
+
+			}
+				 if (!changesApplied.isResult())
+						throw new Exception(changesApplied.getDetailMessage());
+			
+		}catch (Exception e){
 				logger.error(EELFLoggerDelegate.errorLogger,
 						"putAppWithUserRoleStateForUser: failed for app {}, user {}", newAppRolesForUser.appId,
 						newAppRolesForUser.orgUserId);
+				portalResponse = new PortalRestResponse<>(PortalRestStatusEnum.ERROR, e.getMessage(), null);
 			}
 		}
 
 		EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/userAppRoles", "put result =", changesApplied);
-		return fieldsValidator;
+		return portalResponse;
 	}
-
+	
+	
 	@RequestMapping(value = { "/portalApi/updateRemoteUserProfile" }, method = {
 			RequestMethod.GET }, produces = "application/json")
 	public PortalRestResponse<String> updateRemoteUserProfile(HttpServletRequest request,

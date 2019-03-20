@@ -37,8 +37,10 @@
  */
 package org.onap.portalapp.portal.service;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,6 +55,7 @@ import org.onap.portalapp.portal.domain.EPUser;
 import org.onap.portalapp.portal.logging.aop.EPMetricsLog;
 import org.onap.portalsdk.core.domain.MenuData;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
+import org.onap.portalsdk.core.service.DataAccessService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.stereotype.Service;
@@ -71,6 +74,9 @@ public class EPLeftMenuServiceImpl implements EPLeftMenuService {
 	
 	@Autowired
 	private ExternalAccessRolesService externalAccessRolesService;
+	@Autowired
+	private DataAccessService dataAccessService;
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -83,6 +89,7 @@ public class EPLeftMenuServiceImpl implements EPLeftMenuService {
 		final Map<String, JSONObject> defaultNavMap = new LinkedHashMap<String, JSONObject>();
 		resetNavMap(defaultNavMap);
 		loadDefaultNavMap(defaultNavMap);
+		loadNavMapByUserAdminRole(defaultNavMap,user);
 		loadNavMapByRole(defaultNavMap, fullMenuSet , user);
 		return convertToSideBarModel(defaultNavMap);
 	}
@@ -174,6 +181,21 @@ public class EPLeftMenuServiceImpl implements EPLeftMenuService {
 		navItemsDetails3.put("imageSrc", "icon-apps-marketplace");
 		defaultNavMap.put("root.widgetCatalog", navItemsDetails3);
 
+	}
+	
+	@SuppressWarnings("unchecked")
+	private void loadNavMapByUserAdminRole(Map<String, JSONObject> defaultNavMap, EPUser user) {
+	List<String> applicationsList = new ArrayList<>();
+	final Map<String, Long> appParams = new HashMap<>();
+	appParams.put("userId", user.getId());
+	applicationsList = dataAccessService.executeNamedQuery("getAprroverRoleFunctionsOfUser", appParams, null);
+	if (applicationsList.size() > 0) {
+	JSONObject navItemsDetails = new JSONObject();
+	navItemsDetails.put("name", "Users");
+	navItemsDetails.put("state", "root.users");
+	navItemsDetails.put("imageSrc", "icon-user");
+	defaultNavMap.put("root.users", navItemsDetails);
+	}
 	}
 
 }

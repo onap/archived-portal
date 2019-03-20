@@ -53,7 +53,7 @@ public class EPUserAppCurrentRolesTest {
 			
 		epUserAppCurrentRoles.setRoleName(TEST);
 		epUserAppCurrentRoles.setUserId(ID);
-		epUserAppCurrentRoles.setPriority(TEST);
+		epUserAppCurrentRoles.setPriority((Integer) 123);
 		epUserAppCurrentRoles.setRoleId(ID);
 		
 		return epUserAppCurrentRoles;
