@@ -280,6 +280,7 @@ module.exports = function (grunt) {
                         '<%= yeoman.dist %>/public/{,*/}*.css',
                         '<%= yeoman.dist %>/public/assets/images/{,*/}*.{png,jpg,jpeg,gif,webp,svg}',
                         '<%= yeoman.dist %>/public/assets/fonts/*',
+                        '<%= yeoman.dist %>/public/assets/i18n/{,*/}*.{json}',
                         '!<%= yeoman.dist %>/public/assets/images/tmp/*'
                     ]
                 }
@@ -323,6 +324,16 @@ module.exports = function (grunt) {
                     cwd: '<%= yeoman.client %>/assets/images',
                     src: '{,*/}*.{png,jpg,jpeg,gif}',
                     dest: '<%= yeoman.dist %>/public/assets/images'
+                }]
+            }
+        },
+        jsonmin: {
+            dist: {
+                files: [{
+                    expand: true,
+                    cwd: '<%= yeoman.client %>/assets/i18n',
+                    src: '{,*/}*.{json}',
+                    dest: '<%= yeoman.dist %>/public/assets/i18n'
                 }]
             }
         },
@@ -405,6 +416,7 @@ module.exports = function (grunt) {
                         'bower_components/**/*',
                         'bower_components_external/**/*',
                         'assets/images/**/*',
+                        'assets/i18n/**/*',
                         'assets/fonts/**/*',
                         'index.html'
                     ]
@@ -413,6 +425,14 @@ module.exports = function (grunt) {
                     cwd: '.tmp/images',
                     dest: '<%= yeoman.dist %>/public/assets/images',
                     src: ['generated/*']
+                }, {
+                    expand: true,
+                    cwd: '.tmp/i18n',
+                    dest: '<%= yeoman.dist %>/public/assets/i18n',
+                    src: [
+                        'CN.json',
+                        'EN.json'
+                    ]
                 }, {
                     expand: true,
                     dest: '<%= yeoman.dist %>',
