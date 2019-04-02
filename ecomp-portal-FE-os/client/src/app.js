@@ -53,13 +53,19 @@ var app = angular.module('ecompApp', [
         'ui.bootstrap',
         'ngMaterial',
         'oc.lazyLoad',
-        'b2b.att'
+        'b2b.att',
+        'pascalprecht.translate'
     ])
-    .config(($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider, ngDialogProvider, $controllerProvider, hammerDefaultOptsProvider, $sanitizeProvider) => {
+    .config(($stateProvider, $translateProvider, $urlRouterProvider, $locationProvider, $httpProvider, ngDialogProvider, $controllerProvider, hammerDefaultOptsProvider) => {
     	app.controllerProvider = $controllerProvider;
         $urlRouterProvider.otherwise('/error404');
         $locationProvider.html5Mode(true);
-
+        var lang = window.localStorage.lang||'EN';
+        $translateProvider.preferredLanguage(lang);
+        $translateProvider.useStaticFilesLoader({
+          prefix: '././assets/i18n/',
+          suffix: '.json'
+        })
         //initialize get if not there
         if (!$httpProvider.defaults.headers.get) {
              $httpProvider.defaults.headers.get = {};
