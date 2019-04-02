@@ -38,20 +38,46 @@
 'use strict';
 (function () {
 	class HeaderCtrl {
-        constructor($log, $window, userProfileService, menusService, $scope, ECOMP_URL_REGEX, $cookies, $state,auditLogService,notificationService,ngDialog,$modal) {
-            this.firstName = '';
-            this.lastName = '';
-            this.$log = $log;
-            this.menusService = menusService;
-            this.$scope = $scope;
-            this.favoritesMenuItems = '';
-            $scope.favoriteItemsCount = 0;
-            $scope.favoritesMenuItems = '';
-            $scope.showFavorites = false;
-            $scope.emptyFavorites = false;
-            $scope.favoritesWindow = false;
-            $scope.notificationCount=0;
-            $scope.showNotification = true;
+    constructor($log, $window, $translate, translateService,userProfileService, menusService, $scope, ECOMP_URL_REGEX, $cookies, $state,auditLogService,notificationService,ngDialog,$modal) {
+      this.firstName = '';
+      this.lastName = '';
+      this.$log = $log;
+      this.menusService = menusService;
+      this.$scope = $scope;
+      this.favoritesMenuItems = '';
+      $scope.cur_lang = '';
+      $scope.langList = []
+      $scope.favoriteItemsCount = 0;
+      $scope.favoritesMenuItems = '';
+      $scope.showFavorites = false;
+      $scope.emptyFavorites = false;
+      $scope.favoritesWindow = false;
+      $scope.notificationCount=0;
+      $scope.showNotification = true;
+      // get all languages
+      var loginId = sessionStorage.getItem('userId')
+      translateService.getCurrentLang(loginId).then(res => {
+        $scope.cur_lang = res.languageAlias
+        $translate.use($scope.cur_lang);
+      })
+      translateService.getLangList().then(res => {
+        $scope.langList = res.languageList
+      })
+      // switch language
+      $scope.switching = function(lang) {
+        $translate.use(lang);
+        var langs = $scope.langList
+        var langId = ''
+        var selectedLang = langs.find(function(item) {
+          return item.languageAlias === lang;
+        });
+        langId = selectedLang.languageId
+        var loginId = sessionStorage.getItem('userId')
+        translateService.saveSelectedLang(loginId, {'languageId': langId}).then(res => {
+          window.location.reload();
+        })
+      }
+      $scope.cur_lang = $translate.use();
 
             $scope.hideMenus = false;
 
@@ -434,7 +460,7 @@
     
     NotificationCtrl.$inject = ['$log', '$scope', '$cookies', '$timeout', 'sessionService','notificationService','$interval','ngDialog','$modal'];
     LoginSnippetCtrl.$inject = ['$log', '$scope', '$cookies', '$timeout','userProfileService', 'sessionService'];
-    HeaderCtrl.$inject = ['$log', '$window', 'userProfileService', 'menusService', '$scope', 'ECOMP_URL_REGEX','$cookies','$state','auditLogService','notificationService','ngDialog','$modal'];
+    HeaderCtrl.$inject = ['$log', '$window', '$translate', 'translateService', 'userProfileService', 'menusService', '$scope', 'ECOMP_URL_REGEX','$cookies','$state','auditLogService','notificationService','ngDialog','$modal'];
     angular.module('ecompApp').controller('HeaderCtrl', HeaderCtrl);
     angular.module('ecompApp').controller('loginSnippetCtrl', LoginSnippetCtrl);
     angular.module('ecompApp').controller('notificationCtrl', NotificationCtrl);

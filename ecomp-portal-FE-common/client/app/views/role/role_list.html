@@ -43,7 +43,7 @@
 <div class="w-ecomp-admins-page-main">
 	<div class="admins-home-container" id="page-content">
 		<div id="title" class="w-ecomp-main-view-title">
-			<h1 class="heading-page" >Roles</h1>
+			<h1 class="heading-page" >{{'Roles'|T}}</h1>
 		</div>
 		<div class="admins-table">
 		
@@ -58,23 +58,23 @@
 		<br/>
 		
 			<div id="button-create-role" align="left" class="admins-table-btn-create" >
-				<button id="button-create-role" ng-click="addRoleModalPopup(apps.selectedCentralizedApp)" class = "btn btn-alt btn-small">Create</button>
+				<button id="button-create-role" ng-click="addRoleModalPopup(apps.selectedCentralizedApp)" class = "btn btn-alt btn-small">{{'Create'|T}}</button>
 				<button id="button-sync-role"  ng-show="syncRolesApplied" ng-click="syncRolesFromExternalAuthSystem(apps.selectedCentralizedApp)" class = "btn btn-alt btn-small"><i class="icon-arrows-update-refresh-syncL" aria-hidden="true"></i>&nbsp;Sync Roles</button>
 				<button id="button-bulk-upload" ng-show="syncRolesApplied" ng-click="openBulkUploadRolesAndFunctionsModal(apps.selectedCentralizedApp)" class = "btn btn-alt btn-small"><i class="icon-arrows-upload" aria-hidden="true"></i>&nbsp;Bulk Upload</button>
 			</div>
 			<br>
 			  <div class="property-label">
-					<span ID="required" style="color: Red;font-size: 210%;"	visible="false"> *</span>-----Indicates Global Roles	</div>
+					<span ID="required" style="color: Red;font-size: 210%;"	visible="false"> *</span>-----{{'Indicates Global Roles'|T}}</div>
 			<div b2b-table table-data="availableRoles"  search-string="searchString" class="b2b-table-div">
 			<span class="ecomp-spinner" ng-show="showSpinner"></span>
 		        <table>
 		            <thead b2b-table-row type="header">
 		                <tr>
-		                    <th b2b-table-header key="name" sortable="true" default-sort="a" id="col1">Name</th>
-		                    <th b2b-table-header key="priority" sortable="true" id="col2">Priority</th>
-		                    <th b2b-table-header id="col3" sortable="false">Active</th>
-		                    <th b2b-table-header id="col4" sortable="false">Edit</th>
-		                    <th ng-if="apps.selectedCentralizedApp != 1" b2b-table-header id="col4" sortable="false">Delete</th>
+		                    <th b2b-table-header key="name" sortable="true" default-sort="a" id="col1">{{'Name'|T}}</th>
+		                    <th b2b-table-header key="priority" sortable="true" id="col2">{{'Priority'|T}}</th>
+		                    <th b2b-table-header id="col3" sortable="false">{{'Active'|T}}</th>
+		                    <th b2b-table-header id="col4" sortable="false">{{'Edit'|T}}</th>
+		                    <th ng-if="apps.selectedCentralizedApp != 1" b2b-table-header id="col4" sortable="false">{{'Delete'|T}}</th>
 		                </tr>
 		            </thead>
 		            <tbody b2b-table-row type="body" row-repeat="rowData in availableRoles">
