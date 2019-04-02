@@ -308,6 +308,21 @@ create table fn_user (
     fin_loc_code character varying(10),
     silo_status character varying(10)
 );
+
+alter table fn_user add column language_id int(2) not null default 1;
+
+create table fn_language(
+    language_id int(11) PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    language_name VARCHAR(100) NOT NULL,
+    language_alias VARCHAR(100) NOT NULL
+);
+
+create table fn_display_text(
+    id int(11) PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    language_id int(11) NOT NULL,
+    text_id int(11) NOT NULL,
+    text_label VARCHAR(100) NOT NULL
+);
 --
 -- name: fn_role; type: table
 --
