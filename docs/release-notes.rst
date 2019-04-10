@@ -6,6 +6,18 @@
 Portal Platform Release Notes
 =============================
 
+Version: 2.3.2 
+--------------
+:Release Date: 2019-04-15
+
+.. toctree::
+    :maxdepth: 1
+
+This is the official release notes for the Casablanca Maintenance Release 3.0.2.
+
+**Other**
+        * Portal updated Keystore certificate from AAF to extend its expiry date; This change was made in OOM project.
+
 Version: 2.3.1
 --------------
 :Release Date: 2019-01-31
