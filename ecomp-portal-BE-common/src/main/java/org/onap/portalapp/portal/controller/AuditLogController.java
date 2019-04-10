@@ -88,7 +88,7 @@ public class AuditLogController extends EPRestrictedBaseController {
 	@RequestMapping(value = "/store", method = RequestMethod.GET, produces = "application/json")
 	public void auditLog(HttpServletRequest request, @RequestParam String affectedAppId, @RequestParam String type,
 			@RequestParam String comment) {
-		logger.debug(EELFLoggerDelegate.debugLogger, "auditLog: appId {}, type {], comment {}", affectedAppId, type,
+		logger.debug(EELFLoggerDelegate.debugLogger, "auditLog: appId {}, type {}, comment {}", affectedAppId, type,
 				comment);
 		String cd_type = null;
 		try {
