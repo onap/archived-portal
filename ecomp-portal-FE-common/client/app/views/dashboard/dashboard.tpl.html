@@ -38,15 +38,13 @@
 <div class="w-ecomp-dashboard-home" id="widgets">
 	<div class="dashboard-home-container" id="page-content">
 		<div align="center" id="errorInfo" class="error-info-txt">
-			<span class="">You don't have a user account in that
-				application. Please ask the system administrator. </span>
+			<span class="">{{'No account'|T}}. </span>
 		</div>
 		<div class="portals-list">
 			<div>
 				<div class="simulateGridHeader">
-					<span class="simulateGridHeaderTitle">Applications <span
-						class="dashboardSortHeader">Sort by:</span>
-						
+					<span class="simulateGridHeaderTitle">{{'Applications'|T}}<span
+						class="dashboardSortHeader">{{'Sort by'|T}}:</span>
 						<div class="dashboard-dropdown" id="sort-by-dropdownid-{{selectedSortType.value}}">
 						<select id="sort-by-{{selectedSortType.value}}" name="dropdown1" b2b-dropdown  ng-model="selectedSortType.value" ng-change="selectedSortTypeChanged(selectedSortType.value)">  
 				        <option b2b-dropdown-list option-repeat="d in sort_options" value="{{d.value}}">{{d.title}}</option>
@@ -92,8 +90,7 @@
 										<div class="gridster-box-header gridster-box-pointer"
 											ng-click="dashboard.goToCatalog()">
 											<i class="icon-content-gridguide"></i>
-											<h3>Select applications...</h3>
-
+											<h3>{{'Select applications'|T}}...</h3>
 										</div>
 										<div class="gridster-box-content"
 										id="gridster-personalize"
@@ -106,9 +103,10 @@
 										'padding': '4px',
 										'opacity': '1'}"
 											ng-click="dashboard.goToCatalog()" class="gridsterContent">
-											<label id="add-icon-label"  class="gridster-txt">Click
-												here to personalize <br> this applications page
-											</label> <i  id="add-icon" class="icon-controls-add-maximize"
+											<label id="add-icon-label" class="gridster-txt">{{'Click
+                        here to personalize'|T}} <br> {{'this applications page'|T}}
+											</label>
+                      <i id="add-icon" class="icon-controls-add-maximize"
 												class="gridster-icon"></i>
 										</div>
 									</div>
@@ -124,13 +122,9 @@
 			<br> <br>
 
 			<div class="simulateGridHeader">
-				<span class="simulateGridHeaderTitle">Widgets </span>
+				<span class="simulateGridHeaderTitle">{{'Widgets'|T}}</span>
 			</div>
-			
-			<div 
-				ng-show=dashboard.isCommError>Failed to communicate with the
-				widget microservice.</div>
-			
+			<div ng-show=dashboard.isCommError>{{'widget microservice failed'|T}}.</div>
 			<div id="widget-boarder" class="content" gridster="dashboard.gridsterWidgetOpts">
 				<ul>
 					<li gridster-item="widget" ng-repeat="widget in widgetsViewData">
@@ -140,34 +134,30 @@
 								<h3>{{ widget.headerText}}</h3>
 								<div class="box-header-btns pull-right"
 									ng-if="isAdminPortalAdmin == true" class="ng-scope">
-										<span id="widgetHeaderBtns-{{widget.headerText.split(' ').join('-')}}"
-											class="widgetHeaderBtn widgetHeaderBtnPosition singleBtnBorder"
-											ng-class="singleBtnBorder" alt="Settings"
-											ng-mousedown="showImpResOption=!showImpResOption"
-											ng-mouseleave="showImpResOption=false" title="Settings"
-											ddh-accessibility-click="13,32" tabindex="0"><span
-											class="widgetHeaderBtns-span"><span class="icon-controls-moreapplications"></span></span></span>
-
-										<ul class="optionsMenu widget-menu-options"											
-											ng-show="showImpResOption"
-											ng-mouseenter="showImpResOption=true"
-											ng-mouseleave="showImpResOption=false">
-											<!-- ngIf: widget.duplicateAllowed -->
-											<li ng-show="widget.widgetIdentifier != ''"
-												ng-click="editWidgetModalPopup(importResData, widget.widgetIdentifier);">
-												<a id="edit-widget-popup" class="optionsMenuLink" href="javascript:void(0)"
-												ddh-accessibility-click="13,32">Edit</a>
-											</li>
-											
-											<li
-												ng-click="editWidgetParameters(widget.widgetid);">
-												<a id="parameters-widget-popup" class="optionsMenuLink" href="javascript:void(0)"
-												ddh-accessibility-click="13,32">Parameters</a>
-											</li>
-											
-											<!-- end ngIf: widget.duplicateAllowed  -->
-										</ul>
-
+									<span id="widgetHeaderBtns-{{widget.headerText.split(' ').join('-')}}"
+										class="widgetHeaderBtn widgetHeaderBtnPosition singleBtnBorder"
+										ng-class="singleBtnBorder" alt="Settings"
+										ng-mousedown="showImpResOption=!showImpResOption"
+										ng-mouseleave="showImpResOption=false" title="Settings"
+										ddh-accessibility-click="13,32" tabindex="0">
+					                    <span class="widgetHeaderBtns-span">
+					                      <span class="icon-controls-moreapplications"></span>
+					                    </span>
+					                  </span>
+									<ul class="optionsMenu widget-menu-options"											
+										ng-show="showImpResOption"
+										ng-mouseenter="showImpResOption=true"
+										ng-mouseleave="showImpResOption=false">
+										<!-- ngIf: widget.duplicateAllowed -->
+										<li ng-show="widget.widgetIdentifier != ''"
+											ng-click="editWidgetModalPopup(importResData, widget.widgetIdentifier);">
+											<a id="edit-widget-popup" class="optionsMenuLink" href="javascript:void(0)" ddh-accessibility-click="13,32">{{'Edit'|T}}</a>
+										</li>
+										<li ng-click="editWidgetParameters(widget.widgetid);">
+											<a id="parameters-widget-popup" class="optionsMenuLink" href="javascript:void(0)" ddh-accessibility-click="13,32">{{'Parameters'|T}}</a>
+										</li>
+										<!-- end ngIf: widget.duplicateAllowed  -->
+									</ul>
 								</div>
 							</div>
 							<div class="box-content">
@@ -182,12 +172,12 @@
 				<div id="dashboardAddWidgetPreference"
 					ng-style="{'cursor':'pointer'}"
 					ng-click="dashboard.goToWidgetCatLog()">
-					<i class="icon-controls-add-maximize"></i> Add Widget
+					<i class="icon-controls-add-maximize"></i>{{'Add Widget'|T}} 
 				</div>
 				&nbsp;
 				<div id="dashboardDefaultPreference" ng-style="{'cursor':'pointer'}"
 					ng-click="restoreSortSelected()">
-					<i class="icon-arrows-replay-restart"></i> Reset Widget Layout
+					<i class="icon-arrows-replay-restart"></i> {{'Reset Widget Layout'|T}} 
 				</div>
 			</div>
 		</div>

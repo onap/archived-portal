@@ -92,8 +92,8 @@
 			                                        <p id="p-no-favs-icon" class="no-fav-icon">
 			                                        	<span class="icon-star" ></span>
 			                                        </p>
-			                                        <p id="p-no-favs" class="largeText">No Favorites</p>
-			                                        <p id="p-no-favs-desc"  class="normal">Add your favorite items for quick access.</p>
+							                    	<p id="p-no-favs" class="largeText">{{'No Favorites'|T}}</p>
+							                        <p id="p-no-favs-desc"  class="normal">{{'Add your favorite items for quick access'|T}}.</p>
 				                                </div>
 			                                </li>
 			                            </ul>
@@ -155,6 +155,10 @@
             </li>
 <!-- Right side of the Menu - User Icon and Notification flag -->
             <div class="login-section">
+        <!-- Language Select -->
+				<select ng-controller="HeaderCtrl" ng-model="cur_lang" ng-change="switching(cur_lang)" style="float:right">
+					<option value="{{x.languageAlias}}" ng-repeat="x in langList">{{x.languageName}}</option>
+				</select>
      <!-- User Icon -->
             <li class="header__item profile" aria-haspopup="true">
 				<b2b-flyout>
@@ -171,31 +175,30 @@
 					                        <div class="reg-userName-table">
 					                            <div id="reg-userName-table-row">
 					                                <div id="reg-userName-table-cell">
-					                                    <h3 >
-					                                    {{firstName}} {{lastName}}&nbsp;</h3>
+                              							<h3 >{{firstName}} {{lastName}}&nbsp;</h3>
 					                                    <span>&nbsp;</span>
 					                                </div>
 					                            </div>
 					                        </div>
 					                    </li>
-										<li><div class="reg-userEmail-label"><span class="reg-userEmail-label-spn reg-common-label-spn-txt" >Email<span class="visuallyhidden">:
+										<li><div class="reg-userEmail-label"><span class="reg-userEmail-label-spn reg-common-label-spn-txt" >{{'Email'|T}}<span class="visuallyhidden">:
 					                    </span></span></div></li>
 										<li><div class="reg-userEmail-value"><span class="reg-userEmail-value-spn">
 					                        {{loginSnippetEmail}}</span></div></li>
 					                    <li>&nbsp;</li>
 										<li><div class="reg-userRole-label"><span class="reg-userRole-label-spn reg-common-label-spn-txt">
-					                        User Id<span class="visuallyhidden">:</span></span></div></li>
+					                        {{'User Id'|T}}<span class="visuallyhidden">:</span></span></div></li>
 										<li><div class="reg-userRole-value"><span class="reg-userRole-value-spn">
 					                        {{loginSnippetUserid}}<span class="visuallyhidden"></span></span></div></li>
 					                    <li>&nbsp;</li>
 										<li><div class="reg-userLastLogin-label"><span class="reg-userLastLogin-label-spn reg-common-label-spn-txt">
-					                        Last login<span class="visuallyhidden">:</span></span></div></li>
+					                        {{'Last login'|T}}<span class="visuallyhidden">:</span></span></div></li>
 										<li><div class="reg-userLastLogin-value"><span class="reg-userLastLogin-value-spn">
 					                        {{ lastLogin | date : 'medium' }}<span class="visuallyhidden"></span></span></div></li>
 						                <li>&nbsp;</li>
 					 					<li>
 					               			<div class="display-userAppRoles-label">
-					                			<a href="javascript:void(0);"  ng-click="getUserApplicationRoles()"  class="icon-primary-accordion-plus" ng-class="{true: 'icon-primary-accordion-plus', false: 'icon-primary-accordion-minus'}[ !displayUserAppRoles]" ><span class="business-card-app-role">Applications and Roles</span></a>
+					                			<a href="javascript:void(0);"  ng-click="getUserApplicationRoles()"  class="icon-primary-accordion-plus" ng-class="{true: 'icon-primary-accordion-plus', false: 'icon-primary-accordion-minus'}[ !displayUserAppRoles]" ><span class="business-card-app-role">{{'Applications and Roles'|T}}</span></a>
 					                 		</div>
 					                 		<br>
 					                        <div class="display-userAppRoles-label display-userAppRoles-label-txt" ng-show="displayUserAppRoles">
@@ -215,7 +218,7 @@
 					                <div ng-include class="profile-detail-extension" src="'app/views/header/header-extension.tpl.html'"></div>				                							
 					                <div id="reg-logout-div" class="logout-btn-div">
 					                     <button href="javascript:void(0)" id="allLogout" ng-click="allAppsLogout()" class="btn btn-alt btn-small">
-											Log out
+											{{'Log out'|T}}
 										</button>
 					                </div>
 						        </div>
@@ -240,7 +243,7 @@
 									</div>
 									<div class="notification-header">
 										<div class="notification-common-position">
-											<p class="notification-heading">Notifications</p>
+      										<p class="notification-heading">{{'Notifications'| T}}</p>
 										</div>
 										<div class="notification-common-space"></div>
 									</div>
@@ -250,7 +253,7 @@
 												<div align="center" class="icon-information notification-info-icon"></div>
 											</div>
 										<div>
-										<p class="notification-text">No New Notifications.</p>
+										<p class="notification-text">{{'No New Notifications'| T}}.</p>
 									</div>
 									
 								</div>

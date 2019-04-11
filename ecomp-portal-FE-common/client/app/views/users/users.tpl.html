@@ -39,7 +39,7 @@
     <div class="w-ecomp-main-container" >
         <div class="users-page-main" id="page-content">
             <div id="users-page-title" class="w-ecomp-main-view-title">
-            	 <h1 class="heading-page" >Users</h1>
+            	 <h1 class="heading-page" >{{'Users'|T}}</h1>
             </div>
             <div class="users-table">
                 <div class="table-control">
@@ -58,7 +58,7 @@
                 </div>
                 <div ng-hide="users.isLoadingTable">
                     <div class="error-text" id="div-select-app" ng-show="noAppSelected">
-                        <p class="error-help">Use the 'Select application' dropdown to see users.</p>
+                        <p class="error-help">{{'Use dropdown'|T}}.</p>
                     </div>
                     <div class="error-text"
                          id="div-error-no-users"
@@ -83,10 +83,10 @@
 					<table>
 						<thead b2b-table-row type="header">
 							<tr >
-								<th b2b-table-header key="firstName" sortable="true" id="col1" default-sort="a">First Name</th>
-								<th b2b-table-header key="lastName" sortable="true" id="col2">Last Name</th>
-								<th b2b-table-header key="orgUserId" sortable="true" id="col3">User ID</th>
-								<th b2b-table-header key="" sortable="falses" id="col4">Roles</th>
+								<th b2b-table-header key="firstName" sortable="true" id="col1" default-sort="a">{{'First Name'|T}}</th>
+								<th b2b-table-header key="lastName" sortable="true" id="col2">{{'Last Name'|T}}</th>
+								<th b2b-table-header key="orgUserId" sortable="true" id="col3">{{'User Id'|T}}</th>
+								<th b2b-table-header key="" sortable="falses" id="col4">{{'Roles'|T}}</th>
 							</tr>
 						</thead>
 						<tbody b2b-table-row type="body" 	row-repeat="rowData in users.accountUsers" class="table-users-div">
@@ -103,7 +103,7 @@
 				</div>
             </div>
             <div class="error-text"  id="div-error-403" ng-show="adminAppsIsNull==true">
-                <h1>Attention:</h1>
+                <h1>{{'Attention'|T}}:</h1>
                 <p>&nbsp;</p>
                 <p class="error-help">It appears that you have not been added as an admin yet to an application.</p>
                 <p>&nbsp;</p>
