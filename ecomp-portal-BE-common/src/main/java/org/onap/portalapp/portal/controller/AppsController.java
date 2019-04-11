@@ -233,7 +233,7 @@ public class AppsController extends EPRestrictedBaseController {
 	 * @return JSON with left menu
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	@RequestMapping(value = { "/portalApi/leftmenuItems" }, method = RequestMethod.GET, produces = "application/json")
+	@RequestMapping(value = { "/portalApi/leftmenuItems" }, method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	public String getLeftMenuItems(HttpServletRequest request, HttpServletResponse response) {
 		String menuList = null;
 		Set menuSet = (Set) AppUtils.getSession(request)

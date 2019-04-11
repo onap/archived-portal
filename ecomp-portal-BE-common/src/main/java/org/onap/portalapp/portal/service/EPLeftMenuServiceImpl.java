@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,6 +52,7 @@ import java.util.TreeSet;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.onap.portalapp.portal.domain.CentralizedApp;
+import org.onap.portalapp.portal.domain.DisplayText;
 import org.onap.portalapp.portal.domain.EPUser;
 import org.onap.portalapp.portal.logging.aop.EPMetricsLog;
 import org.onap.portalsdk.core.domain.MenuData;
@@ -114,6 +116,30 @@ public class EPLeftMenuServiceImpl implements EPLeftMenuService {
 			@Override
 			public int compare(MenuData e1, MenuData e2) {
 				return e1.getSortOrder().compareTo(e2.getSortOrder());
+			}
+		}
+
+		//mulitilanguage impl
+		String loginId = user.getLoginId();
+		HashMap loginParams = new HashMap();
+		loginParams.put("login_id",loginId);
+		List<EPUser> epUsers = dataAccessService.executeNamedQuery("getEPUserByLoginId", loginParams, new HashMap());
+		Integer languageId = 1;
+		for (EPUser epUser : epUsers) {
+			languageId = epUser.getLanguageId();
+		}
+		Iterator<MenuData> iterator = fullMenuSet.iterator();
+		HashMap params = new HashMap();
+		params.put("language_id",languageId);
+		List<DisplayText> displayTexts = dataAccessService.executeNamedQuery("displayText",params,new HashMap());
+		while (iterator.hasNext()) {
+			MenuData menuData = iterator.next();
+			for (int index = 0;index<displayTexts.size();index++) {
+				DisplayText displayText = displayTexts.get(index);
+				if (menuData.getId()==displayText.getTextId()) {
+					menuData.setLabel(displayText.getLabel());
+					break;
+				}
 			}
 		}
 

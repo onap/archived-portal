@@ -43,6 +43,29 @@
 <!-- Publishes mappings and queries specific to the ONAP Portal application. -->
 <hibernate-mapping package="org.onap.portalapp.portal.domain">
 
+	<!-- multilanguage -->
+	<class name="Language" table="fn_language">
+		<id name="languageId" column="language_id">
+			<generator class="native">
+				<param name="sequence"></param>
+			</generator>
+		</id>
+		<property name="languageName" column="language_name" />
+		<property name="languageAlias" column="language_alias" />
+	</class>
+	
+	<class name="DisplayText" table="fn_display_text">
+		<id name="id" column="id">
+			<generator class="native">
+				<param name="sequence"></param>
+			</generator>
+		</id>
+		
+		<property name="languageId" column="language_id" />
+		<property name="textId" column="text_id" />
+		<property name="label" column="text_label" />
+	</class>
+
 	<!-- Widget class mapping details -->
 	<class name="Widget" table="FN_WIDGET">
 		<id name="id" column="WIDGET_ID">
@@ -206,6 +229,7 @@
 		<property name="createdId" column="created_id" />
 		<property name="modifiedId" column="modified_id" />
 		<property name="timeZoneId" column="timezone" />
+		<property name="languageId" column="language_id" />
 
 		<set name="EPUserApps" table="FN_USER_ROLE" lazy="false" sort="natural"
 			inverse="true">
@@ -527,6 +551,25 @@
 			<column name="req_id" not-null="true" />
 		</many-to-one>
 	</class>
+
+	<!-- multilanguage -->
+	<query name="queryLanguage">
+		<![CDATA[
+			from Language
+		]]>
+	</query>
+	
+	<query name="displayText">
+		<![CDATA[
+			from DisplayText where languageId = :language_id
+		]]>
+	</query>
+	
+	<query name="queryLanguageByLanguageId">
+		<![CDATA[
+			from Language where languageId = :language_id
+		]]>
+	</query>
 
 	<!-- show the current user plus related users -->
 	<sql-query name="relatedUsers">

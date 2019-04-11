@@ -98,7 +98,7 @@ public class EPUser extends User {
 	    private Long timeZoneId;
 	    private boolean online;
 	    private String chatId;
-	
+	    private Integer languageId;
 	    private static final long serialVersionUID = 1L;
 
 	    private static EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(EPUser.class);
@@ -491,8 +491,16 @@ public class EPUser extends User {
 		public void setChatId(String chatId) {
 			this.chatId = chatId;
 		}
-
 		
+		
+		public Integer getLanguageId() {
+			return languageId;
+		}
+
+		public void setLanguageId(Integer languageId) {
+			this.languageId = languageId;
+		}
+
 	public void setPseudoEPRoles(SortedSet<EPRole> pseudoRoles) {
 		this.pseudoRoles = pseudoRoles;
 	}
