@@ -5,6 +5,36 @@ USE portal;
 
 set foreign_key_checks=1; 
 
+INSERT INTO fn_display_text (language_id,text_id,text_label) VALUES (1,2,'Home');
+INSERT INTO fn_display_text (language_id,text_id,text_label) VALUES (1,3,'Application Catalog');
+INSERT INTO fn_display_text (language_id,text_id,text_label) VALUES (1,4,'Widget Catalog');
+INSERT INTO fn_display_text (language_id,text_id,text_label) VALUES (1,5,'Admins');
+INSERT INTO fn_display_text (language_id,text_id,text_label) VALUES (1,6,'Roles');
+INSERT INTO fn_display_text (language_id,text_id,text_label) VALUES (1,7,'Users');
+INSERT INTO fn_display_text (language_id,text_id,text_label) VALUES (1,8,'Portal Admins');
+INSERT INTO fn_display_text (language_id,text_id,text_label) VALUES (1,9,'Application Onboarding');
+INSERT INTO fn_display_text (language_id,text_id,text_label) VALUES (1,10,'Widget Onboarding');
+INSERT INTO fn_display_text (language_id,text_id,text_label) VALUES (1,11,'Edit Functional Menu');
+INSERT INTO fn_display_text (language_id,text_id,text_label) VALUES (1,12,'User Notifications');
+INSERT INTO fn_display_text (language_id,text_id,text_label) VALUES (1,13,'Microservice Onboarding');
+INSERT INTO fn_display_text (language_id,text_id,text_label) VALUES (1,15,'App Account Management');
+INSERT INTO fn_display_text (language_id,text_id,text_label) VALUES (2,2,'主页');
+INSERT INTO fn_display_text (language_id,text_id,text_label) VALUES (2,3,'应用目录');
+INSERT INTO fn_display_text (language_id,text_id,text_label) VALUES (2,4,'部件目录');
+INSERT INTO fn_display_text (language_id,text_id,text_label) VALUES (2,5,'管理员');
+INSERT INTO fn_display_text (language_id,text_id,text_label) VALUES (2,6,'角色');
+INSERT INTO fn_display_text (language_id,text_id,text_label) VALUES (2,7,'用户');
+INSERT INTO fn_display_text (language_id,text_id,text_label) VALUES (2,8,'门户管理员');
+INSERT INTO fn_display_text (language_id,text_id,text_label) VALUES (2,9,'应用管理');
+INSERT INTO fn_display_text (language_id,text_id,text_label) VALUES (2,10,'部件管理');
+INSERT INTO fn_display_text (language_id,text_id,text_label) VALUES (2,11,'编辑功能菜单');
+INSERT INTO fn_display_text (language_id,text_id,text_label) VALUES (2,12,'用户通知');
+INSERT INTO fn_display_text (language_id,text_id,text_label) VALUES (2,13,'微服务管理');
+INSERT INTO fn_display_text (language_id,text_id,text_label) VALUES (2,15,'应用账户管理');
+
+INSERT INTO fn_language (language_name,language_alias) VALUES ('English','EN');
+INSERT INTO fn_language (language_name,language_alias) VALUES ('简体中文','CN');
+
 -- FN_FUNCTION
 Insert into fn_function (FUNCTION_CD,FUNCTION_NAME) values ('menu_process','Process List');
 Insert into fn_function (FUNCTION_CD,FUNCTION_NAME) values ('menu_job','Job Menu');
