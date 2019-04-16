@@ -16,12 +16,14 @@ Version: 2.3.2
 This is the official release notes for the Casablanca Maintenance Release 3.0.2.
 
 **Known Issues**
-        * The issue is an application running on https will not open in Portal if the AAF root CA is missing.
+        * The issue is an application running on HTTPS will not open in Portal if the AAF root CA is missing.
           An error message will appear in a separate tab in Portal. It will say something like: 
           “The webpage at https://portal.api.simpledemo.onap.org:30200/vid/welcome.htm?cc=........ might 
           be temporarily down or it may have moved permanently to a new web address.”
           Here is the work-around, copy above VID (or other app) URL and replace welcome.htm to login.htm 
           in a new browser window; after login come back to Portal home page and click VID, it will now work.
+
+        * For applications running on HTTP (for example SDC), the user needs to disable the security check in the browser to access the application.
 
 **Other**
         * Portal updated Keystore certificate from AAF to extend its expiry date; This change was made in OOM project.
