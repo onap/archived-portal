@@ -4,6 +4,8 @@
  * ===================================================================
  * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
+ * Modifications Copyright (c) 2019 Samsung
+ * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
  * under the Apache License, Version 2.0 (the "License");
@@ -694,7 +696,7 @@ public class RoleManageController extends EPRestrictedBaseController {
 				externalAccessRolesService.syncApplicationRolesWithEcompDB(app);
 			} else {
 				logger.info(EELFLoggerDelegate.auditLogger,
-						"RoleManageController.syncRoles, Unauthorized user:" + user.getOrgUserId());
+						"RoleManageController.syncRoles, Unauthorized user:{}", user != null ? user.getOrgUserId() : "");
 				EcompPortalUtils.setBadPermissions(user, response, "createAdmin");
 				return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, "Unauthorized User", "Failure");
 			}
@@ -713,10 +715,10 @@ public class RoleManageController extends EPRestrictedBaseController {
 			EPApp app = appService.getApp(appId);
 			if (isAuthorizedUser(user, app)) {
 				fieldsValidation(app);
-				externalAccessRolesService.syncRoleFunctionFromExternalAccessSystem(app);;
+				externalAccessRolesService.syncRoleFunctionFromExternalAccessSystem(app);
 			} else {
 				logger.info(EELFLoggerDelegate.auditLogger,
-						"RoleManageController.syncFunctions, Unauthorized user:" + user.getOrgUserId());
+						"RoleManageController.syncFunctions, Unauthorized user:{}", user != null ? user.getOrgUserId() : "");
 				EcompPortalUtils.setBadPermissions(user, response, "createAdmin");
 				return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, "Unauthorized User", "Failure");
 			}
@@ -804,7 +806,7 @@ public class RoleManageController extends EPRestrictedBaseController {
 				logExterlaAuthRoleFunctionActivity(code , user, app, activityCode);
 			} else {
 				logger.info(EELFLoggerDelegate.auditLogger,
-						"RoleManageController.syncRoles, Unauthorized user:" + user.getOrgUserId());
+						"RoleManageController.syncRoles, Unauthorized user:{}", user != null ? user.getOrgUserId() : "");
 				EcompPortalUtils.setBadPermissions(user, response, "createAdmin");
 				return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, "Unauthorized User", "Failure");
 			}

@@ -4,6 +4,8 @@
  * ===================================================================
  * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
+ * Modifications Copyright (c) 2019 Samsung
+ * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
  * under the Apache License, Version 2.0 (the "License");
@@ -92,6 +94,9 @@ public class AdminRolesServiceImplTest {
 
 	@Mock
 	DataAccessService dataAccessService = new DataAccessServiceImpl();
+
+    @Mock
+    ExternalAccessRolesService externalAccessRolesService;
 
 	@Mock
 	EPAppCommonServiceImpl epAppCommonServiceImpl = new EPAppCommonServiceImpl();
@@ -369,6 +374,25 @@ public class AdminRolesServiceImplTest {
 		boolean actual = adminRolesServiceImpl.isAccountAdmin(user);
 		assertFalse(actual);
 	}
+
+    @Test
+    public void isAccountAdminUserNull() {
+        boolean actual = adminRolesServiceImpl.isAccountAdmin(null);
+        assertFalse(actual);
+    }
+
+    @Test
+    public void isRoleAdminTest() {
+        EPUser user = mockUser.mockEPUser();
+        List<String> roles = new ArrayList<>();
+        roles.add("approver\\|");
+        Mockito.when(dataAccessService.executeNamedQuery(
+            Matchers.eq("getRoleFunctionsOfUserforAlltheApplications"), Matchers.any(), Matchers.any()))
+                .thenReturn(roles);
+        Mockito.when(externalAccessRolesService.getFunctionCodeType(Matchers.anyString())).thenReturn("approver");
+        boolean actual = adminRolesServiceImpl.isRoleAdmin(user);
+        assertTrue(actual);
+    }
 
 	@Test
 	public void isUserTest() {
