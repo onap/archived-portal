@@ -47,7 +47,7 @@ import org.junit.Test;
 
 public class CentralRoleTest {
 
-	CentralRole centralRole=new CentralRole();
+	CentralRole centralRole= new CentralRole.CentralRoleBuilder().createCentralRole();
 	
 	
 	/*public CentralV2Role mockCentralRole(){
@@ -99,16 +99,19 @@ public class CentralRoleTest {
 	}*/
 	
 	@Test
-	public void unt_centralRoleConstructorTest(){
-		 centralRole=new CentralRole(null, null, null, null, null, null, null, false, null, null, null, null);
-		assertEquals(false, centralRole.isActive());
-	}
+    public void unt_centralRoleConstructorTest() {
+        centralRole = new CentralRole.CentralRoleBuilder().setId(null).setCreated(null).setModified(null)
+                .setCreatedId(null).setModifiedId(null).setRowNum(null).setName(null).setActive(false).setPriority(null)
+                .setRoleFunctions(null).setChildRoles(null).setParentRoles(null).createCentralRole();
+        assertEquals(false, centralRole.isActive());
+    }
 	
 	@Test
-	public void unt_centralRoleConstructor2Test(){
-		 centralRole=new CentralRole(null, null, false, null, null);
-		assertEquals(false, centralRole.isActive());
-	}
+    public void unt_centralRoleConstructor2Test() {
+        centralRole = new CentralRole.CentralRoleBuilder().setId(null).setName(null).setActive(false).setPriority(null)
+                .setRoleFunctions(null).createCentralRole();
+        assertEquals(false, centralRole.isActive());
+    }
 	
 	@Test
 	public void unt_IdTest(){

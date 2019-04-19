@@ -42,9 +42,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
-import org.onap.portalapp.portal.transport.CentralApp;
-import org.onap.portalapp.portal.transport.CentralV2Role;
-import org.onap.portalapp.portal.transport.CentralV2UserApp;
 
 public class CentralUserAppTest {
 	
@@ -57,7 +54,7 @@ public class CentralUserAppTest {
 		app.setPriority((Integer)1);
 		CentralApp centralApp=new CentralApp();
 		centralApp.setName(TEST);
-		CentralRole role=new CentralRole();
+		CentralRole role= new CentralRole.CentralRoleBuilder().createCentralRole();
 		role.setName(TEST);
 		app.setApp(centralApp);
 		app.setRole(role);
@@ -87,39 +84,39 @@ public class CentralUserAppTest {
 		
 	}
 
-	public CentralV2UserApp mockCentralUserApp(){
-		CentralV2UserApp centralV2UserApp = new CentralV2UserApp();
-				
-		CentralApp app = new CentralApp((long)1, null, null,ID,ID,ID, TEST, TEST, TEST, TEST, TEST, TEST, TEST, TEST, TEST, 
-				TEST, TEST, TEST, TEST, null, TEST, TEST, TEST, TEST);
-		
-		CentralV2Role role = new CentralV2Role();
-		 
-		centralV2UserApp.setUserId((long)1);
-		centralV2UserApp.setApp(app);
-		centralV2UserApp.setRole(role);
-		centralV2UserApp.setPriority((Integer) 123);
-		
-		return centralV2UserApp;
-	}
+    public CentralV2UserApp mockCentralUserApp() {
+        CentralV2UserApp centralV2UserApp = new CentralV2UserApp();
+
+        CentralApp app = new CentralApp((long) 1, null, null, ID, ID, ID, TEST, TEST, TEST, TEST, TEST, TEST, TEST,
+                TEST, TEST, TEST, TEST, TEST, TEST, null, TEST, TEST, TEST, TEST);
+
+        CentralV2Role role = new CentralV2Role();
+
+        centralV2UserApp.setUserId((long) 1);
+        centralV2UserApp.setApp(app);
+        centralV2UserApp.setRole(role);
+        centralV2UserApp.setPriority((Integer) 123);
+
+        return centralV2UserApp;
+    }
 	
 	
 	
 	@Test
-	public void centralUserAppTest(){
-		CentralV2UserApp centralV2UserApp = mockCentralUserApp();
-		
-		CentralApp app1 = new CentralApp((long)1, null, null,ID,ID,ID, TEST, TEST, TEST, TEST, TEST, TEST, TEST, TEST, TEST, 
-				TEST, TEST, TEST, TEST, null, TEST, TEST, TEST, TEST);
-		
-		
-		CentralV2Role role1 = new CentralV2Role();
-		
-		assertEquals(centralV2UserApp.getUserId(), new Long(1));
-		assertEquals(centralV2UserApp.getPriority(), new Integer((Integer) 123));
-		assertEquals(centralV2UserApp.getApp(), app1);
-		assertEquals(centralV2UserApp.getRole(), role1);
-	}
+    public void centralUserAppTest() {
+        CentralV2UserApp centralV2UserApp = mockCentralUserApp();
+
+        CentralApp app1 = new CentralApp((long) 1, null, null, ID, ID, ID, TEST, TEST, TEST, TEST, TEST, TEST, TEST,
+                TEST, TEST, TEST, TEST, TEST, TEST, null, TEST, TEST, TEST, TEST);
+
+
+        CentralV2Role role1 = new CentralV2Role();
+
+        assertEquals(centralV2UserApp.getUserId(), new Long(1));
+        assertEquals(centralV2UserApp.getPriority(), new Integer((Integer) 123));
+        assertEquals(centralV2UserApp.getApp(), app1);
+        assertEquals(centralV2UserApp.getRole(), role1);
+    }
 	
 	@Test
 	public void unt_hashCodeTest(){

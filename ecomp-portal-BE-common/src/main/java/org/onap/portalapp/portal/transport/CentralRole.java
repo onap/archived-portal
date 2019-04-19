@@ -78,24 +78,99 @@ public class CentralRole implements Serializable {
 		this.roleFunctions = roleFunctions;
 	}
 	
-	
+	public static class CentralRoleBuilder {
+	    private Long id;
+	    private String name;
+	    private boolean active;
+	    private Integer priority;
+	    private SortedSet<CentralRoleFunction> roleFunctions;
+	    private Date created;
+	    private Date modified;
+	    private Long createdId;
+	    private Long modifiedId;
+	    private Long rowNum;
+	    private SortedSet<CentralRole> childRoles;
+	    private SortedSet<CentralRole> parentRoles;
 
-	public CentralRole(Long id, Date created, Date modified, Long createdId, Long modifiedId, Long rowNum, String name,
-			boolean active, Integer priority, SortedSet<CentralRoleFunction> roleFunctions,
-			SortedSet<CentralRole> childRoles, SortedSet<CentralRole> parentRoles) {
+	    public CentralRoleBuilder setId(Long id) {
+	        this.id = id;
+	        return this;
+	    }
+
+	    public CentralRoleBuilder setName(String name) {
+	        this.name = name;
+	        return this;
+	    }
+
+	    public CentralRoleBuilder setActive(boolean active) {
+	        this.active = active;
+	        return this;
+	    }
+
+	    public CentralRoleBuilder setPriority(Integer priority) {
+	        this.priority = priority;
+	        return this;
+	    }
+
+	    public CentralRoleBuilder setRoleFunctions(SortedSet<CentralRoleFunction> roleFunctions) {
+	        this.roleFunctions = roleFunctions;
+	        return this;
+	    }
+
+	    public CentralRoleBuilder setCreated(Date created) {
+	        this.created = created;
+	        return this;
+	    }
+
+	    public CentralRoleBuilder setModified(Date modified) {
+	        this.modified = modified;
+	        return this;
+	    }
+
+	    public CentralRoleBuilder setCreatedId(Long createdId) {
+	        this.createdId = createdId;
+	        return this;
+	    }
+
+	    public CentralRoleBuilder setModifiedId(Long modifiedId) {
+	        this.modifiedId = modifiedId;
+	        return this;
+	    }
+
+	    public CentralRoleBuilder setRowNum(Long rowNum) {
+	        this.rowNum = rowNum;
+	        return this;
+	    }
+
+	    public CentralRoleBuilder setChildRoles(SortedSet<CentralRole> childRoles) {
+	        this.childRoles = childRoles;
+	        return this;
+	    }
+
+	    public CentralRoleBuilder setParentRoles(SortedSet<CentralRole> parentRoles) {
+	        this.parentRoles = parentRoles;
+	        return this;
+	    }
+
+	    public CentralRole createCentralRole() {
+	        return new CentralRole(this);
+	    }
+	}
+
+	public CentralRole(CentralRoleBuilder centralRoleBuilder) {
 		super();
-		this.id = id;
-		this.created = created;
-		this.modified = modified;
-		this.createdId = createdId;
-		this.modifiedId = modifiedId;
-		this.rowNum = rowNum;
-		this.name = name;
-		this.active = active;
-		this.priority = priority;
-		this.roleFunctions = roleFunctions;
-		this.childRoles = childRoles;
-		this.parentRoles = parentRoles;
+		this.id = centralRoleBuilder.id;
+		this.created = centralRoleBuilder.created;
+		this.modified = centralRoleBuilder.modified;
+		this.createdId = centralRoleBuilder.createdId;
+		this.modifiedId = centralRoleBuilder.modifiedId;
+		this.rowNum = centralRoleBuilder.rowNum;
+		this.name = centralRoleBuilder.name;
+		this.active = centralRoleBuilder.active;
+		this.priority = centralRoleBuilder.priority;
+		this.roleFunctions = centralRoleBuilder.roleFunctions;
+		this.childRoles = centralRoleBuilder.childRoles;
+		this.parentRoles = centralRoleBuilder.parentRoles;
 	}
 
 	/**
