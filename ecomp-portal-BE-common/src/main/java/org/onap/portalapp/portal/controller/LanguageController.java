@@ -32,7 +32,7 @@ public class LanguageController {
     @Autowired
     private LanguageService languageService;
 
-    @RequestMapping(value = "/language",method = RequestMethod.GET)
+    @RequestMapping(value = "/language",method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public JSONObject getLanguageList() {
         return languageService.getLanguages();
     }

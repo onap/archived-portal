@@ -174,7 +174,8 @@ app.controller("externalLoginController", function ($scope) {
                 success:function (response){
                   if(response.success=="success"){
                     //window.location.href = 'applicationsHome';
-                    window.location.href= "<%=frontUrl%>"
+                    window.location.href= "<%=frontUrl%>",
+                    sessionStorage.setItem('userId',$scope.loginId)
                   }else{
                 	$("#errorInfo span").text(response);
                 	//$("#errorInfo").text = response;

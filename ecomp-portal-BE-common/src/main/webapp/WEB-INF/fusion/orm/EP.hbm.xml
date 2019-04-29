@@ -2548,4 +2548,10 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
  		
  		]]>
 	</sql-query>
+	
+	<sql-query name="updateFnUser">
+		<![CDATA[
+			UPDATE fn_user fu SET fu.language_id=:language_id WHERE fu.login_id=:login_id
+		]]>
+	</sql-query>
 </hibernate-mapping>

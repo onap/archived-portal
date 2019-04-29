@@ -55,21 +55,16 @@ public class LanguageServiceImpl implements LanguageService {
         JSONObject result = new com.alibaba.fastjson.JSONObject();
         HashMap params = new HashMap();
         params.put("login_id",loginId);
+        
+        EPUser user = (EPUser) dataAccessService.executeNamedQuery("getEPUserByLoginId",params,new HashMap()).get(0);
+        int languageId = user.getLanguageId();
+        HashMap<String,String> params1 = new HashMap();
+        params1.put("language_id", String.valueOf(languageId));
+        Language language = (Language) dataAccessService.executeNamedQuery("queryLanguageByLanguageId",params1,new HashMap());
+		result.put("languageId",languageId);
+		result.put("languageName",language.getLanguageName());
+		result.put("languageAlias",language.getLanguageAlias());
 
-        List<EPUser> list = null;
-        list = dataAccessService.executeNamedQuery("getEPUserByLoginId",params,new HashMap());
-        for (EPUser user : list) {
-            int languageId = user.getLanguageId();
-            HashMap<String,String> params1 = new HashMap();
-            params1.put("language_id", String.valueOf(languageId));
-            List<Language> languages = dataAccessService.executeNamedQuery("queryLanguageByLanguageId",params1,new HashMap());
-            for (Language language : languages) {
-                result.put("languageId",languageId);
-                result.put("languageName",language.getLanguageName());
-                result.put("languageAlias",language.getLanguageAlias());
-            }
-            return result;
-        }
-        return null;
+        return result;
     }
 }
