@@ -427,9 +427,11 @@ public class UserRolesCommonServiceImplTest {
 		Mockito.when(session.createQuery("from " + EPRole.class.getName() + " where appId=" + mockApp.getId()))
 				.thenReturn(epRoleQuery);
 		Mockito.doReturn(mockEPRoleList).when(epRoleQuery).list();
-		Mockito.when(session.createQuery(
-				"from " + EPUserApp.class.getName() + " where app.id=" + mockApp.getId() + " and role_id=" + 15l))
+		Mockito.when(session.createQuery("from :name where app.id=:appId and role_id=:roleId"))
 				.thenReturn(epUserAppsQuery);
+		Mockito.when(epUserAppsQuery.setParameter("name",EPUserApp.class.getName())).thenReturn(epUserAppsQuery);
+		Mockito.when(epUserAppsQuery.setParameter("appId",mockApp.getId())).thenReturn(epUserAppsQuery);
+		Mockito.when(epUserAppsQuery.setParameter("roleId",15l)).thenReturn(epUserAppsQuery);
 		Mockito.doReturn(mockUserRolesList).when(epUserAppsQuery).list();
 
 		Mockito.when(session.createQuery("from " + FunctionalMenuRole.class.getName() + " where roleId=" + 15l))

@@ -523,7 +523,10 @@ public class UserRolesCommonServiceImpl  {
 					// Delete from fn_user_role
 					@SuppressWarnings("unchecked")
 					List<EPUserApp> userRoles = localSession.createQuery(
-							"from " + EPUserApp.class.getName() + " where app.id=" + appId + " and role_id=" + roleId)
+							"from :name where app.id=:appId and role_id=:roleId")
+							.setParameter("name",EPUserApp.class.getName())
+							.setParameter("appId",appId)
+							.setParameter("roleId",roleId)
 							.list();
 
 					logger.debug(EELFLoggerDelegate.debugLogger, "syncAppRoles: number of userRoles to delete: " + userRoles.size());
