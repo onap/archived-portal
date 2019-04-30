@@ -4,6 +4,8 @@
  * ===================================================================
  * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
+ * Modifications Copyright (c) 2019 Samsung
+ * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
  * under the Apache License, Version 2.0 (the "License");
@@ -37,13 +39,13 @@
  */
 package org.onap.portalapp.portal.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.onap.portalapp.controller.EPRestrictedBaseController;
 import org.onap.portalapp.portal.domain.AdminUserApplications;
 import org.onap.portalapp.portal.domain.AppIdAndNameTransportModel;
@@ -79,9 +81,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RestController
 @EnableAspectJAutoProxy
@@ -711,8 +710,9 @@ public class AppsController extends EPRestrictedBaseController {
 			try {
 				String oldvaluesAsJson = new ObjectMapper().writeValueAsString(oldEPApp);
 				String newvaluesAsJson = new ObjectMapper().writeValueAsString(modifiedOnboardingApp);
-				logger.info(EELFLoggerDelegate.auditLogger, "/portalApi/onboardingApps, old values ="+oldvaluesAsJson);
-				logger.info(EELFLoggerDelegate.auditLogger, "/portalApi/onboardingApps, loginId="+user.getLoginId()+", new values ="+newvaluesAsJson);
+          logger.info(EELFLoggerDelegate.auditLogger, "/portalApi/onboardingApps, old values ={}", oldvaluesAsJson);
+          logger.info(EELFLoggerDelegate.auditLogger, "/portalApi/onboardingApps, loginId={}, new values ={}",
+              user != null ? user.getLoginId() : "", newvaluesAsJson);
 			} catch (JsonProcessingException e) {
 				logger.error(EELFLoggerDelegate.errorLogger, "putOnboardingApps failed", e);
 			}

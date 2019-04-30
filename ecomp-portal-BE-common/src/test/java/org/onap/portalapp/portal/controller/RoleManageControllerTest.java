@@ -4,6 +4,8 @@
  * ===================================================================
  * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
+ * Modifications Copyright (c) 2019 Samsung
+ * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
  * under the Apache License, Version 2.0 (the "License");
@@ -76,6 +78,7 @@ import org.onap.portalapp.portal.domain.EPApp;
 import org.onap.portalapp.portal.domain.EPUser;
 import org.onap.portalapp.portal.ecomp.model.PortalRestResponse;
 import org.onap.portalapp.portal.ecomp.model.PortalRestStatusEnum;
+import org.onap.portalapp.portal.ecomp.model.UploadRoleFunctionExtSystem;
 import org.onap.portalapp.portal.framework.MockitoTestSuite;
 import org.onap.portalapp.portal.service.AdminRolesService;
 import org.onap.portalapp.portal.service.EPAppService;
@@ -474,6 +477,9 @@ public class RoleManageControllerTest {
 
 	@Test
 	public void syncRolesException() throws Exception {
+      EPUser user = mockUser.mockEPUser();
+      Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
+      Mockito.when(adminRolesService.isAccountAdminOfApplication(user, null)).thenReturn(true);
 		Mockito.when(appService.getAppDetailByAppName("test")).thenThrow(nullPointerException);
 		PortalRestResponse<String> actual = roleManageController.syncRoles(mockedRequest, mockedResponse, 1l);
 		PortalRestResponse<String> portalRestResponse = new PortalRestResponse<>();
@@ -482,6 +488,18 @@ public class RoleManageControllerTest {
 		portalRestResponse.setStatus(PortalRestStatusEnum.ERROR);
 		assertEquals(portalRestResponse, actual);
 	}
+
+    @Test
+    public void syncRolesUserNullException() throws Exception {
+        Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(null);
+        Mockito.when(appService.getAppDetailByAppName("test")).thenThrow(nullPointerException);
+        PortalRestResponse<String> actual = roleManageController.syncRoles(mockedRequest, mockedResponse, 1l);
+        PortalRestResponse<String> portalRestResponse = new PortalRestResponse<>();
+        portalRestResponse.setMessage("Unauthorized User");
+        portalRestResponse.setResponse("Failure");
+        portalRestResponse.setStatus(PortalRestStatusEnum.ERROR);
+        assertEquals(portalRestResponse, actual);
+    }
 
 	@Test
 	public void syncRolesFunctionsTest() throws Exception {
@@ -510,7 +528,10 @@ public class RoleManageControllerTest {
 
 	@Test
 	public void syncRolesFunctionsException() throws Exception {
-		Mockito.when(appService.getAppDetailByAppName("test")).thenThrow(nullPointerException);
+      EPUser user = mockUser.mockEPUser();
+      Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
+      Mockito.when(adminRolesService.isAccountAdminOfApplication(user, null)).thenReturn(true);
+      Mockito.when(appService.getAppDetailByAppName("test")).thenThrow(nullPointerException);
 		PortalRestResponse<String> actual = roleManageController.syncFunctions(mockedRequest, mockedResponse, 1l);
 		PortalRestResponse<String> portalRestResponse = new PortalRestResponse<>();
 		portalRestResponse.setMessage(null);
@@ -518,6 +539,18 @@ public class RoleManageControllerTest {
 		portalRestResponse.setStatus(PortalRestStatusEnum.ERROR);
 		assertEquals(portalRestResponse, actual);
 	}
+
+    @Test
+    public void syncRolesFunctionsUserNullException() throws Exception {
+        Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(null);
+        Mockito.when(appService.getAppDetailByAppName("test")).thenThrow(nullPointerException);
+        PortalRestResponse<String> actual = roleManageController.syncFunctions(mockedRequest, mockedResponse, 1l);
+        PortalRestResponse<String> portalRestResponse = new PortalRestResponse<>();
+        portalRestResponse.setMessage("Unauthorized User");
+        portalRestResponse.setResponse("Failure");
+        portalRestResponse.setStatus(PortalRestStatusEnum.ERROR);
+        assertEquals(portalRestResponse, actual);
+    }
 
 	@Test
 	public void addChildRoleTest() throws Exception {
@@ -890,6 +923,16 @@ public class RoleManageControllerTest {
 		List<CentralizedApp> actual  = roleManageController.getCentralizedAppRoles(mockedRequest, mockedResponse, user.getOrgUserId());
 		assertNull(actual);
 	}
+
+	@Test
+  public void bulkUploadRoleFuncUserNullTest() {
+      UploadRoleFunctionExtSystem data = Mockito.mock(UploadRoleFunctionExtSystem.class);
+      Mockito.when(appService.getApp(127L)).thenReturn(null);
+      PortalRestResponse<String> response = roleManageController.bulkUploadRoleFunc(mockedRequest, mockedResponse, data, 127L);
+      assertEquals(PortalRestStatusEnum.ERROR, response.getStatus());
+      assertEquals("Unauthorized User", response.getMessage());
+      assertEquals("Failure", response.getResponse());
+  }
 	
 	public CentralV2RoleFunction mockCentralRoleFunction() {
 		CentralV2RoleFunction roleFunction = new CentralV2RoleFunction();

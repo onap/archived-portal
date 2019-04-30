@@ -4,6 +4,8 @@
  * ===================================================================
  * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
+ * Modifications Copyright (c) 2019 Samsung
+ * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
  * under the Apache License, Version 2.0 (the "License");
@@ -143,9 +145,9 @@ public class AdminRolesServiceImpl implements AdminRolesService {
 			try {
 				userList = dataAccessService.executeNamedQuery("getEPUserByOrgUserId", userParams, null);
 			} catch (Exception e) {
-				logger.error(EELFLoggerDelegate.errorLogger, "getEPUserByOrgUserId failed", e);			
+				logger.error(EELFLoggerDelegate.errorLogger, "getEPUserByOrgUserId failed", e);
 			}
-				
+
 			HashMap<Long, Long> appsUserAdmin = new HashMap<Long, Long>();
 			if (userList!= null && userList.size() > 0) {
 				EPUser user = userList.get(0);
@@ -265,7 +267,7 @@ public class AdminRolesServiceImpl implements AdminRolesService {
 							// Add user admin role for list of centralized applications in external system
 							addAdminRoleInExternalSystem(user, localSession, newAppsWhereUserIsAdmin);
 							result = true;
-						}	
+						}
 					} catch (Exception e) {
 						EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeDaoSystemError, e);
 						logger.error(EELFLoggerDelegate.errorLogger,
@@ -444,12 +446,14 @@ public class AdminRolesServiceImpl implements AdminRolesService {
 
 	public boolean isAccountAdmin(EPUser user) {
 		try {
-			EPUser currentUser = user != null
-					? (EPUser) dataAccessService.getDomainObject(EPUser.class, user.getId(), null)
-					: null;
-			
+        if (user == null) {
+            return false;
+        }
+
+			EPUser currentUser = (EPUser) dataAccessService.getDomainObject(EPUser.class, user.getId(), null);
+
 			final Map<String, Long> userParams = new HashMap<>();
-			userParams.put("userId", user.getId());	
+			userParams.put("userId", user.getId());
 			logger.debug(EELFLoggerDelegate.debugLogger, "Is account admin for user {}", user.getId());
 			List<Integer> userAdminApps = new ArrayList<>();
 
@@ -460,7 +464,7 @@ public class AdminRolesServiceImpl implements AdminRolesService {
 			if (currentUser != null && currentUser.getId() != null) {
 				for (EPUserApp userApp : currentUser.getEPUserApps()) {
 
-					
+
 					if (userApp.getRole().getId().equals(ACCOUNT_ADMIN_ROLE_ID)||(userAdminApps.size()>1)) {
 						logger.debug(EELFLoggerDelegate.debugLogger, "Is account admin for userAdminApps() - for user {}, found Id {}", user.getOrgUserId(), userApp.getRole().getId());
 						// Account Administrator sees only the applications
@@ -476,19 +480,14 @@ public class AdminRolesServiceImpl implements AdminRolesService {
 		}
 		return false;
 	}
-	
-	
+
+
 	public boolean isRoleAdmin(EPUser user) {
 		try {
 			logger.debug(EELFLoggerDelegate.debugLogger, "Checking if user has isRoleAdmin access");
 
-			EPUser currentUser = user != null
-					? (EPUser) dataAccessService.getDomainObject(EPUser.class, user.getId(), null)
-					: null;
 					final Map<String, Long> userParams = new HashMap<>();
-					userParams.put("userId", user.getId());	
-					List<RoleFunction> roleFunctionSet = new ArrayList<>();
-
+					userParams.put("userId", user.getId());
 					List getRoleFuncListOfUser = dataAccessService.executeNamedQuery("getRoleFunctionsOfUserforAlltheApplications", userParams, null);
 					logger.debug(EELFLoggerDelegate.debugLogger, "Checking if user has isRoleAdmin access :: getRoleFuncListOfUser" , getRoleFuncListOfUser);
 					Set<String> getRoleFuncListOfPortalSet = new HashSet<>(getRoleFuncListOfUser);
@@ -497,15 +496,10 @@ public class AdminRolesServiceImpl implements AdminRolesService {
 					roleFunSet = getRoleFuncListOfPortalSet.stream().filter(x -> x.contains("|")).collect(Collectors.toSet());
 					if (roleFunSet.size() > 0)
 						for (String roleFunction : roleFunSet) {
-							//String roleFun = EcompPortalUtils.getFunctionCode(roleFunction);
-							String roleFun = EcompPortalUtils.getFunctionCode(roleFunction);
 							String type = externalAccessRolesService.getFunctionCodeType(roleFunction);
-							//getRoleFuncListOfPortalSet.remove(roleFunction);
 							getRoleFuncListOfPortalSet1.add(type);
 						}
-				
-					
-					
+
 					for (String rolefunc : getRoleFuncListOfPortalSet1) {
 						logger.debug(EELFLoggerDelegate.debugLogger, "Checking if user has approver rolefunction" , rolefunc);
 				        if (rolefunc.equalsIgnoreCase(TYPE_APPROVER)) {
@@ -516,8 +510,7 @@ public class AdminRolesServiceImpl implements AdminRolesService {
 
 				        }
 				    }
-			       
-		
+
 		} catch (Exception e) {
 			EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeDaoSystemError, e);
 			logger.error(EELFLoggerDelegate.errorLogger, "Exception occurred while executing isRoleAdmin operation",
@@ -568,14 +561,14 @@ public class AdminRolesServiceImpl implements AdminRolesService {
 		Boolean isApplicationAccountAdmin=false;
 		try {
 					final Map<String, Long> userParams = new HashMap<>();
-					userParams.put("userId", user.getId());	
+					userParams.put("userId", user.getId());
 					logger.debug(EELFLoggerDelegate.debugLogger, "Is account admin for user {}", user.getId());
 					List<Integer> userAdminApps = new ArrayList<>();
 					userAdminApps =dataAccessService.executeNamedQuery("getAdminAppsForTheUser", userParams, null);
 					if(userAdminApps.size()>=1){
 					isApplicationAccountAdmin=userAdminApps.contains((int) (long) app.getId());
 					logger.debug(EELFLoggerDelegate.debugLogger, "Is account admin for user is true{} ,appId {}", user.getId(),app.getId());
-					}					
+					}
 			} catch (Exception e) {
 			EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeDaoSystemError, e);
 			logger.error(EELFLoggerDelegate.errorLogger,

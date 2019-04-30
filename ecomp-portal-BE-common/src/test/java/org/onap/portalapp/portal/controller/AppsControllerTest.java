@@ -4,6 +4,8 @@
  * ===================================================================
  * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
+ * Modifications Copyright (c) 2019 Samsung
+ * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
  * under the Apache License, Version 2.0 (the "License");
@@ -733,6 +735,7 @@ public class AppsControllerTest extends MockitoTestSuite{
 		expectedFieldValidator.setErrorCode(null);
 		Mockito.when(adminRolesService.isSuperAdmin(user)).thenReturn(true);
 		Mockito.when(appService.modifyOnboardingApp(OnboardingApp, user)).thenReturn(expectedFieldValidator);
+		Mockito.when(mockedResponse.getStatus()).thenReturn(200);
 		FieldsValidator actualFieldValidator = appsController.putOnboardingApp(mockedRequest, OnboardingApp,
 				mockedResponse);
 		assertEquals(expectedFieldValidator, actualFieldValidator);
@@ -758,6 +761,13 @@ public class AppsControllerTest extends MockitoTestSuite{
 		Mockito.when(appService.modifyOnboardingApp(OnboardingApp, user)).thenThrow(nullPointerException);
 		assertNull(appsController.putOnboardingApp(mockedRequest, OnboardingApp, mockedResponse));
 	}
+
+    @Test
+    public void putOnboardingAppNullUserTest() {
+        Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenThrow(nullPointerException);
+        Mockito.when(mockedResponse.getStatus()).thenReturn(200);
+        assertNull(appsController.putOnboardingApp(mockedRequest, new OnboardingApp(), mockedResponse));
+    }
 	
 	@Test
 	public void postOnboardingAppTest() {
