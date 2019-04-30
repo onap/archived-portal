@@ -483,9 +483,13 @@ public class UserRolesCommonServiceImpl  {
 			transaction = localSession.beginTransaction();
 			// Attention! All roles from remote application supposed to be
 			// active!
+
 			@SuppressWarnings("unchecked")
-			List<EPRole> currentAppRoles = localSession
-					.createQuery("from " + EPRole.class.getName() + " where appId=" + appId).list();
+			List<EPRole> currentAppRoles = localSession.createQuery("from :name where appId = :appId")
+					.setParameter("name",EPRole.class.getName())
+					.setParameter("appId",appId)
+					.list();
+
 			List<EPRole> obsoleteRoles = new ArrayList<EPRole>();
 			for (int i = 0; i < currentAppRoles.size(); i++) {
 				EPRole oldAppRole = currentAppRoles.get(i);
