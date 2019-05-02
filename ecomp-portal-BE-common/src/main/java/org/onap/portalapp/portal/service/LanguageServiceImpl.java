@@ -16,6 +16,9 @@
 package org.onap.portalapp.portal.service;
 
 import com.alibaba.fastjson.JSONObject;
+
+import antlr.StringUtils;
+
 import org.onap.portalapp.portal.domain.EPUser;
 import org.onap.portalapp.portal.domain.Language;
 import org.onap.portalsdk.core.service.DataAccessService;
@@ -53,18 +56,31 @@ public class LanguageServiceImpl implements LanguageService {
     public JSONObject getUserLanguage(String loginId) {
         // get language_id from fn_user by loginId
         JSONObject result = new com.alibaba.fastjson.JSONObject();
-        HashMap params = new HashMap();
-        params.put("login_id",loginId);
-        
-        EPUser user = (EPUser) dataAccessService.executeNamedQuery("getEPUserByLoginId",params,new HashMap()).get(0);
-        int languageId = user.getLanguageId();
-        HashMap<String,String> params1 = new HashMap();
-        params1.put("language_id", String.valueOf(languageId));
-        Language language = (Language) dataAccessService.executeNamedQuery("queryLanguageByLanguageId",params1,new HashMap());
-		result.put("languageId",languageId);
-		result.put("languageName",language.getLanguageName());
-		result.put("languageAlias",language.getLanguageAlias());
+        HashMap getUserParams = new HashMap();
+        getUserParams.put("login_id", loginId);
+        List<EPUser> userList= null;
 
+        try {
+            userList = dataAccessService.executeNamedQuery("getEPUserByLoginId", getUserParams, new HashMap());
+            if (userList != null && userList.size() > 0) {
+                EPUser user = userList.get(0);
+                int languageId = user.getLanguageId();
+                result.put("languageId", languageId);
+
+                // get language name and alias from fn_language by languageId
+                HashMap<String,String> getLangParams = new HashMap();
+                getLangParams.put("language_id", String.valueOf(languageId));
+                List<Language> languageList = null;
+
+                languageList = dataAccessService.executeNamedQuery("queryLanguageByLanguageId", getLangParams, new HashMap());
+                if (languageList != null && languageList.size() > 0) {
+                    result.put("languageName", languageList.get(0).getLanguageName());
+                    result.put("languageAlias", languageList.get(0).getLanguageAlias());
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return result;
     }
 }
