@@ -4,6 +4,8 @@
  * ===================================================================
  * Copyright (C) 2017-2018 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
+ *  Modifications Copyright (c) 2019 Samsung
+ * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
  * under the Apache License, Version 2.0 (the "License");
@@ -378,7 +380,7 @@ public class ApplicationsRestClientServiceImpl implements ApplicationsRestClient
 				String str = ((ResponseImpl)response).readEntity(String.class);
 				EcompPortalUtils.logAndSerializeObject(logger, restPath, "POST result =", str);
 				try {
-					t = (T) gson.fromJson(str, t.getClass());
+					t = (T) gson.fromJson(str, clazz);
 
 					//t = gson.fromJson(str, clazz);
 				} catch (Exception e) {

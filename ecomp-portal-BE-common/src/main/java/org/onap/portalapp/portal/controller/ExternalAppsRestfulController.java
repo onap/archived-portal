@@ -4,6 +4,8 @@
  * ===================================================================
  * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
+ *  Modifications Copyright (c) 2019 Samsung
+ * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
  * under the Apache License, Version 2.0 (the "License");
@@ -112,11 +114,13 @@ public class ExternalAppsRestfulController extends EPRestrictedRESTfulBaseContro
 		String appKey = request.getHeader("uebkey");
 		EPApp app = findEpApp(appKey);
 		List<Long> postRoleIds = new ArrayList<Long>();
-		for (Long roleId : notificationItem.getRoleIds()) {
-			EPRole role = epRoleService.getRole(app.getId(), roleId);
-			if (role != null)
-				postRoleIds.add(role.getId());
-		}
+		if (app != null) {
+        for (Long roleId : notificationItem.getRoleIds()) {
+            EPRole role = epRoleService.getRole(app.getId(), roleId);
+            if (role != null)
+                postRoleIds.add(role.getId());
+        }
+    }
 
 		// --- recreate the user notification object with the POrtal Role Ids
 		EpNotificationItem postItem = new EpNotificationItem();
@@ -151,10 +155,10 @@ public class ExternalAppsRestfulController extends EPRestrictedRESTfulBaseContro
 		try {
 			list = this.getDataAccessService().executeNamedQuery("getMyAppDetailsByUebKey", params, null);
 		} catch (Exception e) {
-			logger.error(EELFLoggerDelegate.errorLogger, "getMyAppDetailsByUebKey failed", e);			
+			logger.error(EELFLoggerDelegate.errorLogger, "getMyAppDetailsByUebKey failed", e);
 		}
 			
-		return (list == null || list.size() == 0) ? null : (EPApp) list.get(0);
+		return (list == null || list.isEmpty()) ? null : (EPApp) list.get(0);
 	}
 
 	@ApiOperation(value = "Gets favorite items within the functional menu for the current user.", response = FavoritesFunctionalMenuItemJson.class, responseContainer="List")

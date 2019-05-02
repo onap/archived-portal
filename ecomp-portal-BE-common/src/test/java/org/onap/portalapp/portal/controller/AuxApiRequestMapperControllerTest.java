@@ -639,7 +639,7 @@ public class AuxApiRequestMapperControllerTest {
 		Mockito.when(AopUtils.isAopProxy(Matchers.anyObject())).thenReturn(false);
 		Mockito.when(mockedRequest.getMethod()).thenReturn("POST");
 		EpNotificationItem notificationItem = new EpNotificationItem();
-		assertNull(auxApiRequestMapperController.publishNotification(mockedRequest, notificationItem, mockedResponse));
+		assertNotNull(auxApiRequestMapperController.publishNotification(mockedRequest, notificationItem, mockedResponse));
 	}
 
 	@Test
