@@ -4,6 +4,8 @@
  * ===================================================================
  * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
+ *  Modifications Copyright (c) 2019 Samsung
+ * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
  * under the Apache License, Version 2.0 (the "License");
@@ -38,8 +40,9 @@
 package org.onap.portalapp.portal.controller;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -54,18 +57,15 @@ import javax.servlet.http.HttpServletResponse;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.onap.portalapp.portal.controller.ExternalAppsRestfulController;
 import org.onap.portalapp.portal.core.MockEPUser;
 import org.onap.portalapp.portal.domain.EPApp;
+import org.onap.portalapp.portal.domain.EPRole;
 import org.onap.portalapp.portal.domain.EPUser;
-import org.onap.portalapp.portal.domain.UserRole;
-import org.onap.portalapp.portal.ecomp.model.PortalRestResponse;
-import org.onap.portalapp.portal.ecomp.model.PortalRestStatusEnum;
 import org.onap.portalapp.portal.framework.MockitoTestSuite;
 import org.onap.portalapp.portal.service.AdminRolesService;
 import org.onap.portalapp.portal.service.AdminRolesServiceImpl;
@@ -82,7 +82,6 @@ import org.onap.portalapp.portal.transport.FavoritesFunctionalMenuItemJson;
 import org.onap.portalapp.portal.transport.FunctionalMenuItem;
 import org.onap.portalapp.portal.utils.EPCommonSystemProperties;
 import org.onap.portalapp.portal.utils.EcompPortalUtils;
-import org.onap.portalsdk.core.menu.MenuBuilder;
 import org.onap.portalsdk.core.onboarding.crossapi.PortalAPIResponse;
 import org.onap.portalsdk.core.service.DataAccessService;
 import org.onap.portalsdk.core.service.DataAccessServiceImpl;
@@ -247,88 +246,124 @@ public class ExternalAppsRestfulControllerTest {
 				.getFavoritesForUser(mockedRequest, mockedResponse);
 		assertEquals(actaulFavorites.size(), 1);
 	}
-	
-	@Test(expected=NullPointerException.class)
-	public void publishNotificationTest() throws Exception{
-		EPApp appTest=new EPApp();
-		Mockito.when(mockedRequest.getHeader("uebkey")).thenReturn("RxH3983AHiyBOQmj");
-		appTest.setUebKey("123456");
-		String appKey="123456";
-		EpNotificationItem notificationItem=new EpNotificationItem();
-		List<Long> roleList = new ArrayList<Long>();
-		Long role1 = (long) 1;
-		roleList.add(role1);
-		notificationItem.setRoleIds(roleList);
-		notificationItem.setIsForAllRoles("N");
-		notificationItem.setIsForOnlineUsers("N");
-		notificationItem.setActiveYn("Y");
-		notificationItem.setPriority(1L);
-		notificationItem.setMsgHeader("testHeader");
-		notificationItem.setMsgDescription("Test Description");
-		Date currentDate = new Date();
-		Calendar c = Calendar.getInstance();
-		c.setTime(currentDate);
-		c.add(Calendar.DATE, 1);
-		Date currentDatePlusOne = c.getTime();
-		notificationItem.setStartTime(currentDate);
-		notificationItem.setEndTime(currentDatePlusOne);
-		notificationItem.setCreatedDate(c.getTime());
-		
-		PortalAPIResponse actualPortalRestResponse = new PortalAPIResponse(true, appKey);
-		PortalAPIResponse expectedPortalRestResponse = new PortalAPIResponse(true, appKey);
-		expectedPortalRestResponse.setMessage("SUCCESS");
-		expectedPortalRestResponse.setStatus("ok");
-		Map<String, String> params = new HashMap<>();
-		params.put("appKey", "1234567");
-		
-		Mockito.when(DataAccessService.executeNamedQuery("getMyAppDetailsByUebKey", params, null)).thenReturn(null);
 
-		Mockito.when(userNotificationService.saveNotification(notificationItem)).thenReturn("Test");
-		actualPortalRestResponse = externalAppsRestfulController.publishNotification(mockedRequest, notificationItem);
-		assertTrue(actualPortalRestResponse.equals(expectedPortalRestResponse));
-		
-	}
-	
-	@Test(expected=NullPointerException.class)
-	public void publishNotificationTest1() throws Exception{
-		EpNotificationItem notificationItem=new EpNotificationItem();
-		List<Long> roleList = new ArrayList<Long>();
-		Long role1 = (long) 1;
-		roleList.add(role1);
-		notificationItem.setRoleIds(roleList);
-		notificationItem.setIsForAllRoles("N");
-		notificationItem.setIsForOnlineUsers("N");
-		notificationItem.setActiveYn("Y");
-		notificationItem.setPriority(1L);
-		notificationItem.setMsgHeader("testHeader");
-		notificationItem.setMsgDescription("Test Description");
-		Date currentDate = new Date();
-		Calendar c = Calendar.getInstance();
-		c.setTime(currentDate);
-		c.add(Calendar.DATE, 1);
-		Date currentDatePlusOne = c.getTime();
-		notificationItem.setStartTime(currentDate);
-		notificationItem.setEndTime(currentDatePlusOne);
-		notificationItem.setCreatedDate(c.getTime());
-		
-		//PowerMockito.mockStatic(EPApp.class);
 
-		
-		List<EPApp> appList = new ArrayList<>();
-		EPApp app = mockApp();
-		app.setId((long) 1);
-		appList.add(app);
-		
-		final Map<String, String> appUebkeyParams = new HashMap<>();
-		appUebkeyParams.put("appKey", "test-ueb-key");
-		
-		Mockito.when(DataAccessService.executeNamedQuery("getMyAppDetailsByUebKey", appUebkeyParams, null))
-		.thenReturn(appList);
-		//EPApp epApp=new EPApp();
-		
-		Mockito.when(mockedRequest.getHeader("uebkey")).thenReturn("RxH3983AHiyBOQmj");
+    @Test
+    public void publishNotificationTest_Success() throws Exception {
+        // input
+        EpNotificationItem notificationItem = new EpNotificationItem();
+        List<Long> roleList = new ArrayList<Long>();
+        Long role1 = 1L;
+        roleList.add(role1);
+        notificationItem.setRoleIds(roleList);
+        notificationItem.setPriority(1L);
+        notificationItem.setMsgHeader("testHeader");
+        notificationItem.setMsgDescription("Test Description");
+        Date currentDate = new Date();
+        Calendar c = Calendar.getInstance();
+        c.setTime(currentDate);
+        c.add(Calendar.DATE, 1);
+        Date currentDatePlusOne = c.getTime();
+        notificationItem.setStartTime(currentDate);
+        notificationItem.setEndTime(currentDatePlusOne);
 
-		 externalAppsRestfulController.publishNotification(mockedRequest, notificationItem);
+        // mock calls
+        Mockito.when(mockedRequest.getHeader("uebkey")).thenReturn("RxH3983AHiyBOQmj");
+        Map<String, String> params = new HashMap<>();
+        params.put("appKey", "RxH3983AHiyBOQmj");
+        List<EPApp> apps = new ArrayList<>();
+        EPApp app = new EPApp();
+        app.setId(123L);
+        apps.add(app);
+        Mockito.when(DataAccessService.executeNamedQuery("getMyAppDetailsByUebKey", params, null)).thenReturn(apps);
+        EPRole role = new EPRole();
+        role.setId(543L);
+        Mockito.when(epRoleService.getRole(123L, 1L)).thenReturn(role);
 
-	}
+        // run
+        Mockito.when(userNotificationService.saveNotification(notificationItem)).thenReturn("Test");
+        PortalAPIResponse response = externalAppsRestfulController.publishNotification(mockedRequest, notificationItem);
+        // verify answer
+        assertNotNull(response);
+        assertEquals("ok", response.getStatus());
+        assertEquals("success", response.getMessage());
+        ArgumentCaptor<EpNotificationItem> capture = ArgumentCaptor.forClass(EpNotificationItem.class);
+        Mockito.verify(userNotificationService).saveNotification(capture.capture());
+        assertNotNull(capture.getValue());
+        EpNotificationItem createdNofification = capture.getValue();
+        assertNotNull(createdNofification.getRoleIds());
+        assertEquals(1, createdNofification.getRoleIds().size());
+        assertEquals(543L, createdNofification.getRoleIds().get(0).longValue());
+    }
+
+    @Test
+    public void publishNotificationTest_EmptyAppHeader() throws Exception {
+        // input
+        EpNotificationItem notificationItem = new EpNotificationItem();
+        List<Long> roleList = new ArrayList<Long>();
+        Long role1 = 1L;
+        roleList.add(role1);
+        notificationItem.setRoleIds(roleList);
+        notificationItem.setPriority(1L);
+        notificationItem.setMsgHeader("testHeader");
+        notificationItem.setMsgDescription("Test Description");
+        Date currentDate = new Date();
+        Calendar c = Calendar.getInstance();
+        c.setTime(currentDate);
+        c.add(Calendar.DATE, 1);
+        Date currentDatePlusOne = c.getTime();
+        notificationItem.setStartTime(currentDate);
+        notificationItem.setEndTime(currentDatePlusOne);
+
+        Mockito.when(mockedRequest.getHeader("uebkey")).thenReturn(null);
+        final Map<String, String> params = new HashMap<>();
+        params.put("appKey", null);
+        Mockito.when(DataAccessService.executeNamedQuery("getMyAppDetailsByUebKey", params, null))
+            .thenThrow(NullPointerException.class);
+
+        PortalAPIResponse response = externalAppsRestfulController.publishNotification(mockedRequest, notificationItem);
+        assertNotNull(response);
+        assertEquals("ok", response.getStatus());
+        assertEquals("success", response.getMessage());
+        ArgumentCaptor<EpNotificationItem> capture = ArgumentCaptor.forClass(EpNotificationItem.class);
+        Mockito.verify(userNotificationService).saveNotification(capture.capture());
+        assertNotNull(capture.getValue());
+        EpNotificationItem createdNofification = capture.getValue();
+        assertNotNull(createdNofification.getRoleIds());
+        assertEquals(0, createdNofification.getRoleIds().size());
+    }
+
+    @Test
+    public void publishNotificationTest_ErrorResponse() throws Exception {
+        // input
+        EpNotificationItem notificationItem = new EpNotificationItem();
+        List<Long> roleList = new ArrayList<Long>();
+        Long role1 = 1L;
+        roleList.add(role1);
+        notificationItem.setRoleIds(roleList);
+        notificationItem.setPriority(1L);
+        notificationItem.setMsgHeader("testHeader");
+        notificationItem.setMsgDescription("Test Description");
+        Date currentDate = new Date();
+        Calendar c = Calendar.getInstance();
+        c.setTime(currentDate);
+        c.add(Calendar.DATE, 1);
+        Date currentDatePlusOne = c.getTime();
+        notificationItem.setStartTime(currentDate);
+        notificationItem.setEndTime(currentDatePlusOne);
+
+        Mockito.when(mockedRequest.getHeader("uebkey")).thenReturn(null);
+        final Map<String, String> params = new HashMap<>();
+        params.put("appKey", null);
+        Mockito.when(DataAccessService.executeNamedQuery("getMyAppDetailsByUebKey", params, null))
+            .thenThrow(NullPointerException.class);
+        Mockito.when(userNotificationService.saveNotification(any(EpNotificationItem.class))).
+            thenThrow(new NullPointerException("expected message"));
+
+        PortalAPIResponse response = externalAppsRestfulController.publishNotification(mockedRequest, notificationItem);
+        assertNotNull(response);
+        assertEquals("error", response.getStatus());
+        assertEquals("expected message", response.getMessage());
+    }
+
 }
