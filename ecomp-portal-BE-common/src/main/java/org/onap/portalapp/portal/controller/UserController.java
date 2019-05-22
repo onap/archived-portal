@@ -69,6 +69,8 @@ public class UserController extends EPRestrictedBaseController {
 	@Autowired
 	private UserService userService;
 
+	private static final String HIDDEN_DEFAULT_PASSWORD = "*****";
+
 	/**
 	 * RESTful service method to get ONAP Logged in User details.
 	 * 
@@ -83,7 +85,7 @@ public class UserController extends EPRestrictedBaseController {
 		try {
 			EPUser user = EPUserUtils.getUserSession(request);
 			ProfileDetail profileDetail = new ProfileDetail(user.getFirstName(), user.getLastName(),
-					user.getMiddleInitial(), user.getEmail(), user.getLoginId(),  CipherUtil.decryptPKC(user.getLoginPwd()));
+					user.getMiddleInitial(), user.getEmail(), user.getLoginId(),  HIDDEN_DEFAULT_PASSWORD);
 			portalRestResponse = new PortalRestResponse<ProfileDetail>(PortalRestStatusEnum.OK, "success",
 					profileDetail);
 			EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/loggedinUser", "result =", profileDetail);
@@ -124,7 +126,9 @@ public class UserController extends EPRestrictedBaseController {
 				user.setEmail(profileDetail.getEmail());
 				user.setMiddleInitial(profileDetail.getMiddleName());
 				user.setLoginId(profileDetail.getLoginId());
-				user.setLoginPwd(CipherUtil.encryptPKC(profileDetail.getLoginPassword()));
+				if (!HIDDEN_DEFAULT_PASSWORD.equals(profileDetail.getLoginPassword())){
+					user.setLoginPwd(CipherUtil.encryptPKC(profileDetail.getLoginPassword()));
+				}
 				userService.saveUser(user);
 				// Update user info in the session
 				request.getSession().setAttribute(SystemProperties.getProperty(SystemProperties.USER_ATTRIBUTE_NAME),
