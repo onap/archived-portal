@@ -4,6 +4,8 @@
  * ===================================================================
  * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
+ * Modifications Copyright (c) 2019 Samsung
+ * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
  * under the Apache License, Version 2.0 (the "License");
@@ -38,11 +40,11 @@
 
 package org.onap.portalapp.portal.scheduleraux;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.onap.portalapp.portal.scheduler.policy.rest.RequestDetails;
+import org.onap.portalapp.util.DateUtil;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -51,15 +53,9 @@ public class SchedulerAuxRestInt {
 	
 	/** The logger. */
 	EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(SchedulerAuxRestInterface.class);
-	
-	/** The Constant dateFormat. */
-	final static DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss:SSSS");
-	
-	/** The request date format. */
-	public DateFormat requestDateFormat = new SimpleDateFormat("EEE, dd MMM YYYY HH:mm:ss z");
-	
+
 	public SchedulerAuxRestInt() {
-		requestDateFormat.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
+		DateUtil.getRequestDateFormat().setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
 	}
 
 	/**
@@ -68,6 +64,7 @@ public class SchedulerAuxRestInt {
 	 * @param r the r
 	 */
 	public void logRequest ( RequestDetails r ) {
+		  SimpleDateFormat dateFormat = DateUtil.getDateFormat();
     	String methodName = "logRequest";
 	    ObjectMapper mapper = new ObjectMapper();
 	    String r_json_str = "";
@@ -77,9 +74,13 @@ public class SchedulerAuxRestInt {
 		    	r_json_str = mapper.writeValueAsString(r);
 		    }
 		    catch ( com.fasterxml.jackson.core.JsonProcessingException j ) {
-		    	logger.debug(EELFLoggerDelegate.debugLogger,dateFormat.format(new Date()) + "<== " +  methodName + " Unable to parse request as json");
+		    	logger.debug(EELFLoggerDelegate.debugLogger, dateFormat.format(new Date()) + "<== " +  methodName + " "
+						+ "Unable to "
+						+ "parse request as json");
 		    }
 	    }
-	    logger.debug(EELFLoggerDelegate.debugLogger,dateFormat.format(new Date()) + "<== " +  methodName + " Request=(" + r_json_str + ")");  
+	    logger.debug(EELFLoggerDelegate.debugLogger,dateFormat.format(new Date()) + "<== " +  methodName + " Request="
+				+ "(" +
+				r_json_str + ")");
     }
 }

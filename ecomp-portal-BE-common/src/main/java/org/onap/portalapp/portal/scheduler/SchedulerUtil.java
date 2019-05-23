@@ -4,6 +4,8 @@
  * ===================================================================
  * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
+ * Modifications Copyright (c) 2019 Samsung
+ * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
  * under the Apache License, Version 2.0 (the "License");
@@ -37,25 +39,21 @@
  */
 package org.onap.portalapp.portal.scheduler;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.onap.portalapp.portal.scheduler.restobjects.GetTimeSlotsRestObject;
 import org.onap.portalapp.portal.scheduler.restobjects.PostCreateNewVnfRestObject;
 import org.onap.portalapp.portal.scheduler.restobjects.PostSubmitVnfChangeRestObject;
 import org.onap.portalapp.portal.scheduler.wrapper.GetTimeSlotsWrapper;
 import org.onap.portalapp.portal.scheduler.wrapper.PostCreateNewVnfWrapper;
 import org.onap.portalapp.portal.scheduler.wrapper.PostSubmitVnfChangeTimeSlotsWrapper;
+import org.onap.portalapp.util.DateUtil;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Date;
 
 public class SchedulerUtil {
 	
 	private static EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(SchedulerUtil.class);
-	
-	final static DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss:SSSS");
 
 	public static GetTimeSlotsWrapper getTimeSlotsWrapResponse (GetTimeSlotsRestObject<String> rs) {	
 		
@@ -127,8 +125,10 @@ public class SchedulerUtil {
 		    	r_json_str = mapper.writeValueAsString(t);
 		    }
 		    catch ( com.fasterxml.jackson.core.JsonProcessingException j ) {
-		    	logger.debug(EELFLoggerDelegate.debugLogger,dateFormat.format(new Date()) + "<== " +  methodName + " Unable to parse object as json");
-		    }
+					logger.debug(EELFLoggerDelegate.debugLogger,
+						DateUtil.getDateFormat().format(new Date()) + "<== " + methodName + " Unable " + "to "
+							+ "parse object as json");
+				}
 	    }
 	    return (r_json_str);
 	}

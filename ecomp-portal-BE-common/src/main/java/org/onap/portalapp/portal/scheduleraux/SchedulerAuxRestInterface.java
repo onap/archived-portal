@@ -4,6 +4,8 @@
  * ===================================================================
  * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
+ * Modifications Copyright (c) 2019 Samsung
+ * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
  * under the Apache License, Version 2.0 (the "License");
@@ -37,19 +39,13 @@
  */
 package org.onap.portalapp.portal.scheduleraux;
 
-import java.lang.reflect.Type;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Collections;
-import java.util.Date;
-
-import javax.annotation.PostConstruct;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.Response;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.cxf.jaxrs.impl.ResponseImpl;
 import org.eclipse.jetty.util.security.Password;
@@ -59,25 +55,25 @@ import org.onap.portalapp.portal.logging.logic.EPLogUtil;
 import org.onap.portalapp.portal.scheduler.SchedulerProperties;
 import org.onap.portalapp.portal.scheduler.client.HttpBasicClient;
 import org.onap.portalapp.portal.scheduler.policy.rest.RequestDetails;
+import org.onap.portalapp.util.DateUtil;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpClientErrorException;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedHashMap;
+import javax.ws.rs.core.Response;
+import java.lang.reflect.Type;
+import java.text.SimpleDateFormat;
+import java.util.Collections;
+import java.util.Date;
 
 public class SchedulerAuxRestInterface extends SchedulerAuxRestInt implements SchedulerAuxRestInterfaceIfc {
 
 	/** The logger. */
 	EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(SchedulerAuxRestInterface.class);
-
-	/** The Constant dateFormat. */
-	final static DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss:SSSS");
 
 	/** The client. */
 	private static Client client = null;
@@ -147,6 +143,7 @@ public class SchedulerAuxRestInterface extends SchedulerAuxRestInt implements Sc
 		String methodName = "Get";
 
 		logger.debug(EELFLoggerDelegate.debugLogger, " start", methodName);
+		SimpleDateFormat dateFormat = DateUtil.getDateFormat();
 
 		String url = "";
 		restObject.set(t);
@@ -165,8 +162,8 @@ public class SchedulerAuxRestInterface extends SchedulerAuxRestInt implements Sc
 		if (status == 200) {
 			t = (T) cres.readEntity(t.getClass());
 			restObject.set(t);
-			logger.debug(EELFLoggerDelegate.debugLogger, " REST api was successfull!", dateFormat.format(new Date()),
-					methodName);
+			logger.debug(EELFLoggerDelegate.debugLogger, " REST api was successfull!",
+				dateFormat.format(new Date()), methodName);
 
 		} else {
 			throw new Exception(methodName + " with status=" + status + ", url= " + url);
@@ -183,6 +180,7 @@ public class SchedulerAuxRestInterface extends SchedulerAuxRestInt implements Sc
 		String methodName = "Delete";
 		String url = "";
 		Response cres = null;
+		SimpleDateFormat dateFormat = DateUtil.getDateFormat();
 
 		logRequest(r);
 
@@ -191,7 +189,7 @@ public class SchedulerAuxRestInterface extends SchedulerAuxRestInt implements Sc
 
 			url = SchedulerProperties.getProperty(SchedulerProperties.SCHEDULERAUX_SERVER_URL_VAL) + path;
 			logger.debug(EELFLoggerDelegate.debugLogger, " methodName sending request to: ",
-					dateFormat.format(new Date()), url, methodName);
+				dateFormat.format(new Date()), url, methodName);
 
 			cres = client.target(url).request().accept("application/json").headers(commonHeaders)
 					// .entity(r)
@@ -235,8 +233,8 @@ public class SchedulerAuxRestInterface extends SchedulerAuxRestInt implements Sc
 					url, e);
 			EPLogUtil.schedulerAccessAlarm(logger, e.getStatusCode().value());
 		} catch (Exception e) {
-			logger.error(EELFLoggerDelegate.errorLogger, "Exception with the URL ", dateFormat.format(new Date()),
-					methodName, url, e);
+			logger.error(EELFLoggerDelegate.errorLogger, "Exception with the URL ",
+				dateFormat.format(new Date()), methodName, url, e);
 			EPLogUtil.schedulerAccessAlarm(logger, HttpStatus.INTERNAL_SERVER_ERROR.value());
 
 			throw e;

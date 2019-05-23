@@ -4,6 +4,8 @@
  * ===================================================================
  * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
+ * Modifications Copyright (c) 2019 Samsung
+ * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
  * under the Apache License, Version 2.0 (the "License");
@@ -39,7 +41,6 @@
 package org.onap.portalapp.portal.scheduler.client;
 
 import java.io.File;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -55,8 +56,8 @@ import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.client.ClientProperties;
 import org.onap.portalapp.portal.scheduler.SchedulerProperties;
 import org.onap.portalapp.portal.scheduler.util.CustomJacksonJaxBJsonProvider;
+import org.onap.portalapp.util.DateUtil;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
-import org.onap.portalsdk.core.util.SystemProperties;
 
  /**
   *  General SSL client using the VID tomcat keystore. It doesn't use client certificates.
@@ -66,10 +67,7 @@ public class HttpsBasicClient{
 	
 	/** The logger. */
 	static EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(HttpsBasicClient.class);
-	
-	/** The Constant dateFormat. */
-	final static DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss:SSSS");
-	
+
 	/**
 	 * Retrieve an SSL client.
 	 *
@@ -85,11 +83,14 @@ public class HttpsBasicClient{
 		SSLContext ctx = null;
 		
 		try {
-			
+
+			SimpleDateFormat dateFormat = DateUtil.getDateFormat();
 			config.property(ClientProperties.SUPPRESS_HTTP_COMPLIANCE_VALIDATION, true);
 			
 			String truststore_path = SchedulerProperties.getProperty(SchedulerProperties.VID_TRUSTSTORE_FILENAME);
-			logger.debug(EELFLoggerDelegate.debugLogger, dateFormat.format(new Date()) + " " + methodName + " truststore_path=" + truststore_path);
+			logger.debug(EELFLoggerDelegate.debugLogger, dateFormat.format(new Date()) + " " + methodName + " "
+				+ "truststore_path=" +
+				truststore_path);
 			String truststore_password = SchedulerProperties.getProperty(SchedulerProperties.VID_TRUSTSTORE_PASSWD_X);
 			
 			
@@ -97,7 +98,8 @@ public class HttpsBasicClient{
 			//logger.debug(dateFormat.format(new Date()) + " " + methodName + " decrypted_truststore_password=" + decrypted_truststore_password);
 			
 			File tr = new File (truststore_path);
-			logger.debug(EELFLoggerDelegate.debugLogger, dateFormat.format(new Date()) + " " + methodName + " absolute truststore path=" + tr.getAbsolutePath());
+			logger.debug(EELFLoggerDelegate.debugLogger, dateFormat.format(new Date()) + " " + methodName + " absolute "
+				+ "truststore path=" + tr.getAbsolutePath());
 			
 			//String keystore_path = certFilePath + AAIProperties.FILESEPARTOR + SystemProperties.getProperty(AAIProperties.AAI_KEYSTORE_FILENAME);
 			//String keystore_password = SystemProperties.getProperty(AAIProperties.AAI_KEYSTORE_PASSWD_X);

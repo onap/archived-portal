@@ -4,6 +4,8 @@
  * ===================================================================
  * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
+ * Modifications Copyright (c) 2019 Samsung
+ * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
  * under the Apache License, Version 2.0 (the "License");
@@ -37,18 +39,13 @@
  */
 package org.onap.portalapp.portal.scheduleraux;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-
 import org.glassfish.jersey.client.ClientResponse;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 
 public class SchedulerAuxUtil {
 	
 	private static EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(SchedulerAuxUtil.class);
-	
-	final static DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss:SSSS");
-	
+
 	public static SchedulerAuxResponseWrapper wrapResponse ( String body, int statusCode ) {
 		
 		SchedulerAuxResponseWrapper w = new SchedulerAuxResponseWrapper();

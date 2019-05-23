@@ -2,9 +2,7 @@
  * ============LICENSE_START==========================================
  * ONAP Portal
  * ===================================================================
- * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
- * ===================================================================
- * Modifications Copyright (c) 2019 Samsung
+ * Copyright (c) 2019 Samsung. All rights reserved.
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
@@ -35,20 +33,24 @@
  *
  * ============LICENSE_END============================================
  *
- * 
+ *
  */
 
-package org.onap.portalapp.portal.scheduler;
+package org.onap.portalapp.util;
 
-import org.onap.portalapp.util.DateUtil;
-import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
+import java.text.SimpleDateFormat;
 
-public class SchedulerRestInt {
-	
-	/** The logger. */
-	EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(SchedulerRestInterface.class);
+public class DateUtil {
 
-	public SchedulerRestInt() {
-		DateUtil.getRequestDateFormat().setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
-	}
+    private DateUtil() {
+        throw new IllegalStateException("Utility class");
+    }
+
+    public static SimpleDateFormat getDateFormat() {
+        return new SimpleDateFormat("HH:mm:ss:SSSS");
+    }
+
+    public static SimpleDateFormat getRequestDateFormat(){
+        return new SimpleDateFormat("EEE, dd MMM YYYY HH:mm:ss z");
+    }
 }
