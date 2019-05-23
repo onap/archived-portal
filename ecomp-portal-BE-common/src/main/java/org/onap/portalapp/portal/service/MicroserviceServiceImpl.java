@@ -4,6 +4,8 @@
  * ===================================================================
  * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
+ * Modifications Copyright (c) 2019 Samsung
+ * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
  * under the Apache License, Version 2.0 (the "License");
@@ -41,8 +43,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.crypto.BadPaddingException;
 
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
@@ -196,7 +196,7 @@ public class MicroserviceServiceImpl implements MicroserviceService {
 
 	private String decryptedPassword(String encryptedPwd) throws Exception {
 		String result = "";
-		if (encryptedPwd != null & encryptedPwd.length() > 0) {
+		if (encryptedPwd != null && !encryptedPwd.isEmpty()) {
 			try {
 				result = CipherUtil.decryptPKC(encryptedPwd,
 						SystemProperties.getProperty(SystemProperties.Decryption_Key));
@@ -210,7 +210,7 @@ public class MicroserviceServiceImpl implements MicroserviceService {
 
 	private String encryptedPassword(String decryptedPwd) throws Exception {
 		String result = "";
-		if (decryptedPwd != null & decryptedPwd.length() > 0) {
+		if (decryptedPwd != null && !decryptedPwd.isEmpty()) {
 			try {
 				result = CipherUtil.encryptPKC(decryptedPwd,
 						SystemProperties.getProperty(SystemProperties.Decryption_Key));
