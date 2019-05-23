@@ -4,6 +4,8 @@
  * ===================================================================
  * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
+ * Modifications Copyright (c) 2019 Samsung
+ * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
  * under the Apache License, Version 2.0 (the "License");
@@ -63,7 +65,6 @@ import org.onap.portalapp.portal.domain.AdminUserApplications;
 import org.onap.portalapp.portal.domain.AppIdAndNameTransportModel;
 import org.onap.portalapp.portal.domain.AppsResponse;
 import org.onap.portalapp.portal.domain.EPApp;
-import org.onap.portalapp.portal.domain.EPRole;
 import org.onap.portalapp.portal.domain.EPUser;
 import org.onap.portalapp.portal.domain.EPUserAppRolesRequest;
 import org.onap.portalapp.portal.domain.EPUserAppRolesRequestDetail;
@@ -493,7 +494,7 @@ public class EPAppCommonServiceImpl implements EPAppService {
 		if (onboardingApp.name == null || onboardingApp.name.length() == 0 || onboardingApp.url == null
 				|| onboardingApp.url.length() == 0 || onboardingApp.restrictedApp == null
 				|| onboardingApp.isOpen == null || onboardingApp.isEnabled == null
-				|| (onboardingApp.id != null && onboardingApp.id.equals(ECOMP_APP_ID))
+				|| (onboardingApp.id != null && ECOMP_APP_ID.equals(onboardingApp.id.toString()))
 				// For a normal app (appType == PortalConstants.PortalAppId),
 				// these fields must be filled
 				// in.
@@ -509,7 +510,7 @@ public class EPAppCommonServiceImpl implements EPAppService {
 			if (onboardingApp.name == null || onboardingApp.name.length() == 0 || onboardingApp.url == null
 					|| onboardingApp.url.length() == 0 || onboardingApp.restrictedApp == null
 					|| onboardingApp.isOpen == null || onboardingApp.isEnabled == null
-					|| (onboardingApp.id != null && onboardingApp.id.equals(ECOMP_APP_ID))
+					|| (onboardingApp.id != null && ECOMP_APP_ID.equals(onboardingApp.id.toString()))
 					// For a normal app (appType == PortalConstants.PortalAppId),
 					// these fields must be filled
 					// in.
@@ -1494,7 +1495,7 @@ public class EPAppCommonServiceImpl implements EPAppService {
 	// Don't encrypt or decrypt the password if it is null or the empty string
 	private String decryptedPassword(String encryptedAppPwd, EPApp app) {
 		String result = "";
-		if (encryptedAppPwd != null & encryptedAppPwd.length() > 0) {
+		if (encryptedAppPwd != null && !encryptedAppPwd.isEmpty()) {
 			try {
 				result = CipherUtil.decryptPKC(encryptedAppPwd,
 						SystemProperties.getProperty(SystemProperties.Decryption_Key));
@@ -1507,7 +1508,7 @@ public class EPAppCommonServiceImpl implements EPAppService {
 
 	protected String encryptedPassword(String decryptedAppPwd, EPApp app) {
 		String result = "";
-		if (decryptedAppPwd != null & decryptedAppPwd.length() > 0) {
+		if (decryptedAppPwd != null && !decryptedAppPwd.isEmpty()) {
 			try {
 				result = CipherUtil.encryptPKC(decryptedAppPwd,
 						SystemProperties.getProperty(SystemProperties.Decryption_Key));
