@@ -1,11 +1,61 @@
 .. This work is licensed under a Creative Commons Attribution 4.0 International License.
 .. http://creativecommons.org/licenses/by/4.0
-.. Copyright 2017-2018 AT&T Intellectual Property.  All rights reserved
+.. Copyright 2017-2019 AT&T Intellectual Property.  All rights reserved
 
 
 Portal Platform Release Notes
 =============================
+Version: 2.5.0
+--------------
+:Release Date: 2019-06-13
 
+.. toctree::
+    :maxdepth: 1
+
+We worked on SDK upgrade to integrate with AAF. We partially implemented multi-language.
+
+**New Features**
+        * SDK upgrade to integrate with AAF
+            * Use of CADI
+        * 68% JUnit Test Coverage
+        * Addressing security issues
+        * Internationalization language support - partially implemented
+        * Reporting feature enhancement in portal/sdk - design and partial code changes
+
+**Bug Fixes**
+        * Fixed Sonar reported critical issues.
+
+**Known Issues**
+        * Mismatch while displaying active online user in Portal.
+        * Internationalization Language component partially completed.
+        * Functional Menu change requires manual refresh.
+
+**Security Notes**
+
+PORTAL code has been formally scanned during build time using NexusIQ and all Critical vulnerabilities have been addressed, items that remain open have been assessed for risk and determined to be false positive. The PORTAL open Critical security vulnerabilities and their risk assessment have been documented as part of the `project <https://wiki.onap.org/pages/viewpage.action?pageId=51283057>`_.
+
+Quick Links:
+     - `PORTAL project page <https://wiki.onap.org/display/DW/Portal+Platform+Project>`_
+
+     - `Passing Badge information for PORTAL <https://bestpractices.coreinfrastructure.org/en/projects/1441>`_
+
+     - `Project Vulnerability Review Table for PORTAL <https://wiki.onap.org/pages/viewpage.action?pageId=51283057>`_
+
+**Upgrade Notes**
+        * For https Apps onboarded to portal, a certificate has to be downloaded in the browser when first trying to access the landing page of the App.
+        * For onboarded Apps using http (since Portal is using https) the browser asks the user to click to Proceed to the unsafe URL.
+		* For onboarded Apps using http the icon in the URL bar will appear red, click on it and allow unsafe scripts.
+		
+**Deprecation Notes**
+
+**Other**
+        * Below are the docker images released as part of Portal Platform project:
+        * onap/portal-app:2.5.0
+        * onap/portal-db:2.5.0
+        * onap/portal-sdk:2.5.0
+        * onap/portal-wms:2.5.0
+        * portal/sdk java artifacts - (Release branch: “release-2.5.0”)
+		
 Version: 2.3.2 
 --------------
 :Release Date: 2019-04-15
