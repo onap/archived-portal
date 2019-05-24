@@ -32,6 +32,12 @@ We worked on SDK upgrade to integrate with AAF. We partially implemented multi-l
 
 **Security Notes**
 
+*Fixed Security Issues*
+
+*Known Security Issues*
+
+*Known Vulnerabilities in Used Modules*
+
 PORTAL code has been formally scanned during build time using NexusIQ and all Critical vulnerabilities have been addressed, items that remain open have been assessed for risk and determined to be false positive. The PORTAL open Critical security vulnerabilities and their risk assessment have been documented as part of the `project <https://wiki.onap.org/pages/viewpage.action?pageId=51283057>`_.
 
 Quick Links:
@@ -45,7 +51,7 @@ Quick Links:
         * For https Apps onboarded to portal, a certificate has to be downloaded in the browser when first trying to access the landing page of the App.
         * For onboarded Apps using http (since Portal is using https) the browser asks the user to click to Proceed to the unsafe URL.
 		* For onboarded Apps using http the icon in the URL bar will appear red, click on it and allow unsafe scripts.
-		
+
 **Deprecation Notes**
 
 **Other**
@@ -55,8 +61,8 @@ Quick Links:
         * onap/portal-sdk:2.5.0
         * onap/portal-wms:2.5.0
         * portal/sdk java artifacts - (Release branch: “release-2.5.0”)
-		
-Version: 2.3.2 
+
+Version: 2.3.2
 --------------
 :Release Date: 2019-04-15
 
@@ -67,10 +73,10 @@ This is the official release notes for the Casablanca Maintenance Release 3.0.2.
 
 **Known Issues**
         * The issue is an application running on HTTPS will not open in Portal if the AAF root CA is missing.
-          An error message will appear in a separate tab in Portal. It will say something like: 
-          “The webpage at https://portal.api.simpledemo.onap.org:30200/vid/welcome.htm?cc=........ might 
+          An error message will appear in a separate tab in Portal. It will say something like:
+          “The webpage at https://portal.api.simpledemo.onap.org:30200/vid/welcome.htm?cc=........ might
           be temporarily down or it may have moved permanently to a new web address.”
-          Here is the work-around, copy above VID (or other app) URL and replace welcome.htm to login.htm 
+          Here is the work-around, copy above VID (or other app) URL and replace welcome.htm to login.htm
           in a new browser window; after login come back to Portal home page and click VID, it will now work.
 
         * For applications running on HTTP (for example SDC), the user needs to disable the security check in the browser to access the application.
