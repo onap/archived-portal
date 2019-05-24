@@ -36,6 +36,7 @@ We worked on SDK upgrade to integrate with AAF. We partially implemented multi-l
 
 *Known Security Issues*
 	* In defult deployment PORTAL (portal-app) exposes HTTP port 8989 outside of cluster. [`OJSI-97 <https://jira.onap.org/browse/OJSI-97>`_]
+	* In defult deployment PORTAL (portal-app) exposes HTTP port 30215 outside of cluster. [`OJSI-105 <https://jira.onap.org/browse/OJSI-105>`_]
 
 *Known Vulnerabilities in Used Modules*
 
