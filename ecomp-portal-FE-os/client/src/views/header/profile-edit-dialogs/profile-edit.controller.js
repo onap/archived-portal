@@ -45,7 +45,6 @@
         	this.email ='';
         	this.loginId ='';
         	this.loginPwd ='';
-        	this.confirmLoginPwd=''
         	this.isLoading = false;
         	let getUser  = () => {
         		this.isLoading = true;
@@ -75,12 +74,8 @@
                     	loginId :this.loginId,
                     	loginPassword :this.loginPwd
             		}
-        		if (this.firstName =='' || this.lastName == '' || this.email == '' || this.loginId =='' || this.loginPwd ==''|| this.confirmLoginPwd ==''){
+        		if (this.firstName =='' || this.lastName == '' || this.email == '' || this.loginId =='' || this.loginPwd ==''){
         			var warningMsg = "Please enter a value for all fields marked with *.";
-        			confirmBoxService.showInformation(warningMsg).then(isConfirmed => {return;});
-        			return;
-        		} else if (this.loginPwd != this.confirmLoginPwd) {
-        			var warningMsg = "Passwords do not match, please try again.";
         			confirmBoxService.showInformation(warningMsg).then(isConfirmed => {return;});
         			return;
         		} else {
