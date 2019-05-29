@@ -121,10 +121,9 @@ public class EPUserAppTest {
         
         
         }
-    
+
     @Test
     public void testEquals(){
-        
         EPRole epRole = new EPRole();
         epRole.setId((long) 12345);
         epRole.setName("test");
@@ -132,19 +131,22 @@ public class EPUserAppTest {
         epRole.setPriority(1);
         epRole.setAppId((long)1);
         epRole.setAppRoleId((long)1);
-        
+
         EPUserApp user1 = mockEPUserApp();
         user1.setApp(mockEPApp());
         user1.setRole(epRole);
-        
+
         EPUserApp user2 = mockEPUserApp();
         user2.setApp(mockEPApp());
         user2.setRole(epRole);
-        
+
+        EPUserApp nullUser = null;
+
+        assertTrue(user1.equals(user1));
+        assertFalse(user1.equals(nullUser));
+        assertFalse(user1.equals(Long.valueOf(1)));
         assertTrue(user1.equals(user2));
-        
         }
-    
     private EPApp mockEPApp() {
         EPApp epApp = new EPApp();
         epApp.setId((long) 12345);
