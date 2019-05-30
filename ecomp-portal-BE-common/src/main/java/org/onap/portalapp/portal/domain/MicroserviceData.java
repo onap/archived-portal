@@ -44,6 +44,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import javax.validation.Valid;
+import org.hibernate.validator.constraints.SafeHtml;
 import org.onap.portalsdk.core.domain.support.DomainVo;
 
 public class MicroserviceData extends DomainVo {
@@ -55,23 +57,23 @@ public class MicroserviceData extends DomainVo {
 	}
 
 	private Long id;
-
+	@SafeHtml
 	private String name;
-
+	@SafeHtml
 	private String active;
-
+	@SafeHtml
 	private String desc;
 
 	private long appId;
-
+	@SafeHtml
 	private String url;
-
+	@SafeHtml
 	private String securityType;
-
+	@SafeHtml
 	private String username;
-
+	@SafeHtml
 	private String password;
-
+	@Valid
 	private List<MicroserviceParameter> parameterList;
 
 	public Long getId() {

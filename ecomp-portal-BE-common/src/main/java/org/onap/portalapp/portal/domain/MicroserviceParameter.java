@@ -37,6 +37,7 @@
  */
 package org.onap.portalapp.portal.domain;
 
+import org.hibernate.validator.constraints.SafeHtml;
 import org.onap.portalsdk.core.domain.support.DomainVo;
 
 public class MicroserviceParameter extends DomainVo {
@@ -50,9 +51,9 @@ public class MicroserviceParameter extends DomainVo {
 	private Long id;
 
 	private long serviceId;
-
+	@SafeHtml
 	private String para_key;
-
+	@SafeHtml
 	private String para_value;
 
 	public Long getId() {
