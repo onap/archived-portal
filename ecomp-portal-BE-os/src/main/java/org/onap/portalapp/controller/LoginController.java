@@ -39,6 +39,7 @@ package org.onap.portalapp.controller;
 
 import static com.att.eelf.configuration.Configuration.MDC_KEY_REQUEST_ID;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
@@ -68,8 +69,10 @@ import org.onap.portalsdk.core.menu.MenuProperties;
 import org.onap.portalsdk.core.util.SystemProperties;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StopWatch;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -409,4 +412,9 @@ public class LoginController extends EPUnRestrictedBaseController implements Log
 		this.sharedContextService = sharedContextService;
 	}
 
+	@ExceptionHandler(Exception.class)
+	protected void handleBadRequests(Exception e, HttpServletResponse response) throws IOException {
+		logger.warn(EELFLoggerDelegate.errorLogger, "Handling bad request", e);
+		response.sendError(HttpStatus.BAD_REQUEST.value());
+	}
 }
