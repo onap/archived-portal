@@ -38,6 +38,7 @@ We worked on SDK upgrade to integrate with AAF. We partially implemented multi-l
 
 	* CVE-2019-12317 - Number of XSS vulnerabilities in Portal [`OJSI-15 <https://jira.onap.org/browse/OJSI-15>`_]
 	* CVE-2019-12122 - ONAP Portal allows to retrieve password of currently active user [`OJSI-65 <https://jira.onap.org/browse/OJSI-65>`_]
+	* CVE-2019-12121 - ONAP Portal is vulnerable for Padding Oracle attack [`OJSI-92 <https://jira.onap.org/browse/OJSI-92>`_]
 	* In defult deployment PORTAL (portal-app) exposes HTTP port 8989 outside of cluster. [`OJSI-97 <https://jira.onap.org/browse/OJSI-97>`_]
 	* In defult deployment PORTAL (portal-app) exposes HTTP port 30215 outside of cluster. [`OJSI-105 <https://jira.onap.org/browse/OJSI-105>`_]
 	* In defult deployment PORTAL (portal-sdk) exposes HTTP port 30212 outside of cluster. [`OJSI-106 <https://jira.onap.org/browse/OJSI-106>`_]
