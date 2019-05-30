@@ -1,9 +1,9 @@
-
 /*-
  * ============LICENSE_START==========================================
  * ONAP Portal
  * ===================================================================
  * Copyright © 2017 AT&T Intellectual Property. All rights reserved.
+ * Modifications Copyright (c) 2019 Samsung
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
@@ -36,6 +36,7 @@
  *
  * 
  */
+
 package org.onap.portalapp.filter;
 
 import java.io.BufferedReader;
@@ -48,7 +49,6 @@ import java.util.Enumeration;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ReadListener;
-import javax.servlet.ServletException;
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
@@ -62,7 +62,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 public class SecurityXssFilter extends OncePerRequestFilter {
 
-	private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(SecurityXssFilter.class);
+	private EELFLoggerDelegate sxLogger = EELFLoggerDelegate.getLogger(SecurityXssFilter.class);
 
 	private static final String APPLICATION_JSON = "application/json";
 
@@ -120,40 +120,47 @@ public class SecurityXssFilter extends OncePerRequestFilter {
 
 			@Override
 			public void setReadListener(ReadListener readListener) {
-
+				// do nothing
 			}
-
 		}
 	}
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-			throws ServletException, IOException {
+			throws IOException {
 		StringBuilder requestURL = new StringBuilder(request.getRequestURL().toString());
-	    String queryString = request.getQueryString();
-	    String requestUrl = "";
-	    if (queryString == null) {
-	    	requestUrl = requestURL.toString();
-	    } else {
-	    	requestUrl = requestURL.append('?').append(queryString).toString();
-	    }
-	    validateRequest(requestUrl, response);
+		String queryString = request.getQueryString();
+		String requestUrl;
+
+		if (queryString == null) {
+			requestUrl = requestURL.toString();
+		} else {
+			requestUrl = requestURL.append('?').append(queryString).toString();
+		}
+
+		validateRequest(requestUrl, response);
 		StringBuilder headerValues = new StringBuilder();
 		Enumeration<String> headerNames = request.getHeaderNames();
+
 		while (headerNames.hasMoreElements()) {
-			String key = (String) headerNames.nextElement();
+			String key = headerNames.nextElement();
 			String value = request.getHeader(key);
 			headerValues.append(value);
 		}
+
 		validateRequest(headerValues.toString(), response);
+
 		if (validateRequestType(request)) {
 			request = new RequestWrapper(request);
 			String requestData = IOUtils.toString(request.getInputStream(), StandardCharsets.UTF_8.toString());
 			validateRequest(requestData, response);
-			filterChain.doFilter(request, response);
+		}
 
-		} else {
+		try {
 			filterChain.doFilter(request, response);
+		} catch (Exception e) {
+			sxLogger.warn(EELFLoggerDelegate.errorLogger, "Handling bad request", e);
+			response.sendError(org.springframework.http.HttpStatus.BAD_REQUEST.value(), "Handling bad request");
 		}
 	}
 
@@ -171,9 +178,8 @@ public class SecurityXssFilter extends OncePerRequestFilter {
 				throw new SecurityException(ERROR_BAD_REQUEST);
 			}
 		} catch (Exception e) {
-			logger.error(EELFLoggerDelegate.errorLogger, "doFilterInternal() failed due to BAD_REQUEST", e);
+			sxLogger.error(EELFLoggerDelegate.errorLogger, "doFilterInternal() failed due to BAD_REQUEST", e);
 			response.getWriter().close();
-			return;
 		}
 	}
 }
