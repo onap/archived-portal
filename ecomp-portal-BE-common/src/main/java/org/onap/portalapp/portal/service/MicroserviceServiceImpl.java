@@ -42,8 +42,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.crypto.BadPaddingException;
-
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 import org.onap.portalapp.portal.domain.MicroserviceData;
@@ -75,9 +73,8 @@ public class MicroserviceServiceImpl implements MicroserviceService {
 		return newService.getId();
 	}
 
-	public void saveServiceParameters(long serviceId, List<MicroserviceParameter> list) throws Exception {
-		for (int i = 0; i < list.size(); i++) {
-			MicroserviceParameter para = list.get(i);
+	public void saveServiceParameters(long serviceId, List<MicroserviceParameter> list) {
+		for (MicroserviceParameter para : list) {
 			para.setServiceId(serviceId);
 			getDataAccessService().saveDomainObject(para, null);
 		}
@@ -85,9 +82,9 @@ public class MicroserviceServiceImpl implements MicroserviceService {
 
 	@Override
 	public MicroserviceData getMicroserviceDataById(long id) {
-		MicroserviceData data = null;
+		MicroserviceData data;
 		try {
-			List<Criterion> restrictionsList = new ArrayList<Criterion>();
+			List<Criterion> restrictionsList = new ArrayList<>();
 			Criterion idCriterion = Restrictions.eq("id", id);
 			restrictionsList.add(idCriterion);
 			data = (MicroserviceData) dataAccessService.getList(MicroserviceData.class, null, restrictionsList, null).get(0);
@@ -102,34 +99,35 @@ public class MicroserviceServiceImpl implements MicroserviceService {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<MicroserviceData> getMicroserviceData() throws Exception {
+	public List<MicroserviceData> getMicroserviceData() {
 		List<MicroserviceData> list = (List<MicroserviceData>) dataAccessService.getList(MicroserviceData.class, null);
-		for (int i = 0; i < list.size(); i++) {
-			if (list.get(i).getPassword() != null)
-				list.get(i).setPassword(EPCommonSystemProperties.APP_DISPLAY_PASSWORD);  //to hide password from get request
-			list.get(i).setParameterList(getServiceParameters(list.get(i).getId()));
+		for (MicroserviceData microserviceData : list) {
+			if (microserviceData.getPassword() != null) {
+				microserviceData
+					.setPassword(EPCommonSystemProperties.APP_DISPLAY_PASSWORD);  //to hide password from get request
+			}
+			microserviceData.setParameterList(getServiceParameters(microserviceData.getId()));
 		}
 		return list;
 	}
 
 	private List<MicroserviceParameter> getServiceParameters(long serviceId) {
-		List<MicroserviceParameter> list = getMicroServiceParametersList(serviceId);
-		return list;
+		return getMicroServiceParametersList(serviceId);
 	}
 
 	@SuppressWarnings("unchecked")
 	private List<MicroserviceParameter> getMicroServiceParametersList(long serviceId) {
-		List<Criterion> restrictionsList = new ArrayList<Criterion>();
+		List<Criterion> restrictionsList = new ArrayList<>();
 		Criterion serviceIdCriterion = Restrictions.eq("serviceId", serviceId);
 		restrictionsList.add(serviceIdCriterion);
 		return (List<MicroserviceParameter>) dataAccessService.getList(MicroserviceParameter.class, null, restrictionsList, null);
 	}
 
 	@Override
-	public void deleteMicroservice(long serviceId) throws Exception {
+	public void deleteMicroservice(long serviceId) {
 
 		try {
-			Map<String, String> params = new HashMap<String, String>();
+			Map<String, String> params = new HashMap<>();
 			params.put("serviceId", Long.toString(serviceId));
 
 			dataAccessService.executeNamedQuery("deleteMicroserviceParameter", params, null);
@@ -156,17 +154,16 @@ public class MicroserviceServiceImpl implements MicroserviceService {
 			getDataAccessService().saveDomainObject(newService, null);
 			List<MicroserviceParameter> oldService = getServiceParameters(serviceId);
 			boolean foundParam;
-			for (int i = 0; i < oldService.size(); i++) {
+			for (MicroserviceParameter microserviceParameter : oldService) {
 				foundParam = false;
 				for (int n = 0; n < newService.getParameterList().size(); n++) {
-					if (newService.getParameterList().get(n).getId().equals(oldService.get(i).getId())) {
+					if (newService.getParameterList().get(n).getId().equals(microserviceParameter.getId())) {
 						foundParam = true;
 						break;
 					}
 				}
-				if (foundParam == false) {
-					MicroserviceParameter pd = oldService.get(i);
-					getDataAccessService().deleteDomainObject(pd, null);
+				if (!foundParam) {
+					getDataAccessService().deleteDomainObject(microserviceParameter, null);
 				}
 			}
 			for (int i = 0; i < newService.getParameterList().size(); i++) {
@@ -184,7 +181,7 @@ public class MicroserviceServiceImpl implements MicroserviceService {
 	@Override
 	@SuppressWarnings("unchecked")
 	public List<MicroserviceParameter> getParametersById(long serviceId) {
-		List<Criterion> restrictionsList = new ArrayList<Criterion>();
+		List<Criterion> restrictionsList = new ArrayList<>();
 		Criterion contextIdCrit = Restrictions.eq("serviceId", serviceId);
 		restrictionsList.add(contextIdCrit);
 		List<MicroserviceParameter> list = (List<MicroserviceParameter>) dataAccessService
@@ -196,7 +193,7 @@ public class MicroserviceServiceImpl implements MicroserviceService {
 
 	private String decryptedPassword(String encryptedPwd) throws Exception {
 		String result = "";
-		if (encryptedPwd != null & encryptedPwd.length() > 0) {
+		if (encryptedPwd != null && !encryptedPwd.isEmpty()) {
 			try {
 				result = CipherUtil.decryptPKC(encryptedPwd,
 						SystemProperties.getProperty(SystemProperties.Decryption_Key));
@@ -210,7 +207,7 @@ public class MicroserviceServiceImpl implements MicroserviceService {
 
 	private String encryptedPassword(String decryptedPwd) throws Exception {
 		String result = "";
-		if (decryptedPwd != null & decryptedPwd.length() > 0) {
+		if (decryptedPwd != null && !decryptedPwd.isEmpty()) {
 			try {
 				result = CipherUtil.encryptPKC(decryptedPwd,
 						SystemProperties.getProperty(SystemProperties.Decryption_Key));
