@@ -45,8 +45,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.Valid;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 import org.onap.portalapp.controller.EPRestrictedBaseController;
 import org.onap.portalapp.portal.domain.EPUser;
 import org.onap.portalapp.portal.ecomp.model.PortalRestResponse;
@@ -56,6 +62,7 @@ import org.onap.portalapp.portal.service.DashboardSearchService;
 import org.onap.portalapp.portal.transport.CommonWidget;
 import org.onap.portalapp.portal.transport.CommonWidgetMeta;
 import org.onap.portalapp.util.EPUserUtils;
+import org.onap.portalapp.validation.SecureString;
 import org.onap.portalsdk.core.domain.support.CollaborateList;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,6 +75,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/portalApi/search")
 public class DashboardSearchResultController extends EPRestrictedBaseController {
+	private static final ValidatorFactory VALIDATOR_FACTORY = Validation.buildDefaultValidatorFactory();
 
 	private static EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(DashboardSearchResultController.class);
 
@@ -85,8 +93,11 @@ public class DashboardSearchResultController extends EPRestrictedBaseController 
 	@RequestMapping(value = "/widgetData", method = RequestMethod.GET, produces = "application/json")
 	public PortalRestResponse<CommonWidgetMeta> getWidgetData(HttpServletRequest request,
 			@RequestParam String resourceType) {
-		return new PortalRestResponse<CommonWidgetMeta>(PortalRestStatusEnum.OK, "success",
-				searchService.getWidgetData(resourceType));
+		if (stringIsNotSafeHtml(resourceType)) {
+				return new PortalRestResponse(PortalRestStatusEnum.ERROR, "resourceType: String string is not valid", "");
+		}
+		return new PortalRestResponse<>(PortalRestStatusEnum.OK, "success",
+			searchService.getWidgetData(resourceType));
 	}
 
 	/**
@@ -97,19 +108,26 @@ public class DashboardSearchResultController extends EPRestrictedBaseController 
 	 * @return Rest response wrapped around a String; e.g., "success" or "ERROR"
 	 */
 	@RequestMapping(value = "/widgetDataBulk", method = RequestMethod.POST, produces = "application/json")
-	public PortalRestResponse<String> saveWidgetDataBulk(@RequestBody CommonWidgetMeta commonWidgetMeta) {
+	public PortalRestResponse<String> saveWidgetDataBulk(@Valid @RequestBody CommonWidgetMeta commonWidgetMeta) {
 		logger.debug(EELFLoggerDelegate.debugLogger, "saveWidgetDataBulk: argument is {}", commonWidgetMeta);
-		if (commonWidgetMeta.getCategory() == null || commonWidgetMeta.getCategory().trim().equals(""))
-			return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, "ERROR",
-					"Category cannot be null or empty");
+		if (commonWidgetMeta.getCategory() == null || commonWidgetMeta.getCategory().trim().equals("")){
+			return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, "ERROR",
+				"Cateogry cannot be null or empty");
+		}else {
+			Validator validator = VALIDATOR_FACTORY.getValidator();
+			Set<ConstraintViolation<CommonWidgetMeta>> constraintViolations = validator.validate(commonWidgetMeta);
+			if (!constraintViolations.isEmpty())
+				return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, "ERROR",
+					"Category is not valid");
+		}
 		// validate dates
 		for (CommonWidget cw : commonWidgetMeta.getItems()) {
 			String err = validateCommonWidget(cw);
 			if (err != null)
-				return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, err, null);
+				return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, err, null);
 		}
-		return new PortalRestResponse<String>(PortalRestStatusEnum.OK, "success",
-				searchService.saveWidgetDataBulk(commonWidgetMeta));
+		return new PortalRestResponse<>(PortalRestStatusEnum.OK, "success",
+			searchService.saveWidgetDataBulk(commonWidgetMeta));
 	}
 
 	/**
@@ -120,16 +138,23 @@ public class DashboardSearchResultController extends EPRestrictedBaseController 
 	 * @return Rest response wrapped around a String; e.g., "success" or "ERROR"
 	 */
 	@RequestMapping(value = "/widgetData", method = RequestMethod.POST, produces = "application/json")
-	public PortalRestResponse<String> saveWidgetData(@RequestBody CommonWidget commonWidget) {
+	public PortalRestResponse<String> saveWidgetData(@Valid @RequestBody CommonWidget commonWidget) {
 		logger.debug(EELFLoggerDelegate.debugLogger, "saveWidgetData: argument is {}", commonWidget);
-		if (commonWidget.getCategory() == null || commonWidget.getCategory().trim().equals(""))
-			return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, "ERROR",
-					"Cateogry cannot be null or empty");
+		if (commonWidget.getCategory() == null || commonWidget.getCategory().trim().equals("")){
+			return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, "ERROR",
+				"Category cannot be null or empty");
+		}else {
+			Validator validator = VALIDATOR_FACTORY.getValidator();
+			Set<ConstraintViolation<CommonWidget>> constraintViolations = validator.validate(commonWidget);
+			if (!constraintViolations.isEmpty())
+				return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, "ERROR",
+					"Category is not valid");
+		}
 		String err = validateCommonWidget(commonWidget);
 		if (err != null)
-			return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, err, null);
-		return new PortalRestResponse<String>(PortalRestStatusEnum.OK, "success",
-				searchService.saveWidgetData(commonWidget));
+			return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, err, null);
+		return new PortalRestResponse<>(PortalRestStatusEnum.OK, "success",
+			searchService.saveWidgetData(commonWidget));
 	}
 
 	/**
@@ -162,10 +187,17 @@ public class DashboardSearchResultController extends EPRestrictedBaseController 
 	 * @return Rest response wrapped around a String; e.g., "success" or "ERROR"
 	 */
 	@RequestMapping(value = "/deleteData", method = RequestMethod.POST, produces = "application/json")
-	public PortalRestResponse<String> deleteWidgetData(@RequestBody CommonWidget commonWidget) {
+	public PortalRestResponse<String> deleteWidgetData(@Valid @RequestBody CommonWidget commonWidget) {
+		if (commonWidget!=null){
+			Validator validator = VALIDATOR_FACTORY.getValidator();
+			Set<ConstraintViolation<CommonWidget>> constraintViolations = validator.validate(commonWidget);
+			if (!constraintViolations.isEmpty())
+				return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, "ERROR",
+					"CommonWidget is not valid");
+		}
 		logger.debug(EELFLoggerDelegate.debugLogger, "deleteWidgetData: argument is {}", commonWidget);
-		return new PortalRestResponse<String>(PortalRestStatusEnum.OK, "success",
-				searchService.deleteWidgetData(commonWidget));
+		return new PortalRestResponse<>(PortalRestStatusEnum.OK, "success",
+			searchService.deleteWidgetData(commonWidget));
 	}
 
 	/**
@@ -185,11 +217,14 @@ public class DashboardSearchResultController extends EPRestrictedBaseController 
 			if (user == null) {
 				return new PortalRestResponse<>(PortalRestStatusEnum.ERROR,
 						"searchPortal: User object is null? - check logs",
-						new HashMap<String, List<SearchResultItem>>());
+					new HashMap<>());
 			} else if (searchString == null || searchString.trim().length() == 0) {
 				return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, "searchPortal: String string is null",
-						new HashMap<String, List<SearchResultItem>>());
-			} else {
+					new HashMap<>());
+			}else if (stringIsNotSafeHtml(searchString)){
+					return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, "searchPortal: String string is not valid",
+						new HashMap<>());
+			}else {
 				logger.debug(EELFLoggerDelegate.debugLogger, "searchPortal: user {}, search string '{}'",
 						user.getLoginId(), searchString);
 				Map<String, List<SearchResultItem>> results = searchService.searchResults(user.getLoginId(),
@@ -199,7 +234,7 @@ public class DashboardSearchResultController extends EPRestrictedBaseController 
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "searchPortal failed", e);
 			return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, e.getMessage() + " - check logs.",
-					new HashMap<String, List<SearchResultItem>>());
+				new HashMap<>());
 		}
 	}
 
@@ -256,6 +291,15 @@ public class DashboardSearchResultController extends EPRestrictedBaseController 
 			return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, e.getMessage() + " - check logs.",
 					new ArrayList<>());
 		}
+	}
+
+	private boolean stringIsNotSafeHtml(String string){
+		SecureString secureString = new SecureString(string);
+
+		Validator validator = VALIDATOR_FACTORY.getValidator();
+
+		Set<ConstraintViolation<SecureString>> constraintViolations = validator.validate(secureString);
+		return !constraintViolations.isEmpty();
 	}
 
 }

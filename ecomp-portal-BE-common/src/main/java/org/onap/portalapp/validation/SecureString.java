@@ -33,39 +33,23 @@
  *
  * ============LICENSE_END============================================
  *
- * 
+ *
  */
-package org.onap.portalapp.portal.transport;
 
-import java.util.List;
-import javax.validation.Valid;
+package org.onap.portalapp.validation;
+
 import org.hibernate.validator.constraints.SafeHtml;
 
-public class CommonWidgetMeta {
-	@SafeHtml
-	private String category;
-	@Valid
-	private List<CommonWidget> items;
+public class SecureString {
 
-	public CommonWidgetMeta(){
+       @SafeHtml
+       private String string;
 
-	}
+       public SecureString(String string) {
+              this.string = string;
+       }
 
-	public CommonWidgetMeta(String category, List<CommonWidget> items){
-		this.category = category;
-		this.items = items;
-	}
-	
-	public String getCategory() {
-		return category;
-	}
-	public void setCategory(String category) {
-		this.category = category;
-	}
-	public List<CommonWidget> getItems() {
-		return items;
-	}
-	public void setItems(List<CommonWidget> items) {
-		this.items = items;
-	}
+       public String getString() {
+              return string;
+       }
 }
