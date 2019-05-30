@@ -41,6 +41,8 @@ import java.util.Iterator;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import javax.validation.Valid;
+import org.hibernate.validator.constraints.SafeHtml;
 import org.onap.portalsdk.core.domain.RoleFunction;
 import org.onap.portalsdk.core.domain.support.DomainVo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -48,6 +50,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class EPRole extends DomainVo {
 
 	private static final long serialVersionUID = 1L;
+	@SafeHtml
 	private String  name;
     private boolean active;
     private Integer priority;
@@ -57,7 +60,7 @@ public class EPRole extends DomainVo {
     private Long appRoleId; // used by ONAP only
 
     private SortedSet<RoleFunction>     roleFunctions = new TreeSet<RoleFunction>();
-    
+    @Valid
     private SortedSet<EPRole> childRoles = new TreeSet<EPRole>();
     
     @JsonIgnore

@@ -37,6 +37,7 @@
  */
 package org.onap.portalapp.portal.domain;
 
+import org.hibernate.validator.constraints.SafeHtml;
 import org.onap.portalsdk.core.domain.support.DomainVo;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -46,10 +47,15 @@ public class AppContactUs extends DomainVo {
 	private static final long serialVersionUID = -2742197830465055134L;
 
 	@JsonBackReference private EPApp app;
+	@SafeHtml
 	private String description;
+	@SafeHtml
 	private String contactEmail;
+	@SafeHtml
 	private String contactName;
+	@SafeHtml
 	private String url;
+	@SafeHtml
 	private String activeYN;
 
 	public EPApp getApp() {

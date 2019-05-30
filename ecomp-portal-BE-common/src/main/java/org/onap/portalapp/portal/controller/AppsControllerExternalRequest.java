@@ -39,9 +39,15 @@ package org.onap.portalapp.portal.controller;
 
 import java.util.List;
 
+import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.Valid;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 import org.onap.portalapp.portal.domain.EPApp;
 import org.onap.portalapp.portal.domain.EPUser;
 import org.onap.portalapp.portal.ecomp.model.PortalRestResponse;
@@ -88,15 +94,11 @@ import io.swagger.annotations.ApiOperation;
 @EnableAspectJAutoProxy
 @EPAuditLog
 public class AppsControllerExternalRequest implements BasicAuthenticationController {
+	private static final ValidatorFactory VALIDATOR_FACTORY = Validation.buildDefaultValidatorFactory();
 
 	private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(AppsControllerExternalRequest.class);
 
 	private static final String ONBOARD_APP = "/onboardApp";
-
-	// Where is this used?
-	public boolean isAuxRESTfulCall() {
-		return true;
-	}
 
 	/**
 	 * For testing whether a user is a superadmin.
@@ -145,9 +147,19 @@ public class AppsControllerExternalRequest implements BasicAuthenticationControl
 	@RequestMapping(value = "/portalAdmin", method = RequestMethod.POST, produces = "application/json")
 	@ResponseBody
 	public PortalRestResponse<String> postPortalAdmin(HttpServletRequest request, HttpServletResponse response,
-			@RequestBody EPUser epUser) {
+			@Valid @RequestBody EPUser epUser) {
 		EcompPortalUtils.logAndSerializeObject(logger, "postPortalAdmin", "request", epUser);
 		PortalRestResponse<String> portalResponse = new PortalRestResponse<>();
+
+		if (epUser!=null){
+			Validator validator = VALIDATOR_FACTORY.getValidator();
+			Set<ConstraintViolation<EPUser>> constraintViolations = validator.validate(epUser);
+			if (!constraintViolations.isEmpty()){
+				portalResponse.setStatus(PortalRestStatusEnum.ERROR);
+				portalResponse.setMessage("Data is not valid");
+				return portalResponse;
+			}
+		}
 
 		// Check mandatory fields.
 		if (epUser.getEmail() == null || epUser.getEmail().trim().length() == 0 //
@@ -248,10 +260,18 @@ public class AppsControllerExternalRequest implements BasicAuthenticationControl
 	@RequestMapping(value = { ONBOARD_APP }, method = RequestMethod.POST, produces = "application/json")
 	@ResponseBody
 	public PortalRestResponse<String> postOnboardAppExternal(HttpServletRequest request, HttpServletResponse response,
-			@RequestBody OnboardingApp newOnboardApp) {
+			@Valid @RequestBody OnboardingApp newOnboardApp) {
 		EcompPortalUtils.logAndSerializeObject(logger, "postOnboardAppExternal", "request", newOnboardApp);
 		PortalRestResponse<String> portalResponse = new PortalRestResponse<>();
-
+		if (newOnboardApp != null){
+			Validator validator = VALIDATOR_FACTORY.getValidator();
+			Set<ConstraintViolation<OnboardingApp>> constraintViolations = validator.validate(newOnboardApp);
+			if (!constraintViolations.isEmpty()){
+				portalResponse.setStatus(PortalRestStatusEnum.ERROR);
+				portalResponse.setMessage("Data is not valid");
+				return portalResponse;
+			}
+		}
 		// Validate fields
 		if (newOnboardApp.id != null) {
 			portalResponse.setStatus(PortalRestStatusEnum.ERROR);
@@ -335,9 +355,20 @@ public class AppsControllerExternalRequest implements BasicAuthenticationControl
 	@RequestMapping(value = { ONBOARD_APP + "/{appId}" }, method = RequestMethod.PUT, produces = "application/json")
 	@ResponseBody
 	public PortalRestResponse<String> putOnboardAppExternal(HttpServletRequest request, HttpServletResponse response,
-			@PathVariable("appId") Long appId, @RequestBody OnboardingApp oldOnboardApp) {
+			@PathVariable("appId") Long appId, @Valid @RequestBody OnboardingApp oldOnboardApp) {
 		EcompPortalUtils.logAndSerializeObject(logger, "putOnboardAppExternal", "request", oldOnboardApp);
 		PortalRestResponse<String> portalResponse = new PortalRestResponse<>();
+
+		if (oldOnboardApp != null){
+			Validator validator = VALIDATOR_FACTORY.getValidator();
+			Set<ConstraintViolation<OnboardingApp>> constraintViolations = validator.validate(oldOnboardApp);
+			if (!constraintViolations.isEmpty()){
+				portalResponse.setStatus(PortalRestStatusEnum.ERROR);
+				portalResponse.setMessage("Data is not valid");
+				return portalResponse;
+			}
+		}
+
 		// Validate fields.
 		if (oldOnboardApp.id == null || !appId.equals(oldOnboardApp.id)) {
 			portalResponse.setStatus(PortalRestStatusEnum.ERROR);
