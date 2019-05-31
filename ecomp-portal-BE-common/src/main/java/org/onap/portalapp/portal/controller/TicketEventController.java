@@ -47,6 +47,10 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 import org.onap.portalapp.portal.domain.EPUser;
 import org.onap.portalapp.portal.ecomp.model.PortalRestResponse;
 import org.onap.portalapp.portal.ecomp.model.PortalRestStatusEnum;
@@ -56,6 +60,7 @@ import org.onap.portalapp.portal.service.UserNotificationService;
 import org.onap.portalapp.portal.transport.EpNotificationItem;
 import org.onap.portalapp.portal.transport.EpRoleNotificationItem;
 import org.onap.portalapp.portal.utils.PortalConstants;
+import org.onap.portalapp.validation.SecureString;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -80,7 +85,7 @@ import io.swagger.annotations.ApiOperation;
 @EnableAspectJAutoProxy
 @EPAuditLog
 public class TicketEventController implements BasicAuthenticationController {
-
+	private static final ValidatorFactory VALIDATOR_FACTORY = Validation.buildDefaultValidatorFactory();
 
 	@Autowired
 	private UserNotificationService userNotificationService;
@@ -105,6 +110,19 @@ public class TicketEventController implements BasicAuthenticationController {
 
 		logger.debug(EELFLoggerDelegate.debugLogger, "Ticket Event notification" + ticketEventJson);
 		PortalRestResponse<String> portalResponse = new PortalRestResponse<>();
+
+		if (ticketEventJson!=null){
+			SecureString secureString = new SecureString(ticketEventJson);
+			Validator validator = VALIDATOR_FACTORY.getValidator();
+
+			Set<ConstraintViolation<SecureString>> constraintViolations = validator.validate(secureString);
+			if (!constraintViolations.isEmpty()){
+				portalResponse.setStatus(PortalRestStatusEnum.ERROR);
+				portalResponse.setMessage("Data is not valid");
+				return portalResponse;
+			}
+		}
+
 		try {
 			JsonNode ticketEventNotif = mapper.readTree(ticketEventJson);
 
