@@ -176,6 +176,17 @@ public class AppsOSControllerTest {
 	}
 
 	@Test
+	public void getCurrentUserProfileXSSTest() {
+		String loginId = "<iframe/src=\"data:text/html,<svg &#111;&#110;load=alert(1)>\">";
+		EPUser user = mockUser.mockEPUser();
+		List<EPUser> expectedList = new ArrayList<>();
+		expectedList.add(user);
+		Mockito.when(userService.getUserByUserId(loginId)).thenReturn(expectedList);
+		String expectedString = appsOSController.getCurrentUserProfile(mockedRequest, loginId);
+		assertEquals("loginId is not valid", expectedString);
+	}
+
+	@Test
 	public void getCurrentUserProfileExceptionTest() {
 		String loginId = "guestT";
 		EPUser user = mockUser.mockEPUser();

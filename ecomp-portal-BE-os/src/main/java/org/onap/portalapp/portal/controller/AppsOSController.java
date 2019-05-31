@@ -40,8 +40,13 @@ package org.onap.portalapp.portal.controller;
 import java.util.HashMap;
 import java.util.Map;
 
+import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 import org.json.JSONObject;
 import org.onap.portalapp.portal.controller.AppsController;
 import org.onap.portalapp.portal.domain.EPUser;
@@ -53,6 +58,7 @@ import org.onap.portalapp.portal.service.EPAppService;
 import org.onap.portalapp.portal.service.PersUserAppService;
 import org.onap.portalapp.portal.service.UserService;
 import org.onap.portalapp.util.EPUserUtils;
+import org.onap.portalapp.validation.SecureString;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
@@ -67,6 +73,7 @@ import org.springframework.web.bind.annotation.RestController;
 @EnableAspectJAutoProxy
 @EPAuditLog
 public class AppsOSController extends AppsController {
+	private static final ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
 	
 	static final String FAILURE = "failure";
 	EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(AppsOSController.class);
@@ -113,9 +120,20 @@ public class AppsOSController extends AppsController {
 	
 	@RequestMapping(value = { "/portalApi/currentUserProfile/{loginId}" }, method = RequestMethod.GET, produces = "application/json")
 	public String getCurrentUserProfile(HttpServletRequest request, @PathVariable("loginId") String loginId) {
+
+		if(loginId != null){
+			Validator validator = validatorFactory.getValidator();
+			SecureString secureString = new SecureString(loginId);
+			Set<ConstraintViolation<SecureString>> constraintViolations = validator.validate(secureString);
+
+			if (!constraintViolations.isEmpty()){
+				return "loginId is not valid";
+			}
+		}
+
 		
-		Map<String,String> map = new HashMap<String,String>();
-		EPUser user = null;
+		Map<String,String> map = new HashMap<>();
+		EPUser user;
 		try {
 			 user = (EPUser) userService.getUserByUserId(loginId).get(0);
 			 map.put("firstName", user.getFirstName());
@@ -128,7 +146,7 @@ public class AppsOSController extends AppsController {
 			logger.error(EELFLoggerDelegate.errorLogger, "Failed to get user info", e);
 		}
 
-		JSONObject j = new JSONObject(map);;
+		JSONObject j = new JSONObject(map);
 		return j.toString();
 	}
 
