@@ -39,6 +39,7 @@ package org.onap.portalapp.portal.domain;
 
 import java.io.Serializable;
 
+import org.hibernate.validator.constraints.SafeHtml;
 import org.onap.portalsdk.core.domain.support.DomainVo;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -50,14 +51,18 @@ public class CentralV2RoleFunction extends DomainVo implements Serializable, Com
 	 * 
 	 */
 	private static final long serialVersionUID = -4018975640065252688L;
+		@SafeHtml
 	   private String code;
+		@SafeHtml
 	   private String name;
 	   @JsonIgnore
 	   private Long appId;
 	   @JsonIgnore
 	   private Long roleId;
 	   private String type;
+	   @SafeHtml
 	   private String action;
+	   @SafeHtml
 	   private String editUrl;
 	   
 	   

@@ -50,6 +50,11 @@ import java.util.TreeSet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.Valid;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 import org.apache.commons.lang.StringUtils;
 import org.json.JSONObject;
 import org.onap.portalapp.controller.EPRestrictedBaseController;
@@ -79,6 +84,7 @@ import org.onap.portalapp.portal.utils.EPCommonSystemProperties;
 import org.onap.portalapp.portal.utils.EcompPortalUtils;
 import org.onap.portalapp.portal.utils.PortalConstants;
 import org.onap.portalapp.util.EPUserUtils;
+import org.onap.portalapp.validation.SecureString;
 import org.onap.portalsdk.core.domain.AuditLog;
 import org.onap.portalsdk.core.domain.Role;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
@@ -111,6 +117,8 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 @EnableAspectJAutoProxy
 @EPAuditLog
 public class RoleManageController extends EPRestrictedBaseController {
+	private static final ValidatorFactory VALIDATOR_FACTORY = Validation.buildDefaultValidatorFactory();
+
 	private static final String PIPE = "|";
 
 	private static final String ROLE_INVALID_CHARS = "%=():,\"\"";
@@ -497,8 +505,17 @@ public class RoleManageController extends EPRestrictedBaseController {
 	}
 
 	@RequestMapping(value = { "/portalApi/role_function_list/saveRoleFunction/{appId}" }, method = RequestMethod.POST)
-	public PortalRestResponse<String> saveRoleFunction(HttpServletRequest request, HttpServletResponse response, @RequestBody CentralV2RoleFunction roleFunc,
+	public PortalRestResponse<String> saveRoleFunction(HttpServletRequest request, HttpServletResponse response, @Valid @RequestBody CentralV2RoleFunction roleFunc,
 			@PathVariable("appId") Long appId) throws Exception {
+		if (roleFunc!=null) {
+			Validator validator = VALIDATOR_FACTORY.getValidator();
+			Set<ConstraintViolation<CentralV2RoleFunction>> constraintViolations = validator.validate(roleFunc);
+
+			if(!constraintViolations.isEmpty()){
+				logger.error(EELFLoggerDelegate.errorLogger, "saveRoleFunction: Failed");
+				return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, "Data is not valid", "ERROR");
+			}
+		}
 		EPUser user = EPUserUtils.getUserSession(request);
 		boolean saveOrUpdateResponse = false;
 		try {
@@ -594,6 +611,19 @@ public class RoleManageController extends EPRestrictedBaseController {
 	public PortalRestResponse<String> removeRoleFunction(HttpServletRequest request, HttpServletResponse response,
 			@RequestBody String roleFunc, @PathVariable("appId") Long appId) throws Exception {
 		EPUser user = EPUserUtils.getUserSession(request);
+
+		if (roleFunc!=null) {
+			SecureString secureString = new SecureString(roleFunc);
+
+			Validator validator = VALIDATOR_FACTORY.getValidator();
+			Set<ConstraintViolation<SecureString>> constraintViolations = validator.validate(secureString);
+
+			if(!constraintViolations.isEmpty()){
+				logger.error(EELFLoggerDelegate.errorLogger, "removeRoleFunction: Failed");
+				return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, "Data is not valid", "ERROR");
+			}
+		}
+
 		try {
 			EPApp requestedApp = appService.getApp(appId);
 			if (isAuthorizedUser(user, requestedApp)) {
@@ -656,6 +686,18 @@ public class RoleManageController extends EPRestrictedBaseController {
 
 	@RequestMapping(value = { "/portalApi/centralizedApps" }, method = RequestMethod.GET)
 	public List<CentralizedApp> getCentralizedAppRoles(HttpServletRequest request, HttpServletResponse response, String userId) throws IOException {
+		if(userId!=null) {
+			SecureString secureString = new SecureString(userId);
+
+			Validator validator = VALIDATOR_FACTORY.getValidator();
+			Set<ConstraintViolation<SecureString>> constraintViolations = validator.validate(secureString);
+
+			if(!constraintViolations.isEmpty()){
+				logger.error(EELFLoggerDelegate.errorLogger, "removeRoleFunction: Failed");
+				return null;
+			}
+		}
+
 		EPUser user = EPUserUtils.getUserSession(request);
 		List<CentralizedApp> applicationsList = null;
 			if (adminRolesService.isAccountAdmin(user) || adminRolesService.isSuperAdmin(user) || adminRolesService.isRoleAdmin(user)) {
