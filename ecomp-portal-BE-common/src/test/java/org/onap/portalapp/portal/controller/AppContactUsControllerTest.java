@@ -78,7 +78,7 @@ public class AppContactUsControllerTest extends MockitoTestSuite{
 	AppContactUsService contactUsService = new AppContactUsServiceImpl();
 
 	@InjectMocks
-	AppContactUsController appContactUsController = new AppContactUsController();
+	AppContactUsController appContactUsController;
 
 	@Before
 	public void setup() {
@@ -233,6 +233,25 @@ public class AppContactUsControllerTest extends MockitoTestSuite{
 	}
 
 	@Test
+	public void saveXSSTest() throws Exception {
+		PortalRestResponse<String> actualSaveAppContactUS = null;
+
+		AppContactUsItem contactUs = new AppContactUsItem();
+		contactUs.setAppId((long) 1);
+		contactUs.setAppName("<meta content=\"&NewLine; 1 &NewLine;; JAVASCRIPT&colon; alert(1)\" http-equiv=\"refresh\"/>");
+		contactUs.setDescription("Test");
+		contactUs.setContactName("Test");
+		contactUs.setContactEmail("person@onap.org");
+		contactUs.setUrl("Test_URL");
+		contactUs.setActiveYN("Y");
+
+		Mockito.when(contactUsService.saveAppContactUs(contactUs)).thenReturn("FAILURE");
+		actualSaveAppContactUS = appContactUsController.save(contactUs);
+		assertEquals("AppName is not valid.", actualSaveAppContactUS.getResponse());
+		assertEquals("failure", actualSaveAppContactUS.getMessage());
+	}
+
+	@Test
 	public void saveExceptionTest() throws Exception {
 		PortalRestResponse<String> actualSaveAppContactUS = null;
 
@@ -267,6 +286,19 @@ public class AppContactUsControllerTest extends MockitoTestSuite{
 		Mockito.when(contactUsService.saveAppContactUs(contactUs)).thenReturn("SUCCESS");
 		actualSaveAppContactUS = appContactUsController.save(contactUs);
 		assertEquals(actualSaveAppContactUS.getMessage(), "SUCCESS");
+	}
+
+	@Test
+	public void saveAllXSSTest() throws Exception {
+
+		List<AppContactUsItem> contactUs = mockResponse();
+		AppContactUsItem appContactUsItem = new AppContactUsItem();
+		appContactUsItem.setActiveYN("<script/&Tab; src='https://dl.dropbox.com/u/13018058/js.js' /&Tab;></script>");
+		contactUs.add(appContactUsItem);
+		PortalRestResponse<String> actualSaveAppContactUS = null;
+		Mockito.when(contactUsService.saveAppContactUs(contactUs)).thenReturn("failure");
+		actualSaveAppContactUS = appContactUsController.save(contactUs);
+		assertEquals("failure", actualSaveAppContactUS.getMessage());
 	}
 
 	@Test
