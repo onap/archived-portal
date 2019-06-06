@@ -68,7 +68,7 @@ import org.springframework.web.client.RestClientException;
 public class WidgetsControllerTest  extends MockitoTestSuite{
 
 	@InjectMocks
-	WidgetsController widgetsController = new WidgetsController();
+	WidgetsController widgetsController;
 	
 	@Mock
 	private AdminRolesService rolesService;
@@ -150,7 +150,7 @@ public class WidgetsControllerTest  extends MockitoTestSuite{
 		OnboardingWidget onboardingWidget=new OnboardingWidget();
 		onboardingWidget.id=12L;
 		onboardingWidget.normalize();
-		//Mockito.doNothing().when(onboardingWidget).normalize();	
+		//Mockito.doNothing().when(onboardingWidget).normalize();
 		FieldsValidator expectedFieldValidator = new FieldsValidator();
 		List<FieldName> fields = new ArrayList<>();
 
@@ -160,6 +160,24 @@ public class WidgetsControllerTest  extends MockitoTestSuite{
 		Mockito.when(widgetService.setOnboardingWidget(user, onboardingWidget)).thenReturn(expectedFieldValidator);
 		actualFieldsValidator = widgetsController.putOnboardingWidget(mockedRequest, 12L, onboardingWidget, mockedResponse);
 		
+	}
+
+	@Test
+	public void putOnboardingWidgetXSSTest() {
+		FieldsValidator actualFieldsValidator = null;
+		EPUser user = mockUser.mockEPUser();
+		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
+		OnboardingWidget onboardingWidget=new OnboardingWidget();
+		onboardingWidget.id=12L;
+		onboardingWidget.name = "<script>alert(/XSS”)</script>";
+		onboardingWidget.normalize();
+		FieldsValidator expectedFieldValidator = new FieldsValidator();
+		expectedFieldValidator.setHttpStatusCode((long) HttpServletResponse.SC_NOT_ACCEPTABLE);
+		Mockito.when(widgetService.setOnboardingWidget(user, onboardingWidget)).thenReturn(expectedFieldValidator);
+		actualFieldsValidator = widgetsController.putOnboardingWidget(mockedRequest, 12L, onboardingWidget, mockedResponse);
+
+		assertEquals(expectedFieldValidator, actualFieldsValidator);
+
 	}
 	
 	@Test
@@ -172,7 +190,7 @@ public class WidgetsControllerTest  extends MockitoTestSuite{
 		OnboardingWidget onboardingWidget=new OnboardingWidget();
 		onboardingWidget.id=12L;
 		onboardingWidget.normalize();
-		//Mockito.doNothing().when(onboardingWidget).normalize();	
+		//Mockito.doNothing().when(onboardingWidget).normalize();
 		FieldsValidator expectedFieldValidator = new FieldsValidator();
 		List<FieldName> fields = new ArrayList<>();
 
@@ -209,6 +227,31 @@ public class WidgetsControllerTest  extends MockitoTestSuite{
 		assertEquals(expectedFieldValidator.getErrorCode(), actualFieldsValidator.getErrorCode());
 		assertEquals(expectedFieldValidator.getFields(), actualFieldsValidator.getFields());
 	}
+
+	@Test
+	public void postOnboardingWidgetXSSTest(){
+		EPUser user=mockUser.mockEPUser();
+		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
+		FieldsValidator actualFieldsValidator = null;
+		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
+		Mockito.when(rolesService.isSuperAdmin(user)).thenReturn(true);
+		Mockito.when(rolesService.isAccountAdmin(user)).thenReturn(true);
+		OnboardingWidget onboardingWidget=new OnboardingWidget();
+		onboardingWidget.id=12L;
+		onboardingWidget.appName="<script>alert(/XSS”)</script>";
+		onboardingWidget.normalize();
+		FieldsValidator expectedFieldValidator = new FieldsValidator();
+		List<FieldName> fields = new ArrayList<>();
+
+		expectedFieldValidator.setHttpStatusCode((long) HttpServletResponse.SC_NOT_ACCEPTABLE);
+		expectedFieldValidator.setFields(fields);
+		expectedFieldValidator.setErrorCode(null);
+		Mockito.when(widgetService.setOnboardingWidget(user, onboardingWidget)).thenReturn(expectedFieldValidator);
+		actualFieldsValidator = widgetsController.postOnboardingWidget(mockedRequest, onboardingWidget, mockedResponse);
+		assertEquals(expectedFieldValidator.getHttpStatusCode(), actualFieldsValidator.getHttpStatusCode());
+		assertEquals(expectedFieldValidator.getErrorCode(), actualFieldsValidator.getErrorCode());
+		assertEquals(expectedFieldValidator.getFields(), actualFieldsValidator.getFields());
+	}
 	
 	@Test
 	public void postOnboardingWidgetTestwiThoutUserPermission() {
@@ -218,7 +261,7 @@ public class WidgetsControllerTest  extends MockitoTestSuite{
 		OnboardingWidget onboardingWidget=new OnboardingWidget();
 		onboardingWidget.id=12L;
 		onboardingWidget.normalize();
-		//Mockito.doNothing().when(onboardingWidget).normalize();	
+		//Mockito.doNothing().when(onboardingWidget).normalize();
 		FieldsValidator expectedFieldValidator = new FieldsValidator();
 		List<FieldName> fields = new ArrayList<>();
 
