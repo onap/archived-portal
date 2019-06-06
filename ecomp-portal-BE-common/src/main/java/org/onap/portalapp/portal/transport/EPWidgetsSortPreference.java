@@ -38,15 +38,19 @@
 package org.onap.portalapp.portal.transport;
 
 import java.util.List;
+import org.hibernate.validator.constraints.SafeHtml;
 
 public class EPWidgetsSortPreference {
 	
 	private int SizeX;
 	private int SizeY;
+	@SafeHtml
 	private String headerText;
+	@SafeHtml
 	private String url;
 	private Long widgetid;
 	private List<Object> attrb;
+	@SafeHtml
 	private String widgetIdentifier;
 	private int row;
 	private int col;

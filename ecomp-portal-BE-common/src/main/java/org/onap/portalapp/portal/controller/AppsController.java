@@ -2,7 +2,7 @@
  * ============LICENSE_START==========================================
  * ONAP Portal
  * ===================================================================
- * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
  * Modifications Copyright (c) 2019 Samsung
  * ===================================================================
@@ -42,18 +42,12 @@ package org.onap.portalapp.portal.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.stream.Stream;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.onap.portalapp.controller.EPRestrictedBaseController;
 import org.onap.portalapp.portal.domain.AdminUserApplications;
 import org.onap.portalapp.portal.domain.AppIdAndNameTransportModel;
@@ -68,7 +62,6 @@ import org.onap.portalapp.portal.logging.logic.EPLogUtil;
 import org.onap.portalapp.portal.service.AdminRolesService;
 import org.onap.portalapp.portal.service.EPAppService;
 import org.onap.portalapp.portal.service.EPLeftMenuService;
-import org.onap.portalapp.portal.service.ExternalAccessRolesService;
 import org.onap.portalapp.portal.transport.EPAppsManualPreference;
 import org.onap.portalapp.portal.transport.EPAppsSortPreference;
 import org.onap.portalapp.portal.transport.EPDeleteAppsManualSortPref;
@@ -76,10 +69,10 @@ import org.onap.portalapp.portal.transport.EPWidgetsSortPreference;
 import org.onap.portalapp.portal.transport.FieldsValidator;
 import org.onap.portalapp.portal.transport.LocalRole;
 import org.onap.portalapp.portal.transport.OnboardingApp;
-import org.onap.portalapp.portal.utils.EPCommonSystemProperties;
 import org.onap.portalapp.portal.utils.EcompPortalUtils;
 import org.onap.portalapp.portal.utils.PortalConstants;
 import org.onap.portalapp.util.EPUserUtils;
+import org.onap.portalapp.validation.DataValidator;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.onap.portalsdk.core.util.SystemProperties;
 import org.onap.portalsdk.core.web.support.AppUtils;
@@ -87,7 +80,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -97,27 +89,27 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpStatusCodeException;
-import org.springframework.web.client.RestTemplate;
 
 @RestController
 @EnableAspectJAutoProxy
 @EPAuditLog
+@NoArgsConstructor
+@Getter
 public class AppsController extends EPRestrictedBaseController {
-	private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(AppsController.class);
+	private static final String GET_RESULT = "GET result =";
+	private static final String PUT_RESULT = "PUT result =";
+	private static final String PORTAL_API_ONBOARDING_APPS = "/portalApi/onboardingApps";
+	private static final String PORTAL_API_USER_APPS_ORDER_BY_SORT_PREF = "/portalApi/userAppsOrderBySortPref";
+
+	private final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(AppsController.class);
+	private final DataValidator dataValidator = new DataValidator();
 
 	@Autowired
 	private AdminRolesService adminRolesService;
-
 	@Autowired
 	private EPAppService appService;
-
 	@Autowired
 	private EPLeftMenuService leftMenuService;
-	
-	@Autowired
-	private ExternalAccessRolesService externalAccessRolesService;
-	RestTemplate template = new RestTemplate();
 
 	/**
 	 * RESTful service method to fetch all Applications available to current
@@ -139,7 +131,7 @@ public class AppsController extends EPRestrictedBaseController {
 				EcompPortalUtils.setBadPermissions(user, response, "getUserApps");
 			} else {
 				ecompApps = appService.transformAppsToEcompApps(appService.getUserApps(user));
-				EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/userApps", "GET result =", ecompApps);
+				EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/userApps", GET_RESULT, ecompApps);
 			}
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "getUserApps failed", e);
@@ -174,7 +166,7 @@ public class AppsController extends EPRestrictedBaseController {
 				else
 					apps = appService.getPersUserApps(user);
 				ecompApps = appService.transformAppsToEcompApps(apps);
-				EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/userPersApps", "GET result =", ecompApps);
+				EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/userPersApps", GET_RESULT, ecompApps);
 			}
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "getPersUserApps failed", e);
@@ -203,7 +195,7 @@ public class AppsController extends EPRestrictedBaseController {
 				EcompPortalUtils.setBadPermissions(user, response, "getAdminApps");
 			} else {
 				adminApps = appService.getAdminApps(user);
-				EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/adminApps", "GET result =", adminApps);
+				EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/adminApps", GET_RESULT, adminApps);
 			}
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "getAdminApps failed", e);
@@ -235,7 +227,7 @@ public class AppsController extends EPRestrictedBaseController {
 			} else {
 				adminApps = appService.getAppsForSuperAdminAndAccountAdmin(user);
 				EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/appsForSuperAdminAndAccountAdmin",
-						"GET result =", adminApps);
+						GET_RESULT, adminApps);
 			}
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "getAppsForSuperAdminAndAccountAdmin failed", e);
@@ -245,7 +237,7 @@ public class AppsController extends EPRestrictedBaseController {
 	}
 
 	/**
-	 * RESTful service method to fetch left menu items from the user's session.
+	 * RESTful service method to fetch left menu items from the user'PORTAL_API_USER_APPS_ORDER_BY_SORT_PREF session.
 	 * 
 	 * @param request
 	 *            HttpServletRequest
@@ -267,7 +259,7 @@ public class AppsController extends EPRestrictedBaseController {
 
 		try {
 			menuList = leftMenuService.getLeftMenuItems(user, menuSet, roleFunctionSet);
-			EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/leftmenuItems", "GET result =", menuList);
+			EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/leftmenuItems", GET_RESULT, menuList);
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "getLeftMenuItems failed", e);
 		}
@@ -275,7 +267,7 @@ public class AppsController extends EPRestrictedBaseController {
 	}
 
 	@RequestMapping(value = {
-			"/portalApi/userAppsOrderBySortPref" }, method = RequestMethod.GET, produces = "application/json")
+			PORTAL_API_USER_APPS_ORDER_BY_SORT_PREF }, method = RequestMethod.GET, produces = "application/json")
 	public List<EcompApp> getUserAppsOrderBySortPref(HttpServletRequest request, HttpServletResponse response) {
 		EPUser user = EPUserUtils.getUserSession(request);
 		List<EcompApp> ecompApps = null;
@@ -284,28 +276,28 @@ public class AppsController extends EPRestrictedBaseController {
 				EcompPortalUtils.setBadPermissions(user, response, "getUserAppsOrderBySortPref");
 			} else {
 				String usrSortPref = request.getParameter("mparams");
-				if (usrSortPref.equals("")) {
+				if (usrSortPref.isEmpty()) {
 					usrSortPref = "N";
 				}
 				switch (usrSortPref) {
 				case "N":
 					ecompApps = appService.transformAppsToEcompApps(appService.getAppsOrderByName(user));
-					EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/userAppsOrderBySortPref", "GET result =",
+					EcompPortalUtils.logAndSerializeObject(logger, PORTAL_API_USER_APPS_ORDER_BY_SORT_PREF, GET_RESULT,
 							ecompApps);
 					break;
 				case "L":
 					ecompApps = appService.transformAppsToEcompApps(appService.getAppsOrderByLastUsed(user));
-					EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/userAppsOrderBySortPref", "GET result =",
+					EcompPortalUtils.logAndSerializeObject(logger, PORTAL_API_USER_APPS_ORDER_BY_SORT_PREF, GET_RESULT,
 							ecompApps);
 					break;
 				case "F":
 					ecompApps = appService.transformAppsToEcompApps(appService.getAppsOrderByMostUsed(user));
-					EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/userAppsOrderBySortPref", "GET result =",
+					EcompPortalUtils.logAndSerializeObject(logger, PORTAL_API_USER_APPS_ORDER_BY_SORT_PREF, GET_RESULT,
 							ecompApps);
 					break;
 				case "M":
 					ecompApps = appService.transformAppsToEcompApps(appService.getAppsOrderByManual(user));
-					EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/userAppsOrderBySortPref", "GET result =",
+					EcompPortalUtils.logAndSerializeObject(logger, PORTAL_API_USER_APPS_ORDER_BY_SORT_PREF, GET_RESULT,
 							ecompApps);
 					break;
 				default:
@@ -335,6 +327,13 @@ public class AppsController extends EPRestrictedBaseController {
 	public FieldsValidator putUserAppsSortingManual(HttpServletRequest request,
 			@RequestBody List<EPAppsManualPreference> epAppsManualPref, HttpServletResponse response) {
 		FieldsValidator fieldsValidator = null;
+
+		if (isNotNullAndNotValid(epAppsManualPref)){
+			fieldsValidator = new FieldsValidator();
+			fieldsValidator.setHttpStatusCode((long) HttpServletResponse.SC_NOT_ACCEPTABLE);
+			return fieldsValidator;
+		}
+
 		try {
 			EPUser user = EPUserUtils.getUserSession(request);
 			fieldsValidator = appService.saveAppsSortManual(epAppsManualPref, user);
@@ -342,7 +341,7 @@ public class AppsController extends EPRestrictedBaseController {
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "putUserAppsSortingManual failed", e);
 		}
-		EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/saveUserAppsSortingManual", "PUT result =",
+		EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/saveUserAppsSortingManual", PUT_RESULT,
 				response.getStatus());
 		return fieldsValidator;
 	}
@@ -352,6 +351,13 @@ public class AppsController extends EPRestrictedBaseController {
 	public FieldsValidator putUserWidgetsSortManual(HttpServletRequest request,
 			@RequestBody List<EPWidgetsSortPreference> saveManualWidgetSData, HttpServletResponse response) {
 		FieldsValidator fieldsValidator = null;
+
+		if (isNotNullAndNotValid(saveManualWidgetSData)){
+			fieldsValidator = new FieldsValidator();
+			fieldsValidator.setHttpStatusCode((long)HttpServletResponse.SC_NOT_ACCEPTABLE);
+			return fieldsValidator;
+		}
+
 		try {
 			EPUser user = EPUserUtils.getUserSession(request);
 			fieldsValidator = appService.saveWidgetsSortManual(saveManualWidgetSData, user);
@@ -359,8 +365,7 @@ public class AppsController extends EPRestrictedBaseController {
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "putUserWidgetsSortManual failed", e);
 		}
-		// return fieldsValidator;
-		EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/putUserWidgetsSortManual", "PUT result =",
+		EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/putUserWidgetsSortManual", PUT_RESULT,
 				response.getStatus());
 		return fieldsValidator;
 	}
@@ -370,6 +375,13 @@ public class AppsController extends EPRestrictedBaseController {
 	public FieldsValidator putUserWidgetsSortPref(HttpServletRequest request,
 			@RequestBody List<EPWidgetsSortPreference> delManualWidgetData, HttpServletResponse response) {
 		FieldsValidator fieldsValidator = null;
+
+		if (isNotNullAndNotValid(delManualWidgetData)){
+			fieldsValidator = new FieldsValidator();
+			fieldsValidator.setHttpStatusCode((long)HttpServletResponse.SC_NOT_ACCEPTABLE);
+			return fieldsValidator;
+		}
+
 		try {
 			EPUser user = EPUserUtils.getUserSession(request);
 			fieldsValidator = appService.deleteUserWidgetSortPref(delManualWidgetData, user);
@@ -378,8 +390,7 @@ public class AppsController extends EPRestrictedBaseController {
 			logger.error(EELFLoggerDelegate.errorLogger, "putUserWidgetsSortPref failed", e);
 
 		}
-		// return fieldsValidator;
-		EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/putUserWidgetsSortPref", "PUT result =",
+		EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/putUserWidgetsSortPref", PUT_RESULT,
 				response.getStatus());
 		return fieldsValidator;
 	}
@@ -400,6 +411,7 @@ public class AppsController extends EPRestrictedBaseController {
 	public FieldsValidator deleteUserAppSortManual(HttpServletRequest request,
 			@RequestBody EPDeleteAppsManualSortPref delManualAppData, HttpServletResponse response) {
 		FieldsValidator fieldsValidator = null;
+
 		try {
 			EPUser user = EPUserUtils.getUserSession(request);
 			fieldsValidator = appService.deleteUserAppSortManual(delManualAppData, user);
@@ -408,8 +420,7 @@ public class AppsController extends EPRestrictedBaseController {
 			logger.error(EELFLoggerDelegate.errorLogger, "deleteUserAppSortManual failed", e);
 
 		}
-		// return fieldsValidator;
-		EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/deleteUserAppSortManual", "PUT result =",
+		EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/deleteUserAppSortManual", PUT_RESULT,
 				response.getStatus());
 		return fieldsValidator;
 	}
@@ -428,8 +439,7 @@ public class AppsController extends EPRestrictedBaseController {
 
 		}
 
-		// return fieldsValidator;
-		EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/putUserAppsSortingPreference", "PUT result =",
+		EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/putUserAppsSortingPreference", PUT_RESULT,
 				response.getStatus());
 		return fieldsValidator;
 	}
@@ -445,7 +455,7 @@ public class AppsController extends EPRestrictedBaseController {
 				EcompPortalUtils.setBadPermissions(user, response, "userAppsSortTypePreference");
 			} else {
 				userSortPreference = appService.getUserAppsSortTypePreference(user);
-				EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/userAppsSortTypePreference", "GET result =",
+				EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/userAppsSortTypePreference", GET_RESULT,
 						userSortPreference);
 			}
 		} catch (Exception e) {
@@ -475,7 +485,7 @@ public class AppsController extends EPRestrictedBaseController {
 				EcompPortalUtils.setBadPermissions(user, response, "getAppsAdministrators");
 			} else {
 				admins = appService.getAppsAdmins();
-				EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/accountAdmins", "GET result =", admins);
+				EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/accountAdmins", GET_RESULT, admins);
 			}
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "getAppsAdministrators failed", e);
@@ -493,7 +503,7 @@ public class AppsController extends EPRestrictedBaseController {
 				EcompPortalUtils.setBadPermissions(user, response, "getApps");
 			} else {
 				apps = appService.getAllApplications(false);
-				EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/availableApps", "GET result =", apps);
+				EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/availableApps", GET_RESULT, apps);
 			}
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "getApps failed", e);
@@ -522,7 +532,7 @@ public class AppsController extends EPRestrictedBaseController {
 				EcompPortalUtils.setBadPermissions(user, response, "getApps");
 			} else {
 				apps = appService.getAllApps(true);
-				EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/availableApps", "GET result =", apps);
+				EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/availableApps", GET_RESULT, apps);
 			}
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "getAllApps failed", e);
@@ -547,7 +557,7 @@ public class AppsController extends EPRestrictedBaseController {
 			EcompPortalUtils.setBadPermissions(user, response, "getAppsFullList");
 		} else {
 			ecompApps = appService.getEcompAppAppsFullList();
-			EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/appsFullList", "GET result =", ecompApps);
+			EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/appsFullList", GET_RESULT, ecompApps);
 		}
 		return ecompApps;
 	}
@@ -598,7 +608,7 @@ public class AppsController extends EPRestrictedBaseController {
 				|| (adminRolesService.isSuperAdmin(user) && requestedApp.getId() == PortalConstants.PORTAL_APP_ID))) {
 			try {
 				roleList = appService.getAppRoles(appId);
-				EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/appRoles/" + appId, "GET result =",
+				EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/appRoles/" + appId, GET_RESULT,
 						roleList);
 			} catch (Exception e) {
 				logger.error(EELFLoggerDelegate.errorLogger, "getAppRoles failed", e);
@@ -626,8 +636,8 @@ public class AppsController extends EPRestrictedBaseController {
 			String appName = request.getParameter("appParam");
 			app = appService.getAppDetailByAppName(appName);
 			if (user != null && (adminRolesService.isAccountAdminOfApplication(user, app)
-					|| (adminRolesService.isSuperAdmin(user) && app.getId() == PortalConstants.PORTAL_APP_ID)))
-				EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/singleAppInfo" + appName, "GET result =", app);
+					|| (adminRolesService.isSuperAdmin(user) && app.getId().equals(PortalConstants.PORTAL_APP_ID))))
+				EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/singleAppInfo" + appName, GET_RESULT, app);
 			else{
 				app= null;
 				EcompPortalUtils.setBadPermissions(user, response, "createAdmin");
@@ -659,8 +669,8 @@ public class AppsController extends EPRestrictedBaseController {
 				app.setCentralAuth(false);
 			}
 			if (user != null && (adminRolesService.isAccountAdminOfApplication(user, app)
-					|| (adminRolesService.isSuperAdmin(user) && app.getId() == PortalConstants.PORTAL_APP_ID)))
-				EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/singleAppInfoById" + appId, "GET result =", app);
+					|| (adminRolesService.isSuperAdmin(user) && app.getId().equals(PortalConstants.PORTAL_APP_ID))))
+				EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/singleAppInfoById" + appId, GET_RESULT, app);
 			else{
 				app= null;
 				EcompPortalUtils.setBadPermissions(user, response, "createAdmin");
@@ -680,7 +690,7 @@ public class AppsController extends EPRestrictedBaseController {
 	 *            HTTP servlet response
 	 * @return List<OnboardingApp>
 	 */
-	@RequestMapping(value = { "/portalApi/onboardingApps" }, method = RequestMethod.GET, produces = "application/json")
+	@RequestMapping(value = { PORTAL_API_ONBOARDING_APPS }, method = RequestMethod.GET, produces = "application/json")
 	public List<OnboardingApp> getOnboardingApps(HttpServletRequest request, HttpServletResponse response) {
 		EPUser user = EPUserUtils.getUserSession(request);
 		List<OnboardingApp> onboardingApps = null;
@@ -697,8 +707,8 @@ public class AppsController extends EPRestrictedBaseController {
 					//get all his admin apps
 					onboardingApps =  appService.getAdminAppsOfUser(user);
 				}
-				EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/onboardingApps", "GET result =",
-						"onboardingApps of size " + onboardingApps.size());
+				EcompPortalUtils.logAndSerializeObject(logger, PORTAL_API_ONBOARDING_APPS, GET_RESULT,
+						"onboardingApps of size " + (onboardingApps != null ? onboardingApps.size() : 0));
 			}
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "getOnboardingApps failed", e);
@@ -718,14 +728,12 @@ public class AppsController extends EPRestrictedBaseController {
 	 * @return FieldsValidator
 	 * @throws Exception 
 	 */
-	@RequestMapping(value = { "/portalApi/onboardingApps" }, method = RequestMethod.PUT, produces = "application/json")
+	@RequestMapping(value = { PORTAL_API_ONBOARDING_APPS }, method = RequestMethod.PUT, produces = "application/json")
 	public FieldsValidator putOnboardingApp(HttpServletRequest request,
-			@RequestBody OnboardingApp modifiedOnboardingApp, HttpServletResponse response) throws Exception {
+			@RequestBody OnboardingApp modifiedOnboardingApp, HttpServletResponse response) {
 		FieldsValidator fieldsValidator = null;
 		EPUser user = null;
-		EPApp oldEPApp = null;
-		oldEPApp = appService.getApp(modifiedOnboardingApp.id);
-		ResponseEntity<String> res = null;
+		EPApp oldEPApp = appService.getApp(modifiedOnboardingApp.id);
 		
 		try {
 			user = EPUserUtils.getUserSession(request);
@@ -734,20 +742,7 @@ public class AppsController extends EPRestrictedBaseController {
 			} else {
 				if((oldEPApp.getCentralAuth() && modifiedOnboardingApp.isCentralAuth && !oldEPApp.getNameSpace().equalsIgnoreCase(modifiedOnboardingApp.nameSpace) && modifiedOnboardingApp.nameSpace!= null ) || (!oldEPApp.getCentralAuth() && modifiedOnboardingApp.isCentralAuth && modifiedOnboardingApp.nameSpace!= null))
 				{
-					try {
-						res = appService.checkIfNameSpaceIsValid(modifiedOnboardingApp.nameSpace);
-					} catch (HttpClientErrorException e) {
-						logger.error(EELFLoggerDelegate.errorLogger, "checkIfNameSpaceExists failed", e);
-						EPLogUtil.logExternalAuthAccessAlarm(logger, e.getStatusCode());
-						if (e.getStatusCode() == HttpStatus.NOT_FOUND || e.getStatusCode() == HttpStatus.FORBIDDEN) {
-							fieldsValidator = setResponse(e.getStatusCode(),fieldsValidator,response);
-							throw new InvalidApplicationException("Invalid NameSpace");
-						}else{
-							fieldsValidator = setResponse(e.getStatusCode(),fieldsValidator,response);
-							throw e;
-						}
-					}
-
+					checkIfNameSpaceIsValid(modifiedOnboardingApp, fieldsValidator, response);
 				}	
 				modifiedOnboardingApp.normalize();
 				fieldsValidator = appService.modifyOnboardingApp(modifiedOnboardingApp, user);
@@ -767,7 +762,7 @@ public class AppsController extends EPRestrictedBaseController {
 				logger.error(EELFLoggerDelegate.errorLogger, "putOnboardingApps failed", e);
 			}
 		}
-		EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/onboardingApps", "PUT result =",
+		EcompPortalUtils.logAndSerializeObject(logger, PORTAL_API_ONBOARDING_APPS, PUT_RESULT,
 				response.getStatus());
 		return fieldsValidator;
 	}
@@ -784,7 +779,7 @@ public class AppsController extends EPRestrictedBaseController {
 	 *            app to add
 	 * @return FieldsValidator
 	 */
-	@RequestMapping(value = { "/portalApi/onboardingApps" }, method = RequestMethod.POST, produces = "application/json")
+	@RequestMapping(value = { PORTAL_API_ONBOARDING_APPS }, method = RequestMethod.POST, produces = "application/json")
 	public FieldsValidator postOnboardingApp(HttpServletRequest request, @RequestBody OnboardingApp newOnboardingApp,
 			HttpServletResponse response) {
 		FieldsValidator fieldsValidator = null;
@@ -794,21 +789,7 @@ public class AppsController extends EPRestrictedBaseController {
 				EcompPortalUtils.setBadPermissions(user, response, "postOnboardingApps");
 			} else {
 				newOnboardingApp.normalize();
-				ResponseEntity<String> res = null;
-				try {
-					if( !(newOnboardingApp.nameSpace == null) && !newOnboardingApp.nameSpace.isEmpty()) 
-					    res = appService.checkIfNameSpaceIsValid(newOnboardingApp.nameSpace);
-				} catch (HttpClientErrorException e) {
-					logger.error(EELFLoggerDelegate.errorLogger, "checkIfNameSpaceExists failed", e);
-					EPLogUtil.logExternalAuthAccessAlarm(logger, e.getStatusCode());
-					if (e.getStatusCode() == HttpStatus.NOT_FOUND || e.getStatusCode() == HttpStatus.FORBIDDEN) {
-						fieldsValidator = setResponse(e.getStatusCode(),fieldsValidator,response);
-						throw new InvalidApplicationException("Invalid NameSpace");
-					}else{
-						fieldsValidator = setResponse(e.getStatusCode(),fieldsValidator,response);
-						throw e;
-					}
-				}
+				checkIfNameSpaceIsValid(newOnboardingApp, fieldsValidator, response);
 				fieldsValidator = appService.addOnboardingApp(newOnboardingApp, user);
 				response.setStatus(fieldsValidator.httpStatusCode.intValue());
 			}
@@ -824,22 +805,22 @@ public class AppsController extends EPRestrictedBaseController {
 			logger.error(EELFLoggerDelegate.errorLogger, "postOnboardingApp failed", e);				
 		}
 
-		EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/onboardingApps", "POST result =",
+		EcompPortalUtils.logAndSerializeObject(logger, PORTAL_API_ONBOARDING_APPS, "POST result =",
 				response.getStatus());
 		return fieldsValidator;
 	}
 	
-	private FieldsValidator setResponse(HttpStatus statusCode,FieldsValidator fieldsValidator,HttpServletResponse response)
+	private FieldsValidator setResponse(HttpStatus statusCode, HttpServletResponse response)
 	{
-		fieldsValidator = new FieldsValidator();
+		FieldsValidator fieldsValidator = new FieldsValidator();
 		if (statusCode == HttpStatus.NOT_FOUND || statusCode == HttpStatus.FORBIDDEN) {
-			fieldsValidator.httpStatusCode = new Long(HttpServletResponse.SC_NOT_FOUND);
+			fieldsValidator.httpStatusCode = (long) HttpServletResponse.SC_NOT_FOUND;
 			logger.error(EELFLoggerDelegate.errorLogger, "setResponse failed"+ "invalid namespace");
 		}else if (statusCode == HttpStatus.UNAUTHORIZED) {
-			fieldsValidator.httpStatusCode = new Long(HttpServletResponse.SC_UNAUTHORIZED);
+			fieldsValidator.httpStatusCode = (long) HttpServletResponse.SC_UNAUTHORIZED;
 			logger.error(EELFLoggerDelegate.errorLogger, "setResponse failed"+ "unauthorized");
 		} else{
-			fieldsValidator.httpStatusCode = new Long(HttpServletResponse.SC_BAD_REQUEST);
+			fieldsValidator.httpStatusCode = (long) HttpServletResponse.SC_BAD_REQUEST;
 			logger.error(EELFLoggerDelegate.errorLogger, "setResponse failed ",statusCode);
 
 		}
@@ -880,7 +861,7 @@ public class AppsController extends EPRestrictedBaseController {
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		}
 		
-		EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/onboardingApps" + appId, "DELETE result =",
+		EcompPortalUtils.logAndSerializeObject(logger, PORTAL_API_ONBOARDING_APPS + appId, "DELETE result =",
 				response.getStatus());
 		return fieldsValidator;
 	}
@@ -918,8 +899,29 @@ public class AppsController extends EPRestrictedBaseController {
 		HttpHeaders header = new HttpHeaders();
 		header.setContentType(mediaType);
 		header.setContentLength(app.getThumbnail().length);
-		return new HttpEntity<byte[]>(app.getThumbnail(), header);
+		return new HttpEntity<>(app.getThumbnail(), header);
 	}
 	
+	private void checkIfNameSpaceIsValid(OnboardingApp modifiedOnboardingApp, FieldsValidator fieldsValidator, HttpServletResponse response)
+		throws InvalidApplicationException {
+		try {
+			ResponseEntity<String> res  = appService.checkIfNameSpaceIsValid(modifiedOnboardingApp.nameSpace);
+		} catch (HttpClientErrorException e) {
+			logger.error(EELFLoggerDelegate.errorLogger, "checkIfNameSpaceExists failed", e);
+			EPLogUtil.logExternalAuthAccessAlarm(logger, e.getStatusCode());
+			if (e.getStatusCode() == HttpStatus.NOT_FOUND || e.getStatusCode() == HttpStatus.FORBIDDEN) {
+				fieldsValidator = setResponse(e.getStatusCode(),response);
+				throw new InvalidApplicationException("Invalid NameSpace");
+			}else{
+				fieldsValidator = setResponse(e.getStatusCode(),response);
+				throw e;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
+	private boolean isNotNullAndNotValid(Object o){
+		return o!=null && !dataValidator.isValid(o);
+	}
 }

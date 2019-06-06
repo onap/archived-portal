@@ -47,15 +47,25 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class DataValidator {
-       private static final ValidatorFactory VALIDATOR_FACTORY  = Validation.buildDefaultValidatorFactory();
+       private volatile static ValidatorFactory VALIDATOR_FACTORY;
 
-       public <E> Set<ConstraintViolation<E>> getConstraintViolations(E classToValid){
+       public DataValidator() {
+              if (VALIDATOR_FACTORY == null) {
+                     synchronized (DataValidator.class) {
+                            if (VALIDATOR_FACTORY == null) {
+                                   VALIDATOR_FACTORY = Validation.buildDefaultValidatorFactory();
+                            }
+                     }
+              }
+       }
+
+       public <E> Set<ConstraintViolation<E>> getConstraintViolations(E classToValid) {
               Validator validator = VALIDATOR_FACTORY.getValidator();
               Set<ConstraintViolation<E>> constraintViolations = validator.validate(classToValid);
               return constraintViolations;
        }
 
-       public <E> boolean isValid(E classToValid){
+       public <E> boolean isValid(E classToValid) {
               Set<ConstraintViolation<E>> constraintViolations = getConstraintViolations(classToValid);
               return constraintViolations.isEmpty();
        }
