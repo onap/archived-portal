@@ -38,24 +38,19 @@ package org.onap.portalapp.portal.controller;
  */
 
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.io.IOException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.drools.core.command.assertion.AssertEquals;
 import org.json.JSONObject;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -64,24 +59,15 @@ import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.onap.portalapp.portal.controller.SharedContextRestClient;
-import org.onap.portalapp.portal.controller.SharedContextTestProperties;
 import org.onap.portalapp.portal.core.MockEPUser;
-import org.onap.portalapp.portal.domain.CentralV2RoleFunction;
 import org.onap.portalapp.portal.domain.SharedContext;
+import org.onap.portalapp.portal.exceptions.NotValidDataException;
 import org.onap.portalapp.portal.framework.MockitoTestSuite;
-import org.onap.portalapp.portal.scheduler.SchedulerProperties;
 import org.onap.portalapp.portal.service.SharedContextService;
 import org.onap.portalapp.portal.utils.EPCommonSystemProperties;
-import org.onap.portalsdk.core.util.SystemProperties;
-import org.onap.portalsdk.core.web.support.UserUtils;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Tests the endpoints exposed by the Shared Context controller in Portal.
@@ -95,7 +81,7 @@ public class SharedContextRestControllerTest {
 	SharedContextService contextService;
 
 	@InjectMocks
-	SharedContextRestController sharedContextRestController=new SharedContextRestController();
+	SharedContextRestController sharedContextRestController=new SharedContextRestController(contextService);
 	
 	@Before
 	public void setup() {
@@ -220,10 +206,30 @@ public class SharedContextRestControllerTest {
 	public void getContextTestWithException() throws Exception{
 		sharedContextRestController.getContext(mockedRequest, null,null);
 	}
+
+	@Test(expected=NotValidDataException.class)
+	public void getContextTestNotValidDataException() throws Exception{
+		sharedContextRestController.getContext(mockedRequest, "<script>alert(\"hellox worldss\");</script>","test");
+	}
+
+	@Test(expected=NotValidDataException.class)
+	public void getContextTest2NotValidDataException() throws Exception{
+		sharedContextRestController.getContext(mockedRequest, "test","“><script>alert(“XSS”)</script>");
+	}
+
+	@Test(expected=NotValidDataException.class)
+	public void getContextTest3NotValidDataException() throws Exception{
+		sharedContextRestController.getContext(mockedRequest, "<ScRipT>alert(\"XSS\");</ScRipT>","“><script>alert(“XSS”)</script>");
+	}
 	
-	@Test(expected=Exception.class)
+	@Test(expected= Exception.class)
 	public void getUserContextTest() throws Exception{
 		sharedContextRestController.getUserContext(mockedRequest, null);
+	}
+
+	@Test(expected= NotValidDataException.class)
+	public void getUserContextXSSTest() throws Exception{
+		sharedContextRestController.getUserContext(mockedRequest, "<svg><script x:href='https://dl.dropbox.com/u/13018058/js.js' {Opera}");
 	}
 	
 	@Test
@@ -257,6 +263,16 @@ public class SharedContextRestControllerTest {
 		Mockito.when(contextService.getSharedContext(Matchers.any(),Matchers.any())).thenReturn(sharedContext);
 		sharedContextRestController.checkContext(mockedRequest, null,null);
 	}
+
+	@Test(expected=NotValidDataException.class)
+	public void checkContextTestWithContextXSSl() throws Exception{
+		SharedContext sharedContext=new SharedContext();
+		sharedContext.setContext_id("test_contextid");
+		sharedContext.setCkey("test_ckey");
+		Mockito.when(contextService.getSharedContext(Matchers.any(),Matchers.any())).thenReturn(sharedContext);
+		sharedContextRestController.checkContext(mockedRequest,
+			"<ScRipT 5-0*3+9/3=>prompt(1)</ScRipT giveanswerhere=?","<script>alert(123);</script>");
+	}
 	
 	@Test
 	public void removeContextTest() throws Exception{
@@ -283,6 +299,20 @@ public class SharedContextRestControllerTest {
 		assertNotNull(actual);
 
 	}
+
+	@Test(expected=NotValidDataException.class)
+	public void removeContextTestWithContextXSS() throws Exception{
+		SharedContext sharedContext=new SharedContext();
+		sharedContext.setContext_id("test_contextid");
+		sharedContext.setCkey("test_ckey");
+		Mockito.when(contextService.getSharedContext(Matchers.any(),Matchers.any())).thenReturn(sharedContext);
+
+		//Mockito.when(contextService.deleteSharedContext(sharedContext));
+		String actual=sharedContextRestController.removeContext(mockedRequest,
+			"<script>alert(“XSS”)</script> ","<script>alert(/XSS/)</script>");
+		assertNotNull(actual);
+
+	}
 	
 	@Test(expected=Exception.class)
 	public void clearContextTestwithContextIdNull() throws Exception{
@@ -290,6 +320,16 @@ public class SharedContextRestControllerTest {
 		Mockito.when(contextService.deleteSharedContexts(Matchers.any())).thenReturn(12);
 
 		String actual=sharedContextRestController.clearContext(mockedRequest,null);
+		assertNotNull(actual);
+
+	}
+
+	@Test(expected=NotValidDataException.class)
+	public void clearContextTestwithContextXSS() throws Exception{
+
+		Mockito.when(contextService.deleteSharedContexts(Matchers.any())).thenReturn(12);
+
+		String actual=sharedContextRestController.clearContext(mockedRequest,"<script>alert(123)</script>");
 		assertNotNull(actual);
 
 	}
@@ -350,4 +390,27 @@ public class SharedContextRestControllerTest {
 		String actual=sharedContextRestController.setContext(mockedRequest,testUserJson.toString());
 
 	}
+
+	@Test(expected=NotValidDataException.class)
+	public void setContextTestWithContextXSS() throws Exception{
+		ObjectMapper mapper = new ObjectMapper();
+		Map<String, Object> userData = new HashMap<String, Object>();
+		userData.put("context_id", "test_contextId");
+		userData.put("ckey", "<script>alert(‘XSS’)</script>");
+		userData.put("cvalue", "test_cvalue");
+		//String testUserJson=Matchers.anyString();
+		JSONObject testUserJson = new JSONObject();
+		testUserJson.put("context_id", "test1ContextId");
+		testUserJson.put("ckey", "testCkey");
+		testUserJson.put("cvalue", "<script>alert(‘XSS’)</script>");
+		Map<String, Object> userData1 = mapper.readValue(testUserJson.toString(), Map.class);
+		SharedContext sharedContext=new SharedContext();
+		sharedContext.setContext_id("test_contextid");
+		sharedContext.setCkey("test_ckey");
+		Mockito.when(contextService.getSharedContext(Matchers.any(),Matchers.any())).thenReturn(sharedContext);
+		// Mockito.when(mapper.readValue("true", Map.class)).thenReturn(userData);
+		String actual=sharedContextRestController.setContext(mockedRequest,testUserJson.toString());
+
+	}
+
 }
