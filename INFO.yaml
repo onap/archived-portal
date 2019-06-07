@@ -41,5 +41,10 @@ committers:
       company: 'ATT'
       id: 'st782s'
       timezone: 'America/New_York'
+    - name: 'Lorraine A Welch'
+      email: 'lb2391@att.com'
+      company: 'ATT'
+      id: 'lorraineawelch'
+      timezone: 'America/New_York'
 tsc:
     approval: 'https://lists.onap.org/pipermail/onap-tsc'
