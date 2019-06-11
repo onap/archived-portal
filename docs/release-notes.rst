@@ -36,14 +36,14 @@ We worked on SDK upgrade to integrate with AAF. We partially implemented multi-l
 
 *Known Security Issues*
 
-	* CVE-2019-12317 - Number of XSS vulnerabilities in Portal [`OJSI-15 <https://jira.onap.org/browse/OJSI-15>`_]
-	* CVE-2019-12122 - ONAP Portal allows to retrieve password of currently active user [`OJSI-65 <https://jira.onap.org/browse/OJSI-65>`_]
-	* CVE-2019-12121 - ONAP Portal is vulnerable for Padding Oracle attack [`OJSI-92 <https://jira.onap.org/browse/OJSI-92>`_]
-	* In defult deployment PORTAL (portal-app) exposes HTTP port 8989 outside of cluster. [`OJSI-97 <https://jira.onap.org/browse/OJSI-97>`_]
-	* In defult deployment PORTAL (portal-app) exposes HTTP port 30215 outside of cluster. [`OJSI-105 <https://jira.onap.org/browse/OJSI-105>`_]
-	* In defult deployment PORTAL (portal-sdk) exposes HTTP port 30212 outside of cluster. [`OJSI-106 <https://jira.onap.org/browse/OJSI-106>`_]
-	* CVE-2019-12318 - Number of SQL Injections in Portal [`OJSI-174 <https://jira.onap.org/browse/OJSI-174>`_]
-	* Portal stores users passwords encrypted instead of hashed [`OJSI-190 <https://jira.onap.org/browse/OJSI-190>`_]
+        * CVE-2019-12317 - Number of XSS vulnerabilities in Portal [`OJSI-15 <https://jira.onap.org/browse/OJSI-15>`_]
+        * CVE-2019-12122 - ONAP Portal allows to retrieve password of currently active user [`OJSI-65 <https://jira.onap.org/browse/OJSI-65>`_]
+        * CVE-2019-12121 - ONAP Portal is vulnerable for Padding Oracle attack [`OJSI-92 <https://jira.onap.org/browse/OJSI-92>`_]
+        * In defult deployment PORTAL (portal-app) exposes HTTP port 8989 outside of cluster. [`OJSI-97 <https://jira.onap.org/browse/OJSI-97>`_]
+        * In defult deployment PORTAL (portal-app) exposes HTTP port 30215 outside of cluster. [`OJSI-105 <https://jira.onap.org/browse/OJSI-105>`_]
+        * In defult deployment PORTAL (portal-sdk) exposes HTTP port 30212 outside of cluster. [`OJSI-106 <https://jira.onap.org/browse/OJSI-106>`_]
+        * CVE-2019-12318 - Number of SQL Injections in Portal [`OJSI-174 <https://jira.onap.org/browse/OJSI-174>`_]
+        * Portal stores users passwords encrypted instead of hashed [`OJSI-190 <https://jira.onap.org/browse/OJSI-190>`_]
 
 *Known Vulnerabilities in Used Modules*
 
@@ -59,7 +59,8 @@ Quick Links:
 **Upgrade Notes**
         * For https Apps onboarded to portal, a certificate has to be downloaded in the browser when first trying to access the landing page of the App.
         * For onboarded Apps using http (since Portal is using https) the browser asks the user to click to Proceed to the unsafe URL.
-		* For onboarded Apps using http the icon in the URL bar will appear red, click on it and allow unsafe scripts.
+        * For onboarded Apps using http the icon in the URL bar will appear red, click on it and allow unsafe scripts.
+        * The first time some apps are selected in the Applications panel, an error stating the webpage might be temporarily down, copy the presented URL to a new browser; once that is done, the application will open in the Portal.
 
 **Deprecation Notes**
 
