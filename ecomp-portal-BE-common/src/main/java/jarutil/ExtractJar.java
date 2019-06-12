@@ -45,18 +45,17 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
 import java.net.URL;
+import java.util.Objects;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 
 
 public class ExtractJar {
-
-	public static final int bufferSize = 8192;
-	public static final String jarFile = "raptor_upgrade.jar";
+	private static final int BUFFER_SIZE = 8192;
 	private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(ExtractJar.class);
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 		if (args.length > 0 && args[0] != null && args[0].length() > 0)
 			extractFilesFromJar(args[0]);
 		else {
@@ -66,52 +65,42 @@ public class ExtractJar {
 		}
 	}
 
-	public static void extractFilesFromJar(String directory) throws IOException {
+	@SuppressWarnings("ResultOfMethodCallIgnored")
+	public static void extractFilesFromJar(String directory) {
 	
 		Class clazz = ExtractJar.class;
-		String classContainer = clazz.getProtectionDomain().getCodeSource().getLocation().toString();
 		URL jarUrl = clazz.getProtectionDomain().getCodeSource().getLocation();
 
 		try(JarInputStream entryStream = new JarInputStream(jarUrl.openStream())){
 			JarEntry entry;
-			while (true) {
 				entry = entryStream.getNextJarEntry();
 				if (entry == null)
-					break;
-				if (entry.getName().indexOf("jarutil") < 0) {
-					logger.info(entry.getName());
-					File file = new File(directory, entry.getName());
-					if (entry.isDirectory()) {
-						if (!file.exists())
+					logger.info("Raptor setup complete");
+					if (!Objects.requireNonNull(entry).getName().contains("jarutil")) {
+						logger.info(entry.getName());
+						File file = new File(directory, entry.getName());
+						if (entry.isDirectory() && !file.exists()) {
 							file.mkdirs();
-					} else {
-						// make directory (some jars don't list dirs)
-						File dir = new File(file.getParent());
-						if (!dir.exists())
-							dir.mkdirs();
-						if (file.exists())
-							file.delete();
-						// Make file
-						FileOutputStream fout = new FileOutputStream(file);
-						copy(entryStream, fout);
-						fout.close();
-	
-						// touch the file.
-						if (entry.getTime() >= 0)
-							file.setLastModified(entry.getTime());
+						} else {
+							// make directory (some jars don't list dirs)
+							File dir = new File(file.getParent());
+							if (!dir.exists())
+								dir.mkdirs();
+							if (file.exists())
+								file.delete();
+							// Make file
+							FileOutputStream fos = new FileOutputStream(file);
+							copy(entryStream, fos);
+							fos.close();
+
+							// touch the file.
+							if (entry.getTime() >= 0)
+								file.setLastModified(entry.getTime());
+						}
+
 					}
-	
-				}
 				entryStream.closeEntry();
-			}
-			System.out.println("************************************************");
-			System.out.println("*                                              *");
-			System.out.println("*                                              *");
-			System.out.println("*          RAPTOR SETUP COMPLETE.              *");
-			System.out.println("*                                              *");
-			System.out.println("*         Thank you for upgrading.             *");
-			System.out.println("*                                              *");
-			System.out.println("************************************************");
+			logger.info("Raptor setup complete");
 		}catch(Exception e) {
 			logger.error("Exception in extractFilesFromJar",e);
 		}
@@ -119,14 +108,14 @@ public class ExtractJar {
 	}
 
 	public static void copy(InputStream in, OutputStream out, long byteCount) throws IOException {
-		byte[] buffer = new byte[bufferSize];
-		int len = bufferSize;
+		byte[] buffer = new byte[BUFFER_SIZE];
+		int len;
 		if (byteCount >= 0) {
 			while (byteCount > 0) {
-				if (byteCount < bufferSize)
+				if (byteCount < BUFFER_SIZE)
 					len = in.read(buffer, 0, (int) byteCount);
 				else
-					len = in.read(buffer, 0, bufferSize);
+					len = in.read(buffer, 0, BUFFER_SIZE);
 				if (len == -1)
 					break;
 
@@ -135,7 +124,7 @@ public class ExtractJar {
 			}
 		} else {
 			while (true) {
-				len = in.read(buffer, 0, bufferSize);
+				len = in.read(buffer, 0, BUFFER_SIZE);
 				if (len < 0)
 					break;
 				out.write(buffer, 0, len);
@@ -148,14 +137,14 @@ public class ExtractJar {
 	 * Copy Reader to Writer for byteCount bytes or until EOF or exception.
 	 */
 	public static void copy(Reader in, Writer out, long byteCount) throws IOException {
-		char[] buffer = new char[bufferSize];
-		int len = bufferSize;
+		char[] buffer = new char[BUFFER_SIZE];
+		int len;
 		if (byteCount >= 0) {
 			while (byteCount > 0) {
-				if (byteCount < bufferSize)
+				if (byteCount < BUFFER_SIZE)
 					len = in.read(buffer, 0, (int) byteCount);
 				else
-					len = in.read(buffer, 0, bufferSize);
+					len = in.read(buffer, 0, BUFFER_SIZE);
 
 				if (len == -1)
 					break;
@@ -164,7 +153,7 @@ public class ExtractJar {
 			}
 		} else {
 			while (true) {
-				len = in.read(buffer, 0, bufferSize);
+				len = in.read(buffer, 0, BUFFER_SIZE);
 				if (len == -1)
 					break;
 				out.write(buffer, 0, len);
@@ -186,8 +175,9 @@ public class ExtractJar {
 	public static boolean deleteDir(File dir) {
 		if (dir.isDirectory()) {
 			String[] children = dir.list();
-			for (int i = 0; i < children.length; i++) {
-				boolean success = deleteDir(new File(dir, children[i]));
+			assert children != null;
+			for (String child : children) {
+				boolean success = deleteDir(new File(dir, child));
 				if (!success) {
 					return false;
 				}
