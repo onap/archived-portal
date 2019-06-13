@@ -154,7 +154,31 @@
 
             return deferred.promise;
         }
-
+        checkIfUserIsSuperAdmin() {
+            let deferred = this.$q.defer();
+            var _this0 = this;
+            // this.$log.info('ApplicationsService::getPersUserApps');
+            this.$http.get(this.conf.api.checkIfUserIsSuperAdmin,
+                {
+                    cache: false,
+                    headers: {
+                        'X-ECOMP-RequestID':this.uuid.generate()
+                    }
+                })
+                .then( res => {
+                    // If response comes back as a redirected HTML page which IS NOT a success
+                	// But don't declare an empty list to be an error.
+                    if (res == null || res.data == null) {
+                        deferred.reject("ApplicationsService::checkIfUserIsSuperAdmin Failed");
+                    } else {
+                        deferred.resolve(res.data);
+                    }
+                })
+                .catch( status => {
+                    deferred.reject(status);
+                });
+            return deferred.promise;
+        }
         saveAppsSortTypeManual(appsSortManual){
             let deferred = this.$q.defer();
             if (appsSortManual== undefined

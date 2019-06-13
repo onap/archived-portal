@@ -106,32 +106,32 @@
 	    <filter-name>SecurityXssFilter</filter-name>
 	    <url-pattern>/*</url-pattern>
 	</filter-mapping>
-	<!-- <filter>
-		<filter-name>CadiAuthFilter</filter-name>
-		<filter-class>org.onap.portalsdk.core.onboarding.crossapi.CadiAuthFilter</filter-class>
-		<init-param>
-			<param-name>cadi_prop_files</param-name>
-        Add Absolute path of cadi.properties
-			<param-value>{Path}/cadi.properties
-			</param-value>
-		</init-param>
-         Add param values with comma delimited values
-		<init-param>
-			<param-name>include_url_endpoints</param-name>
-			<param-value>/auxapi/*</param-value>
-		</init-param>
-		<init-param>
-			<param-name>exclude_url_endpoints</param-name>
-			<param-value>/api/v3/analytics,/api/v3/storeAnalytics</param-value>
-		</init-param>
-	</filter>
-	<filter-mapping>
-		<filter-name>CadiAuthFilter</filter-name>
-		<url-pattern>/auxapi/v3/*</url-pattern>
-	</filter-mapping>
-	<filter-mapping>
-		<filter-name>CadiAuthFilter</filter-name>
-		<url-pattern>/auxapi/v4/*</url-pattern>
+<!-- 	<filter> -->
+<!-- 		<filter-name>CadiAuthFilter</filter-name> -->
+<!-- 		<filter-class>org.onap.portalsdk.core.onboarding.crossapi.CadiAuthFilter</filter-class> -->
+<!-- 		<init-param> -->
+<!-- 			<param-name>cadi_prop_files</param-name> -->
+<!--         Add Absolute path of cadi.properties -->
+<!-- 			<param-value>{Path}/cadi.properties -->
+<!-- 			</param-value> -->
+<!-- 		</init-param> -->
+<!--          Add param values with comma delimited values -->
+<!-- 		<init-param> -->
+<!-- 			<param-name>include_url_endpoints</param-name> -->
+<!-- 			<param-value>/auxapi/*</param-value> -->
+<!-- 		</init-param> -->
+<!-- 		<init-param> -->
+<!-- 			<param-name>exclude_url_endpoints</param-name> -->
+<!-- 			<param-value>/api/v3/analytics,/api/v3/storeAnalytics</param-value> -->
+<!-- 		</init-param> -->
+<!-- 	</filter> -->
+<!-- 	<filter-mapping> -->
+<!-- 		<filter-name>CadiAuthFilter</filter-name> -->
+<!-- 		<url-pattern>/auxapi/v3/*</url-pattern> -->
+<!-- 	</filter-mapping> -->
+<!-- 	<filter-mapping> -->
+<!-- 		<filter-name>CadiAuthFilter</filter-name> -->
+<!-- 		<url-pattern>/auxapi/v4/*</url-pattern> -->
 		
-	</filter-mapping> -->
+<!-- 	</filter-mapping>   -->
 </web-app>

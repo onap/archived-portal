@@ -99,6 +99,7 @@
 		"modifyLoggedinUser" : "portalApi/modifyLoggedinUser",
 		"centralizedApps": "portalApi/centralizedApps",
 		"uploadRoleFunction":"portalApi/uploadRoleFunction/:appId",
+		"checkIfUserIsSuperAdmin":"portalApi/checkIfUserIsSuperAdmin",
 		"getCurrentLang":"auxapi/languageSetting/user/:loginId",
 		"getLanguages":"auxapi/language",
 		"updateLang":"auxapi/languageSetting/user/:loginId"

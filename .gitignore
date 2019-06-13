@@ -2,9 +2,16 @@
 *.iml
 */*.iml
 /.project
+**/.project
+**/requirements.lock
 /.settings
 /dmaapbc
 /sdk
 /target/*/*.*
 /target/*
 /ecomp-portal-BE-common/jacoco.exec
+kubernetes/.classpath
+kubernetes/.settings
+kubernetes/.classpath/*
+kubernetes/.settings/*
+ecomp-portal-FE-att/client/bower*

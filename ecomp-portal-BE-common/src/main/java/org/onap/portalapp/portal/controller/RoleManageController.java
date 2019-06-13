@@ -130,37 +130,36 @@ public class RoleManageController extends EPRestrictedBaseController {
 
 	@Autowired
 	private RoleListController roleListController;
-	
+
 	@Autowired
 	private EPAppService appService;
 
 	@Autowired
 	private AuditService auditService;
-	
+
 	@Autowired
 	private ExternalAccessRolesService externalAccessRolesService;
-	
-	
+
 	@Autowired
 	private AdminRolesService adminRolesService;
 
 	/**
 	 * Calls an SDK-Core library method that gets the available roles and writes
-	 * them to the request object. Portal specifies a Hibernate mappings from
-	 * the Role class to the fn_role_v view, which ensures that only Portal
-	 * (app_id is null) roles are fetched.
+	 * them to the request object. Portal specifies a Hibernate mappings from the
+	 * Role class to the fn_role_v view, which ensures that only Portal (app_id is
+	 * null) roles are fetched.
 	 * 
-	 * Any method declared void (no return value) or returning null causes the
-	 * audit log aspect method to declare failure. TODO: should return a JSON
-	 * string.
+	 * Any method declared void (no return value) or returning null causes the audit
+	 * log aspect method to declare failure. TODO: should return a JSON string.
 	 * 
 	 * @param request
 	 * @param response
-	 * @throws Exception 
+	 * @throws Exception
 	 */
-	
+
 	@RequestMapping(value = { "/portalApi/get_roles/{appId}" }, method = RequestMethod.GET)
-	public void getRoles(HttpServletRequest request, HttpServletResponse response, @PathVariable("appId") Long appId) throws Exception {
+	public void getRoles(HttpServletRequest request, HttpServletResponse response, @PathVariable("appId") Long appId)
+			throws Exception {
 		try {
 			EPUser user = EPUserUtils.getUserSession(request);
 			EPApp requestedApp = appService.getApp(appId);
@@ -186,12 +185,10 @@ public class RoleManageController extends EPRestrictedBaseController {
 			logger.error(EELFLoggerDelegate.errorLogger, "getRoles failed", e);
 		}
 	}
-	
-	
 
 	@RequestMapping(value = { "/portalApi/role_list/toggleRole/{appId}/{roleId}" }, method = RequestMethod.POST)
-	public Map<String, Object> toggleRole(HttpServletRequest request, HttpServletResponse response, @PathVariable("appId") Long appId,
-			@PathVariable("roleId") Long roleId) throws Exception {
+	public Map<String, Object> toggleRole(HttpServletRequest request, HttpServletResponse response,
+			@PathVariable("appId") Long appId, @PathVariable("roleId") Long roleId) throws Exception {
 		EPApp requestedApp = null;
 		String restcallStatus = null;
 		HashMap<String, Object> responseMap = new HashMap<>();
@@ -232,10 +229,10 @@ public class RoleManageController extends EPRestrictedBaseController {
 		}
 		return responseMap;
 	}
-	
+
 	@RequestMapping(value = { "/portalApi/role_list/removeRole/{appId}/{roleId}" }, method = RequestMethod.POST)
-	public Map<String, Object> removeRole(HttpServletRequest request, HttpServletResponse response, @PathVariable("appId") Long appId,
-			@PathVariable("roleId") Long roleId) throws Exception {
+	public Map<String, Object> removeRole(HttpServletRequest request, HttpServletResponse response,
+			@PathVariable("appId") Long appId, @PathVariable("roleId") Long roleId) throws Exception {
 
 		EPUser user = EPUserUtils.getUserSession(request);
 		EPApp requestedApp = null;
@@ -298,7 +295,7 @@ public class RoleManageController extends EPRestrictedBaseController {
 		}
 		return responseMap;
 	}
-	
+
 	@RequestMapping(value = { "/portalApi/role/saveRole/{appId}" }, method = RequestMethod.POST)
 	public Map<String, Object> saveRole(HttpServletRequest request, HttpServletResponse response,
 			@PathVariable("appId") Long appId) throws Exception {
@@ -353,9 +350,13 @@ public class RoleManageController extends EPRestrictedBaseController {
 								throw new InvalidRoleException("Invalid role function type:" + roleFunction.getType()
 										+ " and action: " + roleFunction.getAction() + " found while saving!");
 							}
-							roleFunction.setCode(externalAccessRolesService.encodeFunctionCode(roleFunction.getCode()));
-							roleFunction.setCode(roleFunction.getType() + PIPE + roleFunction.getCode() + PIPE
-									+ roleFunction.getAction());
+							if (EcompPortalUtils.checkFunctionCodeHasEncodePattern(roleFunction.getCode()))
+								roleFunction.setCode(roleFunction.getType() + PIPE
+										+ EcompPortalUtils.encodeFunctionCode(roleFunction.getCode()) + PIPE
+										+ roleFunction.getAction());
+							else
+								roleFunction.setCode(roleFunction.getType() + PIPE + roleFunction.getCode() + PIPE
+										+ roleFunction.getAction());
 							domainRole.addRoleFunction((CentralV2RoleFunction) roleFunction);
 						}
 					} else {
@@ -444,29 +445,29 @@ public class RoleManageController extends EPRestrictedBaseController {
 			@PathVariable("roleId") Long roleId) throws Exception {
 		try {
 			EPUser user = EPUserUtils.getUserSession(request);
-				ObjectMapper mapper = new ObjectMapper();
-				EPApp requestedApp = appService.getApp(appId);
-				if (isAuthorizedUser(user, requestedApp)) {
-					fieldsValidation(requestedApp);
-					if (requestedApp.getCentralAuth()) {
-						CentralV2Role answer = externalAccessRolesService.getRoleInfo(roleId, requestedApp.getUebKey());
-						logger.info(EELFLoggerDelegate.applicationLogger, "role_id" + roleId);
-						Map<String, Object> model = new HashMap<>();
-						model.put("availableRoleFunctions", mapper.writeValueAsString(
-								externalAccessRolesService.getRoleFuncList(requestedApp.getUebKey())));
-						model.put("availableRoles",
-								mapper.writeValueAsString(getAvailableChildRoles(requestedApp.getUebKey(), roleId)));
-						model.put("role", mapper.writeValueAsString(answer));
-						JsonMessage msg = new JsonMessage(mapper.writeValueAsString(model));
-						JSONObject j = new JSONObject(msg);
-						response.getWriter().write(j.toString());
-					} else
-						throw new NonCentralizedAppException(requestedApp.getName());
-				} else {
-					logger.info(EELFLoggerDelegate.auditLogger,
-							"RoleManageController.getRoleFunctionList, Unauthorized user");
-					SendErrorForUnauthorizedUser(response, user);
-				}
+			ObjectMapper mapper = new ObjectMapper();
+			EPApp requestedApp = appService.getApp(appId);
+			if (isAuthorizedUser(user, requestedApp)) {
+				fieldsValidation(requestedApp);
+				if (requestedApp.getCentralAuth()) {
+					CentralV2Role answer = externalAccessRolesService.getRoleInfo(roleId, requestedApp.getUebKey());
+					logger.info(EELFLoggerDelegate.applicationLogger, "role_id" + roleId);
+					Map<String, Object> model = new HashMap<>();
+					model.put("availableRoleFunctions", mapper
+							.writeValueAsString(externalAccessRolesService.getRoleFuncList(requestedApp.getUebKey())));
+					model.put("availableRoles",
+							mapper.writeValueAsString(getAvailableChildRoles(requestedApp.getUebKey(), roleId)));
+					model.put("role", mapper.writeValueAsString(answer));
+					JsonMessage msg = new JsonMessage(mapper.writeValueAsString(model));
+					JSONObject j = new JSONObject(msg);
+					response.getWriter().write(j.toString());
+				} else
+					throw new NonCentralizedAppException(requestedApp.getName());
+			} else {
+				logger.info(EELFLoggerDelegate.auditLogger,
+						"RoleManageController.getRoleFunctionList, Unauthorized user");
+				SendErrorForUnauthorizedUser(response, user);
+			}
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "getRole failed", e);
 			throw e;
@@ -478,26 +479,26 @@ public class RoleManageController extends EPRestrictedBaseController {
 			@PathVariable("appId") Long appId) throws Exception {
 		try {
 			EPUser user = EPUserUtils.getUserSession(request);
-				EPApp requestedApp = appService.getApp(appId);
-				if (isAuthorizedUser(user, requestedApp)) {
-					fieldsValidation(requestedApp);
-					if (requestedApp.getCentralAuth()) {
-						List<CentralV2RoleFunction> answer = null;
-						Map<String, Object> model = new HashMap<>();
-						ObjectMapper mapper = new ObjectMapper();
-						answer = externalAccessRolesService.getRoleFuncList(requestedApp.getUebKey());
-						model.put("availableRoleFunctions", answer);
-						JsonMessage msg = new JsonMessage(mapper.writeValueAsString(model));
-						JSONObject j = new JSONObject(msg);
-						response.getWriter().write(j.toString());
-					} else
-						throw new NonCentralizedAppException(requestedApp.getName());
-				} else {
-					logger.info(EELFLoggerDelegate.auditLogger,
-							"RoleManageController.getRoleFunctionList, Unauthorized user");
-					EcompPortalUtils.setBadPermissions(user, response, "createAdmin");
-					response.getWriter().write("Unauthorized User");
-				}
+			EPApp requestedApp = appService.getApp(appId);
+			if (isAuthorizedUser(user, requestedApp)) {
+				fieldsValidation(requestedApp);
+				if (requestedApp.getCentralAuth()) {
+					List<CentralV2RoleFunction> answer = null;
+					Map<String, Object> model = new HashMap<>();
+					ObjectMapper mapper = new ObjectMapper();
+					answer = externalAccessRolesService.getRoleFuncList(requestedApp.getUebKey());
+					model.put("availableRoleFunctions", answer);
+					JsonMessage msg = new JsonMessage(mapper.writeValueAsString(model));
+					JSONObject j = new JSONObject(msg);
+					response.getWriter().write(j.toString());
+				} else
+					throw new NonCentralizedAppException(requestedApp.getName());
+			} else {
+				logger.info(EELFLoggerDelegate.auditLogger,
+						"RoleManageController.getRoleFunctionList, Unauthorized user");
+				EcompPortalUtils.setBadPermissions(user, response, "createAdmin");
+				response.getWriter().write("Unauthorized User");
+			}
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "getRoleFunctionList failed", e);
 			throw e;
@@ -523,13 +524,14 @@ public class RoleManageController extends EPRestrictedBaseController {
 			if (isAuthorizedUser(user, requestedApp)) {
 				fieldsValidation(requestedApp);
 				if (requestedApp.getCentralAuth()) {
-					String code = roleFunc.getType()+PIPE+roleFunc.getCode()+PIPE+roleFunc.getAction();
+					String code = roleFunc.getType() + PIPE + roleFunc.getCode() + PIPE + roleFunc.getAction();
 					CentralV2RoleFunction domainRoleFunction = externalAccessRolesService.getRoleFunction(code,
 							requestedApp.getUebKey());
-					if(domainRoleFunction != null && (domainRoleFunction.getType() == null || domainRoleFunction.getAction() == null)) {
+					if (domainRoleFunction != null
+							&& (domainRoleFunction.getType() == null || domainRoleFunction.getAction() == null)) {
 						addIfTypeActionDoesNotExits(domainRoleFunction);
 					}
-					boolean isSave =  true;
+					boolean isSave = true;
 					if (domainRoleFunction != null && domainRoleFunction.getCode().equals(roleFunc.getCode())
 							&& domainRoleFunction.getType().equals(roleFunc.getType())
 							&& domainRoleFunction.getAction().equals(roleFunc.getAction())) {
@@ -545,16 +547,14 @@ public class RoleManageController extends EPRestrictedBaseController {
 					if (saveOrUpdateResponse) {
 						EPUser requestedUser = externalAccessRolesService.getUser(user.getOrgUserId()).get(0);
 						EPApp app = externalAccessRolesService.getApp(requestedApp.getUebKey()).get(0);
-						String activityCode = (isSave)
-								? EcompAuditLog.CD_ACTIVITY_EXTERNAL_AUTH_ADD_FUNCTION
+						String activityCode = (isSave) ? EcompAuditLog.CD_ACTIVITY_EXTERNAL_AUTH_ADD_FUNCTION
 								: EcompAuditLog.CD_ACTIVITY_EXTERNAL_AUTH_UPDATE_FUNCTION;
 						logExterlaAuthRoleFunctionActivity(code, requestedUser, app, activityCode);
 					}
 				} else
 					throw new NonCentralizedAppException(requestedApp.getName() + " is not Centralized Application");
 			} else {
-				logger.info(EELFLoggerDelegate.auditLogger,
-						"RoleManageController.saveRoleFunction, Unauthorized user");
+				logger.info(EELFLoggerDelegate.auditLogger, "RoleManageController.saveRoleFunction, Unauthorized user");
 				EcompPortalUtils.setBadPermissions(user, response, "createAdmin");
 				return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, "Unauthorized User", "Failure");
 			}
@@ -564,35 +564,29 @@ public class RoleManageController extends EPRestrictedBaseController {
 		}
 		return new PortalRestResponse<>(PortalRestStatusEnum.OK, "Saved Successfully!", "Success");
 	}
-	
+
 	private void logExterlaAuthRoleFunctionActivity(String code, EPUser requestedUser, EPApp app, String activityCode) {
-		logger.info(EELFLoggerDelegate.applicationLogger,
-				"saveRoleFunction: succeeded for app {}, function {}", app.getId(), code);
+		logger.info(EELFLoggerDelegate.applicationLogger, "saveRoleFunction: succeeded for app {}, function {}",
+				app.getId(), code);
 		AuditLog auditLog = getAuditInfo(requestedUser, activityCode);
-		auditLog.setComments(EcompPortalUtils.truncateString("saveRoleFunction role for app:"
-				+ app.getId() + " and function:'" + code + "'",
+		auditLog.setComments(EcompPortalUtils.truncateString(
+				"saveRoleFunction role for app:" + app.getId() + " and function:'" + code + "'",
 				PortalConstants.AUDIT_LOG_COMMENT_SIZE));
 		auditService.logActivity(auditLog, null);
-		MDC.put(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP,
-				EPEELFLoggerAdvice.getCurrentDateTimeUTC());
-		MDC.put(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP,
-				EPEELFLoggerAdvice.getCurrentDateTimeUTC());
-		EcompPortalUtils.calculateDateTimeDifferenceForLog(
-				MDC.get(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP),
+		MDC.put(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP, EPEELFLoggerAdvice.getCurrentDateTimeUTC());
+		MDC.put(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP, EPEELFLoggerAdvice.getCurrentDateTimeUTC());
+		EcompPortalUtils.calculateDateTimeDifferenceForLog(MDC.get(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP),
 				MDC.get(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP));
 		logger.info(EELFLoggerDelegate.auditLogger,
 				EPLogUtil.formatAuditLogMessage("RoleManageController.saveRoleFunction", activityCode,
-						String.valueOf(requestedUser.getId()), requestedUser.getOrgUserId(),
-						code));
+						String.valueOf(requestedUser.getId()), requestedUser.getOrgUserId(), code));
 		MDC.remove(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP);
 		MDC.remove(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP);
 		MDC.remove(SystemProperties.MDC_TIMER);
 	}
 
-
-
 	private void addIfTypeActionDoesNotExits(CentralV2RoleFunction domainRoleFunction) {
-		if(domainRoleFunction.getCode().contains(PIPE)) {
+		if (domainRoleFunction.getCode().contains(PIPE)) {
 			String newfunctionCodeFormat = EcompPortalUtils.getFunctionCode(domainRoleFunction.getCode());
 			String newfunctionTypeFormat = EcompPortalUtils.getFunctionType(domainRoleFunction.getCode());
 			String newfunctionActionFormat = EcompPortalUtils.getFunctionAction(domainRoleFunction.getCode());
@@ -697,19 +691,19 @@ public class RoleManageController extends EPRestrictedBaseController {
 				return null;
 			}
 		}
-
 		EPUser user = EPUserUtils.getUserSession(request);
 		List<CentralizedApp> applicationsList = null;
-			if (adminRolesService.isAccountAdmin(user) || adminRolesService.isSuperAdmin(user) || adminRolesService.isRoleAdmin(user)) {
-				applicationsList = externalAccessRolesService.getCentralizedAppsOfUser(userId);
-			} else {
-				logger.info(EELFLoggerDelegate.auditLogger,
-						"RoleManageController.getCentralizedAppRoles, Unauthorized user");
-				EcompPortalUtils.setBadPermissions(user, response, "createAdmin");
-			}
+		if (adminRolesService.isAccountAdmin(user) || adminRolesService.isSuperAdmin(user)
+				|| adminRolesService.isRoleAdmin(user)) {
+			applicationsList = externalAccessRolesService.getCentralizedAppsOfUser(userId);
+		} else {
+			logger.info(EELFLoggerDelegate.auditLogger,
+					"RoleManageController.getCentralizedAppRoles, Unauthorized user");
+			EcompPortalUtils.setBadPermissions(user, response, "createAdmin");
+		}
 		return applicationsList;
 	}
-	
+
 	public RoleListController getRoleListController() {
 		return roleListController;
 	}
@@ -725,7 +719,6 @@ public class RoleManageController extends EPRestrictedBaseController {
 	public void setRoleController(RoleController roleController) {
 		this.roleController = roleController;
 	}
-
 
 	@RequestMapping(value = { "/portalApi/syncRoles" }, method = RequestMethod.POST, produces = "application/json")
 	public PortalRestResponse<String> syncRoles(HttpServletRequest request, HttpServletResponse response,
@@ -748,7 +741,7 @@ public class RoleManageController extends EPRestrictedBaseController {
 		}
 		return new PortalRestResponse<>(PortalRestStatusEnum.OK, "Sync roles completed successfully!", "Success");
 	}
-	
+
 	@RequestMapping(value = { "/portalApi/syncFunctions" }, method = RequestMethod.POST, produces = "application/json")
 	public PortalRestResponse<String> syncFunctions(HttpServletRequest request, HttpServletResponse response,
 			@RequestBody Long appId) {
@@ -798,30 +791,30 @@ public class RoleManageController extends EPRestrictedBaseController {
 		}
 		return allParentRoles;
 	}
-	
-	public AuditLog getAuditInfo(EPUser user, String activityCode)
-	{
+
+	public AuditLog getAuditInfo(EPUser user, String activityCode) {
 		AuditLog auditLog = new AuditLog();
 		auditLog.setUserId(user.getId());
 		auditLog.setActivityCode(activityCode);
 		auditLog.setAffectedRecordId(user.getOrgUserId());
-		
+
 		return auditLog;
 	}
-	
-	private void  fieldsValidation(EPApp app) throws Exception{
+
+	private void fieldsValidation(EPApp app) throws Exception {
 		app.getUebKey();
 		List<EPApp> appInfo = externalAccessRolesService.getApp(app.getUebKey());
-		if(appInfo.isEmpty()){
+		if (appInfo.isEmpty()) {
 			throw new InvalidApplicationException("Invalid credentials");
 		}
-		if(!appInfo.isEmpty() && EcompPortalUtils.checkIfRemoteCentralAccessAllowed() && appInfo.get(0).getCentralAuth()){
+		if (!appInfo.isEmpty() && EcompPortalUtils.checkIfRemoteCentralAccessAllowed()
+				&& appInfo.get(0).getCentralAuth()) {
 			ResponseEntity<String> response = externalAccessRolesService.getNameSpaceIfExists(appInfo.get(0));
 			if (response.getStatusCode().value() == HttpServletResponse.SC_NOT_FOUND)
 				throw new InvalidApplicationException("Invalid NameSpace");
 		}
 	}
-	
+
 	private boolean isAuthorizedUser(EPUser user, EPApp requestedApp) {
 		if (user != null && (adminRolesService.isAccountAdminOfApplication(user, requestedApp)
 				|| (adminRolesService.isSuperAdmin(user) && requestedApp.getId() == PortalConstants.PORTAL_APP_ID)))
@@ -833,8 +826,9 @@ public class RoleManageController extends EPRestrictedBaseController {
 		EcompPortalUtils.setBadPermissions(user, response, "createAdmin");
 		response.getWriter().write("Unauthorized User");
 	}
-	
-	@RequestMapping(value = { "/portalApi/uploadRoleFunction/{appId}" }, method = RequestMethod.POST, produces = "application/json")
+
+	@RequestMapping(value = {
+			"/portalApi/uploadRoleFunction/{appId}" }, method = RequestMethod.POST, produces = "application/json")
 	public PortalRestResponse<String> bulkUploadRoleFunc(HttpServletRequest request, HttpServletResponse response,
 			@RequestBody UploadRoleFunctionExtSystem data, @PathVariable("appId") Long appId) {
 		EPUser user = EPUserUtils.getUserSession(request);
@@ -843,9 +837,10 @@ public class RoleManageController extends EPRestrictedBaseController {
 			if (isAuthorizedUser(user, app)) {
 				fieldsValidation(app);
 				externalAccessRolesService.bulkUploadRoleFunc(data, app);
-				String activityCode =  EcompAuditLog.CD_ACTIVITY_EXTERNAL_AUTH_UPDATE_ROLE_AND_FUNCTION;
-				String code = data.getName()+","+data.getType()+ PIPE + data.getInstance() + PIPE + data.getAction();
-				logExterlaAuthRoleFunctionActivity(code , user, app, activityCode);
+				String activityCode = EcompAuditLog.CD_ACTIVITY_EXTERNAL_AUTH_UPDATE_ROLE_AND_FUNCTION;
+				String code = data.getName() + "," + data.getType() + PIPE + data.getInstance() + PIPE
+						+ data.getAction();
+				logExterlaAuthRoleFunctionActivity(code, user, app, activityCode);
 			} else {
 				logger.info(EELFLoggerDelegate.auditLogger,
 						"RoleManageController.syncRoles, Unauthorized user:{}", user != null ? user.getOrgUserId() : "");

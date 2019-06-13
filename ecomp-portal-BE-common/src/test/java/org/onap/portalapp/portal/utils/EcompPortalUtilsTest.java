@@ -38,6 +38,8 @@
 package org.onap.portalapp.portal.utils;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +49,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.junit.Test;
 import org.onap.portalapp.portal.core.MockEPUser;
-import org.onap.portalapp.portal.domain.EPUser;
 import org.onap.portalapp.portal.framework.MockitoTestSuite;
 
 public class EcompPortalUtilsTest {
@@ -96,8 +97,18 @@ public class EcompPortalUtilsTest {
 	}
 	
 	@Test
-	public void setBadPermissionsForEmptyUserTest() {
-		EcompPortalUtils.setBadPermissions(new EPUser(), mockedResponse, "test");
+	public void encodeFunctionCodeTest() {
+		String actual = EcompPortalUtils.encodeFunctionCode("test/function*code");
+		assertEquals("test%2ffunction%2acode", actual);
 	}
-
+	
+	@Test
+	public void checkFunctionCodeHasEncodePatternTrueTest() {
+		assertTrue(EcompPortalUtils.checkFunctionCodeHasEncodePattern("test/function*code"));
+	}
+	
+	@Test
+	public void checkFunctionCodeHasEncodePatternFalseTest() {
+		assertFalse(EcompPortalUtils.checkFunctionCodeHasEncodePattern("test-function-code"));
+	}
 }

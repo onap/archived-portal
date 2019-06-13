@@ -547,6 +547,7 @@ public class ExternalAccessRolesServiceImplTest {
 		Mockito.when(EcompPortalUtils.getFunctionCode("test_type_1|type_code_1|*")).thenReturn("type_code_1");
 		Mockito.when(EcompPortalUtils.getFunctionType("test_type|type_code|*")).thenReturn("test_type");
 		Mockito.when(EcompPortalUtils.getFunctionAction("test_type|type_code|*")).thenReturn("*");
+		Mockito.when(EcompPortalUtils.encodeFunctionCode("type_code")).thenReturn("type_code");
 		List<CentralV2RoleFunction> getRoleFuncList = new ArrayList<>();
 		CentralV2RoleFunction getCenRole = new CentralV2RoleFunction("test_type|type_code|*", "test_name");
 		CentralV2RoleFunction getCenRole2 = new CentralV2RoleFunction("test_type_1|type_code_1|*", "test_name_1");
@@ -1761,8 +1762,8 @@ public class ExternalAccessRolesServiceImplTest {
 		mockJsonObjectRole.put("name", "com.test.app.Test");
 		mockJsonObjectRole.put("perms", permsList);
 		mockJsonObjectRole.put("description",
-				"{\"id\":\"2\",\"name\":\"test1\",\"active\":\"true\",\"priority\":\"null\",\"appId\":\"2\",\"appRoleId\":\"2\"}");
-		mockJsonObjectRole2.put("name", "com.test.app.Test2");
+				"Test role");
+		mockJsonObjectRole2.put("name", "com.test.app.Test2_role");
 		List<JSONObject> permsList2 = new ArrayList<>();
 		permsList2.add(mockJsonObjectPerm1);
 		mockJsonObjectRole2.put("perms", permsList2);
@@ -1775,19 +1776,26 @@ public class ExternalAccessRolesServiceImplTest {
 				Matchers.<HttpEntity<String>>any(), Matchers.eq(String.class))).thenReturn(getResponse);
 		List<EPRole> getCurrentRoleList = new ArrayList<>();
 		EPRole getEPRole = new EPRole();
-		getEPRole.setName("Test");
+		getEPRole.setName("Test role");
 		getEPRole.setId(2l);
 		getEPRole.setAppId(app.getId());
 		getEPRole.setAppRoleId(2l);
 		getEPRole.setActive(true);
 		EPRole getEPRole2 = new EPRole();
-		getEPRole2.setName("Test3");
+		getEPRole2.setName("Test2_role");
 		getEPRole2.setId(3l);
-		getEPRole.setAppId(app.getId());
-		getEPRole.setAppRoleId(3l);
+		getEPRole2.setAppId(app.getId());
+		getEPRole2.setAppRoleId(3l);
 		getEPRole2.setActive(true);
+		EPRole getEPRole3 = new EPRole();
+		getEPRole3.setName("Test3_role");
+		getEPRole3.setId(3l);
+		getEPRole3.setAppId(app.getId());
+		getEPRole3.setAppRoleId(3l);
+		getEPRole3.setActive(true);
 		getCurrentRoleList.add(getEPRole);
 		getCurrentRoleList.add(getEPRole2);
+		getCurrentRoleList.add(getEPRole3);
 		final Map<String, Long> appParams = new HashMap<>();
 		appParams.put("appId", app.getId());
 		Mockito.when(dataAccessService.executeNamedQuery("getPartnerAppRolesList", appParams, null))
@@ -1822,10 +1830,10 @@ public class ExternalAccessRolesServiceImplTest {
 		getV2RoleFunction.add(centralV2RoleFunction);
 		final Map<String, String> extRoleParams = new HashMap<>();
 		List<EPRole> roleListDeactivate = new ArrayList<>();
-		extRoleParams.put(APP_ROLE_NAME_PARAM, "Test3");
+		extRoleParams.put(APP_ROLE_NAME_PARAM, "Test3_role");
 		extRoleParams.put(APP_ID, app.getId().toString());
 		EPRole getEPRoleDeactivate = new EPRole();
-		getEPRoleDeactivate.setName("Test3");
+		getEPRoleDeactivate.setName("Test3_role");
 		getEPRoleDeactivate.setId(3l);
 		getEPRoleDeactivate.setAppId(app.getId());
 		getEPRoleDeactivate.setAppRoleId(3l);

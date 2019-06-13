@@ -5,6 +5,7 @@
 
 hostip=""
 hostname=""
+BASE=/opt/apache-tomcat-8.0.37
 while [ $# -gt 0 ]; do
     key="$1"
     case $key in
@@ -17,6 +18,12 @@ while [ $# -gt 0 ]; do
         -n|--name)
         hostname="$2"
         echo "$0: option -n value is $hostname"
+        shift # past argument
+        shift # past value
+        ;;
+        -b|--base)
+        BASE="$2"
+        echo "$0: option -b value is $BASE"
         shift # past argument
         shift # past value
         ;;
@@ -43,7 +50,6 @@ else
     fi
 fi
 
-BASE=/opt/apache-tomcat-8.0.37
 if [ ! -d $BASE ] ; then
     echo "$0: $BASE not found or not a directory"
     exit 1

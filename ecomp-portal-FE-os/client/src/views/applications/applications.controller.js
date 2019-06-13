@@ -40,8 +40,9 @@
     class ApplicationsCtrl {
 
     	constructor($log, $cookies, conf, ngDialog,
-        			applicationsService, confirmBoxService, userProfileService, utilsService,$modal) {
+        			applicationsService, confirmBoxService, userProfileService, utilsService,$modal,$scope) {
             this.emptyImgForPreview = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
+            $scope.isAdmin = false;
             let getOnboardingApps = () => {
                 this.isLoadingTable = true;
                 applicationsService.getOnboardingApps()
@@ -54,6 +55,10 @@
                         		appsList[i].imageLink = appsList[i].imageLink+'?' + new Date().getTime();
                     		}
                     	}
+                    	if(appsList.length == 0)
+                		{
+                		confirmBoxService.showInformation('You do not have applications to edit').then(isConfirmed => {});
+                		}
                     	this.appsList = appsList;
                     }).catch(err => {
                         confirmBoxService.showInformation('There was a problem retrieving the Applications. ' +
@@ -64,8 +69,21 @@
                     });
             };
 
+            let checkIfUserIsSuperAdmin = () => {
+            	applicationsService.checkIfUserIsSuperAdmin().then(res => {   
+            		if(res) {
+            			$scope.isAdmin = true;
+            			}
+                        }).catch(err => {
+                            $log.error('ApplicationsCtrl.checkIfUserIsSuperAdmin:: Failed - ' + err);
+                        }).finally(()=> {
+                            this.isSaving = false;
+                        });
+              };
+                 
             let init = () => {
                 this.isLoadingTable = false;
+                checkIfUserIsSuperAdmin();
                 getOnboardingApps();
                 this.searchString = '';
                 this.appsTableHeaders = [
@@ -143,6 +161,6 @@
         }
     }
     ApplicationsCtrl.$inject = ['$log', '$cookies', 'conf', 'ngDialog',
-    				'applicationsService', 'confirmBoxService', 'userProfileService', 'utilsService','$modal'];
+    				'applicationsService', 'confirmBoxService', 'userProfileService', 'utilsService','$modal', '$scope'];
     angular.module('ecompApp').controller('ApplicationsCtrl', ApplicationsCtrl);
 })();

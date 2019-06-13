@@ -416,13 +416,6 @@ public interface ExternalAccessRolesService {
 	public JSONArray getAppRolesJSONFromExtAuthSystem(EPApp app) throws Exception;
 	
 	/**
-	 * It encodes the function code  based on Hex encoding
-	 * @param funCode
-	 * 
-	 */
-	public String encodeFunctionCode(String funCode);
-	
-	/**
 	 * 
 	 * It returns list of ExternalRoleDetails which is converted from JSON array of roles
 	 * 

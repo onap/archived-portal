@@ -131,7 +131,7 @@
             return deferred.promise;
         }
 
-        getUserAppRoles(appid, orgUserId, extRequestValue){
+        getUserAppRoles(appid, orgUserId, extRequestValue,isSystemUser){
         	let canceller = this.$q.defer();
             let isActive = false;
 
@@ -148,7 +148,7 @@
             this.$http({
                 method: 'GET',
                 url: this.conf.api.userAppRoles,
-                params: {user: orgUserId, app: appid, externalRequest: extRequestValue},
+                params: {user: orgUserId, app: appid, externalRequest: extRequestValue,isSystemUser: isSystemUser},
                 cache: false,
                 headers: {
                     'X-ECOMP-RequestID':this.uuid.generate()

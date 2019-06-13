@@ -54,6 +54,7 @@ import org.onap.portalapp.portal.transport.EPWidgetsSortPreference;
 import org.onap.portalapp.portal.transport.FieldsValidator;
 import org.onap.portalapp.portal.transport.LocalRole;
 import org.onap.portalapp.portal.transport.OnboardingApp;
+import org.springframework.http.ResponseEntity;
 
 public interface EPAppService {
 
@@ -244,5 +245,10 @@ public interface EPAppService {
 	UserRoles getUserProfileForRolesLeftMenu(String loginId);
 
 	UserRoles getUserProfileNormalizedForRolesLeftMenu(EPUser user);
+	public List<OnboardingApp> getAdminAppsOfUser(EPUser user);
+	
+	public ResponseEntity<String> checkIfNameSpaceIsValid(String namespace) throws Exception ;
+
+	List<AppsResponse> getAllApplications(Boolean all);
 
 }

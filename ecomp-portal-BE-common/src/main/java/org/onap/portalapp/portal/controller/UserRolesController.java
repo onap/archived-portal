@@ -285,7 +285,7 @@ public class UserRolesController extends EPRestrictedBaseController {
 	@RequestMapping(value = { "/portalApi/userAppRoles" }, method = {
 			RequestMethod.GET }, produces = "application/json")
 	public List<RoleInAppForUser> getAppRolesForUser(HttpServletRequest request, @RequestParam("user") String orgUserId,
-			@RequestParam("app") Long appid, @RequestParam("externalRequest") Boolean extRequestValue,
+			@RequestParam("app") Long appid, @RequestParam("externalRequest") Boolean extRequestValue,@RequestParam("isSystemUser") Boolean isSystemUser,
 			HttpServletResponse response) {
 		EPUser user = EPUserUtils.getUserSession(request);
 		List<RoleInAppForUser> result = null;
@@ -295,7 +295,7 @@ public class UserRolesController extends EPRestrictedBaseController {
 			EcompPortalUtils.setBadPermissions(user, response, "getAppRolesForUser");
 			feErrorString = EcompPortalUtils.getFEErrorString(true, response.getStatus());
 		} else {
-			if (EcompPortalUtils.legitimateUserId(orgUserId)) {
+			if ((!isSystemUser && EcompPortalUtils.legitimateUserId(orgUserId)) || isSystemUser) {
 				result = userRolesService.getAppRolesForUser(appid, orgUserId, extRequestValue, user);
 				logger.debug(EELFLoggerDelegate.debugLogger, "getAppRolesForUser: result {}, appId {}", result , appid);
 				int responseCode = EcompPortalUtils.getExternalAppResponseCode();
@@ -561,4 +561,16 @@ public class UserRolesController extends EPRestrictedBaseController {
 		return result;
 	}
 
+	@RequestMapping(value = { "/portalApi/checkIfUserIsSuperAdmin" }, method = RequestMethod.GET, produces = "application/json")
+	public boolean checkIfUserIsSuperAdmin(HttpServletRequest request,
+			HttpServletResponse response) {
+		EPUser user = EPUserUtils.getUserSession(request);
+		boolean isSuperAdmin = false;
+		try {
+			isSuperAdmin = adminRolesService.isSuperAdmin(user) ;
+		} catch (Exception e) {
+			logger.error(EELFLoggerDelegate.errorLogger, "checkIfUserIsSuperAdmin failed: " + e.getMessage());
+		}
+		return isSuperAdmin;
+	}
 }

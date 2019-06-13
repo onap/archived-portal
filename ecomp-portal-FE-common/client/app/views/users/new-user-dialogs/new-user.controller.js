@@ -43,6 +43,18 @@
     class NewUserModalCtrl {
         constructor($scope, $log, usersService, applicationsService, confirmBoxService, items) {
             var extRequestValue = false;
+            var isSystemUser = false;
+
+            $scope.ngRepeatDemo = [
+		        {id: 'userButton', value: 'true', labelvalue: 'user'},
+		        {id: 'systemUserButton', value: 'false', labelvalue: 'system'}
+		    ]
+            
+            $scope.selectedvalueradioButtonGroup = {
+			        type: 'true'
+			    }
+            
+            
             let init = () => {
                 //$log.info('NewUserModalCtrl::init');
                 this.isSaving = false;
@@ -94,7 +106,7 @@
                     this.dialogState = 1;
                     return;
                 }
-                //$log.debug('NewUserModalCtrl::getUserAppsRoles: about to call getAdminAppsSimpler');
+                $log.debug('NewUserModalCtrl::getUserAppsRoles: about to call getAdminAppsSimpler');
                 this.isGettingAdminApps = true;
                 applicationsService.getAdminAppsSimpler().then((apps) => {
                     //$log.debug('NewUserModalCtrl::getUserAppsRoles: beginning of then for getAdminAppsSimpler');
@@ -123,7 +135,11 @@
                         app.isErrorUpdating = false;
                         app.isDoneUpdating = false;
                         app.errorMessage = "";
-                        usersService.getUserAppRoles(app.id, this.selectedUser.orgUserId, extRequestValue).promise().then((userAppRolesResult) => {
+                        if($scope.selectedvalueradioButtonGroup.type == 'false')
+                        	{
+                        	   isSystemUser = true;
+                        	}
+                        usersService.getUserAppRoles(app.id, this.selectedUser.orgUserId, extRequestValue,isSystemUser).promise().then((userAppRolesResult) => {
                             //$log.debug('NewUserModalCtrl::getUserAppsRoles: got a result for app: ',app.id,': ',app.name,': ',userAppRolesResult);
                             app.appRoles = userAppRolesResult;
                             app.isLoading = false;
@@ -179,11 +195,18 @@
         						
         					}
                             }
+                        if($scope.selectedvalueradioButtonGroup.type == 'false')
+                    	{
+                    	   isSystemUser = true;
+                    	}else{
+                    		isSystemUser = false;
+                    	}
                         var newUserAppRoles = {
                         	orgUserId: this.selectedUser.orgUserId,
                         	appId: app.id, 
                         	appRoles: app.appRoles,
-                        	appName: app.name
+                        	appName: app.name,
+                        	isSystemUser : isSystemUser
                         }; 
                         usersService.updateUserAppRoles(newUserAppRoles).promise()
                         .then(res => {

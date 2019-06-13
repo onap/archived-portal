@@ -114,6 +114,8 @@ app.controller('roleController', function ($scope, $http, confirmBoxService, ngD
 				}
 				if (exists) {
 					confirmBoxService.showInformation( "Role already exists.");
+				} else if($scope.role.name.toLowerCase() == "admin"){
+					confirmBoxService.showInformation( "Role '"+$scope.role.name+"' is not acceptable.");
 				}
 				else {
 					var uuu = conf.api.saveRole + "?role_id="+$stateParams.roleId;

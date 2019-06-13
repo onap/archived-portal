@@ -58,7 +58,7 @@
                 'username': null,
                 'appPassword': null,
                 'thumbnail': emptyImg,
-                'isEnabled': true,
+                'isEnabled': false,
                 'restrictedApp': false,
                 'nameSpace': null,
                 'isCentralAuth': false                
@@ -172,26 +172,44 @@
             //***************************
 
             this.saveChanges = () => {
-                //if valid..
+            	 //if valid..
             	if(this.app.isCentralAuth){
-                    //if valid..
-                	 if(((angular.isUndefined(this.app.myLoginsAppName) || !this.app.myLoginsAppName)&&(angular.isUndefined(this.app.myLoginsAppOwner) || !this.app.myLoginsAppOwner)&&(angular.isUndefined(this.app.name) || !this.app.name)&&(angular.isUndefined(this.app.url) || !this.app.url)
-                			 &&(angular.isUndefined(this.app.username) || !this.app.username))) {
-                		 confirmBoxService.showInformation('Please fill in all required fields').then(isConfirmed => {});
-                         return;
-                     }else if(!((angular.isUndefined(this.app.name) || !!this.app.name)&&(angular.isUndefined(this.app.url) || !!this.app.url))){
-                         confirmBoxService.showInformation('Please fill in all required fields').then(isConfirmed => {});
-                         return;
-                     }
+                    //if valid.
+            		if(!this.app.isEnabled)
+            			{
+            			if(((angular.isUndefined(this.app.name) || !this.app.name)||(angular.isUndefined(this.app.nameSpace) || !this.app.nameSpace)
+                   			 ||(angular.isUndefined(this.app.username) || !this.app.username))) {
+                   		    confirmBoxService.showInformation('Please fill in all required fields for centralized application').then(isConfirmed => {});
+                            return;
+                           }
+            			}
+            		if(this.app.isEnabled){
+            			if(((angular.isUndefined(this.app.myLoginsAppName) || !this.app.myLoginsAppName)||(angular.isUndefined(this.app.myLoginsAppOwner) || !this.app.myLoginsAppOwner)||(angular.isUndefined(this.app.name) || !this.app.name)||(angular.isUndefined(this.app.url) || !this.app.url)
+                   			 ||(angular.isUndefined(this.app.username) || !this.app.username)||(angular.isUndefined(this.app.nameSpace) || !this.app.nameSpace))) {
+                   		 confirmBoxService.showInformation('Please fill in all required fields for centralized active application').then(isConfirmed => {});
+                            return;
+                        }
+            	   }
                 	}else{
-                		 if(((angular.isUndefined(this.app.myLoginsAppName) || !this.app.myLoginsAppName)||(angular.isUndefined(this.app.myLoginsAppOwner) || !this.app.myLoginsAppOwner)||(angular.isUndefined(this.app.name) || !this.app.name)||(angular.isUndefined(this.app.url) || !this.app.url)
+                		
+                		if(!this.app.isEnabled)
+                			{
+                			 if((angular.isUndefined(this.app.name) || !this.app.name)){
+                				 confirmBoxService.showInformation('Please fill in all required field ApplicationName to Save the applictaion').then(isConfirmed => {});
+                                 return; 
+                			 }
+                			}else if(this.app.isEnabled && !this.app.restrictedApp){
+                		    if(((angular.isUndefined(this.app.myLoginsAppName) || !this.app.myLoginsAppName)||(angular.isUndefined(this.app.myLoginsAppOwner) || !this.app.myLoginsAppOwner)||(angular.isUndefined(this.app.name) || !this.app.name)||(angular.isUndefined(this.app.url) || !this.app.url)
                     			 ||(angular.isUndefined(this.app.username) || !this.app.username)||(angular.isUndefined(this.app.appPassword) || !this.app.appPassword))) {
-                    		 confirmBoxService.showInformation('Please fill in all required fields along with password as the app is not centralized').then(isConfirmed => {});
+                    		    confirmBoxService.showInformation('Please fill in all required fields along with password as the app is not centralized').then(isConfirmed => {});
+                                 return;
+                		    } }else if(this.app.isEnabled && this.app.restrictedApp){
+                                if((angular.isUndefined(this.app.name) || !this.app.name) ||(angular.isUndefined(this.app.url) || !this.app.url)){
+                        	    confirmBoxService.showInformation('Please fill in all required fields').then(isConfirmed => {});
                              return;
-                         }else if(!((angular.isUndefined(this.app.name) || !!this.app.name)&&(angular.isUndefined(this.app.url) || !!this.app.url))){
-                             confirmBoxService.showInformation('Please fill in all required fields').then(isConfirmed => {});
-                             return;
+                         
                          }
+                	   }
                 	}
                 this.isSaving = true;
                 // For a restricted app, null out all irrelevant fields

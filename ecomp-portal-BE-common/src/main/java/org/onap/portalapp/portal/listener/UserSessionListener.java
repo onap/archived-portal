@@ -109,7 +109,8 @@ public class UserSessionListener implements HttpSessionListener {
 
 				// Clean the shared context each time a session is destroyed.
 				// TODO: move the threshold to configuration file.
-				getSharedContextService().expireSharedContexts(60 * 60 * 8);
+				//June2019:Commented as sharedContext is no more needed.			
+//				getSharedContextService().expireSharedContexts(60 * 60 * 8);
 			}
 
 			logger.info(EELFLoggerDelegate.debugLogger, "Session Destroyed : " + session.getId());

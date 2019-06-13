@@ -98,7 +98,11 @@
 		"loggedinUser" : "http://localhost:8080/ecompportal/portalApi/loggedinUser",
 		"modifyLoggedinUser" : "http://localhost:8080/ecompportal/portalApi/modifyLoggedinUser",
 		"centralizedApps": "http://localhost:8080/ecompportal/portalApi/centralizedApps",
-		"uploadRoleFunction":"http://localhost:8080/ecompportal/portalApi/uploadRoleFunction/:appId"
+		"uploadRoleFunction":"http://localhost:8080/ecompportal/portalApi/uploadRoleFunction/:appId",
+	    "checkIfUserIsSuperAdmin":"http://localhost:8080/ecompportal/portalApi/checkIfUserIsSuperAdmin",
+	    "getCurrentLang": "http://localhost:8080/ecompportal/auxapi/languageSetting/user/:loginId",
+		"getLanguages": "http://localhost:8080/ecompportal/auxapi/language",
+		"updateLang": "http://localhost:8080/ecompportal/auxapi/languageSetting/user/:loginId"
 	},
 	"cookieDomain": "onap.org"
 }

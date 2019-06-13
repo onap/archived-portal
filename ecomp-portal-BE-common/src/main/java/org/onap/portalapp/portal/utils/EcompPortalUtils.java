@@ -47,10 +47,12 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.DatatypeConverter;
 
+import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -70,19 +72,21 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class EcompPortalUtils {
 
 	private static EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(EcompPortalUtils.class);
-	
+
 	private static final String FUNCTION_PIPE = "|";
-	
+
 	// TODO: GLOBAL_LOGIN_URL is the same as in SessionTimeoutInterceptor.
 	// It should be defined in SystemProperties.
 	private static final String GLOBAL_LOGIN_URL = "global-login-url";
-	
-	// It is a regular expression used for while creating a External Central Auth Role 
+
+	// It is a regular expression used for while creating a External Central Auth
+	// Role
 	public static final String EXTERNAL_CENTRAL_AUTH_ROLE_HANDLE_SPECIAL_CHARACTERS = "([^A-Z^a-z^0-9^\\.^%^(^)^=^:])";
-	
+
+	public static final String slash = "/";
+
 	/**
-	 * @param orgUserId
-	 *            User ID to validate
+	 * @param orgUserId User ID to validate
 	 * @return true if orgUserId is not empty and contains only alphanumeric, false
 	 *         otherwise
 	 */
@@ -94,10 +98,8 @@ public class EcompPortalUtils {
 	 * Splits the string into a list of tokens using the specified regular
 	 * expression
 	 * 
-	 * @param source
-	 *            String to split
-	 * @param regex
-	 *            tokens
+	 * @param source String to split
+	 * @param regex  tokens
 	 * @return List of tokens split from the source
 	 */
 	public static List<String> parsingByRegularExpression(String source, String regex) {
@@ -116,10 +118,8 @@ public class EcompPortalUtils {
 	/**
 	 * Builds a JSON object with error code and message information.
 	 * 
-	 * @param errorCode
-	 *            error code
-	 * @param errorMessage
-	 *            message
+	 * @param errorCode    error code
+	 * @param errorMessage message
 	 * @return JSON object as a String
 	 */
 	public static String jsonErrorMessageResponse(int errorCode, String errorMessage) {
@@ -129,8 +129,7 @@ public class EcompPortalUtils {
 	/**
 	 * Builds a JSON object with the specified message
 	 * 
-	 * @param message
-	 *            Message to embed
+	 * @param message Message to embed
 	 * @return JSON object as a String
 	 */
 	public static String jsonMessageResponse(String message) {
@@ -141,15 +140,11 @@ public class EcompPortalUtils {
 	 * Serializes the specified object as JSON and writes the result to the debug
 	 * log. If serialization fails, logs a message to the error logger.
 	 * 
-	 * @param logger
-	 *            Logger for the class where the object was built; the logger
-	 *            carries the class name.
-	 * @param source
-	 *            First portion of the log message
-	 * @param msg
-	 *            Second portion of the log message
-	 * @param obj
-	 *            Object to serialize as JSON
+	 * @param logger Logger for the class where the object was built; the logger
+	 *               carries the class name.
+	 * @param source First portion of the log message
+	 * @param msg    Second portion of the log message
+	 * @param obj    Object to serialize as JSON
 	 */
 	public static void logAndSerializeObject(EELFLoggerDelegate logger, String source, String msg, Object obj) {
 		try {
@@ -169,12 +164,9 @@ public class EcompPortalUtils {
 	 * Serializes the specified object as JSON and writes the result to the debug
 	 * log. If serialization fails, logs a message to the error logger.
 	 * 
-	 * @param source
-	 *            First portion of the log message
-	 * @param msg
-	 *            Second portion of the log message
-	 * @param obj
-	 *            Object to serialize as JSON
+	 * @param source First portion of the log message
+	 * @param msg    Second portion of the log message
+	 * @param obj    Object to serialize as JSON
 	 */
 	public static void logAndSerializeObject(String source, String msg, Object obj) {
 		logAndSerializeObject(logger, source, msg, obj);
@@ -209,12 +201,9 @@ public class EcompPortalUtils {
 	 * Set response status to Unauthorized if user == null and to Forbidden in all
 	 * (!) other cases. Logging is not performed if invocator == null
 	 * 
-	 * @param user
-	 *            User object
-	 * @param response
-	 *            HttpServletResponse
-	 * @param invocator
-	 *            may be null
+	 * @param user      User object
+	 * @param response  HttpServletResponse
+	 * @param invocator may be null
 	 */
 	public static void setBadPermissions(EPUser user, HttpServletResponse response, String invocator) {
 		if (user == null) {
@@ -248,13 +237,15 @@ public class EcompPortalUtils {
 	// This method might be just for testing purposes.
 	public static void setExternalAppResponseCode(int responseCode) {
 		try {
-			/*String code = String.valueOf(responseCode);
-			MDC.put(EPCommonSystemProperties.EXTERNAL_API_RESPONSE_CODE,code );
-			code=StringUtils.EMPTY;*/
+			/*
+			 * String code = String.valueOf(responseCode);
+			 * MDC.put(EPCommonSystemProperties.EXTERNAL_API_RESPONSE_CODE,code );
+			 * code=StringUtils.EMPTY;
+			 */
 			String code = Integer.toString(responseCode);
-			MDC.put(EPCommonSystemProperties.EXTERNAL_API_RESPONSE_CODE,code );
-			char[] chars=code.toCharArray();
-	        Arrays.fill(chars, ' ');
+			MDC.put(EPCommonSystemProperties.EXTERNAL_API_RESPONSE_CODE, code);
+			char[] chars = code.toCharArray();
+			Arrays.fill(chars, ' ');
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "setExternalAppResponseCode failed", e);
 		}
@@ -337,10 +328,8 @@ public class EcompPortalUtils {
 	/**
 	 * Returns a default property if the expected one is not available
 	 * 
-	 * @param property
-	 *            Key
-	 * @param defaultValue
-	 *            default Value
+	 * @param property     Key
+	 * @param defaultValue default Value
 	 * @return Default value if property is not defined or yields the empty string;
 	 *         else the property value.
 	 */
@@ -360,10 +349,8 @@ public class EcompPortalUtils {
 	 * "MDC.remove(SystemProperties.MDC_TIMER);" after this method call to clean up
 	 * the record in MDC
 	 *
-	 * @param beginDateTime
-	 *            the given begin time for the call
-	 * @param endDateTime
-	 *            the given end time for the call
+	 * @param beginDateTime the given begin time for the call
+	 * @param endDateTime   the given end time for the call
 	 * 
 	 */
 	public static void calculateDateTimeDifferenceForLog(String beginDateTime, String endDateTime) {
@@ -405,8 +392,7 @@ public class EcompPortalUtils {
 	 * 
 	 * @return header which contains external central auth username and password
 	 *         base64 encoded
-	 * @throws Exception
-	 *             if unable to decrypt the password
+	 * @throws Exception if unable to decrypt the password
 	 */
 	public static HttpHeaders base64encodeKeyForAAFBasicAuth() throws Exception {
 		String userName = "";
@@ -429,7 +415,8 @@ public class EcompPortalUtils {
 		String result = "";
 		if (encrypted != null && encrypted.length() > 0) {
 			try {
-				result = CipherUtil.decryptPKC(encrypted, SystemProperties.getProperty(SystemProperties.Decryption_Key));
+				result = CipherUtil.decryptPKC(encrypted,
+						SystemProperties.getProperty(SystemProperties.Decryption_Key));
 			} catch (Exception e) {
 				logger.error(EELFLoggerDelegate.errorLogger, "decryptedPassword failed", e);
 				throw e;
@@ -438,8 +425,8 @@ public class EcompPortalUtils {
 		return result;
 	}
 
-	public static String truncateString(String originString, int size){
-		if(originString.length()>=size){
+	public static String truncateString(String originString, int size) {
+		if (originString.length() >= size) {
 			StringBuilder stringBuilder = new StringBuilder();
 			stringBuilder.append(originString);
 			stringBuilder.setLength(size);
@@ -448,11 +435,10 @@ public class EcompPortalUtils {
 		}
 		return originString;
 	}
-	
+
 	/**
 	 * 
-	 * If function code value has any pipes it does pipe filter and 
-	 * returns value.
+	 * If function code value has any pipes it does pipe filter and returns value.
 	 * 
 	 * @param functionCode
 	 * @return function instance without pipe
@@ -462,22 +448,19 @@ public class EcompPortalUtils {
 		if (functionCode.contains(FUNCTION_PIPE)) {
 			int count = StringUtils.countMatches(functionCode, FUNCTION_PIPE);
 			if (count == 2)
-				finalFunctionCodeVal = functionCode.substring(
-						functionCode.indexOf(FUNCTION_PIPE) + 1,
+				finalFunctionCodeVal = functionCode.substring(functionCode.indexOf(FUNCTION_PIPE) + 1,
 						functionCode.lastIndexOf(FUNCTION_PIPE));
 			else
-				finalFunctionCodeVal = functionCode
-						.substring(functionCode.lastIndexOf(FUNCTION_PIPE) + 1);
-		} else{
+				finalFunctionCodeVal = functionCode.substring(functionCode.lastIndexOf(FUNCTION_PIPE) + 1);
+		} else {
 			finalFunctionCodeVal = functionCode;
 		}
 		return finalFunctionCodeVal;
 	}
-	
+
 	/**
 	 * 
-	 * If function code value has any pipes it does pipe filter and 
-	 * returns value.
+	 * If function code value has any pipes it does pipe filter and returns value.
 	 * 
 	 * @param functionCode
 	 * @return function Type without pipe
@@ -486,20 +469,19 @@ public class EcompPortalUtils {
 		String finalFunctionCodeVal = "";
 		if (functionCode.contains(FUNCTION_PIPE)) {
 			int count = StringUtils.countMatches(functionCode, FUNCTION_PIPE);
-			if (count == 2){
-				String[] getTypeValue = functionCode.split("\\"+FUNCTION_PIPE);		
+			if (count == 2) {
+				String[] getTypeValue = functionCode.split("\\" + FUNCTION_PIPE);
 				finalFunctionCodeVal = getTypeValue[0];
 			}
-		} else{
+		} else {
 			finalFunctionCodeVal = functionCode;
 		}
 		return finalFunctionCodeVal;
 	}
-	
+
 	/**
 	 * 
-	 * If function code value has any pipes it does pipe filter and 
-	 * returns value.
+	 * If function code value has any pipes it does pipe filter and returns value.
 	 * 
 	 * @param functionCode
 	 * @return function Action without pipe
@@ -509,17 +491,17 @@ public class EcompPortalUtils {
 		if (functionCode.contains(FUNCTION_PIPE)) {
 			int count = StringUtils.countMatches(functionCode, FUNCTION_PIPE);
 			if (count == 2)
-				finalFunctionCodeVal = functionCode.substring(
-						functionCode.lastIndexOf(FUNCTION_PIPE)+1);
-		} else{
+				finalFunctionCodeVal = functionCode.substring(functionCode.lastIndexOf(FUNCTION_PIPE) + 1);
+		} else {
 			finalFunctionCodeVal = functionCode;
 		}
 		return finalFunctionCodeVal;
 	}
-	
+
 	/**
 	 * 
-	 * It check whether the external auth namespace is matching with current namespace exists in local DB
+	 * It check whether the external auth namespace is matching with current
+	 * namespace exists in local DB
 	 * 
 	 * @param permTypeVal
 	 * @param appNamespaceVal
@@ -539,20 +521,22 @@ public class EcompPortalUtils {
 		}
 		return isNamespaceMatching;
 	}
-	
+
 	public static boolean checkIfRemoteCentralAccessAllowed() {
 		boolean result = false;
-		String rmtCentralAccess = SystemProperties.getProperty(EPCommonSystemProperties.REMOTE_CENTRALISED_SYSTEM_ACCESS);
-		if(rmtCentralAccess == null) {
-	    	logger.error(EELFLoggerDelegate.errorLogger, "Please check in system.properties whether the property exists or not!");
+		String rmtCentralAccess = SystemProperties
+				.getProperty(EPCommonSystemProperties.REMOTE_CENTRALISED_SYSTEM_ACCESS);
+		if (rmtCentralAccess == null) {
+			logger.error(EELFLoggerDelegate.errorLogger,
+					"Please check in system.properties whether the property exists or not!");
 			return false;
-		}else if(new Boolean(rmtCentralAccess)){
-	    	logger.debug(EELFLoggerDelegate.debugLogger, "checkIfRemoteCentralAccessAllowed: {}",rmtCentralAccess);
+		} else if (new Boolean(rmtCentralAccess)) {
+			logger.debug(EELFLoggerDelegate.debugLogger, "checkIfRemoteCentralAccessAllowed: {}", rmtCentralAccess);
 			result = true;
 		}
 		return result;
 	}
-	
+
 	/**
 	 * 
 	 * It validates whether given string is JSON or not
@@ -560,28 +544,48 @@ public class EcompPortalUtils {
 	 * @param jsonInString
 	 * @return true or false
 	 */
-	  public static boolean isJSONValid(String jsonInString ) {
-		    try {
-		       final ObjectMapper mapper = new ObjectMapper();
-		       mapper.readTree(jsonInString);
-		       return true;
-		    } catch (IOException e) {
-		    	logger.error(EELFLoggerDelegate.errorLogger, "Failed to parse Json!", e);
-		       return false;
-		    }
-		  }
-	  /**
-	   * 
-	   *  It retrieves account information from input String
-	   * 
-	   * @param authValue
-	   * @return Array of Account information
-	   * 
-	   */
-	  public static String[] getUserNamePassword(String authValue) {
-			String base64Credentials = authValue.substring("Basic".length()).trim();
-			String credentials = new String(Base64.getDecoder().decode(base64Credentials), Charset.forName("UTF-8"));
-			final String[] values = credentials.split(":", 2);
-			return values;
+	public static boolean isJSONValid(String jsonInString) {
+		try {
+			final ObjectMapper mapper = new ObjectMapper();
+			mapper.readTree(jsonInString);
+			return true;
+		} catch (IOException e) {
+			logger.error(EELFLoggerDelegate.errorLogger, "Failed to parse Json!", e);
+			return false;
 		}
+	}
+
+	/**
+	 * 
+	 * It retrieves account information from input String
+	 * 
+	 * @param authValue
+	 * @return Array of Account information
+	 * 
+	 */
+	public static String[] getUserNamePassword(String authValue) {
+		String base64Credentials = authValue.substring("Basic".length()).trim();
+		String credentials = new String(Base64.getDecoder().decode(base64Credentials), Charset.forName("UTF-8"));
+		final String[] values = credentials.split(":", 2);
+		return values;
+	}
+
+	/**
+	 * It encodes the function code based on Hex encoding
+	 * 
+	 * @param funCode
+	 * 
+	 */
+	public static String encodeFunctionCode(String funCode) {
+		String encodedString = funCode;
+		Pattern encodePattern = Pattern.compile(EcompPortalUtils.slash);
+		return encodedString = encodePattern.matcher(encodedString)
+				.replaceAll("%" + Hex.encodeHexString(encodePattern.toString().getBytes()))
+				.replaceAll("\\*", "%" + Hex.encodeHexString("*".getBytes()));
+	}
+
+	public static boolean checkFunctionCodeHasEncodePattern(String code) {
+		return code.contains(EcompPortalUtils.slash);
+	}
+
 }
