@@ -47,12 +47,17 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.SafeHtml;
 
 @Entity
 @Table(name="fn_menu_functional")
+@NoArgsConstructor
+@AllArgsConstructor
 public class FunctionalMenuItem implements Serializable {
-	public FunctionalMenuItem(){};
-	
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -61,23 +66,40 @@ public class FunctionalMenuItem implements Serializable {
 	public Long menuId;
 	
 	@Column(name = "COLUMN_NUM")
+	@Max(value = 99)
+	@NotNull
 	public Integer column;
 	
 	@Column(name = "TEXT")
+	@Max(value = 100)
+	@SafeHtml
+	@NotNull
 	public String text;
 	
 	@Column(name = "PARENT_MENU_ID")
 	public Integer parentMenuId;
 	
 	@Column(name = "URL")
+	@Max(value = 128)
+	@SafeHtml
+	@NotNull
 	public String url;
 	
 	@Column(name="ACTIVE_YN")
+	@Max(value = 1)
+	@SafeHtml
+	@NotNull
 	public String active_yn;
 
 	@Transient
 	public Integer appid;
 	
+	@Transient
+	private List<Integer> roles;
+
+	@Transient
+	public Boolean restrictedApp;
+
 	public List<Integer> getRoles() {
 		return roles;
 	}
@@ -86,18 +108,12 @@ public class FunctionalMenuItem implements Serializable {
 		this.roles = roles;
 	}
 
-	@Transient
-	private List<Integer> roles;
-	
-	@Transient
-	public Boolean restrictedApp;
-	
 	public void normalize() {
 		if (this.column == null)
-			this.column = new Integer(1);
+			this.column = 1;
 		this.text = (this.text == null) ? "" : this.text.trim();
 		if (this.parentMenuId == null)
-			this.parentMenuId = new Integer(-1);
+			this.parentMenuId = -1;
 		this.url = (this.url == null) ? "" : this.url.trim();
 	}
 
