@@ -47,6 +47,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.validation.constraints.Digits;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -61,30 +62,32 @@ public class FunctionalMenuItem implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name = "MENU_ID")
+	@Digits(integer = 11, fraction = 0)
 	public Long menuId;
-	
+
 	@Column(name = "COLUMN_NUM")
-	@Max(value = 99)
+	@Digits(integer = 2, fraction = 0)
 	@NotNull
 	public Integer column;
-	
+
 	@Column(name = "TEXT")
 	@Max(value = 100)
 	@SafeHtml
 	@NotNull
 	public String text;
-	
+
 	@Column(name = "PARENT_MENU_ID")
+	@Digits(integer = 11, fraction = 0)
 	public Integer parentMenuId;
-	
+
 	@Column(name = "URL")
 	@Max(value = 128)
 	@SafeHtml
 	@NotNull
 	public String url;
-	
+
 	@Column(name="ACTIVE_YN")
 	@Max(value = 1)
 	@SafeHtml
