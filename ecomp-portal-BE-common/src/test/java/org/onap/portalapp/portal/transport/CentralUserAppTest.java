@@ -117,6 +117,18 @@ public class CentralUserAppTest {
         assertEquals(centralV2UserApp.getApp(), app1);
         assertEquals(centralV2UserApp.getRole(), role1);
     }
+
+    @Test
+	public void centralUserAppEqualsTest(){
+		CentralV2UserApp centralV2UserApp = mockCentralUserApp();
+		CentralV2UserApp centralV2UserApp2 = mockCentralUserApp();
+
+		assertTrue(centralV2UserApp.equals(centralV2UserApp));
+		assertTrue(centralV2UserApp.equals(centralV2UserApp2));
+		assertFalse(centralV2UserApp.equals(new Long(1)));
+		centralV2UserApp2.setPriority(213);
+		assertFalse(centralV2UserApp.equals(centralV2UserApp2));
+	}
 	
 	@Test
 	public void unt_hashCodeTest(){

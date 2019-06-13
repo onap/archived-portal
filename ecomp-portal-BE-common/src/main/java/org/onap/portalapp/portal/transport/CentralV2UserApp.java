@@ -38,6 +38,7 @@
 package org.onap.portalapp.portal.transport;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 @SuppressWarnings("rawtypes")
 public class CentralV2UserApp implements Serializable, Comparable{
@@ -99,7 +100,20 @@ public class CentralV2UserApp implements Serializable, Comparable{
 		this.priority = priority;
 	}
 
-
+	@Override
+	public boolean equals(Object other) {
+		if (this == other) {
+			return true;
+		}
+		if (!(other instanceof CentralV2UserApp)) {
+			return false;
+		}
+		CentralV2UserApp castOther = (CentralV2UserApp) other;
+		return Objects.equals(this.userId, castOther.userId) &&
+			Objects.equals(this.app, castOther.app) &&
+			Objects.equals(this.role, castOther.role) &&
+			Objects.equals(this.priority, castOther.priority);
+	}
 
 	public int compareTo(Object other){
 	    CentralV2UserApp castOther = (CentralV2UserApp) other;
