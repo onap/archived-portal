@@ -39,9 +39,15 @@ package org.onap.portalapp.portal.controller;
 
 import java.util.List;
 
+import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.Valid;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 import org.onap.portalapp.controller.EPRestrictedBaseController;
 import org.onap.portalapp.portal.domain.MicroserviceData;
 import org.onap.portalapp.portal.domain.WidgetCatalog;
@@ -72,6 +78,7 @@ import org.springframework.web.client.RestTemplate;
 @EnableAspectJAutoProxy
 @EPAuditLog
 public class MicroserviceController extends EPRestrictedBaseController {
+	public static final ValidatorFactory VALIDATOR_FACTORY = Validation.buildDefaultValidatorFactory();
 	
 	String whatService = "widgets-service";
 	RestTemplate template = new RestTemplate();
@@ -84,53 +91,68 @@ public class MicroserviceController extends EPRestrictedBaseController {
 
 	@RequestMapping(value = { "/portalApi/microservices" }, method = RequestMethod.POST)
 	public PortalRestResponse<String> createMicroservice(HttpServletRequest request, HttpServletResponse response,
-			@RequestBody MicroserviceData newServiceData) throws Exception {
+			@Valid @RequestBody MicroserviceData newServiceData) throws Exception {
 		if (newServiceData == null) {
-			return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, "FAILURE",
-					"MicroserviceData cannot be null or empty");
+			return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, "FAILURE",
+				"MicroserviceData cannot be null or empty");
+		}else {
+			Validator validator = VALIDATOR_FACTORY.getValidator();
+
+			Set<ConstraintViolation<MicroserviceData>> constraintViolations = validator.validate(newServiceData);
+			if(!constraintViolations.isEmpty()){
+				return new PortalRestResponse<>(PortalRestStatusEnum.ERROR,
+					"ERROR", "MicroserviceData is not valid");
+			}
 		}
 		long serviceId = microserviceService.saveMicroservice(newServiceData);
 
 		try {
 			microserviceService.saveServiceParameters(serviceId, newServiceData.getParameterList());
 		} catch (Exception e) {
-			return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, "FAILURE", e.getMessage());
+			return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, "FAILURE", e.getMessage());
 		}
 
-		return new PortalRestResponse<String>(PortalRestStatusEnum.OK, "SUCCESS", "");
+		return new PortalRestResponse<>(PortalRestStatusEnum.OK, "SUCCESS", "");
 	}
 
 	@RequestMapping(value = { "/portalApi/microservices" }, method = RequestMethod.GET)
 	public List<MicroserviceData> getMicroservice(HttpServletRequest request, HttpServletResponse response)
 			throws Exception {
-		List<MicroserviceData> list = microserviceService.getMicroserviceData();
-		return list;
+		return microserviceService.getMicroserviceData();
 	}
 
 	@RequestMapping(value = { "/portalApi/microservices/{serviceId}" }, method = RequestMethod.PUT)
 	public PortalRestResponse<String> updateMicroservice(HttpServletRequest request, HttpServletResponse response,
-			@PathVariable("serviceId") long serviceId, @RequestBody MicroserviceData newServiceData) throws Exception {
+			@PathVariable("serviceId") long serviceId, @Valid @RequestBody MicroserviceData newServiceData) {
 
 		if (newServiceData == null) {
-			return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, "FAILURE",
-					"MicroserviceData cannot be null or empty");
+			return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, "FAILURE",
+				"MicroserviceData cannot be null or empty");
+		}else {
+			Validator validator = VALIDATOR_FACTORY.getValidator();
+
+			Set<ConstraintViolation<MicroserviceData>> constraintViolations = validator.validate(newServiceData);
+			if(!constraintViolations.isEmpty()){
+				return new PortalRestResponse<>(PortalRestStatusEnum.ERROR,
+					"ERROR", "MicroserviceData is not valid");
+			}
 		}
 		try {
 			microserviceService.updateMicroservice(serviceId, newServiceData);
 		} catch (Exception e) {
-			return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, "FAILURE", e.getMessage());
+			return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, "FAILURE", e.getMessage());
 		}
-		return new PortalRestResponse<String>(PortalRestStatusEnum.OK, "SUCCESS", "");
+		return new PortalRestResponse<>(PortalRestStatusEnum.OK, "SUCCESS", "");
 	}
 	
 	@RequestMapping(value = { "/portalApi/microservices/{serviceId}" }, method = RequestMethod.DELETE)
 	public PortalRestResponse<String> deleteMicroservice(HttpServletRequest request, HttpServletResponse response,
-			@PathVariable("serviceId") long serviceId) throws Exception {
+			@PathVariable("serviceId") long serviceId) {
 		try {
 			ParameterizedTypeReference<List<WidgetCatalog>> typeRef = new ParameterizedTypeReference<List<WidgetCatalog>>() {
 			};
 			// If this service is assoicated with widgets, cannnot be deleted
-			ResponseEntity<List<WidgetCatalog>> ans = (ResponseEntity<List<WidgetCatalog>>) template.exchange(
+			ResponseEntity<List<WidgetCatalog>> ans = template.exchange(
 					EcompPortalUtils.widgetMsProtocol() + "://" + consulHealthService.getServiceLocation(whatService, SystemProperties.getProperty("microservices.widget.local.port"))
 							+ "/widget/microservices/widgetCatalog/service/" + serviceId,
 					HttpMethod.GET, new HttpEntity(WidgetServiceHeaders.getInstance()), typeRef);
@@ -140,17 +162,18 @@ public class MicroserviceController extends EPRestrictedBaseController {
 			else{
 				StringBuilder sb = new StringBuilder();
 				for(int i = 0; i < widgets.size(); i++){
-					sb.append("'" + widgets.get(i).getName() + "' ");
+					sb.append("'").append(widgets.get(i).getName()).append("' ");
 					if(i < (widgets.size()-1)){
 						sb.append(",");
 					}
 				}
-				return new PortalRestResponse<String>(PortalRestStatusEnum.WARN, "SOME WIDGETS ASSOICATE WITH THIS SERVICE", sb.toString());
+				return new PortalRestResponse<>(PortalRestStatusEnum.WARN, "SOME WIDGETS ASSOICATE WITH THIS SERVICE",
+					sb.toString());
 			}
 		} catch (Exception e) {
-			return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, "FAILURE", e.getMessage());
+			return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, "FAILURE", e.getMessage());
 		}
-		return new PortalRestResponse<String>(PortalRestStatusEnum.OK, "SUCCESS", "");
+		return new PortalRestResponse<>(PortalRestStatusEnum.OK, "SUCCESS", "");
 	}
 
 }
