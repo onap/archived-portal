@@ -371,6 +371,48 @@ public class RoleManageControllerTest {
 	}
 
 	@Test
+	public void saveRoleFunctionXSSTest() throws Exception {
+		PowerMockito.mockStatic(EPUserUtils.class);
+		PowerMockito.mockStatic(EcompPortalUtils.class);
+		EPUser user = mockUser.mockEPUser();
+		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
+		Mockito.when(EcompPortalUtils.checkIfRemoteCentralAccessAllowed()).thenReturn(true);
+		Mockito.when(adminRolesService.isAccountAdminOfApplication(user, CentralApp())).thenReturn(true);
+		Mockito.when(appService.getApp((long) 1)).thenReturn(CentralApp());
+		Mockito.doNothing().when(roleFunctionListController).saveRoleFunction(mockedRequest, mockedResponse, "test");
+		CentralV2RoleFunction addNewFunc = new CentralV2RoleFunction();
+		addNewFunc.setCode("“><script>alert(“XSS”)</script>");
+		addNewFunc.setType("Test");
+		addNewFunc.setAction("Test");
+		addNewFunc.setName("Test");
+		CentralV2RoleFunction roleFunction = mockCentralRoleFunction();
+		roleFunction.setCode("Test|Test|Test");
+		Mockito.when(externalAccessRolesService.getRoleFunction("Test|Test|Test", "test")).thenReturn(roleFunction);
+		Mockito.when(externalAccessRolesService.saveCentralRoleFunction(Matchers.anyObject(), Matchers.anyObject()))
+			.thenReturn(true);
+		Mockito.when(EcompPortalUtils.getFunctionCode(roleFunction.getCode())).thenReturn("Test");
+		Mockito.when(EcompPortalUtils.getFunctionType(roleFunction.getCode())).thenReturn("Test");
+		Mockito.when(EcompPortalUtils.getFunctionAction(roleFunction.getCode())).thenReturn("Test");
+		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
+		List<EPUser> userList = new ArrayList<>();
+		userList.add(user);
+		List<EPApp> appList = new ArrayList<>();
+		appList.add(CentralApp());
+		Mockito.when(externalAccessRolesService.getUser("guestT")).thenReturn(userList);
+		StringWriter sw = new StringWriter();
+		PrintWriter writer = new PrintWriter(sw);
+		Mockito.when(mockedResponse.getWriter()).thenReturn(writer);
+		ResponseEntity<String> response = new ResponseEntity<>(HttpStatus.OK);
+		Mockito.when(externalAccessRolesService.getNameSpaceIfExists(Matchers.anyObject())).thenReturn(response);
+		Mockito.when(externalAccessRolesService.getApp(Matchers.anyString())).thenReturn(appList);
+		PortalRestResponse<String> actual = roleManageController.saveRoleFunction(mockedRequest, mockedResponse,
+			addNewFunc, (long) 1);
+		PortalRestResponse<String> expected = new PortalRestResponse<String>(PortalRestStatusEnum.ERROR,
+			"Data is not valid", "ERROR");
+		assertEquals(expected, actual);
+	}
+
+	@Test
 	public void saveRoleFunctionExceptionTest() throws Exception {
 		Mockito.when(appService.getApp((long) 1)).thenReturn(CentralApp());
 		Mockito.doNothing().when(roleFunctionListController).saveRoleFunction(mockedRequest, mockedResponse, "test");
@@ -417,6 +459,36 @@ public class RoleManageControllerTest {
 				roleFun, (long) 1);
 		PortalRestResponse<String> expected = new PortalRestResponse<String>(PortalRestStatusEnum.OK,
 				"Deleted Successfully!", "Success");
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void removeRoleFunctionXSSTest() throws Exception {
+		PowerMockito.mockStatic(EPUserUtils.class);
+		PowerMockito.mockStatic(EcompPortalUtils.class);
+		EPUser user = mockUser.mockEPUser();
+		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
+		Mockito.when(EcompPortalUtils.checkIfRemoteCentralAccessAllowed()).thenReturn(true);
+		Mockito.when(adminRolesService.isAccountAdminOfApplication(user, CentralApp())).thenReturn(true);
+		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
+		Mockito.when(appService.getApp((long) 1)).thenReturn(CentralApp());
+		String roleFun = "<script>alert(/XSS”)</script>";
+		CentralV2RoleFunction roleFunction = mockCentralRoleFunction();
+		Mockito.when(externalAccessRolesService.getRoleFunction("Test|Test|Test", "test")).thenReturn(roleFunction);
+		StringWriter sw = new StringWriter();
+		PrintWriter writer = new PrintWriter(sw);
+		Mockito.when(mockedResponse.getWriter()).thenReturn(writer);
+		Mockito.when(externalAccessRolesService.deleteCentralRoleFunction(Matchers.anyString(), Matchers.anyObject()))
+			.thenReturn(true);
+		List<EPApp> appList = new ArrayList<>();
+		appList.add(CentralApp());
+		ResponseEntity<String> response = new ResponseEntity<>(HttpStatus.OK);
+		Mockito.when(externalAccessRolesService.getNameSpaceIfExists(Matchers.anyObject())).thenReturn(response);
+		Mockito.when(externalAccessRolesService.getApp(Matchers.anyString())).thenReturn(appList);
+		PortalRestResponse<String> actual = roleManageController.removeRoleFunction(mockedRequest, mockedResponse,
+			roleFun, (long) 1);
+		PortalRestResponse<String> expected = new PortalRestResponse<String>(PortalRestStatusEnum.ERROR,
+			"Data is not valid", "ERROR");
 		assertEquals(expected, actual);
 	}
 
@@ -907,6 +979,13 @@ public class RoleManageControllerTest {
 		Mockito.when(externalAccessRolesService.getCentralizedAppsOfUser(Matchers.anyString())).thenReturn(cenApps);
 		List<CentralizedApp> actual  = roleManageController.getCentralizedAppRoles(mockedRequest, mockedResponse, user.getOrgUserId());
 		assertEquals(cenApps.size(), actual.size());
+	}
+
+	@Test
+	public void getCentralizedAppRolesXSSTest() throws IOException {
+		String id = ("<ScRipT>alert(\"XSS\");</ScRipT>");
+		List<CentralizedApp> actual  = roleManageController.getCentralizedAppRoles(mockedRequest, mockedResponse, id);
+		assertNull(actual);
 	}
 	
 	@Test
