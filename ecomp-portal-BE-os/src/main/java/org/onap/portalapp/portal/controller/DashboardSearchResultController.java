@@ -48,7 +48,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.onap.portalapp.controller.EPRestrictedBaseController;
-import org.onap.portalapp.portal.controller.DashboardSearchResultController;
 import org.onap.portalapp.portal.domain.EPUser;
 import org.onap.portalapp.portal.ecomp.model.PortalRestResponse;
 import org.onap.portalapp.portal.ecomp.model.PortalRestStatusEnum;
@@ -57,6 +56,8 @@ import org.onap.portalapp.portal.service.DashboardSearchService;
 import org.onap.portalapp.portal.transport.CommonWidget;
 import org.onap.portalapp.portal.transport.CommonWidgetMeta;
 import org.onap.portalapp.util.EPUserUtils;
+import org.onap.portalapp.validation.DataValidator;
+import org.onap.portalapp.validation.SecureString;
 import org.onap.portalsdk.core.domain.support.CollaborateList;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,6 +72,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class DashboardSearchResultController extends EPRestrictedBaseController {
 
 	private static EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(DashboardSearchResultController.class);
+	private DataValidator dataValidator = new DataValidator();
 
 	@Autowired
 	private DashboardSearchService searchService;
@@ -86,7 +88,12 @@ public class DashboardSearchResultController extends EPRestrictedBaseController 
 	@RequestMapping(value = "/widgetData", method = RequestMethod.GET, produces = "application/json")
 	public PortalRestResponse<CommonWidgetMeta> getWidgetData(HttpServletRequest request,
 			@RequestParam String resourceType) {
-		return new PortalRestResponse<CommonWidgetMeta>(PortalRestStatusEnum.OK, "success",
+		if (resourceType !=null){
+			SecureString secureString = new SecureString(resourceType);
+			if (!dataValidator.isValid(secureString))
+				return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, "Provided data is invalid", null);
+		}
+		return new PortalRestResponse<>(PortalRestStatusEnum.OK, "success",
 				searchService.getWidgetData(resourceType));
 	}
 
@@ -100,9 +107,14 @@ public class DashboardSearchResultController extends EPRestrictedBaseController 
 	@RequestMapping(value = "/widgetDataBulk", method = RequestMethod.POST, produces = "application/json")
 	public PortalRestResponse<String> saveWidgetDataBulk(@RequestBody CommonWidgetMeta commonWidgetMeta) {
 		logger.debug(EELFLoggerDelegate.debugLogger, "saveWidgetDataBulk: argument is {}", commonWidgetMeta);
-		if (commonWidgetMeta.getCategory() == null || commonWidgetMeta.getCategory().trim().equals(""))
+		if (commonWidgetMeta.getCategory() == null || commonWidgetMeta.getCategory().trim().equals("")){
 			return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, "ERROR",
 					"Category cannot be null or empty");
+		}else {
+			if(!dataValidator.isValid(commonWidgetMeta))
+				return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, "ERROR",
+					"Category is not valid");
+		}
 		// validate dates
 		for (CommonWidget cw : commonWidgetMeta.getItems()) {
 			String err = validateCommonWidget(cw);
@@ -123,13 +135,18 @@ public class DashboardSearchResultController extends EPRestrictedBaseController 
 	@RequestMapping(value = "/widgetData", method = RequestMethod.POST, produces = "application/json")
 	public PortalRestResponse<String> saveWidgetData(@RequestBody CommonWidget commonWidget) {
 		logger.debug(EELFLoggerDelegate.debugLogger, "saveWidgetData: argument is {}", commonWidget);
-		if (commonWidget.getCategory() == null || commonWidget.getCategory().trim().equals(""))
-			return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, "ERROR",
+		if (commonWidget.getCategory() == null || commonWidget.getCategory().trim().equals("")){
+			return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, "ERROR",
 					"Cateogry cannot be null or empty");
+		}else {
+			if(!dataValidator.isValid(commonWidget))
+				return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, "ERROR",
+					"Category is not valid");
+		}
 		String err = validateCommonWidget(commonWidget);
 		if (err != null)
-			return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, err, null);
-		return new PortalRestResponse<String>(PortalRestStatusEnum.OK, "success",
+			return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, err, null);
+		return new PortalRestResponse<>(PortalRestStatusEnum.OK, "success",
 				searchService.saveWidgetData(commonWidget));
 	}
 
@@ -165,7 +182,10 @@ public class DashboardSearchResultController extends EPRestrictedBaseController 
 	@RequestMapping(value = "/deleteData", method = RequestMethod.POST, produces = "application/json")
 	public PortalRestResponse<String> deleteWidgetData(@RequestBody CommonWidget commonWidget) {
 		logger.debug(EELFLoggerDelegate.debugLogger, "deleteWidgetData: argument is {}", commonWidget);
-		return new PortalRestResponse<String>(PortalRestStatusEnum.OK, "success",
+		if(!dataValidator.isValid(commonWidget))
+			return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, "ERROR",
+				"Data is not valid");
+		return new PortalRestResponse<>(PortalRestStatusEnum.OK, "success",
 				searchService.deleteWidgetData(commonWidget));
 	}
 
@@ -180,16 +200,24 @@ public class DashboardSearchResultController extends EPRestrictedBaseController 
 	@RequestMapping(value = "/allPortal", method = RequestMethod.GET, produces = "application/json")
 	public PortalRestResponse<Map<String, List<SearchResultItem>>> searchPortal(HttpServletRequest request,
 			@RequestParam String searchString) {
+		if(searchString!=null){
+			SecureString secureString = new SecureString(searchString);
+			if(!dataValidator.isValid(secureString)){
+				return new PortalRestResponse<>(PortalRestStatusEnum.ERROR,
+					"searchPortal: User object is invalid",
+					null);
+			}
+		}
 
 		EPUser user = EPUserUtils.getUserSession(request);
 		try {
 			if (user == null) {
 				return new PortalRestResponse<>(PortalRestStatusEnum.ERROR,
 						"searchPortal: User object is null? - check logs",
-						new HashMap<String, List<SearchResultItem>>());
+						new HashMap<>());
 			} else if (searchString == null || searchString.trim().length() == 0) {
 				return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, "searchPortal: String string is null",
-						new HashMap<String, List<SearchResultItem>>());
+						new HashMap<>());
 			} else {
 				logger.debug(EELFLoggerDelegate.debugLogger, "searchPortal: user {}, search string '{}'",
 						user.getLoginId(), searchString);
@@ -200,7 +228,7 @@ public class DashboardSearchResultController extends EPRestrictedBaseController 
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "searchPortal failed", e);
 			return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, e.getMessage() + " - check logs.",
-					new HashMap<String, List<SearchResultItem>>());
+					new HashMap<>());
 		}
 	}
 

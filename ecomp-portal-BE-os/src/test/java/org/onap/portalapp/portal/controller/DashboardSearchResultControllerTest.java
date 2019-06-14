@@ -99,6 +99,18 @@ public class DashboardSearchResultControllerTest {
 	}
 
 	@Test
+	public void getWidgetDataXSSTest() {
+		String resourceType = "\"<IMG SRC=\\\"jav\\tascript:alert('XSS');\\\">\"";
+		PortalRestResponse expectedPortalRestResponse = new PortalRestResponse<>();
+		expectedPortalRestResponse.setMessage("Provided data is invalid");
+		expectedPortalRestResponse.setStatus(PortalRestStatusEnum.ERROR);
+		Mockito.when(searchService.getWidgetData(resourceType)).thenReturn(null);
+		PortalRestResponse acutualPoratlRestResponse = dashboardSearchResultController
+			.getWidgetData(mockedRequest, resourceType);
+		assertEquals(acutualPoratlRestResponse, expectedPortalRestResponse);
+	}
+
+	@Test
 	public void saveWidgetDataBulkIfCatrgoryNullTest() {
 		PortalRestResponse<String> ecpectedPortalRestResponse = new PortalRestResponse<String>();
 		ecpectedPortalRestResponse.setMessage("ERROR");
@@ -149,6 +161,82 @@ public class DashboardSearchResultControllerTest {
 		PortalRestResponse<String> actualPortalRestResponse = dashboardSearchResultController
 				.saveWidgetDataBulk(commonWidgetMeta);
 		assertEquals(ecpectedPortalRestResponse, actualPortalRestResponse);
+	}
+
+	@Test
+	public void saveWidgetDataBulkXSSTest() {
+		PortalRestResponse<String> ecpectedPortalRestResponse = new PortalRestResponse<>();
+		ecpectedPortalRestResponse.setMessage("ERROR");
+		ecpectedPortalRestResponse.setResponse("Category is not valid");
+		ecpectedPortalRestResponse.setStatus(PortalRestStatusEnum.ERROR);
+
+		CommonWidgetMeta commonWidgetMeta = new CommonWidgetMeta();
+		commonWidgetMeta.setCategory("test");
+
+		List<CommonWidget> commonWidgetList = new ArrayList<>();
+		CommonWidget commonWidget = new CommonWidget();
+		commonWidget.setId((long) 1);
+		commonWidget.setCategory("test");
+		commonWidget.setHref("\"<IMG SRC=\\\"jav\\tascript:alert('XSS');\\\">\"");
+		commonWidget.setTitle("test_title");
+		commonWidget.setContent("test_content");
+		commonWidget.setEventDate(null);
+		commonWidget.setSortOrder(1);
+
+		commonWidgetList.add(commonWidget);
+
+		commonWidgetMeta.setItems(commonWidgetList);
+
+		Mockito.when(searchService.saveWidgetDataBulk(commonWidgetMeta)).thenReturn(null);
+
+		PortalRestResponse<String> actualPortalRestResponse = dashboardSearchResultController
+			.saveWidgetDataBulk(commonWidgetMeta);
+		assertEquals(ecpectedPortalRestResponse, actualPortalRestResponse);
+	}
+
+	@Test
+	public void saveWidgetDataXSSTest() {
+		PortalRestResponse<String> expectedPortalRestResponse = new PortalRestResponse<>();
+		expectedPortalRestResponse.setMessage("ERROR");
+		expectedPortalRestResponse.setResponse("Category is not valid");
+		expectedPortalRestResponse.setStatus(PortalRestStatusEnum.ERROR);
+		CommonWidget commonWidget = new CommonWidget();
+		commonWidget.setId((long) 1);
+		commonWidget.setCategory("test");
+		commonWidget.setHref("\"<IMG SRC=\"jav\\tascript:alert('XSS');\">\"");
+		commonWidget.setTitle("test_title");
+		commonWidget.setContent("test_content");
+		commonWidget.setEventDate(null);
+		commonWidget.setSortOrder(1);
+
+		Mockito.when(searchService.saveWidgetData(commonWidget)).thenReturn(null);
+
+		PortalRestResponse<String> actualPortalRestResponse = dashboardSearchResultController
+			.saveWidgetData(commonWidget);
+		assertEquals(expectedPortalRestResponse, actualPortalRestResponse);
+
+	}
+
+	@Test
+	public void deleteWidgetDataXSSTest() {
+		PortalRestResponse<String> expectedPortalRestResponse = new PortalRestResponse<>();
+		expectedPortalRestResponse.setMessage("ERROR");
+		expectedPortalRestResponse.setResponse("Data is not valid");
+		expectedPortalRestResponse.setStatus(PortalRestStatusEnum.ERROR);
+		CommonWidget commonWidget = new CommonWidget();
+		commonWidget.setId((long) 1);
+		commonWidget.setCategory("test");
+		commonWidget.setHref("test_href");
+		commonWidget.setTitle("\"<IMG SRC=\"jav\\tascript:alert('XSS');\">\"");
+		commonWidget.setContent("test_content");
+		commonWidget.setEventDate(null);
+		commonWidget.setSortOrder(1);
+		Mockito.when(searchService.deleteWidgetData(commonWidget)).thenReturn(null);
+
+		PortalRestResponse<String> actualPortalRestResponse = dashboardSearchResultController
+			.deleteWidgetData(commonWidget);
+
+		assertEquals(expectedPortalRestResponse, actualPortalRestResponse);
 	}
 
 	@Test
@@ -336,6 +424,22 @@ public class DashboardSearchResultControllerTest {
 		PortalRestResponse<Map<String, List<SearchResultItem>>> actualResult = dashboardSearchResultController
 				.searchPortal(mockedRequest, searchString);
 		assertEquals(expectedResult, actualResult);
+
+	}
+
+	@Test
+	public void searchPortalXSS() {
+		EPUser user = mockUser.mockEPUser();
+		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
+		String searchString = "<script>alert(“XSS”)</script> ";
+
+		PortalRestResponse<Map<String, List<SearchResultItem>>> expectedResult = new PortalRestResponse<Map<String, List<SearchResultItem>>>();
+		expectedResult.setMessage("searchPortal: User object is invalid");
+		expectedResult.setStatus(PortalRestStatusEnum.ERROR);
+
+		PortalRestResponse<Map<String, List<SearchResultItem>>> actualResult = dashboardSearchResultController
+			.searchPortal(mockedRequest, searchString);
+		assertEquals(actualResult, expectedResult);
 
 	}
 
