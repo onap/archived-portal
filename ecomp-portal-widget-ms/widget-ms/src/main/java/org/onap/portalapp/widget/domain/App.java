@@ -8,6 +8,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import org.hibernate.validator.constraints.SafeHtml;
 
 @Entity
 @Table(name = "FN_APP")
@@ -18,9 +22,13 @@ public class App implements Serializable{
 	@Id
 	@Column(name = "APP_ID")
 	@GeneratedValue(strategy=GenerationType.AUTO)
+	@Digits(integer = 11, fraction = 0)
 	private Long appId;
-	
+
 	@Column(name = "APP_Name")
+	@SafeHtml
+	@Size(max = 100)
+	@NotNull
 	private String appName;
 
 	public Long getAppId() {
