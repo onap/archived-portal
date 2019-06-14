@@ -6,6 +6,12 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.validator.constraints.SafeHtml;
 
 /**
  * TODO: moved all microservice-related code (domain, controller, service)
@@ -13,108 +19,56 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name="EP_MICROSERVICE")
+@Getter
+@Setter
 public class MicroserviceData {
 	
 	@Id
 	@Column(name = "id")
+	@Digits(integer = 11, fraction = 0)
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
 
 	@Column(name = "name")
+	@Size(max = 50)
+	@SafeHtml
 	private String name;
 
 	@Column(name = "description")
+	@Size(max = 50)
+	@SafeHtml
 	private String desc;
 	
 	@Column(name = "appId")
+	@Digits(integer = 11, fraction = 0)
 	private long appId;
 
 	@Column(name = "endpoint_url")
+	@Size(max = 200)
+	@SafeHtml
 	private String url;
 
 	@Column(name = "security_type")
+	@Size(max = 50)
+	@SafeHtml
 	private String securityType;
 
 	@Column(name = "username")
+	@Size(max = 50)
+	@SafeHtml
 	private String username;
 
 	@Column(name = "password")
+	@Size(max = 50)
+	@SafeHtml
+	@NotNull
 	private String password;
 	
 	@Column(name = "active")
+	@Size(max = 1)
+	@SafeHtml
+	@NotNull
 	private String active;
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getDesc() {
-		return desc;
-	}
-
-	public void setDesc(String desc) {
-		this.desc = desc;
-	}
-
-	public long getAppId() {
-		return appId;
-	}
-
-	public void setAppId(long appId) {
-		this.appId = appId;
-	}
-
-	public String getUrl() {
-		return url;
-	}
-
-	public void setUrl(String url) {
-		this.url = url;
-	}
-
-	public String getSecurityType() {
-		return securityType;
-	}
-
-	public void setSecurityType(String securityType) {
-		this.securityType = securityType;
-	}
-
-	public String getUsername() {
-		return username;
-	}
-
-	public void setUsername(String username) {
-		this.username = username;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
-	public String getActive() {
-		return active;
-	}
-
-	public void setActive(String active) {
-		this.active = active;
-	}
 
 	@Override
 	public String toString() {
