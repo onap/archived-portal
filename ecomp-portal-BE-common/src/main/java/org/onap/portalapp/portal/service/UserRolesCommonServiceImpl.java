@@ -176,10 +176,10 @@ public class UserRolesCommonServiceImpl  {
 	 * 
 	 * @param userId
 	 */
-	protected void createLocalUserIfNecessary(String userId) {
+	protected boolean createLocalUserIfNecessary(String userId) {
 		if (StringUtils.isEmpty(userId)) {
 			logger.error(EELFLoggerDelegate.errorLogger, "createLocalUserIfNecessary : empty userId!");
-			return;
+			return false;
 		}
 		Session localSession = null;
 		Transaction transaction = null;
@@ -188,7 +188,10 @@ public class UserRolesCommonServiceImpl  {
 			transaction = localSession.beginTransaction();
 			@SuppressWarnings("unchecked")
 			List<EPUser> userList = localSession
-					.createQuery("from " + EPUser.class.getName() + " where orgUserId='" + userId + "'").list();
+					.createQuery("from :name where orgUserId=:userId")
+					.setParameter("name",EPUser.class.getName())
+					.setParameter("userId",userId)
+					.list();
 			if (userList.size() == 0) {
 				EPUser client = searchService.searchUserByUserId(userId);
 				if (client == null) {
@@ -202,9 +205,11 @@ public class UserRolesCommonServiceImpl  {
 				}
 			}
 			transaction.commit();
+			return true;
 		} catch (Exception e) {
 			EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeDaoSystemError, e);
 			EcompPortalUtils.rollbackTransaction(transaction, "searchOrCreateUser rollback, exception = " + e);
+			return false;
 		} finally {
 			EcompPortalUtils.closeLocalSession(localSession, "searchOrCreateUser");
 		}

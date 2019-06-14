@@ -55,6 +55,7 @@ import java.util.TreeSet;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.cxf.transport.http.HTTPException;
+import org.drools.core.command.assertion.AssertEquals;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
@@ -235,6 +236,31 @@ public class UserRolesCommonServiceImplTest {
 		mockRoleInAppForUserList.add(mockRoleInAppForUser);
 		mockRoleInAppForUserList.add(mockRoleInAppForUser2);
 		return mockRoleInAppForUserList;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void checkTheProtectionAgainstSQLInjection() throws Exception {
+		EPUser user = mockUser.mockEPUser();
+		user.setId(1l);
+		user.setOrgId(2l);
+		Query epUserQuery = Mockito.mock(Query.class);
+		List<EPUser> mockEPUserList = new ArrayList<>();
+		mockEPUserList.add(user);
+
+		// test with SQL injection, should return false
+		Mockito.when(session.createQuery("from :name where orgUserId=:userId")).thenReturn(epUserQuery);
+		Mockito.when(epUserQuery.setParameter("name",EPUser.class.getName())).thenReturn(epUserQuery);
+		Mockito.when(epUserQuery.setParameter("userId",user.getOrgUserId() + "; select * from " + EPUser.class.getName() +";")).thenReturn(epUserQuery);
+		boolean ret = userRolesCommonServiceImpl.createLocalUserIfNecessary(user.getOrgUserId());
+		assertFalse(ret);
+
+		// test without SQL injection, should return true
+		Mockito.when(session.createQuery("from :name where orgUserId=:userId")).thenReturn(epUserQuery);
+		Mockito.when(epUserQuery.setParameter("name",EPUser.class.getName())).thenReturn(epUserQuery);
+		Mockito.when(epUserQuery.setParameter("userId",user.getOrgUserId())).thenReturn(epUserQuery);
+		ret = userRolesCommonServiceImpl.createLocalUserIfNecessary(user.getOrgUserId());
+		assertTrue(ret);
 	}
 
 	@SuppressWarnings("unchecked")
