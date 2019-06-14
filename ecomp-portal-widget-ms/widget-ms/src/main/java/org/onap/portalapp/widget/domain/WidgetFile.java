@@ -4,18 +4,31 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.validator.constraints.SafeHtml;
 
 @Entity
 @Table(name = "ep_widget_catalog_files")
+@Getter
+@Setter
 public class WidgetFile {
 	@Id
 	@Column (name = "file_id")
+	@Digits(integer = 11, fraction = 0)
 	private int id;
 	
 	@Column(name = "widget_name")
+	@Size(max = 11)
+	@SafeHtml
+	@NotNull
 	private String name;
 	
 	@Column(name = "widget_id")
+	@Digits(integer = 11, fraction = 0)
 	private long widgetId;
 	
 	@Column(name = "markup_html")
@@ -29,62 +42,6 @@ public class WidgetFile {
 
 	@Column(name = "widget_css")
 	private  byte[] css;
-
-	public int getId() {
-		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public byte[] getMarkup() {
-		return markup;
-	}
-
-	public void setMarkup(byte[] markup) {
-		this.markup = markup;
-	}
-
-	public byte[] getController() {
-		return controller;
-	}
-
-	public void setController(byte[] controller) {
-		this.controller = controller;
-	}
-
-	public byte[] getFramework() {
-		return framework;
-	}
-
-	public void setFramework(byte[] framework) {
-		this.framework = framework;
-	}
-
-	public byte[] getCss() {
-		return css;
-	}
-
-	public void setCss(byte[] css) {
-		this.css = css;
-	}
-
-	public long getWidgetId() {
-		return widgetId;
-	}
-
-	public void setWidgetId(long widgetId) {
-		this.widgetId = widgetId;
-	}
 
 	@Override
 	public String toString() {
