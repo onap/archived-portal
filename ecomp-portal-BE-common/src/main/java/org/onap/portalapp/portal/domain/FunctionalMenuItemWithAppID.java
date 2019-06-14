@@ -44,6 +44,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Transient;
+import javax.validation.constraints.DecimalMax;
+import javax.validation.constraints.Digits;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -68,10 +70,11 @@ public class FunctionalMenuItemWithAppID{
 	@Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name = "MENU_ID")
+	@Digits(integer = 11, fraction = 0)
 	public Long menuId;
 	
 	@Column(name = "COLUMN_NUM")
-	@Max(value = 99)
+	@Digits(integer = 2, fraction = 0)
 	@NotNull
 	public Integer column;
 	
@@ -82,6 +85,7 @@ public class FunctionalMenuItemWithAppID{
 	public String text;
 	
 	@Column(name = "PARENT_MENU_ID")
+	@Digits(integer = 11, fraction = 0)
 	public Integer parentMenuId;
 	
 	@Column(name = "URL")
