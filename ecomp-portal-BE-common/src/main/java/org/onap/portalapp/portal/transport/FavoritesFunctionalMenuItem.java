@@ -43,6 +43,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.Digits;
 
 
 /**
@@ -55,9 +56,11 @@ public class FavoritesFunctionalMenuItem implements Serializable {
 	
 	@Id
 	@Column(name = "user_id")
+	@Digits(integer = 11, fraction = 0)
 	public Long userId;
 	
 	@Id
 	@Column(name = "menu_id")
+	@Digits(integer = 11, fraction = 0)
 	public Long menuId;	
 }
