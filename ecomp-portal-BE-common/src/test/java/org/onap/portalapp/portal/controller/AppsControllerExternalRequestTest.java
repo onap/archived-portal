@@ -133,6 +133,24 @@ public class AppsControllerExternalRequestTest extends MockitoTestSuite {
 	}
 
 	@Test
+	public void postPortalAdminXSSTest() {
+		PortalRestResponse<String> expectedportalRestResponse = new PortalRestResponse<String>();
+		expectedportalRestResponse.setMessage("Data is not valid");
+		expectedportalRestResponse.setResponse(null);
+		PortalRestStatusEnum portalRestStatusEnum = null;
+		expectedportalRestResponse.setStatus(portalRestStatusEnum.ERROR);
+		EPUser user = mockUser.mockEPUser();
+		user.setEmail("“><script>alert(“XSS”)</script>");
+		user.setLoginPwd("pwd");
+		user.setLoginId("Test");
+		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
+		Mockito.when(userService.getUserByUserId(user.getOrgUserId())).thenThrow(nullPointerException);
+		PortalRestResponse<String> actualPortalRestResponse = appsControllerExternalRequest
+			.postPortalAdmin(mockedRequest, mockedResponse, user);
+		assertEquals(expectedportalRestResponse, actualPortalRestResponse);
+	}
+
+	@Test
 	public void postPortalAdminCreateUserIfNotFoundTest() throws Exception {
 		PortalRestResponse<String> expectedportalRestResponse = new PortalRestResponse<String>();
 		expectedportalRestResponse.setMessage(null);
@@ -277,6 +295,36 @@ public class AppsControllerExternalRequestTest extends MockitoTestSuite {
 	}
 
 	@Test
+	public void postOnboardAppExternalXSSTest() {
+		PortalRestResponse<String> expectedportalRestResponse = new PortalRestResponse<String>();
+		expectedportalRestResponse.setMessage(
+			"Data is not valid");
+		expectedportalRestResponse.setResponse(null);
+		PortalRestStatusEnum portalRestStatusEnum = null;
+		expectedportalRestResponse.setStatus(portalRestStatusEnum.ERROR);
+
+		OnboardingApp expectedOnboardingApp = new OnboardingApp();;
+		expectedOnboardingApp.name = "test";
+		expectedOnboardingApp.url="test.com";
+		expectedOnboardingApp.restUrl="<script>alert(/XSS”)</script>";
+		expectedOnboardingApp.myLoginsAppOwner="testUser";
+		expectedOnboardingApp.restrictedApp=false;
+		expectedOnboardingApp.isOpen=true;
+		expectedOnboardingApp.isEnabled=true;
+		EPUser user = mockUser.mockEPUser();
+		user.setEmail("guestT@test.portal.onap.org");
+		user.setLoginPwd("pwd");
+		user.setLoginId("Test");
+		List<EPUser> expectedList = new ArrayList<EPUser>();
+		expectedList.add(user);
+
+		PortalRestResponse<String> actualPortalRestResponse = appsControllerExternalRequest
+			.postOnboardAppExternal(mockedRequest, mockedResponse, expectedOnboardingApp);
+		assertEquals(expectedportalRestResponse, actualPortalRestResponse);
+
+	}
+
+	@Test
 	public void putOnboardAppExternalifAppNullTest() {
 		PortalRestResponse<String> expectedportalRestResponse = new PortalRestResponse<String>();
 		expectedportalRestResponse.setMessage("Unexpected value for field: id");
@@ -290,6 +338,38 @@ public class AppsControllerExternalRequestTest extends MockitoTestSuite {
 		PortalRestResponse<String> actualPortalRestResponse = appsControllerExternalRequest
 				.putOnboardAppExternal(mockedRequest, mockedResponse, appId, expectedOnboardingApp);
 		assertEquals(actualPortalRestResponse, expectedportalRestResponse);
+	}
+
+	@Test
+	public void putOnboardAppExternalXSSTest() {
+		PortalRestResponse<String> expectedportalRestResponse = new PortalRestResponse<String>();
+		expectedportalRestResponse.setMessage(
+			"Data is not valid");
+		expectedportalRestResponse.setResponse(null);
+		PortalRestStatusEnum portalRestStatusEnum = null;
+		expectedportalRestResponse.setStatus(portalRestStatusEnum.ERROR);
+
+		OnboardingApp expectedOnboardingApp = new OnboardingApp();;
+		expectedOnboardingApp.name = "test";
+		expectedOnboardingApp.url="test.com";
+		expectedOnboardingApp.restUrl="<script>alert(/XSS”)</script>";
+		expectedOnboardingApp.myLoginsAppOwner="testUser";
+		expectedOnboardingApp.restrictedApp=false;
+		expectedOnboardingApp.isOpen=true;
+		expectedOnboardingApp.isEnabled=true;
+		EPUser user = mockUser.mockEPUser();
+		user.setEmail("guestT@test.portal.onap.org");
+		user.setLoginPwd("pwd");
+		user.setLoginId("Test");
+		List<EPUser> expectedList = new ArrayList<EPUser>();
+		expectedList.add(user);
+
+		Long appId = (long) 1;
+
+		PortalRestResponse<String> actualPortalRestResponse = appsControllerExternalRequest
+			.putOnboardAppExternal(mockedRequest, mockedResponse, appId, expectedOnboardingApp);
+		assertEquals(expectedportalRestResponse, actualPortalRestResponse);
+
 	}
 
 	@Test

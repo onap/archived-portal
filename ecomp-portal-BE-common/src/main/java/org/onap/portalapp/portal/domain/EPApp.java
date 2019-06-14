@@ -41,7 +41,9 @@ import java.util.Arrays;
 
 import javax.persistence.Lob;
 
+import javax.validation.Valid;
 import org.apache.commons.lang.StringUtils;
+import org.hibernate.validator.constraints.SafeHtml;
 import org.onap.portalsdk.core.domain.support.DomainVo;
 
 /**
@@ -50,29 +52,44 @@ import org.onap.portalsdk.core.domain.support.DomainVo;
 public class EPApp extends DomainVo {
 
 	private static final long serialVersionUID = 1L;
-
+	@SafeHtml
 	private String name;
+	@SafeHtml
 	private String imageUrl;
+	@SafeHtml
 	private String description;
+	@SafeHtml
 	private String notes;
+	@SafeHtml
 	private String url;
+	@SafeHtml
 	private String alternateUrl;
+	@SafeHtml
 	private String appRestEndpoint;
+	@SafeHtml
 	private String mlAppName;
+	@SafeHtml
 	private String mlAppAdminId;
 	private Long motsId;
+	@SafeHtml
 	private String username;
+	@SafeHtml
 	private String appPassword;
 	@Lob
 	private byte[] thumbnail;
 	private Boolean open;
 	private Boolean enabled;
+	@SafeHtml
 	private String uebTopicName;
+	@SafeHtml
 	private String uebKey;
+	@SafeHtml
 	private String uebSecret;
 	private Integer appType;
+	@Valid
 	private AppContactUs contactUs;
 	private Boolean centralAuth;
+	@SafeHtml
 	private String	nameSpace;
 
 	public EPApp() {

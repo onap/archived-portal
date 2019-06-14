@@ -37,6 +37,7 @@
  */
 package org.onap.portalapp.portal.domain;
 
+import javax.validation.Valid;
 import org.onap.portalsdk.core.domain.support.DomainVo;
 
 @SuppressWarnings("rawtypes")
@@ -45,7 +46,9 @@ public class EPUserApp extends DomainVo implements java.io.Serializable, Compara
 	private static final long serialVersionUID = 1L;
 	
 	private Long userId;
+	@Valid
 	private EPApp app;
+	@Valid
 	private EPRole role;
 	private Integer priority;
 	

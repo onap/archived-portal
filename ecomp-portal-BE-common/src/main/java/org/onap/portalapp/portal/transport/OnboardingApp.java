@@ -37,6 +37,8 @@
  */
 package org.onap.portalapp.portal.transport;
 
+import org.hibernate.validator.constraints.SafeHtml;
+
 /**
  * Model of rows in the fn_app table; serialized as a message add or update an
  * on-boarded application.
@@ -44,21 +46,21 @@ package org.onap.portalapp.portal.transport;
 public class OnboardingApp {
 
 	public Long id;
-
+	@SafeHtml
 	public String name;
-
+	@SafeHtml
 	public String imageUrl;
-
+	@SafeHtml
 	public String imageLink;
-
+	@SafeHtml
 	public String description;
-
+	@SafeHtml
 	public String notes;
-
+	@SafeHtml
 	public String url;
-
+	@SafeHtml
 	public String alternateUrl;
-
+	@SafeHtml
 	public String restUrl;
 
 	public Boolean isOpen;
@@ -66,27 +68,27 @@ public class OnboardingApp {
 	public Boolean isEnabled;
 
 	public Long motsId;
-
+	@SafeHtml
 	public String myLoginsAppName;
-
+	@SafeHtml
 	public String myLoginsAppOwner;
-
+	@SafeHtml
 	public String username;
-
+	@SafeHtml
 	public String appPassword;
-
+	@SafeHtml
 	public String thumbnail;
-
+	@SafeHtml
 	public String uebTopicName;
-
+	@SafeHtml
 	public String uebKey;
-
+	@SafeHtml
 	public String uebSecret;
 
 	public Boolean restrictedApp;
 	
 	public Boolean isCentralAuth;
-	
+	@SafeHtml
 	public String nameSpace;
 
 	/**

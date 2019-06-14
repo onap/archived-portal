@@ -42,6 +42,8 @@ import java.util.Iterator;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import javax.validation.Valid;
+import org.hibernate.validator.constraints.SafeHtml;
 import org.onap.portalapp.portal.utils.PortalConstants;
 import org.onap.portalsdk.core.domain.User;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
@@ -52,44 +54,78 @@ public class EPUser extends User {
 	    
 	    private Long   orgId;
 	    private Long   managerId;
+	    @SafeHtml
 	    private String firstName;
+	    @SafeHtml
 	    private String middleInitial;
+	    @SafeHtml
 	    private String lastName;
+	    @SafeHtml
 	    private String phone;
+	    @SafeHtml
 	    private String fax;
+	    @SafeHtml
 	    private String cellular;
+	    @SafeHtml
 	    private String email;
 	    private Long   addressId;
+	    @SafeHtml
 	    private String alertMethodCd;
+	    @SafeHtml
 	    private String hrid;
+	    @SafeHtml
 	    private String orgUserId;
+	    @SafeHtml
 	    private String orgCode;
+	    @SafeHtml
 	    private String address1;
+	    @SafeHtml
 	    private String address2;
+	    @SafeHtml
 	    private String city;
+	    @SafeHtml
 	    private String state;
+	    @SafeHtml
 	    private String zipCode;
+	    @SafeHtml
 	    private String country;
+	    @SafeHtml
 	    private String orgManagerUserId;
+	    @SafeHtml
 	    private String locationClli;
+	    @SafeHtml
 	    private String businessCountryCode;
+	    @SafeHtml
 	    private String businessCountryName;
+	    @SafeHtml
 	    private String businessUnit;
+	    @SafeHtml
 	    private String businessUnitName;
+	    @SafeHtml
 	    private String department;
+	    @SafeHtml
 	    private String departmentName;
+	    @SafeHtml
 	    private String companyCode;
+	    @SafeHtml
 	    private String company;
+	    @SafeHtml
 	    private String zipCodeSuffix;
+	    @SafeHtml
 	    private String jobTitle;
+	    @SafeHtml
 	    private String commandChain;
+	    @SafeHtml
 	    private String siloStatus;
+	    @SafeHtml
 	    private String costCenter;
+	    @SafeHtml
 	    private String financialLocCode;
 	    
 	    
-	  
+	    @SafeHtml
 	    private String loginId;
+	    @SafeHtml
 	    private String loginPwd;
 	    private Date   lastLoginDate;
 	    private boolean active;
@@ -97,6 +133,7 @@ public class EPUser extends User {
 	    private Long    selectedProfileId;
 	    private Long timeZoneId;
 	    private boolean online;
+	    @SafeHtml
 	    private String chatId;
 	    private Integer languageId;
 	    private static final long serialVersionUID = 1L;
@@ -104,8 +141,9 @@ public class EPUser extends User {
 	    private static EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(EPUser.class);
 		private static final String ECOMP_PORTAL_NAME = "ECOMP";
 		private boolean isGuest = false;
-		
+		@Valid
 		private SortedSet<EPUserApp> userApps = new TreeSet<EPUserApp>();
+		@Valid
 		private SortedSet<EPRole> pseudoRoles = new TreeSet<EPRole>();
 
 	    public EPUser() {}
