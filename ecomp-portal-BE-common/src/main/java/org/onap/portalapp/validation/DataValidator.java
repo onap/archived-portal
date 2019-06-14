@@ -38,18 +38,26 @@
 
 package org.onap.portalapp.validation;
 
-import org.hibernate.validator.constraints.SafeHtml;
+import java.util.Set;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
+import org.springframework.stereotype.Component;
 
-public class SecureString {
+@Component
+public class DataValidator {
+       private static final ValidatorFactory VALIDATOR_FACTORY  = Validation.buildDefaultValidatorFactory();
 
-       @SafeHtml
-       private String data;
-
-       public SecureString(String string) {
-              this.data = string;
+       public <E> Set<ConstraintViolation<E>> getConstraintViolations(E classToValid){
+              Validator validator = VALIDATOR_FACTORY.getValidator();
+              Set<ConstraintViolation<E>> constraintViolations = validator.validate(classToValid);
+              return constraintViolations;
        }
 
-       public String getString() {
-              return data;
+       public <E> boolean isValid(E classToValid){
+              Set<ConstraintViolation<E>> constraintViolations = getConstraintViolations(classToValid);
+              return constraintViolations.isEmpty();
        }
+
 }
