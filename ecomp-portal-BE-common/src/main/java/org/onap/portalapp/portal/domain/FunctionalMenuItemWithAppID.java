@@ -38,13 +38,18 @@
 package org.onap.portalapp.portal.domain;
 
 import java.util.List;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Transient;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.SafeHtml;
+
 /***
  * 
  * This class is almost identical to org.onap.portalapp.portal.transport.FunctionalMenuItem
@@ -55,6 +60,8 @@ import javax.persistence.Transient;
  *
  */
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
 public class FunctionalMenuItemWithAppID{
 	private static final long serialVersionUID = 1L;
 
@@ -64,18 +71,29 @@ public class FunctionalMenuItemWithAppID{
 	public Long menuId;
 	
 	@Column(name = "COLUMN_NUM")
+	@Max(value = 99)
+	@NotNull
 	public Integer column;
 	
 	@Column(name = "TEXT")
+	@Max(value = 100)
+	@SafeHtml
+	@NotNull
 	public String text;
 	
 	@Column(name = "PARENT_MENU_ID")
 	public Integer parentMenuId;
 	
 	@Column(name = "URL")
+	@Max(value = 128)
+	@SafeHtml
+	@NotNull
 	public String url;
 	
 	@Column(name="ACTIVE_YN")
+	@Max(value = 1)
+	@SafeHtml
+	@NotNull
 	public String active_yn;
 
 	@Column(name="APP_ID")
@@ -89,10 +107,10 @@ public class FunctionalMenuItemWithAppID{
 	
 	public void normalize() {
 		if (this.column == null)
-			this.column = new Integer(1);
+			this.column = 1;
 		this.text = (this.text == null) ? "" : this.text.trim();
 		if (this.parentMenuId == null)
-			this.parentMenuId = new Integer(-1);
+			this.parentMenuId = -1;
 		this.url = (this.url == null) ? "" : this.url.trim();
 	}
 
