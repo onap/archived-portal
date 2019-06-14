@@ -14,30 +14,51 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.validator.constraints.SafeHtml;
 
 
 @Entity
 @Table(name="EP_WIDGET_CATALOG")
+@Getter
+@Setter
 public class WidgetCatalog{
 	
 	@Id
 	@Column(name = "widget_id")
 	@GeneratedValue(strategy=GenerationType.AUTO)
+	@Digits(integer = 11, fraction = 0)
 	private long id;
 	
 	@Column(name = "wdg_name")
+	@Size(max = 100)
+	@SafeHtml
+	@NotNull
 	private String name;
 	
 	@Column(name = "wdg_desc")
+	@Size(max = 200)
+	@SafeHtml
 	private String desc;	
 	
 	@Column(name = "wdg_file_loc")
+	@Size(max = 256)
+	@SafeHtml
+	@NotNull
 	private String fileLocation;
 	
 	@Column(name = "all_user_flag")
+	@Size(max = 1)
+	@SafeHtml
+	@NotNull
 	private String allowAllUser;
 	
 	@Column(name = "service_id")
+	@Digits(integer = 11, fraction = 0)
 	private Long serviceId;
 	
 	@Transient
@@ -52,78 +73,6 @@ public class WidgetCatalog{
 			inverseJoinColumns = {@JoinColumn(name = "ROLE_ID")}
 	)
 	private Set<RoleApp> widgetRoles;
-
-	public long getId() {
-		return id;
-	}
-
-	public void setId(long id) {
-		this.id = id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getDesc() {
-		return desc;
-	}
-
-	public void setDesc(String desc) {
-		this.desc = desc;
-	}
-
-	public String getFileLocation() {
-		return fileLocation;
-	}
-
-	public void setFileLocation(String fileLocation) {
-		this.fileLocation = fileLocation;
-	}
-
-	public Set<RoleApp> getWidgetRoles() {
-		return widgetRoles;
-	}
-
-	public void setWidgetRoles(Set<RoleApp> widgetRoles) {
-		this.widgetRoles = widgetRoles;
-	}
-	
-	public String getAllowAllUser() {
-		return allowAllUser;
-	}
-
-	public void setAllowAllUser(String allowAllUser) {
-		this.allowAllUser = allowAllUser;
-	}
-
-	public String getSortOrder() {
-		return sortOrder;
-	}
-
-	public void setSortOrder(String sortOrder) {
-		this.sortOrder = sortOrder;
-	}
-
-	public String getStatusCode() {
-		return statusCode;
-	}
-
-	public void setStatusCode(String statusCode) {
-		this.statusCode = statusCode;
-	}
-
-	public Long getServiceId() {
-		return serviceId;
-	}
-
-	public void setServiceId(Long serviceId) {
-		this.serviceId = serviceId;
-	}
 
 	@Override
 	public String toString() {
