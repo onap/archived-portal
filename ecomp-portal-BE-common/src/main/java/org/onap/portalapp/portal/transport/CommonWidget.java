@@ -44,6 +44,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.hibernate.validator.constraints.SafeHtml;
 import org.onap.portalsdk.core.domain.support.DomainVo;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -63,28 +64,33 @@ public class CommonWidget extends DomainVo{
 	private Long id;
 
 	@Column(name = "category")
+	@SafeHtml
 	public String category;
 	
 	@Column(name = "href")
+	@SafeHtml
 	public String href;
 
 	@Column(name = "title")
+	@SafeHtml
 	public String title;
 	
 	@Column(name = "content")
+	@SafeHtml
 	public String content;
 
 	@Column(name = "event_date")
+	@SafeHtml
 	public String eventDate;
 	
 	@Column(name = "sort_order")
 	public Integer sortOrder;
 
-	
+
 	public CommonWidget(){
-		
+
 	}
-	
+
 	public CommonWidget(String category, String href, String title, String content, String eventDate, Integer sortOrder){
 		this.category = category;
 		this.href = href;
