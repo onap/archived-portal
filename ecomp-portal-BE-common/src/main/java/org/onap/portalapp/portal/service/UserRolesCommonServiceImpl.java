@@ -323,7 +323,10 @@ public class UserRolesCommonServiceImpl  {
 					} else { // remote app
 						@SuppressWarnings("unchecked")
 						List<EPRole> roles = localSession
-								.createQuery("from " + EPRole.class.getName() + " where appId=" + appId).list();
+								.createQuery("from :name where appId=:appId")
+								.setParameter("name",EPRole.class.getName())
+								.setParameter("appId",appId)
+								.list();
 						for (EPRole role : roles) {
 							if (!extRequestValue && app.getCentralAuth()) {
 								rolesMap.put(role.getId(), role);
