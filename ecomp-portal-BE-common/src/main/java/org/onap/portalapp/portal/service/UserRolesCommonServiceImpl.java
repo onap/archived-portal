@@ -271,7 +271,10 @@ public class UserRolesCommonServiceImpl  {
 			transaction = localSession.beginTransaction();
 			@SuppressWarnings("unchecked")
 			List<EPUser> userList = localSession
-					.createQuery("from " + EPUser.class.getName() + " where orgUserId='" + userId + "'").list();
+					.createQuery("from :name where orgUserId=:userId")
+					.setParameter("name",EPUser.class.getName())
+					.setParameter("userId",userId)
+					.list();
 			if (userList.size() > 0) {
 				EPUser client = userList.get(0);
 				roleActive = ("DELETE".equals(reqType)) ? "" : " and role.active = 'Y'";
