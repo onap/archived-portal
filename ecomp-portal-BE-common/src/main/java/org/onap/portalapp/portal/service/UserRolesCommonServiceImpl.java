@@ -276,8 +276,12 @@ public class UserRolesCommonServiceImpl  {
 				EPUser client = userList.get(0);
 				roleActive = ("DELETE".equals(reqType)) ? "" : " and role.active = 'Y'";
 				@SuppressWarnings("unchecked")
-				List<EPUserApp> userRoles = localSession.createQuery("from " + EPUserApp.class.getName()
-						+ " where app.id=" + appId + roleActive + " and userId=" + client.getId()).list();
+				List<EPUserApp> userRoles = localSession.createQuery("from :name where app.id=:appId :roleActive and userId=:userId")
+						.setParameter("name",EPUserApp.class.getName())
+						.setParameter("appId",appId)
+						.setParameter("roleActive",roleActive)
+						.setParameter("userId",client.getId())
+						.list();
 				
 				if ("DELETE".equals(reqType)) {
 					for (EPUserApp userAppRoleList : userRoles) {
