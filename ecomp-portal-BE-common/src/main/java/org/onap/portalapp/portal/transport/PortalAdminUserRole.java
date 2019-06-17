@@ -43,6 +43,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.Digits;
 
 /**
  * This is to handle portal admins
@@ -54,13 +55,16 @@ public class PortalAdminUserRole implements Serializable{
 
 	@Id
 	@Column(name = "user_id")
+	@Digits(integer = 10, fraction = 0)
 	public Long userId;
 	
 	@Id
 	@Column(name = "role_id")
+	@Digits(integer = 10, fraction = 0)
 	public Long roleId;
 	
 	@Column(name = "app_id")
+	@Digits(integer = 11, fraction = 0)
 	public Long appId;
 		
 }
