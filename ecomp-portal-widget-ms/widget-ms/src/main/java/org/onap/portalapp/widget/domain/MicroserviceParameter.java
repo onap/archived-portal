@@ -6,6 +6,11 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.validator.constraints.SafeHtml;
 
 /**
  * TODO: moved all microservice-related code (domain, controller, service)
@@ -13,53 +18,29 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name="EP_MICROSERVICE_PARAMETER")
+@Getter
+@Setter
 public class MicroserviceParameter {
 	
 	@Id
 	@Column(name = "id")
 	@GeneratedValue(strategy=GenerationType.AUTO)
+	@Digits(integer = 11, fraction = 0)
 	private Long id;
 
 	@Column(name = "service_id")
+	@Digits(integer = 11, fraction = 0)
 	private long serviceId;
 
 	@Column(name = "para_key")
+	@Size(max = 50)
+	@SafeHtml
 	private String para_key;
 
 	@Column(name = "para_value")
+	@Size(max = 50)
+	@SafeHtml
 	private String para_value;
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public long getServiceId() {
-		return serviceId;
-	}
-
-	public void setServiceId(long serviceId) {
-		this.serviceId = serviceId;
-	}
-
-	public String getPara_key() {
-		return para_key;
-	}
-
-	public void setPara_key(String para_key) {
-		this.para_key = para_key;
-	}
-
-	public String getPara_value() {
-		return para_value;
-	}
-
-	public void setPara_value(String para_value) {
-		this.para_value = para_value;
-	}
 
 	@Override
 	public String toString() {
