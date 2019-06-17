@@ -229,6 +229,7 @@
 		<property name="createdId" column="created_id" />
 		<property name="modifiedId" column="modified_id" />
 		<property name="timeZoneId" column="timezone" />
+		<property name="systemUser" column="is_system_user" type="yes_no"/>
 		<property name="languageId" column="language_id" />
 
 		<set name="EPUserApps" table="FN_USER_ROLE" lazy="false" sort="natural"
@@ -1160,7 +1161,7 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 	<sql-query name="getAppsAdmins">
 		<return alias="adminUserApp" class="org.onap.portalapp.portal.domain.AdminUserApp" />   
 	<![CDATA[
-    	SELECT apps.APP_NAME, apps.APP_ID, user.USER_ID, user.FIRST_NAME, user.LAST_NAME, user.org_user_id FROM fn_user_role userrole INNER JOIN fn_user user ON user.USER_ID = userrole.USER_ID INNER JOIN fn_app apps ON apps.APP_ID = userrole.APP_ID  WHERE user.active_yn='Y' AND userrole.ROLE_ID = :accountAdminRoleId AND (apps.ENABLED = 'Y' OR apps.APP_ID=1)      
+    	SELECT apps.APP_NAME, apps.APP_ID, user.USER_ID, user.FIRST_NAME, user.LAST_NAME, user.org_user_id FROM fn_user_role userrole INNER JOIN fn_user user ON user.USER_ID = userrole.USER_ID INNER JOIN fn_app apps ON apps.APP_ID = userrole.APP_ID  WHERE user.active_yn='Y' AND userrole.ROLE_ID = :accountAdminRoleId       
 	]]>
 	</sql-query>
 	
@@ -2549,6 +2550,32 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
  		]]>
 	</sql-query>
 	
+	<sql-query name="getAllAdminAppsofTheUser">
+		<![CDATA[
+		select fa.app_id  from fn_user_role ur,fn_app fa where ur.user_id =:userId and ur.app_id=fa.app_id and ur.role_id= 999
+
+		]]>
+    </sql-query>
+	<sql-query name="getAllAppsFunctionsOfUser">
+			<![CDATA[
+			select distinct ep.function_cd from fn_user_role fu, ep_app_role_function ep, ep_app_function ea, fn_app fa , fn_role fr
+			where fu.role_id = ep.role_id 
+			and fu.app_id = ep.app_id
+			and fu.user_id =:userId
+			and ea.function_cd = ep.function_cd
+            and ((fu.app_id = fa.app_id  and fa.enabled = 'Y' ) or (fa.app_id = 1))
+            and fr.role_id = fu.role_id and fr.active_yn='Y' 
+		    union
+            select distinct app_r_f.function_cd from ep_app_role_function app_r_f, ep_app_function a_f
+			where role_id = 999
+			and app_r_f.function_cd = a_f.function_cd
+			and exists
+			(
+			select fa.app_id from fn_user fu, fn_user_role ur, fn_app fa where fu.user_id =:userId and fu.user_id = ur.user_id
+			and ur.role_id = 999 and ur.app_id = fa.app_id and fa.enabled = 'Y'
+			);
+			]]>
+	</sql-query>
 	<sql-query name="updateFnUser">
 		<![CDATA[
 			UPDATE fn_user fu SET fu.language_id=:language_id WHERE fu.login_id=:login_id

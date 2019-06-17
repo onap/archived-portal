@@ -154,8 +154,8 @@ public class PortalResourceInterceptor extends ResourceInterceptor {
 									SystemProperties.getProperty(SystemProperties.USER_ATTRIBUTE_NAME));
 							//RoleAdmin check is being added because the role belongs to partner application 
 							//inorder to access portal api's, bypassing this with isRoleAdmin Check
-							if ((matchRoleFunctions(portalApiPath, allRoleFunctions)
-									&& !matchRoleFunctions(portalApiPath, roleFunctions)) && !adminRolesService.isRoleAdmin(user)) {
+							if ((EPUserUtils.matchRoleFunctions(portalApiPath, allRoleFunctions)
+									&& !EPUserUtils.matchRoleFunctions(portalApiPath, roleFunctions)) && !adminRolesService.isRoleAdmin(user)) {
 								logger.error(EELFLoggerDelegate.errorLogger,
 										"preHandle: User {} not authorized for path {} ", user.getOrgUserId(),
 										portalApiPath);
@@ -296,9 +296,13 @@ public class PortalResourceInterceptor extends ResourceInterceptor {
 		}catch(ClassCastException e){
 			logger.debug(EELFLoggerDelegate.debugLogger, "Entering in the classcastexception block if the UN is not the mechid : {}");
 
-			
+			String secretKey = null;
 			// Unauthorized access due to missing HTTP Authorization request header
 			if (authHeader == null) {
+				if (remoteWebServiceCallService.verifyRESTCredential(secretKey, request.getHeader(EPCommonSystemProperties.UEB_KEY),
+						request.getHeader("username"), request.getHeader("password"))) {
+					return true;
+				}
 				final String msg = "no authorization found";
 				logger.debug(EELFLoggerDelegate.debugLogger, "checkBasicAuth: {}", msg);
 				sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, msg);
@@ -395,42 +399,6 @@ public class PortalResourceInterceptor extends ResourceInterceptor {
 		}
 		return result;
 	}
-
-	private Boolean matchRoleFunctions(String portalApiPath, Set<? extends String> roleFunctions) {
-		String[] path = portalApiPath.split("/");
-		List<String> roleFunList = new ArrayList<>();
-		if (path.length > 1) {
-			roleFunList = roleFunctions.stream().filter(item -> item.startsWith(path[0])).collect(Collectors.toList());
-			if (roleFunList.size() >= 1) {
-				for (String roleFunction : roleFunList) {
-					String[] roleFunctionArray = roleFunction.split("/");
-					boolean b = true;
-					if (roleFunctionArray.length == path.length) {
-						for (int i = 0; i < roleFunctionArray.length; i++) {
-							if (b) {
-								if (!roleFunctionArray[i].equals("*")) {
-									Pattern p = Pattern.compile(Pattern.quote(path[i]), Pattern.CASE_INSENSITIVE);
-									Matcher m = p.matcher(roleFunctionArray[i]);
-									b = m.matches();
-
-								}
-							}
-						}
-							if (b)
-								return b;
-					}
-				}
-			}
-		} else {
-			for (String roleFunction : roleFunctions) {
-				if (portalApiPath.matches(roleFunction))
-					return true;
-			}
-		}
-		return false;
-	}
-	
-	
 
 	protected void handleSessionUpdates(HttpServletRequest request) {
 		PortalTimeoutHandler.handleSessionUpdatesNative(request, null, null, null, null, manageService);

@@ -35,6 +35,16 @@
  
   
   -->
+<style>
+.mandatoryFeild
+    {
+    color: Red; 
+    margin-right: 2px;  
+    position: absolute;
+    left: -10px;top: 28px;
+    
+    }
+</style>
 
 <div class="b2b-modal-header">
 	<h2 class="account-details-title" id="application-details-title">Application
@@ -48,14 +58,16 @@
 	<div class="application-details-modal">
 		<div class="app-properties-main" scroll-top="appDetails.scrollApi">
 			<form name="appForm" novalidate autocomplete="off">
+			
 				<div id="app-left-container" class="left-container">
 					<div class="property-label checkbox-label">
 						<label for="checkbox-app-is-restricted" class="checkbox">
 							<input type="checkbox" ng-model="appDetails.app.restrictedApp"
 							id="checkbox-app-is-restricted"
 							ng-disabled="appDetails.isEditMode"
-							ng-checked="appDetails.app.restrictedApp" /> <i class="skin"></i>
-							<span>Hyperlink only application</span>
+							ng-checked="appDetails.app.restrictedApp" /> <i
+							id="checkbox-app-is-restricted" class="skin"></i> <span>Hyperlink
+								only application</span>
 						</label>
 					</div>
 					<div class="property required">
@@ -81,11 +93,14 @@
 							</div>
 						</div>
 					</div>
-					<div class="property required">
+					<div class="property">
 						<div id="url-property-label" class="property-label">URL</div>
-						<input id="input-app-url" ng-model="appDetails.app.url"
+                       <span runat="server" ID="required" class="mandatoryFeild"
+						visible="false"  ng-show="appDetails.app.isEnabled"> *</span><input id="input-app-url" ng-model="appDetails.app.url"
 							maxlength="256" name="url" type="url" placeholder="https://"
 							ng-pattern="appDetails.ECOMP_URL_REGEX" required />
+												
+						
 						<div id="app-error-url" class="error-container"
 							ng-show="appDetails.conflictMessages.url"
 							id="div-app-name-err-url">
@@ -107,9 +122,10 @@
 					</div>
 
 
-					<div class="property required" ng-show="!appDetails.app.restrictedApp">
+					<div class="property" ng-show="!appDetails.app.restrictedApp">
 						<div class="property-label">Rest API URL</div>
-						<input id="input-app-rest-url" ng-model="appDetails.app.restUrl"
+						<span runat="server" ID="required" class="mandatoryFiled"
+						visible="false"  ng-show="appDetails.app.isEnabled"> *</span><input id="input-app-rest-url" ng-model="appDetails.app.restUrl"
 							name="restUrl" type="url" placeholder="https://"
 							ng-pattern="appDetails.ECOMP_URL_REGEX" maxlength="256"
 							ng-required="!appDetails.app.restrictedApp" />
@@ -122,18 +138,19 @@
 						</div>
 					</div>
 
-					<div class="property required"
+					<div class="property"
 						ng-show="!appDetails.app.restrictedApp">
 						<div id="username-property-label" class="property-label">Username</div>
-						<input type="text" ng-model="appDetails.app.username"
-							name="username" maxlength="256"
-							ng-required="!appDetails.app.restrictedApp" />
+						<span runat="server" ID="required" class="mandatoryFiled"
+						visible="false" ng-show="appDetails.app.isCentralAuth || appDetails.app.isEnabled"> *</span><input type="text" id="input-username-property"
+							ng-model="appDetails.app.username" name="username"
+							maxlength="256" ng-required="!appDetails.app.restrictedApp" />
 						<div id="app-error-username-container" class="error-container"
 							ng-show="appForm.username.$dirty || appDetails.isEditMode">
 							<div ng-messages="appForm.username.$error"
 								class="error-container">
 								<small id="error-appusername-reqd" class="err-message"
-									ng-message="required">My Logins App Username is
+									ng-message="required">App Username is
 									required</small>
 							</div>
 						</div>
@@ -161,32 +178,21 @@
 							ng-model="appDetails.app.appPassword" autocomplete="new-password"
 							name="appPassword" maxlength="256"/>
 					</div>
-					<div class="property" ng-show="!appDetails.app.restrictedApp">
-						<div id="pwd-property-label" class="property-label">Name
-							Space</div>
-						<input type="text" id="input-mylogins-auth-namespace"
-							ng-model="appDetails.app.nameSpace" name="appAuthNameSpace"
-							maxlength="256" />
-					</div>
+					
+					
 				</div>
 				<div class="right-container">
 					<div class="property">
 						<div class="property-label">Upload Image</div>
 						<input type="file" id="input-app-image-upload"
-							class="input-file-field" accept="image/*"
-							ng-model="appDetails.originalImage" name="appImage"
-							image-upload="appDetails.originalImage"
+							class="input-file-field input-app-image-upload-ht"
+							accept="image/*" ng-model="appDetails.originalImage"
+							name="appImage" image-upload="appDetails.originalImage"
 							image-upload-resize-max-height="300"
 							image-upload-resize-max-width="360"
 							image-upload-resize-quality="0.7"
-							image-upload-api="appDetails.imageApi" style="height: 24px;" 
-							file-change="appImageHandler($event,files)" />
-						<div id="app-error-image-upload-type" class="error-container"
-							ng-show="appImageTypeError" class="ng-hide">
-							<div class="error-container">
-								 <small id="error-app-invalid-image-size" class="err-message">File must be an image</small>
-							</div>
-						</div> 
+							
+							image-upload-api="appDetails.imageApi" 
 							file-change="appImageHandler($event,files)" />
 						<div id="app-error-image-upload-type" class="error-container"
 							ng-show="appImageTypeError" class="ng-hide">
@@ -206,21 +212,14 @@
 						</div>
 
 						<div class="property-label preview">
-							<span class="left-label">Preview</span> <span class="remove"
+							<span id="{{$index}}-preview-property" class="left-label">Preview</span>
+							<span id="{{$index}}-remove-property" class="remove"
 								ng-click="appDetails.removeImage()">Remove</span>
 						</div>
 						<img id="image-app-preview" class="image-preview"
 							ng-src="{{appDetails.app.imageLink || appDetails.app.thumbnail || appDetails.emptyImgForPreview}}" />
-						<div id="property-communication-inbox" class="property"
-							ng-show="!appDetails.app.restrictedApp">
-							<div id="property-communication-inbox-label"
-								class="property-label">Communication Inbox</div>
-							<input type="text" id="input-UEB-topicname"
-								ng-model="appDetails.app.uebTopicName" name="uebTopicName"
-								readonly="readonly" />
-						</div>
-
-						<div id="property-communication-key" class="property"
+					
+                         <div id="property-communication-key" class="property"
 							ng-show="!appDetails.app.restrictedApp">
 							<div id="property-communication-key-label" class="property-label">Communication
 								Key</div>
@@ -228,16 +227,31 @@
 								ng-model="appDetails.app.uebKey" name="uebKey"
 								readonly="readonly" />
 						</div>
+						<div class="property"  ng-show="!appDetails.app.restrictedApp" >
+						<div id="pwd-property-label" class="property-label" >Name
+							Space</div>
+						<span runat="server" ID="required" class="mandatoryFiled"
+						visible="false" ng-show="appDetails.app.isCentralAuth"> *</span><input type="text" id="input-mylogins-auth-namespace"
+							ng-model="appDetails.app.nameSpace" name="appAuthNameSpace"
+							maxlength="256" ng-disabled="!appDetails.app.isCentralAuth" />
+					</div>
 
-						<div id="property-communication-secret" class="property"
+						
+						<div id="property-is-central-auth" class="property"
 							ng-show="!appDetails.app.restrictedApp">
-							<div id="property-communication-secret-label"
-								class="property-label">Communication Secret</div>
-							<input type="text" id="input-UEB-communication-secret"
-								ng-model="appDetails.app.uebSecret" name="uebSecret"
-								readonly="readonly" />
+							<label for="checkbox-app-is-central-auth" class="checkbox">
+								<input type="checkbox" ng-model="appDetails.app.isCentralAuth"
+								id="checkbox-app-is-central-auth" /> <i class="skin"></i> <span>Centralized</span>
+							</label>
 						</div>
-
+						<br />
+						<div id="property-active" class="property">
+							<label for="checkbox-app-is-enabled" class="checkbox"> <input
+								type="checkbox" ng-model="appDetails.app.isEnabled"
+								id="checkbox-app-is-enabled" /> <i class="skin"></i> <span>Active</span>
+							</label>
+						</div>
+						<br />
 						<div id="property-guest-access" class="property">
 							<label for="checkbox-app-is-open" class="checkbox"> <input
 								type="checkbox" ng-model="appDetails.app.isOpen"
@@ -247,20 +261,7 @@
 								<span>Allow guest access</span>
 							</label>
 						</div>
-						<div id="property-active" class="property">
-							<label for="checkbox-app-is-enabled" class="checkbox"> <input
-								type="checkbox" ng-model="appDetails.app.isEnabled"
-								id="checkbox-app-is-enabled" /> <i class="skin"></i> <span>Active</span>
-							</label>
-						</div>
-						<br />
-						<div id="property-is-central-auth" class="property"
-							ng-show="!appDetails.app.restrictedApp">
-							<label for="checkbox-app-is-central-auth" class="checkbox">
-								<input type="checkbox" ng-model="appDetails.app.isCentralAuth"
-								id="checkbox-app-is-central-auth" /> <i class="skin"></i> <span>Centralized</span>
-							</label>
-						</div>
+						
 
 					</div>
 
@@ -273,8 +274,7 @@
 	<div align="right">
 		<span class="ecomp-save-spinner" ng-show="appDetails.isSaving"></span>
 		<button id="button-save-app" class="btn btn-alt btn-small"
-			ng-class="{disabled: appForm.$invalid}"
-			ng-click="appDetails.saveChanges()">Save</button>
+				ng-disabled="(!appDetails.app.name ||  appDetails.app.name.length == 0)" ng-click="appDetails.saveChanges()">Save</button>
 		<button id="button-notification-cancel" class="btn btn-alt btn-small"
 			ng-click="$dismiss('cancel')" role="button" tabindex="0">Cancel</button>
 	</div>

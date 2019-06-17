@@ -333,7 +333,7 @@ public class HealthMonitor {
 							zkNodeStatistics.indexOf("Node"));
 					logger.info(EELFLoggerDelegate.applicationLogger,
 							"Getting Status for zookeeper :" + zookeeperNodes[i].trim() + ":------:" + state);
-					if (state.contains("leader"))
+					if (state.contains("leader") || state.contains("follower"))
 						return true;
 				}
 			} catch (Exception e) {

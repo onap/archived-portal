@@ -45,7 +45,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -398,4 +400,40 @@ public class EPUserUtils {
 		return "";
 	}
 
+	public static Boolean matchRoleFunctions(String portalApiPath, Set<? extends String> roleFunctions) {
+		String[] path = portalApiPath.split("/");
+		List<String> roleFunList = new ArrayList<>();
+		if (path.length > 1) {
+			roleFunList = roleFunctions.stream().filter(item -> item.startsWith(path[0])).collect(Collectors.toList());
+			if (roleFunList.size() >= 1) {
+				for (String roleFunction : roleFunList) {
+					String[] roleFunctionArray = roleFunction.split("/");
+					boolean b = true;
+					if (roleFunctionArray.length == path.length) {
+						for (int i = 0; i < roleFunctionArray.length; i++) {
+							if (b) {
+								if (!roleFunctionArray[i].equals("*")) {
+									Pattern p = Pattern.compile(Pattern.quote(path[i]), Pattern.CASE_INSENSITIVE);
+									Matcher m = p.matcher(roleFunctionArray[i]);
+									b = m.matches();
+
+								}
+							}
+						}
+							if (b)
+								return b;
+					}
+				}
+			}
+		} else {
+			for (String roleFunction : roleFunctions) {
+				if (roleFunction.equals(("*"))) {
+					return true;
+				} else if (portalApiPath.matches(roleFunction)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 }

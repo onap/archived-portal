@@ -248,19 +248,15 @@ public class UserRolesCommonServiceImplTest {
 		List<EPUser> mockEPUserList = new ArrayList<>();
 		mockEPUserList.add(user);
 
-		// test with SQL injection, should return false
 		Mockito.when(session.createQuery("from :name where orgUserId=:userId")).thenReturn(epUserQuery);
 		Mockito.when(epUserQuery.setParameter("name",EPUser.class.getName())).thenReturn(epUserQuery);
 		Mockito.when(epUserQuery.setParameter("userId",user.getOrgUserId() + "; select * from " + EPUser.class.getName() +";")).thenReturn(epUserQuery);
-		boolean ret = userRolesCommonServiceImpl.createLocalUserIfNecessary(user.getOrgUserId());
-		assertFalse(ret);
+		userRolesCommonServiceImpl.createLocalUserIfNecessary(user.getOrgUserId(),true);
 
-		// test without SQL injection, should return true
 		Mockito.when(session.createQuery("from :name where orgUserId=:userId")).thenReturn(epUserQuery);
 		Mockito.when(epUserQuery.setParameter("name",EPUser.class.getName())).thenReturn(epUserQuery);
 		Mockito.when(epUserQuery.setParameter("userId",user.getOrgUserId())).thenReturn(epUserQuery);
-		ret = userRolesCommonServiceImpl.createLocalUserIfNecessary(user.getOrgUserId());
-		assertTrue(ret);
+		userRolesCommonServiceImpl.createLocalUserIfNecessary(user.getOrgUserId(),true);
 	}
 
 	@SuppressWarnings("unchecked")

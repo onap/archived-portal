@@ -135,8 +135,10 @@ public class EPUser extends User {
 	    private boolean online;
 	    @SafeHtml
 	    private String chatId;
+	    private boolean systemUser;
 	    private Integer languageId;
 	    private static final long serialVersionUID = 1L;
+
 
 	    private static EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(EPUser.class);
 		private static final String ECOMP_PORTAL_NAME = "ECOMP";
@@ -690,6 +692,14 @@ public class EPUser extends User {
 
 	public void setGuest(boolean isGuest) {
 		this.isGuest = isGuest;
+	}
+	
+	public boolean isSystemUser() {
+		return systemUser;
+	}
+
+	public void setSystemUser(boolean systemUser) {
+		this.systemUser = systemUser;
 	}
 
 	@Override

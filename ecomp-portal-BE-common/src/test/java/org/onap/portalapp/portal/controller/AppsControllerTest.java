@@ -1,5 +1,5 @@
 /*-
- * ============LICENSE_START==========================================
+  * ============LICENSE_START==========================================
  * ONAP Portal
  * ===================================================================
  * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
@@ -90,7 +90,10 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.HttpClientErrorException;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({SystemProperties.class,AppUtils.class, EPUserUtils.class, MediaType.class})
@@ -548,7 +551,7 @@ public class AppsControllerTest extends MockitoTestSuite{
 		List<AppsResponse> atualApps = new ArrayList<AppsResponse>();
 
 		Mockito.when(adminRolesService.isSuperAdmin(user)).thenReturn(true);
-		Mockito.when(appService.getAllApps(false)).thenReturn(expectedApps);
+		Mockito.when(appService.getAllApplications(false)).thenReturn(expectedApps);
 		atualApps = appsController.getApps(mockedRequest, mockedResponse);
 		assertEquals(expectedApps, atualApps);
 	}
@@ -566,7 +569,7 @@ public class AppsControllerTest extends MockitoTestSuite{
 		EPUser user = mockUser.mockEPUser();
 		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
 		Mockito.when(adminRolesService.isSuperAdmin(user)).thenReturn(true);
-		Mockito.when(appService.getAllApps(false)).thenThrow(nullPointerException);
+		Mockito.when(appService.getAllApplications(false)).thenThrow(nullPointerException);
 		assertNull(appsController.getApps(mockedRequest, mockedResponse));
 	}
 
@@ -725,24 +728,110 @@ public class AppsControllerTest extends MockitoTestSuite{
 	}
 
 	@Test
-	public void putOnboardingAppTest() {
+	public void putOnboardingAppTest() throws Exception {
 		EPUser user = mockUser.mockEPUser();
 		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
 		OnboardingApp OnboardingApp = new OnboardingApp();
+		OnboardingApp.isCentralAuth = true;
+		OnboardingApp.nameSpace = "test1";
 		FieldsValidator expectedFieldValidator = new FieldsValidator();
 		expectedFieldValidator.setHttpStatusCode((long) 200);
 		expectedFieldValidator.setFields(null);
 		expectedFieldValidator.setErrorCode(null);
+		EPApp OnboardingApp1 = new EPApp();
+		OnboardingApp1.setCentralAuth(false);
+		OnboardingApp1.setNameSpace("test"); 
+		Mockito.when(appService.getApp(Matchers.anyLong())).thenReturn(OnboardingApp1);
 		Mockito.when(adminRolesService.isSuperAdmin(user)).thenReturn(true);
+		ResponseEntity<String> response = new ResponseEntity<>(HttpStatus.OK);
+		Mockito.when(appService.checkIfNameSpaceIsValid(Matchers.anyString())).thenReturn(response);
 		Mockito.when(appService.modifyOnboardingApp(OnboardingApp, user)).thenReturn(expectedFieldValidator);
 		Mockito.when(mockedResponse.getStatus()).thenReturn(200);
 		FieldsValidator actualFieldValidator = appsController.putOnboardingApp(mockedRequest, OnboardingApp,
 				mockedResponse);
 		assertEquals(expectedFieldValidator, actualFieldValidator);
 	}
+	
+	@Test
+	public void putOnboardingApp2Test() throws Exception {
+		EPUser user = mockUser.mockEPUser();
+		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
+		OnboardingApp onboardingApp = new OnboardingApp();
+		onboardingApp.isCentralAuth = true;
+		onboardingApp.nameSpace = "com.test1";
+		EPApp app = new EPApp();
+		app.setNameSpace("com.test ");
+		FieldsValidator expectedFieldValidator = new FieldsValidator();
+		expectedFieldValidator.setHttpStatusCode((long) 200);
+		expectedFieldValidator.setFields(null);
+		expectedFieldValidator.setErrorCode(null);
+		Mockito.when(adminRolesService.isSuperAdmin(user)).thenReturn(false);
+		Mockito.when(adminRolesService.isAccountAdminOfApplication(Matchers.any(EPUser.class),Matchers.any(EPApp.class))).thenReturn(true);
+		ResponseEntity<String> response = new ResponseEntity<>(HttpStatus.OK);
+		Mockito.when(appService.checkIfNameSpaceIsValid("com.test1")).thenReturn(response);
+		Mockito.when(appService.getApp(Matchers.anyLong())).thenReturn(app);
+		Mockito.when(mockedResponse.getStatus()).thenReturn(200);
+		Mockito.when(appService.modifyOnboardingApp(Matchers.any(OnboardingApp.class), Matchers.any(EPUser.class))).thenReturn(expectedFieldValidator);
+		FieldsValidator actualFieldValidator = appsController.putOnboardingApp(mockedRequest, onboardingApp,
+				mockedResponse);
+	}
+	
+	
+
+	
+	@Test
+	public void putOnboardingApp4Test() throws Exception {
+		EPUser user = mockUser.mockEPUser();
+		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
+		OnboardingApp onboardingApp = new OnboardingApp();
+		onboardingApp.isCentralAuth = false;
+		onboardingApp.nameSpace = "com.test1";
+		EPApp app = new EPApp();
+		app.setCentralAuth(false);
+		app.setNameSpace("com.test ");
+		FieldsValidator expectedFieldValidator = new FieldsValidator();
+		expectedFieldValidator.setHttpStatusCode((long) 404);
+		Mockito.when(adminRolesService.isSuperAdmin(user)).thenReturn(false);
+		Mockito.when(adminRolesService.isAccountAdminOfAnyActiveorInactiveApplication(Matchers.any(EPUser.class),Matchers.any(EPApp.class))).thenReturn(true);
+		ResponseEntity<String> response = new ResponseEntity<>(HttpStatus.OK);
+		
+		HttpClientErrorException exception = new HttpClientErrorException(HttpStatus.FORBIDDEN);
+		Mockito.when(appService.checkIfNameSpaceIsValid("com.test1")).thenThrow(exception);
+		Mockito.when(appService.getApp(Matchers.anyLong())).thenReturn(app);
+		Mockito.when(mockedResponse.getStatus()).thenReturn(200);
+		Mockito.when(appService.modifyOnboardingApp(Matchers.any(OnboardingApp.class), Matchers.any(EPUser.class))).thenReturn(expectedFieldValidator);
+		FieldsValidator actualFieldValidator = appsController.putOnboardingApp(mockedRequest, onboardingApp,
+				mockedResponse);
+		assertEquals(expectedFieldValidator.getHttpStatusCode(), actualFieldValidator.getHttpStatusCode());
+	}
+	
+	@Test
+	public void putOnboardingApp5Test() throws Exception {
+		EPUser user = mockUser.mockEPUser();
+		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
+		OnboardingApp onboardingApp = new OnboardingApp();
+		onboardingApp.isCentralAuth = true;
+		onboardingApp.nameSpace = "com.test1";
+		EPApp app = new EPApp();
+		app.setNameSpace("com.test ");
+		FieldsValidator expectedFieldValidator = new FieldsValidator();
+		expectedFieldValidator.setHttpStatusCode((long) 400);
+		Mockito.when(adminRolesService.isSuperAdmin(user)).thenReturn(false);
+		Mockito.when(adminRolesService.isAccountAdminOfApplication(Matchers.any(EPUser.class),Matchers.any(EPApp.class))).thenReturn(true);
+		ResponseEntity<String> response = new ResponseEntity<>(HttpStatus.OK);
+		
+		HttpClientErrorException exception = new HttpClientErrorException(HttpStatus.BAD_REQUEST);
+		Mockito.when(appService.checkIfNameSpaceIsValid("com.test1")).thenThrow(exception);
+		Mockito.when(appService.getApp(Matchers.anyLong())).thenReturn(app);
+		Mockito.when(mockedResponse.getStatus()).thenReturn(400);
+		Mockito.when(appService.modifyOnboardingApp(Matchers.any(OnboardingApp.class), Matchers.any(EPUser.class))).thenReturn(expectedFieldValidator);
+		FieldsValidator actualFieldValidator = appsController.putOnboardingApp(mockedRequest, onboardingApp,
+				mockedResponse);
+	}
+
 
 	@Test
-	public void putOnboardingAppIfSuperAdminTest() {
+	public void putOnboardingAppIfSuperAdminTest() throws Exception {
 		EPUser user = mockUser.mockEPUser();
 		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
 		FieldsValidator expectedFieldValidator = null;
@@ -753,7 +842,7 @@ public class AppsControllerTest extends MockitoTestSuite{
 	}
 
 	@Test
-	public void putOnboardingAppExceptionTest() {
+	public void putOnboardingAppExceptionTest() throws Exception {
 		EPUser user = mockUser.mockEPUser();
 		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
 		OnboardingApp OnboardingApp = new OnboardingApp();
@@ -763,7 +852,7 @@ public class AppsControllerTest extends MockitoTestSuite{
 	}
 
     @Test
-    public void putOnboardingAppNullUserTest() {
+    public void putOnboardingAppNullUserTest() throws Exception {
         Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenThrow(nullPointerException);
         Mockito.when(mockedResponse.getStatus()).thenReturn(200);
         assertNull(appsController.putOnboardingApp(mockedRequest, new OnboardingApp(), mockedResponse));

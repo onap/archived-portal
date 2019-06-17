@@ -65,6 +65,7 @@ import org.onap.portalapp.portal.domain.EPUser;
 import org.onap.portalapp.portal.domain.EPUserApp;
 import org.onap.portalapp.portal.domain.UserIdRoleId;
 import org.onap.portalapp.portal.domain.UserRole;
+import org.onap.portalapp.portal.exceptions.RoleFunctionException;
 import org.onap.portalapp.portal.logging.aop.EPMetricsLog;
 import org.onap.portalapp.portal.logging.format.EPAppMessagesEnum;
 import org.onap.portalapp.portal.logging.logic.EPLogUtil;
@@ -77,6 +78,7 @@ import org.onap.portalapp.portal.utils.EcompPortalUtils;
 import org.onap.portalapp.portal.utils.PortalConstants;
 import org.onap.portalapp.util.EPUserUtils;
 import org.onap.portalsdk.core.domain.RoleFunction;
+import org.onap.portalsdk.core.domain.User;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.onap.portalsdk.core.restful.domain.EcompRole;
 import org.onap.portalsdk.core.service.DataAccessService;
@@ -168,8 +170,10 @@ public class AdminRolesServiceImpl implements AdminRolesService {
 			appsListWithAdminRole.orgUserId = orgUserId;
 			List<EPApp> appsList = null;
 			try {
-				appsList = dataAccessService.getList(EPApp.class,
-						"  where ( enabled = 'Y' or id = " + ECOMP_APP_ID + ")", null, null);
+//				appsList = dataAccessService.getList(EPApp.class,
+//						null, null, null);
+				
+				appsList = dataAccessService.getList(EPApp.class, null);
 			} catch (Exception e) {
 				logger.error(EELFLoggerDelegate.errorLogger, "getAppsWithAdminRoleStateForUser 2 failed", e);
 				EPLogUtil.logEcompError(EPAppMessagesEnum.BeDaoSystemError);
@@ -202,9 +206,9 @@ public class AdminRolesServiceImpl implements AdminRolesService {
 				List<EPApp> apps = appsService.getAppsFullList();
 				HashMap<Long, EPApp> enabledApps = new HashMap<Long, EPApp>();
 				for (EPApp app : apps) {
-					if (app.getEnabled().booleanValue() || app.getId() == ECOMP_APP_ID) {
+//					if (app.getEnabled().booleanValue() || app.getId() == ECOMP_APP_ID) {
 						enabledApps.put(app.getId(), app);
-					}
+//					}
 				}
 				List<AppNameIdIsAdmin> newAppsWhereUserIsAdmin = new ArrayList<AppNameIdIsAdmin>();
 				for (AppNameIdIsAdmin adminRole : newAppsListWithAdminRoles.appsRoles) {
@@ -499,18 +503,13 @@ public class AdminRolesServiceImpl implements AdminRolesService {
 							String type = externalAccessRolesService.getFunctionCodeType(roleFunction);
 							getRoleFuncListOfPortalSet1.add(type);
 						}
+				
+					boolean checkIfFunctionsExits = getRoleFuncListOfPortalSet1.stream()
+							.anyMatch(roleFunction -> roleFunction.equalsIgnoreCase("Approver"));
+					logger.debug(EELFLoggerDelegate.debugLogger, "Checking if user has approver rolefunction" , checkIfFunctionsExits);
 
-					for (String rolefunc : getRoleFuncListOfPortalSet1) {
-						logger.debug(EELFLoggerDelegate.debugLogger, "Checking if user has approver rolefunction" , rolefunc);
-				        if (rolefunc.equalsIgnoreCase(TYPE_APPROVER)) {
-							logger.debug(EELFLoggerDelegate.debugLogger, "Checking if user has approver rolefunction" , rolefunc);
-				            return true;
-				        }else{
-						       return false;
-
-				        }
-				    }
-
+					return checkIfFunctionsExits;
+		
 		} catch (Exception e) {
 			EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeDaoSystemError, e);
 			logger.error(EELFLoggerDelegate.errorLogger, "Exception occurred while executing isRoleAdmin operation",
@@ -569,6 +568,54 @@ public class AdminRolesServiceImpl implements AdminRolesService {
 					isApplicationAccountAdmin=userAdminApps.contains((int) (long) app.getId());
 					logger.debug(EELFLoggerDelegate.debugLogger, "Is account admin for user is true{} ,appId {}", user.getId(),app.getId());
 					}
+			} catch (Exception e) {
+			EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeDaoSystemError, e);
+			logger.error(EELFLoggerDelegate.errorLogger,
+					"Exception occurred while executing isAccountAdminOfApplication operation", e);
+		}
+		logger.debug(EELFLoggerDelegate.debugLogger, "In AdminRolesServiceImpl() - isAccountAdminOfApplication = {} and userId ={} ", isApplicationAccountAdmin, user.getOrgUserId());
+		return isApplicationAccountAdmin;
+
+	}
+
+	@Override
+	public Set<String> getAllAppsFunctionsOfUser(String OrgUserId) throws RoleFunctionException {
+		final Map<String, String> params = new HashMap<>();
+		params.put("userId", OrgUserId);
+		List getRoleFuncListOfPortal = dataAccessService.executeNamedQuery("getAllAppsFunctionsOfUser", params, null);
+		Set<String> getRoleFuncListOfPortalSet = new HashSet<>(getRoleFuncListOfPortal);
+		Set<String> roleFunSet = new HashSet<>();
+		roleFunSet = getRoleFuncListOfPortalSet.stream().filter(x -> x.contains("|")).collect(Collectors.toSet());
+		if (roleFunSet.size() > 0)
+			for (String roleFunction : roleFunSet) {
+				String roleFun = EcompPortalUtils.getFunctionCode(roleFunction);
+				getRoleFuncListOfPortalSet.remove(roleFunction);
+				getRoleFuncListOfPortalSet.add(roleFun);
+			}
+
+		Set<String> finalRoleFunctionSet = new HashSet<>();
+		for (String roleFn : getRoleFuncListOfPortalSet) {
+			finalRoleFunctionSet.add(EPUserUtils.decodeFunctionCode(roleFn));
+		}
+		
+//		List<String> functionsOfUser = new ArrayList<>(getRoleFuncListOfPortal);
+		return finalRoleFunctionSet;
+	}
+
+	
+	@Override
+	public boolean isAccountAdminOfAnyActiveorInactiveApplication(EPUser user, EPApp app) {
+		Boolean isApplicationAccountAdmin=false;
+		try {
+					final Map<String, Long> userParams = new HashMap<>();
+					userParams.put("userId", user.getId());	
+					logger.debug(EELFLoggerDelegate.debugLogger, "Is account admin for user {}", user.getId());
+					List<Integer> userAdminApps = new ArrayList<>();
+					userAdminApps =dataAccessService.executeNamedQuery("getAllAdminAppsofTheUser", userParams, null);
+					if(userAdminApps.size()>=1){
+					isApplicationAccountAdmin=userAdminApps.contains((int) (long) app.getId());
+					logger.debug(EELFLoggerDelegate.debugLogger, "Is account admin for user is true{} ,appId {}", user.getId(),app.getId());
+					}					
 			} catch (Exception e) {
 			EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeDaoSystemError, e);
 			logger.error(EELFLoggerDelegate.errorLogger,

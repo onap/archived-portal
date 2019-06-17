@@ -219,11 +219,13 @@ app.controller('roleListController', function ($scope,RoleService, applicationsS
 		
 		// edit Role
 		$scope.editRoleModalPopup = function(appId, availableRole) {
+			$scope.showSpinner = true;
 			if(!availableRole.active)
 				 return confirmBoxService.showInformation('Edit is diabled! Please toggle the role to activate it.').then(isConfirmed => {});
 			$scope.editRole = availableRole;
 			if(appId != undefined && availableRole.id != undefined){
-				RoleService.getRole(appId, availableRole.id).then(function(data){	
+				RoleService.getRole(appId, availableRole.id).then(function(data){
+					$scope.showSpinner = false;
 					var response = JSON.parse(data.data);					
 					var role = JSON.parse(response.role);
 					var availableRoles = JSON.parse(response.availableRoles);
@@ -253,6 +255,7 @@ app.controller('roleListController', function ($scope,RoleService, applicationsS
 					});
 				},function(error){
 					$log.debug('Failed to editRole');
+					$scope.showSpinner = false;
 				});
 			}
 			 
@@ -260,9 +263,11 @@ app.controller('roleListController', function ($scope,RoleService, applicationsS
 		
 		// add Role
 		$scope.addRoleModalPopup = function(appId) {
+			$scope.showSpinner = true;
 			if(appId){
 				var roleId = -1;
 				RoleService.getRole(appId, roleId).then(function(data){	
+					$scope.showSpinner = false;
 					var response = JSON.parse(data.data);					
 					var role = JSON.parse(response.role);
 					var availableRoles = JSON.parse(response.availableRoles);

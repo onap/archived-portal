@@ -38,10 +38,12 @@
 package org.onap.portalapp.portal.service;
 
 import java.util.List;
+import java.util.Set;
 
 import org.onap.portalapp.portal.domain.EPApp;
 import org.onap.portalapp.portal.domain.EPRole;
 import org.onap.portalapp.portal.domain.EPUser;
+import org.onap.portalapp.portal.exceptions.RoleFunctionException;
 import org.onap.portalapp.portal.transport.AppsListWithAdminRole;
 
 public interface AdminRolesService {
@@ -78,4 +80,7 @@ public interface AdminRolesService {
 	List<EPRole> getRolesByApp(EPUser user, Long appId);
 	
 	public boolean isAccountAdminOfApplication(EPUser user, EPApp app);
+	public Set<String> getAllAppsFunctionsOfUser(String OrgUserId)throws RoleFunctionException;
+
+	boolean isAccountAdminOfAnyActiveorInactiveApplication(EPUser user, EPApp app);
 }

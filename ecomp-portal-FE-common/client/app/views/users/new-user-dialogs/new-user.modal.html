@@ -55,22 +55,44 @@
 
 		<div class="b2b-modal-header">
 			<h2 class="heading-medium" id="newAdmin">New User</h2>
-
+			
 			<div class="corner-button in">
 				<button type="button" class="close" aria-label="Close" id="user-button-close" 
 					ng-click="$dismiss('cancel')"></button>
 			</div>
 		</div>
-
-		<div class="b2b-modal-body" tabindex="0"
+				
+				<fieldset style="height: 75px;" role="radiogroup"
+						b2b-radio-group-accessibility aria-labelledby="radiolabel2">
+						<div class="form-row" role="radio"
+							ng-repeat="radioObj in ngRepeatDemo">
+							<label style="margin-top: 10px;" for="{{radioObj.id}}"
+								class="radio"> <input type="radio"
+								ng-model="selectedvalueradioButtonGroup.type"
+								id="{{radioObj.id}}"
+								name="nameradioButton" value="{{radioObj.value}}"> <i
+								style= "margin-top: 10px; margin-left: 38px;" class="skin"></i> <span
+								style="margin-top: 10px; margin-left: 70px;">{{radioObj.labelvalue}}</span>
+							</label>
+						</div>
+					</fieldset>
+		  <div class="systemUser" ng-show="selectedvalueradioButtonGroup.type =='false'" style="color: #5a5a5a;
+        font-family: Omnes-ECOMP-W02, Arial;font-size: 14px;margin-bottom: 8px; padding-left: 30px;">Enter system UserId</div>
+          <div ng-show="selectedvalueradioButtonGroup.type =='false'">
+				<input id="action-property-input"
+					class="adminForm-name-property-input" placeholder="xxxxxx@org.com"
+					ng-model="newUser.selectedUser.orgUserId"
+					type="text" maxlength="60" style="padding: 20px;
+                  margin-left: 30px; width: 60%;"/>
+			</div>
+		<div class="b2b-modal-body" tabindex="0" ng-show="selectedvalueradioButtonGroup.type =='true'"
 			aria-label="Modal header text content" role="region">
 			<search-users search-title="" selected-user="newUser.selectedUser"></search-users>
-		</div>
-
+		</div>		
 		<div class="b2b-modal-footer">
 			<div class="cta-button-group in">
 				<button class="btn btn-alt btn-small" id="next-button"  ng-click="newUser.selectedUser && newUser.getUserAppsRoles()"
-	                 ng-class="{disabled: !newUser.selectedUser}">Next
+	                 ng-disabled = "(!newUser.selectedUser && selectedvalueradioButtonGroup.type =='true' ) || (selectedvalueradioButtonGroup.type =='false' && !newUser.selectedUser) ||(newUser.selectedUser && newUser.selectedUser.orgUserId.length <1)">Next
 	            	</button>
 				<button id="search-users-button-cancel"
 					class="btn btn-alt btn-small" ng-click="$dismiss('cancel')">Cancel</button>
@@ -78,7 +100,7 @@
 		</div>
 
 	</div>
-		<div ng-if="newUser.dialogState===3">
+		<div ng-if="newUser.dialogState===3" >
 	
 			<div class="b2b-modal-header">
 				<div class="title"

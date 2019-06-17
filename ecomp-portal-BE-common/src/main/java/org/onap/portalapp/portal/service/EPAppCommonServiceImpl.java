@@ -50,6 +50,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletResponse;
@@ -60,6 +61,8 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.onap.portalapp.portal.domain.AdminUserApp;
 import org.onap.portalapp.portal.domain.AdminUserApplications;
 import org.onap.portalapp.portal.domain.AppIdAndNameTransportModel;
@@ -96,6 +99,13 @@ import org.onap.portalsdk.core.onboarding.util.PortalApiProperties;
 import org.onap.portalsdk.core.service.DataAccessService;
 import org.onap.portalsdk.core.util.SystemProperties;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
 
 import com.att.nsa.apiClient.http.HttpException;
 import com.att.nsa.cambria.client.CambriaClient.CambriaApiException;
@@ -110,7 +120,9 @@ public class EPAppCommonServiceImpl implements EPAppService {
 	protected String ACCOUNT_ADMIN_ROLE_ID = "999";
 	protected String RESTRICTED_APP_ROLE_ID = "900";
 
-	private static final String urlField = "url";
+	//private static final String urlField = "url";
+	private static final String nameSpaceField = "url";
+
 	private static final String nameField = "name";
 
 	private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(EPAppCommonServiceImpl.class);
@@ -121,6 +133,8 @@ public class EPAppCommonServiceImpl implements EPAppService {
 	protected SessionFactory sessionFactory;
 	@Autowired
 	private DataAccessService dataAccessService;	
+	
+	RestTemplate template = new RestTemplate();
 
 	@PostConstruct
 	private void init() {
@@ -128,6 +142,65 @@ public class EPAppCommonServiceImpl implements EPAppService {
 		ACCOUNT_ADMIN_ROLE_ID = SystemProperties.getProperty(EPCommonSystemProperties.ACCOUNT_ADMIN_ROLE_ID);
 		ECOMP_APP_ID = SystemProperties.getProperty(EPCommonSystemProperties.ECOMP_APP_ID);
 		RESTRICTED_APP_ROLE_ID = SystemProperties.getProperty(EPCommonSystemProperties.RESTRICTED_APP_ROLE_ID);
+	}
+	
+	public Boolean onboardingAppFieldsValidation(OnboardingApp onboardingApp) {
+		//FieldsValidator fieldsValidator = new FieldsValidator();
+
+		if ((!onboardingApp.restrictedApp) &&( onboardingApp.name == null || onboardingApp.name.length() == 0 || onboardingApp.restrictedApp == null
+				|| onboardingApp.url == null || onboardingApp.url.length() == 0 || onboardingApp.restUrl == null || onboardingApp.restUrl.length() == 0
+			    || onboardingApp.username == null || onboardingApp.username.length() == 0
+				|| onboardingApp.isOpen == null
+				|| (onboardingApp.id != null && onboardingApp.id.equals(ECOMP_APP_ID)))
+				// For a normal app (appType == PortalConstants.PortalAppId),
+				// these fields must be filled
+				// in.
+				// For a restricted app (appType==2), they will be empty.
+				|| ((onboardingApp.restrictedApp) && (onboardingApp.name == null || onboardingApp.name.length() == 0
+						|| onboardingApp.url == null || onboardingApp.url.length() == 0 || onboardingApp.isOpen == null))) {
+			return false;
+		}
+		return true;
+		
+	}
+	
+	private Boolean onboardingInactiveAppFieldsForValidation(OnboardingApp onboardingApp) {
+		if (onboardingApp.name == null || onboardingApp.name.length() == 0
+				|| onboardingApp.isOpen == null) {
+			return false;
+		}
+		return true;
+	}
+
+	protected FieldsValidator onboardingAppFieldsChecker(OnboardingApp onboardingApp) {
+		FieldsValidator fieldsValidator = new FieldsValidator();
+		if (onboardingApp.isCentralAuth) {
+			if (!onboardingApp.isEnabled) {
+				if (!onboardingInactiveAppFieldsForValidation(onboardingApp)) {
+					fieldsValidator.httpStatusCode = new Long(HttpServletResponse.SC_BAD_REQUEST);
+				}
+			} else if (onboardingApp.isEnabled) {
+				if (onboardingAppFieldsValidation(onboardingApp) == false || onboardingApp.nameSpace == null
+						|| onboardingApp.nameSpace.length() == 0) {
+					fieldsValidator.httpStatusCode = new Long(HttpServletResponse.SC_BAD_REQUEST);
+				}
+			}
+		} else {
+			if (!onboardingApp.isEnabled) {
+				if (!onboardingInactiveAppFieldsForValidation(onboardingApp)) {
+					fieldsValidator.httpStatusCode = new Long(HttpServletResponse.SC_BAD_REQUEST);
+				}
+			} else if (onboardingApp.isEnabled) {
+				if(onboardingApp.restrictedApp && onboardingAppFieldsValidation(onboardingApp) == false){
+					fieldsValidator.httpStatusCode = new Long(HttpServletResponse.SC_BAD_REQUEST);
+				}
+				else if (!onboardingApp.restrictedApp && (onboardingAppFieldsValidation(onboardingApp) == false || onboardingApp.appPassword == null
+						|| onboardingApp.appPassword.length() == 0)) {
+					fieldsValidator.httpStatusCode = new Long(HttpServletResponse.SC_BAD_REQUEST);
+				}
+			}
+		}
+		return fieldsValidator;
 	}
 
 	@Override
@@ -406,6 +479,23 @@ public class EPAppCommonServiceImpl implements EPAppService {
 		return appsModified;
 	}
 
+	
+	@Override
+	public List<AppsResponse> getAllApplications(Boolean all) {
+		// If all is true, return both active and inactive apps. Otherwise, just
+		// active apps.
+		@SuppressWarnings("unchecked")
+		// Sort the list by application name so the drop-down looks pretty.
+		List<EPApp> apps = all
+				? (List<EPApp>) dataAccessService.getList(EPApp.class, " where id != " + ECOMP_APP_ID, "name", null)
+						:dataAccessService.getList(EPApp.class, null);
+
+		List<AppsResponse> appsModified = new ArrayList<AppsResponse>();
+		for (EPApp app : apps) {
+			appsModified.add(new AppsResponse(app.getId(), app.getName(), app.isRestrictedApp(), app.getEnabled()));
+		}
+		return appsModified;
+	}
 	@Override
 	public UserRoles getUserProfile(String loginId) {
 		final Map<String, String> params = new HashMap<>();
@@ -488,7 +578,7 @@ public class EPAppCommonServiceImpl implements EPAppService {
 		return query.toString();
 	}
 
-	protected FieldsValidator onboardingAppFieldsChecker(OnboardingApp onboardingApp) {
+	/*protected FieldsValidator onboardingAppFieldsChecker(OnboardingApp onboardingApp) {
 		FieldsValidator fieldsValidator = new FieldsValidator();
 		if(onboardingApp.isCentralAuth){
 		if (onboardingApp.name == null || onboardingApp.name.length() == 0 || onboardingApp.url == null
@@ -526,7 +616,7 @@ public class EPAppCommonServiceImpl implements EPAppService {
 			
 		}
 		return fieldsValidator;
-	}
+	}*/
 
 	@Override
 	public List<EPApp> getUserApps(EPUser user) {
@@ -739,6 +829,27 @@ public class EPAppCommonServiceImpl implements EPAppService {
 		}
 		return onboardingAppsList;
 	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<OnboardingApp> getAdminAppsOfUser(EPUser user) {
+		
+		List<OnboardingApp> onboardingAppsList = new ArrayList<OnboardingApp>();
+		List<Integer> userAdminApps = new ArrayList<>();
+		final Map<String, Long> userParams = new HashMap<>();
+		userParams.put("userId", user.getId());	
+		userAdminApps =  dataAccessService.executeNamedQuery("getAllAdminAppsofTheUser", userParams, null);
+		
+//		userAdminApps.removeIf(x -> x == Integer.valueOf(ECOMP_APP_ID));
+		
+		logger.debug(EELFLoggerDelegate.debugLogger, "Is account admin for userAdminApps() - for user {}, found userAdminAppsSize {}", user.getOrgUserId(), userAdminApps.size());
+		onboardingAppsList = getOnboardingApps();
+		
+		final List<Integer> userAdminApps1 = userAdminApps;
+		List<OnboardingApp> userApplicationAdmins = onboardingAppsList.stream().filter(x -> userAdminApps1.contains((int) (long)x.id)).collect(Collectors.toList());
+		
+        return userApplicationAdmins;
+	}
 
 	@Override
 	public List<OnboardingApp> getEnabledNonOpenOnboardingApps() {
@@ -757,25 +868,33 @@ public class EPAppCommonServiceImpl implements EPAppService {
 
 	@SuppressWarnings("unchecked")
 	private void validateOnboardingApp(OnboardingApp onboardingApp, FieldsValidator fieldsValidator) {
-		boolean duplicatedUrl = false;
+		boolean duplicatedNameSpace = false;
 		boolean duplicatedName = false;
 		List<EPApp> apps;
 		if (onboardingApp.id == null) {
 			List<Criterion> restrictionsList = new ArrayList<Criterion>();
-			Criterion urlCrit =Restrictions.eq("url", onboardingApp.url);
-			Criterion nameCrit = Restrictions.eq("name",onboardingApp.name);			
-			Criterion orCrit = Restrictions.or(urlCrit, nameCrit);
-			
+			Criterion nameCrit = Restrictions.eq("name",onboardingApp.name);
+			Criterion nameSpaceCrit = null;
+			Criterion	orCrit = null;
+			if (onboardingApp.isCentralAuth) {
+				nameSpaceCrit = Restrictions.eq("nameSpace", onboardingApp.nameSpace);
+				orCrit = Restrictions.or(nameCrit, nameSpaceCrit);
+			} else
+				orCrit = Restrictions.or(nameCrit);
 			restrictionsList.add(orCrit);
 			apps = (List<EPApp>) dataAccessService.getList(EPApp.class, null, restrictionsList, null);
-			
-			
 		} else {
 			List<Criterion> restrictionsList = new ArrayList<Criterion>();
 			Criterion idCrit =Restrictions.eq("id", onboardingApp.id);
-			Criterion urlCrit =Restrictions.eq("url", onboardingApp.url);
-			Criterion nameCrit = Restrictions.eq("name",onboardingApp.name);			
-			Criterion orCrit = Restrictions.or(idCrit, urlCrit, nameCrit);
+			Criterion nameCrit = Restrictions.eq("name",onboardingApp.name);
+			Criterion nameSpaceCrit = null;
+			Criterion orCrit= null;
+			if (onboardingApp.isCentralAuth) {
+				nameSpaceCrit = Restrictions.eq("nameSpace",onboardingApp.nameSpace);
+				orCrit = Restrictions.or(idCrit, nameSpaceCrit, nameCrit);
+			}
+			else
+			 orCrit = Restrictions.or(idCrit, nameCrit);
 			
 			restrictionsList.add(orCrit);
 			apps = (List<EPApp>) dataAccessService.getList(EPApp.class, null, restrictionsList, null);
@@ -785,22 +904,23 @@ public class EPAppCommonServiceImpl implements EPAppService {
 			if (onboardingApp.id != null && onboardingApp.id.equals(app.getId())) {
 				continue;
 			}
-			if (!duplicatedUrl && app.getUrl().equalsIgnoreCase(onboardingApp.url)) {
-				duplicatedUrl = true;
+			if (!duplicatedName && app.getName().equalsIgnoreCase(onboardingApp.name)) {
+				duplicatedName = true;
 				if (duplicatedName) {
 					break;
 				}
 			}
-			if (!duplicatedName && app.getName().equalsIgnoreCase(onboardingApp.name)) {
-				duplicatedName = true;
-				if (duplicatedUrl) {
+			if (!duplicatedNameSpace && app.getNameSpace().equalsIgnoreCase(onboardingApp.nameSpace)) {
+				duplicatedNameSpace = true;
+				if (duplicatedNameSpace) {
 					break;
 				}
 			}
+			
 		}
-		if (duplicatedUrl || duplicatedName) {
-			if (duplicatedUrl) {
-				fieldsValidator.addProblematicFieldName(urlField);
+		if (duplicatedNameSpace || duplicatedName) {
+			if (duplicatedNameSpace) {
+				fieldsValidator.addProblematicFieldName(nameSpaceField);
 			}
 			if (duplicatedName) {
 				fieldsValidator.addProblematicFieldName(nameField);
@@ -1800,5 +1920,58 @@ public class EPAppCommonServiceImpl implements EPAppService {
 		UserRoles userAndRoles = new UserRoles(userRole);
 		return userAndRoles;
 		
+	}
+
+	@SuppressWarnings("unused")
+	@Override
+	public ResponseEntity<String> checkIfNameSpaceIsValid(String namespace) throws Exception {
+		HttpHeaders headers = EcompPortalUtils.base64encodeKeyForAAFBasicAuth();
+		HttpEntity<String> entity = new HttpEntity<>(headers);
+		logger.debug(EELFLoggerDelegate.debugLogger, "checkIfNameSpaceExists: Connecting to External Auth system for : "+namespace);
+		ResponseEntity<String> response = null;
+		try {
+			response = template
+					.exchange(SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_URL)
+							+ "nss/" + namespace, HttpMethod.GET, entity, String.class);
+			logger.debug(EELFLoggerDelegate.debugLogger, "checkIfNameSpaceExists for"+ namespace ,
+					response.getStatusCode().value());
+			if (response.getStatusCode().value() == 200) {
+				String res = response.getBody();
+				JSONObject jsonObj = new JSONObject(res);
+				JSONArray namespaceArray = jsonObj.getJSONArray("ns");
+				if(!namespaceArray.getJSONObject(0).has("admin")){
+					logger.error(EELFLoggerDelegate.errorLogger,
+							"No admins are available for requested namespace:" + namespace);		
+					throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED,
+							"Portal Mechid is not an admin of" + namespace);
+				}
+				
+				JSONArray namespaceAdminArray = namespaceArray.getJSONObject(0).getJSONArray("admin");
+				ArrayList<String> list = new ArrayList<String>();
+				if (namespaceAdminArray != null) {
+					int len = namespaceAdminArray.length();
+					for (int i = 0; i < len; i++) {
+						list.add(namespaceAdminArray.get(i).toString());
+					}
+				}
+				logger.debug(EELFLoggerDelegate.debugLogger, "List of Admins of requested namespace" + list);
+				final String userName = SystemProperties
+						.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_AUTH_USER_NAME);
+				boolean idExists = list.stream().anyMatch(t -> userName.equals(t));
+				if (false) {
+					logger.error(EELFLoggerDelegate.errorLogger,
+							"Portal mechid is not admin of requested namespace:" + namespace);
+					throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED,
+							"Portal Mechid is not an admin of" + namespace);
+				}
+			}
+			
+		} catch (HttpClientErrorException e) {
+			logger.error(EELFLoggerDelegate.errorLogger, "checkIfNameSpaceExists failed", e);
+			EPLogUtil.logExternalAuthAccessAlarm(logger, e.getStatusCode());
+				throw e;
+		}
+		return response;
+
 	}
 }

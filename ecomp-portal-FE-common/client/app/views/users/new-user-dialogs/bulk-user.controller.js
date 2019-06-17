@@ -377,7 +377,7 @@
     				if (prevRow == null || prevRow.orgUserId.toLowerCase() !== uploadRow.orgUserId.toLowerCase()) {
             			 if (debug)
             				 $log.debug('BulkUserModalCtrl::buildAppRoleChecks: create request for orgUserId ' + uploadRow.orgUserId);
-            			 let appPromise = usersService.getUserAppRoles(appId, uploadRow.orgUserId,true).promise().then( (userAppRolesResult) => {
+            			 let appPromise = usersService.getUserAppRoles(appId, uploadRow.orgUserId,true, false).promise().then( (userAppRolesResult) => {
             				 // Reply for unknown user has all defined roles with isApplied=false on each.  
             				 if (typeof userAppRolesResult[0] !== "undefined") {
             					 if (debug)

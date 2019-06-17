@@ -80,9 +80,7 @@ public class MusicSessionRepositoryHandler {
 				MusicService.removeSession(id);
 			} catch (MusicLockingException e) {
 				logger.error(EELFLoggerDelegate.errorLogger, "removeSession locking failed with id " + id, e);
-			} catch (MusicServiceException e) {
-				logger.error(EELFLoggerDelegate.errorLogger, "removeSession failed with id " + id, e);
-			}
+			} 
 		}
 	}
 

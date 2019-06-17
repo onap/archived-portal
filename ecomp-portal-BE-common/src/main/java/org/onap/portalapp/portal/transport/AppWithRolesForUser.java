@@ -42,6 +42,8 @@ import java.util.List;
 public class AppWithRolesForUser {
 
 	public String orgUserId;
+		
+	public boolean isSystemUser;
 
 	public Long appId;
 
@@ -81,10 +83,20 @@ public class AppWithRolesForUser {
 		this.appRoles = appRoles;
 	}
 
+	
+
+	public boolean isSystemUser() {
+		return isSystemUser;
+	}
+
+	public void setSystemUser(boolean isSystemUser) {
+		this.isSystemUser = isSystemUser;
+	}
+
 	@Override
 	public String toString() {
-		return "AppWithRolesForUser [orgUserId=" + orgUserId + ", appId=" + appId + ", appName=" + appName
-				+ ", appRoles=" + appRoles + "]";
+		return "AppWithRolesForUser [orgUserId=" + orgUserId + ", isSystemUser=" + isSystemUser + ", appId=" + appId
+				+ ", appName=" + appName + ", appRoles=" + appRoles + "]";
 	}
 
 }

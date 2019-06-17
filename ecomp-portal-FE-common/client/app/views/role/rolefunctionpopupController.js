@@ -98,10 +98,10 @@ app.controller('rolefunctionpopupController',function($scope, confirmBoxService,
 			confirmBoxService.showInformation('Instance can only contain alphanumeric characters, hyphens(-), dots(.), colons(:), forwardSlash(/) , asterisk(*) and underscores(_)').then(isConfirmed => {});
 			return;
 		}
-		if(/[^a-zA-Z0-9\-\_ \.]/.test(availableRoleFunction.name)){
+/*		if(/[^a-zA-Z0-9\-\_ \.]/.test(availableRoleFunction.name)){
 			confirmBoxService.showInformation('Name can only contain alphanumeric characters, spaces, hyphens(-), dots(.) and underscores(_)').then(isConfirmed => {});
 			return;
-		}
+		}*/
 		confirmBoxService.confirm(
 				"You are about to Create the role function "+ availableRoleFunction.name+ ". Do you want to continue?")
 				.then(function(confirmed) {

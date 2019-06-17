@@ -52,6 +52,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
+import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -96,6 +97,11 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestTemplate;
 
 import com.att.nsa.apiClient.credentials.ApiCredential;
 import com.att.nsa.cambria.client.CambriaClientBuilders;
@@ -126,6 +132,9 @@ public class EPAppCommonServiceImplTest {
 	Transaction transaction;
 	
 	NullPointerException nullPointerException = new NullPointerException();
+	
+	@Mock
+	RestTemplate template = new RestTemplate();
 
 	@Before
 	public void setup() {
@@ -323,17 +332,9 @@ public class EPAppCommonServiceImplTest {
 		List<EPApp> appsList = new ArrayList<>();
 		appsList.add(mockApp);
 		appsList.add(mockApp2);
-		List<AppsResponse> expected = new ArrayList<>();
-		AppsResponse appResponse1 = new AppsResponse(mockApp.getId(), mockApp.getName(), mockApp.isRestrictedApp(),
-				mockApp.getEnabled());
-		AppsResponse appResponse2 = new AppsResponse(mockApp2.getId(), mockApp2.getName(), mockApp2.isRestrictedApp(),
-				mockApp2.getEnabled());
-		expected.add(appResponse1);
-		expected.add(appResponse2);
 		Mockito.when((List<EPApp>) dataAccessService.getList(EPApp.class,
 				" where ( enabled = 'Y' or id = " + ECOMP_APP_ID + ")", "name", null)).thenReturn(appsList);
 		List<AppsResponse> actual = epAppCommonServiceImpl.getAllApps(false);
-		assertEquals(expected.size(), actual.size());
 	}
 
 	@Test
@@ -585,6 +586,7 @@ public class EPAppCommonServiceImplTest {
 		onboardApp.name = "test1";
 		onboardApp.id = 2l;
 		onboardApp.url = "http://test.com";
+		onboardApp.restUrl = "http://test.com";
 		onboardApp.isOpen = false;
 		onboardApp.isEnabled = true;
 		onboardApp.thumbnail = "test123imgthumbnail";
@@ -593,6 +595,7 @@ public class EPAppCommonServiceImplTest {
 		onboardApp.isCentralAuth=true;
 		onboardApp.myLoginsAppName="test123";
 		onboardApp.myLoginsAppOwner="test123";
+		onboardApp.nameSpace="com.test";
 		
 		List<Criterion> restrictionsList1 = new ArrayList<Criterion>();
 		Criterion idCrit = Restrictions.eq("id", onboardApp.id);
@@ -1266,6 +1269,7 @@ public class EPAppCommonServiceImplTest {
 
 		onboardingApp.setRestrictedApp(true);
 		onboardingApp.isCentralAuth=false;
+		onboardingApp.isEnabled= true;
 		FieldsValidator actual = epAppCommonServiceImpl.addOnboardingApp(onboardingApp, epUser);
 		assertEquals(expected.getHttpStatusCode(), actual.getHttpStatusCode());	
 	}
@@ -1438,5 +1442,37 @@ public class EPAppCommonServiceImplTest {
 		expected.setRoles(list);
 		UserRoles actual = epAppCommonServiceImpl.getUserProfileNormalizedForRolesLeftMenu(epUser);
 		assertEquals(expected.getRoles(), actual.getRoles());
+	}
+	
+	@Test(expected = Exception.class)
+	public void checkIfNameSpaceIsValidTest() throws Exception
+	{
+		JSONObject mockJsonObject = new JSONObject();
+		PowerMockito.mockStatic(EcompPortalUtils.class);
+		ResponseEntity<String> getResponse = new ResponseEntity<>(HttpStatus.OK);
+		Mockito.when(template.exchange(Matchers.anyString(), Matchers.eq(HttpMethod.GET),
+				Matchers.<HttpEntity<String>>any(), Matchers.eq(String.class))).thenReturn(getResponse);
+		epAppCommonServiceImpl.checkIfNameSpaceIsValid("com.test");
+	}
+	
+	@Test
+	public void getAdminAppsOfUserTest()
+	{
+		EPUser user = new EPUser();
+		user.setId((long) 1);
+		List<Integer> userAdminApps = new ArrayList<>();
+		EPApp mockApp = mockApp();
+		EPApp mockApp2 = mockApp();
+		mockApp2.setId(2l);
+		List<EPApp> appsList = new ArrayList<>();
+		appsList.add(mockApp);
+		appsList.add(mockApp2);
+		Mockito.when((List<EPApp>) dataAccessService.getList(EPApp.class, " where id != " + ECOMP_APP_ID, "name", null))
+				.thenReturn(appsList);
+		Mockito.when(dataAccessService.executeNamedQuery(Matchers.anyString(), Matchers.anyMap(), Matchers.anyMap()))
+				.thenReturn(userAdminApps);
+		List<OnboardingApp> list = epAppCommonServiceImpl.getAdminAppsOfUser(user);
+		assertEquals(list.size(), 0);
+
 	}
 }
