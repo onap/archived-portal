@@ -538,7 +538,9 @@ public class UserRolesCommonServiceImpl  {
 					// Delete from fn_menu_functional_roles
 					@SuppressWarnings("unchecked")
 					List<FunctionalMenuRole> funcMenuRoles = localSession
-							.createQuery("from " + FunctionalMenuRole.class.getName() + " where roleId=" + roleId)
+							.createQuery("from :name where roleId=:roleId")
+							.setParameter("name",FunctionalMenuRole.class.getName())
+							.setParameter("roleId",roleId)
 							.list();
 					int numMenuRoles = funcMenuRoles.size();
 					logger.debug(EELFLoggerDelegate.debugLogger,
@@ -550,7 +552,9 @@ public class UserRolesCommonServiceImpl  {
 						// so must null out the url too, to be consistent
 						@SuppressWarnings("unchecked")
 						List<FunctionalMenuRole> funcMenuRoles2 = localSession
-								.createQuery("from " + FunctionalMenuRole.class.getName() + " where menuId=" + menuId)
+								.createQuery("from :name where menuId=:menuId")
+								.setParameter("name",FunctionalMenuRole.class.getName())
+								.setParameter("menuId",menuId)
 								.list();
 						int numMenuRoles2 = funcMenuRoles2.size();
 						logger.debug(EELFLoggerDelegate.debugLogger,
