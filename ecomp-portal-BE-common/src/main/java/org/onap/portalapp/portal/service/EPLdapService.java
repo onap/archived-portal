@@ -40,7 +40,7 @@ package org.onap.portalapp.portal.service;
 import org.onap.portalsdk.core.command.support.SearchResult;
 import org.onap.portalsdk.core.domain.support.DomainVo;
 
-
+@FunctionalInterface
 public interface EPLdapService {
 
     // search POST for users based on the criteria selected in the Request
