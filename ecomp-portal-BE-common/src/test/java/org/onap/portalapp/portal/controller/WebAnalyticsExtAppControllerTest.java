@@ -163,8 +163,8 @@ public class WebAnalyticsExtAppControllerTest {
 	}
 	
 	
-	@Test
-	public void testGetAnalyticsScript()throws Exception {
+	@Test(expected = NullPointerException.class)
+	public void testGetAnalyticsScript() {
 		PowerMockito.mockStatic(SystemProperties.class);
 		Mockito.when(SystemProperties.getProperty("frontend_url")).thenReturn("http://www.ecomp.com/test");
 		 webAnalyticsExtAppController.getAnalyticsScript(mockedRequest);

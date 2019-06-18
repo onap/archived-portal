@@ -2,7 +2,7 @@
  * ============LICENSE_START==========================================
  * ONAP Portal
  * ===================================================================
- * Copyright (C) 2017-2018 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
@@ -37,13 +37,15 @@
  */
 package org.onap.portalapp.portal.controller;
 
+import io.swagger.annotations.ApiOperation;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
-
+import java.util.Objects;
 import javax.servlet.http.HttpServletRequest;
-
+import lombok.NoArgsConstructor;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.onap.portalapp.controller.EPRestrictedRESTfulBaseController;
@@ -60,7 +62,6 @@ import org.onap.portalapp.portal.utils.EcompPortalUtils;
 import org.onap.portalapp.portal.utils.PortalConstants;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.onap.portalsdk.core.onboarding.crossapi.PortalAPIResponse;
-import org.onap.portalsdk.core.service.AuditService;
 import org.onap.portalsdk.core.util.SystemProperties;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,48 +82,29 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.AsyncRestTemplate;
 
-import io.swagger.annotations.ApiOperation;
-
 @RestController
 @RequestMapping(PortalConstants.REST_AUX_API)
 @Configuration
 @EnableAspectJAutoProxy
 @EPAuditLog
+@NoArgsConstructor
 public class WebAnalyticsExtAppController extends EPRestrictedRESTfulBaseController {
-
-	@Autowired
 	private ConsulHealthService consulHealthService;
+	private	AppsCacheService appCacheService;
 
 	private static final String MACHINE_LEARNING_SERVICE_CTX = "/ml_api";
 	private static final String REGISTER_ACTION = MACHINE_LEARNING_SERVICE_CTX + "/" + "registerAction";
 	private static final String CONSUL_ML_SERVICE_ID = "machine-learning";
 	private static final String APP_KEY = "uebkey";
-	private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(WebAnalyticsExtAppController.class);
-	private AsyncRestTemplate restTemplate = new AsyncRestTemplate();
-
-
-	@Autowired
-	AuditService auditService;
+	private final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(WebAnalyticsExtAppController.class);
+	private final AsyncRestTemplate restTemplate = new AsyncRestTemplate();
+	private final SuccessCallback<ResponseEntity<String>> successCallback = arg -> logger.info(EELFLoggerDelegate.debugLogger, arg.getBody());
+	private final FailureCallback failureCallback = arg -> logger.error(EELFLoggerDelegate.errorLogger, "storeAuxAnalytics failed", arg);
 
 	@Autowired
-	AppsCacheService appCacheService;
-
-	SuccessCallback<ResponseEntity<String>> successCallback = new SuccessCallback<ResponseEntity<String>>() {
-		@Override
-		public void onSuccess(ResponseEntity<String> arg) {
-			logger.info(EELFLoggerDelegate.debugLogger, arg.getBody());
-		}
-	};
-
-	FailureCallback failureCallback = new FailureCallback() {
-		@Override
-		public void onFailure(Throwable arg) {
-			logger.error(EELFLoggerDelegate.errorLogger, "storeAuxAnalytics failed", arg);
-		}
-	};
-
-	protected boolean isAuxRESTfulCall() {
-		return true;
+	public WebAnalyticsExtAppController(AppsCacheService appCacheService, ConsulHealthService consulHealthService) {
+		this.appCacheService = appCacheService;
+		this.consulHealthService = consulHealthService;
 	}
 
 	/**
@@ -132,12 +114,10 @@ public class WebAnalyticsExtAppController extends EPRestrictedRESTfulBaseControl
 	 * @param request
 	 *            HttpServletRequest
 	 * @return String
-	 * @throws Exception
-	 *             on failure
 	 */
 	@ApiOperation(value = "Gets javascript with functions that support gathering and reporting web analytics.", response = String.class)
 	@RequestMapping(value = { "/analytics" }, method = RequestMethod.GET, produces = "application/javascript")
-	public String getAnalyticsScript(HttpServletRequest request) throws Exception {
+	public String getAnalyticsScript(HttpServletRequest request) {
 		String responseText = "";
 		EPApp app = null;
 		String version = "";
@@ -149,31 +129,26 @@ public class WebAnalyticsExtAppController extends EPRestrictedRESTfulBaseControl
 		}
 		if (app != null) {
 			String restEndPoint = app.getAppRestEndpoint();
-			if(restEndPoint.indexOf("/api")!=-1) {
+			if(restEndPoint.contains("/api")) {
 				version = restEndPoint.substring(restEndPoint.indexOf("/api")+4);
 			}
 		}
-		String END_POINT = "/storeAnalytics";
+		String endPoint = "/storeAnalytics";
 		if(StringUtils.isNotBlank(version)) {
-			END_POINT = version + "/storeAnalytics";
+			endPoint = version + "/storeAnalytics";
 		}
 
 		final String fileName = "analytics.txt";
-		InputStream analyticsFileStream = null;
-		try {
-			analyticsFileStream = this.getClass().getClassLoader().getResourceAsStream(fileName);
-			responseText = IOUtils.toString(analyticsFileStream, StandardCharsets.UTF_8.name());
-		} catch (Exception e) {
+		try (InputStream analyticsFileStream = this.getClass().getClassLoader().getResourceAsStream(fileName)) {
+			responseText = IOUtils.toString(Objects.requireNonNull(analyticsFileStream), StandardCharsets.UTF_8.name());
+		} catch (IOException e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "Error reading contents of the file " + fileName, e);
-		} finally {
-			if (analyticsFileStream != null)
-				analyticsFileStream.close();
 		}
 
 		String feURLContext = SystemProperties.getProperty("frontend_url");
 		String feURL = feURLContext.substring(0, feURLContext.lastIndexOf('/'));
 		responseText = responseText.replace("PORTAL_ENV_URL", feURL);
-		responseText = responseText.replace("$END_POINT", END_POINT);
+		responseText = responseText.replace("$END_POINT", endPoint);
 		return responseText;
 	}
 
@@ -185,14 +160,11 @@ public class WebAnalyticsExtAppController extends EPRestrictedRESTfulBaseControl
 	 * @param analyticsMap
 	 *            Analytics
 	 * @return PortalAPIResponse
-	 * @throws Exception
-	 *             on failure
 	 */
 	@RequestMapping(value = { "/storeAnalytics" }, method = RequestMethod.POST, produces = "application/json")
 	@ResponseBody
 	@ApiOperation(value = "Accepts data from partner applications with web analytics data.", response = PortalAPIResponse.class)
-	public PortalAPIResponse storeAnalyticsScript(HttpServletRequest request, @RequestBody Analytics analyticsMap)
-			throws Exception {
+	public PortalAPIResponse storeAnalyticsScript(HttpServletRequest request, @RequestBody Analytics analyticsMap) {
 		try {
 			MDC.put(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP, EPEELFLoggerAdvice.getCurrentDateTimeUTC());
 			String appName = "";
@@ -225,16 +197,14 @@ public class WebAnalyticsExtAppController extends EPRestrictedRESTfulBaseControl
 			MDC.remove(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP);
 			MDC.remove(SystemProperties.MDC_TIMER);
 
-			PortalAPIResponse response = new PortalAPIResponse(true, "success");
-			return response;
+			return new PortalAPIResponse(true, "success");
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "storeAnalytics failed", e);
-			PortalAPIResponse response = new PortalAPIResponse(true, "error");
-			return response;
+			return new PortalAPIResponse(true, "error");
 		}
 	}
 
-	protected String getAppName(HttpServletRequest request, String appName) {
+	private String getAppName(HttpServletRequest request, String appName) {
 		
 		EPApp appRecord = getApp(request);
 		if (appRecord != null) {
@@ -243,7 +213,7 @@ public class WebAnalyticsExtAppController extends EPRestrictedRESTfulBaseControl
 		return appName;
 	}
 	
-	protected EPApp getApp(HttpServletRequest request) {
+	private EPApp getApp(HttpServletRequest request) {
 		String appKeyValue = request.getHeader(APP_KEY);
 		EPApp appRecord = null;
 		if (appKeyValue == null || appKeyValue.equals("")) {
@@ -254,12 +224,12 @@ public class WebAnalyticsExtAppController extends EPRestrictedRESTfulBaseControl
 		return appRecord;
 	}
 
-	protected void storeAuxAnalytics(Analytics analyticsMap, String appName) {
+	private void storeAuxAnalytics(Analytics analyticsMap, String appName) {
 		logger.info(EELFLoggerDelegate.debugLogger,
 				" Registering an action for recommendation: AppName/Function/UserId " + appName + "/"
 						+ analyticsMap.getFunction() + "/" + analyticsMap.getUserid());
 
-		Map<String, String> requestMapping = new HashMap<String, String>();
+		Map<String, String> requestMapping = new HashMap<>();
 		requestMapping.put("id", analyticsMap.getUserid());
 		requestMapping.put("action", appName + "|" + analyticsMap.getFunction());
 
@@ -267,7 +237,7 @@ public class WebAnalyticsExtAppController extends EPRestrictedRESTfulBaseControl
 		headers.setContentType(MediaType.APPLICATION_JSON);
 
 		// set your entity to send
-		HttpEntity<Map<String, String>> entity = new HttpEntity<Map<String, String>>(requestMapping, headers);
+		HttpEntity<Map<String, String>> entity = new HttpEntity<>(requestMapping, headers);
 
 		// send it!
 		ListenableFuture<ResponseEntity<String>> out = restTemplate.exchange(
