@@ -461,12 +461,16 @@ public class UserRolesCommonServiceImplTest {
 		Mockito.when(epUserAppsQuery.setParameter("roleId",15l)).thenReturn(epUserAppsQuery);
 		Mockito.doReturn(mockUserRolesList).when(epUserAppsQuery).list();
 
-		Mockito.when(session.createQuery("from " + FunctionalMenuRole.class.getName() + " where roleId=" + 15l))
+		Mockito.when(session.createQuery("from :name where roleId=:roleId"))
 				.thenReturn(epFunctionalMenuQuery);
+		Mockito.when(epFunctionalMenuQuery.setParameter("name",FunctionalMenuRole.class.getName())).thenReturn(epFunctionalMenuQuery);
+		Mockito.when(epFunctionalMenuQuery.setParameter("roleId",15l)).thenReturn(epFunctionalMenuQuery);
 		Mockito.doReturn(mockFunctionalMenuRolesList).when(epFunctionalMenuQuery).list();
 
-		Mockito.when(session.createQuery("from " + FunctionalMenuRole.class.getName() + " where menuId=" + 10l))
+		Mockito.when(session.createQuery("from :name where menuId=:menuId"))
 				.thenReturn(epFunctionalMenuQuery2);
+		Mockito.when(epFunctionalMenuQuery2.setParameter("name",FunctionalMenuRole.class.getName())).thenReturn(epFunctionalMenuQuery2);
+		Mockito.when(epFunctionalMenuQuery2.setParameter("menuId",10l)).thenReturn(epFunctionalMenuQuery2);
 		Mockito.doReturn(mockFunctionalMenuRolesList).when(epFunctionalMenuQuery2).list();
 
 		Mockito.when(session.createQuery("from " + FunctionalMenuItem.class.getName() + " where menuId=" + 10l))
