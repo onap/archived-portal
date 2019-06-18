@@ -45,6 +45,13 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.hibernate.validator.constraints.SafeHtml;
 import org.onap.portalsdk.core.domain.support.DomainVo;
 
 /**
@@ -55,137 +62,39 @@ import org.onap.portalsdk.core.domain.support.DomainVo;
  */
 @Entity
 @Table(name = "fn_shared_context")
+@NoArgsConstructor
+@Getter
+@Setter
 public class SharedContext extends DomainVo {
-
-	// generated
 	private static final long serialVersionUID = 7287469622586677888L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Digits(integer = 11, fraction = 0)
 	private Long id;
+
+	@NotNull
 	private Date create_time;
+
+	@NotNull
+	@SafeHtml
+	@Size(max = 64)
 	private String context_id;
+
+	@NotNull
+	@SafeHtml
+	@Size(max = 128)
 	private String ckey;
+
+	@NotNull
+	@SafeHtml
+	@Size(max = 1024)
 	private String cvalue;
 
-	/**
-	 * Mandatory no-argument constructor
-	 */
-	public SharedContext() {
-	}
-
-	/**
-	 * Convenience constructor. The database ID and creation timestamp are
-	 * populated when the object is added to the database.
-	 * 
-	 * @param contextId
-	 *            context ID
-	 * @param key
-	 *            context key
-	 * @param value
-	 *            context value
-	 */
 	public SharedContext(final String contextId, final String key, final String value) {
 		this.context_id = contextId;
 		this.ckey = key;
 		this.cvalue = value;
-	}
-
-	/**
-	 * Gets the database row ID.
-	 * 
-	 * @return Database row ID
-	 */
-	public Long getId() {
-		return id;
-	}
-
-	/**
-	 * Sets the database row ID.
-	 * 
-	 * @param id
-	 *            database row ID
-	 */
-	public void setId(final Long id) {
-		this.id = id;
-	}
-
-	/**
-	 * Gets the creation time
-	 * 
-	 * @return Creation time as a Date
-	 */
-	public Date getCreate_time() {
-		return create_time;
-	}
-
-	/**
-	 * Sets the creation time
-	 * 
-	 * @param create_time
-	 *            Date
-	 */
-	public void setCreate_time(final Date create_time) {
-		this.create_time = create_time;
-	}
-
-	/**
-	 * Gets the context ID
-	 * 
-	 * @return Context ID
-	 */
-	public String getContext_id() {
-		return context_id;
-	}
-
-	/**
-	 * Sets the context ID
-	 * 
-	 * @param context_id
-	 *            String
-	 */
-	public void setContext_id(final String context_id) {
-		this.context_id = context_id;
-	}
-
-	/**
-	 * Gets the key of the key-value pair. Called ckey because "key" is a
-	 * reserved word in Mysql.
-	 * 
-	 * @return The key
-	 */
-	public String getCkey() {
-		return ckey;
-	}
-
-	/**
-	 * Sets the key of the key-value pair.
-	 * 
-	 * @param ckey
-	 *            String
-	 */
-	public void setCkey(final String ckey) {
-		this.ckey = ckey;
-	}
-
-	/**
-	 * Gets the value of the key-value pair. Called cvalue because "value" is a
-	 * reserved word in Mysql.
-	 * 
-	 * @return value
-	 */
-	public String getCvalue() {
-		return cvalue;
-	}
-
-	/**
-	 * Sets the value of the key-value pair.
-	 * 
-	 * @param cvalue
-	 *            value
-	 */
-	public void setCvalue(final String cvalue) {
-		this.cvalue = cvalue;
 	}
 
 }
