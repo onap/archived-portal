@@ -182,8 +182,8 @@ public class DashboardSearchResultControllerTest {
 	@Test
 	public void saveWidgetDataBulkIfCategoryNullTest() {
 		PortalRestResponse<String> ecpectedPortalRestResponse = new PortalRestResponse<>();
-		ecpectedPortalRestResponse.setMessage("java.text.ParseException: Unparseable date: \"1\"");
-		ecpectedPortalRestResponse.setResponse(null);
+		ecpectedPortalRestResponse.setMessage("ERROR");
+		ecpectedPortalRestResponse.setResponse("Category is not valid");
 		ecpectedPortalRestResponse.setStatus(PortalRestStatusEnum.ERROR);
 
 		CommonWidgetMeta commonWidgetMeta = new CommonWidgetMeta();
@@ -280,8 +280,8 @@ public class DashboardSearchResultControllerTest {
 	@Test
 	public void saveWidgetDataDateErrorTest() {
 		PortalRestResponse<String> ecpectedPortalRestResponse = new PortalRestResponse<>();
-		ecpectedPortalRestResponse.setMessage("java.text.ParseException: Unparseable date: \"1\"");
-		ecpectedPortalRestResponse.setResponse(null);
+		ecpectedPortalRestResponse.setMessage("ERROR");
+		ecpectedPortalRestResponse.setResponse("Category is not valid");
 		ecpectedPortalRestResponse.setStatus(PortalRestStatusEnum.ERROR);
 		CommonWidget commonWidget = new CommonWidget();
 		commonWidget.setId((long) 1);
