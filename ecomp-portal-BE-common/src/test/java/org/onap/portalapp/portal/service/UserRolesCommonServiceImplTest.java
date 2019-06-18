@@ -446,8 +446,13 @@ public class UserRolesCommonServiceImplTest {
 		Mockito.when(applicationsRestClientService.get(EcompRole[].class, mockApp.getId(), "/roles"))
 				.thenReturn(mockEcompRoleArray);
 		// syncAppRolesTest
-		Mockito.when(session.createQuery("from " + EPRole.class.getName() + " where appId=" + mockApp.getId()))
+
+		Mockito.when(session.createQuery("from :name where appId = :appId"))
 				.thenReturn(epRoleQuery);
+
+		Mockito.when(epRoleQuery.setParameter("name",EPRole.class.getName())).thenReturn(epRoleQuery);
+		Mockito.when(epRoleQuery.setParameter("appId",mockApp.getId())).thenReturn(epRoleQuery);
+
 		Mockito.doReturn(mockEPRoleList).when(epRoleQuery).list();
 		Mockito.when(session.createQuery(
 				"from " + EPUserApp.class.getName() + " where app.id=" + mockApp.getId() + " and role_id=" + 15l))
