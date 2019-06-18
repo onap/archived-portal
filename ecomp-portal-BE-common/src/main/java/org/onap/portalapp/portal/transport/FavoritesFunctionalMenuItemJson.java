@@ -44,7 +44,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-
+import javax.validation.constraints.Digits;
 
 
 /**
@@ -55,21 +55,23 @@ import javax.persistence.Transient;
 public class FavoritesFunctionalMenuItemJson implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	@Id
 	@Column(name = "user_id")
+	@Digits(integer = 11, fraction = 0)
 	public Long userId;
-	
+
 	@Id
 	@Column(name = "menu_id")
+	@Digits(integer = 11, fraction = 0)
 	public Long menuId;
-	
+
 	@Column(name = "text")
 	public String text;
-	
+
 	@Column(name = "url")
 	public String url;
-	
+
 	@Transient
 	public Boolean restrictedApp;
 }
