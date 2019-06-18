@@ -2,7 +2,7 @@
  * ============LICENSE_START==========================================
  * ONAP Portal
  * ===================================================================
- * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
@@ -52,7 +52,13 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.Size;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.hibernate.validator.constraints.SafeHtml;
 import org.onap.portalsdk.core.domain.support.DomainVo;
 
 
@@ -63,287 +69,77 @@ import org.onap.portalsdk.core.domain.support.DomainVo;
 
 @Entity
 @Table(name = "ep_notification")
+@NoArgsConstructor
+@Getter
+@Setter
+@EqualsAndHashCode(callSuper = false)
 public class EpNotificationItem extends DomainVo {
-	public EpNotificationItem() {
-	};
-
 	private static final long serialVersionUID = 1L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "notification_ID")
+	@Digits(integer = 11, fraction = 0)
 	public Long notificationId;
 
 	@Column(name = "is_for_online_users")
+	@Size(max = 1)
+	@SafeHtml
 	public String isForOnlineUsers;
 
 	@Column(name = "is_for_all_roles")
+	@Size(max = 1)
+	@SafeHtml
 	public String isForAllRoles;
 
 	@Column(name = "active_YN")
+	@Size(max = 1)
+	@SafeHtml
 	public String activeYn;
-	
+
 	@Column(name = "msg_header")
+	@Size(max = 100)
+	@SafeHtml
 	public String msgHeader;
 
 	@Column(name = "msg_description")
+	@Size(max = 2000)
+	@SafeHtml
 	public String msgDescription;
-	
+
 	@Column(name = "msg_source")
+	@Size(max = 50)
+	@SafeHtml
 	public String msgSource;
 
 	@Column(name = "start_time")
 	public Date startTime;
-	
+
 	@Column(name = "end_time")
 	public Date endTime;
 
 	@Column(name = "priority")
+	@Digits(integer = 11, fraction = 0)
 	public Long priority;
-	
+
 	@Column(name = "creator_ID")
+	@Digits(integer = 11, fraction = 0)
 	public Long creatorId;
-	
+
 	@Column(name = "created_date")
 	public Date createdDate;
-	
+
 	@Column(name = "notification_hyperlink")
+	@Size(max = 512)
+	@SafeHtml
 	public String notificationHyperlink;
-		
-	
+
 	@OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL}, orphanRemoval = true)
 	@JoinColumn(name="notification_ID")
 	private Set<EpRoleNotificationItem> roles;
-	
+
 	@Transient
 	private List<Long> roleIds;
-	
-	public Long getNotificationId() {
-		return notificationId;
-	}
-
-	public void setNotificationId(Long notificationId) {
-		this.notificationId = notificationId;
-	}
-
-	public String getIsForOnlineUsers() {
-		return isForOnlineUsers;
-	}
-
-	public void setIsForOnlineUsers(String isForOnlineUsers) {
-		this.isForOnlineUsers = isForOnlineUsers;
-	}
-
-	public String getIsForAllRoles() {
-		return isForAllRoles;
-	}
-
-	public void setIsForAllRoles(String isForAllRoles) {
-		this.isForAllRoles = isForAllRoles;
-	}
-	
-	public String getActiveYn() {
-		return activeYn;
-	}
-
-	public void setActiveYn(String activeYn) {
-		this.activeYn = activeYn;
-	}
-
-	public String getMsgHeader() {
-		return msgHeader;
-	}
-
-	public void setMsgHeader(String msgHeader) {
-		this.msgHeader = msgHeader;
-	}
-
-	public String getMsgDescription() {
-		return msgDescription;
-	}
-
-	public void setMsgDescription(String msgDescription) {
-		this.msgDescription = msgDescription;
-	}
-
-	public Date getStartTime() {
-		return startTime;
-	}
-
-	public void setStartTime(Date startTime) {
-		this.startTime = startTime;
-	}
-
-	public Date getEndTime() {
-		return endTime;
-	}
-
-	public void setEndTime(Date endTime) {
-		this.endTime = endTime;
-	}
-
-	public Long getPriority() {
-		return priority;
-	}
-
-	public void setPriority(Long priority) {
-		this.priority = priority;
-	}
-
-	public Long getCreatorId() {
-		return creatorId;
-	}
-
-	public void setCreatorId(Long creatorId) {
-		this.creatorId = creatorId;
-	}
-
-	public Date getCreatedDate() {
-		return createdDate;
-	}
-
-	public void setCreatedDate(Date createdDate) {
-		this.createdDate = createdDate;
-	}
-
-	public static long getSerialversionuid() {
-		return serialVersionUID;
-	}
-
-	public Set<EpRoleNotificationItem> getRoles() {
-		return roles;
-	}
-
-	public void setRoles(Set<EpRoleNotificationItem> roles) {
-		this.roles = roles;
-	}
-
-	public List<Long> getRoleIds() {
-		return roleIds;
-	}
-
-	public void setRoleIds(List<Long> roleIds) {
-		this.roleIds = roleIds;
-	}
-	
-	public String getMsgSource() {
-		return msgSource;
-	}
-
-	public void setMsgSource(String msgSource) {
-		this.msgSource = msgSource;
-	}
-	
-	public String getNotificationHyperlink() {
-		return notificationHyperlink;
-	}
-
-	public void setNotificationHyperlink(String notificationHyperlink) {
-		this.notificationHyperlink = notificationHyperlink;
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((activeYn == null) ? 0 : activeYn.hashCode());
-		result = prime * result + ((createdDate == null) ? 0 : createdDate.hashCode());
-		result = prime * result + ((creatorId == null) ? 0 : creatorId.hashCode());
-		result = prime * result + ((endTime == null) ? 0 : endTime.hashCode());
-		result = prime * result + ((isForAllRoles == null) ? 0 : isForAllRoles.hashCode());
-		result = prime * result + ((isForOnlineUsers == null) ? 0 : isForOnlineUsers.hashCode());
-		result = prime * result + ((msgDescription == null) ? 0 : msgDescription.hashCode());
-		result = prime * result + ((msgHeader == null) ? 0 : msgHeader.hashCode());
-		result = prime * result + ((msgSource == null) ? 0 : msgSource.hashCode());
-		result = prime * result + ((notificationId == null) ? 0 : notificationId.hashCode());
-		result = prime * result + ((priority == null) ? 0 : priority.hashCode());
-		result = prime * result + ((roleIds == null) ? 0 : roleIds.hashCode());
-		result = prime * result + ((roles == null) ? 0 : roles.hashCode());
-		result = prime * result + ((startTime == null) ? 0 : startTime.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		EpNotificationItem other = (EpNotificationItem) obj;
-		if (activeYn == null) {
-			if (other.activeYn != null)
-				return false;
-		} else if (!activeYn.equals(other.activeYn))
-			return false;
-		if (createdDate == null) {
-			if (other.createdDate != null)
-				return false;
-		} else if (!createdDate.equals(other.createdDate))
-			return false;
-		if (creatorId == null) {
-			if (other.creatorId != null)
-				return false;
-		} else if (!creatorId.equals(other.creatorId))
-			return false;
-		if (endTime == null) {
-			if (other.endTime != null)
-				return false;
-		} else if (!endTime.equals(other.endTime))
-			return false;
-		if (isForAllRoles == null) {
-			if (other.isForAllRoles != null)
-				return false;
-		} else if (!isForAllRoles.equals(other.isForAllRoles))
-			return false;
-		if (isForOnlineUsers == null) {
-			if (other.isForOnlineUsers != null)
-				return false;
-		} else if (!isForOnlineUsers.equals(other.isForOnlineUsers))
-			return false;
-		if (msgDescription == null) {
-			if (other.msgDescription != null)
-				return false;
-		} else if (!msgDescription.equals(other.msgDescription))
-			return false;
-		if (msgHeader == null) {
-			if (other.msgHeader != null)
-				return false;
-		} else if (!msgHeader.equals(other.msgHeader))
-			return false;
-		if (msgSource == null) {
-			if (other.msgSource != null)
-				return false;
-		} else if (!msgSource.equals(other.msgSource))
-			return false;
-		if (notificationId == null) {
-			if (other.notificationId != null)
-				return false;
-		} else if (!notificationId.equals(other.notificationId))
-			return false;
-		if (priority == null) {
-			if (other.priority != null)
-				return false;
-		} else if (!priority.equals(other.priority))
-			return false;
-		if (roleIds == null) {
-			if (other.roleIds != null)
-				return false;
-		} else if (!roleIds.equals(other.roleIds))
-			return false;
-		if (roles == null) {
-			if (other.roles != null)
-				return false;
-		} else if (!roles.equals(other.roles))
-			return false;
-		if (startTime == null) {
-			if (other.startTime != null)
-				return false;
-		} else if (!startTime.equals(other.startTime))
-			return false;
-		return true;
-	}
 
 	@Override
 	public String toString() {
@@ -353,5 +149,5 @@ public class EpNotificationItem extends DomainVo {
 				+ ", endTime=" + endTime + ", priority=" + priority + ", creatorId=" + creatorId + ", createdDate="
 				+ createdDate + ", roles=" + roles + ", roleIds=" + roleIds + "]";
 	}
-	
+
 }
