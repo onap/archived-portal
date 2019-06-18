@@ -43,8 +43,8 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
+import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.client.FourLetterWordMain;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -61,6 +61,7 @@ import org.onap.portalapp.portal.utils.EPCommonSystemProperties;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.onap.portalsdk.core.util.SystemProperties;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -68,19 +69,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 @Transactional
-@org.springframework.context.annotation.Configuration
+@Configuration
 @EnableAspectJAutoProxy
 @EPMetricsLog
+@NoArgsConstructor
 public class HealthMonitor {
-
-	
-	ZooKeeper zookeeper = null;
-
 	private static EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(HealthMonitor.class);
-
-	@Autowired
-	private SessionFactory sessionFactory;
-
+	private Thread healthMonitorThread;
+	private static SessionFactory sessionFactory;
 
 	private static boolean databaseUp;
 	private static boolean uebUp;
@@ -89,50 +85,17 @@ public class HealthMonitor {
 	private static boolean dbPermissionsOk;
 	private static boolean zookeeperStatusOk;
 	private static boolean cassandraStatusOk;
-	private static String APPLICATION = "Portal";
-	
-	/**
-	 * Read directly by external classes.
-	 */
-	public static boolean isSuspended = false;
+	private static String application = "Portal";
+	private static boolean isSuspended = false;
 
-	private Thread healthMonitorThread;
-
-	public HealthMonitor() {
+	@Autowired
+	public HealthMonitor(SessionFactory sessionFactory) {
+		HealthMonitor.sessionFactory = sessionFactory;
 	}
 
-	public static boolean isDatabaseUp() {
-		return databaseUp;
-	}
-
-	public static boolean isDatabasePermissionsOk() {
-		return dbPermissionsOk;
-	}
-
-	public static boolean isUebUp() {
-		return uebUp;
-	}
-
-	public static boolean isFrontEndUp() {
-		return frontEndUp;
-	}
-
-	public static boolean isBackEndUp() {
-		return backEndUp;
-	}
-	
-	public static boolean isZookeeperStatusOk() {
-		return zookeeperStatusOk;
-	}
-
-	public static boolean isCassandraStatusOk() {
-		return cassandraStatusOk;
-	}
-
-	private void monitorEPHealth() throws InterruptedException {
+	private static void monitorEPHealth() {
 
 		int numIntervalsDatabaseHasBeenDown = 0;
-		int numIntervalsClusterNotHealthy = 0;
 		int numIntervalsDatabasePermissionsIncorrect = 0;
 		int numIntervalsZookeeperNotHealthy = 0;
 		int numIntervalsCassandraNotHealthy = 0;
@@ -141,9 +104,9 @@ public class HealthMonitor {
         
 
 		long sleepInterval = (Long
-				.valueOf(SystemProperties.getProperty(EPCommonSystemProperties.HEALTH_POLL_INTERVAL_SECONDS)) * 1000);
+				.parseLong(SystemProperties.getProperty(EPCommonSystemProperties.HEALTH_POLL_INTERVAL_SECONDS)) * 1000);
 		long numIntervalsBetweenAlerts = Long
-				.valueOf(SystemProperties.getProperty(EPCommonSystemProperties.HEALTHFAIL_ALERT_EVERY_X_INTERVALS));
+				.parseLong(SystemProperties.getProperty(EPCommonSystemProperties.HEALTHFAIL_ALERT_EVERY_X_INTERVALS));
 		logger.debug(EELFLoggerDelegate.debugLogger,
 				"monitorEPHealth: Polling health every " + sleepInterval + " milliseconds. Alerting every "
 						+ (sleepInterval * numIntervalsBetweenAlerts) / 1000 + " seconds when component remains down.");
@@ -154,8 +117,8 @@ public class HealthMonitor {
 			//
 			// Get DB status. If down, signal alert once every X intervals.
 			//
-			databaseUp = this.checkIfDatabaseUp();
-			if (databaseUp == false) {
+			databaseUp = checkIfDatabaseUp();
+			if (databaseUp) {
 				if ((numIntervalsDatabaseHasBeenDown % numIntervalsBetweenAlerts) == 0) {
 					logger.debug(EELFLoggerDelegate.debugLogger,
 							"monitorEPHealth: database down, logging to error log to trigger alert.");
@@ -167,8 +130,8 @@ public class HealthMonitor {
 				}
 			}
 
-			dbPermissionsOk = this.checkDatabasePermissions();
-			if (dbPermissionsOk == false) {
+			dbPermissionsOk = checkDatabasePermissions();
+			if (!dbPermissionsOk) {
 				if ((numIntervalsDatabasePermissionsIncorrect % numIntervalsBetweenAlerts) == 0) {
 					logger.debug(EELFLoggerDelegate.debugLogger,
 							"monitorEPHealth: database permissions incorrect, logging to error log to trigger alert.");
@@ -178,12 +141,11 @@ public class HealthMonitor {
 					numIntervalsDatabasePermissionsIncorrect = 0;
 				}
 			}
-			org.onap.portalapp.music.util.MusicUtil MusicUtilSDK = new org.onap.portalapp.music.util.MusicUtil();
-			if(MusicUtilSDK.isMusicEnable()){
+			if(org.onap.portalapp.music.util.MusicUtil.isMusicEnable()){
 
-				zookeeperStatusOk = this.checkZookeeperStatus();
+				zookeeperStatusOk = checkZookeeperStatus();
 
-				if (zookeeperStatusOk == false) {
+				if (!zookeeperStatusOk) {
 					if ((numIntervalsZookeeperNotHealthy % numIntervalsBetweenAlerts) == 0) {
 						logger.debug(EELFLoggerDelegate.debugLogger,
 								"monitorEPHealth: cluster nodes down, logging to error log to trigger alert.");
@@ -194,8 +156,8 @@ public class HealthMonitor {
 					}
 				}
 
-				cassandraStatusOk = this.checkCassandraStatus();
-				if (cassandraStatusOk == false) {
+				cassandraStatusOk = checkCassandraStatus();
+				if (!cassandraStatusOk) {
 					if ((numIntervalsCassandraNotHealthy % numIntervalsBetweenAlerts) == 0) {
 						logger.debug(EELFLoggerDelegate.debugLogger,
 								"monitorEPHealth: cluster nodes down, logging to error log to trigger alert.");
@@ -206,45 +168,9 @@ public class HealthMonitor {
 					}
 				}
 			}
-			
-			
-			//
-			// Get UEB status. Publish a bogus message to EP inbox, if 200 OK
-			// returned, status is Up.
-			// If down, signal alert once every X intervals.
-			// EP will ignore this bogus message.
-			// Commenting this out as Dependency on UEB is being deprecated
-			/*
-			 * uebUp = this.checkIfUebUp(); if (uebUp == false) {
-			 * 
-			 * if ((numIntervalsUebHasBeenDown % numIntervalsBetweenAlerts) == 0) {
-			 * logger.debug(EELFLoggerDelegate.debugLogger,
-			 * "monitorEPHealth: UEB down, logging to error log to trigger alert"); // Write
-			 * a Log entry that will generate an alert EPLogUtil.logEcompError(logger,
-			 * EPAppMessagesEnum.BeHealthCheckUebClusterError);
-			 * numIntervalsUebHasBeenDown++; } else { numIntervalsUebHasBeenDown = 0; } }
-			 */
-
-			// The front end should be up because the API is called through
-			// proxy front end server.
 			frontEndUp = true;
-
-			// If the rest API called, the backend is always up
 			backEndUp = true;
 
-			//
-			// future nice to have...get Partner status
-			//
-			// For all apps exposing a rest url, query one of the rest
-			// urls(/roles?) and manage a list
-			// of app name/status. We might not return back a non 200 OK in
-			// health check, but we
-			// could return information in the json content of a health check.
-			//
-
-			//
-			// Get DB status. If down, signal alert once every X intervals.
-			//
 			if (Thread.interrupted()) {
 				logger.info(EELFLoggerDelegate.errorLogger, "monitorEPHealth: thread interrupted");
 				break;
@@ -262,12 +188,11 @@ public class HealthMonitor {
 	@PostConstruct
 	public void initHealthMonitor() {
 		healthMonitorThread = new Thread("EP HealthMonitor thread") {
+			@Override
 			public void run() {
 				try {
 					monitorEPHealth();
-				} catch (InterruptedException e) {
-					logger.debug(EELFLoggerDelegate.debugLogger, "healthMonitorThread interrupted", e);
-				} 
+				}
 				catch (Exception e) {
 					logger.error(EELFLoggerDelegate.errorLogger, "healthMonitorThread failed", e);
 				}
@@ -292,7 +217,7 @@ public class HealthMonitor {
 	 * 
 	 * @return true if the database can be read.
 	 */
-	private boolean checkIfDatabaseUp() {
+	private static boolean checkIfDatabaseUp() {
 		boolean isUp = false;
 		Session localSession = null;
 		try {
@@ -316,25 +241,26 @@ public class HealthMonitor {
 		return isUp;
 	}
 
-	private boolean checkZookeeperStatus() {
+	private static boolean checkZookeeperStatus() {
 
 		String[] zookeeperNodes = MusicUtil.getMyZkHost().split(",");
 		logger.info(EELFLoggerDelegate.applicationLogger, "MusicUtil.getMyZkHost()---- :" + MusicUtil.getMyZkHost());
-		for (int i = 0; i < zookeeperNodes.length; i++) {
+		for (String zookeeperNode : zookeeperNodes) {
 			try {
-				logger.info(EELFLoggerDelegate.applicationLogger, "server ip--zookeeper  :" + zookeeperNodes[i].trim());
-				String[] iport = zookeeperNodes[i].split(":");
+				logger.info(EELFLoggerDelegate.applicationLogger, "server ip--zookeeper  :" + zookeeperNode.trim());
+				String[] iport = zookeeperNode.split(":");
 				String zkNodeStatistics = FourLetterWordMain.send4LetterWord(iport[0].trim(),
-						Integer.parseInt(iport[1].trim()), "stat");
+					Integer.parseInt(iport[1].trim()), "stat");
 				logger.info(EELFLoggerDelegate.applicationLogger,
-						"Getting Status for Zookeeper zkNodeStatistics :" + zkNodeStatistics);
+					"Getting Status for Zookeeper zkNodeStatistics :" + zkNodeStatistics);
 				if (StringUtils.isNotBlank(zkNodeStatistics)) {
 					String state = zkNodeStatistics.substring(zkNodeStatistics.indexOf("Mode:"),
-							zkNodeStatistics.indexOf("Node"));
+						zkNodeStatistics.indexOf("Node"));
 					logger.info(EELFLoggerDelegate.applicationLogger,
-							"Getting Status for zookeeper :" + zookeeperNodes[i].trim() + ":------:" + state);
-					if (state.contains("leader") || state.contains("follower"))
+						"Getting Status for zookeeper :" + zookeeperNode.trim() + ":------:" + state);
+					if (state.contains("leader") || state.contains("follower")) {
 						return true;
+					}
 				}
 			} catch (Exception e) {
 				logger.error(EELFLoggerDelegate.errorLogger, "ZookeeperStatus Service is not responding", e.getCause());
@@ -345,9 +271,9 @@ public class HealthMonitor {
 	}
 
 
-	public boolean checkCassandraStatus() {
+	private static boolean checkCassandraStatus() {
 		logger.info(EELFLoggerDelegate.applicationLogger, "Getting Status for Cassandra");
-		if (this.getAdminKeySpace()) {
+		if (getAdminKeySpace()) {
 			return true;
 		} else {
 			logger.error(EELFLoggerDelegate.errorLogger, "Cassandra Service is not responding");
@@ -355,17 +281,18 @@ public class HealthMonitor {
 		}
 	}
 	
-	private Boolean getAdminKeySpace() {
+	private static Boolean getAdminKeySpace() {
 		String musicKeySpace = MusicProperties.getProperty(MusicProperties.MUSIC_SESSION_KEYSPACE);
 		Instant creationTime = Instant.now();
 		PreparedQueryObject pQuery = new PreparedQueryObject();
 		pQuery.appendQueryString(
 				"UPDATE " + musicKeySpace + ".health_check  SET creation_time = ? WHERE primary_id = ?");
 		pQuery.addValue(creationTime.toString());
-		pQuery.addValue(APPLICATION);
+		pQuery.addValue(application);
 		try {
 			MusicCore.nonKeyRelatedPut(pQuery, MusicUtil.CRITICAL);
 		} catch (MusicServiceException e) {
+			logger.error(EELFLoggerDelegate.errorLogger, e.getErrorMessage(), e);
 			return Boolean.FALSE;
 		}
 		return Boolean.TRUE;
@@ -373,7 +300,7 @@ public class HealthMonitor {
 	}
 
 	
-	private boolean checkDatabasePermissions() {
+	private static boolean checkDatabasePermissions() {
 		boolean isUp = false;
 		Session localSession = null;
 		try {
@@ -391,7 +318,7 @@ public class HealthMonitor {
 						break;
 					}
 				}
-				if (isUp == false) {
+				if (!isUp) {
 					logger.error(EELFLoggerDelegate.errorLogger,
 							"checkDatabasePermissions returning false.  SHOW GRANTS FOR CURRENT_USER being dumped:");
 					for (String str : grantsList) {
@@ -412,5 +339,40 @@ public class HealthMonitor {
 		}
 		return isUp;
 	}
-	
+
+	public static boolean isDatabaseUp() {
+		return databaseUp;
+	}
+
+	public static boolean isUebUp() {
+		return uebUp;
+	}
+
+	public static boolean isFrontEndUp() {
+		return frontEndUp;
+	}
+
+	public static boolean isBackEndUp() {
+		return backEndUp;
+	}
+
+	public static boolean isDbPermissionsOk() {
+		return dbPermissionsOk;
+	}
+
+	public static boolean isZookeeperStatusOk() {
+		return zookeeperStatusOk;
+	}
+
+	public static boolean isCassandraStatusOk() {
+		return cassandraStatusOk;
+	}
+
+	public static boolean isSuspended() {
+		return isSuspended;
+	}
+
+	public static void setSuspended(boolean isSuspended) {
+		HealthMonitor.isSuspended = isSuspended;
+	}
 }

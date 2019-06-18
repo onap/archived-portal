@@ -123,7 +123,7 @@ public class HealthCheckController extends EPUnRestrictedBaseController {
 		HealthStatus healthStatus = new HealthStatus(500, "");
 
 		// Return the status as 500 if it suspended due to manual fail over
-		if (HealthMonitor.isSuspended) {
+		if (HealthMonitor.isSuspended()) {
 			healthStatus.body = "Suspended";
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			MDC.put(EPCommonSystemProperties.RESPONSE_CODE,
@@ -171,16 +171,15 @@ public class HealthCheckController extends EPUnRestrictedBaseController {
 //				dbInfo.dbClusterStatus = statusOk;
 //			}
 
-			if (!HealthMonitor.isDatabasePermissionsOk()) {
+			if (!HealthMonitor.isDbPermissionsOk()) {
 				dbInfo.dbPermissions = "Problem, check the logs for more details";
 				EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeDaoSystemError);
 			} else {
 				dbInfo.dbPermissions = statusOk;
 			}
 			statusCollection.add(dbInfo);
-			
-			org.onap.portalapp.music.util.MusicUtil MusicUtilSDK = new org.onap.portalapp.music.util.MusicUtil();
-			if(MusicUtilSDK.isMusicEnable()){
+
+			if(org.onap.portalapp.music.util.MusicUtil.isMusicEnable()){
 				HealthStatusInfo CassandraStatusInfo = new HealthStatusInfo("Music-Cassandra");
 				//CassandraStatusInfo.hostName = EcompPortalUtils.getMyHostName();
 				CassandraStatusInfo.ipAddress = MusicUtil.getMyCassaHost();
@@ -234,7 +233,7 @@ public class HealthCheckController extends EPUnRestrictedBaseController {
 	public HealthStatus healthCheckSuspend(HttpServletRequest request, HttpServletResponse response) {
 		HealthStatus healthStatus = new HealthStatus(500, "Suspended for manual failover mechanism");
 
-		HealthMonitor.isSuspended = true;
+		HealthMonitor.setSuspended(true);
 		healthStatus.statusCode = 200;
 
 		EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/healthCheckSuspend", "GET result =",
@@ -248,7 +247,7 @@ public class HealthCheckController extends EPUnRestrictedBaseController {
 	public HealthStatus healthCheckResume(HttpServletRequest request, HttpServletResponse response) {
 		HealthStatus healthStatus = new HealthStatus(500, "Resumed from manual failover mechanism");
 
-		HealthMonitor.isSuspended = false;
+		HealthMonitor.setSuspended(false);
 		healthStatus.statusCode = 200;
 		EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/healthCheckResume", "GET result =",
 				response.getStatus());
