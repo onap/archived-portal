@@ -2,7 +2,7 @@
  * ============LICENSE_START==========================================
  * ONAP Portal
  * ===================================================================
- * Copyright (C) 2017-2018 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
@@ -1001,11 +1001,11 @@ public class UserRolesCommonServiceImpl  {
 		boolean epRequestValue = false;
 		String userId = "";
 		String reqMessage = "";
-		if (newAppRolesForUser != null && newAppRolesForUser.orgUserId != null) {
-			userId = newAppRolesForUser.orgUserId.trim();
+		if (newAppRolesForUser != null && newAppRolesForUser.getOrgUserId() != null) {
+			userId = newAppRolesForUser.getOrgUserId().trim();
 		}
-		Long appId = newAppRolesForUser.appId;
-		List<RoleInAppForUser> roleInAppForUserList = newAppRolesForUser.appRoles;
+		Long appId = newAppRolesForUser.getAppId();
+		List<RoleInAppForUser> roleInAppForUserList = newAppRolesForUser.getAppRoles();
 		if (userId.length() > 0 ) {
 			ObjectMapper mapper = new ObjectMapper();
 			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -1014,7 +1014,7 @@ public class UserRolesCommonServiceImpl  {
 				EPApp app = appsService.getApp(appId);
 				applyChangesToUserAppRolesForMyLoginsRequest(user, appId);
 
-				boolean systemUser = newAppRolesForUser.isSystemUser;
+				boolean systemUser = newAppRolesForUser.isSystemUser();
 				if ((app.getCentralAuth() || app.getId().equals(PortalConstants.PORTAL_APP_ID)) && systemUser) {
 
 					Set<EcompRole> userRolesInLocalApp = postUsersRolesToLocalApp(roleInAppForUserList, mapper,
@@ -2056,17 +2056,18 @@ public class UserRolesCommonServiceImpl  {
 		List<EPUserAppRoles>  appRole= null;
 		try {
 			logger.error(EELFLoggerDelegate.errorLogger,"Should not be reached here, still the endpoint is yet to be defined");
-			boolean result = postUserRolesToMylogins(userAppRolesData, applicationsRestClientService, userAppRolesData.appId, user.getId());
+			boolean result = postUserRolesToMylogins(userAppRolesData, applicationsRestClientService,
+				userAppRolesData.getAppId(), user.getId());
 			logger.debug(EELFLoggerDelegate.debugLogger,"putUserAppRolesRequest: result {}", result);
 						
-			params.put("appId", userAppRolesData.appId);
+			params.put("appId", userAppRolesData.getAppId());
 			EPUserAppRolesRequest epAppRolesRequestData = new EPUserAppRolesRequest();
 			epAppRolesRequestData.setCreatedDate(new Date());
 			epAppRolesRequestData.setUpdatedDate(new Date());
 			epAppRolesRequestData.setUserId(user.getId());
-			epAppRolesRequestData.setAppId(userAppRolesData.appId);
+			epAppRolesRequestData.setAppId(userAppRolesData.getAppId());
 			epAppRolesRequestData.setRequestStatus("P");
-			List<RoleInAppForUser> appRoleIdList = userAppRolesData.appRoles;
+			List<RoleInAppForUser> appRoleIdList = userAppRolesData.getAppRoles();
 			Set<EPUserAppRolesRequestDetail> appRoleDetails = new LinkedHashSet<EPUserAppRolesRequestDetail>();
 			dataAccessService.saveDomainObject(epAppRolesRequestData, null);
 			for (RoleInAppForUser userAppRoles : appRoleIdList) {

@@ -2,7 +2,7 @@
  * ============LICENSE_START==========================================
  * ONAP Portal
  * ===================================================================
- * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
@@ -38,65 +38,24 @@
 package org.onap.portalapp.portal.transport;
 
 import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode
+@ToString
 public class AppWithRolesForUser {
-
-	public String orgUserId;
-		
-	public boolean isSystemUser;
-
-	public Long appId;
-
-	public String appName;
-
-	public List<RoleInAppForUser> appRoles;
-
-	public String getOrgUserId() {
-		return orgUserId;
-	}
-
-	public void setOrgUserId(String orgUserId) {
-		this.orgUserId = orgUserId;
-	}
-
-	public Long getAppId() {
-		return appId;
-	}
-
-	public void setAppId(Long appId) {
-		this.appId = appId;
-	}
-
-	public String getAppName() {
-		return appName;
-	}
-
-	public void setAppName(String appName) {
-		this.appName = appName;
-	}
-
-	public List<RoleInAppForUser> getAppRoles() {
-		return appRoles;
-	}
-
-	public void setAppRoles(List<RoleInAppForUser> appRoles) {
-		this.appRoles = appRoles;
-	}
-
-	
-
-	public boolean isSystemUser() {
-		return isSystemUser;
-	}
-
-	public void setSystemUser(boolean isSystemUser) {
-		this.isSystemUser = isSystemUser;
-	}
-
-	@Override
-	public String toString() {
-		return "AppWithRolesForUser [orgUserId=" + orgUserId + ", isSystemUser=" + isSystemUser + ", appId=" + appId
-				+ ", appName=" + appName + ", appRoles=" + appRoles + "]";
-	}
+	private String orgUserId;
+	private boolean isSystemUser;
+	private Long appId;
+	private String appName;
+	private List<RoleInAppForUser> appRoles;
 
 }

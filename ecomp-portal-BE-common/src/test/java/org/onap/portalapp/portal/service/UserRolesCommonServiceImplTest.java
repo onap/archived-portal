@@ -2,7 +2,7 @@
  * ============LICENSE_START==========================================
  * ONAP Portal
  * ===================================================================
- * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
@@ -1336,7 +1336,7 @@ public class UserRolesCommonServiceImplTest {
 		EPUserAppRolesRequest mockEpAppRolesRequestData = new EPUserAppRolesRequest();
 		Mockito.doNothing().when(dataAccessService).saveDomainObject(mockEpAppRolesRequestData, null);
 		final Map<String, Long> params = new HashMap<>();
-		params.put("appId", appWithRolesForUser.appId);
+		params.put("appId", appWithRolesForUser.getAppId());
 		params.put("appRoleId", roleInAppForUser.roleId);
 		Mockito.when((List<EPUserAppRoles>) dataAccessService.executeNamedQuery("appRoles", params, null))
 				.thenReturn(epUserAppRolesList);

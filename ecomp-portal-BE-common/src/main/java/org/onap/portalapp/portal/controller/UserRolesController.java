@@ -2,7 +2,7 @@
  * ============LICENSE_START==========================================
  * ONAP Portal
  * ===================================================================
- * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
@@ -354,18 +354,18 @@ public class UserRolesController extends EPRestrictedBaseController {
 		PortalRestResponse<String> portalResponse = new PortalRestResponse<>();
 		StringBuilder sbUserApps = new StringBuilder();
 		if (newAppRolesForUser != null) {
-			sbUserApps.append("User '" + newAppRolesForUser.orgUserId);
-			if (newAppRolesForUser.appRoles != null && newAppRolesForUser.appRoles.size() >= 1) {
+			sbUserApps.append("User '" + newAppRolesForUser.getOrgUserId());
+			if (newAppRolesForUser.getAppId() != null && !newAppRolesForUser.getAppRoles().isEmpty()) {
 				sbUserApps.append("' has roles = { ");
-				for (RoleInAppForUser appRole : newAppRolesForUser.appRoles) {
+				for (RoleInAppForUser appRole : newAppRolesForUser.getAppRoles()) {
 					if (appRole.isApplied) {
 						sbUserApps.append(appRole.roleName + " ,");
 					}
 				}
 				sbUserApps.deleteCharAt(sbUserApps.length() - 1);
-				sbUserApps.append("} assigned for the app " + newAppRolesForUser.appId);
+				sbUserApps.append("} assigned for the app " + newAppRolesForUser.getAppId());
 			} else {
-				sbUserApps.append("' has no roles assigned for app " + newAppRolesForUser.appId);
+				sbUserApps.append("' has no roles assigned for app " + newAppRolesForUser.getAppId());
 			}
 		}
 		logger.info(EELFLoggerDelegate.applicationLogger, "putAppWithUserRoleStateForUser: {}", sbUserApps.toString());
@@ -383,14 +383,14 @@ public class UserRolesController extends EPRestrictedBaseController {
 			try{
 				if (changesApplied.isResult()) {
 				logger.info(EELFLoggerDelegate.applicationLogger,
-						"putAppWithUserRoleStateForUser: succeeded for app {}, user {}", newAppRolesForUser.appId,
-						newAppRolesForUser.orgUserId);
+						"putAppWithUserRoleStateForUser: succeeded for app {}, user {}", newAppRolesForUser.getAppId(),
+						newAppRolesForUser.getAppId());
 
 				MDC.put(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP, EPEELFLoggerAdvice.getCurrentDateTimeUTC());
 				AuditLog auditLog = new AuditLog();
 				auditLog.setUserId(user.getId());
 				auditLog.setActivityCode(EcompAuditLog.CD_ACTIVITY_UPDATE_USER);
-				auditLog.setAffectedRecordId(newAppRolesForUser.orgUserId);
+				auditLog.setAffectedRecordId(newAppRolesForUser.getOrgUserId());
 				auditLog.setComments(EcompPortalUtils.truncateString(sbUserApps.toString(), PortalConstants.AUDIT_LOG_COMMENT_SIZE));
 				auditService.logActivity(auditLog, null);
 				
@@ -401,7 +401,7 @@ public class UserRolesController extends EPRestrictedBaseController {
 				logger.info(EELFLoggerDelegate.auditLogger,
 						EPLogUtil.formatAuditLogMessage("UserRolesController.putAppWithUserRoleStateForUser",
 								EcompAuditLog.CD_ACTIVITY_UPDATE_USER, user.getOrgUserId(),
-								newAppRolesForUser.orgUserId, sbUserApps.toString()));
+							newAppRolesForUser.getOrgUserId(), sbUserApps.toString()));
 				MDC.remove(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP);
 				MDC.remove(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP);
 				MDC.remove(SystemProperties.MDC_TIMER);
@@ -413,8 +413,8 @@ public class UserRolesController extends EPRestrictedBaseController {
 			
 		}catch (Exception e){
 				logger.error(EELFLoggerDelegate.errorLogger,
-						"putAppWithUserRoleStateForUser: failed for app {}, user {}", newAppRolesForUser.appId,
-						newAppRolesForUser.orgUserId);
+						"putAppWithUserRoleStateForUser: failed for app {}, user {}", newAppRolesForUser.getAppId(),
+					newAppRolesForUser.getOrgUserId());
 				portalResponse = new PortalRestResponse<>(PortalRestStatusEnum.ERROR, e.getMessage(), null);
 			}
 		}

@@ -66,6 +66,6 @@ public class AppWithRolesForUserTest {
 		assertEquals(appWithRolesForUser.getAppName(), "test");
 		assertEquals(appWithRolesForUser.getAppRoles(), null);
 		assertEquals(appWithRolesForUser.isSystemUser(), false);
-		assertEquals(appWithRolesForUser.toString(), "AppWithRolesForUser [orgUserId=test, isSystemUser=false, appId=1, appName=test, appRoles=null]");
+		assertEquals(appWithRolesForUser.toString(), "AppWithRolesForUser(orgUserId=test, isSystemUser=false, appId=1, appName=test, appRoles=null)");
 	}
 }
