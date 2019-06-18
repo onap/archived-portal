@@ -45,59 +45,41 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.validator.constraints.SafeHtml;
 
 /**
  * This is to handle portal admins
  */
 @Entity
 @Table(name = "fn_user")
+@Getter
+@Setter
 public class PortalAdmin implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "user_id")
+	@Digits(integer = 11, fraction = 0)
 	public Long userId;
 
 	@Column(name = "login_id")
+	@Size(max = 25)
+	@SafeHtml
 	public String loginId;
 
 	@Column(name = "first_name")
+	@Size(max = 50)
+	@SafeHtml
 	public String firstName;
 
 	@Column(name = "last_name")
+	@Size(max = 50)
+	@SafeHtml
 	public String lastName;
-
-	public Long getUserId() {
-		return userId;
-	}
-
-	public void setUserId(Long userId) {
-		this.userId = userId;
-	}
-
-	public String getLoginId() {
-		return loginId;
-	}
-
-	public void setLoginId(String loginId) {
-		this.loginId = loginId;
-	}
-
-	public String getFirstName() {
-		return firstName;
-	}
-
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
-
-	public String getLastName() {
-		return lastName;
-	}
-
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
 
 }
