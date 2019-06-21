@@ -55,12 +55,9 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.ModelAndView;
 
 public class OpenIdConnectLoginStrategy extends org.onap.portalsdk.core.auth.LoginStrategy implements org.onap.portalapp.authentication.LoginStrategy {
-	
-	private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(OpenIdConnectLoginStrategy.class);
-	
+	private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(OpenIdConnectLoginStrategy.class);
 	private static final String GLOBAL_LOCATION_KEY = "Location";
 
-	@SuppressWarnings("rawtypes")
 	public boolean login(HttpServletRequest request, HttpServletResponse response) throws Exception{
 		
 		logger.info("Attempting Login");												
@@ -93,7 +90,7 @@ public class OpenIdConnectLoginStrategy extends org.onap.portalsdk.core.auth.Log
 				String loginUrl = SystemProperties.getProperty(EPSystemProperties.LOGIN_URL_NO_RET_VAL);
 				logger.info(EELFLoggerDelegate.errorLogger, "Authentication Mechanism: '" + authentication + "'.");
 				
-				if (authentication == null || authentication.equals("") || authentication.trim().equals("OIDC")) {				
+				if (authentication == null || "".equals(authentication) || "OIDC".equals(authentication.trim())) {
 				    response.sendRedirect("oid-login");
 				} else {
 					logger.info(EELFLoggerDelegate.errorLogger, "No cookies are found, redirecting the request to '" + loginUrl + "'.");
@@ -108,10 +105,10 @@ public class OpenIdConnectLoginStrategy extends org.onap.portalsdk.core.auth.Log
 	}
 
 	@Override
-	public ModelAndView doLogin(HttpServletRequest request, HttpServletResponse response) throws Exception {
+	public ModelAndView doLogin(HttpServletRequest request, HttpServletResponse response) throws PortalAPIException {
 		String message = "Method not implmented; Cannot be called";
 		logger.error(EELFLoggerDelegate.errorLogger, message);
-		throw new Exception(message);
+		throw new PortalAPIException(message);
 	}
 
 	@Override
