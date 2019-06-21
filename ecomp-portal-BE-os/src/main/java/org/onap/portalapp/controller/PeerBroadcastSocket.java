@@ -39,65 +39,34 @@
  */
 package org.onap.portalapp.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Map;
-
+import java.util.Optional;
 import javax.websocket.OnClose;
 import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
-
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @ServerEndpoint("/opencontact")
 public class PeerBroadcastSocket {
+	private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(PeerBroadcastSocket.class);
+	private static final ObjectMapper mapper = new ObjectMapper();
 
-	EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(PeerBroadcastSocket.class);
-
-	public final static Map<String, Object> channelMap = new Hashtable<String, Object>();
-	public Map<String, String> sessionMap = new Hashtable<String, String>();
-	ObjectMapper mapper = new ObjectMapper();
+	protected static final Map<String, Object> channelMap = new HashMap<>();
+	private Map<String, String> sessionMap = new HashMap<>();
 
 	@OnMessage
 	public void message(String message, Session session) {
 		try {
-			// JSONObject jsonObject = new JSONObject(message);
-			@SuppressWarnings("unchecked")
 			Map<String, Object> jsonObject = mapper.readValue(message, Map.class);
-			try {
-				Object from = jsonObject.get("from");
-				if (from != null) {
-					if(channelMap.get(from.toString()) == null) {
-						channelMap.put(from.toString(), session);
-						sessionMap.put(session.getId(), from.toString());
-					}
-				}
-			} catch (Exception je) {
-				logger.error(EELFLoggerDelegate.errorLogger, "Failed to read value" + je.getMessage());
-			}
-
-			try {
-				Object to = jsonObject.get("to");
-				if (to == null)
-					return;
-				Object toSessionObj = channelMap.get(to);
-				/*if (toSessionObj != null) {
-					Session toSession = null;
-					toSession = (Session) toSessionObj;
-					toSession.getBasicRemote().sendText(message);
-				}
-*/
-			} catch (Exception ex) {
-				logger.error(EELFLoggerDelegate.errorLogger, "Failed to send text" + ex.getMessage());
-			}
-
+			save(jsonObject, session);
 		} catch (Exception ex) {
 			logger.error(EELFLoggerDelegate.errorLogger, "Failed" + ex.getMessage());
 		}
-
 	}
 
 	@OnOpen
@@ -120,6 +89,14 @@ public class PeerBroadcastSocket {
 			channelMap.remove(channel);
 		}
 		logger.info(EELFLoggerDelegate.debugLogger, "Channel closed");
+	}
+
+	private void save(Map<String, Object> jsonObject, Session session) {
+		final Optional<String> from = Optional.of(jsonObject.get("from").toString());
+		if (from.isPresent() && channelMap.get(from.get()) == null) {
+			this.channelMap.put(from.toString(), session);
+			this.sessionMap.put(session.getId(), from.toString());
+		}
 	}
 
 }
