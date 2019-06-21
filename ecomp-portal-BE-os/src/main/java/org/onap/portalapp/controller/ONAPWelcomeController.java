@@ -44,9 +44,11 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import lombok.NoArgsConstructor;
 import org.mitre.openid.connect.client.SubjectIssuerGrantedAuthority;
 import org.onap.portalapp.controller.EPRestrictedBaseController;
 import org.onap.portalapp.portal.logging.aop.EPAuditLog;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -56,12 +58,11 @@ import org.springframework.web.servlet.ModelAndView;
 
 @Controller
 @RequestMapping("/")
-@org.springframework.context.annotation.Configuration
+@Configuration
 @EnableAspectJAutoProxy
 @EPAuditLog
+@NoArgsConstructor
 public class ONAPWelcomeController extends EPRestrictedBaseController{
-	String viewName;
-		
 	@RequestMapping(value = "/index.htm", method = RequestMethod.GET)
     public String getIndexPage(HttpServletRequest request) {
 		return "/index";
@@ -71,14 +72,6 @@ public class ONAPWelcomeController extends EPRestrictedBaseController{
     public String getEcompSinglePage(HttpServletRequest request, HttpServletResponse response) {
 		return "forward:/index.html";
     }
-	
-	protected String getViewName() {
-		return viewName;
-	}
-	
-	protected void setViewName(String viewName) {
-		this.viewName = viewName;
-	}
 	
 	// TODO Need to revisit this as its conflicting with Spring Security; check web.xml's oid-context.xml config
 	//@Resource(name = "namedAdmins")
