@@ -37,12 +37,10 @@
  */
 package org.onap.portalapp.controller;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import lombok.NoArgsConstructor;
 import org.onap.portalsdk.core.auth.LoginStrategy;
 import org.onap.portalsdk.core.controller.UnRestrictedBaseController;
 import org.onap.portalsdk.core.onboarding.listener.PortalTimeoutHandler;
@@ -57,14 +55,20 @@ import org.springframework.web.servlet.ModelAndView;
 
 @Controller
 @RequestMapping("/")
+@NoArgsConstructor
 public class ONAPLoginController extends UnRestrictedBaseController {
-	@Autowired
-	ProfileService service;
-	@Autowired
+	private ProfileService service;
 	private LoginService loginService;
-	@Autowired
 	private LoginStrategy loginStrategy;
-	String viewName;
+	private String viewName;
+
+	@Autowired
+	public ONAPLoginController(ProfileService service, LoginService loginService,
+		LoginStrategy loginStrategy) {
+		this.service = service;
+		this.loginService = loginService;
+		this.loginStrategy = loginStrategy;
+	}
 
 	@RequestMapping(value = { "/doLogin" }, method = RequestMethod.GET)
 	public ModelAndView doLogin(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -80,14 +84,6 @@ public class ONAPLoginController extends UnRestrictedBaseController {
 		PortalTimeoutHandler.sessionCreated(jSessionId, jSessionId, AppUtils.getSession(request));
 	}
 
-	public String getViewName() {
-		return viewName;
-	}
-
-	public void setViewName(String viewName) {
-		this.viewName = viewName;
-	}
-
 	public LoginService getLoginService() {
 		return loginService;
 	}
@@ -96,4 +92,13 @@ public class ONAPLoginController extends UnRestrictedBaseController {
 		this.loginService = loginService;
 	}
 
+	@Override
+	public String getViewName() {
+		return viewName;
+	}
+
+	@Override
+	public void setViewName(String viewName) {
+		this.viewName = viewName;
+	}
 }
