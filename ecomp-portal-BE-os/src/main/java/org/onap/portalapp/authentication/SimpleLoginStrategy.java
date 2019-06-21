@@ -40,6 +40,7 @@ package org.onap.portalapp.authentication;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import lombok.NoArgsConstructor;
 import org.onap.portalapp.command.EPLoginBean;
 import org.onap.portalapp.portal.service.EPLoginService;
 import org.onap.portalapp.portal.service.EPRoleFunctionService;
@@ -54,18 +55,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.ModelAndView;
 
+@NoArgsConstructor
 public class SimpleLoginStrategy extends org.onap.portalsdk.core.auth.LoginStrategy implements LoginStrategy{
-	
-	@Autowired
+	private static final String GLOBAL_LOCATION_KEY = "Location";
+	private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(SimpleLoginStrategy.class);
+
 	private EPLoginService loginService;
+	private EPRoleFunctionService ePRoleFunctionService;
 
 	@Autowired
-	private EPRoleFunctionService ePRoleFunctionService;
-	
-	private static final String GLOBAL_LOCATION_KEY = "Location";
-	
-	EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(SimpleLoginStrategy.class);
-	
+	public SimpleLoginStrategy(EPLoginService loginService,
+		EPRoleFunctionService ePRoleFunctionService) {
+		this.loginService = loginService;
+		this.ePRoleFunctionService = ePRoleFunctionService;
+	}
+
 	public boolean login(HttpServletRequest request, HttpServletResponse response) throws Exception{
 		logger.info("Attempting 'Simple' Login");												
 		
@@ -79,9 +83,7 @@ public class SimpleLoginStrategy extends org.onap.portalsdk.core.auth.LoginStrat
 			commandBean = loginService.findUser(commandBean, (String)request.getAttribute(MenuProperties.MENU_PROPERTIES_FILENAME_KEY), null);
 
 			 // in case authentication has passed but user is not in the ONAP data base, return a Guest User to the home page.
-			if (commandBean.getUser() == null) {
-			}
-			else {
+			if (commandBean.getUser() != null) {
 				// store the currently logged in user's information in the session
 				EPUserUtils.setUserSession(request, commandBean.getUser(), commandBean.getMenu(), commandBean.getBusinessDirectMenu(), "", ePRoleFunctionService);
 				logger.info(EELFLoggerDelegate.debugLogger, commandBean.getUser().getOrgUserId() + " exists in the the system.");
@@ -96,15 +98,15 @@ public class SimpleLoginStrategy extends org.onap.portalsdk.core.auth.LoginStrat
 				String authentication = SystemProperties.getProperty(SystemProperties.AUTHENTICATION_MECHANISM);
 				String loginUrl = SystemProperties.getProperty(EPSystemProperties.LOGIN_URL_NO_RET_VAL);
 				logger.info(EELFLoggerDelegate.errorLogger, "Authentication Mechanism: '" + authentication + "'.");
-				if (authentication == null || authentication.equals("") || authentication.trim().equals("BOTH")) {
+				if (authentication == null || authentication.isEmpty() || "BOTH".equals(authentication.trim())) {
 				
 					logger.info(EELFLoggerDelegate.errorLogger, "No cookies are found, redirecting the request to '" + loginUrl + "'.");
 				    response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
-		            response.setHeader(GLOBAL_LOCATION_KEY, loginUrl); //returnUrl + "/index.htm");
+		            response.setHeader(GLOBAL_LOCATION_KEY, loginUrl);
 		        }else {
 					logger.info(EELFLoggerDelegate.errorLogger, "No cookies are found, redirecting the request to '" + loginUrl + "'.");
 					response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
-			        response.setHeader(GLOBAL_LOCATION_KEY, loginUrl); //returnUrl + "/index.htm");
+			        response.setHeader(GLOBAL_LOCATION_KEY, loginUrl);
 			    }
 			} catch(Exception e) {
 				logger.error(EELFLoggerDelegate.errorLogger, "login failed", e);
@@ -116,10 +118,10 @@ public class SimpleLoginStrategy extends org.onap.portalsdk.core.auth.LoginStrat
 	}
 
 	@Override
-	public ModelAndView doLogin(HttpServletRequest request, HttpServletResponse response) throws Exception {
+	public ModelAndView doLogin(HttpServletRequest request, HttpServletResponse response) throws PortalAPIException {
 		String message = "Method not implmented; Cannot be called";
 		logger.error(EELFLoggerDelegate.errorLogger, message);
-		throw new Exception(message);
+		throw new PortalAPIException(message);
 	}
 
 	@Override
