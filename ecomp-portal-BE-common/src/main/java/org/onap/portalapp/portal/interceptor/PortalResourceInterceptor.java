@@ -40,6 +40,7 @@
 package org.onap.portalapp.portal.interceptor;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -246,7 +247,7 @@ public class PortalResourceInterceptor extends ResourceInterceptor {
 				logger.debug(EELFLoggerDelegate.debugLogger, "Entering in the loop as the uri contains auxapi : {}");
 				String nameSpace=PortalApiProperties.getProperty(PortalApiConstants.AUTH_NAMESPACE);
 				logger.debug(EELFLoggerDelegate.debugLogger, "namespace form the portal properties : {}",nameSpace);
-				Boolean accessallowed=AuthUtil.isAccessAllowed(request, nameSpace);
+				Boolean accessallowed=AuthUtil.isAccessAllowed(request, nameSpace, new HashMap<>());
 				logger.debug(EELFLoggerDelegate.debugLogger, "AccessAllowed for the request and namespace : {}",accessallowed);
 				if(accessallowed){
 					logger.debug(EELFLoggerDelegate.debugLogger, "AccessAllowed is allowed: {}",accessallowed);
