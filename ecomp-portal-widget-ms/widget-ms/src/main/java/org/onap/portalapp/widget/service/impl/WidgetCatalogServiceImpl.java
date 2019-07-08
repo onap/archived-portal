@@ -244,16 +244,15 @@ public class WidgetCatalogServiceImpl implements WidgetCatalogService {
 		logger.debug("WidgetCatalogServiceImpl.getWidgetCatalog: result={}", widgets);
 		return widgets;
 	}
-	
-	
-	
-	
-	
+
 	private void updateAppId(long widgetId, Set<RoleApp> roles){
 		Session session = sessionFactory.openSession();
 		for(RoleApp role: roles){
-			String sql = "UPDATE ep_widget_catalog_role SET app_id = " + role.getApp().getAppId() + " WHERE widget_id = " + widgetId + " AND ROLE_ID = " + role.getRoleId() ;
+			String sql = "UPDATE ep_widget_catalog_role SET app_id = :appId WHERE widget_id = :widgetId AND ROLE_ID = :roleId" ;
 			Query query = session.createSQLQuery(sql);
+			query.setParameter("appId", role.getApp().getAppId());
+			query.setParameter("widgetId", widgetId);
+			query.setParameter("roleId", role.getRoleId());
 			query.executeUpdate();
 		}
 		session.flush();
