@@ -56,12 +56,15 @@ import org.onap.portalapp.portal.transport.PortalAdmin;
 import org.onap.portalapp.portal.utils.EPCommonSystemProperties;
 import org.onap.portalapp.portal.utils.EcompPortalUtils;
 import org.onap.portalapp.util.EPUserUtils;
+import org.onap.portalapp.validation.DataValidator;
+import org.onap.portalapp.validation.SecureString;
 import org.onap.portalsdk.core.domain.AuditLog;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.onap.portalsdk.core.service.AuditService;
 import org.onap.portalsdk.core.util.SystemProperties;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -70,18 +73,24 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@org.springframework.context.annotation.Configuration
+@Configuration
 @EnableAspectJAutoProxy
 @EPAuditLog
 public class PortalAdminController extends EPRestrictedBaseController {
-	@Autowired
-	PortalAdminService portalAdminService;
-	@Autowired
-	AdminRolesService adminRolesService;
-	@Autowired
-	AuditService auditService;
+	private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(PortalAdminController.class);
+	private static final DataValidator DATA_VALIDATOR = new DataValidator();
 
-	EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(PortalAdminController.class);
+	private	PortalAdminService portalAdminService;
+	private AdminRolesService adminRolesService;
+	private AuditService auditService;
+
+	@Autowired
+	public PortalAdminController(PortalAdminService portalAdminService,
+		AdminRolesService adminRolesService, AuditService auditService){
+		this.portalAdminService = portalAdminService;
+		this.adminRolesService = adminRolesService;
+		this.auditService = auditService;
+	}
 
 	@RequestMapping(value = { "/portalApi/portalAdmins" }, method = RequestMethod.GET, produces = "application/json")
 	public List<PortalAdmin> getPortalAdmins(HttpServletRequest request, HttpServletResponse response) {
@@ -116,7 +125,10 @@ public class PortalAdminController extends EPRestrictedBaseController {
 			HttpServletResponse response) {
 		EPUser user = EPUserUtils.getUserSession(request);
 		FieldsValidator fieldsValidator = null;
-		if (user == null) {
+		if(!DATA_VALIDATOR.isValid(new SecureString(userId))){
+			logger.debug(EELFLoggerDelegate.debugLogger, "PortalAdminController.createPortalAdmin not valid userId");
+			EcompPortalUtils.setBadPermissions(user, response, "createPortalAdmin");
+		}else if (user == null) {
 			logger.debug(EELFLoggerDelegate.debugLogger, "PortalAdminController.createPortalAdmin, null user");
 			EcompPortalUtils.setBadPermissions(user, response, "createPortalAdmin");
 		} else if (!adminRolesService.isSuperAdmin(user)) {
@@ -158,6 +170,12 @@ public class PortalAdminController extends EPRestrictedBaseController {
 	@RequestMapping(value = { "/portalApi/portalAdmin/{userInfo}" }, method = RequestMethod.DELETE)
 	public FieldsValidator deletePortalAdmin(HttpServletRequest request, @PathVariable("userInfo") String userInfo,
 			HttpServletResponse response) {
+
+		if(!DATA_VALIDATOR.isValid(new SecureString(userInfo))){
+			logger.debug(EELFLoggerDelegate.debugLogger, "PortalAdminController.deletePortalAdmin not valid userId");
+			return null;
+		}
+
 		int userIdIdx = userInfo.indexOf("-");
 		Long userId = null;
 		String sbcid = null;

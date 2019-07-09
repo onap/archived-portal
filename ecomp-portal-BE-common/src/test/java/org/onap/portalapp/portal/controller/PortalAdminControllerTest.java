@@ -42,22 +42,17 @@ import static org.junit.Assert.assertNull;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.onap.portalapp.portal.controller.PortalAdminController;
 import org.onap.portalapp.portal.core.MockEPUser;
 import org.onap.portalapp.portal.domain.EPRole;
 import org.onap.portalapp.portal.domain.EPUser;
-import org.onap.portalapp.portal.exceptions.NoHealthyServiceException;
 import org.onap.portalapp.portal.framework.MockitoTestSuite;
 import org.onap.portalapp.portal.service.AdminRolesService;
 import org.onap.portalapp.portal.service.AdminRolesServiceImpl;
@@ -73,7 +68,7 @@ import org.onap.portalsdk.core.service.AuditServiceImpl;
 public class PortalAdminControllerTest extends MockitoTestSuite{
 
 	@InjectMocks
-	PortalAdminController portalAdminController = new PortalAdminController();
+	PortalAdminController portalAdminController;
 
 	@Mock
 	AdminRolesService adminRolesService = new AdminRolesServiceImpl();
@@ -168,9 +163,22 @@ public class PortalAdminControllerTest extends MockitoTestSuite{
         assertEquals(actualFieldValidator,expectedFieldValidator);
 
 	}
-	
 
-		
+	@Test
+	public void createPortalAdminXSSTest()
+	{
+		EPUser user = mockUser.mockEPUser();
+		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
+		FieldsValidator expectedFieldValidator = null;
+		FieldsValidator actualFieldValidator;
+		String userId = "<IMG SRC=jAVasCrIPt:alert(‘XSS’)>";
+		Mockito.when(adminRolesService.isSuperAdmin(user)).thenReturn(true);
+		Mockito.when(portalAdminService.createPortalAdmin(userId)).thenReturn(expectedFieldValidator);
+		actualFieldValidator = portalAdminController.createPortalAdmin(mockedRequest, userId, mockedResponse);
+		assertEquals(expectedFieldValidator, actualFieldValidator);
+
+	}
+
 	@Test
 	public void createPortalAdminIfUserIsNullTest()
 	{
@@ -202,6 +210,17 @@ public class PortalAdminControllerTest extends MockitoTestSuite{
 	    Mockito.when(portalAdminService.deletePortalAdmin(12L)).thenReturn(null);
          FieldsValidator actualPortalAdminsList =  portalAdminController.deletePortalAdmin(mockedRequest, "test", mockedResponse);
          assertNull(actualPortalAdminsList);
+
+	}
+
+	@Test
+	public void deletePortalAdminXSSTest()
+	{
+		EPUser user = mockUser.mockEPUser();
+		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
+		Mockito.when(adminRolesService.isSuperAdmin(user)).thenReturn(true);
+		FieldsValidator actualFieldValidator = portalAdminController.deletePortalAdmin(mockedRequest,"<img src=xss onerror=alert(1)>" , mockedResponse);
+		assertNull(actualFieldValidator);
 
 	}
 	
