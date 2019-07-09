@@ -44,6 +44,11 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.validator.constraints.SafeHtml;
 import org.onap.portalsdk.core.domain.support.DomainVo;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -54,6 +59,9 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @Entity 
 @Table(name="fn_common_widget_data")
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@NoArgsConstructor
+@Getter
+@Setter
 public class CommonWidget extends DomainVo{
 
 	private static final long serialVersionUID = 7897021982887364557L;
@@ -64,32 +72,34 @@ public class CommonWidget extends DomainVo{
 	private Long id;
 
 	@Column(name = "category")
+	@Size(max = 32)
 	@SafeHtml
 	public String category;
 	
 	@Column(name = "href")
+	@Size(max = 512)
 	@SafeHtml
 	public String href;
 
 	@Column(name = "title")
+	@Size(max = 256)
 	@SafeHtml
 	public String title;
 	
 	@Column(name = "content")
+	@Size(max = 4096)
 	@SafeHtml
 	public String content;
 
 	@Column(name = "event_date")
+	@Size(max = 10)
+	@Pattern(regexp = "([1-2][0-9]{3})-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])")
 	@SafeHtml
 	public String eventDate;
 	
 	@Column(name = "sort_order")
 	public Integer sortOrder;
 
-
-	public CommonWidget(){
-
-	}
 
 	public CommonWidget(String category, String href, String title, String content, String eventDate, Integer sortOrder){
 		this.category = category;
@@ -100,63 +110,4 @@ public class CommonWidget extends DomainVo{
 		this.sortOrder = sortOrder;
 	}
 
-	public String getCategory() {
-		return category;
-	}
-
-	public void setCategory(String category) {
-		this.category = category;
-	}
-
-	public String getHref() {
-		return href;
-	}
-
-	public void setHref(String href) {
-		this.href = href;
-	}
-
-	public String getTitle() {
-		return title;
-	}
-
-	public void setTitle(String title) {
-		this.title = title;
-	}
-
-	public Integer getSortOrder() {
-		return sortOrder;
-	}
-
-	public void setSortOrder(Integer sortOrder) {
-		this.sortOrder = sortOrder;
-	}
-
-	public static long getSerialversionuid() {
-		return serialVersionUID;
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {		
-		this.id = id;
-	}
-
-	public String getContent() {
-		return content;
-	}
-
-	public void setContent(String content) {
-		this.content = content;
-	}
-
-	public String getEventDate() {
-		return eventDate;
-	}
-
-	public void setEventDate(String eventDate) {
-		this.eventDate = eventDate;
-	}	
 }
