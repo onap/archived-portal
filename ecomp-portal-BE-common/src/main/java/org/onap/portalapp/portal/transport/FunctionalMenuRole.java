@@ -44,90 +44,41 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.NotNull;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Table(name="fn_menu_functional_roles")
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
 public class FunctionalMenuRole implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name = "ID")
+	@Digits(integer = 11, fraction = 0)
 	public Integer id;
-	
+
 	@Column(name = "MENU_ID")
+	@Digits(integer = 11, fraction = 0)
+	@NotNull
 	public Long menuId;
-	
+
 	@Column(name = "APP_ID")
+	@Digits(integer = 11, fraction = 0)
+	@NotNull
 	public Integer appId;
-	
+
 	@Column(name = "ROLE_ID")
+	@Digits(integer = 11, fraction = 0)
+	@NotNull
 	public Integer roleId;
 
-	public Integer getId() {
-		return id;
-	}
-
-	public void setId(Integer id) {
-		this.id = id;
-	}
-
-	public Long getMenuId() {
-		return menuId;
-	}
-
-	public void setMenuId(Long menuId) {
-		this.menuId = menuId;
-	}
-
-	public Integer getAppId() {
-		return appId;
-	}
-
-	public void setAppId(Integer appId) {
-		this.appId = appId;
-	}
-
-	public Integer getRoleId() {
-		return roleId;
-	}
-
-	public void setRoleId(Integer roleId) {
-		this.roleId = roleId;
-	}
-
-	@Override
-	public String toString() {
-		return "FunctionalMenuRole [id=" + id + ", menuId=" + menuId + ", appId=" + appId + ", roleId=" + roleId + "]";
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((appId == null) ? 0 : appId.hashCode());
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		result = prime * result + ((menuId == null) ? 0 : menuId.hashCode());
-		result = prime * result + ((roleId == null) ? 0 : roleId.hashCode());
-		return result;
-	}
-
-	@Override
-    public boolean equals(Object o) {
-
-        if (o == this) return true;
-        if (!(o instanceof FunctionalMenuRole)) {
-            return false;
-        }
-        FunctionalMenuRole functionalMenuRole = (FunctionalMenuRole) o;
-        System.out.println("test");
-        return  id.equals(functionalMenuRole.getId()) &&
-        		menuId.equals(functionalMenuRole.menuId) &&
-        		appId.equals(functionalMenuRole.appId) &&
-        		roleId.equals(functionalMenuRole.roleId) ;
-    }
-	
-	
-	
-	
 }
