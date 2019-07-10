@@ -597,9 +597,8 @@ public class UserRolesCommonServiceImpl  {
 									"syncAppRoles: There is exactly 1 menu item for this role, so emptying the url");
 							@SuppressWarnings("unchecked")
 							List<FunctionalMenuItem> funcMenuItems = localSession
-									.createQuery("from :name where menuId=:menuId")
-									.setParameter("name",FunctionalMenuItem.class.getName())
-									.setParameter("menuId",menuId)
+									.createQuery(
+											"from " + FunctionalMenuItem.class.getName() + " where menuId=" + menuId)
 									.list();
 							if (funcMenuItems.size() > 0) {
 								logger.debug(EELFLoggerDelegate.debugLogger, "got the menu item");

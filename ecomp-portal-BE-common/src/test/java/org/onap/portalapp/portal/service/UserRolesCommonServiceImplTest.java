@@ -473,10 +473,8 @@ public class UserRolesCommonServiceImplTest {
 		Mockito.when(epFunctionalMenuQuery2.setParameter("menuId",10l)).thenReturn(epFunctionalMenuQuery2);
 		Mockito.doReturn(mockFunctionalMenuRolesList).when(epFunctionalMenuQuery2).list();
 
-		Mockito.when(session.createQuery("from :name where menuId=:menuId"))
+		Mockito.when(session.createQuery("from " + FunctionalMenuItem.class.getName() + " where menuId=" + 10l))
 				.thenReturn(epFunctionalMenuItemQuery);
-		Mockito.when(epFunctionalMenuItemQuery.setParameter("name",FunctionalMenuItem.class.getName())).thenReturn(epFunctionalMenuItemQuery);
-		Mockito.when(epFunctionalMenuItemQuery.setParameter("menuId",10l)).thenReturn(epFunctionalMenuItemQuery);
 		Mockito.doReturn(mockFunctionalMenuItemList).when(epFunctionalMenuItemQuery).list();
 		List<EcompRole> mockEcompRoleList2 = new ArrayList<>();
 		EcompRole mockUserAppRoles = new EcompRole();
