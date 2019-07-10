@@ -2,7 +2,7 @@
  * ============LICENSE_START==========================================
  * ONAP Portal
  * ===================================================================
- * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
@@ -33,53 +33,32 @@
  *
  * ============LICENSE_END============================================
  *
- * 
+ *
  */
 package org.onap.portalapp.portal.service;
 
+import com.att.nsa.cambria.client.CambriaClientFactory;
+import com.att.nsa.cambria.client.CambriaTopicManager;
 import java.net.MalformedURLException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeSet;
-import java.util.UUID;
-
-import javax.servlet.http.HttpServletResponse;
-
-import org.hibernate.Session;
-import org.hibernate.Transaction;
 import org.onap.portalapp.portal.domain.EPApp;
-import org.onap.portalapp.portal.domain.EPUser;
 import org.onap.portalapp.portal.logging.aop.EPMetricsLog;
-import org.onap.portalapp.portal.logging.format.EPAppMessagesEnum;
-import org.onap.portalapp.portal.logging.logic.EPLogUtil;
-import org.onap.portalapp.portal.service.EPAppCommonServiceImpl;
-import org.onap.portalapp.portal.service.EPAppService;
-import org.onap.portalapp.portal.transport.FieldsValidator;
-import org.onap.portalapp.portal.transport.OnboardingApp;
-import org.onap.portalapp.portal.utils.EcompPortalUtils;
-import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.onap.portalsdk.core.service.DataAccessService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.att.nsa.cambria.client.CambriaClientFactory;
-import com.att.nsa.cambria.client.CambriaTopicManager;
-
 @Service("epAppService")
 @Transactional
-@org.springframework.context.annotation.Configuration
+@Configuration
 @EnableAspectJAutoProxy
 @EPMetricsLog
 public class EPAppServiceImpl extends EPAppCommonServiceImpl implements EPAppService {
-
-	private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(EPAppServiceImpl.class);
-
-	private static Object syncRests = new Object();
-
 	@Autowired
 	private DataAccessService dataAccessService;
 
@@ -87,17 +66,12 @@ public class EPAppServiceImpl extends EPAppCommonServiceImpl implements EPAppSer
 	public List<EPApp> getUserRemoteApps(String id) {
 		StringBuilder query = new StringBuilder();
 		query.append("SELECT * FROM FN_APP join FN_USER_ROLE ON FN_USER_ROLE.APP_ID = FN_APP.APP_ID where ");
-		query.append("FN_USER_ROLE.USER_ID = " + id + " AND FN_USER_ROLE.ROLE_ID != " + SUPER_ADMIN_ROLE_ID);
+		query.append("FN_USER_ROLE.USER_ID = ").append(id).append(" AND FN_USER_ROLE.ROLE_ID != ")
+			.append(SUPER_ADMIN_ROLE_ID);
 		query.append(" AND FN_APP.ENABLED = 'Y'");
-		TreeSet<EPApp> distinctApps = new TreeSet<EPApp>();
 		@SuppressWarnings("unchecked")
 		List<EPApp> adminApps = dataAccessService.executeSQLQuery(query.toString(), EPApp.class, null);
-		for (EPApp app : adminApps) {
-			distinctApps.add(app);
-		}
-		List<EPApp> userApps = new ArrayList<EPApp>();
-		userApps.addAll(distinctApps);
-		return userApps;
+		return new ArrayList<>(new TreeSet<>(adminApps));
 	}
 
 
