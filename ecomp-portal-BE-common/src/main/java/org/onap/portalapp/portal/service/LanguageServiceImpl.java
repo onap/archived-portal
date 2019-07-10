@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2019 CMCC, Inc. and others. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,28 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.onap.portalapp.portal.service;
 
 import com.alibaba.fastjson.JSONObject;
-
-import antlr.StringUtils;
-
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import org.onap.music.eelf.logging.EELFLoggerDelegate;
 import org.onap.portalapp.portal.domain.EPUser;
 import org.onap.portalapp.portal.domain.Language;
 import org.onap.portalsdk.core.service.DataAccessService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 @Service
 public class LanguageServiceImpl implements LanguageService {
+    private final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(LanguageServiceImpl.class);
+
+    private final DataAccessService dataAccessService;
 
     @Autowired
-    private DataAccessService dataAccessService;
+    public LanguageServiceImpl(DataAccessService dataAccessService) {
+        this.dataAccessService = dataAccessService;
 
+    }
+
+    @SuppressWarnings("unchecked")
     @Override
     public JSONObject getLanguages() {
         List<Language> languages = (List<Language>) dataAccessService.executeNamedQuery("queryLanguage",null,new HashMap());
@@ -44,7 +49,7 @@ public class LanguageServiceImpl implements LanguageService {
     }
 
     @Override
-    public String setUpUserLanguage(Integer languageId, String loginId) throws Exception{
+    public String setUpUserLanguage(Integer languageId, String loginId) {
         Map<String,Object> params = new HashMap<>();
         params.put("login_id",loginId);
         params.put("language_id",languageId);
@@ -52,13 +57,14 @@ public class LanguageServiceImpl implements LanguageService {
         return "success";
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public JSONObject getUserLanguage(String loginId) {
         // get language_id from fn_user by loginId
-        JSONObject result = new com.alibaba.fastjson.JSONObject();
+        JSONObject result = new JSONObject();
         HashMap getUserParams = new HashMap();
         getUserParams.put("login_id", loginId);
-        List<EPUser> userList= null;
+        List<EPUser> userList;
 
         try {
             userList = dataAccessService.executeNamedQuery("getEPUserByLoginId", getUserParams, new HashMap());
@@ -70,7 +76,7 @@ public class LanguageServiceImpl implements LanguageService {
                 // get language name and alias from fn_language by languageId
                 HashMap<String,String> getLangParams = new HashMap();
                 getLangParams.put("language_id", String.valueOf(languageId));
-                List<Language> languageList = null;
+                List<Language> languageList;
 
                 languageList = dataAccessService.executeNamedQuery("queryLanguageByLanguageId", getLangParams, new HashMap());
                 if (languageList != null && languageList.size() > 0) {
@@ -79,7 +85,7 @@ public class LanguageServiceImpl implements LanguageService {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.debug(EELFLoggerDelegate.debugLogger, e.getMessage());
         }
         return result;
     }
