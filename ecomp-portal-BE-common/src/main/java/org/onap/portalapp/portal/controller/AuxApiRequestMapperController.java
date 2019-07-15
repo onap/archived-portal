@@ -36,6 +36,8 @@
  */
 package org.onap.portalapp.portal.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.swagger.annotations.ApiOperation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -47,10 +49,8 @@ import java.util.Map;
 import java.util.jar.Attributes;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.onap.aaf.cadi.aaf.AAFPermission;
 import org.onap.portalapp.annotation.ApiVersion;
 import org.onap.portalapp.externalsystemapproval.model.ExternalSystemUser;
@@ -67,6 +67,8 @@ import org.onap.portalapp.portal.transport.EpNotificationItem;
 import org.onap.portalapp.portal.transport.FavoritesFunctionalMenuItemJson;
 import org.onap.portalapp.portal.transport.FunctionalMenuItem;
 import org.onap.portalapp.portal.transport.OnboardingApp;
+import org.onap.portalapp.validation.DataValidator;
+import org.onap.portalapp.validation.SecureString;
 import org.onap.portalsdk.core.domain.Role;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.onap.portalsdk.core.onboarding.crossapi.PortalAPIResponse;
@@ -76,6 +78,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -85,18 +88,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import io.swagger.annotations.ApiOperation;
-
 @RestController
 @RequestMapping("/auxapi")
-@org.springframework.context.annotation.Configuration
+@Configuration
 @EnableAspectJAutoProxy
 @EPAuditLog
 public class AuxApiRequestMapperController implements ApplicationContextAware, BasicAuthenticationController {
 
 	private static EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(AuxApiRequestMapperController.class);
+	private DataValidator dataValidator = new DataValidator();
 
 	ApplicationContext context = null;
 	int minorVersion = 0;
@@ -108,6 +108,13 @@ public class AuxApiRequestMapperController implements ApplicationContextAware, B
 	@RequestMapping(value = { "/v3/user/{loginId}" }, method = RequestMethod.GET, produces = "application/json")
 	public String getUser(HttpServletRequest request, HttpServletResponse response,
 			@PathVariable("loginId") String loginId) throws Exception {
+		if (loginId!=null){
+			SecureString secureLoginId = new SecureString(loginId);
+			if (!dataValidator.isValid(secureLoginId))
+				return "Provided data is not valid";
+		}
+
+
 		Map<String, Object> res = getMethod(request, response);
 		String answer = null;
 		try {
@@ -198,6 +205,12 @@ public class AuxApiRequestMapperController implements ApplicationContextAware, B
 	@RequestMapping(value = { "/v3/function/{code}" }, method = RequestMethod.GET, produces = "application/json")
 	public CentralV2RoleFunction getRoleFunction(HttpServletRequest request, HttpServletResponse response,
 			@PathVariable("code") String code) throws Exception {
+		if (code!=null){
+			SecureString secureCode = new SecureString(code);
+			if (!dataValidator.isValid(secureCode))
+				return new CentralV2RoleFunction();
+		}
+
 		Map<String, Object> res = getMethod(request, response);
 		CentralV2RoleFunction roleFunction = null;
 		try {
@@ -214,13 +227,20 @@ public class AuxApiRequestMapperController implements ApplicationContextAware, B
 	public PortalRestResponse<String> saveRoleFunction(HttpServletRequest request, HttpServletResponse response,
 			@RequestBody String roleFunc) throws Exception {
 		PortalRestResponse<String> result = null;
+
+		if (roleFunc!=null){
+			SecureString secureRoleFunc = new SecureString(roleFunc);
+			if(!dataValidator.isValid(secureRoleFunc))
+				return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, "Provided data is not valid", "Failed");
+		}
+
 		Map<String, Object> res = getMethod(request, response);
 		try {
 			result = (PortalRestResponse<String>) invokeMethod(res, request, response, roleFunc);
 			return result;
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "saveRoleFunction failed", e);
-			return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, e.getMessage(), "Failed");
+			return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, e.getMessage(), "Failed");
 		}
 	}
 
@@ -230,6 +250,13 @@ public class AuxApiRequestMapperController implements ApplicationContextAware, B
 	public PortalRestResponse<String> deleteRoleFunction(HttpServletRequest request, HttpServletResponse response,
 			@PathVariable("code") String code) throws Exception {
 		PortalRestResponse<String> result = null;
+
+		if (code!=null){
+			SecureString secureCode = new SecureString(code);
+			if(!dataValidator.isValid(secureCode))
+				return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, "Provided data is not valid", "Failed");
+		}
+
 		Map<String, Object> res = getMethod(request, response);
 		try {
 			result = (PortalRestResponse<String>) invokeMethod(res, request, response, code);
@@ -276,6 +303,14 @@ public class AuxApiRequestMapperController implements ApplicationContextAware, B
 	public String getEcompUser(HttpServletRequest request, HttpServletResponse response,
 			@PathVariable("loginId") String loginId) throws Exception {
 		Map<String, Object> res = getMethod(request, response);
+
+		if (loginId!=null){
+			SecureString secureLoginId = new SecureString(loginId);
+
+			if (!dataValidator.isValid(secureLoginId))
+				return null;
+		}
+
 		String answer = null;
 		try {
 			answer = (String) invokeMethod(res, request, response, loginId);
@@ -319,6 +354,14 @@ public class AuxApiRequestMapperController implements ApplicationContextAware, B
 	@RequestMapping(value = { "/v3/extendSessionTimeOuts" }, method = RequestMethod.POST)
 	public Boolean extendSessionTimeOuts(HttpServletRequest request, HttpServletResponse response,
 			@RequestParam String sessionMap) throws Exception {
+
+		if (sessionMap!=null){
+			SecureString secureSessionMap = new SecureString(sessionMap);
+			if (!dataValidator.isValid(secureSessionMap)){
+				return null;
+			}
+		}
+
 		Map<String, Object> res = getMethod(request, response);
 		Boolean ans = null;
 		try {
@@ -347,6 +390,12 @@ public class AuxApiRequestMapperController implements ApplicationContextAware, B
 	@ApiOperation(value = "Accepts data from partner applications with web analytics data.", response = PortalAPIResponse.class)
 	public PortalAPIResponse storeAnalyticsScript(HttpServletRequest request, HttpServletResponse response,
 			@RequestBody Analytics analyticsMap) throws Exception {
+
+		if (analyticsMap!=null){
+			if (!dataValidator.isValid(analyticsMap))
+				return new PortalAPIResponse(false, "analyticsScript is not valid");
+		}
+
 		Map<String, Object> res = getMethod(request, response);
 		PortalAPIResponse ans = new PortalAPIResponse(true, "error");
 		try {
@@ -715,6 +764,12 @@ public class AuxApiRequestMapperController implements ApplicationContextAware, B
 	@RequestMapping(value = { "/v3/userProfile" }, method = RequestMethod.POST, produces = "application/json")
 	public PortalRestResponse<String> postUserProfile(HttpServletRequest request,
 			@RequestBody ExternalSystemUser extSysUser, HttpServletResponse response) {
+
+		if (extSysUser!=null){
+			if (!dataValidator.isValid(extSysUser))
+				return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, "ExternalSystemUser is not valid", "Failed");
+		}
+
 		PortalRestResponse<String> result = null;
 		Map<String, Object> res = getMethod(request, response);
 		try {
@@ -731,6 +786,12 @@ public class AuxApiRequestMapperController implements ApplicationContextAware, B
 	@RequestMapping(value = { "/v3/userProfile" }, method = RequestMethod.PUT, produces = "application/json")
 	public PortalRestResponse<String> putUserProfile(HttpServletRequest request,
 			@RequestBody ExternalSystemUser extSysUser, HttpServletResponse response) {
+
+		if (extSysUser!=null){
+			if (!dataValidator.isValid(extSysUser))
+				return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, "ExternalSystemUser is not valid", "Failed");
+		}
+
 		PortalRestResponse<String> result = null;
 		Map<String, Object> res = getMethod(request, response);
 		try {
@@ -747,6 +808,12 @@ public class AuxApiRequestMapperController implements ApplicationContextAware, B
 	@RequestMapping(value = { "/v3/userProfile" }, method = RequestMethod.DELETE, produces = "application/json")
 	public PortalRestResponse<String> deleteUserProfile(HttpServletRequest request,
 			@RequestBody ExternalSystemUser extSysUser, HttpServletResponse response) {
+
+		if (extSysUser!=null){
+			if (!dataValidator.isValid(extSysUser))
+				return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, "ExternalSystemUser is not valid", "Failed");
+		}
+
 		PortalRestResponse<String> result = null;
 		Map<String, Object> res = getMethod(request, response);
 		try {
@@ -763,6 +830,13 @@ public class AuxApiRequestMapperController implements ApplicationContextAware, B
 	@RequestMapping(value = { "/v3/ticketevent" }, method = RequestMethod.POST)
 	public PortalRestResponse<String> handleRequest(HttpServletRequest request, HttpServletResponse response,
 			@RequestBody String ticketEventJson) throws Exception {
+
+		if (ticketEventJson!=null){
+			SecureString secureTicketEventJson = new SecureString(ticketEventJson);
+			if (!dataValidator.isValid(secureTicketEventJson))
+				return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, "ticketEventJson is not valid", "Failed");
+		}
+
 		PortalRestResponse<String> result = null;
 		Map<String, Object> res = getMethod(request, response);
 		try {
@@ -780,6 +854,12 @@ public class AuxApiRequestMapperController implements ApplicationContextAware, B
 	@ResponseBody
 	public PortalRestResponse<String> postPortalAdmin(HttpServletRequest request, HttpServletResponse response,
 			@RequestBody EPUser epUser) {
+
+		if (epUser!=null){
+			if (!dataValidator.isValid(epUser))
+				return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, "EPUser is not valid", "Failed");
+		}
+
 		PortalRestResponse<String> result = null;
 		Map<String, Object> res = getMethod(request, response);
 		try {
@@ -812,6 +892,12 @@ public class AuxApiRequestMapperController implements ApplicationContextAware, B
 	@ResponseBody
 	public PortalRestResponse<String> postOnboardAppExternal(HttpServletRequest request, HttpServletResponse response,
 			@RequestBody OnboardingApp newOnboardApp) {
+
+		if (newOnboardApp!=null){
+			if (!dataValidator.isValid(newOnboardApp))
+				return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, "OnboardingApp is not valid", "Failed");
+		}
+
 		PortalRestResponse<String> result = new PortalRestResponse<>();
 		Map<String, Object> res = getMethod(request, response);
 		try {
@@ -830,7 +916,13 @@ public class AuxApiRequestMapperController implements ApplicationContextAware, B
 	@ResponseBody
 	public PortalRestResponse<String> putOnboardAppExternal(HttpServletRequest request, HttpServletResponse response,
 			@PathVariable("appId") Long appId, @RequestBody OnboardingApp oldOnboardApp) {
-		PortalRestResponse<String> result = new PortalRestResponse<>();
+
+		if (oldOnboardApp!=null){
+			if (!dataValidator.isValid(oldOnboardApp))
+				return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, "OnboardingApp is not valid", "Failed");
+		}
+
+		PortalRestResponse<String> result;
 		Map<String, Object> res = getMethod(request, response);
 		try {
 			result = (PortalRestResponse<String>) invokeMethod(res, request, response, appId, oldOnboardApp);
@@ -845,12 +937,16 @@ public class AuxApiRequestMapperController implements ApplicationContextAware, B
 	@RequestMapping(value = { "/v3/publishNotification" }, method = RequestMethod.POST, produces = "application/json")
 	@ResponseBody
 	public PortalAPIResponse publishNotification(HttpServletRequest request,
-			@RequestBody EpNotificationItem notificationItem, HttpServletResponse response) throws Exception {
-		PortalAPIResponse result = new PortalAPIResponse(true, "success");
+			@RequestBody EpNotificationItem notificationItem, HttpServletResponse response) {
+
+		if (notificationItem!=null){
+			if (!dataValidator.isValid(notificationItem))
+				return new PortalAPIResponse(false, "EpNotificationItem is not valid");
+		}
+
 		Map<String, Object> res = getMethod(request, response);
 		try {
-			result = (PortalAPIResponse) invokeMethod(res, request, response, notificationItem);
-			return result;
+			return (PortalAPIResponse) invokeMethod(res, request, response, notificationItem);
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "publishNotification failed", e);
 			return new PortalAPIResponse(false, e.getMessage());

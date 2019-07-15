@@ -45,10 +45,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -68,6 +66,7 @@ import org.onap.portalapp.portal.transport.Analytics;
 import org.onap.portalapp.portal.transport.EpNotificationItem;
 import org.onap.portalapp.portal.transport.OnboardingApp;
 import org.onap.portalsdk.core.domain.Role;
+import org.onap.portalsdk.core.onboarding.crossapi.PortalAPIResponse;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -113,6 +112,21 @@ public class AuxApiRequestMapperControllerTest {
 		Mockito.when(AopUtils.isAopProxy(Matchers.anyObject())).thenReturn(false);
 		Mockito.when(mockedRequest.getMethod()).thenReturn("GET");
 		assertNull(auxApiRequestMapperController.getUser(mockedRequest, mockedResponse, "test12"));
+	}
+
+	@Test
+	public void getUserXSSTest() throws Exception {
+		Mockito.when(mockedRequest.getRequestURI()).thenReturn("/auxapi/v3/roles");
+		Mockito.when(mockedRequest.getHeader("MinorVersion")).thenReturn("0");
+		Map<String, Object> beans = new HashMap<>();
+		beans.put("bean1", rolesController);
+		Mockito.when(context.getBeansWithAnnotation(ApiVersion.class)).thenReturn(beans);
+		PowerMockito.mockStatic(AopUtils.class);
+		Mockito.when(AopUtils.isAopProxy(Matchers.anyObject())).thenReturn(false);
+		Mockito.when(mockedRequest.getMethod()).thenReturn("GET");
+		String expected = "Provided data is not valid";
+		String actual = auxApiRequestMapperController.getUser(mockedRequest, mockedResponse, "“><script>alert(“XSS”)</script>");
+		assertEquals(expected, actual);
 	}
 	
 	@Test
@@ -233,6 +247,7 @@ public class AuxApiRequestMapperControllerTest {
 		assertNull(auxApiRequestMapperController.getRoleFunction(mockedRequest, mockedResponse, "test"));
 	}
 
+
 	@Test
 	public void saveRoleFunctionTest() throws Exception {
 		Mockito.when(mockedRequest.getRequestURI()).thenReturn("/auxapi/v3/roleFunction");
@@ -248,6 +263,21 @@ public class AuxApiRequestMapperControllerTest {
 	}
 
 	@Test
+	public void saveRoleFunctionXSSTest() throws Exception {
+		Mockito.when(mockedRequest.getRequestURI()).thenReturn("/auxapi/v3/roleFunction");
+		Mockito.when(mockedRequest.getHeader("MinorVersion")).thenReturn("0");
+		Map<String, Object> beans = new HashMap<>();
+		beans.put("bean1", rolesController);
+		Mockito.when(context.getBeansWithAnnotation(ApiVersion.class)).thenReturn(beans);
+		PowerMockito.mockStatic(AopUtils.class);
+		Mockito.when(AopUtils.isAopProxy(Matchers.anyObject())).thenReturn(false);
+		Mockito.when(mockedRequest.getMethod()).thenReturn("POST");
+		PortalRestResponse<String> actual = auxApiRequestMapperController.saveRoleFunction(mockedRequest, mockedResponse, "<script>alert(123)</script>");
+		PortalRestResponse<String> expected = new PortalRestResponse<>(PortalRestStatusEnum.ERROR, "Provided data is not valid", "Failed");
+		assertEquals(expected, actual);
+	}
+
+	@Test
 	public void deleteRoleFunctionTest() throws Exception {
 		Mockito.when(mockedRequest.getRequestURI()).thenReturn("/auxapi/v3/roleFunction/test");
 		Mockito.when(mockedRequest.getHeader("MinorVersion")).thenReturn("0");
@@ -258,6 +288,22 @@ public class AuxApiRequestMapperControllerTest {
 		Mockito.when(AopUtils.isAopProxy(Matchers.anyObject())).thenReturn(false);
 		Mockito.when(mockedRequest.getMethod()).thenReturn("DELETE");
 		assertNull(auxApiRequestMapperController.deleteRoleFunction(mockedRequest, mockedResponse, "test"));
+	}
+
+	@Test
+	public void deleteRoleFunctionXSSTest() throws Exception {
+		Mockito.when(mockedRequest.getRequestURI()).thenReturn("/auxapi/v3/roleFunction/test");
+		Mockito.when(mockedRequest.getHeader("MinorVersion")).thenReturn("0");
+		Map<String, Object> beans = new HashMap<>();
+		beans.put("bean1", rolesController);
+		Mockito.when(context.getBeansWithAnnotation(ApiVersion.class)).thenReturn(beans);
+		PowerMockito.mockStatic(AopUtils.class);
+		Mockito.when(AopUtils.isAopProxy(Matchers.anyObject())).thenReturn(false);
+		Mockito.when(mockedRequest.getMethod()).thenReturn("DELETE");
+		PortalRestResponse<String> actual = auxApiRequestMapperController.deleteRoleFunction(mockedRequest, mockedResponse,
+			"<svg><script x:href='https://dl.dropbox.com/u/13018058/js.js' {Opera}");
+		PortalRestResponse<String> expected = new PortalRestResponse<>(PortalRestStatusEnum.ERROR, "Provided data is not valid", "Failed");
+		assertEquals(expected, actual);
 	}
 
 	@Test
@@ -297,6 +343,19 @@ public class AuxApiRequestMapperControllerTest {
 		Mockito.when(AopUtils.isAopProxy(Matchers.anyObject())).thenReturn(false);
 		Mockito.when(mockedRequest.getMethod()).thenReturn("GET");
 		assertNull(auxApiRequestMapperController.getEcompUser(mockedRequest, mockedResponse, "test"));
+	}
+
+	@Test
+	public void getEcompUserXSSTest() throws Exception {
+		Mockito.when(mockedRequest.getRequestURI()).thenReturn("/auxapi/v4/user/test");
+		Mockito.when(mockedRequest.getHeader("MinorVersion")).thenReturn("0");
+		Map<String, Object> beans = new HashMap<>();
+		beans.put("bean1", rolesController);
+		Mockito.when(context.getBeansWithAnnotation(ApiVersion.class)).thenReturn(beans);
+		PowerMockito.mockStatic(AopUtils.class);
+		Mockito.when(AopUtils.isAopProxy(Matchers.anyObject())).thenReturn(false);
+		Mockito.when(mockedRequest.getMethod()).thenReturn("GET");
+		assertNull(auxApiRequestMapperController.getEcompUser(mockedRequest, mockedResponse, "<script>alert(‘XSS’)</script>"));
 	}
 
 	@Test
@@ -340,6 +399,20 @@ public class AuxApiRequestMapperControllerTest {
 	}
 
 	@Test
+	public void extendSessionTimeOutsXSSTest() throws Exception {
+		String sessionMap = "<script>alert(“XSS”)</script>";
+		Mockito.when(mockedRequest.getRequestURI()).thenReturn("/auxapi/v3/extendSessionTimeOuts");
+		Mockito.when(mockedRequest.getHeader("MinorVersion")).thenReturn("0");
+		Map<String, Object> beans = new HashMap<>();
+		beans.put("bean1", sessionCommunicationController);
+		Mockito.when(context.getBeansWithAnnotation(ApiVersion.class)).thenReturn(beans);
+		PowerMockito.mockStatic(AopUtils.class);
+		Mockito.when(AopUtils.isAopProxy(Matchers.anyObject())).thenReturn(false);
+		Mockito.when(mockedRequest.getMethod()).thenReturn("POST");
+		assertNull(auxApiRequestMapperController.extendSessionTimeOuts(mockedRequest, mockedResponse, sessionMap));
+	}
+
+	@Test
 	public void getAnalyticsScriptTest() throws Exception {
 		Mockito.when(mockedRequest.getRequestURI()).thenReturn("/auxapi/v3/analytics");
 		Mockito.when(mockedRequest.getHeader("MinorVersion")).thenReturn("0");
@@ -364,6 +437,23 @@ public class AuxApiRequestMapperControllerTest {
 		Mockito.when(mockedRequest.getMethod()).thenReturn("POST");
 		Analytics analyticsMap = new Analytics();
 		assertNull(auxApiRequestMapperController.storeAnalyticsScript(mockedRequest, mockedResponse, analyticsMap));
+	}
+
+	@Test
+	public void storeAnalyticsScriptXSSTest() throws Exception {
+		Mockito.when(mockedRequest.getRequestURI()).thenReturn("/auxapi/v3/storeAnalytics");
+		Mockito.when(mockedRequest.getHeader("MinorVersion")).thenReturn("0");
+		Map<String, Object> beans = new HashMap<>();
+		beans.put("bean1", webAnalyticsExtAppController);
+		Mockito.when(context.getBeansWithAnnotation(ApiVersion.class)).thenReturn(beans);
+		PowerMockito.mockStatic(AopUtils.class);
+		Mockito.when(AopUtils.isAopProxy(Matchers.anyObject())).thenReturn(false);
+		Mockito.when(mockedRequest.getMethod()).thenReturn("POST");
+		Analytics analyticsMap = new Analytics();
+		analyticsMap.setPage("<script>alert(“XSS”);</script>");
+		PortalAPIResponse actual = auxApiRequestMapperController.storeAnalyticsScript(mockedRequest, mockedResponse, analyticsMap);
+		PortalAPIResponse expected  = new PortalAPIResponse(true, "analyticsScript is not valid");
+		assertEquals(expected.getMessage(), actual.getMessage());
 	}
 
 	@Test
@@ -532,6 +622,23 @@ public class AuxApiRequestMapperControllerTest {
 	}
 
 	@Test
+	public void postUserProfileXSSTest() {
+		Mockito.when(mockedRequest.getRequestURI()).thenReturn("/auxapi/v3/userProfile");
+		Mockito.when(mockedRequest.getHeader("MinorVersion")).thenReturn("0");
+		Map<String, Object> beans = new HashMap<>();
+		beans.put("bean1", rolesApprovalSystemController);
+		Mockito.when(context.getBeansWithAnnotation(ApiVersion.class)).thenReturn(beans);
+		PowerMockito.mockStatic(AopUtils.class);
+		Mockito.when(AopUtils.isAopProxy(Matchers.anyObject())).thenReturn(false);
+		Mockito.when(mockedRequest.getMethod()).thenReturn("POST");
+		ExternalSystemUser extSysUser = new ExternalSystemUser();
+		extSysUser.setLoginId("<script>alert(“XSS”);</script>");
+		PortalRestResponse<String> actual = auxApiRequestMapperController.postUserProfile(mockedRequest, extSysUser, mockedResponse);
+		PortalRestResponse<String> expected = new PortalRestResponse<>(PortalRestStatusEnum.ERROR, "ExternalSystemUser is not valid", "Failed");
+		assertEquals(expected, actual);
+	}
+
+	@Test
 	public void putUserProfileTest() throws Exception {
 		Mockito.when(mockedRequest.getRequestURI()).thenReturn("/auxapi/v3/userProfile");
 		Mockito.when(mockedRequest.getHeader("MinorVersion")).thenReturn("0");
@@ -543,6 +650,23 @@ public class AuxApiRequestMapperControllerTest {
 		Mockito.when(mockedRequest.getMethod()).thenReturn("PUT");
 		ExternalSystemUser extSysUser = new ExternalSystemUser();
 		assertNull(auxApiRequestMapperController.putUserProfile(mockedRequest, extSysUser, mockedResponse));
+	}
+
+	@Test
+	public void putUserProfileXSSTest() {
+		Mockito.when(mockedRequest.getRequestURI()).thenReturn("/auxapi/v3/userProfile");
+		Mockito.when(mockedRequest.getHeader("MinorVersion")).thenReturn("0");
+		Map<String, Object> beans = new HashMap<>();
+		beans.put("bean1", rolesApprovalSystemController);
+		Mockito.when(context.getBeansWithAnnotation(ApiVersion.class)).thenReturn(beans);
+		PowerMockito.mockStatic(AopUtils.class);
+		Mockito.when(AopUtils.isAopProxy(Matchers.anyObject())).thenReturn(false);
+		Mockito.when(mockedRequest.getMethod()).thenReturn("POST");
+		ExternalSystemUser extSysUser = new ExternalSystemUser();
+		extSysUser.setLoginId("<script>alert(“XSS”);</script>");
+		PortalRestResponse<String> actual = auxApiRequestMapperController.putUserProfile(mockedRequest, extSysUser, mockedResponse);
+		PortalRestResponse<String> expected = new PortalRestResponse<>(PortalRestStatusEnum.ERROR, "ExternalSystemUser is not valid", "Failed");
+		assertEquals(expected, actual);
 	}
 
 	@Test
@@ -560,6 +684,23 @@ public class AuxApiRequestMapperControllerTest {
 	}
 
 	@Test
+	public void deleteUserProfileXSSTest() throws Exception {
+		Mockito.when(mockedRequest.getRequestURI()).thenReturn("/auxapi/v3/userProfile");
+		Mockito.when(mockedRequest.getHeader("MinorVersion")).thenReturn("0");
+		Map<String, Object> beans = new HashMap<>();
+		beans.put("bean1", rolesApprovalSystemController);
+		Mockito.when(context.getBeansWithAnnotation(ApiVersion.class)).thenReturn(beans);
+		PowerMockito.mockStatic(AopUtils.class);
+		Mockito.when(AopUtils.isAopProxy(Matchers.anyObject())).thenReturn(false);
+		Mockito.when(mockedRequest.getMethod()).thenReturn("DELETE");
+		ExternalSystemUser extSysUser = new ExternalSystemUser();
+		extSysUser.setLoginId("<script>alert(“XSS”);</script>");
+		PortalRestResponse<String> actual = auxApiRequestMapperController.deleteUserProfile(mockedRequest, extSysUser, mockedResponse);
+		PortalRestResponse<String> expected = new PortalRestResponse<>(PortalRestStatusEnum.ERROR, "ExternalSystemUser is not valid", "Failed");
+		assertEquals(expected, actual);
+	}
+
+	@Test
 	public void handleRequestTest() throws Exception {
 		Mockito.when(mockedRequest.getRequestURI()).thenReturn("/auxapi/v3/ticketevent");
 		Mockito.when(mockedRequest.getHeader("MinorVersion")).thenReturn("0");
@@ -570,6 +711,21 @@ public class AuxApiRequestMapperControllerTest {
 		Mockito.when(AopUtils.isAopProxy(Matchers.anyObject())).thenReturn(false);
 		Mockito.when(mockedRequest.getMethod()).thenReturn("POST");
 		assertNull(auxApiRequestMapperController.handleRequest(mockedRequest, mockedResponse, "test"));
+	}
+
+	@Test
+	public void handleRequestXSSTest() throws Exception {
+		Mockito.when(mockedRequest.getRequestURI()).thenReturn("/auxapi/v3/ticketevent");
+		Mockito.when(mockedRequest.getHeader("MinorVersion")).thenReturn("0");
+		Map<String, Object> beans = new HashMap<>();
+		beans.put("bean1", ticketEventVersionController);
+		Mockito.when(context.getBeansWithAnnotation(ApiVersion.class)).thenReturn(beans);
+		PowerMockito.mockStatic(AopUtils.class);
+		Mockito.when(AopUtils.isAopProxy(Matchers.anyObject())).thenReturn(false);
+		Mockito.when(mockedRequest.getMethod()).thenReturn("POST");
+		PortalRestResponse<String> actual = auxApiRequestMapperController.handleRequest(mockedRequest, mockedResponse, "<script>alert(“XSS”);</script>");
+		PortalRestResponse<String> expected =  new PortalRestResponse<>(PortalRestStatusEnum.ERROR, "ticketEventJson is not valid", "Failed");
+		assertEquals(expected, actual);
 	}
 
 	@Test
@@ -584,6 +740,23 @@ public class AuxApiRequestMapperControllerTest {
 		Mockito.when(mockedRequest.getMethod()).thenReturn("POST");
 		EPUser epUser = new EPUser();
 		assertNull(auxApiRequestMapperController.postPortalAdmin(mockedRequest, mockedResponse, epUser));
+	}
+
+	@Test
+	public void postPortalAdminXSSTest() throws Exception {
+		Mockito.when(mockedRequest.getRequestURI()).thenReturn("/auxapi/v3/portalAdmin");
+		Mockito.when(mockedRequest.getHeader("MinorVersion")).thenReturn("0");
+		Map<String, Object> beans = new HashMap<>();
+		beans.put("bean1", appsControllerExternalVersionRequest);
+		Mockito.when(context.getBeansWithAnnotation(ApiVersion.class)).thenReturn(beans);
+		PowerMockito.mockStatic(AopUtils.class);
+		Mockito.when(AopUtils.isAopProxy(Matchers.anyObject())).thenReturn(false);
+		Mockito.when(mockedRequest.getMethod()).thenReturn("POST");
+		EPUser epUser = new EPUser();
+		epUser.setLoginId("<script>alert(/XSS”)</script>");
+		PortalRestResponse<String> actual = auxApiRequestMapperController.postPortalAdmin(mockedRequest, mockedResponse, epUser);
+		PortalRestResponse<String> expected = new PortalRestResponse<>(PortalRestStatusEnum.ERROR, "EPUser is not valid", "Failed");
+		assertEquals(expected, actual);
 	}
 
 	@Test
@@ -614,6 +787,23 @@ public class AuxApiRequestMapperControllerTest {
 	}
 
 	@Test
+	public void postOnboardAppExternalXSSTest() throws Exception {
+		Mockito.when(mockedRequest.getRequestURI()).thenReturn("/auxapi/v3/onboardApp");
+		Mockito.when(mockedRequest.getHeader("MinorVersion")).thenReturn("0");
+		Map<String, Object> beans = new HashMap<>();
+		beans.put("bean1", appsControllerExternalVersionRequest);
+		Mockito.when(context.getBeansWithAnnotation(ApiVersion.class)).thenReturn(beans);
+		PowerMockito.mockStatic(AopUtils.class);
+		Mockito.when(AopUtils.isAopProxy(Matchers.anyObject())).thenReturn(false);
+		Mockito.when(mockedRequest.getMethod()).thenReturn("POST");
+		OnboardingApp newOnboardApp = new OnboardingApp();
+		newOnboardApp.setUebKey("&#00;</form><input type&#61;\"date\" onfocus=\"alert(1)\">");
+		PortalRestResponse<String> actual = auxApiRequestMapperController.postOnboardAppExternal(mockedRequest, mockedResponse, newOnboardApp);
+		PortalRestResponse<String> expected = new PortalRestResponse<>(PortalRestStatusEnum.ERROR, "OnboardingApp is not valid", "Failed");
+		assertEquals(expected, actual);
+	}
+
+	@Test
 	public void putOnboardAppExternalTest() throws Exception {
 		Mockito.when(mockedRequest.getRequestURI()).thenReturn("/auxapi/v3/onboardApp/1");
 		Mockito.when(mockedRequest.getHeader("MinorVersion")).thenReturn("0");
@@ -629,6 +819,24 @@ public class AuxApiRequestMapperControllerTest {
 	}
 
 	@Test
+	public void putOnboardAppExternalXSSTest() throws Exception {
+		Mockito.when(mockedRequest.getRequestURI()).thenReturn("/auxapi/v3/onboardApp/1");
+		Mockito.when(mockedRequest.getHeader("MinorVersion")).thenReturn("0");
+		Map<String, Object> beans = new HashMap<>();
+		beans.put("bean1", appsControllerExternalVersionRequest);
+		Mockito.when(context.getBeansWithAnnotation(ApiVersion.class)).thenReturn(beans);
+		PowerMockito.mockStatic(AopUtils.class);
+		Mockito.when(AopUtils.isAopProxy(Matchers.anyObject())).thenReturn(false);
+		Mockito.when(mockedRequest.getMethod()).thenReturn("PUT");
+		OnboardingApp newOnboardApp = new OnboardingApp();
+		newOnboardApp.setUebTopicName("&#13;<blink/&#13; onmouseover=pr&#x6F;mp&#116;(1)>OnMouseOver {Firefox & Opera}");
+		PortalRestResponse<String> actual = auxApiRequestMapperController.putOnboardAppExternal(mockedRequest, mockedResponse, (long) 1,
+			newOnboardApp);
+		PortalRestResponse<String> expected = new PortalRestResponse<>(PortalRestStatusEnum.ERROR, "OnboardingApp is not valid", "Failed");
+		assertEquals(expected, actual);
+	}
+
+	@Test
 	public void publishNotificationTest() throws Exception {
 		Mockito.when(mockedRequest.getRequestURI()).thenReturn("/auxapi/v3/publishNotification");
 		Mockito.when(mockedRequest.getHeader("MinorVersion")).thenReturn("0");
@@ -640,6 +848,24 @@ public class AuxApiRequestMapperControllerTest {
 		Mockito.when(mockedRequest.getMethod()).thenReturn("POST");
 		EpNotificationItem notificationItem = new EpNotificationItem();
 		assertNotNull(auxApiRequestMapperController.publishNotification(mockedRequest, notificationItem, mockedResponse));
+	}
+
+	@Test
+	public void publishNotificationXSSTest() throws Exception {
+		Mockito.when(mockedRequest.getRequestURI()).thenReturn("/auxapi/v3/publishNotification");
+		Mockito.when(mockedRequest.getHeader("MinorVersion")).thenReturn("0");
+		Map<String, Object> beans = new HashMap<>();
+		beans.put("bean1", externalAppsRestfulVersionController);
+		Mockito.when(context.getBeansWithAnnotation(ApiVersion.class)).thenReturn(beans);
+		PowerMockito.mockStatic(AopUtils.class);
+		Mockito.when(AopUtils.isAopProxy(Matchers.anyObject())).thenReturn(false);
+		Mockito.when(mockedRequest.getMethod()).thenReturn("POST");
+		EpNotificationItem notificationItem = new EpNotificationItem();
+		notificationItem.setIsForAllRoles("</svg>''<svg><script 'AQuickBrownFoxJumpsOverTheLazyDog'>alert&#x28;1&#x29; {Opera}");
+		PortalAPIResponse actual = auxApiRequestMapperController.publishNotification(mockedRequest, notificationItem, mockedResponse);
+		PortalAPIResponse expected = new PortalAPIResponse(false, "EpNotificationItem is not valid");
+		assertEquals(expected.getMessage(), actual.getMessage());
+		assertEquals(expected.getStatus(), actual.getStatus());
 	}
 
 	@Test

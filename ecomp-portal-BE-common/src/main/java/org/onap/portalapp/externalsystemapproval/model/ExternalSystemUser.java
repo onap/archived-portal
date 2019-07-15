@@ -40,15 +40,17 @@ package org.onap.portalapp.externalsystemapproval.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.validation.Valid;
+import org.hibernate.validator.constraints.SafeHtml;
 
 public class ExternalSystemUser {
-
+	@SafeHtml
 	private String loginId;
-	
+	@SafeHtml
 	private String applicationName;
-	
+	@SafeHtml
 	private String myloginrequestId;
-	
+	@Valid
 	private List<ExternalSystemRoleApproval> roles;
 
 	public ExternalSystemUser() {

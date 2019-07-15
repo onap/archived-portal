@@ -38,14 +38,19 @@
 package org.onap.portalapp.portal.transport;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import org.hibernate.validator.constraints.SafeHtml;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Analytics {
-	
+	@SafeHtml
 	private String action;
+	@SafeHtml
 	private String page;
+	@SafeHtml
 	private String function;
+	@SafeHtml
 	private String userid;
+	@SafeHtml
 	private String type;
 	
 	public String getType() {
