@@ -49,6 +49,7 @@ import javax.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.validator.constraints.SafeHtml;
 import org.onap.portalsdk.core.domain.support.DomainVo;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -62,6 +63,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @NoArgsConstructor
 @Getter
 @Setter
+@ToString
 public class CommonWidget extends DomainVo{
 
 	private static final long serialVersionUID = 7897021982887364557L;

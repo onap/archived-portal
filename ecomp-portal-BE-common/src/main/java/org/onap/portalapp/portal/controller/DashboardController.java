@@ -66,6 +66,8 @@ import org.onap.portalapp.portal.utils.EPCommonSystemProperties;
 import org.onap.portalapp.portal.utils.EcompPortalUtils;
 import org.onap.portalapp.portal.utils.PortalConstants;
 import org.onap.portalapp.util.EPUserUtils;
+import org.onap.portalapp.validation.DataValidator;
+import org.onap.portalapp.validation.SecureString;
 import org.onap.portalsdk.core.domain.AuditLog;
 import org.onap.portalsdk.core.domain.support.CollaborateList;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
@@ -87,19 +89,23 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/portalApi/dashboard")
 public class DashboardController extends EPRestrictedBaseController {
+	private static final DataValidator DATA_VALIDATOR = new DataValidator();
+	private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(DashboardController.class);
 
-	private static EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(DashboardController.class);
-
-	@Autowired
 	private DashboardSearchService searchService;
-	@Autowired
 	private AuditService auditService;
-	
-	@Autowired
 	private AdminRolesService adminRolesService;
-	
+
+	@Autowired
+	public DashboardController(DashboardSearchService searchService,
+		AuditService auditService, AdminRolesService adminRolesService) {
+		this.searchService = searchService;
+		this.auditService = auditService;
+		this.adminRolesService = adminRolesService;
+	}
+
 	public enum WidgetCategory {
-		EVENTS, NEWS, IMPORTANTRESOURCES;
+		EVENTS, NEWS, IMPORTANTRESOURCES
 	}
 
 	/**
@@ -129,11 +135,15 @@ public class DashboardController extends EPRestrictedBaseController {
 	@RequestMapping(value = "/widgetData", method = RequestMethod.GET, produces = "application/json")
 	public PortalRestResponse<CommonWidgetMeta> getWidgetData(HttpServletRequest request,
 			@RequestParam String resourceType) {
-		if (!isValidResourceType(resourceType))
-			return new PortalRestResponse<CommonWidgetMeta>(PortalRestStatusEnum.ERROR,
-					"Unexpected resource type " + resourceType, null);
-		return new PortalRestResponse<CommonWidgetMeta>(PortalRestStatusEnum.OK, "success",
-				searchService.getWidgetData(resourceType));
+		if (!isValidResourceType(resourceType)) {
+			return new PortalRestResponse<>(PortalRestStatusEnum.ERROR,
+				"Unexpected resource type " + resourceType, null);
+		}else if (!DATA_VALIDATOR.isValid(new SecureString(resourceType))){
+			return new PortalRestResponse<>(PortalRestStatusEnum.ERROR,
+				"Unsafe resource type " + resourceType, null);
+		}
+		return new PortalRestResponse<>(PortalRestStatusEnum.OK, "success",
+			searchService.getWidgetData(resourceType));
 	}
 	
 	
@@ -147,20 +157,23 @@ public class DashboardController extends EPRestrictedBaseController {
 	@RequestMapping(value = "/widgetDataBulk", method = RequestMethod.POST, produces = "application/json")
 	public PortalRestResponse<String> saveWidgetDataBulk(@RequestBody CommonWidgetMeta commonWidgetMeta) {
 		logger.debug(EELFLoggerDelegate.debugLogger, "saveWidgetDataBulk: argument is {}", commonWidgetMeta);
-		if (commonWidgetMeta.getCategory() == null || commonWidgetMeta.getCategory().trim().equals(""))
-			return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, "ERROR",
-					"Category cannot be null or empty");
-		if (!isValidResourceType(commonWidgetMeta.getCategory()))
-			return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR,
-					"Unexpected resource type " + commonWidgetMeta.getCategory(), null);
-		// validate dates
+		if (!DATA_VALIDATOR.isValid(commonWidgetMeta)){
+			return new PortalRestResponse<>(PortalRestStatusEnum.ERROR,
+				"Unsafe resource type " + commonWidgetMeta, "ERROR");
+		}else if (commonWidgetMeta.getCategory() == null || commonWidgetMeta.getCategory().trim().equals("")) {
+			return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, "ERROR",
+				"Category cannot be null or empty");
+		}else if (!isValidResourceType(commonWidgetMeta.getCategory())) {
+			return new PortalRestResponse<>(PortalRestStatusEnum.ERROR,
+				"Unexpected resource type " + commonWidgetMeta.getCategory(), null);
+		}
 		for (CommonWidget cw : commonWidgetMeta.getItems()) {
 			String err = validateCommonWidget(cw);
 			if (err != null)
-				return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, err, null);
+				return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, err, null);
 		}
-		return new PortalRestResponse<String>(PortalRestStatusEnum.OK, "success",
-				searchService.saveWidgetDataBulk(commonWidgetMeta));
+		return new PortalRestResponse<>(PortalRestStatusEnum.OK, "success",
+			searchService.saveWidgetDataBulk(commonWidgetMeta));
 	}
 
 	/**
@@ -175,17 +188,21 @@ public class DashboardController extends EPRestrictedBaseController {
 		logger.debug(EELFLoggerDelegate.debugLogger, "saveWidgetData: argument is {}", commonWidget);
 		EPUser user = EPUserUtils.getUserSession(request);
 		if (adminRolesService.isSuperAdmin(user)) {
-			if (commonWidget.getCategory() == null || commonWidget.getCategory().trim().isEmpty())
-				return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, "ERROR",
-						"Category cannot be null or empty");
+			if (commonWidget.getCategory() == null || commonWidget.getCategory().trim().isEmpty()) {
+				return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, "ERROR",
+					"Category cannot be null or empty");
+			}else if (!DATA_VALIDATOR.isValid(commonWidget)){
+				return new PortalRestResponse<>(PortalRestStatusEnum.ERROR,
+					"Unsafe resource type " + commonWidget, "ERROR");
+			}
 			String err = validateCommonWidget(commonWidget);
 			if (err != null)
-				return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, err, null);
-			return new PortalRestResponse<String>(PortalRestStatusEnum.OK, "success",
-					searchService.saveWidgetData(commonWidget));
+				return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, err, null);
+			return new PortalRestResponse<>(PortalRestStatusEnum.OK, "success",
+				searchService.saveWidgetData(commonWidget));
 		} else {
 			EcompPortalUtils.setBadPermissions(user, response, "saveWidgetData");
-			return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, "Failed", null);
+			return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, "Failed", null);
 		}
 	}
 
@@ -235,8 +252,12 @@ public class DashboardController extends EPRestrictedBaseController {
 	@RequestMapping(value = "/deleteData", method = RequestMethod.POST, produces = "application/json")
 	public PortalRestResponse<String> deleteWidgetData(@RequestBody CommonWidget commonWidget) {
 		logger.debug(EELFLoggerDelegate.debugLogger, "deleteWidgetData: argument is {}", commonWidget);
-		return new PortalRestResponse<String>(PortalRestStatusEnum.OK, "success",
-				searchService.deleteWidgetData(commonWidget));
+		if (!DATA_VALIDATOR.isValid(commonWidget)){
+			return new PortalRestResponse<>(PortalRestStatusEnum.ERROR,
+				"Unsafe resource type " + commonWidget, "ERROR");
+		}
+		return new PortalRestResponse<>(PortalRestStatusEnum.OK, "success",
+			searchService.deleteWidgetData(commonWidget));
 	}
 
 	/**
@@ -251,7 +272,10 @@ public class DashboardController extends EPRestrictedBaseController {
 	@RequestMapping(value = "/search", method = RequestMethod.GET, produces = "application/json")
 	public PortalRestResponse<Map<String, List<SearchResultItem>>> searchPortal(HttpServletRequest request,
 			@RequestParam String searchString) {
-
+		if (!DATA_VALIDATOR.isValid(new SecureString(searchString))){
+			return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, "searchPortal: String string is not safe",
+				new HashMap<>());
+		}
 		if (searchString != null)
 			searchString = searchString.trim();
 		EPUser user = EPUserUtils.getUserSession(request);
@@ -259,10 +283,10 @@ public class DashboardController extends EPRestrictedBaseController {
 			if (user == null) {
 				return new PortalRestResponse<>(PortalRestStatusEnum.ERROR,
 						"searchPortal: User object is null? - check logs",
-						new HashMap<String, List<SearchResultItem>>());
+					new HashMap<>());
 			} else if (searchString == null || searchString.length() == 0) {
 				return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, "searchPortal: String string is null",
-						new HashMap<String, List<SearchResultItem>>());
+					new HashMap<>());
 			} else {
 				logger.debug(EELFLoggerDelegate.debugLogger, "searchPortal: user {}, search string '{}'",
 						user.getLoginId(), searchString);
@@ -294,7 +318,7 @@ public class DashboardController extends EPRestrictedBaseController {
 			MDC.put(EPCommonSystemProperties.STATUS_CODE, "ERROR");
 			MDC.remove(EPCommonSystemProperties.STATUS_CODE);
 			return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, e.getMessage() + " - check logs.",
-					new HashMap<String, List<SearchResultItem>>());
+				new HashMap<>());
 		}
 	}
 
@@ -308,7 +332,7 @@ public class DashboardController extends EPRestrictedBaseController {
 	 */
 	@RequestMapping(value = "/activeUsers", method = RequestMethod.GET, produces = "application/json")
 	public List<String> getActiveUsers(HttpServletRequest request) {
-		List<String> activeUsers = null;
+		List<String> activeUsers;
 		List<String> onlineUsers = new ArrayList<>();
 		try {
 			EPUser user = EPUserUtils.getUserSession(request);
@@ -341,7 +365,7 @@ public class DashboardController extends EPRestrictedBaseController {
 			String updateDuration = SystemProperties.getProperty(EPCommonSystemProperties.ONLINE_USER_UPDATE_DURATION);				
 			Integer rateInMiliSec = Integer.valueOf(updateRate)*1000;
 			Integer durationInMiliSec = Integer.valueOf(updateDuration)*1000;
-			Map<String, String> results = new HashMap<String,String>();
+			Map<String, String> results = new HashMap<>();
 			results.put("onlineUserUpdateRate", String.valueOf(rateInMiliSec));
 			results.put("onlineUserUpdateDuration", String.valueOf(durationInMiliSec));			
 			return new PortalRestResponse<>(PortalRestStatusEnum.OK, "success", results);
@@ -362,7 +386,7 @@ public class DashboardController extends EPRestrictedBaseController {
 		try {
 			String windowWidthString = SystemProperties.getProperty(EPCommonSystemProperties.WINDOW_WIDTH_THRESHOLD_RIGHT_MENU);	
 			Integer windowWidth = Integer.valueOf(windowWidthString);
-			Map<String, String> results = new HashMap<String,String>();
+			Map<String, String> results = new HashMap<>();
 			results.put("windowWidth", String.valueOf(windowWidth));
 			return new PortalRestResponse<>(PortalRestStatusEnum.OK, "success", results);
 		} catch (Exception e) {
@@ -383,7 +407,7 @@ public class DashboardController extends EPRestrictedBaseController {
 		try {
 			String windowWidthString = SystemProperties.getProperty(EPCommonSystemProperties.WINDOW_WIDTH_THRESHOLD_LEFT_MENU);	
 			Integer windowWidth = Integer.valueOf(windowWidthString);
-			Map<String, String> results = new HashMap<String,String>();
+			Map<String, String> results = new HashMap<>();
 			results.put("windowWidth", String.valueOf(windowWidth));
 			return new PortalRestResponse<>(PortalRestStatusEnum.OK, "success", results);
 		} catch (Exception e) {
