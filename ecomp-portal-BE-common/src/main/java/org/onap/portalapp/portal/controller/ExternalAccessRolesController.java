@@ -69,6 +69,8 @@ import org.onap.portalapp.portal.transport.ExternalRequestFieldsValidator;
 import org.onap.portalapp.portal.utils.EPCommonSystemProperties;
 import org.onap.portalapp.portal.utils.EcompPortalUtils;
 import org.onap.portalapp.portal.utils.PortalConstants;
+import org.onap.portalapp.validation.DataValidator;
+import org.onap.portalapp.validation.SecureString;
 import org.onap.portalsdk.core.domain.AuditLog;
 import org.onap.portalsdk.core.domain.Role;
 import org.onap.portalsdk.core.domain.User;
@@ -76,7 +78,6 @@ import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.onap.portalsdk.core.restful.domain.EcompRole;
 import org.onap.portalsdk.core.restful.domain.EcompUser;
 import org.onap.portalsdk.core.service.AuditService;
-import org.onap.portalsdk.core.service.UserService;
 import org.onap.portalsdk.core.service.UserServiceCentalizedImpl;
 import org.onap.portalsdk.core.util.SystemProperties;
 import org.onap.portalsdk.core.web.support.UserUtils;
@@ -90,7 +91,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -104,36 +104,39 @@ import io.swagger.annotations.ApiOperation;
 @EnableAspectJAutoProxy
 @EPAuditLog
 public class ExternalAccessRolesController implements BasicAuthenticationController {
-
 	private static final String ROLE_INVALID_CHARS = "%=():,\"\"";
-
 	private static final String SUCCESSFULLY_DELETED = "Successfully Deleted";
-
 	private static final String INVALID_UEB_KEY = "Invalid credentials!";
-
 	private static final String LOGIN_ID = "LoginId";
-	
-	RestTemplate template = new RestTemplate();
-
-	@Autowired
-	private AuditService auditService;
-
 	private static final String UEBKEY = "uebkey";
 
-	private static EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(ExternalAccessRolesController.class);
+	private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(ExternalAccessRolesController.class);
+	private static final DataValidator DATA_VALIDATOR = new DataValidator();
 
-	@Autowired
+	private AuditService auditService;
 	private ExternalAccessRolesService externalAccessRolesService;
+	private UserServiceCentalizedImpl userservice;
 
 	@Autowired
-	private UserService userservice =  new UserServiceCentalizedImpl();
+	public ExternalAccessRolesController(AuditService auditService,
+		ExternalAccessRolesService externalAccessRolesService,
+		UserServiceCentalizedImpl userservice) {
+		this.auditService = auditService;
+		this.externalAccessRolesService = externalAccessRolesService;
+		this.userservice = userservice;
+	}
+
 
 	@ApiOperation(value = "Gets user role for an application.", response = CentralUser.class, responseContainer="List")
 	@RequestMapping(value = {
 			"/user/{loginId}" }, method = RequestMethod.GET, produces = "application/json")
 	public CentralUser getUser(HttpServletRequest request, HttpServletResponse response,
 			@PathVariable("loginId") String loginId) throws Exception {
-
+		if (!DATA_VALIDATOR.isValid(new SecureString(loginId))){
+			sendErrorResponse(response, new Exception("Data is not valid"));
+			logger.error(EELFLoggerDelegate.errorLogger, "getUser not valid data");
+			return null;
+		}
 		CentralUser answer = null;
 		try {
 			fieldsValidation(request);
@@ -150,6 +153,11 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 			"/v1/user/{loginId}" }, method = RequestMethod.GET, produces = "application/json")
 	public String getV2UserList(HttpServletRequest request, HttpServletResponse response,
 			@PathVariable("loginId") String loginId) throws Exception {
+		if (!DATA_VALIDATOR.isValid(new SecureString(loginId))){
+			sendErrorResponse(response, new Exception("Data is not valid"));
+			logger.error(EELFLoggerDelegate.errorLogger, "getV2UserList not valid data");
+			return "Data is not valid";
+		}
 		String answer = null;
 		try {
 			fieldsValidation(request);
@@ -300,6 +308,10 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 			@PathVariable("code") String code) throws Exception {
 		CentralV2RoleFunction centralV2RoleFunction = null;
 		CentralRoleFunction centralRoleFunction = new CentralRoleFunction();
+		if(!DATA_VALIDATOR.isValid(new SecureString(code))){
+			sendErrorResponse(response, new Exception("Data is not valid"));
+			logger.error(EELFLoggerDelegate.errorLogger, "getRoleFunction failed", new Exception("Data is not valid"));
+		}
 		try {
 			fieldsValidation(request);
 			centralV2RoleFunction = externalAccessRolesService.getRoleFunction(code, request.getHeader(UEBKEY));
@@ -318,6 +330,10 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 	public CentralV2RoleFunction getV2RoleFunction(HttpServletRequest request, HttpServletResponse response,
 			@PathVariable("code") String code) throws Exception {
 		CentralV2RoleFunction centralV2RoleFunction = null;
+		if(!DATA_VALIDATOR.isValid(new SecureString(code))){
+			sendErrorResponse(response, new Exception("Data is not valid"));
+			logger.error(EELFLoggerDelegate.errorLogger, "getV2RoleFunction failed", new Exception("Data is not valid"));
+		}
 		try {
 			fieldsValidation(request);
 			centralV2RoleFunction = externalAccessRolesService.getRoleFunction(code, request.getHeader(UEBKEY));
@@ -334,16 +350,20 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 	@ApiOperation(value = "Saves role function for an application.", response = PortalRestResponse.class, responseContainer = "Json")
 	@RequestMapping(value = { "/roleFunction" }, method = RequestMethod.POST, produces = "application/json")
 	public PortalRestResponse<String> saveRoleFunction(HttpServletRequest request, HttpServletResponse response,
-			@RequestBody String roleFunc) throws Exception {
+			@RequestBody String roleFunc) {
 		String status = "Successfully saved!";
+		if(!DATA_VALIDATOR.isValid(new SecureString(roleFunc))){
+			logger.error(EELFLoggerDelegate.errorLogger, "saveRoleFunction failed");
+			return new PortalRestResponse<>(PortalRestStatusEnum.ERROR,
+				"Failed to roleFunc, not valid data.", "Failed");
+		}
 		try {
 			fieldsValidation(request);
-			String data = roleFunc;
-			ObjectMapper mapper = new ObjectMapper();
+               ObjectMapper mapper = new ObjectMapper();
 			List<EPApp> applicationList = externalAccessRolesService.getApp(request.getHeader(UEBKEY));
 			EPApp requestedApp = applicationList.get(0);
 			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-			CentralV2RoleFunction availableRoleFunction = mapper.readValue(data, CentralV2RoleFunction.class);
+			CentralV2RoleFunction availableRoleFunction = mapper.readValue(roleFunc, CentralV2RoleFunction.class);
 			CentralV2RoleFunction domainRoleFunction = null;
 			boolean isCentralV2Version = false;
 			if(availableRoleFunction.getType()!=null && availableRoleFunction.getAction()!= null) {
@@ -405,8 +425,8 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 				MDC.remove(SystemProperties.MDC_TIMER);
 			} else {
 				logger.error(EELFLoggerDelegate.errorLogger, "saveRoleFunction failed");
-				return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR,
-						"Failed to saveRoleFunction for '" + availableRoleFunction.getCode() + "'", "Failed");
+				return new PortalRestResponse<>(PortalRestStatusEnum.ERROR,
+                        "Failed to saveRoleFunction for '" + availableRoleFunction.getCode() + "'", "Failed");
 			}
 		} catch (Exception e) {
 			if (e.getMessage() == null ||e.getMessage().contains(INVALID_UEB_KEY)) {
@@ -415,15 +435,20 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			}
 			logger.error(EELFLoggerDelegate.errorLogger, "saveRoleFunction failed", e);
-			return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, e.getMessage(), "Failed");
+			return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, e.getMessage(), "Failed");
 		}
-		return new PortalRestResponse<String>(PortalRestStatusEnum.OK, status, "Success");
+		return new PortalRestResponse<>(PortalRestStatusEnum.OK, status, "Success");
 	}
 	
 	@ApiOperation(value = "Deletes role function for an application.", response = PortalRestResponse.class, responseContainer = "Json")
 	@RequestMapping(value = { "/roleFunction/{code}" }, method = RequestMethod.DELETE, produces = "application/json")
 	public PortalRestResponse<String> deleteRoleFunction(HttpServletRequest request, HttpServletResponse response,
-			@PathVariable("code") String code) throws Exception {
+			@PathVariable("code") String code) {
+		if(!DATA_VALIDATOR.isValid(new SecureString(code))){
+			logger.error(EELFLoggerDelegate.errorLogger, "deleteRoleFunction failed");
+			return new PortalRestResponse<>(PortalRestStatusEnum.ERROR,
+				"Failed to deleteRoleFunction, not valid data.", "Failed");
+		}
 		try {
 			fieldsValidation(request);
 			EPUser user = externalAccessRolesService.getUser(request.getHeader(LOGIN_ID)).get(0);
@@ -454,8 +479,8 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 				MDC.remove(SystemProperties.MDC_TIMER);
 			} else {
 				logger.error(EELFLoggerDelegate.errorLogger, "deleteRoleFunction failed");
-				return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR,
-						"Failed to deleteRoleFunction for '" + code + "'", "Failed");
+				return new PortalRestResponse<>(PortalRestStatusEnum.ERROR,
+                        "Failed to deleteRoleFunction for '" + code + "'", "Failed");
 			}
 		} catch (Exception e) {
 			if (e.getMessage().contains(INVALID_UEB_KEY)) {
@@ -473,7 +498,7 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 	@ApiOperation(value = "Saves role for an application.", response = PortalRestResponse.class, responseContainer = "Json")
 	@RequestMapping(value = { "/role" }, method = RequestMethod.POST, produces = "application/json")
 	public PortalRestResponse<String> saveRole(HttpServletRequest request, HttpServletResponse response,
-			@RequestBody Role role) throws Exception {
+			@RequestBody Role role) {
 		try {
 			fieldsValidation(request);
 			ExternalRequestFieldsValidator saveRoleResult = null;
@@ -526,15 +551,20 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			}
 			logger.error(EELFLoggerDelegate.errorLogger, "saveRole failed", e);
-			return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, e.getMessage(), "Failed");
+			return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, e.getMessage(), "Failed");
 		}
-		return new PortalRestResponse<String>(PortalRestStatusEnum.OK, "Successfully Saved", "Success");
+		return new PortalRestResponse<>(PortalRestStatusEnum.OK, "Successfully Saved", "Success");
 	}
 	
 	@ApiOperation(value = "Deletes role for an application.", response = PortalRestResponse.class, responseContainer = "Json")
 	@RequestMapping(value = { "/deleteRole/{code}" }, method = RequestMethod.DELETE, produces = "application/json")
 	public  PortalRestResponse<String> deleteRole(HttpServletRequest request, HttpServletResponse response,
-			@PathVariable String code) throws Exception {
+			@PathVariable String code) {
+		if(!DATA_VALIDATOR.isValid(new SecureString(code))){
+			logger.error(EELFLoggerDelegate.errorLogger, "deleteRole failed");
+			return new PortalRestResponse<>(PortalRestStatusEnum.ERROR,
+				"Failed to deleteRole, not valid data.", "Failed");
+		}
 		try {
 			fieldsValidation(request);
 			boolean deleteResponse = externalAccessRolesService.deleteRoleForApplication(code,
@@ -566,8 +596,8 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 				MDC.remove(SystemProperties.MDC_TIMER);
 			} else {
 				logger.error(EELFLoggerDelegate.errorLogger, "deleteRole failed");
-				return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR,
-						"Failed to deleteRole for '" + code + "'", "Failed");
+				return new PortalRestResponse<>(PortalRestStatusEnum.ERROR,
+                        "Failed to deleteRole for '" + code + "'", "Failed");
 			}
 		} catch (Exception e) {
 			if (e.getMessage().contains(INVALID_UEB_KEY)) {
@@ -576,9 +606,9 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			}
 			logger.error(EELFLoggerDelegate.errorLogger, "deleteRole failed", e);
-			return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, e.getMessage(), "Failed");
+			return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, e.getMessage(), "Failed");
 		}
-		return new PortalRestResponse<String>(PortalRestStatusEnum.OK, SUCCESSFULLY_DELETED, "Success");
+		return new PortalRestResponse<>(PortalRestStatusEnum.OK, SUCCESSFULLY_DELETED, "Success");
 	}
 	
 	@ApiOperation(value = "Gets active roles for an application.", response = CentralRole.class, responseContainer = "Json")
@@ -615,7 +645,7 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 	@ApiOperation(value = "deletes user roles for an application.", response = PortalRestResponse.class, responseContainer = "Json")
 	@RequestMapping(value = { "/deleteDependcyRoleRecord/{roleId}" }, method = RequestMethod.DELETE, produces = "application/json")
 	public PortalRestResponse<String> deleteDependencyRoleRecord(HttpServletRequest request, HttpServletResponse response,
-			@PathVariable("roleId") Long roleId) throws Exception {
+			@PathVariable("roleId") Long roleId) {
 		ExternalRequestFieldsValidator removeResult = null;
 		try {
 			fieldsValidation(request);
@@ -642,7 +672,7 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 	@ApiOperation(value = "deletes  roles for an application.", response = PortalRestResponse.class, responseContainer = "Json")
 	@RequestMapping(value = { "/v2/deleteRole/{roleId}" }, method = RequestMethod.DELETE, produces = "application/json")
 	public PortalRestResponse<String> deleteRole(HttpServletRequest request, HttpServletResponse response,
-			@PathVariable("roleId") Long roleId) throws Exception {
+			@PathVariable("roleId") Long roleId) {
 		ExternalRequestFieldsValidator removeResult = null;
 		try {
 			fieldsValidation(request);
@@ -668,63 +698,63 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 	
 	@ApiOperation(value = "Bulk upload functions for an application.", response = PortalRestResponse.class, responseContainer = "Json")
 	@RequestMapping(value = { "/upload/portal/functions" }, method = RequestMethod.POST, produces = "application/json")
-	public  PortalRestResponse<String> bulkUploadFunctions(HttpServletRequest request, HttpServletResponse response) throws Exception {
+	public  PortalRestResponse<String> bulkUploadFunctions(HttpServletRequest request, HttpServletResponse response) {
 		Integer result = 0;
 		try {
 			result = externalAccessRolesService.bulkUploadFunctions(request.getHeader(UEBKEY));
 		} catch (Exception e) {
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			logger.error(EELFLoggerDelegate.errorLogger, "bulkUploadFunctions failed", e);
-			return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, "Failed to bulkUploadFunctions", "Failed");
+			return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, "Failed to bulkUploadFunctions", "Failed");
 		}
-		return new PortalRestResponse<String>(PortalRestStatusEnum.OK, "Successfully added: "+result, "Success");
+		return new PortalRestResponse<>(PortalRestStatusEnum.OK, "Successfully added: " + result, "Success");
 	}
 	
 	@ApiOperation(value = "Bulk upload roles for an application.", response = PortalRestResponse.class, responseContainer = "Json")
 	@RequestMapping(value = { "/upload/portal/roles" }, method = RequestMethod.POST, produces = "application/json")
-	public  PortalRestResponse<String> bulkUploadRoles(HttpServletRequest request, HttpServletResponse response) throws Exception {
+	public  PortalRestResponse<String> bulkUploadRoles(HttpServletRequest request, HttpServletResponse response) {
 		Integer result = 0;
 		try {
 			result = externalAccessRolesService.bulkUploadRoles(request.getHeader(UEBKEY));
 		} catch (Exception e) {
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			logger.error(EELFLoggerDelegate.errorLogger, "bulkUploadRoles failed", e);
-			return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, "Failed to bulkUploadRoles", "Failed");
+			return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, "Failed to bulkUploadRoles", "Failed");
 		}
-		return new PortalRestResponse<String>(PortalRestStatusEnum.OK, "Successfully added: "+result, "Success");
+		return new PortalRestResponse<>(PortalRestStatusEnum.OK, "Successfully added: " + result, "Success");
 	}
 	
 	@ApiOperation(value = "Bulk upload role functions for an application.", response = PortalRestResponse.class, responseContainer = "Json")
 	@RequestMapping(value = { "/upload/portal/roleFunctions" }, method = RequestMethod.POST, produces = "application/json")
-	public  PortalRestResponse<String> bulkUploadRoleFunctions(HttpServletRequest request, HttpServletResponse response) throws Exception {
+	public  PortalRestResponse<String> bulkUploadRoleFunctions(HttpServletRequest request, HttpServletResponse response) {
 		Integer result = 0;
 		try {
 			result = externalAccessRolesService.bulkUploadRolesFunctions(request.getHeader(UEBKEY));
 		} catch (Exception e) {
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			logger.error(EELFLoggerDelegate.errorLogger, "bulkUploadRoleFunctions failed", e);
-			return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, "Failed to bulkUploadRoleFunctions", "Failed");
+			return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, "Failed to bulkUploadRoleFunctions", "Failed");
 		}
-		return new PortalRestResponse<String>(PortalRestStatusEnum.OK, "Successfully added: "+result, "Success");
+		return new PortalRestResponse<>(PortalRestStatusEnum.OK, "Successfully added: " + result, "Success");
 	}
 	
 	@ApiOperation(value = "Bulk upload user roles for an application.", response = PortalRestResponse.class, responseContainer = "Json")
 	@RequestMapping(value = { "/upload/portal/userRoles" }, method = RequestMethod.POST, produces = "application/json")
-	public  PortalRestResponse<String> bulkUploadUserRoles(HttpServletRequest request, HttpServletResponse response) throws Exception {
+	public  PortalRestResponse<String> bulkUploadUserRoles(HttpServletRequest request, HttpServletResponse response) {
 		Integer result = 0;
 		try {
 			result = externalAccessRolesService.bulkUploadUserRoles(request.getHeader(UEBKEY));
 		} catch (Exception e) {
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			logger.error(EELFLoggerDelegate.errorLogger, "bulkUploadUserRoles failed", e);
-			return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, "Failed to bulkUploadUserRoles", "Failed");
+			return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, "Failed to bulkUploadUserRoles", "Failed");
 		}
-		return new PortalRestResponse<String>(PortalRestStatusEnum.OK, "Successfully added: "+result, "Success");
+		return new PortalRestResponse<>(PortalRestStatusEnum.OK, "Successfully added: " + result, "Success");
 	}
 	
 	@ApiOperation(value = "Bulk upload users for renamed role of an application.", response = PortalRestResponse.class, responseContainer = "Json")
 	@RequestMapping(value = { "/upload/portal/userRole/{roleId}" }, method = RequestMethod.POST, produces = "application/json")
-	public  PortalRestResponse<String> bulkUploadUsersSingleRole(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roleId) throws Exception {
+	public  PortalRestResponse<String> bulkUploadUsersSingleRole(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roleId) {
 		Integer result = 0;
 		try {
 			String roleName = request.getHeader("RoleName");
@@ -732,50 +762,53 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 		} catch (Exception e) {
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			logger.error(EELFLoggerDelegate.errorLogger, "bulkUploadUsersSingleRole failed", e);
-			return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, "Failed to bulkUploadUsersSingleRole", "Failed");
+			return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, "Failed to bulkUploadUsersSingleRole", "Failed");
 		}
-		return new PortalRestResponse<String>(PortalRestStatusEnum.OK, "Successfully added: "+result, "Success");
+		return new PortalRestResponse<>(PortalRestStatusEnum.OK, "Successfully added: " + result, "Success");
 	}
 	
 	@ApiOperation(value = "Bulk upload functions for an partner application.", response = PortalRestResponse.class, responseContainer = "Json")
 	@RequestMapping(value = { "/upload/partner/functions" }, method = RequestMethod.POST, produces = "application/json")
-	public  PortalRestResponse<String> bulkUploadPartnerFunctions(HttpServletRequest request, HttpServletResponse response) throws Exception {
+	public  PortalRestResponse<String> bulkUploadPartnerFunctions(HttpServletRequest request, HttpServletResponse response) {
 		Integer addedFunctions = 0;
 		try {
 			addedFunctions = externalAccessRolesService.bulkUploadPartnerFunctions(request.getHeader(UEBKEY));
 		} catch (Exception e) {
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			logger.error(EELFLoggerDelegate.errorLogger, "bulkUploadFunctions failed", e);
-			return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, "Failed to bulkUploadFunctions", "Failed");
+			return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, "Failed to bulkUploadFunctions", "Failed");
 		}
-		return new PortalRestResponse<String>(PortalRestStatusEnum.OK, "Successfully added: '"+addedFunctions+"' functions", "Success");
+		return new PortalRestResponse<>(PortalRestStatusEnum.OK,
+                "Successfully added: '" + addedFunctions + "' functions", "Success");
 	}
 	
 	@ApiOperation(value = "Bulk upload roles for an partner application.", response = PortalRestResponse.class, responseContainer = "Json")
 	@RequestMapping(value = { "/upload/partner/roles" }, method = RequestMethod.POST, produces = "application/json")
-	public  PortalRestResponse<String> bulkUploadPartnerRoles(HttpServletRequest request, HttpServletResponse response, @RequestBody List<Role> upload) throws Exception {
+	public  PortalRestResponse<String> bulkUploadPartnerRoles(HttpServletRequest request, HttpServletResponse response, @RequestBody List<Role> upload) {
 		try {
 			externalAccessRolesService.bulkUploadPartnerRoles(request.getHeader(UEBKEY), upload);
 		} catch (Exception e) {
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			logger.error(EELFLoggerDelegate.errorLogger, "bulkUploadRoles failed", e);
-			return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, "Failed to bulkUploadRoles", "Failed");
+			return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, "Failed to bulkUploadRoles", "Failed");
 		}
-		return new PortalRestResponse<String>(PortalRestStatusEnum.OK, "Successfully added", "Success");
+		return new PortalRestResponse<>(PortalRestStatusEnum.OK, "Successfully added", "Success");
 	}
 	
 	@ApiOperation(value = "Bulk upload role functions for an partner application.", response = PortalRestResponse.class, responseContainer = "Json")
 	@RequestMapping(value = { "/upload/partner/roleFunctions" }, method = RequestMethod.POST, produces = "application/json")
-	public  PortalRestResponse<String> bulkUploadPartnerRoleFunctions(HttpServletRequest request, HttpServletResponse response) throws Exception {
+	public  PortalRestResponse<String> bulkUploadPartnerRoleFunctions(HttpServletRequest request, HttpServletResponse response) {
 		Integer addedRoleFunctions = 0;
 		try {
 			addedRoleFunctions = externalAccessRolesService.bulkUploadPartnerRoleFunctions(request.getHeader(UEBKEY));
 		} catch (Exception e) {
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			logger.error(EELFLoggerDelegate.errorLogger, "bulkUploadPartnerRoleFunctions failed", e);
-			return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, "Failed to bulkUploadPartnerRoleFunctions", "Failed");
+			return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, "Failed to bulkUploadPartnerRoleFunctions",
+                    "Failed");
 		}
-		return new PortalRestResponse<String>(PortalRestStatusEnum.OK, "Successfully added: '"+addedRoleFunctions + "' role functions", "Success");
+		return new PortalRestResponse<>(PortalRestStatusEnum.OK,
+                "Successfully added: '" + addedRoleFunctions + "' role functions", "Success");
 	}
 	
 	@ApiOperation(value = "Gets all functions along with global functions", response = List.class, responseContainer = "Json")
@@ -856,6 +889,10 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 	@RequestMapping(value = { "/v2/user/{loginId}" }, method = RequestMethod.GET, produces = "application/json")
 	public String getEcompUser(HttpServletRequest request, HttpServletResponse response,
 			@PathVariable("loginId") String loginId) throws Exception {
+		if(!DATA_VALIDATOR.isValid(new SecureString(loginId))){
+			sendErrorResponse(response, new Exception("getEcompUser failed"));
+			logger.error(EELFLoggerDelegate.errorLogger, "getEcompUser failed", new Exception("getEcompUser failed"));
+		}
 		EcompUser user = new EcompUser();
 		ObjectMapper mapper = new ObjectMapper();
 		String answer = null;
@@ -868,7 +905,7 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 				user = UserUtils.convertToEcompUser(ecompUser);
 			    List<EcompRole> missingRolesOfUser = externalAccessRolesService.missingUserApplicationRoles(request.getHeader(UEBKEY), loginId, user.getRoles());
 				if (missingRolesOfUser.size() > 0) {
-					Set<EcompRole> roles = new TreeSet<EcompRole>(missingRolesOfUser);
+					Set<EcompRole> roles = new TreeSet<>(missingRolesOfUser);
 					user.getRoles().addAll(roles);
 				}
 			}

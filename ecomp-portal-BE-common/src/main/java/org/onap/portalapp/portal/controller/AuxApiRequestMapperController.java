@@ -46,6 +46,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.jar.Attributes;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -226,22 +228,24 @@ public class AuxApiRequestMapperController implements ApplicationContextAware, B
 	@RequestMapping(value = { "/v3/roleFunction" }, method = RequestMethod.POST, produces = "application/json")
 	public PortalRestResponse<String> saveRoleFunction(HttpServletRequest request, HttpServletResponse response,
 			@RequestBody String roleFunc) throws Exception {
-		PortalRestResponse<String> result = null;
-
 		if (roleFunc!=null){
 			SecureString secureRoleFunc = new SecureString(roleFunc);
 			if(!dataValidator.isValid(secureRoleFunc))
 				return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, "Provided data is not valid", "Failed");
 		}
-
+		Optional<PortalRestResponse<String>> result = null;
 		Map<String, Object> res = getMethod(request, response);
 		try {
-			result = (PortalRestResponse<String>) invokeMethod(res, request, response, roleFunc);
-			return result;
+			result = Optional.ofNullable((PortalRestResponse<String>) invokeMethod(res, request, response));
+			if (!result.isPresent()){
+				logger.error(EELFLoggerDelegate.errorLogger, "saveRoleFunction failed", new Exception("saveRoleFunction failed"));
+				return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, "saveRoleFunction failed", "Failed");
+			}
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "saveRoleFunction failed", e);
 			return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, e.getMessage(), "Failed");
 		}
+		return result.get();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -279,7 +283,7 @@ public class AuxApiRequestMapperController implements ApplicationContextAware, B
 			return result;
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "deleteRole failed", e);
-			return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, e.getMessage(), "Failed");
+			return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, e.getMessage(), "Failed");
 		}
 	}
 
@@ -413,16 +417,19 @@ public class AuxApiRequestMapperController implements ApplicationContextAware, B
 			"/v3/upload/portal/functions" }, method = RequestMethod.POST, produces = "application/json")
 	public PortalRestResponse<String> bulkUploadFunctions(HttpServletRequest request, HttpServletResponse response)
 			throws Exception {
-		PortalRestResponse<String> result = null;
+		Optional<PortalRestResponse<String>> result = null;
 		Map<String, Object> res = getMethod(request, response);
 		try {
-			result = (PortalRestResponse<String>) invokeMethod(res, request, response);
-			return result;
+			result = Optional.ofNullable((PortalRestResponse<String>) invokeMethod(res, request, response));
+			if (!result.isPresent()){
+				logger.error(EELFLoggerDelegate.errorLogger, "Failed to bulkUploadFunctions", new Exception("Failed to bulkUploadFunctions"));
+				return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, "Failed to bulkUploadFunctions", "Failed");
+			}
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "bulkUploadFunctions failed", e);
 			return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, e.getMessage(), "Failed");
 		}
-
+		return result.get();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -430,11 +437,15 @@ public class AuxApiRequestMapperController implements ApplicationContextAware, B
 	@RequestMapping(value = { "/v3/upload/portal/roles" }, method = RequestMethod.POST, produces = "application/json")
 	public PortalRestResponse<String> bulkUploadRoles(HttpServletRequest request, HttpServletResponse response)
 			throws Exception {
-		PortalRestResponse<String> result = null;
+		Optional<PortalRestResponse<String>> result;
 		Map<String, Object> res = getMethod(request, response);
 		try {
-			result = (PortalRestResponse<String>) invokeMethod(res, request, response);
-			return result;
+			result = Optional.ofNullable((PortalRestResponse<String>) invokeMethod(res, request, response));
+			if (!result.isPresent()){
+				logger.error(EELFLoggerDelegate.errorLogger, "Failed to bulkUploadRoles", new Exception("Failed to bulkUploadRoles"));
+				return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, "Failed to bulkUploadRoles", "Failed");
+			}
+			return result.get();
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "bulkUploadRoles failed", e);
 			return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, e.getMessage(), "Failed");
@@ -447,11 +458,15 @@ public class AuxApiRequestMapperController implements ApplicationContextAware, B
 			"/v3/upload/portal/roleFunctions" }, method = RequestMethod.POST, produces = "application/json")
 	public PortalRestResponse<String> bulkUploadRoleFunctions(HttpServletRequest request, HttpServletResponse response)
 			throws Exception {
-		PortalRestResponse<String> result = null;
+		Optional<PortalRestResponse<String>> result;
 		Map<String, Object> res = getMethod(request, response);
 		try {
-			result = (PortalRestResponse<String>) invokeMethod(res, request, response);
-			return result;
+			result = Optional.ofNullable((PortalRestResponse<String>) invokeMethod(res, request, response));
+			if (!result.isPresent()){
+				logger.error(EELFLoggerDelegate.errorLogger, "Failed to bulkUploadRoleFunctions", new Exception("Failed to bulkUploadRoleFunctions"));
+				return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, "Failed to bulkUploadRoleFunctions", "Failed");
+			}
+			return result.get();
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "bulkUploadRoleFunctions failed", e);
 			return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, e.getMessage(), "Failed");
@@ -464,11 +479,15 @@ public class AuxApiRequestMapperController implements ApplicationContextAware, B
 			"/v3/upload/portal/userRoles" }, method = RequestMethod.POST, produces = "application/json")
 	public PortalRestResponse<String> bulkUploadUserRoles(HttpServletRequest request, HttpServletResponse response)
 			throws Exception {
-		PortalRestResponse<String> result = null;
+		Optional<PortalRestResponse<String>> result;
 		Map<String, Object> res = getMethod(request, response);
 		try {
-			result = (PortalRestResponse<String>) invokeMethod(res, request, response);
-			return result;
+			result = Optional.ofNullable((PortalRestResponse<String>) invokeMethod(res, request, response));
+			if (!result.isPresent()){
+				logger.error(EELFLoggerDelegate.errorLogger, "Failed to bulkUploadUserRoles", new Exception("Failed to bulkUploadUserRoles"));
+				return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, "Failed to bulkUploadUserRoles", "Failed");
+			}
+			return result.get();
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "bulkUploadUserRoles failed", e);
 			return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, e.getMessage(), "Failed");
@@ -482,11 +501,15 @@ public class AuxApiRequestMapperController implements ApplicationContextAware, B
 			"/v3/upload/portal/userRole/{roleId}" }, method = RequestMethod.POST, produces = "application/json")
 	public PortalRestResponse<String> bulkUploadUsersSingleRole(HttpServletRequest request,
 			HttpServletResponse response, @PathVariable Long roleId) throws Exception {
-		PortalRestResponse<String> result = null;
+		Optional<PortalRestResponse<String>> result = null;
 		Map<String, Object> res = getMethod(request, response);
 		try {
-			result = (PortalRestResponse<String>) invokeMethod(res, request, response, roleId);
-			return result;
+			result = Optional.ofNullable((PortalRestResponse<String>) invokeMethod(res, request, response));
+			if (!result.isPresent()){
+				logger.error(EELFLoggerDelegate.errorLogger, "Failed to bulkUploadUsersSingleRole", new Exception("Failed to bulkUploadUsersSingleRole"));
+				return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, "Failed to bulkUploadUsersSingleRole", "Failed");
+			}
+			return result.get();
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "bulkUploadUsersSingleRole failed", e);
 			return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, e.getMessage(), "Failed");
@@ -499,11 +522,15 @@ public class AuxApiRequestMapperController implements ApplicationContextAware, B
 			"/v3/upload/partner/functions" }, method = RequestMethod.POST, produces = "application/json")
 	public PortalRestResponse<String> bulkUploadPartnerFunctions(HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
-		PortalRestResponse<String> result = null;
+		Optional<PortalRestResponse<String>> result = null;
 		Map<String, Object> res = getMethod(request, response);
 		try {
-			result = (PortalRestResponse<String>) invokeMethod(res, request, response);
-			return result;
+			result = Optional.ofNullable((PortalRestResponse<String>) invokeMethod(res, request, response));
+			if (!result.isPresent()){
+				logger.error(EELFLoggerDelegate.errorLogger, "Failed to bulkUploadPartnerRoleFunctions", new Exception("Failed to bulkUploadPartnerRoleFunctions"));
+				return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, "Failed to bulkUploadPartnerRoleFunctions", "Failed");
+			}
+			return result.get();
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "bulkUploadPartnerFunctions failed", e);
 			return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, e.getMessage(), "Failed");
@@ -516,11 +543,15 @@ public class AuxApiRequestMapperController implements ApplicationContextAware, B
 	@RequestMapping(value = { "/v3/upload/partner/roles" }, method = RequestMethod.POST, produces = "application/json")
 	public PortalRestResponse<String> bulkUploadPartnerRoles(HttpServletRequest request, HttpServletResponse response,
 			@RequestBody List<Role> upload) throws Exception {
-		PortalRestResponse<String> result = null;
+		Optional<PortalRestResponse<String>> result = null;
 		Map<String, Object> res = getMethod(request, response);
 		try {
-			result = (PortalRestResponse<String>) invokeMethod(res, request, response, upload);
-			return result;
+			result = Optional.ofNullable((PortalRestResponse<String>) invokeMethod(res, request, response));
+			if (!result.isPresent()){
+				logger.error(EELFLoggerDelegate.errorLogger, "Failed to bulkUploadRoles", new Exception("Failed to bulkUploadRoles"));
+				return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, "Failed to bulkUploadRoles", "Failed");
+			}
+			return result.get();
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "bulkUploadPartnerRoles failed", e);
 			return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, e.getMessage(), "Failed");
@@ -533,11 +564,15 @@ public class AuxApiRequestMapperController implements ApplicationContextAware, B
 			"/v3/upload/partner/roleFunctions" }, method = RequestMethod.POST, produces = "application/json")
 	public PortalRestResponse<String> bulkUploadPartnerRoleFunctions(HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
-		PortalRestResponse<String> result = null;
+		Optional<PortalRestResponse<String>> result = null;
 		Map<String, Object> res = getMethod(request, response);
 		try {
-			result = (PortalRestResponse<String>) invokeMethod(res, request, response);
-			return result;
+			result = Optional.ofNullable((PortalRestResponse<String>) invokeMethod(res, request, response));
+			if (!result.isPresent()){
+				logger.error(EELFLoggerDelegate.errorLogger, "Failed to bulkUploadPartnerRoleFunctions", new Exception("Failed to bulkUploadPartnerRoleFunctions"));
+				return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, "Failed to bulkUploadPartnerRoleFunctions", "Failed");
+			}
+			return result.get();
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "bulkUploadPartnerRoleFunctions failed", e);
 			return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, e.getMessage(), "Failed");
