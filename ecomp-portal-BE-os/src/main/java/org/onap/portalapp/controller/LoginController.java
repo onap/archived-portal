@@ -149,8 +149,7 @@ public class LoginController extends EPUnRestrictedBaseController implements Log
 		} else {
 			// store the currently logged in user's information in the session
 			EPUserUtils.setUserSession(request, commandBean.getUser(), commandBean.getMenu(),
-					commandBean.getBusinessDirectMenu(),
-					SystemProperties.getProperty(SystemProperties.AUTHENTICATION_MECHANISM), ePRoleFunctionService);
+					commandBean.getBusinessDirectMenu(), ePRoleFunctionService);
 
 			try {
 				logger.info(EELFLoggerDelegate.debugLogger, "loginValidate: store user info into share context begins");
@@ -265,8 +264,7 @@ public class LoginController extends EPUnRestrictedBaseController implements Log
 						orgUserId);
 
 				EPUserUtils.setUserSession(request, commandBean.getUser(), commandBean.getMenu(),
-						commandBean.getBusinessDirectMenu(),
-						SystemProperties.getProperty(SystemProperties.AUTHENTICATION_MECHANISM), ePRoleFunctionService);
+						commandBean.getBusinessDirectMenu(), ePRoleFunctionService);
 				logger.info(EELFLoggerDelegate.debugLogger,
 						"processSingleSignOn: now set up user session for {} finished", orgUserId);
 

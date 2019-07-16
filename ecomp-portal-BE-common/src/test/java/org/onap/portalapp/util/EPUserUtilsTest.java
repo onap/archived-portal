@@ -256,7 +256,7 @@ public class EPUserUtilsTest {
 		PowerMockito.when(AppUtils.getSession(mockedRequest)).thenReturn(session);
 		PowerMockito.when(SystemProperties.getProperty(Matchers.anyString())).thenReturn("12");
 		Mockito.when(session.getAttribute(Matchers.anyString())).thenReturn(roles);
-		roles=EPUserUtils.getRoles(mockedRequest);
+		roles= (HashMap) EPUserUtils.getRoles(mockedRequest);
 		assertEquals(roles,expected);
 
 
@@ -279,7 +279,7 @@ public class EPUserUtilsTest {
 		Mockito.when(session.getAttribute("attr_name")).thenReturn(user);
 		Mockito.when(user.getEPRoles()).thenReturn(role);
 		Mockito.when(session.getAttribute("12")).thenReturn(null);
-		roles=EPUserUtils.getRoles(mockedRequest);
+		roles= (HashMap) EPUserUtils.getRoles(mockedRequest);
 		assertEquals(roles,expected);
 
 	}
@@ -320,7 +320,7 @@ public class EPUserUtilsTest {
 		Mockito.when(epRole.getChildRoles()).thenReturn(childRoles);
 		Mockito.when(user.getEPUserApps()).thenReturn(epUserApps);
 		Mockito.when(session.getAttribute("12")).thenReturn(null);
-		roles=	EPUserUtils.getRoles(mockedRequest);
+		roles= (HashMap) EPUserUtils.getRoles(mockedRequest);
 		assertNotNull(roles);
 	}
 	
@@ -358,7 +358,7 @@ public class EPUserUtilsTest {
 		Mockito.when(epRoleFunctionService.getRoleFunctions()).thenReturn(roleFunctions);
 		Mockito.when(MenuBuilder.filterMenu(applicationMenuData, mockedRequest)).thenReturn(applicationMenuData);
 		PowerMockito.when(SystemProperties.getProperty(SystemProperties.USER_ATTRIBUTE_NAME)).thenReturn("12");
-        EPUserUtils.setUserSession(mockedRequest, user, applicationMenuData, businessDirectMenuData, "login_method", epRoleFunctionService);
+        EPUserUtils.setUserSession(mockedRequest, user, applicationMenuData, businessDirectMenuData,  epRoleFunctionService);
         assertNotNull(session);
 
 
@@ -383,7 +383,7 @@ public class EPUserUtilsTest {
 		Mockito.when(epRoleFunctionService.getRoleFunctions()).thenReturn(null);
 		Mockito.when(MenuBuilder.filterMenu(applicationMenuData, mockedRequest)).thenReturn(applicationMenuData);
 		PowerMockito.when(SystemProperties.getProperty(SystemProperties.USER_ATTRIBUTE_NAME)).thenReturn("12");
-        EPUserUtils.setUserSession(mockedRequest, user, applicationMenuData, businessDirectMenuData, "login_method", epRoleFunctionService);
+        EPUserUtils.setUserSession(mockedRequest, user, applicationMenuData, businessDirectMenuData,  epRoleFunctionService);
         assertNotNull(session);
 	}
 	
@@ -408,7 +408,7 @@ public class EPUserUtilsTest {
 		Mockito.when(epRoleFunctionService.getRoleFunctions()).thenReturn(null);
 		Mockito.when(MenuBuilder.filterMenu(applicationMenuData, mockedRequest)).thenReturn(applicationMenuData);
 		PowerMockito.when(SystemProperties.getProperty(SystemProperties.USER_ATTRIBUTE_NAME)).thenReturn("12");
-        EPUserUtils.setUserSession(mockedRequest, user, applicationMenuData, businessDirectMenuData, "login_method", epRoleFunctionService);
+        EPUserUtils.setUserSession(mockedRequest, user, applicationMenuData, businessDirectMenuData, epRoleFunctionService);
         assertNotNull(session);
 
 

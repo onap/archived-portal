@@ -2,7 +2,7 @@
  * ============LICENSE_START==========================================
  * ONAP Portal
  * ===================================================================
- * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
@@ -41,18 +41,16 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.onap.portalapp.portal.domain.EPRole;
@@ -70,18 +68,14 @@ import org.onap.portalsdk.core.web.support.AppUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class EPUserUtils {
-
-	private static EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(EPUserUtils.class);
-
-	private final static Long ACCOUNT_ADMIN_ROLE_ID = 999L;
-
 	public static final String ALL_ROLE_FUNCTIONS = "allRoleFunctions";
-	
-	// These decode values are based on HexDecoder
+
 	private	static final String decodeValueOfForwardSlash = "2f";
 	private	static final String decodeValueOfHyphen = "2d";
 	private static final String decodeValueOfAsterisk = "2a";
+	private static final Long ACCOUNT_ADMIN_ROLE_ID = 999L;
 
+	private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(EPUserUtils.class);
 	private static DataAccessService dataAccessService;
 
 	/**
@@ -111,15 +105,13 @@ public class EPUserUtils {
 	 *            Menu data
 	 * @param businessDirectMenuData
 	 *            Menu data
-	 * @param loginMethod_ignored
-	 *            How the user authenticated; ignored
 	 * @param ePRoleFunctionService
 	 *            role function service
 	 * @throws DecoderException 
 	 */
 	@SuppressWarnings("rawtypes")
 	public static void setUserSession(HttpServletRequest request, EPUser user, Set applicationMenuData,
-			Set businessDirectMenuData, String loginMethod_ignored, EPRoleFunctionService ePRoleFunctionService) throws RoleFunctionException {
+			Set businessDirectMenuData, EPRoleFunctionService ePRoleFunctionService) throws RoleFunctionException {
 		HttpSession session = request.getSession(true);
 
 		// clear the current user session to avoid any conflicts
@@ -136,9 +128,8 @@ public class EPUserUtils {
 		session.setAttribute(SystemProperties.getProperty(SystemProperties.USER_NAME), user.getFullName());
 
 		ServletContext context = session.getServletContext();
-		int licenseVerificationFlag = 3;
 		try {
-			licenseVerificationFlag = (Integer) context.getAttribute("licenseVerification");
+			context.getAttribute("licenseVerification");
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "setUserSession failed to get licenseVerification attribute",
 					e);
@@ -163,7 +154,7 @@ public class EPUserUtils {
 	private static void setAllRoleFunctions(List<RoleFunction> allRoleFunctions, HttpSession session) throws RoleFunctionException {
 		if (allRoleFunctions == null)
 			return;
-		Set<String> roleFnSet = new HashSet<String>();
+		Set<String> roleFnSet = new HashSet<>();
 		for (RoleFunction roleFn : allRoleFunctions){
 			roleFnSet.add(decodeFunctionCode(roleFn.getCode()));
 		}
@@ -221,8 +212,8 @@ public class EPUserUtils {
 	 * @return Map of role ID to role object
 	 */
 	@SuppressWarnings("rawtypes")
-	public static HashMap getRoles(HttpServletRequest request) {
-		HashMap roles = null;
+	public static Map getRoles(HttpServletRequest request) {
+		HashMap roles;
 
 		HttpSession session = AppUtils.getSession(request);
 		roles = (HashMap) session.getAttribute(SystemProperties.getProperty(SystemProperties.ROLES_ATTRIBUTE_NAME));
@@ -251,11 +242,8 @@ public class EPUserUtils {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private static HashMap getAllUserRoles(EPUser user) {
 		HashMap roles = new HashMap();
-		Iterator i = user.getEPRoles().iterator();
 
-		while (i.hasNext()) {
-			EPRole role = (EPRole) i.next();
-
+		for (EPRole role : user.getEPRoles()) {
 			if (role.getActive()) {
 				roles.put(role.getId(), role);
 
@@ -267,9 +255,8 @@ public class EPUserUtils {
 
 		// Additionally; the account admin role is overloaded between onap
 		// portal and partners; lets also include that
-		Iterator<EPUserApp> appRolesIterator = user.getEPUserApps().iterator();
-		while (appRolesIterator.hasNext()) {
-			EPRole role = (EPRole) appRolesIterator.next().getRole();
+		for (EPUserApp epUserApp : user.getEPUserApps()) {
+			EPRole role = epUserApp.getRole();
 
 			if (role.getActive() && role.getId().equals(ACCOUNT_ADMIN_ROLE_ID)) {
 				roles.put(role.getId(), role);
@@ -295,10 +282,9 @@ public class EPUserUtils {
 	private static void addChildRoles(EPRole role, HashMap roles) {
 		Set childRoles = role.getChildRoles();
 
-		if (childRoles != null && childRoles.size() > 0) {
-			Iterator j = childRoles.iterator();
-			while (j.hasNext()) {
-				EPRole childRole = (EPRole) j.next();
+		if (childRoles != null && !childRoles.isEmpty()) {
+			for (Object o : childRoles) {
+				EPRole childRole = (EPRole) o;
 
 				if (childRole.getActive()) {
 					roles.put(childRole.getId(), childRole);
@@ -319,7 +305,7 @@ public class EPUserUtils {
 	}
 
 	@Autowired
-	public void setDataAccessService(DataAccessService dataAccessService) {
+	public static void setDataAccessService(DataAccessService dataAccessService) {
 		EPUserUtils.dataAccessService = dataAccessService;
 	}
 
@@ -341,12 +327,10 @@ public class EPUserUtils {
 	 *            HttpServletREquest
 	 * @return Long ID of current user
 	 */
-	public static Long getUserIdAsLong(HttpServletRequest request) {
+	static Long getUserIdAsLong(HttpServletRequest request) {
 		Long userId = new Long(SystemProperties.getProperty(SystemProperties.APPLICATION_USER_ID));
-		if (request != null) {
-			if (getUserSession(request) != null) {
+		if (request != null && getUserSession(request) != null) {
 				userId = getUserSession(request).getId();
-			}
 		}
 		return userId;
 	}
@@ -364,7 +348,7 @@ public class EPUserUtils {
 		String requestId = "";
 		try {
 			while (headerNames.hasMoreElements()) {
-				String headerName = (String) headerNames.nextElement();
+				String headerName = headerNames.nextElement();
 				logger.debug(EELFLoggerDelegate.debugLogger,
 						"One header is " + headerName + " : " + request.getHeader(headerName));
 				if (headerName.equalsIgnoreCase(SystemProperties.ECOMP_REQUEST_ID)) {
@@ -386,7 +370,7 @@ public class EPUserUtils {
 	 *            HttpServletRequest
 	 * @return Full URL
 	 */
-	public static String getFullURL(HttpServletRequest request) {
+	static String getFullURL(HttpServletRequest request) {
 		if (request != null) {
 			StringBuffer requestURL = request.getRequestURL();
 			String queryString = request.getQueryString();
@@ -402,7 +386,7 @@ public class EPUserUtils {
 
 	public static Boolean matchRoleFunctions(String portalApiPath, Set<? extends String> roleFunctions) {
 		String[] path = portalApiPath.split("/");
-		List<String> roleFunList = new ArrayList<>();
+		List<String> roleFunList;
 		if (path.length > 1) {
 			roleFunList = roleFunctions.stream().filter(item -> item.startsWith(path[0])).collect(Collectors.toList());
 			if (roleFunList.size() >= 1) {
@@ -411,17 +395,13 @@ public class EPUserUtils {
 					boolean b = true;
 					if (roleFunctionArray.length == path.length) {
 						for (int i = 0; i < roleFunctionArray.length; i++) {
-							if (b) {
 								if (!roleFunctionArray[i].equals("*")) {
 									Pattern p = Pattern.compile(Pattern.quote(path[i]), Pattern.CASE_INSENSITIVE);
 									Matcher m = p.matcher(roleFunctionArray[i]);
 									b = m.matches();
-
 								}
 							}
-						}
-							if (b)
-								return b;
+						if (b) return true;
 					}
 				}
 			}
