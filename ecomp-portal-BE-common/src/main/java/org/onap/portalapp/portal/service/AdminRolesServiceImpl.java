@@ -40,25 +40,19 @@
 package org.onap.portalapp.portal.service;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
 import java.util.stream.Collectors;
-
 import javax.annotation.PostConstruct;
-
 import org.apache.cxf.common.util.StringUtils;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.onap.portalapp.portal.domain.CentralV2RoleFunction;
 import org.onap.portalapp.portal.domain.EPApp;
 import org.onap.portalapp.portal.domain.EPRole;
 import org.onap.portalapp.portal.domain.EPUser;
@@ -71,16 +65,12 @@ import org.onap.portalapp.portal.logging.format.EPAppMessagesEnum;
 import org.onap.portalapp.portal.logging.logic.EPLogUtil;
 import org.onap.portalapp.portal.transport.AppNameIdIsAdmin;
 import org.onap.portalapp.portal.transport.AppsListWithAdminRole;
-import org.onap.portalapp.portal.transport.EPUserAppCurrentRoles;
 import org.onap.portalapp.portal.transport.ExternalAccessUser;
 import org.onap.portalapp.portal.utils.EPCommonSystemProperties;
 import org.onap.portalapp.portal.utils.EcompPortalUtils;
 import org.onap.portalapp.portal.utils.PortalConstants;
 import org.onap.portalapp.util.EPUserUtils;
-import org.onap.portalsdk.core.domain.RoleFunction;
-import org.onap.portalsdk.core.domain.User;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
-import org.onap.portalsdk.core.restful.domain.EcompRole;
 import org.onap.portalsdk.core.service.DataAccessService;
 import org.onap.portalsdk.core.util.SystemProperties;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,7 +82,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service("adminRolesService")
@@ -106,6 +95,7 @@ public class AdminRolesServiceImpl implements AdminRolesService {
 	private Long ACCOUNT_ADMIN_ROLE_ID = 999L;
 	private Long ECOMP_APP_ID = 1L;
 	public static final String TYPE_APPROVER = "approver";
+	private static final String ADMIN_ACCOUNT= "Is account admin for user {}";
 
 	private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(AdminRolesServiceImpl.class);
 
@@ -458,7 +448,7 @@ public class AdminRolesServiceImpl implements AdminRolesService {
 
 			final Map<String, Long> userParams = new HashMap<>();
 			userParams.put("userId", user.getId());
-			logger.debug(EELFLoggerDelegate.debugLogger, "Is account admin for user {}", user.getId());
+			logger.debug(EELFLoggerDelegate.debugLogger, ADMIN_ACCOUNT, user.getId());
 			List<Integer> userAdminApps = new ArrayList<>();
 
 			userAdminApps =dataAccessService.executeNamedQuery("getAdminAppsForTheUser", userParams, null);
@@ -498,7 +488,7 @@ public class AdminRolesServiceImpl implements AdminRolesService {
 					Set<String> getRoleFuncListOfPortalSet1=new HashSet<>();
 					Set<String> roleFunSet = new HashSet<>();
 					roleFunSet = getRoleFuncListOfPortalSet.stream().filter(x -> x.contains("|")).collect(Collectors.toSet());
-					if (roleFunSet.size() > 0)
+					if (!roleFunSet.isEmpty())
 						for (String roleFunction : roleFunSet) {
 							String type = externalAccessRolesService.getFunctionCodeType(roleFunction);
 							getRoleFuncListOfPortalSet1.add(type);
@@ -561,10 +551,10 @@ public class AdminRolesServiceImpl implements AdminRolesService {
 		try {
 					final Map<String, Long> userParams = new HashMap<>();
 					userParams.put("userId", user.getId());
-					logger.debug(EELFLoggerDelegate.debugLogger, "Is account admin for user {}", user.getId());
+					logger.debug(EELFLoggerDelegate.debugLogger, ADMIN_ACCOUNT, user.getId());
 					List<Integer> userAdminApps = new ArrayList<>();
 					userAdminApps =dataAccessService.executeNamedQuery("getAdminAppsForTheUser", userParams, null);
-					if(userAdminApps.size()>=1){
+					if(!userAdminApps.isEmpty()){
 					isApplicationAccountAdmin=userAdminApps.contains((int) (long) app.getId());
 					logger.debug(EELFLoggerDelegate.debugLogger, "Is account admin for user is true{} ,appId {}", user.getId(),app.getId());
 					}
@@ -586,7 +576,7 @@ public class AdminRolesServiceImpl implements AdminRolesService {
 		Set<String> getRoleFuncListOfPortalSet = new HashSet<>(getRoleFuncListOfPortal);
 		Set<String> roleFunSet = new HashSet<>();
 		roleFunSet = getRoleFuncListOfPortalSet.stream().filter(x -> x.contains("|")).collect(Collectors.toSet());
-		if (roleFunSet.size() > 0)
+		if (!roleFunSet.isEmpty())
 			for (String roleFunction : roleFunSet) {
 				String roleFun = EcompPortalUtils.getFunctionCode(roleFunction);
 				getRoleFuncListOfPortalSet.remove(roleFunction);
@@ -598,7 +588,6 @@ public class AdminRolesServiceImpl implements AdminRolesService {
 			finalRoleFunctionSet.add(EPUserUtils.decodeFunctionCode(roleFn));
 		}
 		
-//		List<String> functionsOfUser = new ArrayList<>(getRoleFuncListOfPortal);
 		return finalRoleFunctionSet;
 	}
 
@@ -609,10 +598,10 @@ public class AdminRolesServiceImpl implements AdminRolesService {
 		try {
 					final Map<String, Long> userParams = new HashMap<>();
 					userParams.put("userId", user.getId());	
-					logger.debug(EELFLoggerDelegate.debugLogger, "Is account admin for user {}", user.getId());
+					logger.debug(EELFLoggerDelegate.debugLogger, ADMIN_ACCOUNT, user.getId());
 					List<Integer> userAdminApps = new ArrayList<>();
 					userAdminApps =dataAccessService.executeNamedQuery("getAllAdminAppsofTheUser", userParams, null);
-					if(userAdminApps.size()>=1){
+					if(!userAdminApps.isEmpty()){
 					isApplicationAccountAdmin=userAdminApps.contains((int) (long) app.getId());
 					logger.debug(EELFLoggerDelegate.debugLogger, "Is account admin for user is true{} ,appId {}", user.getId(),app.getId());
 					}					
