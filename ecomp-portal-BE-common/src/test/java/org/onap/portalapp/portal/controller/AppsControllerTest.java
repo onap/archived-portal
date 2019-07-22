@@ -58,7 +58,6 @@ import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.onap.portalapp.portal.controller.AppsController;
 import org.onap.portalapp.portal.core.MockEPUser;
 import org.onap.portalapp.portal.domain.AdminUserApplications;
 import org.onap.portalapp.portal.domain.AppIdAndNameTransportModel;
@@ -82,7 +81,6 @@ import org.onap.portalapp.portal.transport.EPWidgetsSortPreference;
 import org.onap.portalapp.portal.transport.FieldsValidator;
 import org.onap.portalapp.portal.transport.LocalRole;
 import org.onap.portalapp.portal.transport.OnboardingApp;
-import org.onap.portalapp.portal.utils.EcompPortalUtils;
 import org.onap.portalapp.util.EPUserUtils;
 import org.onap.portalsdk.core.util.SystemProperties;
 import org.onap.portalsdk.core.web.support.AppUtils;
@@ -100,7 +98,7 @@ import org.springframework.web.client.HttpClientErrorException;
 public class AppsControllerTest extends MockitoTestSuite{
 
 	@InjectMocks
-	AppsController appsController = new AppsController();
+	AppsController appsController;
 
 	@Mock
 	AdminRolesService adminRolesService = new AdminRolesServiceImpl();
@@ -369,6 +367,38 @@ public class AppsControllerTest extends MockitoTestSuite{
 	}
 
 	@Test
+	public void putUserAppsSortingManualXSSTest() {
+		EPUser user = mockUser.mockEPUser();
+		EPAppsManualPreference preference = new EPAppsManualPreference();
+		preference.setHeaderText("<script>alert(\"hellox worldss\");</script>");
+		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
+		List<EPAppsManualPreference> ePAppsManualPreference = new ArrayList<>();
+		FieldsValidator expectedFieldValidator = new FieldsValidator();
+		expectedFieldValidator.setHttpStatusCode((long)HttpServletResponse.SC_NOT_ACCEPTABLE);
+		ePAppsManualPreference.add(preference);
+		Mockito.when(appService.saveAppsSortManual(ePAppsManualPreference, user)).thenReturn(expectedFieldValidator);
+		FieldsValidator actualFieldValidator = appsController.putUserAppsSortingManual(mockedRequest, ePAppsManualPreference,
+			mockedResponse);
+		assertEquals(actualFieldValidator, expectedFieldValidator);
+	}
+
+	@Test
+	public void putUserWidgetsSortManualXSSTest() {
+		EPUser user = mockUser.mockEPUser();
+		EPWidgetsSortPreference preference = new EPWidgetsSortPreference();
+		preference.setHeaderText("<script>alert(\"hellox worldss\");</script>");
+		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
+		List<EPWidgetsSortPreference> ePAppsManualPreference = new ArrayList<>();
+		FieldsValidator expectedFieldValidator = new FieldsValidator();
+		expectedFieldValidator.setHttpStatusCode((long)HttpServletResponse.SC_NOT_ACCEPTABLE);
+		ePAppsManualPreference.add(preference);
+		Mockito.when(appService.saveWidgetsSortManual(ePAppsManualPreference, user)).thenReturn(expectedFieldValidator);
+		FieldsValidator actualFieldValidator = appsController.putUserWidgetsSortManual(mockedRequest, ePAppsManualPreference,
+			mockedResponse);
+		assertEquals(expectedFieldValidator, actualFieldValidator);
+	}
+
+	@Test
 	public void putUserAppsSortingManualExceptionTest() throws IOException {
 		EPUser user = mockUser.mockEPUser();
 		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
@@ -404,7 +434,7 @@ public class AppsControllerTest extends MockitoTestSuite{
 	}
 
 	@Test
-	public void putUserWidgetsSortPrefTest() throws IOException {
+	public void putUserWidgetsSortPrefTest() {
 		EPUser user = mockUser.mockEPUser();
 		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
 		List<EPWidgetsSortPreference> ePWidgetsSortPreference = new ArrayList<EPWidgetsSortPreference>();
@@ -417,6 +447,24 @@ public class AppsControllerTest extends MockitoTestSuite{
 				.thenReturn(expectedFieldValidator);
 		actualFieldValidator = appsController.putUserWidgetsSortPref(mockedRequest, ePWidgetsSortPreference,
 				mockedResponse);
+		assertEquals(actualFieldValidator, expectedFieldValidator);
+	}
+
+	@Test
+	public void putUserWidgetsSortPrefXSSTest() {
+		EPUser user = mockUser.mockEPUser();
+		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
+		List<EPWidgetsSortPreference> ePWidgetsSortPreference = new ArrayList<>();
+		EPWidgetsSortPreference preference = new EPWidgetsSortPreference();
+		preference.setHeaderText("<script>alert(\"hellox worldss\");</script>");
+		ePWidgetsSortPreference.add(preference);
+		FieldsValidator expectedFieldValidator = new FieldsValidator();
+		expectedFieldValidator.setHttpStatusCode((long) HttpServletResponse.SC_NOT_ACCEPTABLE);
+		FieldsValidator actualFieldValidator;
+		Mockito.when(appService.deleteUserWidgetSortPref(ePWidgetsSortPreference, user))
+			.thenReturn(expectedFieldValidator);
+		actualFieldValidator = appsController.putUserWidgetsSortPref(mockedRequest, ePWidgetsSortPreference,
+			mockedResponse);
 		assertEquals(actualFieldValidator, expectedFieldValidator);
 	}
 
@@ -472,6 +520,23 @@ public class AppsControllerTest extends MockitoTestSuite{
 		Mockito.when(appService.saveAppsSortPreference(userAppsValue, user)).thenReturn(expectedFieldValidator);
 		actualFieldValidator = appsController.putUserAppsSortingPreference(mockedRequest, userAppsValue,
 				mockedResponse);
+		assertEquals(actualFieldValidator, expectedFieldValidator);
+	}
+
+	@Test
+	public void putUserAppsSortingPreferenceXSSTest() {
+		EPUser user = mockUser.mockEPUser();
+		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
+		EPAppsSortPreference userAppsValue = new EPAppsSortPreference();
+		userAppsValue.setTitle("</script><script>alert(1)</script>");
+		FieldsValidator expectedFieldValidator = new FieldsValidator();
+		expectedFieldValidator.setHttpStatusCode((long) HttpServletResponse.SC_NOT_ACCEPTABLE);
+		expectedFieldValidator.setFields(null);
+		expectedFieldValidator.setErrorCode(null);
+		FieldsValidator actualFieldValidator;
+		Mockito.when(appService.saveAppsSortPreference(userAppsValue, user)).thenReturn(expectedFieldValidator);
+		actualFieldValidator = appsController.putUserAppsSortingPreference(mockedRequest, userAppsValue,
+			mockedResponse);
 		assertEquals(actualFieldValidator, expectedFieldValidator);
 	}
 

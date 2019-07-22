@@ -47,8 +47,8 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
+import lombok.NoArgsConstructor;
 import org.json.JSONObject;
-import org.onap.portalapp.portal.controller.AppsController;
 import org.onap.portalapp.portal.domain.EPUser;
 import org.onap.portalapp.portal.ecomp.model.PortalRestResponse;
 import org.onap.portalapp.portal.ecomp.model.PortalRestStatusEnum;
@@ -61,6 +61,7 @@ import org.onap.portalapp.util.EPUserUtils;
 import org.onap.portalapp.validation.SecureString;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -69,27 +70,20 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@org.springframework.context.annotation.Configuration
+@Configuration
 @EnableAspectJAutoProxy
 @EPAuditLog
+@NoArgsConstructor
 public class AppsOSController extends AppsController {
 	private static final ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
 	
-	static final String FAILURE = "failure";
-	EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(AppsOSController.class);
+	private static final String FAILURE = "failure";
+	private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(AppsOSController.class);
 
-	@Autowired
-	AdminRolesService adminRolesService;
-	@Autowired
-	EPAppService appService;
-	@Autowired
-	PersUserAppService persUserAppService;
 	@Autowired
 	UserService userService;
 
-	
-	
-	/**
+       /**
 	 * Create new application's contact us details.
 	 * 
 	 * @param contactUs
@@ -102,9 +96,9 @@ public class AppsOSController extends AppsController {
 			return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, FAILURE,
 					"New User cannot be null or empty");
 		
-		if (!(adminRolesService.isSuperAdmin(user) || adminRolesService.isAccountAdmin(user))){
+		if (!(super.getAdminRolesService().isSuperAdmin(user) || super.getAdminRolesService().isAccountAdmin(user))){
 			if(!user.getLoginId().equalsIgnoreCase(newUser.getLoginId()))
-				return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, FAILURE,
+				return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, FAILURE,
 						"UnAuthorized");
 		}
 			
@@ -113,9 +107,9 @@ public class AppsOSController extends AppsController {
 		try {
 			saveNewUser = userService.saveNewUser(newUser,checkDuplicate);
 		} catch (Exception e) {
-			return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, saveNewUser, e.getMessage());
+			return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, saveNewUser, e.getMessage());
 		}
-		return new PortalRestResponse<String>(PortalRestStatusEnum.OK, saveNewUser, "");
+		return new PortalRestResponse<>(PortalRestStatusEnum.OK, saveNewUser, "");
 	}
 	
 	@RequestMapping(value = { "/portalApi/currentUserProfile/{loginId}" }, method = RequestMethod.GET, produces = "application/json")

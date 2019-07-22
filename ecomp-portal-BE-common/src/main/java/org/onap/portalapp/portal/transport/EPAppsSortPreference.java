@@ -37,10 +37,14 @@
  */
 package org.onap.portalapp.portal.transport;
 
+import org.hibernate.validator.constraints.SafeHtml;
+
 public class EPAppsSortPreference {
 	
 	private int index;
+	@SafeHtml
 	private String value;
+	@SafeHtml
 	private String title;
 	
 	public int getIndex() {

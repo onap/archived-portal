@@ -37,18 +37,24 @@
  */
 package org.onap.portalapp.portal.transport;
 
+import org.hibernate.validator.constraints.SafeHtml;
+
 public class EPAppsManualPreference {
 	
 	private Long appid;
 	private int col;
+	@SafeHtml
 	private String headerText;
+	@SafeHtml
 	private String imageLink;
 	private int order;
 	private boolean restrictedApp;
 	private int row;
 	private int sizeX;
 	private int sizeY;
+	@SafeHtml
 	private String subHeaderText;
+	@SafeHtml
 	private String url;
 	private boolean addRemoveApps;
 	

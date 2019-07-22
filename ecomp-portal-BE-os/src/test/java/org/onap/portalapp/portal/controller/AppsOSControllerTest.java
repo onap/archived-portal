@@ -41,10 +41,8 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -52,7 +50,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.onap.portalapp.portal.controller.AppsOSController;
 import org.onap.portalapp.portal.domain.EPUser;
 import org.onap.portalapp.portal.ecomp.model.PortalRestResponse;
 import org.onap.portalapp.portal.ecomp.model.PortalRestStatusEnum;
@@ -87,7 +84,7 @@ public class AppsOSControllerTest {
 	}
 
 	@InjectMocks
-	AppsOSController appsOSController = new AppsOSController();
+	AppsOSController appsOSController;
 
 	MockitoTestSuite mockitoTestSuite = new MockitoTestSuite();
 
