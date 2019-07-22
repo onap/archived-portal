@@ -39,33 +39,21 @@ package org.onap.portalapp.portal.transport;
 
 import java.util.List;
 import javax.validation.Valid;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.validator.constraints.SafeHtml;
 
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+@ToString
 public class CommonWidgetMeta {
 	@SafeHtml
 	private String category;
 	@Valid
 	private List<CommonWidget> items;
-
-	public CommonWidgetMeta(){
-
-	}
-
-	public CommonWidgetMeta(String category, List<CommonWidget> items){
-		this.category = category;
-		this.items = items;
-	}
-	
-	public String getCategory() {
-		return category;
-	}
-	public void setCategory(String category) {
-		this.category = category;
-	}
-	public List<CommonWidget> getItems() {
-		return items;
-	}
-	public void setItems(List<CommonWidget> items) {
-		this.items = items;
-	}
 }

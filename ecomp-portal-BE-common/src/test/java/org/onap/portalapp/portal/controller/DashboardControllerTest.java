@@ -57,10 +57,8 @@ import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.onap.portalapp.portal.controller.DashboardController;
 import org.onap.portalapp.portal.core.MockEPUser;
 import org.onap.portalapp.portal.domain.EPUser;
-import org.onap.portalapp.portal.domain.EcompAuditLog;
 import org.onap.portalapp.portal.ecomp.model.PortalRestResponse;
 import org.onap.portalapp.portal.ecomp.model.PortalRestStatusEnum;
 import org.onap.portalapp.portal.ecomp.model.SearchResultItem;
@@ -72,13 +70,10 @@ import org.onap.portalapp.portal.service.DashboardSearchServiceImpl;
 import org.onap.portalapp.portal.transport.CommonWidget;
 import org.onap.portalapp.portal.transport.CommonWidgetMeta;
 import org.onap.portalapp.portal.utils.EPCommonSystemProperties;
-import org.onap.portalapp.portal.utils.EcompPortalUtils;
-import org.onap.portalapp.portal.utils.PortalConstants;
 import org.onap.portalapp.util.EPUserUtils;
 import org.onap.portalsdk.core.domain.AuditLog;
 import org.onap.portalsdk.core.domain.support.CollaborateList;
 import org.onap.portalsdk.core.service.AuditService;
-import org.onap.portalsdk.core.service.AuditServiceImpl;
 import org.onap.portalsdk.core.util.SystemProperties;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -92,12 +87,9 @@ public class DashboardControllerTest {
 	
 	@Mock
 	DashboardSearchService searchService = new DashboardSearchServiceImpl();
-	
-	/*@Mock
-	AuditService auditService = new AuditServiceImpl();*/
-	
+
 	@InjectMocks
-	DashboardController dashboardController = new DashboardController();
+	DashboardController dashboardController;
 
 	@Mock
 	AdminRolesService adminRolesService = new AdminRolesServiceImpl();
@@ -129,7 +121,7 @@ public class DashboardControllerTest {
 		commonWidget.setHref("testhref");
 		commonWidget.setTitle("testTitle");
 	    commonWidget.setContent("testcontent");
-	    commonWidget.setEventDate("testDate");
+	    commonWidget.setEventDate("2017-03-24");
 	    commonWidget.setSortOrder(1);		    
 		widgetList.add(commonWidget);		
 		commonWidgetMeta.setItems(widgetList);
@@ -163,8 +155,21 @@ public class DashboardControllerTest {
 		
 		PortalRestResponse<CommonWidgetMeta> actualResponse = 	dashboardController.getWidgetData(mockedRequest, resourceType);
 		assertEquals(expectedData,actualResponse);		
-	}	
-	
+	}
+
+	@Test
+	public void getWidgetDataTestXSS() {
+
+		String resourceType = "“><script>alert(“XSS”)</script>";
+		PortalRestResponse<CommonWidgetMeta> expectedData = new PortalRestResponse<>();
+		expectedData.setStatus(PortalRestStatusEnum.ERROR);
+		expectedData.setMessage("Unexpected resource type “><script>alert(“XSS”)</script>");
+		expectedData.setResponse(null);
+
+		PortalRestResponse<CommonWidgetMeta> actualResponse = dashboardController.getWidgetData(mockedRequest, resourceType);
+		assertEquals(expectedData, actualResponse);
+	}
+
 	@Test
 	public void getWidgetDataWithValidResourceTest() throws IOException {
 		String resourceType = "EVENTS";
@@ -193,6 +198,20 @@ public class DashboardControllerTest {
 		
 		PortalRestResponse<String> actualResponse = dashboardController.saveWidgetDataBulk(commonWidgetMeta);
 		assertEquals(expectedData,actualResponse);		
+	}
+
+	@Test
+	public void saveWidgetDataBulkXSSTest() {
+		CommonWidgetMeta commonWidgetMeta= mockCommonWidgetMeta();
+		commonWidgetMeta.setCategory("<script>alert(‘XSS’)</script>");
+
+		PortalRestResponse<String> expectedData = new PortalRestResponse<>();
+		expectedData.setStatus(PortalRestStatusEnum.ERROR);
+		expectedData.setResponse("ERROR");
+		expectedData.setMessage("Unsafe resource type " + commonWidgetMeta.toString());
+
+		PortalRestResponse<String> actualResponse = dashboardController.saveWidgetDataBulk(commonWidgetMeta);
+		assertEquals(expectedData,actualResponse);
 	}
 	
 	@Test
@@ -261,6 +280,24 @@ public class DashboardControllerTest {
 		assertEquals(expectedData,actualResponse);
 		
 	}
+
+	@Test
+	public void saveWidgetDataXSSTest() {
+
+		CommonWidget commonWidget = mockCommonWidget();
+		commonWidget.setId((long)1);
+		commonWidget.setContent("test");
+		commonWidget.setCategory("<form><a href=\"javascript:\\u0061lert&#x28;1&#x29;\">X");
+		PortalRestResponse<String> expectedData = new PortalRestResponse<String>();
+		expectedData.setStatus(PortalRestStatusEnum.ERROR);
+		expectedData.setResponse("ERROR");
+		expectedData.setMessage("Unsafe resource type " + commonWidget.toString());
+
+		Mockito.when(adminRolesService.isSuperAdmin(Matchers.anyObject())).thenReturn(true);
+		PortalRestResponse<String> actualResponse = dashboardController.saveWidgetData(commonWidget, mockedRequest, mockedResponse);
+		assertEquals(expectedData,actualResponse);
+
+	}
 	
 	@Test
 	public void saveWidgetDataTitleTest() throws IOException {				
@@ -268,6 +305,7 @@ public class DashboardControllerTest {
 		commonWidget.setId((long)1);
 		commonWidget.setContent("test");
 		commonWidget.setTitle("test");
+		commonWidget.setEventDate("2017-05-06");
 		PortalRestResponse<String> expectedData = new PortalRestResponse<String>();
 		expectedData.setStatus(PortalRestStatusEnum.ERROR);
 		expectedData.setMessage("Invalid category: test");
@@ -280,7 +318,8 @@ public class DashboardControllerTest {
 	@Test
 	public void saveWidgetDataErrorTest() throws IOException {
 				
-		CommonWidget commonWidget = mockCommonWidget();		
+		CommonWidget commonWidget = mockCommonWidget();
+		commonWidget.setEventDate("2017-03-05");
 		PortalRestResponse<String> expectedData = new PortalRestResponse<String>();
 		expectedData.setStatus(PortalRestStatusEnum.ERROR);
 		expectedData.setMessage("Invalid category: test");
@@ -323,7 +362,7 @@ public class DashboardControllerTest {
 	public void deleteWidgetDataTest() throws IOException {
 				
 		CommonWidget commonWidget = mockCommonWidget();
-		
+		commonWidget.setEventDate("2017-03-25");
 		PortalRestResponse<String> expectedData = new PortalRestResponse<String>();
 		expectedData.setStatus(PortalRestStatusEnum.OK);
 		expectedData.setMessage("success");
@@ -334,6 +373,20 @@ public class DashboardControllerTest {
 		PortalRestResponse<String> actualResponse = dashboardController.deleteWidgetData(commonWidget);
 		assertEquals(expectedData,actualResponse);
 		
+	}
+
+	@Test
+	public void deleteWidgetDataXSSTest() {
+
+		CommonWidget commonWidget = mockCommonWidget();
+		commonWidget.setCategory("<svg><script x:href='https://dl.dropbox.com/u/13018058/js.js' {Opera}");
+		PortalRestResponse<String> expectedData = new PortalRestResponse<>();
+		expectedData.setStatus(PortalRestStatusEnum.ERROR);
+		expectedData.setMessage("Unsafe resource type " + commonWidget.toString());
+		expectedData.setResponse("ERROR");
+		PortalRestResponse<String> actualResponse = dashboardController.deleteWidgetData(commonWidget);
+		assertEquals(expectedData,actualResponse);
+
 	}
 		
 	@Test
@@ -541,6 +594,23 @@ public class DashboardControllerTest {
 		PortalRestResponse<Map<String, List<SearchResultItem>>> actualResponse = dashboardController.searchPortal(mockedRequest, null);
 		assertTrue(actualResponse.getStatus().compareTo(PortalRestStatusEnum.ERROR) == 0);
 	}
+
+	@Test
+	public void searchPortalXSSTest(){
+		EPUser user = null;
+		String searchString = "\n"
+			+ "<form><textarea &#13; onkeyup='\\u0061\\u006C\\u0065\\u0072\\u0074&#x28;1&#x29;'>";
+		PowerMockito.mockStatic(EPUserUtils.class);
+		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
+		PortalRestResponse<Map<String, List<SearchResultItem>>> expectedResult = new PortalRestResponse<>();
+		expectedResult.setMessage("searchPortal: String string is not safe");
+		expectedResult.setResponse(new HashMap<>());
+		expectedResult.setStatus(PortalRestStatusEnum.ERROR);
+
+		PortalRestResponse<Map<String, List<SearchResultItem>>> actualResponse = dashboardController.searchPortal(mockedRequest, searchString);
+		assertEquals(expectedResult, actualResponse);
+	}
+
 	@Test
 	public void searchPortalTestWithException(){
 		EPUser user = mockUser.mockEPUser();
