@@ -40,6 +40,7 @@ package org.onap.portalapp.portal.ecomp.model;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
+import org.hibernate.validator.constraints.SafeHtml;
 import org.onap.portalsdk.core.domain.support.DomainVo;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -55,11 +56,17 @@ public class AppContactUsItem extends DomainVo {
 
 	@Id
 	private Long appId;
+	@SafeHtml
 	private String appName;
+	@SafeHtml
 	private String description;
+	@SafeHtml
 	private String contactName;
+	@SafeHtml
 	private String contactEmail;
+	@SafeHtml
 	private String url;
+	@SafeHtml
 	private String activeYN;
 
 	public Long getAppId() {

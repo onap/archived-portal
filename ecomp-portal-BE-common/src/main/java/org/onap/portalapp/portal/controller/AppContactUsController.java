@@ -37,7 +37,6 @@
  */
 package org.onap.portalapp.portal.controller;
 
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -53,9 +52,11 @@ import org.onap.portalapp.portal.ecomp.model.PortalRestStatusEnum;
 import org.onap.portalapp.portal.logging.aop.EPAuditLog;
 import org.onap.portalapp.portal.service.AppContactUsService;
 import org.onap.portalapp.portal.utils.EPCommonSystemProperties;
+import org.onap.portalapp.validation.DataValidator;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.onap.portalsdk.core.util.SystemProperties;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -65,42 +66,51 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/portalApi/contactus")
-@org.springframework.context.annotation.Configuration
+@Configuration
 @EnableAspectJAutoProxy
 @EPAuditLog
 public class AppContactUsController extends EPRestrictedBaseController {
 
-	static final String FAILURE = "failure";
+	private static final String FAILURE = "failure";
+	private static final String SUCCESS= "success";
 
-	private static EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(AppContactUsController.class);
+	private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(AppContactUsController.class);
+	private static final DataValidator dataValidator = new DataValidator();
+	private final Comparator<AppCategoryFunctionsItem> appCategoryFunctionsItemComparator = Comparator
+		.comparing(AppCategoryFunctionsItem::getCategory);
+
+	private AppContactUsService contactUsService;
 
 	@Autowired
-	private AppContactUsService contactUsService;
+	public AppContactUsController(AppContactUsService contactUsService) {
+		this.contactUsService = contactUsService;
+	}
+
 
 	/**
 	 * Answers a JSON object with three items from the system.properties file:
 	 * user self-help ticket URL, email for feedback, and Portal info link.
-	 * 
+	 *
 	 * @param request HttpServletRequest
 	 * @return PortalRestResponse
 	 */
 	@RequestMapping(value = "/feedback", method = RequestMethod.GET, produces = "application/json")
 	public PortalRestResponse<String> getPortalDetails(HttpServletRequest request) {
-		PortalRestResponse<String> portalRestResponse = null;
+		PortalRestResponse<String> portalRestResponse;
 		try {
 			final String ticketUrl = SystemProperties.getProperty(EPCommonSystemProperties.USH_TICKET_URL);
 			final String portalInfoUrl = SystemProperties.getProperty(EPCommonSystemProperties.PORTAL_INFO_URL);
 			final String feedbackEmail = SystemProperties.getProperty(EPCommonSystemProperties.FEEDBACK_EMAIL_ADDRESS);
-			HashMap<String, String> map = new HashMap<String, String>();
+			HashMap<String, String> map = new HashMap<>();
 			map.put(EPCommonSystemProperties.USH_TICKET_URL, ticketUrl);
 			map.put(EPCommonSystemProperties.PORTAL_INFO_URL, portalInfoUrl);
 			map.put(EPCommonSystemProperties.FEEDBACK_EMAIL_ADDRESS, feedbackEmail);
 			JSONObject j = new JSONObject(map);
 			String contactUsPortalResponse = j.toString();
-			portalRestResponse = new PortalRestResponse<String>(PortalRestStatusEnum.OK, "success",
-					contactUsPortalResponse);
+			portalRestResponse = new PortalRestResponse<>(PortalRestStatusEnum.OK, SUCCESS,
+				contactUsPortalResponse);
 		} catch (Exception e) {
-			return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, FAILURE, e.getMessage());
+			return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, FAILURE, e.getMessage());
 		}
 		return portalRestResponse;
 	}
@@ -108,21 +118,21 @@ public class AppContactUsController extends EPRestrictedBaseController {
 	/**
 	 * Answers the contents of the contact-us table, extended with the
 	 * application name.
-	 * 
+	 *
 	 * @param request HttpServletRequest
 	 * @return PortalRestResponse<List<AppContactUsItem>>
 	 */
 	@RequestMapping(value = "/list", method = RequestMethod.GET, produces = "application/json")
 	public PortalRestResponse<List<AppContactUsItem>> getAppContactUsList(HttpServletRequest request) {
-		PortalRestResponse<List<AppContactUsItem>> portalRestResponse = null;
+		PortalRestResponse<List<AppContactUsItem>> portalRestResponse;
 		try {
 			List<AppContactUsItem> contents = contactUsService.getAppContactUs();
-			portalRestResponse = new PortalRestResponse<List<AppContactUsItem>>(PortalRestStatusEnum.OK, "success",
-					contents);
+			portalRestResponse = new PortalRestResponse<>(PortalRestStatusEnum.OK, SUCCESS,
+				contents);
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "getAppContactUsList failed", e);
-			portalRestResponse = new PortalRestResponse<List<AppContactUsItem>>(PortalRestStatusEnum.ERROR,
-					e.getMessage(), null);
+			portalRestResponse = new PortalRestResponse<>(PortalRestStatusEnum.ERROR,
+				e.getMessage(), null);
 		}
 		return portalRestResponse;
 	}
@@ -130,35 +140,25 @@ public class AppContactUsController extends EPRestrictedBaseController {
 	/**
 	 * Answers a list of objects, one per application, extended with available
 	 * data on how to contact that app's organization (possibly none).
-	 * 
+	 *
 	 * @param request HttpServletRequest
 	 * @return PortalRestResponse<List<AppContactUsItem>>
 	 */
 	@RequestMapping(value = "/allapps", method = RequestMethod.GET, produces = "application/json")
 	public PortalRestResponse<List<AppContactUsItem>> getAppsAndContacts(HttpServletRequest request) {
-		PortalRestResponse<List<AppContactUsItem>> portalRestResponse = null;
+		PortalRestResponse<List<AppContactUsItem>> portalRestResponse;
 		try {
 			List<AppContactUsItem> contents = contactUsService.getAppsAndContacts();
-			portalRestResponse = new PortalRestResponse<List<AppContactUsItem>>(PortalRestStatusEnum.OK, "success",
-					contents);
+			portalRestResponse = new PortalRestResponse<>(PortalRestStatusEnum.OK, SUCCESS,
+				contents);
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "getAllAppsAndContacts failed", e);
-			portalRestResponse = new PortalRestResponse<List<AppContactUsItem>>(PortalRestStatusEnum.ERROR,
-					e.getMessage(), null);
+			portalRestResponse = new PortalRestResponse<>(PortalRestStatusEnum.ERROR,
+				e.getMessage(), null);
 		}
 		return portalRestResponse;
 	}
 
-	/**
-	 * Sorts by category name.
-	 */
-	private Comparator<AppCategoryFunctionsItem> appCategoryFunctionsItemComparator = new Comparator<AppCategoryFunctionsItem>() {
-		@Override
-		public int compare(AppCategoryFunctionsItem o1, AppCategoryFunctionsItem o2) {
-			return o1.getCategory().compareTo(o2.getCategory());
-		}
-	};
-	
 	/**
 	 * Answers a list of objects with category-application-function details. Not
 	 * all applications participate in the functional menu.
@@ -168,20 +168,17 @@ public class AppContactUsController extends EPRestrictedBaseController {
 	 */
 	@RequestMapping(value = "/functions", method = RequestMethod.GET, produces = "application/json")
 	public PortalRestResponse<List<AppCategoryFunctionsItem>> getAppCategoryFunctions(HttpServletRequest request) {
-		PortalRestResponse<List<AppCategoryFunctionsItem>> portalRestResponse = null;
+		PortalRestResponse<List<AppCategoryFunctionsItem>> portalRestResponse;
 		try {
 			List<AppCategoryFunctionsItem> contents = contactUsService.getAppCategoryFunctions();
-			// logger.debug(EELFLoggerDelegate.debugLogger,
-			// "getAppCategoryFunctions: result list size is " +
-			// contents.size());
-			Collections.sort(contents, appCategoryFunctionsItemComparator);
-			portalRestResponse = new PortalRestResponse<List<AppCategoryFunctionsItem>>(PortalRestStatusEnum.OK,
-					"success", contents);
+			contents.sort(appCategoryFunctionsItemComparator);
+			portalRestResponse = new PortalRestResponse<>(PortalRestStatusEnum.OK,
+				SUCCESS, contents);
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "getAppCategoryFunctions failed", e);
 			// TODO build JSON error
-			portalRestResponse = new PortalRestResponse<List<AppCategoryFunctionsItem>>(PortalRestStatusEnum.ERROR,
-					e.getMessage(), null);
+			portalRestResponse = new PortalRestResponse<>(PortalRestStatusEnum.ERROR,
+				e.getMessage(), null);
 		}
 		return portalRestResponse;
 	}
@@ -195,29 +192,41 @@ public class AppContactUsController extends EPRestrictedBaseController {
 	@RequestMapping(value = "/save", method = RequestMethod.POST, produces = "application/json")
 	public PortalRestResponse<String> save(@RequestBody AppContactUsItem contactUs) {
 
-		if (contactUs == null || contactUs.getAppName() == null)
-			return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, FAILURE,
-					"AppName cannot be null or empty");
+		if (contactUs == null || contactUs.getAppName() == null) {
+			return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, FAILURE,
+				"AppName cannot be null or empty");
+		}else if(!dataValidator.isValid(contactUs)){
+			return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, FAILURE, "AppName is not valid.");
+		}
 
 		String saveAppContactUs = FAILURE;
 		try {
 			saveAppContactUs = contactUsService.saveAppContactUs(contactUs);
 		} catch (Exception e) {
-			return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, saveAppContactUs, e.getMessage());
+			logger.error(EELFLoggerDelegate.errorLogger, "save failed", e);
+			return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, saveAppContactUs, e.getMessage());
 		}
-		return new PortalRestResponse<String>(PortalRestStatusEnum.OK, saveAppContactUs, "");
+		return new PortalRestResponse<>(PortalRestStatusEnum.OK, saveAppContactUs, "");
 	}
 
 	@RequestMapping(value = "/saveAll", method = RequestMethod.POST, produces = "application/json")
 	public PortalRestResponse<String> save(@RequestBody List<AppContactUsItem> contactUsList) {
 
+		if (contactUsList == null) {
+			return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, FAILURE,
+				"AppNameList cannot be null or empty");
+		}else if(!dataValidator.isValid(contactUsList)){
+			return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, FAILURE, "AppNameList is not valid.");
+		}
+
 		String saveAppContactUs = FAILURE;
 		try {
 			saveAppContactUs = contactUsService.saveAppContactUs(contactUsList);
 		} catch (Exception e) {
-			return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, saveAppContactUs, e.getMessage());
+			logger.error(EELFLoggerDelegate.errorLogger, "save failed", e);
+			return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, saveAppContactUs, e.getMessage());
 		}
-		return new PortalRestResponse<String>(PortalRestStatusEnum.OK, saveAppContactUs, "");
+		return new PortalRestResponse<>(PortalRestStatusEnum.OK, saveAppContactUs, "");
 	}
 
 	/**
@@ -234,9 +243,10 @@ public class AppContactUsController extends EPRestrictedBaseController {
 		try {
 			saveAppContactUs = contactUsService.deleteContactUs(id);
 		} catch (Exception e) {
-			return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, saveAppContactUs, e.getMessage());
+			logger.error(EELFLoggerDelegate.errorLogger, "delete failed", e);
+			return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, saveAppContactUs, e.getMessage());
 		}
-		return new PortalRestResponse<String>(PortalRestStatusEnum.OK, saveAppContactUs, "");
+		return new PortalRestResponse<>(PortalRestStatusEnum.OK, saveAppContactUs, "");
 	}
 
 }
