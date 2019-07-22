@@ -38,13 +38,14 @@
 package org.onap.portalapp.externalsystemapproval.model;
 
 import java.io.Serializable;
+import org.hibernate.validator.constraints.SafeHtml;
 
 public class ExternalSystemRoleApproval implements Serializable {
 
 	private static final long serialVersionUID = 6048830318039958615L;
-
+	@SafeHtml
 	private String roleName;
-
+	@SafeHtml
 	public String getRoleName() {
 		return roleName;
 	}
