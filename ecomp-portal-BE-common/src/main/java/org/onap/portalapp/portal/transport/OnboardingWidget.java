@@ -42,6 +42,7 @@ import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import org.hibernate.validator.constraints.SafeHtml;
 
 @Entity
 public class OnboardingWidget implements Serializable {
@@ -53,12 +54,14 @@ public class OnboardingWidget implements Serializable {
 	public Long id;
 
 	@Column(name = "WDG_NAME")
+	@SafeHtml
 	public String name;
 
 	@Column(name = "APP_ID")
 	public Long appId;
 
 	@Column(name = "APP_NAME")
+	@SafeHtml
 	public String appName;
 
 	@Column(name = "WDG_WIDTH")
@@ -68,15 +71,16 @@ public class OnboardingWidget implements Serializable {
 	public Integer height;
 
 	@Column(name = "WDG_URL")
+	@SafeHtml
 	public String url;
 
 	public void normalize() {
 		this.name = (this.name == null) ? "" : this.name.trim();
 		this.appName = (this.appName == null) ? "" : this.appName.trim();
 		if (this.width == null)
-			this.width = new Integer(0);
+			this.width = 0;
 		if (this.height == null)
-			this.height = new Integer(0);
+			this.height = 0;
 		this.url = (this.url == null) ? "" : this.url.trim();
 	}
 

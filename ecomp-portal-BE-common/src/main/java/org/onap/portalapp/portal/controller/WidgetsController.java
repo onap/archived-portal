@@ -52,10 +52,13 @@ import org.onap.portalapp.portal.service.PersUserWidgetService;
 import org.onap.portalapp.portal.service.WidgetService;
 import org.onap.portalapp.portal.transport.FieldsValidator;
 import org.onap.portalapp.portal.transport.OnboardingWidget;
+import org.onap.portalapp.portal.transport.WidgetCatalogPersonalization;
 import org.onap.portalapp.portal.utils.EcompPortalUtils;
 import org.onap.portalapp.util.EPUserUtils;
+import org.onap.portalapp.validation.DataValidator;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -64,30 +67,36 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@org.springframework.context.annotation.Configuration
+@Configuration
 @EnableAspectJAutoProxy
 @EPAuditLog
 public class WidgetsController extends EPRestrictedBaseController {
-	private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(WidgetsController.class);
-	
-	@Autowired
+	private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(WidgetsController.class);
+	private static final DataValidator dataValidator = new DataValidator();
+
 	private AdminRolesService adminRolesService;
-	@Autowired
 	private WidgetService widgetService;
-	@Autowired
 	private PersUserWidgetService persUserWidgetService;
+
+	@Autowired
+	public WidgetsController(AdminRolesService adminRolesService,
+		WidgetService widgetService, PersUserWidgetService persUserWidgetService) {
+		this.adminRolesService = adminRolesService;
+		this.widgetService = widgetService;
+		this.persUserWidgetService = persUserWidgetService;
+	}
 
 	@RequestMapping(value = { "/portalApi/widgets" }, method = RequestMethod.GET, produces = "application/json")
 	public List<OnboardingWidget> getOnboardingWidgets(HttpServletRequest request, HttpServletResponse response) {
 		EPUser user = EPUserUtils.getUserSession(request);
 		List<OnboardingWidget> onboardingWidgets = null;
-		
+
 		if (user == null || user.isGuest()) {
 			EcompPortalUtils.setBadPermissions(user, response, "getOnboardingWidgets");
 		} else {
 			String getType = request.getHeader("X-Widgets-Type");
-			if (!StringUtils.isEmpty(getType) && (getType.equals("managed") || getType.equals("all"))) {
-				onboardingWidgets = widgetService.getOnboardingWidgets(user, getType.equals("managed"));
+			if (!StringUtils.isEmpty(getType) && ("managed".equals(getType) || "all".equals(getType))) {
+				onboardingWidgets = widgetService.getOnboardingWidgets(user, "managed".equals(getType));
 			} else {
 				logger.debug(EELFLoggerDelegate.debugLogger, "WidgetsController.getOnboardingApps - request must contain header 'X-Widgets-Type' with 'all' or 'managed'");
 				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -112,6 +121,14 @@ public class WidgetsController extends EPRestrictedBaseController {
 			@RequestBody OnboardingWidget onboardingWidget, HttpServletResponse response) {
 		EPUser user = EPUserUtils.getUserSession(request);
 		FieldsValidator fieldsValidator = null;
+		if (onboardingWidget!=null){
+			if(!dataValidator.isValid(onboardingWidget)){
+				fieldsValidator = new FieldsValidator();
+				fieldsValidator.setHttpStatusCode((long)HttpServletResponse.SC_NOT_ACCEPTABLE);
+				return fieldsValidator;
+			}
+		}
+
 		if (userHasPermissions(user, response, "putOnboardingWidget")) {
 			onboardingWidget.id = widgetId; // !
 			onboardingWidget.normalize();
@@ -119,7 +136,7 @@ public class WidgetsController extends EPRestrictedBaseController {
 			response.setStatus(fieldsValidator.httpStatusCode.intValue());
 		}
 		EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/widgets/" + widgetId, "GET result =", response.getStatus());
-		
+
 		return fieldsValidator;
 	}
 
@@ -127,15 +144,23 @@ public class WidgetsController extends EPRestrictedBaseController {
 	@RequestMapping(value = { "/portalApi/widgets" }, method = { RequestMethod.POST }, produces = "application/json")
 	public FieldsValidator postOnboardingWidget(HttpServletRequest request, @RequestBody OnboardingWidget onboardingWidget, HttpServletResponse response) {
 		EPUser user = EPUserUtils.getUserSession(request);
-		FieldsValidator fieldsValidator = null; ;
-		
+		FieldsValidator fieldsValidator = null;
+
+		if (onboardingWidget!=null){
+			if(!dataValidator.isValid(onboardingWidget)){
+				fieldsValidator = new FieldsValidator();
+				fieldsValidator.setHttpStatusCode((long)HttpServletResponse.SC_NOT_ACCEPTABLE);
+				return fieldsValidator;
+			}
+		}
+
 		if (userHasPermissions(user, response, "postOnboardingWidget")) {
 			onboardingWidget.id = null; // !
 			onboardingWidget.normalize();
 			fieldsValidator = widgetService.setOnboardingWidget(user, onboardingWidget);
 			response.setStatus(fieldsValidator.httpStatusCode.intValue());
 		}
-		
+
 		EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/widgets", "POST result =", response.getStatus());
 		return fieldsValidator;
 	}
@@ -143,17 +168,17 @@ public class WidgetsController extends EPRestrictedBaseController {
 	@RequestMapping(value = { "/portalApi/widgets/{widgetId}" }, method = { RequestMethod.DELETE }, produces = "application/json")
 	public FieldsValidator deleteOnboardingWidget(HttpServletRequest request, @PathVariable("widgetId") Long widgetId, HttpServletResponse response) {
 		EPUser user = EPUserUtils.getUserSession(request);
-		FieldsValidator fieldsValidator = null; ;
-		
+		FieldsValidator fieldsValidator = null;
+
 		if (userHasPermissions(user, response, "deleteOnboardingWidget")) {
 			fieldsValidator = widgetService.deleteOnboardingWidget(user, widgetId);
 			response.setStatus(fieldsValidator.httpStatusCode.intValue());
 		}
-		
+
 		EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/widgets/" + widgetId, "DELETE result =", response.getStatus());
 		return fieldsValidator;
 	}
-	
+
 	/**
 	 * service to accept a user's action made on the application
 	 * catalog.
@@ -167,9 +192,18 @@ public class WidgetsController extends EPRestrictedBaseController {
 	 */
 	@RequestMapping(value = { "portalApi/widgetCatalogSelection" }, method = RequestMethod.PUT, produces = "application/json")
 	public FieldsValidator putWidgetCatalogSelection(HttpServletRequest request,
-			@RequestBody org.onap.portalapp.portal.transport.WidgetCatalogPersonalization persRequest, HttpServletResponse response) throws IOException {
+			@RequestBody WidgetCatalogPersonalization persRequest, HttpServletResponse response) throws IOException {
 		FieldsValidator result = new FieldsValidator();
 		EPUser user = EPUserUtils.getUserSession(request);
+
+		if (persRequest!=null){
+			if(!dataValidator.isValid(persRequest)){
+				result.httpStatusCode = (long)HttpServletResponse.SC_NOT_ACCEPTABLE;
+				return result;
+			}
+		}
+
+
 		try {
 			if (persRequest.getWidgetId() == null || user == null) {
 				EcompPortalUtils.setBadPermissions(user, response, "putWidgetCatalogSelection");
@@ -180,7 +214,7 @@ public class WidgetsController extends EPRestrictedBaseController {
 			logger.error(EELFLoggerDelegate.errorLogger, "Failed in putAppCatalogSelection", e);
 			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
 		}
-		result.httpStatusCode = new Long(HttpServletResponse.SC_OK);
+		result.httpStatusCode = (long) HttpServletResponse.SC_OK;
 		return result;
 	}
 }
