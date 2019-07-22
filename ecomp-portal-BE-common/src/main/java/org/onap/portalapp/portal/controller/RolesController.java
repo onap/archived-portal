@@ -79,7 +79,7 @@ public class RolesController implements BasicAuthenticationController {
 	private ExternalAccessRolesService externalAccessRolesService;
 
 	@Autowired
-	ExternalAccessRolesController externalAccessRolesController = new ExternalAccessRolesController();
+	ExternalAccessRolesController externalAccessRolesController;
 	
 
 	@ApiOperation(value = "Gets roles for an application which is upgraded to newer version.", response = CentralV2Role.class, responseContainer = "Json")

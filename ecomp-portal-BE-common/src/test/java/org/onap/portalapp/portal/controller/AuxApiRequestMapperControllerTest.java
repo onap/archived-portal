@@ -466,11 +466,11 @@ public class AuxApiRequestMapperControllerTest {
 		PowerMockito.mockStatic(AopUtils.class);
 		Mockito.when(AopUtils.isAopProxy(Matchers.anyObject())).thenReturn(false);
 		Mockito.when(mockedRequest.getMethod()).thenReturn("POST");
-		PortalRestResponse res = new PortalRestResponse();
-		res.setStatus(PortalRestStatusEnum.ERROR);
-		res.setMessage("Failed to bulkUploadFunctions");
-		res.setResponse("Failed");
-		assertEquals(res, auxApiRequestMapperController.bulkUploadFunctions(mockedRequest, mockedResponse));
+		PortalRestResponse expected = new PortalRestResponse();
+		expected.setStatus(PortalRestStatusEnum.ERROR);
+		expected.setMessage("Failed to bulkUploadFunctions");
+		expected.setResponse("Failed");
+		assertEquals(expected, auxApiRequestMapperController.bulkUploadFunctions(mockedRequest, mockedResponse));
 	}
 
 	@Test
@@ -483,11 +483,13 @@ public class AuxApiRequestMapperControllerTest {
 		PowerMockito.mockStatic(AopUtils.class);
 		Mockito.when(AopUtils.isAopProxy(Matchers.anyObject())).thenReturn(false);
 		Mockito.when(mockedRequest.getMethod()).thenReturn("POST");
-		PortalRestResponse res = new PortalRestResponse();
-		res.setStatus(PortalRestStatusEnum.ERROR);
-		res.setMessage("Failed to bulkUploadRoles");
-		res.setResponse("Failed");
-		assertEquals(res, auxApiRequestMapperController.bulkUploadRoles(mockedRequest, mockedResponse));
+		PortalRestResponse expected = new PortalRestResponse();
+		expected.setStatus(PortalRestStatusEnum.ERROR);
+		expected.setMessage("Failed to bulkUploadRoles");
+		expected.setResponse("Failed");
+		PortalRestResponse actual = auxApiRequestMapperController.bulkUploadRoles(mockedRequest, mockedResponse);
+		System.out.println(actual.toString());
+		assertEquals(expected, actual);
 	}
 
 	@Test
@@ -500,11 +502,11 @@ public class AuxApiRequestMapperControllerTest {
 		PowerMockito.mockStatic(AopUtils.class);
 		Mockito.when(AopUtils.isAopProxy(Matchers.anyObject())).thenReturn(false);
 		Mockito.when(mockedRequest.getMethod()).thenReturn("POST");
-		PortalRestResponse res = new PortalRestResponse();
-		res.setStatus(PortalRestStatusEnum.ERROR);
-		res.setMessage("Failed to bulkUploadRoleFunctions");
-		res.setResponse("Failed");
-		assertEquals(res, auxApiRequestMapperController.bulkUploadRoleFunctions(mockedRequest, mockedResponse));
+		PortalRestResponse expected = new PortalRestResponse();
+		expected.setStatus(PortalRestStatusEnum.ERROR);
+		expected.setMessage("Failed to bulkUploadRoleFunctions");
+		expected.setResponse("Failed");
+		assertEquals(expected, auxApiRequestMapperController.bulkUploadRoleFunctions(mockedRequest, mockedResponse));
 	}
 
 	@Test
@@ -517,11 +519,11 @@ public class AuxApiRequestMapperControllerTest {
 		PowerMockito.mockStatic(AopUtils.class);
 		Mockito.when(AopUtils.isAopProxy(Matchers.anyObject())).thenReturn(false);
 		Mockito.when(mockedRequest.getMethod()).thenReturn("POST");
-		PortalRestResponse res = new PortalRestResponse();
-		res.setStatus(PortalRestStatusEnum.ERROR);
-		res.setMessage("Failed to bulkUploadUserRoles");
-		res.setResponse("Failed");
-		assertEquals(res, auxApiRequestMapperController.bulkUploadUserRoles(mockedRequest, mockedResponse));
+		PortalRestResponse expected = new PortalRestResponse();
+		expected.setStatus(PortalRestStatusEnum.ERROR);
+		expected.setMessage("Failed to bulkUploadUserRoles");
+		expected.setResponse("Failed");
+		assertEquals(expected, auxApiRequestMapperController.bulkUploadUserRoles(mockedRequest, mockedResponse));
 	}
 
 	@Test
@@ -534,11 +536,11 @@ public class AuxApiRequestMapperControllerTest {
 		PowerMockito.mockStatic(AopUtils.class);
 		Mockito.when(AopUtils.isAopProxy(Matchers.anyObject())).thenReturn(false);
 		Mockito.when(mockedRequest.getMethod()).thenReturn("POST");
-		PortalRestResponse res = new PortalRestResponse();
-		res.setStatus(PortalRestStatusEnum.ERROR);
-		res.setMessage("Failed to bulkUploadUsersSingleRole");
-		res.setResponse("Failed");
-		assertEquals(res,
+		PortalRestResponse expected = new PortalRestResponse();
+		expected.setStatus(PortalRestStatusEnum.ERROR);
+		expected.setMessage("Failed to bulkUploadUsersSingleRole");
+		expected.setResponse("Failed");
+		assertEquals(expected,
 				auxApiRequestMapperController.bulkUploadUsersSingleRole(mockedRequest, mockedResponse, (long) 1));
 	}
 
@@ -552,11 +554,11 @@ public class AuxApiRequestMapperControllerTest {
 		PowerMockito.mockStatic(AopUtils.class);
 		Mockito.when(AopUtils.isAopProxy(Matchers.anyObject())).thenReturn(false);
 		Mockito.when(mockedRequest.getMethod()).thenReturn("POST");
-		PortalRestResponse res = new PortalRestResponse();
-		res.setStatus(PortalRestStatusEnum.ERROR);
-		res.setMessage("Failed to bulkUploadPartnerRoleFunctions");
-		res.setResponse("Failed");
-		assertEquals(res, auxApiRequestMapperController.bulkUploadPartnerFunctions(mockedRequest, mockedResponse));
+		PortalRestResponse expected = new PortalRestResponse();
+		expected.setStatus(PortalRestStatusEnum.ERROR);
+		expected.setMessage("Failed to bulkUploadPartnerRoleFunctions");
+		expected.setResponse("Failed");
+		assertEquals(expected, auxApiRequestMapperController.bulkUploadPartnerFunctions(mockedRequest, mockedResponse));
 	}
 
 	@Test
@@ -570,11 +572,11 @@ public class AuxApiRequestMapperControllerTest {
 		Mockito.when(AopUtils.isAopProxy(Matchers.anyObject())).thenReturn(false);
 		Mockito.when(mockedRequest.getMethod()).thenReturn("POST");
 		List<Role> upload = new ArrayList<>();
-		PortalRestResponse res = new PortalRestResponse();
-		res.setStatus(PortalRestStatusEnum.ERROR);
-		res.setMessage("Failed to bulkUploadRoles");
-		res.setResponse("Failed");
-		assertEquals(res, auxApiRequestMapperController.bulkUploadPartnerRoles(mockedRequest, mockedResponse, upload));
+		PortalRestResponse expected = new PortalRestResponse();
+		expected.setStatus(PortalRestStatusEnum.ERROR);
+		expected.setMessage("Failed to bulkUploadRoles");
+		expected.setResponse("Failed");
+		assertEquals(expected, auxApiRequestMapperController.bulkUploadPartnerRoles(mockedRequest, mockedResponse, upload));
 	}
 
 	@Test
@@ -587,11 +589,11 @@ public class AuxApiRequestMapperControllerTest {
 		PowerMockito.mockStatic(AopUtils.class);
 		Mockito.when(AopUtils.isAopProxy(Matchers.anyObject())).thenReturn(false);
 		Mockito.when(mockedRequest.getMethod()).thenReturn("POST");
-		PortalRestResponse res = new PortalRestResponse();
-		res.setStatus(PortalRestStatusEnum.ERROR);
-		res.setMessage("Failed to bulkUploadPartnerRoleFunctions");
-		res.setResponse("Failed");
-		assertEquals(res, auxApiRequestMapperController.bulkUploadPartnerRoleFunctions(mockedRequest, mockedResponse));
+		PortalRestResponse expected = new PortalRestResponse();
+		expected.setStatus(PortalRestStatusEnum.ERROR);
+		expected.setMessage("Failed to bulkUploadPartnerRoleFunctions");
+		expected.setResponse("Failed");
+		assertEquals(expected, auxApiRequestMapperController.bulkUploadPartnerRoleFunctions(mockedRequest, mockedResponse));
 	}
 
 	@Test
