@@ -48,10 +48,13 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.onap.portalapp.controller.EPRestrictedRESTfulBaseController;
 import org.onap.portalapp.portal.domain.SharedContext;
+import org.onap.portalapp.portal.exceptions.NotValidDataException;
 import org.onap.portalapp.portal.logging.aop.EPAuditLog;
 import org.onap.portalapp.portal.service.SharedContextService;
 import org.onap.portalapp.portal.utils.EPCommonSystemProperties;
 import org.onap.portalapp.portal.utils.PortalConstants;
+import org.onap.portalapp.validation.DataValidator;
+import org.onap.portalapp.validation.SecureString;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -85,33 +88,20 @@ import io.swagger.annotations.ApiOperation;
 @EnableAspectJAutoProxy
 @EPAuditLog
 public class SharedContextRestController extends EPRestrictedRESTfulBaseController {
+	private static final DataValidator dataValidator = new DataValidator();
+	private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(SharedContextRestController.class);
+	private static final ObjectMapper mapper = new ObjectMapper();
 
-	/**
-	 * Model for a one-element JSON object returned by many methods.
-	 */
-	class SharedContextJsonResponse {
-		String response;
+	private SharedContextService contextService;
+
+	@Autowired
+	public SharedContextRestController(SharedContextService contextService) {
+		this.contextService = contextService;
 	}
 
 	/**
-	 * Access to the database
-	 */
-	@Autowired
-	private SharedContextService contextService;
-
-	/**
-	 * Logger for debug etc.
-	 */
-	private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(SharedContextRestController.class);
-
-	/**
-	 * Reusable JSON (de)serializer
-	 */
-	private final ObjectMapper mapper = new ObjectMapper();
-
-	/**
 	 * Gets a value for the specified context and key (RESTful service method).
-	 * 
+	 *
 	 * @param request
 	 *            HTTP servlet request
 	 * @param context_id
@@ -127,13 +117,18 @@ public class SharedContextRestController extends EPRestrictedRESTfulBaseControll
 	@RequestMapping(value = { "/get" }, method = RequestMethod.GET, produces = "application/json")
 	public String getContext(HttpServletRequest request, @RequestParam String context_id, @RequestParam String ckey)
 			throws Exception {
-
 		logger.debug(EELFLoggerDelegate.debugLogger, "getContext for ID " + context_id + ", key " + ckey);
 		if (context_id == null || ckey == null)
 			throw new Exception("Received null for context_id and/or ckey");
+		SecureString secureContextId = new SecureString(context_id);
+		SecureString secureCKey = new SecureString(ckey);
+
+		if(!dataValidator.isValid(secureContextId) || !dataValidator.isValid(secureCKey)){
+			throw new NotValidDataException("Received not valid for context_id and/or ckey");
+		}
 
 		SharedContext context = contextService.getSharedContext(context_id, ckey);
-		String jsonResponse = "";
+		String jsonResponse;
 		if (context == null)
 			jsonResponse = convertResponseToJSON(context);
 		else
@@ -144,7 +139,7 @@ public class SharedContextRestController extends EPRestrictedRESTfulBaseControll
 
 	/**
 	 * Gets user information for the specified context (RESTful service method).
-	 * 
+	 *
 	 * @param request
 	 *            HTTP servlet request
 	 * @param context_id
@@ -162,8 +157,11 @@ public class SharedContextRestController extends EPRestrictedRESTfulBaseControll
 		logger.debug(EELFLoggerDelegate.debugLogger, "getUserContext for ID " + context_id);
 		if (context_id == null)
 			throw new Exception("Received null for context_id");
+		SecureString secureContextId = new SecureString(context_id);
+		if (!dataValidator.isValid(secureContextId))
+			throw new NotValidDataException("context_id is not valid");
 
-		List<SharedContext> listSharedContext = new ArrayList<SharedContext>();
+		List<SharedContext> listSharedContext = new ArrayList<>();
 		SharedContext firstNameContext = contextService.getSharedContext(context_id,
 				EPCommonSystemProperties.USER_FIRST_NAME);
 		SharedContext lastNameContext = contextService.getSharedContext(context_id,
@@ -179,14 +177,13 @@ public class SharedContextRestController extends EPRestrictedRESTfulBaseControll
 			listSharedContext.add(emailContext);
 		if (orgUserIdContext != null)
 			listSharedContext.add(orgUserIdContext);
-		String jsonResponse = convertResponseToJSON(listSharedContext);
-		return jsonResponse;
+		return convertResponseToJSON(listSharedContext);
 	}
 
 	/**
 	 * Tests for presence of the specified key in the specified context (RESTful
 	 * service method).
-	 * 
+	 *
 	 * @param request
 	 *            HTTP servlet request
 	 * @param context_id
@@ -208,19 +205,24 @@ public class SharedContextRestController extends EPRestrictedRESTfulBaseControll
 		if (context_id == null || ckey == null)
 			throw new Exception("Received null for contextId and/or key");
 
+		SecureString secureContextId = new SecureString(context_id);
+		SecureString secureCKey = new SecureString(ckey);
+
+		if (!dataValidator.isValid(secureContextId) || !dataValidator.isValid(secureCKey))
+			throw new NotValidDataException("Not valid data for contextId and/or key");
+
 		String response = null;
 		SharedContext context = contextService.getSharedContext(context_id, ckey);
 		if (context != null)
 			response = "exists";
 
-		String jsonResponse = convertResponseToJSON(response);
-		return jsonResponse;
+		return convertResponseToJSON(response);
 	}
 
 	/**
 	 * Removes the specified key in the specified context (RESTful service
 	 * method).
-	 * 
+	 *
 	 * @param request
 	 *            HTTP servlet request
 	 * @param context_id
@@ -242,6 +244,12 @@ public class SharedContextRestController extends EPRestrictedRESTfulBaseControll
 		if (context_id == null || ckey == null)
 			throw new Exception("Received null for contextId and/or key");
 
+		SecureString secureContextId = new SecureString(context_id);
+		SecureString secureCKey = new SecureString(ckey);
+
+		if (!dataValidator.isValid(secureContextId) || !dataValidator.isValid(secureCKey))
+			throw new NotValidDataException("Not valid data for contextId and/or key");
+
 		SharedContext context = contextService.getSharedContext(context_id, ckey);
 		String response = null;
 		if (context != null) {
@@ -249,14 +257,13 @@ public class SharedContextRestController extends EPRestrictedRESTfulBaseControll
 			response = "removed";
 		}
 
-		String jsonResponse = convertResponseToJSON(response);
-		return jsonResponse;
+		return convertResponseToJSON(response);
 	}
 
 	/**
 	 * Clears all key-value pairs in the specified context (RESTful service
 	 * method).
-	 * 
+	 *
 	 * @param request
 	 *            HTTP servlet request
 	 * @param context_id
@@ -275,16 +282,20 @@ public class SharedContextRestController extends EPRestrictedRESTfulBaseControll
 		if (context_id == null)
 			throw new Exception("clearContext: Received null for contextId");
 
+		SecureString secureContextId = new SecureString(context_id);
+
+		if (!dataValidator.isValid(secureContextId))
+			throw new NotValidDataException("Not valid data for contextId");
+
 		int count = contextService.deleteSharedContexts(context_id);
-		String jsonResponse = convertResponseToJSON(Integer.toString(count));
-		return jsonResponse;
+		return convertResponseToJSON(Integer.toString(count));
 	}
 
 	/**
 	 * Sets a context value for the specified context and key (RESTful service
 	 * method). Creates the context if no context with the specified ID-key pair
 	 * exists, overwrites the value if it exists already.
-	 * 
+	 *
 	 * @param request
 	 *            HTTP servlet request
 	 * @param userJson
@@ -302,6 +313,11 @@ public class SharedContextRestController extends EPRestrictedRESTfulBaseControll
 	@ApiOperation(value = "Sets a context value for the specified context and key. Creates the context if no context with the specified ID-key pair exists, overwrites the value if it exists already.", response = SharedContextJsonResponse.class)
 	@RequestMapping(value = { "/set" }, method = RequestMethod.POST, produces = "application/json")
 	public String setContext(HttpServletRequest request, @RequestBody String userJson) throws Exception {
+		if (userJson !=null){
+		SecureString secureUserJson = new SecureString(userJson);
+		if (!dataValidator.isValid(secureUserJson))
+			throw new NotValidDataException("Not valid data for userJson");
+		}
 
 		@SuppressWarnings("unchecked")
 		Map<String, Object> userData = mapper.readValue(userJson, Map.class);
@@ -313,7 +329,7 @@ public class SharedContextRestController extends EPRestrictedRESTfulBaseControll
 			throw new Exception("setContext: received null for contextId and/or key");
 
 		logger.debug(EELFLoggerDelegate.debugLogger, "setContext: ID " + contextId + ", key " + key + "->" + value);
-		String response = null;
+		String response;
 		SharedContext existing = contextService.getSharedContext(contextId, key);
 		if (existing == null) {
 			contextService.addSharedContext(contextId, key, value);
@@ -322,53 +338,49 @@ public class SharedContextRestController extends EPRestrictedRESTfulBaseControll
 			contextService.saveSharedContext(existing);
 		}
 		response = existing == null ? "added" : "replaced";
-		String jsonResponse = convertResponseToJSON(response);
-		return jsonResponse;
+		return convertResponseToJSON(response);
 	}
 
 	/**
 	 * Creates a two-element JSON object tagged "response".
-	 * 
+	 *
 	 * @param responseBody
 	 * @return JSON object as String
 	 * @throws JsonProcessingException
 	 */
 	private String convertResponseToJSON(String responseBody) throws JsonProcessingException {
-		Map<String, String> responseMap = new HashMap<String, String>();
+		Map<String, String> responseMap = new HashMap<>();
 		responseMap.put("response", responseBody);
-		String response = mapper.writeValueAsString(responseMap);
-		return response;
+		return mapper.writeValueAsString(responseMap);
 	}
 
 	/**
 	 * Converts a list of SharedContext objects to a JSON array.
-	 * 
+	 *
 	 * @param contextList
 	 * @return JSON array as String
 	 * @throws JsonProcessingException
 	 */
 	private String convertResponseToJSON(List<SharedContext> contextList) throws JsonProcessingException {
-		String jsonArray = mapper.writeValueAsString(contextList);
-		return jsonArray;
+		return mapper.writeValueAsString(contextList);
 	}
 
 	/**
 	 * Creates a JSON object with the content of the shared context; null is ok.
-	 * 
+	 *
 	 * @param context
 	 * @return tag "response" with collection of context object's fields
 	 * @throws JsonProcessingException
 	 */
 	private String convertResponseToJSON(SharedContext context) throws JsonProcessingException {
-		Map<String, Object> responseMap = new HashMap<String, Object>();
+		Map<String, Object> responseMap = new HashMap<>();
 		responseMap.put("response", context);
-		String responseBody = mapper.writeValueAsString(responseMap);
-		return responseBody;
+		return mapper.writeValueAsString(responseMap);
 	}
 
 	/**
 	 * Handles any exception thrown by a method in this controller.
-	 * 
+	 *
 	 * @param e
 	 *            Exception
 	 * @param response
@@ -382,3 +394,7 @@ public class SharedContextRestController extends EPRestrictedRESTfulBaseControll
 	}
 
 }
+class SharedContextJsonResponse {
+	String response;
+}
+
