@@ -66,7 +66,7 @@ public class AuditLogControllerTest {
 	AuditService auditService;
 	
 	@InjectMocks
-     AuditLogController auditLogController = new AuditLogController();
+     AuditLogController auditLogController;
 
 	@Before
 	public void setup() {

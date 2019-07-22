@@ -43,6 +43,8 @@ import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.onap.portalapp.validation.DataValidator;
+import org.onap.portalapp.validation.SecureString;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -68,14 +70,18 @@ import org.onap.portalsdk.core.util.SystemProperties;
 @RestController
 @RequestMapping("/portalApi/auditLog")
 public class AuditLogController extends EPRestrictedBaseController {
-	private static EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(DashboardController.class);
+	private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(DashboardController.class);
+	private static final DataValidator dataValidator = new DataValidator();
 
-	@Autowired
 	private AuditService auditService;
+	@Autowired
+	public AuditLogController(AuditService auditService) {
+		this.auditService = auditService;
+	}
 
 	/**
 	 * Store audit log of the specified access type.
-	 * 
+	 *
 	 * @param request
 	 *            HttpServletRequest
 	 * @param affectedAppId
@@ -90,34 +96,50 @@ public class AuditLogController extends EPRestrictedBaseController {
 			@RequestParam String comment) {
 		logger.debug(EELFLoggerDelegate.debugLogger, "auditLog: appId {}, type {}, comment {}", affectedAppId, type,
 				comment);
-		String cd_type = null;
+		String cdType = null;
+
+		SecureString secureString0 = new SecureString(affectedAppId);
+		SecureString secureString1 = new SecureString(type);
+		SecureString secureString2 = new SecureString(comment);
+		if (  !dataValidator.isValid(secureString0)
+			||!dataValidator.isValid(secureString1)
+			||!dataValidator.isValid(secureString2)){
+			return;
+		}
+
 		try {
 			EPUser user = EPUserUtils.getUserSession(request);
 			/* Check type of Activity CD */
-			if (type.equals("app")) {
-				cd_type = AuditLog.CD_ACTIVITY_APP_ACCESS;
-			} else if (type.equals("tab")) {
-				cd_type = AuditLog.CD_ACTIVITY_TAB_ACCESS;
-			} else if (type.equals("functional")) {
-				cd_type = AuditLog.CD_ACTIVITY_FUNCTIONAL_ACCESS;
-			} else if (type.equals("leftMenu")) {
-				cd_type = AuditLog.CD_ACTIVITY_LEFT_MENU_ACCESS;
-			} else {
-				logger.error(EELFLoggerDelegate.errorLogger,
+			switch (type) {
+				case "app":
+					cdType = AuditLog.CD_ACTIVITY_APP_ACCESS;
+					break;
+				case "tab":
+					cdType = AuditLog.CD_ACTIVITY_TAB_ACCESS;
+					break;
+				case "functional":
+					cdType = AuditLog.CD_ACTIVITY_FUNCTIONAL_ACCESS;
+					break;
+				case "leftMenu":
+					cdType = AuditLog.CD_ACTIVITY_LEFT_MENU_ACCESS;
+					break;
+				default:
+					logger.error(EELFLoggerDelegate.errorLogger,
 						"Storing auditLog failed! Activity CD type is not correct.");
+					break;
 			}
 			/* Store the audit log only if it contains valid Activity CD */
-			if (cd_type != null) {
+			if (cdType != null) {
 				AuditLog auditLog = new AuditLog();
-				auditLog.setActivityCode(cd_type);
+				auditLog.setActivityCode(cdType);
 				/*
 				 * Check affectedAppId and comment and see if these two values
 				 * are valid
 				 */
-				if (comment != null && !comment.equals("") && !comment.equals("undefined"))
+				if (comment != null && !comment.isEmpty() && !"undefined".equals(comment))
 					auditLog.setComments(
 							EcompPortalUtils.truncateString(comment, PortalConstants.AUDIT_LOG_COMMENT_SIZE));
-				if (affectedAppId != null && !affectedAppId.equals("") && !affectedAppId.equals("undefined"))
+				if (affectedAppId != null && !affectedAppId.isEmpty() && !"undefined".equals(affectedAppId))
 					auditLog.setAffectedRecordId(affectedAppId);
 				long userId = EPUserUtils.getUserId(request);
 				auditLog.setUserId(userId);
@@ -140,7 +162,7 @@ public class AuditLogController extends EPRestrictedBaseController {
 				MDC.put(SystemProperties.MDC_TIMER, timeDifference);
 				MDC.put(EPCommonSystemProperties.STATUS_CODE, "COMPLETE");
 				logger.info(EELFLoggerDelegate.auditLogger, EPLogUtil.formatAuditLogMessage(
-						"AuditLogController.auditLog", cd_type, user.getOrgUserId(), affectedAppId, comment));
+						"AuditLogController.auditLog", cdType, user.getOrgUserId(), affectedAppId, comment));
 				MDC.remove(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP);
 				MDC.remove(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP);
 			}
