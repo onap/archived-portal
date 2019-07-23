@@ -523,7 +523,7 @@ public class RoleManageController extends EPRestrictedBaseController {
 			EPApp requestedApp = appService.getApp(appId);
 			if (isAuthorizedUser(user, requestedApp)) {
 				fieldsValidation(requestedApp);
-				if (requestedApp.getCentralAuth()) {
+				if (requestedApp.getCentralAuth() && roleFunc!=null) {
 					String code = roleFunc.getType() + PIPE + roleFunc.getCode() + PIPE + roleFunc.getAction();
 					CentralV2RoleFunction domainRoleFunction = externalAccessRolesService.getRoleFunction(code,
 							requestedApp.getUebKey());
@@ -679,7 +679,7 @@ public class RoleManageController extends EPRestrictedBaseController {
 	}
 
 	@RequestMapping(value = { "/portalApi/centralizedApps" }, method = RequestMethod.GET)
-	public List<CentralizedApp> getCentralizedAppRoles(HttpServletRequest request, HttpServletResponse response, String userId) throws IOException {
+	public List<CentralizedApp> getCentralizedAppRoles(HttpServletRequest request, HttpServletResponse response, String userId) {
 		if(userId!=null) {
 			SecureString secureString = new SecureString(userId);
 
@@ -817,7 +817,7 @@ public class RoleManageController extends EPRestrictedBaseController {
 
 	private boolean isAuthorizedUser(EPUser user, EPApp requestedApp) {
 		if (user != null && (adminRolesService.isAccountAdminOfApplication(user, requestedApp)
-				|| (adminRolesService.isSuperAdmin(user) && requestedApp.getId() == PortalConstants.PORTAL_APP_ID)))
+				|| (adminRolesService.isSuperAdmin(user) && requestedApp.getId().equals(PortalConstants.PORTAL_APP_ID))))
 			return true;
 		return false;
 	}
