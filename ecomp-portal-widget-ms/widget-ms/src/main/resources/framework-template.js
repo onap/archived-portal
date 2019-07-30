@@ -45,7 +45,7 @@ var ARGUMENT1 = (function(window, undefined) {
 			else if (node.currentStyle) {                                                                                          
 				value = node.currentStyle.color;                                                                                   
 			}                                                                                                                      
-			if (value && value === 'rgb(186, 218, 85)' || value.toLowerCase() === ARGUMENT1.readyCssFlagExpectedValue) {           
+			if (value && (value === 'rgb(186, 218, 85)' || value.toLowerCase() === ARGUMENT1.readyCssFlagExpectedValue)) {           
 				callback();                                                                                                        
 			} else {                                                                                                               
 				setTimeout(poll, 500);                                                                                             
