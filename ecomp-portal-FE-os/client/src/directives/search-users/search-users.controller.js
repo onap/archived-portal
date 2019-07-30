@@ -112,7 +112,7 @@
 		   				this.newUser ={
 		               			firstName:'',
 		               			lastName:'',
-		               			emailAdress:'',
+		               			emailAddress:'',
 		               			middleName:'',
 		               			loginId:'',
 		               			loginPwd:'',
