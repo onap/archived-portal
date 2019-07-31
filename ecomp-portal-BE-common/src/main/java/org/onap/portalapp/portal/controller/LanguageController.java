@@ -15,15 +15,16 @@
  */
 package org.onap.portalapp.portal.controller;
 
-import com.alibaba.fastjson.JSONObject;
-import org.onap.portalapp.portal.domain.Language;
-import org.onap.portalapp.portal.service.LanguageService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.List;
+import org.onap.portalapp.portal.service.LanguageService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+import com.alibaba.fastjson.JSONObject;
 
 @RestController
 @RequestMapping("/auxapi")
