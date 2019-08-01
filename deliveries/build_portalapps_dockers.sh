@@ -19,7 +19,6 @@ fi
 
 # Check for Jenkins build number
 if [ -n "$BUILD_NUMBER" ]; then
-    export PORTAL_TAG=$BUILD_NUMBER
     echo "Using Jenkins build number $BUILD_NUMBER; Docker Tag $PORTAL_TAG"
 else
     # This indicates a non-Jenkins build
