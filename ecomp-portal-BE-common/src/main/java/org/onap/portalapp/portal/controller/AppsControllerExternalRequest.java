@@ -151,29 +151,33 @@ public class AppsControllerExternalRequest implements BasicAuthenticationControl
 		EcompPortalUtils.logAndSerializeObject(logger, "postPortalAdmin", "request", epUser);
 		PortalRestResponse<String> portalResponse = new PortalRestResponse<>();
 
-		if (epUser!=null){
-			Validator validator = VALIDATOR_FACTORY.getValidator();
-			Set<ConstraintViolation<EPUser>> constraintViolations = validator.validate(epUser);
-			if (!constraintViolations.isEmpty()){
-				portalResponse.setStatus(PortalRestStatusEnum.ERROR);
-				portalResponse.setMessage("Data is not valid");
-				return portalResponse;
-			}
-		}
+        if (epUser != null) {
+            Validator validator = VALIDATOR_FACTORY.getValidator();
+            Set<ConstraintViolation<EPUser>> constraintViolations = validator.validate(epUser);
+            if (!constraintViolations.isEmpty()) {
+                portalResponse.setStatus(PortalRestStatusEnum.ERROR);
+                portalResponse.setMessage("Data is not valid");
+                return portalResponse;
+            }
+        }
 
-		// Check mandatory fields.
-		if (epUser.getEmail() == null || epUser.getEmail().trim().length() == 0 //
-				|| epUser.getLoginId() == null || epUser.getLoginId().trim().length() == 0 //
-				|| epUser.getLoginPwd() == null) {
-			portalResponse.setStatus(PortalRestStatusEnum.ERROR);
-			portalResponse.setMessage("Missing required field: email, loginId, or loginPwd");
-			return portalResponse;
-		}
+        // Check mandatory fields.
+        if (epUser != null && (epUser.getEmail() == null || epUser.getEmail().trim().length() == 0 //
+                || epUser.getLoginId() == null || epUser.getLoginId().trim().length() == 0 //
+                || epUser.getLoginPwd() == null)) {
+            portalResponse.setStatus(PortalRestStatusEnum.ERROR);
+            portalResponse.setMessage("Missing required field: email, loginId, or loginPwd");
+            return portalResponse;
+        }
 
 		try {
-			// Check for existing user; create if not found.
-			List<EPUser> userList = userService.getUserByUserId(epUser.getOrgUserId());
-			if (userList == null || userList.size() == 0) {
+            // Check for existing user; create if not found.
+            List<EPUser> userList = null;
+            if (epUser != null) {
+                userList = userService.getUserByUserId(epUser.getOrgUserId());
+            }
+
+			if (userList == null || userList.isEmpty()) {
 				// Create user with first, last names etc.; do check for
 				// duplicates.
 				String userCreateResult = userService.saveNewUser(epUser, "Yes");
@@ -185,17 +189,22 @@ public class AppsControllerExternalRequest implements BasicAuthenticationControl
 			}
 
 			// Check for Portal admin status; promote if not.
-			if (adminRolesService.isSuperAdmin(epUser)) {
-				portalResponse.setStatus(PortalRestStatusEnum.OK);
-			} else {
-				FieldsValidator fv = portalAdminService.createPortalAdmin(epUser.getOrgUserId());
-				if (fv.httpStatusCode.intValue() == HttpServletResponse.SC_OK) {
-					portalResponse.setStatus(PortalRestStatusEnum.OK);
-				} else {
-					portalResponse.setStatus(PortalRestStatusEnum.ERROR);
-					portalResponse.setMessage(fv.toString());
-				}
-			}
+            if (adminRolesService.isSuperAdmin(epUser)) {
+                portalResponse.setStatus(PortalRestStatusEnum.OK);
+            } else {
+                FieldsValidator fv = null;
+                if (epUser != null) {
+                    fv = portalAdminService.createPortalAdmin(epUser.getOrgUserId());
+                }
+                if (fv != null && fv.httpStatusCode.intValue() == HttpServletResponse.SC_OK) {
+                    portalResponse.setStatus(PortalRestStatusEnum.OK);
+                } else {
+                    portalResponse.setStatus(PortalRestStatusEnum.ERROR);
+                    if (fv != null) {
+                        portalResponse.setMessage(fv.toString());
+                    }
+                }
+            }
 		} catch (Exception ex) {
 			// Uncaught exceptions yield 404 and an empty error page
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -273,29 +282,37 @@ public class AppsControllerExternalRequest implements BasicAuthenticationControl
 			}
 		}
 		// Validate fields
-		if (newOnboardApp.id != null) {
+		if (newOnboardApp != null && newOnboardApp.id != null) {
 			portalResponse.setStatus(PortalRestStatusEnum.ERROR);
 			portalResponse.setMessage("Unexpected field: id");
 			return portalResponse;
 		}
-		if (newOnboardApp.name == null || newOnboardApp.name.trim().length() == 0 //
-				|| newOnboardApp.url == null || newOnboardApp.url.trim().length() == 0 //
-				|| newOnboardApp.restUrl == null || newOnboardApp.restUrl.trim().length() == 0
-				|| newOnboardApp.myLoginsAppOwner == null || newOnboardApp.myLoginsAppOwner.trim().length() == 0
-				|| newOnboardApp.restrictedApp == null //
-				|| newOnboardApp.isOpen == null //
-				|| newOnboardApp.isEnabled == null) {
-			portalResponse.setStatus(PortalRestStatusEnum.ERROR);
-			portalResponse.setMessage(
-					"Missing required field: name, url, restUrl, restrictedApp, isOpen, isEnabled, myLoginsAppOwner");
-			return portalResponse;
-		}
+        if (newOnboardApp != null && (newOnboardApp.name == null || newOnboardApp.name.trim().length() == 0 //
+                || newOnboardApp.url == null || newOnboardApp.url.trim().length() == 0 //
+                || newOnboardApp.restUrl == null || newOnboardApp.restUrl.trim().length() == 0
+                || newOnboardApp.myLoginsAppOwner == null || newOnboardApp.myLoginsAppOwner.trim().length() == 0
+                || newOnboardApp.restrictedApp == null //
+                || newOnboardApp.isOpen == null //
+                || newOnboardApp.isEnabled == null)) {
+            portalResponse.setStatus(PortalRestStatusEnum.ERROR);
+            portalResponse.setMessage(
+                    "Missing required field: name, url, restUrl, restrictedApp, isOpen, isEnabled, myLoginsAppOwner");
+            return portalResponse;
+        }
 
 		try {
-			List<EPUser> userList = userService.getUserByUserId(newOnboardApp.myLoginsAppOwner);
-			if (userList == null || userList.size() != 1) {
-				portalResponse.setStatus(PortalRestStatusEnum.ERROR);
-				portalResponse.setMessage("Failed to find user: " + newOnboardApp.myLoginsAppOwner);
+		    List<EPUser> userList = null;
+            if (newOnboardApp != null) {
+                userList = userService.getUserByUserId(newOnboardApp.myLoginsAppOwner);
+            }
+            if (userList == null || userList.size() != 1) {
+                portalResponse.setStatus(PortalRestStatusEnum.ERROR);
+                if (newOnboardApp != null) {
+                    portalResponse.setMessage("Failed to find user: " + newOnboardApp.myLoginsAppOwner);
+                } else {
+                    portalResponse.setMessage("Failed to find user");
+                }
+
 				return portalResponse;
 			}
 
@@ -370,18 +387,18 @@ public class AppsControllerExternalRequest implements BasicAuthenticationControl
 		}
 
 		// Validate fields.
-		if (oldOnboardApp.id == null || !appId.equals(oldOnboardApp.id)) {
+		if (oldOnboardApp !=null && (oldOnboardApp.id == null || !appId.equals(oldOnboardApp.id))) {
 			portalResponse.setStatus(PortalRestStatusEnum.ERROR);
 			portalResponse.setMessage("Unexpected value for field: id");
 			return portalResponse;
 		}
-		if (oldOnboardApp.name == null || oldOnboardApp.name.trim().length() == 0 //
+		if (oldOnboardApp !=null && (oldOnboardApp.name == null || oldOnboardApp.name.trim().length() == 0 //
 				|| oldOnboardApp.url == null || oldOnboardApp.url.trim().length() == 0 //
 				|| oldOnboardApp.restUrl == null || oldOnboardApp.restUrl.trim().length() == 0
 				|| oldOnboardApp.myLoginsAppOwner == null || oldOnboardApp.myLoginsAppOwner.trim().length() == 0
 				|| oldOnboardApp.restrictedApp == null //
 				|| oldOnboardApp.isOpen == null //
-				|| oldOnboardApp.isEnabled == null) {
+				|| oldOnboardApp.isEnabled == null)) {
 			portalResponse.setStatus(PortalRestStatusEnum.ERROR);
 			portalResponse.setMessage(
 					"Missing required field: name, url, restUrl, restrictedApp, isOpen, isEnabled, myLoginsAppOwner");
@@ -389,12 +406,20 @@ public class AppsControllerExternalRequest implements BasicAuthenticationControl
 		}
 
 		try {
-			List<EPUser> userList = userService.getUserByUserId(oldOnboardApp.myLoginsAppOwner);
-			if (userList == null || userList.size() != 1) {
-				portalResponse.setStatus(PortalRestStatusEnum.ERROR);
-				portalResponse.setMessage("Failed to find user: " + oldOnboardApp.myLoginsAppOwner);
-				return portalResponse;
-			}
+            List<EPUser> userList = null;
+            if (oldOnboardApp != null) {
+                userList = userService.getUserByUserId(oldOnboardApp.myLoginsAppOwner);
+            }
+            if (userList == null || userList.size() != 1) {
+                portalResponse.setStatus(PortalRestStatusEnum.ERROR);
+                if (oldOnboardApp != null) {
+                    portalResponse.setMessage("Failed to find user: " + oldOnboardApp.myLoginsAppOwner);
+                } else {
+                    portalResponse.setMessage("Failed to find user");
+                }
+
+                return portalResponse;
+            }
 
 			EPUser epUser = userList.get(0);
 			// Check for Portal admin status

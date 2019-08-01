@@ -917,7 +917,7 @@ public class AppsController extends EPRestrictedBaseController {
 				throw e;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+		    logger.error(EELFLoggerDelegate.errorLogger, "Exception in checkIfNameSpaceIsValid", e);
 		}
 	}
 
