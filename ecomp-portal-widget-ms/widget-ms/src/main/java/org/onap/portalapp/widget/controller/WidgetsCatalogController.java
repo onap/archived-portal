@@ -73,7 +73,7 @@ public class WidgetsCatalogController {
 			widgetCatalog = widgetCatalogService.getWidgetCatalog();
 			logger.debug("WidgetsCatalogController.getWidgetCatalog: getting widget list {}", widgetCatalog);
 		} catch (Exception e) {
-			logger.error("Exception occurred while performing WidgetsCatalogController.getWidgetCatalog in widget microservices. Details:" + e.getMessage());
+			logger.error("Exception occurred while performing WidgetsCatalogController.getWidgetCatalog in widget microservices. Details:", e);
 		}
 		return widgetCatalog;
 	}
@@ -92,7 +92,7 @@ public class WidgetsCatalogController {
 			widgetCatalog = widgetCatalogService.getUserWidgetCatalog(loginName);
 			logger.debug("WidgetsCatalogController.getUserWidgetCatalog: getting widget list {}", widgetCatalog);
 		} catch (Exception e) {
-			logger.error("Exception occurred while performing WidgetsCatalogController.getUserWidgetCatalog in widget microservices. Details:" + e.getMessage());
+			logger.error("Exception occurred while performing WidgetsCatalogController.getUserWidgetCatalog in widget microservices. Details:", e);
 		}
 		return widgetCatalog;
 	}
@@ -112,8 +112,7 @@ public class WidgetsCatalogController {
 			widgetCatalogService.updateWidgetCatalog(widgetId, newWidgetCatalog);
 			logger.debug("WidgetsCatalogController.updateWidgetCatalog: updating widget {}", newWidgetCatalog);
 		} catch (Exception e) {
-			logger.error("Exception occurred while performing WidgetsCatalogController.updateWidgetCatalog in widget microservices. Details:" + e.getMessage());
-			e.printStackTrace();
+			logger.error("Exception occurred while performing WidgetsCatalogController.updateWidgetCatalog in widget microservices. Details:", e);
 		}
 	}
 	
@@ -152,7 +151,7 @@ public class WidgetsCatalogController {
 	@RequestMapping(value = { "/microservices/widgetCatalog/{widgetId}" }, method = RequestMethod.POST, produces = "application/json")
 	public ValidationRespond updateWidgetCatalogwithFiles(HttpServletRequest request, HttpServletResponse response, @RequestHeader(value="Authorization") String auth,
 			@RequestParam("file") MultipartFile file, @RequestParam("widget") String widget, @PathVariable("widgetId") long widgetId) throws IOException {	
-		System.out.println("microserivces updating with files" + widgetId);
+		logger.debug("microserivces updating with files {}", widgetId);
 		ValidationRespond respond = null;
 		if(!util.authorization(auth, security_user, security_pass)){
 			response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
@@ -171,8 +170,7 @@ public class WidgetsCatalogController {
 				storageService.update(file, newWidget, widgetId);
 			}
 		} catch (Exception e) {
-			logger.error("Exception occurred while performing WidgetsCatalogController.saveWidgetCatalog in widget microservices. Details:" + e.getMessage());
-			e.printStackTrace();
+			logger.error("Exception occurred while performing WidgetsCatalogController.saveWidgetCatalog in widget microservices. Details:", e);
 		}
 		return respond;
 	}
@@ -193,7 +191,7 @@ public class WidgetsCatalogController {
 			widgetCatalogService.deleteWidgetCatalog(widgetId);
 			storageService.deleteWidgetFile(widgetId);
 		} catch (Exception e) {
-			logger.error("Exception occurred while performing WidgetsCatalogController.deleteOnboardingWidget in widget microservices. Details:" + e.getMessage());
+			logger.error("Exception occurred while performing WidgetsCatalogController.deleteOnboardingWidget in widget microservices. Details:", e);
 		}
 	}
 	
@@ -212,7 +210,7 @@ public class WidgetsCatalogController {
 			logger.debug("WidgetsCatalogController.getServiceIdByWidget: getting service Id for widget {}", widgetId);
 			serviceId = widgetCatalogService.getServiceIdByWidget(widgetId);
 		}catch(Exception e){
-			logger.error("Exception occurred while performing WidgetsCatalogController.getServiceIdByWidget in widget microservices. Details:" + e.getMessage());
+			logger.error("Exception occurred while performing WidgetsCatalogController.getServiceIdByWidget in widget microservices. Details:", e);
 		}
 		return serviceId;
 	}
@@ -222,7 +220,7 @@ public class WidgetsCatalogController {
 	@RequestMapping(value = { "/microservices/widgetCatalog/service/{serviceId}" }, method = RequestMethod.GET, produces = "application/json")
 	public List<WidgetCatalog> getWidgetByServiceId(HttpServletRequest request, HttpServletResponse response, 
 			@PathVariable("serviceId") Long serviceId, @RequestHeader(value="Authorization") String auth) throws IOException {
-		List<WidgetCatalog> list = new ArrayList<WidgetCatalog>();
+		List<WidgetCatalog> list = new ArrayList<>();
 		if(!util.authorization(auth, security_user, security_pass)){
 			response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
 			logger.error("Basic Authentication Error while performing WidgetsCatalogController.getWidgetByServiceId in widget microserivce. Please check your username and password.");
@@ -232,7 +230,7 @@ public class WidgetsCatalogController {
 			logger.debug("WidgetsCatalogController.getWidgetByServiceId: getting service Id for widget {}", serviceId);
 			list = widgetCatalogService.getWidgetsByServiceId(serviceId);
 		}catch(Exception e){
-			logger.error("Exception occurred while performing WidgetsCatalogController.getWidgetByServiceId in widget microservices. Details:" + e.getMessage());
+			logger.error("Exception occurred while performing WidgetsCatalogController.getWidgetByServiceId in widget microservices. Details:", e);
 		}
 		return list;
 	}
@@ -252,7 +250,7 @@ public class WidgetsCatalogController {
 			byteFile = storageService.getWidgetCatalogContent(widgetId);
 			logger.debug("WidgetsCatalogController.getWidgetZipFile: getting widget zip file for widget with id {}", widgetId);
 		} catch (Exception e) {
-			logger.error("Exception occurred while performing WidgetsCatalogController.getWidgetZipFile in widget microservices. Details:" + e.getMessage());
+			logger.error("Exception occurred while performing WidgetsCatalogController.getWidgetZipFile in widget microservices. Details:", e);
 		}
 		return byteFile;
 	}

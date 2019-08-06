@@ -117,6 +117,7 @@ public class MainUebHandler {
 				Thread.sleep(10);
 			} catch (InterruptedException e) {
 				logger.error(EELFLoggerDelegate.errorLogger, "runHandler interrupted", e);
+				Thread.currentThread().interrupt();
 			} catch (Exception e) {
 				logger.error(EELFLoggerDelegate.errorLogger, "runHandler failed", e);
 			}
