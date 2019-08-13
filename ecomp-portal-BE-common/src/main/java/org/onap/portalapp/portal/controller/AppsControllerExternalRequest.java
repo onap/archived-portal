@@ -37,17 +37,12 @@
  */
 package org.onap.portalapp.portal.controller;
 
+import io.swagger.annotations.ApiOperation;
 import java.util.List;
-
-import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import javax.validation.ConstraintViolation;
 import javax.validation.Valid;
-import javax.validation.Validation;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
+import lombok.NoArgsConstructor;
 import org.onap.portalapp.portal.domain.EPApp;
 import org.onap.portalapp.portal.domain.EPUser;
 import org.onap.portalapp.portal.ecomp.model.PortalRestResponse;
@@ -62,6 +57,7 @@ import org.onap.portalapp.portal.transport.OnboardingApp;
 import org.onap.portalapp.portal.utils.EPCommonSystemProperties;
 import org.onap.portalapp.portal.utils.EcompPortalUtils;
 import org.onap.portalapp.portal.utils.PortalConstants;
+import org.onap.portalapp.validation.DataValidator;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -72,8 +68,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-
-import io.swagger.annotations.ApiOperation;
 
 /**
  * Processes requests from external systems (i.e., not the front-end web UI).
@@ -93,90 +87,72 @@ import io.swagger.annotations.ApiOperation;
 @Configuration
 @EnableAspectJAutoProxy
 @EPAuditLog
+@NoArgsConstructor
 public class AppsControllerExternalRequest implements BasicAuthenticationController {
-	private static final ValidatorFactory VALIDATOR_FACTORY = Validation.buildDefaultValidatorFactory();
-
-	private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(AppsControllerExternalRequest.class);
-
 	private static final String ONBOARD_APP = "/onboardApp";
+	private static final String DATA_IS_NOT_VALID = "Data is not valid";
+	private static final String REQUEST = "request";
+	private static final String RESPONSE = "response";
 
-	/**
-	 * For testing whether a user is a superadmin.
-	 */
-	@Autowired
+	private static final DataValidator DATA_VALIDATOR = new DataValidator();
+	private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(AppsControllerExternalRequest.class);
+
 	private AdminRolesService adminRolesService;
-
-	/**
-	 * For onboarding or updating an app
-	 */
-	@Autowired
 	private EPAppService appService;
-
-	/**
-	 * For promoting a user to Portal admin
-	 */
-	@Autowired
 	private PortalAdminService portalAdminService;
-
-	/**
-	 * For creating a new user
-	 */
-	@Autowired
 	private UserService userService;
+
+	@Autowired
+	public AppsControllerExternalRequest(AdminRolesService adminRolesService,
+		EPAppService appService, PortalAdminService portalAdminService,
+		UserService userService) {
+		this.adminRolesService = adminRolesService;
+		this.appService = appService;
+		this.portalAdminService = portalAdminService;
+		this.userService = userService;
+	}
+
 
 	/**
 	 * Creates a new user as a Portal administrator.
-	 * 
+	 *
 	 * <PRE>
-	 { 
-		"loginId" : "abc123",
-		"loginPwd": "",
-		"email":"ecomp@controller" 
-	 }
+	 * { "loginId" : "abc123", "loginPwd": "", "email":"ecomp@controller" }
 	 * </PRE>
-	 * 
-	 * @param request
-	 *            HttpServletRequest
-	 * @param epUser
-	 *            User details; the email and orgUserId fields are mandatory
-	 * @param response
-	 *            HttpServletResponse
+	 *
+	 * @param request HttpServletRequest
+	 * @param epUser User details; the email and orgUserId fields are mandatory
+	 * @param response HttpServletResponse
 	 * @return PortalRestResponse with success or failure
 	 */
 	@ApiOperation(value = "Creates a new user as a Portal administrator.", response = PortalRestResponse.class)
 	@RequestMapping(value = "/portalAdmin", method = RequestMethod.POST, produces = "application/json")
 	@ResponseBody
 	public PortalRestResponse<String> postPortalAdmin(HttpServletRequest request, HttpServletResponse response,
-			@Valid @RequestBody EPUser epUser) {
-		EcompPortalUtils.logAndSerializeObject(logger, "postPortalAdmin", "request", epUser);
+		@Valid @RequestBody EPUser epUser) {
+		EcompPortalUtils.logAndSerializeObject(logger, "postPortalAdmin", REQUEST, epUser);
 		PortalRestResponse<String> portalResponse = new PortalRestResponse<>();
+		if (epUser == null) {
+			portalResponse.setStatus(PortalRestStatusEnum.ERROR);
+			portalResponse.setMessage("User can not be NULL");
+			return portalResponse;
+		} else if (!DATA_VALIDATOR.isValid(epUser)) {
+				portalResponse.setStatus(PortalRestStatusEnum.ERROR);
+				portalResponse.setMessage(DATA_IS_NOT_VALID);
+				return portalResponse;
+		}
 
-        if (epUser != null) {
-            Validator validator = VALIDATOR_FACTORY.getValidator();
-            Set<ConstraintViolation<EPUser>> constraintViolations = validator.validate(epUser);
-            if (!constraintViolations.isEmpty()) {
-                portalResponse.setStatus(PortalRestStatusEnum.ERROR);
-                portalResponse.setMessage("Data is not valid");
-                return portalResponse;
-            }
-        }
-
-        // Check mandatory fields.
-        if (epUser != null && (epUser.getEmail() == null || epUser.getEmail().trim().length() == 0 //
-                || epUser.getLoginId() == null || epUser.getLoginId().trim().length() == 0 //
-                || epUser.getLoginPwd() == null)) {
-            portalResponse.setStatus(PortalRestStatusEnum.ERROR);
-            portalResponse.setMessage("Missing required field: email, loginId, or loginPwd");
-            return portalResponse;
-        }
+		if (epUser.getEmail() == null || epUser.getEmail().trim().length() == 0 //
+			|| epUser.getLoginId() == null || epUser.getLoginId().trim().length() == 0 //
+			|| epUser.getLoginPwd() == null) {
+			portalResponse.setStatus(PortalRestStatusEnum.ERROR);
+			portalResponse.setMessage("Missing required field: email, loginId, or loginPwd");
+			return portalResponse;
+		}
 
 		try {
-            // Check for existing user; create if not found.
-            List<EPUser> userList = null;
-            if (epUser != null) {
-                userList = userService.getUserByUserId(epUser.getOrgUserId());
-            }
-
+			// Check for existing user; create if not found.
+			List<EPUser> userList = userService.getUserByUserId(epUser.getOrgUserId());
 			if (userList == null || userList.isEmpty()) {
 				// Create user with first, last names etc.; do check for
 				// duplicates.
@@ -192,11 +168,9 @@ public class AppsControllerExternalRequest implements BasicAuthenticationControl
             if (adminRolesService.isSuperAdmin(epUser)) {
                 portalResponse.setStatus(PortalRestStatusEnum.OK);
             } else {
-                FieldsValidator fv = null;
-                if (epUser != null) {
-                    fv = portalAdminService.createPortalAdmin(epUser.getOrgUserId());
-                }
-                if (fv != null && fv.httpStatusCode.intValue() == HttpServletResponse.SC_OK) {
+                FieldsValidator fv;
+				fv = portalAdminService.createPortalAdmin(epUser.getOrgUserId());
+				if (fv != null && fv.httpStatusCode.intValue() == HttpServletResponse.SC_OK) {
                     portalResponse.setStatus(PortalRestStatusEnum.OK);
                 } else {
                     portalResponse.setStatus(PortalRestStatusEnum.ERROR);
@@ -207,123 +181,105 @@ public class AppsControllerExternalRequest implements BasicAuthenticationControl
             }
 		} catch (Exception ex) {
 			// Uncaught exceptions yield 404 and an empty error page
+			logger.error(EELFLoggerDelegate.errorLogger, ex.getMessage(), ex);
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			portalResponse.setStatus(PortalRestStatusEnum.ERROR);
 			portalResponse.setMessage(ex.toString());
 		}
 
-		EcompPortalUtils.logAndSerializeObject(logger, "postPortalAdmin", "response", portalResponse);
+		EcompPortalUtils.logAndSerializeObject(logger, "postPortalAdmin", RESPONSE, portalResponse);
 		return portalResponse;
 	}
 
 	/**
 	 * Gets the specified application that is on-boarded in Portal.
-	 * 
-	 * @param request
-	 *            HttpServletRequest
-	 * @param appId
-	 *            Application ID to get
-	 * @param response
-	 *            httpServletResponse
+	 *
+	 * @param request HttpServletRequest
+	 * @param appId Application ID to get
+	 * @param response httpServletResponse
 	 * @return OnboardingApp objects
 	 */
 	@ApiOperation(value = "Gets the specified application that is on-boarded in Portal.", response = OnboardingApp.class)
-	@RequestMapping(value = { ONBOARD_APP + "/{appId}" }, method = RequestMethod.GET, produces = "application/json")
+	@RequestMapping(value = {ONBOARD_APP + "/{appId}"}, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public OnboardingApp getOnboardAppExternal(HttpServletRequest request, HttpServletResponse response,
-			@PathVariable("appId") Long appId) {
+		@PathVariable("appId") Long appId) {
 		EPApp epApp = appService.getApp(appId);
 		OnboardingApp obApp = new OnboardingApp();
 		epApp.setAppPassword(EPCommonSystemProperties.APP_DISPLAY_PASSWORD); //to hide password from get request
 		appService.createOnboardingFromApp(epApp, obApp);
-		EcompPortalUtils.logAndSerializeObject(logger, "getOnboardAppExternal", "response", obApp);
+		EcompPortalUtils.logAndSerializeObject(logger, "getOnboardAppExternal", RESPONSE, obApp);
 		return obApp;
 	}
 
 	/**
-	 * Adds a new application to Portal. The My Logins App Owner in the request
-	 * must be the organization user ID of a person who is a Portal
-	 * administrator.
-	 * 
+	 * Adds a new application to Portal. The My Logins App Owner in the request must be the organization user ID of a
+	 * person who is a Portal administrator.
+	 *
 	 * <pre>
-	 * { 
-		"myLoginsAppOwner" : "abc123",
-		"name": "dashboard",
-		"url": "http://k8s/something",
-		"restUrl" : "http://targeturl.com",
-		"restrictedApp" : true,
-		"isOpen" : true,
-		"isEnabled": false
-		}
+	 * {
+	 * "myLoginsAppOwner" : "abc123",
+	 * "name": "dashboard",
+	 * "url": "http://k8s/something",
+	 * "restUrl" : "http://targeturl.com",
+	 * "restrictedApp" : true,
+	 * "isOpen" : true,
+	 * "isEnabled": false
+	 * }
 	 * </pre>
-	 * 
-	 * @param request
-	 *            HttpServletRequest
-	 * @param response
-	 *            httpServletResponse
-	 * @param newOnboardApp
-	 *            Message with details about the app to add
+	 *
+	 * @param request HttpServletRequest
+	 * @param response httpServletResponse
+	 * @param newOnboardApp Message with details about the app to add
 	 * @return PortalRestResponse
 	 */
 	@ApiOperation(value = "Adds a new application to Portal.", response = PortalRestResponse.class)
-	@RequestMapping(value = { ONBOARD_APP }, method = RequestMethod.POST, produces = "application/json")
+	@RequestMapping(value = {ONBOARD_APP}, method = RequestMethod.POST, produces = "application/json")
 	@ResponseBody
 	public PortalRestResponse<String> postOnboardAppExternal(HttpServletRequest request, HttpServletResponse response,
-			@Valid @RequestBody OnboardingApp newOnboardApp) {
-		EcompPortalUtils.logAndSerializeObject(logger, "postOnboardAppExternal", "request", newOnboardApp);
+		@Valid @RequestBody OnboardingApp newOnboardApp) {
+		EcompPortalUtils.logAndSerializeObject(logger, "postOnboardAppExternal", REQUEST, newOnboardApp);
 		PortalRestResponse<String> portalResponse = new PortalRestResponse<>();
-		if (newOnboardApp != null){
-			Validator validator = VALIDATOR_FACTORY.getValidator();
-			Set<ConstraintViolation<OnboardingApp>> constraintViolations = validator.validate(newOnboardApp);
-			if (!constraintViolations.isEmpty()){
+		if (newOnboardApp == null) {
+			portalResponse.setStatus(PortalRestStatusEnum.ERROR);
+			portalResponse.setMessage("newOnboardApp can not be NULL");
+			return portalResponse;
+		} else if (!DATA_VALIDATOR.isValid(newOnboardApp)) {
 				portalResponse.setStatus(PortalRestStatusEnum.ERROR);
-				portalResponse.setMessage("Data is not valid");
+				portalResponse.setMessage(DATA_IS_NOT_VALID);
 				return portalResponse;
-			}
 		}
 		// Validate fields
-		if (newOnboardApp != null && newOnboardApp.id != null) {
+		if (newOnboardApp.id != null) {
 			portalResponse.setStatus(PortalRestStatusEnum.ERROR);
 			portalResponse.setMessage("Unexpected field: id");
 			return portalResponse;
 		}
-        if (newOnboardApp != null && (newOnboardApp.name == null || newOnboardApp.name.trim().length() == 0 //
-                || newOnboardApp.url == null || newOnboardApp.url.trim().length() == 0 //
-                || newOnboardApp.restUrl == null || newOnboardApp.restUrl.trim().length() == 0
-                || newOnboardApp.myLoginsAppOwner == null || newOnboardApp.myLoginsAppOwner.trim().length() == 0
-                || newOnboardApp.restrictedApp == null //
-                || newOnboardApp.isOpen == null //
-                || newOnboardApp.isEnabled == null)) {
-            portalResponse.setStatus(PortalRestStatusEnum.ERROR);
-            portalResponse.setMessage(
-                    "Missing required field: name, url, restUrl, restrictedApp, isOpen, isEnabled, myLoginsAppOwner");
-            return portalResponse;
-        }
+		if (checkOnboardingApp(newOnboardApp)) {
+			portalResponse.setStatus(PortalRestStatusEnum.ERROR);
+			portalResponse.setMessage(
+				"Missing required field: name, url, restUrl, restrictedApp, isOpen, isEnabled, myLoginsAppOwner");
+			return portalResponse;
+		}
 
 		try {
-		    List<EPUser> userList = null;
-            if (newOnboardApp != null) {
-                userList = userService.getUserByUserId(newOnboardApp.myLoginsAppOwner);
-            }
-            if (userList == null || userList.size() != 1) {
+		    List<EPUser> userList;
+			userList = userService.getUserByUserId(newOnboardApp.myLoginsAppOwner);
+			if (userList == null || userList.size() != 1) {
                 portalResponse.setStatus(PortalRestStatusEnum.ERROR);
-                if (newOnboardApp != null) {
-                    portalResponse.setMessage("Failed to find user: " + newOnboardApp.myLoginsAppOwner);
-                } else {
-                    portalResponse.setMessage("Failed to find user");
-                }
+				portalResponse.setMessage("Failed to find user: " + newOnboardApp.myLoginsAppOwner);
 
 				return portalResponse;
 			}
 
 			EPUser epUser = userList.get(0);
 			// Check for Portal admin status
-			if (! adminRolesService.isSuperAdmin(epUser)) {
+			if (!adminRolesService.isSuperAdmin(epUser)) {
 				portalResponse.setStatus(PortalRestStatusEnum.ERROR);
 				portalResponse.setMessage("User lacks Portal admin role: " + epUser.getLoginId());
-				return portalResponse;				
+				return portalResponse;
 			}
-				
+
 			newOnboardApp.normalize();
 			FieldsValidator fv = appService.addOnboardingApp(newOnboardApp, epUser);
 			if (fv.httpStatusCode.intValue() == HttpServletResponse.SC_OK) {
@@ -334,99 +290,86 @@ public class AppsControllerExternalRequest implements BasicAuthenticationControl
 			}
 		} catch (Exception ex) {
 			// Uncaught exceptions yield 404 and an empty error page
+			logger.error(EELFLoggerDelegate.errorLogger, ex.getMessage(), ex);
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			portalResponse.setStatus(PortalRestStatusEnum.ERROR);
 			portalResponse.setMessage(ex.toString());
 		}
-		EcompPortalUtils.logAndSerializeObject(logger, "postOnboardAppExternal", "response", portalResponse);
+		EcompPortalUtils.logAndSerializeObject(logger, "postOnboardAppExternal", RESPONSE, portalResponse);
 		return portalResponse;
 	}
 
 	/**
-	 * Updates information about an on-boarded application in Portal. The My
-	 * Logins App Owner in the request must be the organization user ID of a
-	 * person who is a Portal administrator.
+	 * Updates information about an on-boarded application in Portal. The My Logins App Owner in the request must be
+	 * the organization user ID of a person who is a Portal administrator.
 	 * <pre>
-	   { 
-		"id" : 123,
-		"myLoginsAppOwner" : "abc123",
-		"name": "dashboard",
-		"url": "http://k8s/something",
-		"restUrl" : "http://targeturl.com",
-		"restrictedApp" : true,
-		"isOpen" : true,
-		"isEnabled": false
-		}
-		</pre>
-	 * @param request
-	 *            HttpServletRequest
-	 * @param response
-	 *            httpServletResponse
-	 * @param appId
-	 *            application id
-	 * @param oldOnboardApp
-	 *            Message with details about the app to add
+	 * {
+	 * "id" : 123,
+	 * "myLoginsAppOwner" : "abc123",
+	 * "name": "dashboard",
+	 * "url": "http://k8s/something",
+	 * "restUrl" : "http://targeturl.com",
+	 * "restrictedApp" : true,
+	 * "isOpen" : true,
+	 * "isEnabled": false
+	 * }
+	 * </pre>
+	 *
+	 * @param request HttpServletRequest
+	 * @param response httpServletResponse
+	 * @param appId application id
+	 * @param oldOnboardApp Message with details about the app to add
 	 * @return PortalRestResponse
 	 */
 	@ApiOperation(value = "Updates information about an on-boarded application in Portal.", response = PortalRestResponse.class)
-	@RequestMapping(value = { ONBOARD_APP + "/{appId}" }, method = RequestMethod.PUT, produces = "application/json")
+	@RequestMapping(value = {ONBOARD_APP + "/{appId}"}, method = RequestMethod.PUT, produces = "application/json")
 	@ResponseBody
 	public PortalRestResponse<String> putOnboardAppExternal(HttpServletRequest request, HttpServletResponse response,
-			@PathVariable("appId") Long appId, @Valid @RequestBody OnboardingApp oldOnboardApp) {
-		EcompPortalUtils.logAndSerializeObject(logger, "putOnboardAppExternal", "request", oldOnboardApp);
+		@PathVariable("appId") Long appId, @Valid @RequestBody OnboardingApp oldOnboardApp) {
+		EcompPortalUtils.logAndSerializeObject(logger, "putOnboardAppExternal", REQUEST, oldOnboardApp);
 		PortalRestResponse<String> portalResponse = new PortalRestResponse<>();
 
-		if (oldOnboardApp != null){
-			Validator validator = VALIDATOR_FACTORY.getValidator();
-			Set<ConstraintViolation<OnboardingApp>> constraintViolations = validator.validate(oldOnboardApp);
-			if (!constraintViolations.isEmpty()){
+		if (oldOnboardApp == null){
+			portalResponse.setStatus(PortalRestStatusEnum.ERROR);
+			portalResponse.setMessage("OnboardingApp can not be NULL");
+			return portalResponse;
+		}else if (!DATA_VALIDATOR.isValid(oldOnboardApp)) {
 				portalResponse.setStatus(PortalRestStatusEnum.ERROR);
-				portalResponse.setMessage("Data is not valid");
+				portalResponse.setMessage(DATA_IS_NOT_VALID);
 				return portalResponse;
-			}
 		}
 
 		// Validate fields.
-		if (oldOnboardApp !=null && (oldOnboardApp.id == null || !appId.equals(oldOnboardApp.id))) {
+
+		if (appId == null || !appId.equals(oldOnboardApp.id)) {
 			portalResponse.setStatus(PortalRestStatusEnum.ERROR);
 			portalResponse.setMessage("Unexpected value for field: id");
 			return portalResponse;
 		}
-		if (oldOnboardApp !=null && (oldOnboardApp.name == null || oldOnboardApp.name.trim().length() == 0 //
-				|| oldOnboardApp.url == null || oldOnboardApp.url.trim().length() == 0 //
-				|| oldOnboardApp.restUrl == null || oldOnboardApp.restUrl.trim().length() == 0
-				|| oldOnboardApp.myLoginsAppOwner == null || oldOnboardApp.myLoginsAppOwner.trim().length() == 0
-				|| oldOnboardApp.restrictedApp == null //
-				|| oldOnboardApp.isOpen == null //
-				|| oldOnboardApp.isEnabled == null)) {
+		if (checkOnboardingApp(oldOnboardApp)) {
+
 			portalResponse.setStatus(PortalRestStatusEnum.ERROR);
 			portalResponse.setMessage(
-					"Missing required field: name, url, restUrl, restrictedApp, isOpen, isEnabled, myLoginsAppOwner");
+				"Missing required field: name, url, restUrl, restrictedApp, isOpen, isEnabled, myLoginsAppOwner");
 			return portalResponse;
 		}
 
 		try {
-            List<EPUser> userList = null;
-            if (oldOnboardApp != null) {
-                userList = userService.getUserByUserId(oldOnboardApp.myLoginsAppOwner);
-            }
-            if (userList == null || userList.size() != 1) {
+            List<EPUser> userList;
+			userList = userService.getUserByUserId(oldOnboardApp.myLoginsAppOwner);
+			if (userList == null || userList.size() != 1) {
                 portalResponse.setStatus(PortalRestStatusEnum.ERROR);
-                if (oldOnboardApp != null) {
-                    portalResponse.setMessage("Failed to find user: " + oldOnboardApp.myLoginsAppOwner);
-                } else {
-                    portalResponse.setMessage("Failed to find user");
-                }
+				portalResponse.setMessage("Failed to find user: " + oldOnboardApp.myLoginsAppOwner);
 
-                return portalResponse;
+				return portalResponse;
             }
 
 			EPUser epUser = userList.get(0);
 			// Check for Portal admin status
-			if (! adminRolesService.isSuperAdmin(epUser)) {
+			if (!adminRolesService.isSuperAdmin(epUser)) {
 				portalResponse.setStatus(PortalRestStatusEnum.ERROR);
 				portalResponse.setMessage("User lacks Portal admin role: " + epUser.getLoginId());
-				return portalResponse;				
+				return portalResponse;
 			}
 
 			oldOnboardApp.normalize();
@@ -439,12 +382,29 @@ public class AppsControllerExternalRequest implements BasicAuthenticationControl
 			}
 		} catch (Exception ex) {
 			// Uncaught exceptions yield 404 and an empty error page
+			logger.error(EELFLoggerDelegate.errorLogger, ex.getMessage(), ex);
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			portalResponse.setStatus(PortalRestStatusEnum.ERROR);
 			portalResponse.setMessage(ex.toString());
 		}
-		EcompPortalUtils.logAndSerializeObject(logger, "putOnboardAppExternal", "response", portalResponse);
+		EcompPortalUtils.logAndSerializeObject(logger, "putOnboardAppExternal", RESPONSE, portalResponse);
 		return portalResponse;
 	}
 
+	private boolean checkOnboardingApp(OnboardingApp onboardingApp) {
+		return checkIfFieldsAreNull(onboardingApp) || checkIfFieldsAreEmpty(onboardingApp);
+	}
+
+	private boolean checkIfFieldsAreNull(OnboardingApp onboardingApp) {
+		return onboardingApp.name == null || onboardingApp.url == null || onboardingApp.restUrl == null
+			|| onboardingApp.myLoginsAppOwner == null || onboardingApp.restrictedApp == null
+			|| onboardingApp.isOpen == null || onboardingApp.isEnabled == null;
+	}
+
+	private boolean checkIfFieldsAreEmpty(OnboardingApp onboardingApp) {
+		return onboardingApp.name.trim().isEmpty()
+			|| onboardingApp.url.trim().isEmpty()
+			|| onboardingApp.restUrl.trim().isEmpty()
+			|| onboardingApp.myLoginsAppOwner.trim().isEmpty();
+	}
 }

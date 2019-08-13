@@ -51,7 +51,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.onap.portalapp.portal.controller.AppsControllerExternalRequest;
 import org.onap.portalapp.portal.core.MockEPUser;
 import org.onap.portalapp.portal.domain.EPApp;
 import org.onap.portalapp.portal.domain.EPUser;
@@ -82,7 +81,7 @@ public class AppsControllerExternalRequestTest extends MockitoTestSuite {
 	UserService userService = new UserServiceImpl();
 
 	@InjectMocks
-	AppsControllerExternalRequest appsControllerExternalRequest = new AppsControllerExternalRequest();
+	AppsControllerExternalRequest appsControllerExternalRequest;
 
 	@Before
 	public void setup() {
