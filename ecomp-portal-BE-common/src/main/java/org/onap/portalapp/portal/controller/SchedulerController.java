@@ -41,7 +41,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -49,12 +48,12 @@ import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import lombok.NoArgsConstructor;
 import org.json.simple.JSONObject;
 import org.onap.portalapp.controller.EPRestrictedBaseController;
 import org.onap.portalapp.portal.domain.EPUser;
 import org.onap.portalapp.portal.ecomp.model.PortalRestResponse;
 import org.onap.portalapp.portal.ecomp.model.PortalRestStatusEnum;
-import org.onap.portalapp.portal.exceptions.RoleFunctionException;
 import org.onap.portalapp.portal.logging.aop.EPAuditLog;
 import org.onap.portalapp.portal.logging.logic.EPLogUtil;
 import org.onap.portalapp.portal.scheduler.SchedulerProperties;
@@ -70,7 +69,6 @@ import org.onap.portalapp.portal.service.AdminRolesService;
 import org.onap.portalapp.portal.utils.PortalConstants;
 import org.onap.portalapp.util.EPUserUtils;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
-import org.onap.portalsdk.core.service.DataAccessService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
@@ -87,62 +85,66 @@ import org.springframework.web.bind.annotation.RestController;
 @Configuration
 @EnableAspectJAutoProxy
 @EPAuditLog
+@NoArgsConstructor
 public class SchedulerController extends EPRestrictedBaseController {
+	private static final String USER_IS_UNAUTHORIZED_TO_MAKE_THIS_CALL = "User is unauthorized to make this call";
 
-	@Autowired
+	private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(SchedulerController.class);
+	private static final DateFormat requestDateFormat = new SimpleDateFormat("EEE, dd MMM YYYY HH:mm:ss z");
+
 	private SchedulerRestInterface schedulerRestController;
-	
-	@Autowired
 	private AdminRolesService adminRolesService;
 
-	private static EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(SchedulerController.class);
-
-	/** The request date format. */
-	public DateFormat requestDateFormat = new SimpleDateFormat("EEE, dd MMM YYYY HH:mm:ss z");
+	@Autowired
+	public SchedulerController(SchedulerRestInterface schedulerRestController,
+		AdminRolesService adminRolesService) {
+		this.schedulerRestController = schedulerRestController;
+		this.adminRolesService = adminRolesService;
+	}
 
 	@RequestMapping(value = "/get_time_slots/{scheduler_request}", method = RequestMethod.GET, produces = "application/json")
 	public ResponseEntity<String> getTimeSlots(HttpServletRequest request,
-			@PathVariable("scheduler_request") String scheduler_request) throws Exception {
+			@PathVariable("scheduler_request") String schedulerRequest) throws Exception {
 		if (checkIfUserISValidToMakeSchedule(request)) {
 			try {
 				Date startingTime = new Date();
 				String startTimeRequest = requestDateFormat.format(startingTime);
 				logger.debug(EELFLoggerDelegate.debugLogger,
 						"Controller Scheduler GET Timeslots for startTimeRequest: ", startTimeRequest);
-				logger.debug(EELFLoggerDelegate.debugLogger, "Original Request = {} ", scheduler_request);
+				logger.debug(EELFLoggerDelegate.debugLogger, "Original Request = {} ", schedulerRequest);
 
 				String path = SchedulerProperties.getProperty(SchedulerProperties.SCHEDULER_GET_TIME_SLOTS)
-						+ scheduler_request;
+						+ schedulerRequest;
 
-				GetTimeSlotsWrapper schedulerResWrapper = getTimeSlots(scheduler_request, path, scheduler_request);
+				GetTimeSlotsWrapper schedulerResWrapper = getTimeSlots(path, schedulerRequest);
 
 				Date endTime = new Date();
 				String endTimeRequest = requestDateFormat.format(endTime);
 				logger.debug(EELFLoggerDelegate.debugLogger, "Controller Scheduler - GET for EndTimeRequest = {}",
 						endTimeRequest);
-				return (new ResponseEntity<String>(schedulerResWrapper.getResponse(),
-						HttpStatus.valueOf(schedulerResWrapper.getStatus())));
+				return (new ResponseEntity<>(schedulerResWrapper.getResponse(),
+					HttpStatus.valueOf(schedulerResWrapper.getStatus())));
 			} catch (Exception e) {
 				GetTimeSlotsWrapper schedulerResWrapper = new GetTimeSlotsWrapper();
 				schedulerResWrapper.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
 				schedulerResWrapper.setEntity(e.getMessage());
 				logger.error(EELFLoggerDelegate.errorLogger, "Exception with getTimeslots", e);
-				return (new ResponseEntity<String>(schedulerResWrapper.getResponse(),
-						HttpStatus.INTERNAL_SERVER_ERROR));
+				return (new ResponseEntity<>(schedulerResWrapper.getResponse(),
+					HttpStatus.INTERNAL_SERVER_ERROR));
 			}
 		}else{
-			return (new ResponseEntity<String>("User is unauthorized to make this call", HttpStatus.UNAUTHORIZED));
+			return (new ResponseEntity<>(USER_IS_UNAUTHORIZED_TO_MAKE_THIS_CALL, HttpStatus.UNAUTHORIZED));
 		}
 	}
 
-	protected GetTimeSlotsWrapper getTimeSlots(String request, String path, String uuid) throws Exception {
+	protected GetTimeSlotsWrapper getTimeSlots(String path, String uuid) throws Exception {
 
 		try {
 			// STARTING REST API CALL AS AN FACTORY INSTACE
 			logger.debug(EELFLoggerDelegate.debugLogger, "Get Time Slots Request START");
 
-			GetTimeSlotsRestObject<String> restObjStr = new GetTimeSlotsRestObject<String>();
-			String str = new String();
+			GetTimeSlotsRestObject<String> restObjStr = new GetTimeSlotsRestObject<>();
+			String str = "";
 
 			restObjStr.set(str);
 
@@ -169,7 +171,7 @@ public class SchedulerController extends EPRestrictedBaseController {
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/post_create_new_vnf_change", method = RequestMethod.POST, produces = "application/json")
 	public ResponseEntity<String> postCreateNewVNFChange(HttpServletRequest request,
-			@RequestBody JSONObject scheduler_request) throws Exception {
+			@RequestBody JSONObject schedulerRequest) throws Exception {
 		if (checkIfUserISValidToMakeSchedule(request)) {
 			try {
 				Date startingTime = new Date();
@@ -181,34 +183,34 @@ public class SchedulerController extends EPRestrictedBaseController {
 				// Generating uuid
 				String uuid = UUID.randomUUID().toString();
 
-				scheduler_request.put("scheduleId", uuid);
+				schedulerRequest.put("scheduleId", uuid);
 				logger.debug(EELFLoggerDelegate.debugLogger, "UUID = {} ", uuid);
 
 				// adding uuid to the request payload
-				scheduler_request.put("scheduleId", uuid);
-				logger.debug(EELFLoggerDelegate.debugLogger, "Original Request = {}", scheduler_request.toString());
+				schedulerRequest.put("scheduleId", uuid);
+				logger.debug(EELFLoggerDelegate.debugLogger, "Original Request = {}", schedulerRequest.toString());
 
 				String path = SchedulerProperties
 						.getProperty(SchedulerProperties.SCHEDULER_CREATE_NEW_VNF_CHANGE_INSTANCE_VAL) + uuid;
 
-				PostCreateNewVnfWrapper responseWrapper = postSchedulingRequest(scheduler_request, path, uuid);
+				PostCreateNewVnfWrapper responseWrapper = postSchedulingRequest(schedulerRequest, path, uuid);
 
 				Date endTime = new Date();
 				String endTimeRequest = requestDateFormat.format(endTime);
 				logger.debug(EELFLoggerDelegate.debugLogger, "Controller Scheduler - POST= {}", endTimeRequest);
 
-				return new ResponseEntity<String>(responseWrapper.getResponse(),
-						HttpStatus.valueOf(responseWrapper.getStatus()));
+				return new ResponseEntity<>(responseWrapper.getResponse(),
+					HttpStatus.valueOf(responseWrapper.getStatus()));
 			} catch (Exception e) {
 				PostCreateNewVnfWrapper responseWrapper = new PostCreateNewVnfWrapper();
 				responseWrapper.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
 				responseWrapper.setEntity(e.getMessage());
 				logger.error(EELFLoggerDelegate.errorLogger, "Exception with postCreateNewVNFChange ", e);
-				return (new ResponseEntity<String>(responseWrapper.getResponse(), HttpStatus.INTERNAL_SERVER_ERROR));
+				return (new ResponseEntity<>(responseWrapper.getResponse(), HttpStatus.INTERNAL_SERVER_ERROR));
 
 			}
 		}else{
-			return (new ResponseEntity<String>("User is unauthorized to make this call",HttpStatus.UNAUTHORIZED));
+			return (new ResponseEntity<>(USER_IS_UNAUTHORIZED_TO_MAKE_THIS_CALL, HttpStatus.UNAUTHORIZED));
 		}
 
 	}
@@ -219,11 +221,11 @@ public class SchedulerController extends EPRestrictedBaseController {
 		try {
 			// STARTING REST API CALL AS AN FACTORY INSTACE
 
-			PostCreateNewVnfRestObject<String> restObjStr = new PostCreateNewVnfRestObject<String>();
-			String str = new String();
+			PostCreateNewVnfRestObject<String> restObjStr = new PostCreateNewVnfRestObject<>();
+			String str = "";
 
 			restObjStr.set(str);
-			schedulerRestController.<String>Post(str, request, path, restObjStr);
+			schedulerRestController.Post(str, request, path, restObjStr);
 
 			int status = restObjStr.getStatusCode();
 			if (status >= 200 && status <= 299) {
@@ -249,7 +251,7 @@ public class SchedulerController extends EPRestrictedBaseController {
 
 	@RequestMapping(value = "/submit_vnf_change_timeslots", method = RequestMethod.POST, produces = "application/json")
 	public ResponseEntity<String> postSubmitVnfChangeTimeslots(HttpServletRequest request,
-			@RequestBody JSONObject scheduler_request) throws Exception {
+			@RequestBody JSONObject schedulerRequest) throws Exception {
 		if (checkIfUserISValidToMakeSchedule(request)) {
 		try {
 			Date startingTime = new Date();
@@ -258,17 +260,17 @@ public class SchedulerController extends EPRestrictedBaseController {
 					startTimeRequest);
 
 			// Generating uuid
-			String uuid = (String) scheduler_request.get("scheduleId");
+			String uuid = (String) schedulerRequest.get("scheduleId");
 			logger.debug(EELFLoggerDelegate.debugLogger, "UUID = {} ", uuid);
 
-			scheduler_request.remove("scheduleId");
+			schedulerRequest.remove("scheduleId");
 			logger.debug(EELFLoggerDelegate.debugLogger, "Original Request for the schedulerId= {} ",
-					scheduler_request.toString());
+					schedulerRequest.toString());
 
 			String path = SchedulerProperties.getProperty(SchedulerProperties.SCHEDULER_SUBMIT_NEW_VNF_CHANGE)
 					.replace("{scheduleId}", uuid);
 
-			PostSubmitVnfChangeTimeSlotsWrapper responseWrapper = postSubmitSchedulingRequest(scheduler_request, path,
+			PostSubmitVnfChangeTimeSlotsWrapper responseWrapper = postSubmitSchedulingRequest(schedulerRequest, path,
 					uuid);
 
 			Date endTime = new Date();
@@ -276,17 +278,17 @@ public class SchedulerController extends EPRestrictedBaseController {
 			logger.debug(EELFLoggerDelegate.debugLogger, " Controller Scheduler - POST Submit for end time request= {}",
 					endTimeRequest);
 
-			return (new ResponseEntity<String>(responseWrapper.getResponse(),HttpStatus.valueOf(responseWrapper.getStatus())));
+			return (new ResponseEntity<>(responseWrapper.getResponse(), HttpStatus.valueOf(responseWrapper.getStatus())));
 			} catch (Exception e) {
 				PostSubmitVnfChangeTimeSlotsWrapper responseWrapper = new PostSubmitVnfChangeTimeSlotsWrapper();
 				responseWrapper.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
 				responseWrapper.setEntity(e.getMessage());
 				logger.error(EELFLoggerDelegate.errorLogger, "Exception with Post submit Vnf change Timeslots", e);
-				return (new ResponseEntity<String>(responseWrapper.getResponse(), HttpStatus.INTERNAL_SERVER_ERROR));
+				return (new ResponseEntity<>(responseWrapper.getResponse(), HttpStatus.INTERNAL_SERVER_ERROR));
 
 			}
 		}else{
-			return (new ResponseEntity<String>("User is unauthorized to make this call",HttpStatus.UNAUTHORIZED));
+			return (new ResponseEntity<>(USER_IS_UNAUTHORIZED_TO_MAKE_THIS_CALL, HttpStatus.UNAUTHORIZED));
 		}
 	}
 
@@ -296,11 +298,11 @@ public class SchedulerController extends EPRestrictedBaseController {
 		try {
 			// STARTING REST API CALL AS AN FACTORY INSTACE
 
-			PostSubmitVnfChangeRestObject<String> restObjStr = new PostSubmitVnfChangeRestObject<String>();
-			String str = new String();
+			PostSubmitVnfChangeRestObject<String> restObjStr = new PostSubmitVnfChangeRestObject<>();
+			String str = "";
 
 			restObjStr.set(str);
-			schedulerRestController.<String>Post(str, request, path, restObjStr);
+			schedulerRestController.Post(str, request, path, restObjStr);
 
 			int status = restObjStr.getStatusCode();
 			if (status >= 200 && status <= 299) {
@@ -362,19 +364,19 @@ public class SchedulerController extends EPRestrictedBaseController {
 						throw new Exception(entry.getKey() + errorMsg);
 				}
 				logger.debug(EELFLoggerDelegate.debugLogger, " portalRestResponse - getSchedulerConstant= {}", map);
-				portalRestResponse = new PortalRestResponse<Map<String, String>>(PortalRestStatusEnum.OK, "success",
-						map);
+				portalRestResponse = new PortalRestResponse<>(PortalRestStatusEnum.OK, "success",
+					map);
 
 			} catch (Exception e) {
 				logger.error(EELFLoggerDelegate.errorLogger, "getSchedulerConstant failed", e);
-				portalRestResponse = new PortalRestResponse<Map<String, String>>(PortalRestStatusEnum.ERROR,
-						e.getMessage(), null);
+				portalRestResponse = new PortalRestResponse<>(PortalRestStatusEnum.ERROR,
+					e.getMessage(), null);
 			}
 
 		}
         else{
 			logger.error(EELFLoggerDelegate.errorLogger, "getSchedulerConstant failed: User unauthorized to make this call");
-        	portalRestResponse = new PortalRestResponse<Map<String, String>>(PortalRestStatusEnum.ERROR, "failed : Unauthorized", null);
+			portalRestResponse = new PortalRestResponse<>(PortalRestStatusEnum.ERROR, "failed : Unauthorized", null);
         }
 				return portalRestResponse;
 	}
@@ -397,8 +399,6 @@ public class SchedulerController extends EPRestrictedBaseController {
 		EPUser user = EPUserUtils.getUserSession(request);
 		String portalApiPath = getPath(request);
 		Set<String> functionCodeList = adminRolesService.getAllAppsFunctionsOfUser(user.getId().toString());
-		boolean isValidUser =	EPUserUtils.matchRoleFunctions(portalApiPath, functionCodeList);
-//		boolean isValidUser = functionCodeList.stream().anyMatch(x -> functionCodeList.contains(portalApiPath));
-		return isValidUser;
+		return EPUserUtils.matchRoleFunctions(portalApiPath, functionCodeList);
 	}
 }

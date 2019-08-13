@@ -48,7 +48,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.poi.ss.formula.functions.T;
 import org.json.simple.JSONObject;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -56,7 +55,6 @@ import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.onap.portalapp.portal.controller.SchedulerController;
 import org.onap.portalapp.portal.core.MockEPUser;
 import org.onap.portalapp.portal.domain.EPUser;
 import org.onap.portalapp.portal.framework.MockitoTestSuite;
@@ -84,7 +82,7 @@ public class SchedulerControllerTest {
 	AdminRolesService adminRolesService;
 
 	@InjectMocks
-	SchedulerController schedulerController = new SchedulerController();
+	SchedulerController schedulerController;
 
 	@Before
 	public void setup() {
