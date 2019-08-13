@@ -86,7 +86,7 @@ public class EPRoleFunctionServiceImpl implements EPRoleFunctionService {
 				.getAttribute(SystemProperties.getProperty(SystemProperties.ROLE_FUNCTIONS_ATTRIBUTE_NAME));
 
 		if (roleFunctions == null) {
-			HashMap roles = EPUserUtils.getRoles(request);
+			HashMap roles = (HashMap) EPUserUtils.getRoles(request);
 			roleFunctions = new HashSet();
 
 			Iterator i = roles.keySet().iterator();

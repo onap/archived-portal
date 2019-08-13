@@ -85,7 +85,7 @@ public class SimpleLoginStrategy extends org.onap.portalsdk.core.auth.LoginStrat
 			 // in case authentication has passed but user is not in the ONAP data base, return a Guest User to the home page.
 			if (commandBean.getUser() != null) {
 				// store the currently logged in user's information in the session
-				EPUserUtils.setUserSession(request, commandBean.getUser(), commandBean.getMenu(), commandBean.getBusinessDirectMenu(), "", ePRoleFunctionService);
+				EPUserUtils.setUserSession(request, commandBean.getUser(), commandBean.getMenu(), commandBean.getBusinessDirectMenu(), ePRoleFunctionService);
 				logger.info(EELFLoggerDelegate.debugLogger, commandBean.getUser().getOrgUserId() + " exists in the the system.");
 			}
 			
