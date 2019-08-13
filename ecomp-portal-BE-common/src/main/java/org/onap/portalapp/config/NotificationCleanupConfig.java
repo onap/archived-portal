@@ -40,6 +40,7 @@
  */
 package org.onap.portalapp.config;
 
+import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
@@ -51,23 +52,25 @@ import java.util.TimerTask;
 
 @Configuration
 public class NotificationCleanupConfig implements ApplicationContextAware {
-	
+
 	// Once every 10 minutes should be adequate
-	public static final int CLEANUP_PERIOD_MINUTES = 10;
-	
+	private static final int CLEANUP_PERIOD_MINUTES = 10;
+
 	private static ApplicationContext applicationContext;
 
-	public void setApplicationContext(ApplicationContext context) {
-		applicationContext = context;
+
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+		NotificationCleanupConfig.applicationContext = applicationContext;
 	}
 
-	public static ApplicationContext getApplicationContext() {
+	static ApplicationContext getApplicationContext() {
 		return applicationContext;
 
 	}
 
 	@PostConstruct
-	public void StartSchedular() {
+	public void startSchedular() {
 		TimerTask task = new NotificationCleanup();
 		Timer timer = new Timer();
 		timer.schedule(task, 1000, (long) CLEANUP_PERIOD_MINUTES * 60 * 1000);
@@ -77,5 +80,4 @@ public class NotificationCleanupConfig implements ApplicationContextAware {
 	public NotificationCleanupConfig getConfig() {
 		return new NotificationCleanupConfig();
 	}
-
 }
