@@ -45,14 +45,14 @@ import org.springframework.stereotype.Service;
 @Service
 public interface SchedulerRestInterfaceIfc {
 
-	public void initRestClient();
+	void initRestClient();
 
-	public <T> void Get(T t, String sourceId, String path, org.onap.portalapp.portal.scheduler.restobjects.RestObject<T> restObject ) throws Exception;
+	<T> void Get(T t, String sourceId, String path, org.onap.portalapp.portal.scheduler.restobjects.RestObject<T> restObject ) throws Exception;
 
-	public <T> void Delete(T t, JSONObject requestDetails, String sourceID, String path, RestObject<T> restObject)
+	<T> void Delete(T t, JSONObject requestDetails, String sourceID, String path, RestObject<T> restObject)
 			throws Exception;
 
-	public <T> void Post(T t, JSONObject r, String path, RestObject<T> restObject) throws Exception;
+	<T> void Post(T t, JSONObject r, String path, RestObject<T> restObject) throws Exception;
 
-	public void logRequest(JSONObject requestDetails);
+	void logRequest(JSONObject requestDetails);
 }

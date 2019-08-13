@@ -37,20 +37,20 @@
  */
 package org.onap.portalapp.portal.scheduler;
 
-import java.lang.reflect.Type;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializer;
 import java.util.Collections;
 import java.util.Date;
-
 import javax.security.auth.login.CredentialException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.Response;
-
+import lombok.NoArgsConstructor;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
-import org.apache.cxf.jaxrs.impl.ResponseImpl;
 import org.eclipse.jetty.util.security.Password;
 import org.json.simple.JSONObject;
 import org.onap.portalapp.portal.logging.format.EPAppMessagesEnum;
@@ -63,45 +63,28 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
-
+@SuppressWarnings("MalformedFormatString")
 @Service
+@NoArgsConstructor
 public class SchedulerRestInterface implements SchedulerRestInterfaceIfc {
-
+	private static final String APPLICATION_JSON = "application/json";
 	private static final String PASSWORD_IS_EMPTY = "Password is Empty";
+	private static final String HTTP_CLIENT_ERROR = " HttpClientErrorException: Exception For the POST  ." 
+													+ " MethodName: %APPLICATION_JSON, Url: %APPLICATION_JSON";
 
+	private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(SchedulerRestInterface.class);
 	private static Client client = null;
+	private static Gson gson = null;
 
 	private MultivaluedHashMap<String, Object> commonHeaders;
 
-	/** The logger. */
-	static EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(SchedulerRestInterface.class);
-
-	public SchedulerRestInterface() {
-		super();
-	}
-
-	Gson gson = null;
-
-	private final ObjectMapper mapper = new ObjectMapper();
-
-	private void init() {
+	private static void init() {
 		logger.debug(EELFLoggerDelegate.debugLogger, "initializing");
 		GsonBuilder builder = new GsonBuilder();
 
 		// Register an adapter to manage the date types as long values
-		builder.registerTypeAdapter(Date.class, new JsonDeserializer<Date>() {
-			public Date deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
-					throws JsonParseException {
-				return new Date(json.getAsJsonPrimitive().getAsLong());
-			}
-		});
+		builder.registerTypeAdapter(Date.class,
+			(JsonDeserializer<Date>) (json, typeOfT, context) -> new Date(json.getAsJsonPrimitive().getAsLong()));
 
 		gson = builder.create();
 	}
@@ -114,7 +97,6 @@ public class SchedulerRestInterface implements SchedulerRestInterfaceIfc {
 		final String username;
 		final String password;
 
-		String methodName = "initRestClient";
 		/* Setting user name based on properties */
 		String retrievedUsername = SchedulerProperties.getProperty(SchedulerProperties.SCHEDULER_USER_NAME_VAL);
 		if (retrievedUsername.isEmpty()) {
@@ -145,8 +127,8 @@ public class SchedulerRestInterface implements SchedulerRestInterfaceIfc {
 		byte[] authEncBytes = Base64.encodeBase64(authString.getBytes());
 		String authStringEnc = new String(authEncBytes);
 
-		commonHeaders = new MultivaluedHashMap<String, Object>();
-		commonHeaders.put("Authorization", Collections.singletonList((Object) ("Basic " + authStringEnc)));
+		commonHeaders = new MultivaluedHashMap<>();
+		commonHeaders.put("Authorization", Collections.singletonList(("Basic " + authStringEnc)));
 
 		try {
 			if (!username.isEmpty()) {
@@ -166,7 +148,7 @@ public class SchedulerRestInterface implements SchedulerRestInterfaceIfc {
 
 	@SuppressWarnings("unchecked")
 	public <T> void Get(T t, String sourceId, String path,
-			org.onap.portalapp.portal.scheduler.restobjects.RestObject<T> restObject) throws Exception {
+			org.onap.portalapp.portal.scheduler.restobjects.RestObject<T> restObject) {
 
 		String methodName = "Get";
 		String url = SchedulerProperties.getProperty(SchedulerProperties.SCHEDULER_SERVER_URL_VAL) + path;
@@ -175,14 +157,14 @@ public class SchedulerRestInterface implements SchedulerRestInterfaceIfc {
 		try {
 			initRestClient();
 
-			final Response cres = client.target(url).request().accept("application/json").headers(commonHeaders).get();
+			final Response cres = client.target(url).request().accept(APPLICATION_JSON).headers(commonHeaders).get();
 
 			int status = cres.getStatus();
 			restObject.setStatusCode(status);
 
-			if (cres != null && cres.getEntity() != null) {
+			if (cres.getEntity() != null) {
 				try {
-					String str = ((ResponseImpl) cres).readEntity(String.class);
+					String str = (cres).readEntity(String.class);
 					if (t.getClass().getName().equals(String.class.getName())) {
 						t = (T) str;
 
@@ -195,23 +177,21 @@ public class SchedulerRestInterface implements SchedulerRestInterfaceIfc {
 				}
 			} else {
 				t = null;
-				restObject.set(t);
+				restObject.set(null);
 			}
 
-			// t = (T) cres.readEntity(t.getClass());
-
-			if (t.equals("")) {
+			if ("".equals(t)) {
 				restObject.set(null);
 			} else {
 				restObject.set(t);
 			}
 		} catch (HttpClientErrorException e) {
 			String message = String.format(
-					" HttpClientErrorException: Exception For the POST  . MethodName: %s, Url: %s", methodName, url);
+					HTTP_CLIENT_ERROR, methodName, url);
 			logger.error(EELFLoggerDelegate.errorLogger, message, e);
 			EPLogUtil.schedulerAccessAlarm(logger, e.getStatusCode().value());
 		} catch (Exception e) {
-			String message = String.format("Exception For the POST . MethodName: %s, Url: %s", methodName, url);
+			String message = String.format("Exception For the POST . MethodName: %APPLICATION_JSON, Url: %APPLICATION_JSON", methodName, url);
 
 			logger.error(EELFLoggerDelegate.errorLogger, message, e);
 			EPLogUtil.schedulerAccessAlarm(logger, HttpStatus.INTERNAL_SERVER_ERROR.value());
@@ -223,7 +203,7 @@ public class SchedulerRestInterface implements SchedulerRestInterfaceIfc {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> void Post(T t, JSONObject requestDetails, String path, RestObject<T> restObject) throws Exception {
+	public <T> void Post(T t, JSONObject requestDetails, String path, RestObject<T> restObject) {
 
 		String methodName = "Post";
 		String url = SchedulerProperties.getProperty(SchedulerProperties.SCHEDULER_SERVER_URL_VAL) + path;
@@ -234,13 +214,13 @@ public class SchedulerRestInterface implements SchedulerRestInterfaceIfc {
 			initRestClient();
 
 			// Change the content length
-			final Response cres = client.target(url).request().accept("application/json").headers(commonHeaders)
+			final Response cres = client.target(url).request().accept(APPLICATION_JSON).headers(commonHeaders)
 					.post(Entity.entity(requestDetails, MediaType.APPLICATION_JSON));
 
 			if (cres != null && cres.getEntity() != null) {
 
 				try {
-					String str = ((ResponseImpl) cres).readEntity(String.class);
+					String str = (cres).readEntity(String.class);
 					if (t.getClass().getName().equals(String.class.getName())) {
 						t = (T) str;
 
@@ -251,14 +231,12 @@ public class SchedulerRestInterface implements SchedulerRestInterfaceIfc {
 				} catch (Exception e) {
 					EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeInvalidJsonInput, e);
 				}
-				// t = (T) cres.readEntity(t.getClass());
 				restObject.set(t);
 			} else {
-				t = null;
-				restObject.set(t);
+				restObject.set(null);
 			}
 
-			int status = cres.getStatus();
+			int status = cres != null ? cres.getStatus() : 0;
 			restObject.setStatusCode(status);
 
 			if (status >= 200 && status <= 299) {
@@ -266,19 +244,19 @@ public class SchedulerRestInterface implements SchedulerRestInterfaceIfc {
 				logger.debug(EELFLoggerDelegate.debugLogger, message);
 
 			} else {
-				String message = String.format(" FAILED with http status  . MethodName: %s, Status: %s, Url: %s",
+				String message = String.format(" FAILED with http status  . MethodName: %APPLICATION_JSON, Status: %APPLICATION_JSON, Url: %APPLICATION_JSON",
 						methodName, status, url);
 				logger.debug(EELFLoggerDelegate.debugLogger, message);
 			}
 
 		} catch (HttpClientErrorException e) {
 			String message = String.format(
-					" HttpClientErrorException: Exception For the POST  . MethodName: %s, Url: %s", methodName, url);
+					HTTP_CLIENT_ERROR, methodName, url);
 			logger.error(EELFLoggerDelegate.errorLogger, message, e);
 			EPLogUtil.schedulerAccessAlarm(logger, e.getStatusCode().value());
 		} catch (Exception e) {
 			String message = String.format(
-					" HttpClientErrorException: Exception For the POST  . MethodName: %s, Url: %s", methodName, url);
+					HTTP_CLIENT_ERROR, methodName, url);
 			logger.error(EELFLoggerDelegate.errorLogger, message, e);
 			EPLogUtil.schedulerAccessAlarm(logger, HttpStatus.INTERNAL_SERVER_ERROR.value());
 			throw e;
@@ -287,6 +265,7 @@ public class SchedulerRestInterface implements SchedulerRestInterfaceIfc {
 
 	@Override
 	public void logRequest(JSONObject requestDetails) {
+		throw new UnsupportedOperationException();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -294,18 +273,16 @@ public class SchedulerRestInterface implements SchedulerRestInterfaceIfc {
 
 		String methodName = "Delete";
 		String url = "";
-		Response cres = null;
+		Response cres;
 
 		try {
 			initRestClient();
 
 			url = SchedulerProperties.getProperty(SchedulerProperties.SCHEDULER_SERVER_URL_VAL) + path;
 
-			cres = client.target(url).request().accept("application/json").headers(commonHeaders)
+			cres = client.target(url).request().accept(APPLICATION_JSON).headers(commonHeaders)
 					// .entity(r)
 					.build("DELETE", Entity.entity(requestDetails, MediaType.APPLICATION_JSON)).invoke();
-			// .method("DELETE", Entity.entity(r, MediaType.APPLICATION_JSON));
-			// .delete(Entity.entity(r, MediaType.APPLICATION_JSON));
 
 			int status = cres.getStatus();
 			restObject.setStatusCode(status);
@@ -323,10 +300,6 @@ public class SchedulerRestInterface implements SchedulerRestInterfaceIfc {
 			EPLogUtil.schedulerAccessAlarm(logger, HttpStatus.INTERNAL_SERVER_ERROR.value());
 			throw e;
 		}
-	}
-
-	public <T> T getInstance(Class<T> clazz) throws IllegalAccessException, InstantiationException {
-		return clazz.newInstance();
 	}
 
 }
