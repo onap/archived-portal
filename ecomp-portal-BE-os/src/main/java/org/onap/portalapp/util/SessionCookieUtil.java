@@ -69,6 +69,7 @@ public class SessionCookieUtil {
 			HttpServletResponse response) {
 		String jSessionId = getJessionId(request);
 		Cookie cookie1 = new Cookie(EP_SERVICE, jSessionId);
+		cookie1.setSecure(true);
 		cookie1.setMaxAge(cookieMaxAge);
 		cookie1.setDomain(EPCommonSystemProperties.getProperty(EPCommonSystemProperties.COOKIE_DOMAIN));
 		cookie1.setPath("/");
@@ -81,6 +82,7 @@ public class SessionCookieUtil {
 		userId = CipherUtil.encrypt(userId,
 				SystemProperties.getProperty(SystemProperties.Decryption_Key));
 		Cookie cookie1 = new Cookie(USER_ID, userId);
+		cookie1.setSecure(true);
 		cookie1.setMaxAge(cookieMaxAge);
 		cookie1.setDomain(EPCommonSystemProperties.getProperty(EPCommonSystemProperties.COOKIE_DOMAIN));
 		cookie1.setPath("/");
