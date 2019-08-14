@@ -50,7 +50,7 @@ public class CentralRoleFunction implements Serializable, Comparable {
 	private Long createdId;
 	private Long modifiedId;
 	private Serializable auditUserId;
-	private Set auditTrail;
+	private transient Set auditTrail;
 	private Long rowNum;
 	private String code;
 	private String name;
