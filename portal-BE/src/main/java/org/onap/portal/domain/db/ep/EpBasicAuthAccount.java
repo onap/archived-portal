@@ -40,7 +40,8 @@
 
 package org.onap.portal.domain.db.ep;
 
-
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -48,73 +49,66 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Index;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinColumns;
-import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.validation.Valid;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.validator.constraints.SafeHtml;
-import org.onap.portalapp.portal.domain.db.fn.FnApp;
-import org.onap.portalapp.portal.domain.db.fn.FnRole;
 
 /*
-CREATE TABLE `ep_app_role_function` (
+CREATE TABLE `ep_basic_auth_account` (
         `id` int(11) NOT NULL AUTO_INCREMENT,
-        `app_id` int(11) NOT NULL,
-        `role_id` int(11) NOT NULL,
-        `function_cd` varchar(250) NOT NULL,
-        `role_app_id` varchar(20) DEFAULT NULL,
-        PRIMARY KEY (`id`),
-        UNIQUE KEY `UNIQUE KEY` (`app_id`,`role_id`,`function_cd`),
-        KEY `fk_ep_app_role_function_ep_app_func` (`app_id`,`function_cd`),
-        KEY `fk_ep_app_role_function_role_id` (`role_id`),
-        CONSTRAINT `fk_ep_app_role_function_app_id` FOREIGN KEY (`app_id`) REFERENCES `fn_app` (`app_id`),
-        CONSTRAINT `fk_ep_app_role_function_ep_app_func` FOREIGN KEY (`app_id`, `function_cd`) REFERENCES `ep_app_function` (`app_id`, `function_cd`),
-        CONSTRAINT `fk_ep_app_role_function_role_id` FOREIGN KEY (`role_id`) REFERENCES `fn_role` (`role_id`)
+        `ext_app_name` varchar(50) NOT NULL,
+        `username` varchar(50) NOT NULL,
+        `password` varchar(50) DEFAULT NULL,
+        `active_yn` char(1) NOT NULL DEFAULT 'Y',
+        PRIMARY KEY (`id`)
         )
 */
 
-@Table(name = "ep_app_role_function", indexes = {
-        @Index(name = "UNIQUE KEY", columnList = "app_id, role_id, function_cd", unique = true)
-})
+@Table(name = "ep_basic_auth_account")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
 @Entity
-public class EpAppRoleFunction {
+public class EpBasicAuthAccount {
        @Id
        @GeneratedValue(strategy = GenerationType.AUTO)
-       @Column(name = "id", length = 11, nullable = false, columnDefinition = "int(11) NOT NULL AUTO_INCREMENT")
+       @Column(name = "id", length = 11, nullable = false, columnDefinition = "int(11) AUTO_INCREMENT")
        @Digits(integer = 11, fraction = 0)
-       private Integer id;
-       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-       @JoinColumn(name = "app_id", insertable = false, updatable = false)
-       @Valid
-       @NotNull
-       private FnApp appId;
-       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-       @JoinColumn(name = "role_id")
-       @Valid
-       @NotNull
-       private FnRole fnRole;
-       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-       @JoinColumns({
-               @JoinColumn(name = "app_id", referencedColumnName = "app_id"),
-               @JoinColumn(name = "function_cd", referencedColumnName = "function_cd")
-       })
-       @Valid
-       @NotNull
-       private EpAppFunction epAppFunction;
-       @Column(name = "role_app_id", length = 20)
-       @Digits(integer = 20, fraction = 0)
+       private Long id;
+       @Column(name = "ext_app_name", length = 50, nullable = false)
+       @Size(max = 50)
        @SafeHtml
-       private String roleAppId;
+       @NotNull
+       private String extAppName;
+       @Column(name = "username", length = 50, nullable = false)
+       @Size(max = 50)
+       @SafeHtml
+       @NotNull
+       private String username;
+       @Column(name = "password", length = 50)
+       @Size(max = 50)
+       @SafeHtml
+       private String password;
+       @Column(name = "active_yn", length = 1, nullable = false, columnDefinition = "char(1) NOT NULL default 'Y'")
+       @Pattern(regexp = "[YNyn]")
+       @Size(max = 1)
+       @NotNull
+       @SafeHtml
+       private String activeYn;
+       @OneToMany(
+               targetEntity = EpEndpointsBasicAuthAccount.class,
+               mappedBy = "accountId",
+               cascade = CascadeType.ALL,
+               fetch = FetchType.LAZY
+       )
+       private List<EpEndpointsBasicAuthAccount> epEndpointsBasicAuthAccounts = new ArrayList<>();
 }
