@@ -40,60 +40,53 @@
 
 package org.onap.portal.domain.db.cr;
 
-import java.io.Serializable;
+import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.IdClass;
 import javax.persistence.Table;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.Positive;
+import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.onap.portal.domain.db.cr.CrFavoriteReports.CrFavoriteReportsId;
-
+import org.hibernate.validator.constraints.SafeHtml;
+import org.hibernate.validator.constraints.URL;
 
 /*
 
-CREATE TABLE `cr_favorite_reports` (
-        `user_id` int(11) NOT NULL,
-        `rep_id` int(11) NOT NULL,
-        PRIMARY KEY (`user_id`,`rep_id`)
+CREATE TABLE `cr_filehist_log` (
+        `schedule_id` decimal(11,0) NOT NULL,
+        `url` varchar(4000) DEFAULT NULL,
+        `notes` varchar(3500) DEFAULT NULL,
+        `run_time` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
         )
 */
 
 
-@Table(name = "cr_favorite_reports")
+@Table(name = "cr_filehist_log")
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
 @Getter
 @Setter
-@IdClass(CrFavoriteReportsId.class)
 @Entity
-public class CrFavoriteReports {
+public class CrFilehistLog {
        @Id
-       @Column(name = "user_id", length = 11, nullable = false)
+       @Column(name = "schedule_id", length = 11, nullable = false)
        @Digits(integer = 11, fraction = 0)
        @Positive
-       private Long userId;
-       @Id
-       @Column(name = "rep_id", length = 11, nullable = false)
-       @Digits(integer = 11, fraction = 0)
-       @Positive
-       private Long repId;
-
-       @Getter
-       @Setter
-       @EqualsAndHashCode
-       @AllArgsConstructor
-       @NoArgsConstructor
-       public static class CrFavoriteReportsId implements Serializable {
-              private Long userId;
-              private Long repId;
-       }
+       private Long scheduledId;
+       //TODO URL @URL
+       @URL
+       @Column(name = "url", length = 4000, columnDefinition = "varchar(4000) DEFAULT NULL")
+       @Size(max = 4000)
+       @SafeHtml
+       private String url;
+       @Column(name = "notes", length = 3500, columnDefinition = "varchar(3500) DEFAULT NULL")
+       @SafeHtml
+       private String notes;
+       @Column(name = "run_time", nullable = false, columnDefinition = "datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()")
+       private LocalDateTime runTime;
 }
-
