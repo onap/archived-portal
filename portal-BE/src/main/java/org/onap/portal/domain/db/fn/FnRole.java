@@ -66,10 +66,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.validator.constraints.SafeHtml;
-import org.onap.portalapp.portal.domain.db.ep.EpAppRoleFunction;
-import org.onap.portalapp.portal.domain.db.ep.EpRoleNotification;
-import org.onap.portalapp.portal.domain.db.ep.EpUserRolesRequestDet;
-import org.onap.portalapp.portal.domain.db.ep.EpWidgetCatalogRole;
+import org.onap.portal.domain.db.ep.EpAppRoleFunction;
+import org.onap.portal.domain.db.ep.EpRoleNotification;
+import org.onap.portal.domain.db.ep.EpUserRolesRequestDet;
+import org.onap.portal.domain.db.ep.EpWidgetCatalogRole;
 
 /*
 CREATE TABLE `fn_role` (

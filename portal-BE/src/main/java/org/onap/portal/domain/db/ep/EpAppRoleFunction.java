@@ -61,8 +61,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.validator.constraints.SafeHtml;
-import org.onap.portalapp.portal.domain.db.fn.FnApp;
-import org.onap.portalapp.portal.domain.db.fn.FnRole;
+import org.onap.portal.domain.db.fn.FnApp;
+import org.onap.portal.domain.db.fn.FnRole;
 
 /*
 CREATE TABLE `ep_app_role_function` (
@@ -82,7 +82,9 @@ CREATE TABLE `ep_app_role_function` (
 */
 
 @Table(name = "ep_app_role_function", indexes = {
-        @Index(name = "UNIQUE KEY", columnList = "app_id, role_id, function_cd", unique = true)
+        @Index(name = "fk_ep_app_role_function_ep_app_func_role_id", columnList = "app_id, role_id, function_cd", unique = true),
+        @Index(name = "fk_ep_app_role_function_ep_app_func", columnList = "app_id, function_cd"),
+        @Index(name = "fk_ep_app_role_function_role_id", columnList = "role_id")
 })
 @NoArgsConstructor
 @AllArgsConstructor

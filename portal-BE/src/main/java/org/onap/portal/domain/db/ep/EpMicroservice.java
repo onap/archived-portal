@@ -66,7 +66,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.validator.constraints.SafeHtml;
 import org.hibernate.validator.constraints.URL;
-import org.onap.portalapp.portal.domain.db.fn.FnApp;
+import org.onap.portal.domain.db.fn.FnApp;
 
 /*
 CREATE TABLE `ep_microservice` (

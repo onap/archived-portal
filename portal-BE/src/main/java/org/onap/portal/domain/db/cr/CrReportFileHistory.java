@@ -67,6 +67,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.validator.constraints.SafeHtml;
 import org.hibernate.validator.constraints.URL;
+import org.onap.portal.domain.db.fn.FnUser;
 
 /*
 CREATE TABLE `cr_report_file_history` (

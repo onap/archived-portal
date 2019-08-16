@@ -59,7 +59,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.validator.constraints.SafeHtml;
-import org.onap.portalapp.portal.domain.db.fn.compositePK.FnQzTriggersId;
+import org.onap.portal.domain.db.fn.compositePK.FnQzTriggersId;
 
 /*
 CREATE TABLE `fn_qz_triggers` (

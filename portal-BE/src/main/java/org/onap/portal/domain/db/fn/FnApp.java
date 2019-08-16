@@ -66,6 +66,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.validator.constraints.SafeHtml;
 import org.hibernate.validator.constraints.URL;
+import org.onap.portal.domain.db.ep.EpAppFunction;
+import org.onap.portal.domain.db.ep.EpAppRoleFunction;
+import org.onap.portal.domain.db.ep.EpMicroservice;
+import org.onap.portal.domain.db.ep.EpUserRolesRequest;
+import org.onap.portal.domain.db.ep.EpWebAnalyticsSource;
+import org.onap.portal.domain.db.ep.EpWidgetCatalogRole;
 import org.onap.portal.domain.dto.DomainVo;
 
 /*
@@ -272,24 +278,10 @@ public class FnApp extends DomainVo implements Serializable {
        )
        private List<EpMicroservice> epMicroservices = new ArrayList<>();
        @OneToMany(
-               targetEntity = EpPersUserAppManSort.class,
-               mappedBy = "appId",
-               cascade = CascadeType.ALL,
-               fetch = FetchType.LAZY
-       )
-       private List<EpPersUserAppManSort> epPersUserAppManSorts = new ArrayList<>();
-       @OneToMany(
                targetEntity = FnPersUserAppSel.class,
                mappedBy = "appId",
                cascade = CascadeType.ALL,
                fetch = FetchType.LAZY
        )
        private List<FnPersUserAppSel> fnPersUserAppSels = new ArrayList<>();
-       @OneToMany(
-               targetEntity = FnWidget.class,
-               mappedBy = "appId",
-               cascade = CascadeType.ALL,
-               fetch = FetchType.LAZY
-       )
-       private List<FnWidget> fnWidgets = new ArrayList<>();
 }

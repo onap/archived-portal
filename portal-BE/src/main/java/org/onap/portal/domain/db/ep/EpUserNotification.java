@@ -55,7 +55,6 @@ import javax.persistence.Table;
 import javax.validation.Valid;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.PastOrPresent;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -63,7 +62,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.validator.constraints.SafeHtml;
-import org.onap.portalapp.portal.domain.db.fn.FnUser;
+import org.onap.portal.domain.db.fn.FnUser;
 
 /*
 CREATE TABLE `ep_user_notification` (

@@ -54,6 +54,7 @@ import javax.persistence.Index;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.Digits;
+import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PastOrPresent;
 import javax.validation.constraints.Pattern;
@@ -101,7 +102,6 @@ CREATE TABLE `cr_report` (
 @Entity
 @Embeddable
 public class CrReport implements Serializable {
-
        @Id
        @Column(name = "rep_id", length = 11, nullable = false)
        @Digits(integer = 11, fraction = 0)
@@ -167,10 +167,22 @@ public class CrReport implements Serializable {
        @SafeHtml
        private String dashboardYn;
 
-       public CrReport(final Long repId, final String title, final String descr, final String publicYn,
-               final String reportXml, final Long createId, final LocalDateTime createDate, final Long maintId,
-               final LocalDateTime maintDate, final String menuId, final String menuApprovedYn, final Long ownerId,
-               final Integer folderId, final String dashboardTypeYn, final String dashboardYn) {
+       public CrReport(
+               @Digits(integer = 11, fraction = 0) @Positive Long repId,
+               @Size(max = 100) @SafeHtml @NotNull String title,
+               @Size(max = 255) @SafeHtml String descr,
+               @Pattern(regexp = "[YNyn]") @Size(max = 1) @SafeHtml @NotNull String publicYn,
+               @SafeHtml String reportXml,
+               @Digits(integer = 11, fraction = 0) @Positive Long createId,
+               @FutureOrPresent @NotNull LocalDateTime createDate,
+               @Digits(integer = 11, fraction = 0) Long maintId,
+               @FutureOrPresent @NotNull LocalDateTime maintDate,
+               @Size(max = 500) @SafeHtml String menuId,
+               @Pattern(regexp = "[YNyn]") @Size(max = 1) @SafeHtml @NotNull String menuApprovedYn,
+               @Digits(integer = 11, fraction = 0) Long ownerId,
+               @Digits(integer = 11, fraction = 0) @Positive Integer folderId,
+               @Pattern(regexp = "[YNyn]") @Size(max = 1) @SafeHtml String dashboardTypeYn,
+               @Pattern(regexp = "[YNyn]") @Size(max = 1) @SafeHtml String dashboardYn) {
               this.repId = repId;
               this.title = title;
               this.descr = descr;

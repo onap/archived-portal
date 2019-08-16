@@ -87,7 +87,8 @@ CREATE TABLE `cr_report_access` (
 @IdClass(CrReportAccessId.class)
 public class CrReportAccess implements Serializable{
        @Id
-       @JoinColumn(name = "rep_id", nullable = false)
+       @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+       @JoinColumn(name = "rep_id")
        @Valid
        private CrReport repId;
        @Id
@@ -96,19 +97,19 @@ public class CrReportAccess implements Serializable{
        @Positive
        @NotNull
        private Long orderNo;
-       @Column(name = "role_id")
+       @Column(name = "role_id", columnDefinition = "decimal(11,0) DEFAULT NULL")
        @Digits(integer = 11, fraction = 0)
        @Positive
        private Long roleId;
-       @Column(name = "user_id")
+       @Column(name = "user_id", columnDefinition = "decimal(11,0) DEFAULT NULL")
        @Digits(integer = 11, fraction = 0)
        @Positive
        private Long userId;
-       @Column(name = "read_only_yn", nullable = false, length = 1, columnDefinition = "character varying(1) default 'n'")
+       @Column(name = "menu_approved_yn", nullable = false, length = 1, columnDefinition = "character varying(1) default 'n'")
        @Pattern(regexp = "[YNyn]")
        @SafeHtml
        @NotNull
-       private String readOnlyYn;
+       private String menuApprovedYn;
 
        @NoArgsConstructor
        @AllArgsConstructor

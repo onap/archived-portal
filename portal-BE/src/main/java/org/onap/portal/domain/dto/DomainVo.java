@@ -14,7 +14,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.onap.portalapp.portal.domain.db.fn.FnUser;
+import org.onap.portal.domain.db.fn.FnUser;
 import org.onap.portalsdk.core.domain.FusionVo;
 
 @Getter

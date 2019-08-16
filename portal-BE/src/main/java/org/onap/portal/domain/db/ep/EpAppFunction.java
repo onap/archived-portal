@@ -64,6 +64,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.validator.constraints.SafeHtml;
 import org.onap.portal.domain.db.ep.EpAppFunction.EpAppFunctionId;
+import org.onap.portal.domain.db.fn.FnApp;
 
 /*
 CREATE TABLE `ep_app_function` (

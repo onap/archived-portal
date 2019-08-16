@@ -57,7 +57,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.onap.portalapp.portal.domain.db.fn.FnRole;
+import org.onap.portal.domain.db.fn.FnRole;
 
 /*
 CREATE TABLE `ep_role_notification` (

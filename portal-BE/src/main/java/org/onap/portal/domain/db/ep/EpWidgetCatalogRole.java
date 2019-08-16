@@ -44,8 +44,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.JoinColumn;
@@ -58,8 +56,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.onap.portalapp.portal.domain.db.fn.FnApp;
-import org.onap.portalapp.portal.domain.db.fn.FnRole;
+import org.onap.portal.domain.db.fn.FnApp;
+import org.onap.portal.domain.db.fn.FnRole;
 
 /*
 CREATE TABLE `ep_widget_catalog_role` (

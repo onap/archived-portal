@@ -61,7 +61,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.validator.constraints.SafeHtml;
-import org.onap.portalapp.portal.domain.db.fn.FnRole;
+import org.onap.portal.domain.db.fn.FnRole;
+
 /*
 CREATE TABLE `ep_user_roles_request_det` (
         `id` int(11) NOT NULL AUTO_INCREMENT,

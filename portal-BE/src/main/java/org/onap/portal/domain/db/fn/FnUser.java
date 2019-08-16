@@ -79,14 +79,6 @@ import org.onap.portal.domain.db.ep.EpUserNotification;
 import org.onap.portal.domain.db.ep.EpUserRolesRequest;
 import org.onap.portal.domain.db.ep.EpWidgetCatalogParameter;
 import org.onap.portal.domain.dto.DomainVo;
-import org.onap.portalapp.portal.domain.DomainVo;
-import org.onap.portalapp.portal.domain.db.cr.CrReportFileHistory;
-import org.onap.portalapp.portal.domain.db.ep.EpPersUserAppManSort;
-import org.onap.portalapp.portal.domain.db.ep.EpPersUserWidgetPlacement;
-import org.onap.portalapp.portal.domain.db.ep.EpPersUserWidgetSel;
-import org.onap.portalapp.portal.domain.db.ep.EpUserNotification;
-import org.onap.portalapp.portal.domain.db.ep.EpUserRolesRequest;
-import org.onap.portalapp.portal.domain.db.ep.EpWidgetCatalogParameter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -404,13 +396,6 @@ public class FnUser extends DomainVo implements UserDetails {
                fetch = FetchType.LAZY
        )
        private List<FnPersUserAppSel> persUserAppSels = new ArrayList<>();
-       @OneToMany(
-               targetEntity = EpPersUserAppManSort.class,
-               mappedBy = "userId",
-               cascade = CascadeType.ALL,
-               fetch = FetchType.LAZY
-       )
-       private List<EpPersUserAppManSort> epPersUserAppManSorts = new ArrayList<>();
        @OneToMany(
                targetEntity = EpWidgetCatalogParameter.class,
                mappedBy = "userId",

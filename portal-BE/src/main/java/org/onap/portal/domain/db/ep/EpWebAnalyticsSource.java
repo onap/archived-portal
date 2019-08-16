@@ -60,7 +60,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.validator.constraints.SafeHtml;
-import org.onap.portalapp.portal.domain.db.fn.FnApp;
+import org.onap.portal.domain.db.fn.FnApp;
 
 /*
 CREATE TABLE `ep_web_analytics_source` (
