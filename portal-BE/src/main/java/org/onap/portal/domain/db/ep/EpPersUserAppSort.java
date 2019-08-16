@@ -49,68 +49,61 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.Valid;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.onap.portalapp.portal.domain.db.fn.FnApp;
+import org.hibernate.validator.constraints.SafeHtml;
 import org.onap.portalapp.portal.domain.db.fn.FnUser;
 
 /*
-CREATE TABLE `ep_pers_user_app_man_sort` (
+CREATE TABLE `ep_pers_user_app_sort` (
         `id` int(11) NOT NULL AUTO_INCREMENT,
         `user_id` int(11) NOT NULL,
-        `app_id` int(11) NOT NULL,
-        `sort_order` int(11) NOT NULL,
+        `sort_pref` char(1) NOT NULL,
         PRIMARY KEY (`id`),
-        UNIQUE KEY `uk_1_ep_pers_user_app_man_sort` (`user_id`,`app_id`),
-        KEY `fk_ep_pers_app_man_sort_fn_app` (`app_id`),
-        CONSTRAINT `fk_ep_pers_app_man_sort_fn_app` FOREIGN KEY (`app_id`) REFERENCES `fn_app` (`app_id`),
-        CONSTRAINT `fk_ep_pers_app_man_sort_fn_user` FOREIGN KEY (`user_id`) REFERENCES `fn_user` (`user_id`)
+        UNIQUE KEY `uk_1_ep_pers_user_app_sort` (`user_id`),
+        CONSTRAINT `fk_ep_pers_user_app_sort_fn_user` FOREIGN KEY (`user_id`) REFERENCES `fn_user` (`user_id`)
         )
 */
 
 @NamedQueries({
         @NamedQuery(
-                name = "EpPersUserAppManSort.retrieveByUserId",
-                query = "from EpPersUserAppManSort where user_id =:userId"
+                name = "EpPersUserAppSort.retrieveByUserId",
+                query = "from EpPersUserAppSort where user_id = :userId"
         )
 })
 
-@Table(name = "ep_pers_user_app_man_sort", indexes ={
-        @Index(name = "uk_1_ep_pers_user_app_man_sort", columnList = "user_id, app_id", unique = true),
-        @Index(name = "fk_ep_pers_app_man_sort_fn_app", columnList = "app_id")
+@Table(name = "ep_pers_user_app_sort", indexes = {
+        @Index(name = "uk_1_ep_pers_user_app_sort", columnList = "user_id", unique = true)
 })
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
 @Entity
-public class EpPersUserAppManSort {
+public class EpPersUserAppSort {
        @Id
        @GeneratedValue(strategy = GenerationType.AUTO)
        @Column(name = "id", length = 11, nullable = false, columnDefinition = "int(11) AUTO_INCREMENT")
        @Digits(integer = 11, fraction = 0)
        private Long id;
-       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-       @JoinColumn(name = "user_id", nullable = false)
+       @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+       @JoinColumn(name = "user_id", unique = true, nullable = false)
        @NotNull
        @Valid
-       private FnUser userId;
-       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-       @JoinColumn(name = "app_id", nullable = false)
+       private FnUser userID;
+       @Column(name = "sort_pref", length = 1, nullable = false)
+       @Size(max = 1)
        @NotNull
-       @Valid
-       private FnApp appId;
-       @Column(name = "sort_order", length = 11, nullable = false)
-       @Digits(integer = 11, fraction = 0)
-       @NotNull
-       private Long sortOrder;
+       @SafeHtml
+       private String sortPref;
 }
