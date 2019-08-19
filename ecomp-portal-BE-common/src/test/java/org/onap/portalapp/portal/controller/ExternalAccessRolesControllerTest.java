@@ -68,11 +68,7 @@ import org.onap.portalapp.portal.ecomp.model.PortalRestStatusEnum;
 import org.onap.portalapp.portal.framework.MockitoTestSuite;
 import org.onap.portalapp.portal.service.ExternalAccessRolesService;
 import org.onap.portalapp.portal.service.ExternalAccessRolesServiceImpl;
-import org.onap.portalapp.portal.transport.CentralRole;
-import org.onap.portalapp.portal.transport.CentralRoleFunction;
-import org.onap.portalapp.portal.transport.CentralUser;
-import org.onap.portalapp.portal.transport.CentralV2Role;
-import org.onap.portalapp.portal.transport.ExternalRequestFieldsValidator;
+import org.onap.portalapp.portal.transport.*;
 import org.onap.portalapp.portal.utils.EPCommonSystemProperties;
 import org.onap.portalapp.portal.utils.EcompPortalUtils;
 import org.onap.portalapp.portal.utils.PortalConstants;
@@ -151,11 +147,20 @@ public class ExternalAccessRolesControllerTest {
 
 	@Test
 	public void getUserTest() throws Exception {
-		CentralUser expectedCentralUser = new CentralUser(null, null, null, null, null, null, null, null, loginId,
-				loginId, loginId, loginId, loginId, loginId, loginId, null, loginId, loginId, loginId, loginId, loginId,
-				loginId, loginId, loginId, loginId, loginId, loginId, loginId, loginId, loginId, loginId, loginId,
-				loginId, loginId, loginId, loginId, loginId, loginId, loginId, loginId, loginId, loginId, loginId,
-				loginId, null, false, false, null, null, false, loginId, null);
+        CentralUser expectedCentralUser =
+                new CentralUser.CentralUserBuilder().setId(null).setCreated(null).setModified(null).setCreatedId(null)
+                        .setModifiedId(null).setRowNum(null).setOrgId(null).setManagerId(null).setFirstName(loginId)
+                        .setMiddleInitial(loginId).setLastName(loginId).setPhone(loginId).setFax(loginId)
+                        .setCellular(loginId).setEmail(loginId).setAddressId(null).setAlertMethodCd(loginId)
+                        .setHrid(loginId).setOrgUserId(loginId).setOrgCode(loginId).setAddress1(loginId)
+                        .setAddress2(loginId).setCity(loginId).setState(loginId).setZipCode(loginId).setCountry(loginId)
+                        .setOrgManagerUserId(loginId).setLocationClli(loginId).setBusinessCountryCode(loginId)
+                        .setBusinessCountryName(loginId).setBusinessUnit(loginId).setBusinessUnitName(loginId)
+                        .setDepartment(loginId).setDepartmentName(loginId).setCompanyCode(loginId).setCompany(loginId)
+                        .setZipCodeSuffix(loginId).setJobTitle(loginId).setCommandChain(loginId).setSiloStatus(loginId)
+                        .setCostCenter(loginId).setFinancialLocCode(loginId).setLoginId(loginId).setLoginPwd(loginId)
+                        .setLastLoginDate(null).setActive(false).setInternal(false).setSelectedProfileId(null)
+                        .setTimeZoneId(null).setOnline(false).setChatId(loginId).setUserApps(null).createCentralUser();
 		String loginId = "test";
 		StringWriter sw = new StringWriter();
 		PrintWriter writer = new PrintWriter(sw);
