@@ -3469,22 +3469,31 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 			cua.setRole(role);
 			userApps.add(cua);
 		}
-		return new CentralUser(cenV2User.getId(), cenV2User.getCreated(), cenV2User.getModified(),
-				cenV2User.getCreatedId(), cenV2User.getModifiedId(), cenV2User.getRowNum(), cenV2User.getOrgId(),
-				cenV2User.getManagerId(), cenV2User.getFirstName(), cenV2User.getMiddleInitial(),
-				cenV2User.getLastName(), cenV2User.getPhone(), cenV2User.getFax(), cenV2User.getCellular(),
-				cenV2User.getEmail(), cenV2User.getAddressId(), cenV2User.getAlertMethodCd(), cenV2User.getHrid(),
-				cenV2User.getOrgUserId(), cenV2User.getOrgCode(), cenV2User.getAddress1(), cenV2User.getAddress2(),
-				cenV2User.getCity(), cenV2User.getState(), cenV2User.getZipCode(), cenV2User.getCountry(),
-				cenV2User.getOrgManagerUserId(), cenV2User.getLocationClli(), cenV2User.getBusinessCountryCode(),
-				cenV2User.getBusinessCountryName(), cenV2User.getBusinessUnit(), cenV2User.getBusinessUnitName(),
-				cenV2User.getDepartment(), cenV2User.getDepartmentName(), cenV2User.getCompanyCode(),
-				cenV2User.getCompany(), cenV2User.getZipCodeSuffix(), cenV2User.getJobTitle(),
-				cenV2User.getCommandChain(), cenV2User.getSiloStatus(), cenV2User.getCostCenter(),
-				cenV2User.getFinancialLocCode(), cenV2User.getLoginId(), cenV2User.getLoginPwd(),
-				cenV2User.getLastLoginDate(), cenV2User.isActive(), cenV2User.isInternal(),
-				cenV2User.getSelectedProfileId(), cenV2User.getTimeZoneId(), cenV2User.isOnline(),
-				cenV2User.getChatId(), userApps);
+        return new CentralUser.CentralUserBuilder().setId(cenV2User.getId()).setCreated(cenV2User.getCreated())
+                .setModified(cenV2User.getModified()).setCreatedId(cenV2User.getCreatedId())
+                .setModifiedId(cenV2User.getModifiedId()).setRowNum(cenV2User.getRowNum())
+                .setOrgId(cenV2User.getOrgId()).setManagerId(cenV2User.getManagerId())
+                .setFirstName(cenV2User.getFirstName()).setMiddleInitial(cenV2User.getMiddleInitial())
+                .setLastName(cenV2User.getLastName()).setPhone(cenV2User.getPhone()).setFax(cenV2User.getFax())
+                .setCellular(cenV2User.getCellular()).setEmail(cenV2User.getEmail())
+                .setAddressId(cenV2User.getAddressId()).setAlertMethodCd(cenV2User.getAlertMethodCd())
+                .setHrid(cenV2User.getHrid()).setOrgUserId(cenV2User.getOrgUserId()).setOrgCode(cenV2User.getOrgCode())
+                .setAddress1(cenV2User.getAddress1()).setAddress2(cenV2User.getAddress2()).setCity(cenV2User.getCity())
+                .setState(cenV2User.getState()).setZipCode(cenV2User.getZipCode()).setCountry(cenV2User.getCountry())
+                .setOrgManagerUserId(cenV2User.getOrgManagerUserId()).setLocationClli(cenV2User.getLocationClli())
+                .setBusinessCountryCode(cenV2User.getBusinessCountryCode())
+                .setBusinessCountryName(cenV2User.getBusinessCountryName()).setBusinessUnit(cenV2User.getBusinessUnit())
+                .setBusinessUnitName(cenV2User.getBusinessUnitName()).setDepartment(cenV2User.getDepartment())
+                .setDepartmentName(cenV2User.getDepartmentName()).setCompanyCode(cenV2User.getCompanyCode())
+                .setCompany(cenV2User.getCompany()).setZipCodeSuffix(cenV2User.getZipCodeSuffix())
+                .setJobTitle(cenV2User.getJobTitle()).setCommandChain(cenV2User.getCommandChain())
+                .setSiloStatus(cenV2User.getSiloStatus()).setCostCenter(cenV2User.getCostCenter())
+                .setFinancialLocCode(cenV2User.getFinancialLocCode()).setLoginId(cenV2User.getLoginId())
+                .setLoginPwd(cenV2User.getLoginPwd()).setLastLoginDate(cenV2User.getLastLoginDate())
+                .setActive(cenV2User.isActive()).setInternal(cenV2User.isInternal())
+                .setSelectedProfileId(cenV2User.getSelectedProfileId()).setTimeZoneId(cenV2User.getTimeZoneId())
+                .setOnline(cenV2User.isOnline()).setChatId(cenV2User.getChatId()).setUserApps(userApps)
+                .createCentralUser();
 	}
 
 	@Override

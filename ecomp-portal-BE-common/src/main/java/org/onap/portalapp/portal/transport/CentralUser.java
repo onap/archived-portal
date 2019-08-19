@@ -102,69 +102,379 @@ public class CentralUser implements Serializable {
 	private Set<CentralUserApp> userApps = new TreeSet<>();
 	private Set<CentralRole> pseudoRoles = new TreeSet<>();
 
-	public CentralUser(Long id, Date created, Date modified, Long createdId, Long modifiedId, Long rowNum, Long orgId,
-			Long managerId, String firstName, String middleInitial, String lastName, String phone, String fax,
-			String cellular, String email, Long addressId, String alertMethodCd, String hrid, String orgUserId,
-			String orgCode, String address1, String address2, String city, String state, String zipCode, String country,
-			String orgManagerUserId, String locationClli, String businessCountryCode, String businessCountryName,
-			String businessUnit, String businessUnitName, String department, String departmentName, String companyCode,
-			String company, String zipCodeSuffix, String jobTitle, String commandChain, String siloStatus,
-			String costCenter, String financialLocCode, String loginId, String loginPwd, Date lastLoginDate,
-			boolean active, boolean internal, Long selectedProfileId, Long timeZoneId, boolean online, String chatId,
-			Set<CentralUserApp> userApps) {
+	public CentralUser(CentralUserBuilder builder) {
 		super();
-		this.id = id;
-		this.created = created;
-		this.modified = modified;
-		this.createdId = createdId;
-		this.modifiedId = modifiedId;
-		this.rowNum = rowNum;
-		this.orgId = orgId;
-		this.managerId = managerId;
-		this.firstName = firstName;
-		this.middleInitial = middleInitial;
-		this.lastName = lastName;
-		this.phone = phone;
-		this.fax = fax;
-		this.cellular = cellular;
-		this.email = email;
-		this.addressId = addressId;
-		this.alertMethodCd = alertMethodCd;
-		this.hrid = hrid;
-		this.orgUserId = orgUserId;
-		this.orgCode = orgCode;
-		this.address1 = address1;
-		this.address2 = address2;
-		this.city = city;
-		this.state = state;
-		this.zipCode = zipCode;
-		this.country = country;
-		this.orgManagerUserId = orgManagerUserId;
-		this.locationClli = locationClli;
-		this.businessCountryCode = businessCountryCode;
-		this.businessCountryName = businessCountryName;
-		this.businessUnit = businessUnit;
-		this.businessUnitName = businessUnitName;
-		this.department = department;
-		this.departmentName = departmentName;
-		this.companyCode = companyCode;
-		this.company = company;
-		this.zipCodeSuffix = zipCodeSuffix;
-		this.jobTitle = jobTitle;
-		this.commandChain = commandChain;
-		this.siloStatus = siloStatus;
-		this.costCenter = costCenter;
-		this.financialLocCode = financialLocCode;
-		this.loginId = loginId;
-		this.loginPwd = loginPwd;
-		this.lastLoginDate = lastLoginDate;
-		this.active = active;
-		this.internal = internal;
-		this.selectedProfileId = selectedProfileId;
-		this.timeZoneId = timeZoneId;
-		this.online = online;
-		this.chatId = chatId;
-		this.userApps = userApps;
+		this.id = builder.id;
+		this.created = builder.created;
+		this.modified = builder.modified;
+		this.createdId = builder.createdId;
+		this.modifiedId = builder.modifiedId;
+		this.rowNum = builder.rowNum;
+		this.orgId = builder.orgId;
+		this.managerId = builder.managerId;
+		this.firstName = builder.firstName;
+		this.middleInitial = builder.middleInitial;
+		this.lastName = builder.lastName;
+		this.phone = builder.phone;
+		this.fax = builder.fax;
+		this.cellular = builder.cellular;
+		this.email = builder.email;
+		this.addressId = builder.addressId;
+		this.alertMethodCd = builder.alertMethodCd;
+		this.hrid = builder.hrid;
+		this.orgUserId = builder.orgUserId;
+		this.orgCode = builder.orgCode;
+		this.address1 = builder.address1;
+		this.address2 = builder.address2;
+		this.city = builder.city;
+		this.state = builder.state;
+		this.zipCode = builder.zipCode;
+		this.country = builder.country;
+		this.orgManagerUserId = builder.orgManagerUserId;
+		this.locationClli = builder.locationClli;
+		this.businessCountryCode = builder.businessCountryCode;
+		this.businessCountryName = builder.businessCountryName;
+		this.businessUnit = builder.businessUnit;
+		this.businessUnitName = builder.businessUnitName;
+		this.department = builder.department;
+		this.departmentName = builder.departmentName;
+		this.companyCode = builder.companyCode;
+		this.company = builder.company;
+		this.zipCodeSuffix = builder.zipCodeSuffix;
+		this.jobTitle = builder.jobTitle;
+		this.commandChain = builder.commandChain;
+		this.siloStatus = builder.siloStatus;
+		this.costCenter = builder.costCenter;
+		this.financialLocCode = builder.financialLocCode;
+		this.loginId = builder.loginId;
+		this.loginPwd = builder.loginPwd;
+		this.lastLoginDate = builder.lastLoginDate;
+		this.active = builder.active;
+		this.internal = builder.internal;
+		this.selectedProfileId = builder.selectedProfileId;
+		this.timeZoneId = builder.timeZoneId;
+		this.online = builder.online;
+		this.chatId = builder.chatId;
+		this.userApps = builder.userApps;
+	}
+
+	public static class CentralUserBuilder {
+	    private Long id;
+	    private Date created;
+	    private Date modified;
+	    private Long createdId;
+	    private Long modifiedId;
+	    private Long rowNum;
+	    private Long orgId;
+	    private Long managerId;
+	    private String firstName;
+	    private String middleInitial;
+	    private String lastName;
+	    private String phone;
+	    private String fax;
+	    private String cellular;
+	    private String email;
+	    private Long addressId;
+	    private String alertMethodCd;
+	    private String hrid;
+	    private String orgUserId;
+	    private String orgCode;
+	    private String address1;
+	    private String address2;
+	    private String city;
+	    private String state;
+	    private String zipCode;
+	    private String country;
+	    private String orgManagerUserId;
+	    private String locationClli;
+	    private String businessCountryCode;
+	    private String businessCountryName;
+	    private String businessUnit;
+	    private String businessUnitName;
+	    private String department;
+	    private String departmentName;
+	    private String companyCode;
+	    private String company;
+	    private String zipCodeSuffix;
+	    private String jobTitle;
+	    private String commandChain;
+	    private String siloStatus;
+	    private String costCenter;
+	    private String financialLocCode;
+	    private String loginId;
+	    private String loginPwd;
+	    private Date lastLoginDate;
+	    private boolean active;
+	    private boolean internal;
+	    private Long selectedProfileId;
+	    private Long timeZoneId;
+	    private boolean online;
+	    private String chatId;
+	    private Set<CentralUserApp> userApps;
+
+	    public CentralUserBuilder setId(Long id) {
+	        this.id = id;
+	        return this;
+	    }
+
+	    public CentralUserBuilder setCreated(Date created) {
+	        this.created = created;
+	        return this;
+	    }
+
+	    public CentralUserBuilder setModified(Date modified) {
+	        this.modified = modified;
+	        return this;
+	    }
+
+        public CentralUserBuilder setCreatedId(Long createdId) {
+            this.createdId = createdId;
+            return this;
+        }
+
+	    public CentralUserBuilder setModifiedId(Long modifiedId) {
+	        this.modifiedId = modifiedId;
+	        return this;
+	    }
+
+	    public CentralUserBuilder setRowNum(Long rowNum) {
+	        this.rowNum = rowNum;
+	        return this;
+	    }
+
+	    public CentralUserBuilder setOrgId(Long orgId) {
+	        this.orgId = orgId;
+	        return this;
+	    }
+
+	    public CentralUserBuilder setManagerId(Long managerId) {
+	        this.managerId = managerId;
+	        return this;
+	    }
+
+	    public CentralUserBuilder setFirstName(String firstName) {
+	        this.firstName = firstName;
+	        return this;
+	    }
+
+	    public CentralUserBuilder setMiddleInitial(String middleInitial) {
+	        this.middleInitial = middleInitial;
+	        return this;
+	    }
+
+	    public CentralUserBuilder setLastName(String lastName) {
+	        this.lastName = lastName;
+	        return this;
+	    }
+
+	    public CentralUserBuilder setPhone(String phone) {
+	        this.phone = phone;
+	        return this;
+	    }
+
+	    public CentralUserBuilder setFax(String fax) {
+	        this.fax = fax;
+	        return this;
+	    }
+
+	    public CentralUserBuilder setCellular(String cellular) {
+	        this.cellular = cellular;
+	        return this;
+	    }
+
+	    public CentralUserBuilder setEmail(String email) {
+	        this.email = email;
+	        return this;
+	    }
+
+	    public CentralUserBuilder setAddressId(Long addressId) {
+	        this.addressId = addressId;
+	        return this;
+	    }
+
+	    public CentralUserBuilder setAlertMethodCd(String alertMethodCd) {
+	        this.alertMethodCd = alertMethodCd;
+	        return this;
+	    }
+
+	    public CentralUserBuilder setHrid(String hrid) {
+	        this.hrid = hrid;
+	        return this;
+	    }
+
+	    public CentralUserBuilder setOrgUserId(String orgUserId) {
+	        this.orgUserId = orgUserId;
+	        return this;
+	    }
+
+	    public CentralUserBuilder setOrgCode(String orgCode) {
+	        this.orgCode = orgCode;
+	        return this;
+	    }
+
+	    public CentralUserBuilder setAddress1(String address1) {
+	        this.address1 = address1;
+	        return this;
+	    }
+
+	    public CentralUserBuilder setAddress2(String address2) {
+	        this.address2 = address2;
+	        return this;
+	    }
+
+	    public CentralUserBuilder setCity(String city) {
+	        this.city = city;
+	        return this;
+	    }
+
+	    public CentralUserBuilder setState(String state) {
+	        this.state = state;
+	        return this;
+	    }
+
+	    public CentralUserBuilder setZipCode(String zipCode) {
+	        this.zipCode = zipCode;
+	        return this;
+	    }
+
+	    public CentralUserBuilder setCountry(String country) {
+	        this.country = country;
+	        return this;
+	    }
+
+	    public CentralUserBuilder setOrgManagerUserId(String orgManagerUserId) {
+	        this.orgManagerUserId = orgManagerUserId;
+	        return this;
+	    }
+
+	    public CentralUserBuilder setLocationClli(String locationClli) {
+	        this.locationClli = locationClli;
+	        return this;
+	    }
+
+	    public CentralUserBuilder setBusinessCountryCode(String businessCountryCode) {
+	        this.businessCountryCode = businessCountryCode;
+	        return this;
+	    }
+
+	    public CentralUserBuilder setBusinessCountryName(String businessCountryName) {
+	        this.businessCountryName = businessCountryName;
+	        return this;
+	    }
+
+	    public CentralUserBuilder setBusinessUnit(String businessUnit) {
+	        this.businessUnit = businessUnit;
+	        return this;
+	    }
+
+	    public CentralUserBuilder setBusinessUnitName(String businessUnitName) {
+	        this.businessUnitName = businessUnitName;
+	        return this;
+	    }
+
+	    public CentralUserBuilder setDepartment(String department) {
+	        this.department = department;
+	        return this;
+	    }
+
+	    public CentralUserBuilder setDepartmentName(String departmentName) {
+	        this.departmentName = departmentName;
+	        return this;
+	    }
+
+	    public CentralUserBuilder setCompanyCode(String companyCode) {
+	        this.companyCode = companyCode;
+	        return this;
+	    }
+
+	    public CentralUserBuilder setCompany(String company) {
+	        this.company = company;
+	        return this;
+	    }
+
+	    public CentralUserBuilder setZipCodeSuffix(String zipCodeSuffix) {
+	        this.zipCodeSuffix = zipCodeSuffix;
+	        return this;
+	    }
+
+	    public CentralUserBuilder setJobTitle(String jobTitle) {
+	        this.jobTitle = jobTitle;
+	        return this;
+	    }
+
+	    public CentralUserBuilder setCommandChain(String commandChain) {
+	        this.commandChain = commandChain;
+	        return this;
+	    }
+
+	    public CentralUserBuilder setSiloStatus(String siloStatus) {
+	        this.siloStatus = siloStatus;
+	        return this;
+	    }
+
+	    public CentralUserBuilder setCostCenter(String costCenter) {
+	        this.costCenter = costCenter;
+	        return this;
+	    }
+
+	    public CentralUserBuilder setFinancialLocCode(String financialLocCode) {
+	        this.financialLocCode = financialLocCode;
+	        return this;
+	    }
+
+	    public CentralUserBuilder setLoginId(String loginId) {
+	        this.loginId = loginId;
+	        return this;
+	    }
+
+	    public CentralUserBuilder setLoginPwd(String loginPwd) {
+	        this.loginPwd = loginPwd;
+	        return this;
+	    }
+
+	    public CentralUserBuilder setLastLoginDate(Date lastLoginDate) {
+	        this.lastLoginDate = lastLoginDate;
+	        return this;
+	    }
+
+	    public CentralUserBuilder setActive(boolean active) {
+	        this.active = active;
+	        return this;
+	    }
+
+	    public CentralUserBuilder setInternal(boolean internal) {
+	        this.internal = internal;
+	        return this;
+	    }
+
+	    public CentralUserBuilder setSelectedProfileId(Long selectedProfileId) {
+	        this.selectedProfileId = selectedProfileId;
+	        return this;
+	    }
+
+	    public CentralUserBuilder setTimeZoneId(Long timeZoneId) {
+	        this.timeZoneId = timeZoneId;
+	        return this;
+	    }
+
+	    public CentralUserBuilder setOnline(boolean online) {
+	        this.online = online;
+	        return this;
+	    }
+
+	    public CentralUserBuilder setChatId(String chatId) {
+	        this.chatId = chatId;
+	        return this;
+	    }
+
+	    public CentralUserBuilder setUserApps(Set<CentralUserApp> userApps) {
+	        this.userApps = userApps;
+	        return this;
+	    }
+
+	    public CentralUser createCentralUser() {
+	        return new CentralUser(this);
+	    }
 	}
 
 	/**

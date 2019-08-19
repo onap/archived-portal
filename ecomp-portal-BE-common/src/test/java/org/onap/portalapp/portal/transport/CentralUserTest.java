@@ -44,13 +44,20 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.junit.Test;
-import org.onap.portalapp.portal.transport.CentralV2Role;
-import org.onap.portalapp.portal.transport.CentralV2User;
-import org.onap.portalapp.portal.transport.CentralV2UserApp;
 
 public class CentralUserTest {
 
-	CentralUser centralUser=new CentralUser(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, false, false, null, null, false, null, null);
+    CentralUser centralUser = new CentralUser.CentralUserBuilder().setId(null).setCreated(null).setModified(null)
+            .setCreatedId(null).setModifiedId(null).setRowNum(null).setOrgId(null).setManagerId(null).setFirstName(null)
+            .setMiddleInitial(null).setLastName(null).setPhone(null).setFax(null).setCellular(null).setEmail(null)
+            .setAddressId(null).setAlertMethodCd(null).setHrid(null).setOrgUserId(null).setOrgCode(null)
+            .setAddress1(null).setAddress2(null).setCity(null).setState(null).setZipCode(null).setCountry(null)
+            .setOrgManagerUserId(null).setLocationClli(null).setBusinessCountryCode(null).setBusinessCountryName(null)
+            .setBusinessUnit(null).setBusinessUnitName(null).setDepartment(null).setDepartmentName(null)
+            .setCompanyCode(null).setCompany(null).setZipCodeSuffix(null).setJobTitle(null).setCommandChain(null)
+            .setSiloStatus(null).setCostCenter(null).setFinancialLocCode(null).setLoginId(null).setLoginPwd(null)
+            .setLastLoginDate(null).setActive(false).setInternal(false).setSelectedProfileId(null).setTimeZoneId(null)
+            .setOnline(false).setChatId(null).setUserApps(null).createCentralUser();
 
 	public CentralV2User mockCentralUser(){
 		Set<CentralV2UserApp> userApps = new HashSet<CentralV2UserApp>();
