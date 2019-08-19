@@ -47,18 +47,16 @@ import lombok.Setter;
 @EqualsAndHashCode
 public class ExternalRoleDetails implements Comparable {
 
-	private String  name;
+    private String name;
     private boolean active;
     private Integer priority;
-    private Long appId;     // used by ONAP only 
+    private Long appId; // used by ONAP only
     private Long appRoleId; // used by ONAP only
-	private List<EPAppRoleFunction> perms;
+    private List<EPAppRoleFunction> perms;
 
-	@Override
-	public int compareTo(Object obj) {
-		EPRole other = (EPRole)obj;
-		return (this.getName() == null || other.getName() == null) ? 1 : getName().equals(other.getName()) ? 0 : 1;
-	}
-
-
+    @Override
+    public int compareTo(Object obj) {
+        EPRole other = (EPRole) obj;
+        return (this.getName() == null || other.getName() == null) ? 1 : getName().equals(other.getName()) ? 0 : 1;
+    }
 }

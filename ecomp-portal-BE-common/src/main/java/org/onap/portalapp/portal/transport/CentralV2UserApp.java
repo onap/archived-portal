@@ -42,7 +42,7 @@ import java.util.Objects;
 
 @SuppressWarnings("rawtypes")
 public class CentralV2UserApp implements Serializable, Comparable{
-	
+
 	/**
 	 * 
 	 */
@@ -51,77 +51,73 @@ public class CentralV2UserApp implements Serializable, Comparable{
 	private CentralApp app;
 	private CentralV2Role role;
 	private Integer priority;
-	
-	
-	
+
 	public Long getUserId() {
 		return userId;
 	}
-
-
 
 	public void setUserId(Long userId) {
 		this.userId = userId;
 	}
 
-
-
 	public CentralApp getApp() {
 		return app;
 	}
-
-
 
 	public void setApp(CentralApp app) {
 		this.app = app;
 	}
 
-
-
 	public CentralV2Role getRole() {
 		return role;
 	}
-
-
 
 	public void setRole(CentralV2Role role) {
 		this.role = role;
 	}
 
-
-
 	public Integer getPriority() {
 		return priority;
 	}
-
-
 
 	public void setPriority(Integer priority) {
 		this.priority = priority;
 	}
 
 	@Override
-	public boolean equals(Object other) {
-		if (this == other) {
-			return true;
-		}
-		if (!(other instanceof CentralV2UserApp)) {
-			return false;
-		}
-		CentralV2UserApp castOther = (CentralV2UserApp) other;
-		return Objects.equals(this.userId, castOther.userId) &&
-			Objects.equals(this.app, castOther.app) &&
-			Objects.equals(this.role, castOther.role) &&
-			Objects.equals(this.priority, castOther.priority);
-	}
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((app == null) ? 0 : app.hashCode());
+        result = prime * result + ((priority == null) ? 0 : priority.hashCode());
+        result = prime * result + ((role == null) ? 0 : role.hashCode());
+        result = prime * result + ((userId == null) ? 0 : userId.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (!(other instanceof CentralV2UserApp)) {
+            return false;
+        }
+        CentralV2UserApp castOther = (CentralV2UserApp) other;
+        return Objects.equals(this.userId, castOther.userId) &&
+            Objects.equals(this.app, castOther.app) &&
+            Objects.equals(this.role, castOther.role) &&
+            Objects.equals(this.priority, castOther.priority);
+    }
 
 	public int compareTo(Object other){
 	    CentralV2UserApp castOther = (CentralV2UserApp) other;
 
-	    Long c1 = (this.getUserId()==null ? 0 : this.getUserId()) + (this.priority==null ? 0 : this.priority);
-	    Long c2 = (castOther.getUserId()==null ? 0 : castOther.getUserId()) + (castOther.getApp()==null||castOther.getApp().getId()==null ? 0 : castOther.getApp().getId()) + (castOther.priority==null ? 0 : castOther.priority);
+        Long c1 = (this.getUserId() == null ? 0 : this.getUserId()) + (this.priority == null ? 0 : this.priority);
+        Long c2 = (castOther.getUserId() == null ? 0 : castOther.getUserId());
+        c2 += (castOther.getApp() == null || castOther.getApp().getId() == null ? 0 : castOther.getApp().getId());
+        c2 += (castOther.priority == null ? 0 : castOther.priority);
 
 	    return c1.compareTo(c2);
 	}
-	
 }
