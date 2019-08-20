@@ -61,7 +61,7 @@ public class CentralV2UserTest {
 		
 		CentralV2User user=buildV2User();
 		user.setZipCodeSuffix(TEST);
-		CentralV2User centrlUser=new CentralV2User();
+        CentralV2User centrlUser = new CentralV2User.CentralV2UserBuilder().createCentralV2User();
 		centrlUser.setId(user.getId());
 		centrlUser.setCreated(user.getCreated());
 		centrlUser.setModified(user.getModified());
@@ -249,15 +249,18 @@ public class CentralV2UserTest {
 	public CentralV2User buildV2User(){
 		Set<CentralV2UserApp> userApps = new HashSet<CentralV2UserApp>();
 		Set<CentralV2Role> pseudoRoles = new HashSet<CentralV2Role>();
-		CentralV2User centralV2User = new CentralV2User(ID, DATE, DATE, ID, ID, ID, ID,
-				ID, TEST, TEST, TEST, TEST, TEST,
-				TEST, TEST, ID, TEST, TEST, TEST,
-				TEST, TEST, TEST, TEST, TEST, TEST, TEST,
-				TEST, TEST, TEST, TEST,
-				TEST, TEST, TEST, TEST, TEST,
-				TEST, TEST, TEST, TEST, TEST,
-				TEST, TEST, TEST, TEST, null,
-				false, false, ID, ID, false, TEST, userApps, pseudoRoles);
+        CentralV2User centralV2User = new CentralV2User.CentralV2UserBuilder().setId(ID).setCreated(DATE)
+                .setModified(DATE).setCreatedId(ID).setModifiedId(ID).setRowNum(ID).setOrgId(ID).setManagerId(ID)
+                .setFirstName(TEST).setMiddleInitial(TEST).setLastName(TEST).setPhone(TEST).setFax(TEST)
+                .setCellular(TEST).setEmail(TEST).setAddressId(ID).setAlertMethodCd(TEST).setHrid(TEST)
+                .setOrgUserId(TEST).setOrgCode(TEST).setAddress1(TEST).setAddress2(TEST).setCity(TEST).setState(TEST)
+                .setZipCode(TEST).setCountry(TEST).setOrgManagerUserId(TEST).setLocationClli(TEST)
+                .setBusinessCountryCode(TEST).setBusinessCountryName(TEST).setBusinessUnit(TEST)
+                .setBusinessUnitName(TEST).setDepartment(TEST).setDepartmentName(TEST).setCompanyCode(TEST)
+                .setCompany(TEST).setZipCodeSuffix(TEST).setJobTitle(TEST).setCommandChain(TEST).setSiloStatus(TEST)
+                .setCostCenter(TEST).setFinancialLocCode(TEST).setLoginId(TEST).setLoginPwd(TEST).setLastLoginDate(null)
+                .setActive(false).setInternal(false).setSelectedProfileId(ID).setTimeZoneId(ID).setOnline(false)
+                .setChatId(TEST).setUserApps(userApps).setPseudoRoles(pseudoRoles).createCentralV2User();
 		
 		return centralV2User;
 	}

@@ -62,15 +62,20 @@ public class CentralUserTest {
 	public CentralV2User mockCentralUser(){
 		Set<CentralV2UserApp> userApps = new HashSet<CentralV2UserApp>();
 		Set<CentralV2Role> pseudoRoles = new HashSet<CentralV2Role>();
-		CentralV2User centralV2User = new CentralV2User((long)1, null, null, (long)1, (long)1, (long)1, (long)1,
-				(long)1, "test", "test", "test", "test", "test",
-				"test", "test", (long)1, "test", "test", "test",
-				"test", "test", "test", "test", "test", "test", "test",
-				"test", "test", "test", "test",
-				"test", "test", "test", "test", "test",
-				"test", "test", "test", "test", "test",
-				"test", "test", "test", "test", null,
-				false, false, (long)1, (long)1, false, "test", userApps, pseudoRoles);
+        CentralV2User centralV2User = new CentralV2User.CentralV2UserBuilder().setId((long) 1).setCreated(null)
+                .setModified(null).setCreatedId((long) 1).setModifiedId((long) 1).setRowNum((long) 1).setOrgId((long) 1)
+                .setManagerId((long) 1).setFirstName("test").setMiddleInitial("test").setLastName("test")
+                .setPhone("test").setFax("test").setCellular("test").setEmail("test").setAddressId((long) 1)
+                .setAlertMethodCd("test").setHrid("test").setOrgUserId("test").setOrgCode("test").setAddress1("test")
+                .setAddress2("test").setCity("test").setState("test").setZipCode("test").setCountry("test")
+                .setOrgManagerUserId("test").setLocationClli("test").setBusinessCountryCode("test")
+                .setBusinessCountryName("test").setBusinessUnit("test").setBusinessUnitName("test")
+                .setDepartment("test").setDepartmentName("test").setCompanyCode("test").setCompany("test")
+                .setZipCodeSuffix("test").setJobTitle("test").setCommandChain("test").setSiloStatus("test")
+                .setCostCenter("test").setFinancialLocCode("test").setLoginId("test").setLoginPwd("test")
+                .setLastLoginDate(null).setActive(false).setInternal(false).setSelectedProfileId((long) 1)
+                .setTimeZoneId((long) 1).setOnline(false).setChatId("test").setUserApps(userApps)
+                .setPseudoRoles(pseudoRoles).createCentralV2User();
 		
 		return centralV2User;
 	}
@@ -81,15 +86,20 @@ public class CentralUserTest {
 		
 		Set<CentralV2UserApp> userApps = new HashSet<CentralV2UserApp>();
 		Set<CentralV2Role> pseudoRoles = new HashSet<CentralV2Role>();
-		CentralV2User centralV2User1 = new CentralV2User((long)1, null, null, (long)1, (long)1, (long)1, (long)1,
-				(long)1, "test", "test", "test", "test", "test",
-				"test", "test", (long)1, "test", "test", "test",
-				"test", "test", "test", "test", "test", "test", "test",
-				"test", "test", "test", "test",
-				"test", "test", "test", "test", "test",
-				"test", "test", "test", "test", "test",
-				"test", "test", "test", "test", null,
-				false, false, (long)1, (long)1, false, "test", userApps, pseudoRoles);
+        CentralV2User centralV2User1 = new CentralV2User.CentralV2UserBuilder().setId((long) 1).setCreated(null)
+                .setModified(null).setCreatedId((long) 1).setModifiedId((long) 1).setRowNum((long) 1).setOrgId((long) 1)
+                .setManagerId((long) 1).setFirstName("test").setMiddleInitial("test").setLastName("test")
+                .setPhone("test").setFax("test").setCellular("test").setEmail("test").setAddressId((long) 1)
+                .setAlertMethodCd("test").setHrid("test").setOrgUserId("test").setOrgCode("test").setAddress1("test")
+                .setAddress2("test").setCity("test").setState("test").setZipCode("test").setCountry("test")
+                .setOrgManagerUserId("test").setLocationClli("test").setBusinessCountryCode("test")
+                .setBusinessCountryName("test").setBusinessUnit("test").setBusinessUnitName("test")
+                .setDepartment("test").setDepartmentName("test").setCompanyCode("test").setCompany("test")
+                .setZipCodeSuffix("test").setJobTitle("test").setCommandChain("test").setSiloStatus("test")
+                .setCostCenter("test").setFinancialLocCode("test").setLoginId("test").setLoginPwd("test")
+                .setLastLoginDate(null).setActive(false).setInternal(false).setSelectedProfileId((long) 1)
+                .setTimeZoneId((long) 1).setOnline(false).setChatId("test").setUserApps(userApps)
+                .setPseudoRoles(pseudoRoles).createCentralV2User();
 		
 		
 		assertEquals(centralV2User, centralV2User1);

@@ -1158,7 +1158,7 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 	@SuppressWarnings("unchecked")
 	private CentralV2User createEPUser(EPUser userInfo, Set<EPUserApp> userAppSet, EPApp app) throws Exception {
 		final Map<String, Long> params = new HashMap<>();
-		CentralV2User userAppList = new CentralV2User();
+        CentralV2User userAppList = new CentralV2User.CentralV2UserBuilder().createCentralV2User();
 		CentralV2User user1 = null;
 		final Map<String, Long> params1 = new HashMap<>();
 		List<EPRole> globalRoleList = new ArrayList<>();
@@ -1234,21 +1234,32 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 					}
 				}
 			}
-			user1 = new CentralV2User(null, userInfo.getCreated(), userInfo.getModified(), userInfo.getCreatedId(),
-					userInfo.getModifiedId(), userInfo.getRowNum(), userInfo.getOrgId(), userInfo.getManagerId(),
-					userInfo.getFirstName(), userInfo.getMiddleInitial(), userInfo.getLastName(), userInfo.getPhone(),
-					userInfo.getFax(), userInfo.getCellular(), userInfo.getEmail(), userInfo.getAddressId(),
-					userInfo.getAlertMethodCd(), userInfo.getHrid(), userInfo.getOrgUserId(), userInfo.getOrgCode(),
-					userInfo.getAddress1(), userInfo.getAddress2(), userInfo.getCity(), userInfo.getState(),
-					userInfo.getZipCode(), userInfo.getCountry(), userInfo.getOrgManagerUserId(),
-					userInfo.getLocationClli(), userInfo.getBusinessCountryCode(), userInfo.getBusinessCountryName(),
-					userInfo.getBusinessUnit(), userInfo.getBusinessUnitName(), userInfo.getDepartment(),
-					userInfo.getDepartmentName(), userInfo.getCompanyCode(), userInfo.getCompany(),
-					userInfo.getZipCodeSuffix(), userInfo.getJobTitle(), userInfo.getCommandChain(),
-					userInfo.getSiloStatus(), userInfo.getCostCenter(), userInfo.getFinancialLocCode(),
-					userInfo.getLoginId(), userInfo.getLoginPwd(), userInfo.getLastLoginDate(), userInfo.getActive(),
-					userInfo.getInternal(), userInfo.getSelectedProfileId(), userInfo.getTimeZoneId(),
-					userInfo.isOnline(), userInfo.getChatId(), userAppList.getUserApps(), null);
+            user1 = new CentralV2User.CentralV2UserBuilder().setId(null).setCreated(userInfo.getCreated())
+                    .setModified(userInfo.getModified()).setCreatedId(userInfo.getCreatedId())
+                    .setModifiedId(userInfo.getModifiedId()).setRowNum(userInfo.getRowNum())
+                    .setOrgId(userInfo.getOrgId()).setManagerId(userInfo.getManagerId())
+                    .setFirstName(userInfo.getFirstName()).setMiddleInitial(userInfo.getMiddleInitial())
+                    .setLastName(userInfo.getLastName()).setPhone(userInfo.getPhone()).setFax(userInfo.getFax())
+                    .setCellular(userInfo.getCellular()).setEmail(userInfo.getEmail())
+                    .setAddressId(userInfo.getAddressId()).setAlertMethodCd(userInfo.getAlertMethodCd())
+                    .setHrid(userInfo.getHrid()).setOrgUserId(userInfo.getOrgUserId()).setOrgCode(userInfo.getOrgCode())
+                    .setAddress1(userInfo.getAddress1()).setAddress2(userInfo.getAddress2()).setCity(userInfo.getCity())
+                    .setState(userInfo.getState()).setZipCode(userInfo.getZipCode()).setCountry(userInfo.getCountry())
+                    .setOrgManagerUserId(userInfo.getOrgManagerUserId()).setLocationClli(userInfo.getLocationClli())
+                    .setBusinessCountryCode(userInfo.getBusinessCountryCode())
+                    .setBusinessCountryName(userInfo.getBusinessCountryName())
+                    .setBusinessUnit(userInfo.getBusinessUnit()).setBusinessUnitName(userInfo.getBusinessUnitName())
+                    .setDepartment(userInfo.getDepartment()).setDepartmentName(userInfo.getDepartmentName())
+                    .setCompanyCode(userInfo.getCompanyCode()).setCompany(userInfo.getCompany())
+                    .setZipCodeSuffix(userInfo.getZipCodeSuffix()).setJobTitle(userInfo.getJobTitle())
+                    .setCommandChain(userInfo.getCommandChain()).setSiloStatus(userInfo.getSiloStatus())
+                    .setCostCenter(userInfo.getCostCenter()).setFinancialLocCode(userInfo.getFinancialLocCode())
+                    .setLoginId(userInfo.getLoginId()).setLoginPwd(userInfo.getLoginPwd())
+                    .setLastLoginDate(userInfo.getLastLoginDate()).setActive(userInfo.getActive())
+                    .setInternal(userInfo.getInternal()).setSelectedProfileId(userInfo.getSelectedProfileId())
+                    .setTimeZoneId(userInfo.getTimeZoneId()).setOnline(userInfo.isOnline())
+                    .setChatId(userInfo.getChatId()).setUserApps(userAppList.getUserApps()).setPseudoRoles(null)
+                    .createCentralV2User();
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "createEPUser: createEPUser failed", e);
 			throw e;
