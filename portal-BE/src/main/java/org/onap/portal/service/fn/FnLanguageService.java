@@ -38,18 +38,24 @@
  *
  */
 
-package org.onap.portal.controller;
+package org.onap.portal.service.fn;
 
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import java.util.List;
+import org.onap.portal.dao.fn.FnLanguageDao;
+import org.onap.portal.domain.db.fn.FnLanguage;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-@Controller
-public class LoginController {
+@Service
+public class FnLanguageService {
+       private final FnLanguageDao fnLanguageDao;
 
-       @RequestMapping(value = "login", method = RequestMethod.GET)
-       public String loginView() {
-              return "login";
+       @Autowired
+       public FnLanguageService(final FnLanguageDao fnLanguageDao) {
+              this.fnLanguageDao = fnLanguageDao;
        }
 
+       public List<FnLanguage> getLanguages(){
+              return fnLanguageDao.findAll();
+       }
 }

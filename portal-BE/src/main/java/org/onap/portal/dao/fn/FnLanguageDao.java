@@ -38,18 +38,15 @@
  *
  */
 
-package org.onap.portal.controller;
+package org.onap.portal.dao.fn;
 
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.onap.portal.domain.db.fn.FnLanguage;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
-@Controller
-public class LoginController {
-
-       @RequestMapping(value = "login", method = RequestMethod.GET)
-       public String loginView() {
-              return "login";
-       }
+@Repository
+@Transactional
+public interface FnLanguageDao extends JpaRepository<FnLanguage, Long> {
 
 }
