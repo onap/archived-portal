@@ -41,6 +41,7 @@
 package org.onap.portal.service.fn;
 
 import java.util.List;
+import java.util.Optional;
 import org.onap.portal.dao.fn.FnLanguageDao;
 import org.onap.portal.domain.db.fn.FnLanguage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,6 +56,9 @@ public class FnLanguageService {
               this.fnLanguageDao = fnLanguageDao;
        }
 
+       public Optional<FnLanguage> findById(Long id){
+              return fnLanguageDao.findById(id);
+       }
        public List<FnLanguage> getLanguages(){
               return fnLanguageDao.findAll();
        }
