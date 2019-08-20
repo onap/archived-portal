@@ -22,6 +22,7 @@
 		<module>ecomp-portal-BE-os</module>
 		<module>ecomp-portal-FE-os</module>
 		<module>ecomp-portal-widget-ms</module>
+		<module>portal-BE</module>
 	</modules>
 
 	<properties>

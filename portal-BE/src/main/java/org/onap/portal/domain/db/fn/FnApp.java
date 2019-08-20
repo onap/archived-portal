@@ -120,7 +120,7 @@ public class FnApp extends DomainVo implements Serializable {
 
        @Id
        @GeneratedValue(strategy = GenerationType.AUTO)
-       @Column(name = "app_Id", length = 11, nullable = false, columnDefinition = "int(11) AUTO_INCREMENT")
+       @Column(name = "app_Id", length = 11, nullable = false)
        @Digits(integer = 11, fraction = 0)
        private Long appId;
        @Column(name = "app_name", length = 100, nullable = false, columnDefinition = "varchar(100) not null default '?'")

@@ -54,10 +54,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class FnUserService implements UserDetailsService {
 
-       private final FnUserDao fnUserDao;
+       private FnUserDao fnUserDao;
 
        @Autowired
-       public FnUserService(final FnUserDao fnUserDao) {
+       public FnUserService(FnUserDao fnUserDao) {
               this.fnUserDao = fnUserDao;
        }
 

@@ -1,0 +1,92 @@
+<!--
+
+ ============LICENSE_START==========================================
+ ONAP Portal
+ ===================================================================
+ Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ ===================================================================
+ Modifications Copyright (c) 2019 Samsung
+ ===================================================================
+ Unless otherwise specified, all software contained herein is licensed
+ under the Apache License, Version 2.0 (the "License");
+ you may not use this software except in compliance with the License.
+ You may obtain a copy of the License at
+
+             http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+ Unless otherwise specified, all documentation contained herein is licensed
+ under the Creative Commons License, Attribution 4.0 Intl. (the "License");
+ you may not use this documentation except in compliance with the License.
+ You may obtain a copy of the License at
+
+            https://creativecommons.org/licenses/by/4.0/
+
+ Unless required by applicable law or agreed to in writing, documentation
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+ ============LICENSE_END============================================
+
+-->
+
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+      <meta charset="utf-8"/>
+      <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title>Please Login</title>
+      <style>
+			.terms {
+				font-family: Verdana,Arial,Helvetica, sans-serif;
+				font-size: 9px;
+			}
+			.login-txt {
+			    font-family: Arial;
+			    font-size: 14px;
+			    text-decoration: none;
+			}
+			.login-input-text {
+				width: 140px;
+				height:25px;
+				border-radius:7px;
+				padding-left:5px;
+			    font-family: Arial;
+				font-size: 14px;
+			}
+      </style>
+</head>
+<body style="padding-top: 15px;">
+<div th:fragment="content">
+      <form name="f" th:action="@{/login}" method="post">
+            <div align="center" style="margin-left:auto;margin-right:auto;width:40%;padding:6px;background-color:white">
+                  <img src="/img/onap-portal-logo.png" height="250"/>
+                  <fieldset>
+                        <legend>Please Login</legend>
+                        <div th:if="${param.error}" class="alert alert-error">
+                              <span style="color:red">Invalid username or password. Please try again.</span>.
+                        </div>
+                        <div th:if="${param.logout}" class="alert alert-success">
+                              <span style="color:green">You have been logged out.</span>
+                        </div>
+                        <label class="login-txt" for="username">Login ID:</label>
+                        <input class="login-input-text" type="text" id="username" name="username" maxlength="30"/>
+                        <label class="login-txt" for="password">Password:</label>
+                        <input class="login-input-text" type="password" id="password" name="password" maxlength="30"/>
+                        <div class="form-actions">
+                              <button type="submit" class="btn">Log in</button>
+                        </div>
+                  </fieldset>
+            </div>
+      </form>
+</div>
+</body>
+</html>

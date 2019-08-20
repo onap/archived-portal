@@ -86,7 +86,7 @@ CREATE TABLE `ep_widget_catalog` (
 public class EpWidgetCatalog {
        @Id
        @GeneratedValue(strategy = GenerationType.AUTO)
-       @Column(name = "widget_id", length = 11, nullable = false, columnDefinition = "int(11) AUTO_INCREMENT")
+       @Column(name = "widget_id", length = 11, nullable = false)
        @Digits(integer = 11, fraction = 0)
        private Long widgetId;
        @Column(name = "wdg_name", length = 100, columnDefinition = "varchar(100) default '?'", nullable = false)

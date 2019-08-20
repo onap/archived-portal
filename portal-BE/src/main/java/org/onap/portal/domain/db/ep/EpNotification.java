@@ -92,7 +92,7 @@ CREATE TABLE `ep_notification` (
 public class EpNotification {
        @Id
        @GeneratedValue(strategy = GenerationType.AUTO)
-       @Column(name = "notification_ID", length = 11, nullable = false, columnDefinition = "int(11) AUTO_INCREMENT")
+       @Column(name = "notification_ID", length = 11, nullable = false)
        @Digits(integer = 11, fraction = 0)
        private Long notificationID;
        @Column(name = "is_for_online_users", length = 1, columnDefinition = "char(1) default 'N'")
