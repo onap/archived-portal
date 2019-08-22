@@ -38,57 +38,85 @@
  *
  */
 
-package org.onap.portal.domain.db.fn;
+package org.onap.portal.domain.dto;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
-import javax.validation.constraints.Digits;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
-import org.hibernate.validator.constraints.SafeHtml;
-/*
-CREATE TABLE `fn_language` (
-        `language_id` int(11) NOT NULL AUTO_INCREMENT,
-        `language_name` varchar(100) NOT NULL,
-        `language_alias` varchar(100) NOT NULL,
-        PRIMARY KEY (`language_id`)
-        )
-*/
+public class PortalRestResponse<T> {
+	
+	private PortalRestStatusEnum status;
+	private String message;
+	
+	private T response;
+	
+	public PortalRestResponse(){};
+	
+	public PortalRestResponse(PortalRestStatusEnum status, String message, T response){
+		this.status = status;
+		this.message = message;
+		this.response = response;
+	}
 
-@Table(name = "fn_language")
-@NoArgsConstructor
-@AllArgsConstructor
-@ToString
-@Getter
-@Setter
-@Entity
-@SequenceGenerator(name="seq", initialValue=3, allocationSize=100)
-public class FnLanguage {
+	public PortalRestStatusEnum getStatus() {
+		return status;
+	}
 
-       @Id
-       @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq")
-       @Column(name = "language_id", length = 11, nullable = false, columnDefinition = "int(11) AUTO_INCREMENT")
-       @Digits(integer = 11, fraction = 0)
-       private Long languageId;
-       @Column(name = "language_name", length = 100, nullable = false)
-       @Size(max = 100)
-       @NotNull
-       @SafeHtml
-       private String languageName;
-       @Column(name = "language_alias", length = 100, nullable = false)
-       @Size(max = 100)
-       @NotNull
-       @SafeHtml
-       private String languageAlias;
+	public void setStatus(PortalRestStatusEnum status) {
+		this.status = status;
+	}
 
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
+
+	public T getResponse() {
+		return response;
+	}
+
+	public void setResponse(T response) {
+		this.response = response;
+	}
+
+	@Override
+	public String toString() {
+		return "PortalRestResponse [status=" + status + ", message=" + message + ", response=" + response + "]";
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((message == null) ? 0 : message.hashCode());
+		result = prime * result + ((response == null) ? 0 : response.hashCode());
+		result = prime * result + ((status == null) ? 0 : status.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		PortalRestResponse other = (PortalRestResponse) obj;
+		if (message == null) {
+			if (other.message != null)
+				return false;
+		} else if (!message.equals(other.message))
+			return false;
+		if (response == null) {
+			if (other.response != null)
+				return false;
+		} else if (!response.equals(other.response))
+			return false;
+		if (status != other.status)
+			return false;
+		return true;
+	};	
+	
+	
 }
