@@ -40,6 +40,7 @@
 
 package org.onap.portal.service.fn;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -47,21 +48,25 @@ import java.util.stream.Collectors;
 import org.onap.portal.dao.fn.FnUserDao;
 import org.onap.portal.domain.db.fn.FnUser;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@EnableAspectJAutoProxy
+@Transactional
 public class FnUserService implements UserDetailsService {
 
-       private FnUserDao fnUserDao;
+       private final FnUserDao fnUserDao;
 
        @Autowired
        public FnUserService(FnUserDao fnUserDao) {
               this.fnUserDao = fnUserDao;
        }
 
-       public FnUser saveFnUser(FnUser fnUser) {
+       public FnUser saveFnUser(final Principal principal, final FnUser fnUser) {
               return fnUserDao.save(fnUser);
        }
 
@@ -98,5 +103,9 @@ public class FnUserService implements UserDetailsService {
 
        List<FnUser> etActiveUsers(){
               return fnUserDao.findAll().stream().filter(fnUser -> "Y".equals(fnUser.getActiveYn())).collect(Collectors.toList());
+       }
+
+       public void deleteUser(FnUser fnUser){
+              fnUserDao.delete(fnUser);
        }
 }

@@ -63,15 +63,22 @@ public class FnLanguageServiceAOP {
        @Before("execution(* org.onap.portal.service.fn.FnLanguageService.save(..)) && args(principal, fnLanguage)")
        public void save(final Principal principal, final FnLanguage fnLanguage) {
               if (fnLanguage == null) {
-                     LOGGER.error("User " + principal.getName() + " try to save NULL fnLanguage");
+                     LOGGER.info("User " + principal.getName() + " try to save NULL fnLanguage");
                      throw new NullPointerException("FnLanguage cannot be null or empty");
               }
               if (!dataValidator.isValid(fnLanguage)) {
                      String violations = dataValidator.getConstraintViolations(fnLanguage).stream()
                              .map(ConstraintViolation::getMessage)
                              .collect(Collectors.joining(", "));
-                     LOGGER.error("User " + principal.getName() + " try to save not valid fnLanguage: " + violations);
+                     LOGGER.info("User " + principal.getName() + " try to save not valid fnLanguage: " + violations);
                      throw new IllegalArgumentException("FnLanguage is not valid, " + violations);
               }
        }
+
+       @Before("execution(* org.onap.portal.service.fn.FnLanguageService.getLanguageList(..)) && args(principal)")
+       public void getLanguageList(final Principal principal) {
+              LOGGER.info("User " + principal.getName() + " try requested for all language list");
+       }
+
+
 }

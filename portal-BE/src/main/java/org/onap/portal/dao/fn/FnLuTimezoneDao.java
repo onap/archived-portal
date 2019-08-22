@@ -38,36 +38,15 @@
  *
  */
 
-package org.onap.portal.service.fn;
+package org.onap.portal.dao.fn;
 
-import java.security.Principal;
-import java.util.List;
-import java.util.Optional;
-import org.onap.portal.dao.fn.FnLanguageDao;
-import org.onap.portal.domain.db.fn.FnLanguage;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
-import org.springframework.stereotype.Service;
+import org.onap.portal.domain.db.fn.FnLuTimezone;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-@Service
-@EnableAspectJAutoProxy
+@Repository
 @Transactional
-public class FnLanguageService {
-       private final FnLanguageDao fnLanguageDao;
+public interface FnLuTimezoneDao extends JpaRepository<FnLuTimezone, Integer> {
 
-       @Autowired
-       public FnLanguageService(final FnLanguageDao fnLanguageDao) {
-              this.fnLanguageDao = fnLanguageDao;
-       }
-
-       public Optional<FnLanguage> findById(final Long id){
-              return fnLanguageDao.findById(id);
-       }
-       public List<FnLanguage> getLanguages(Principal principal){
-              return fnLanguageDao.findAll();
-       }
-       public FnLanguage save(final Principal principal, final FnLanguage fnLanguage){
-              return fnLanguageDao.save(fnLanguage);
-       }
 }
