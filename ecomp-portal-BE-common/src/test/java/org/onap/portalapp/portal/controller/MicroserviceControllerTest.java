@@ -59,8 +59,8 @@ import org.onap.portalapp.portal.domain.WidgetServiceHeaders;
 import org.onap.portalapp.portal.ecomp.model.PortalRestResponse;
 import org.onap.portalapp.portal.ecomp.model.PortalRestStatusEnum;
 import org.onap.portalapp.portal.framework.MockitoTestSuite;
-import org.onap.portalapp.portal.service.ConsulHealthService;
-import org.onap.portalapp.portal.service.ConsulHealthServiceImpl;
+import org.onap.portalapp.portal.service.WidgetMService;
+import org.onap.portalapp.portal.service.WidgetMServiceImpl;
 import org.onap.portalapp.portal.service.MicroserviceService;
 import org.onap.portalapp.portal.service.MicroserviceServiceImpl;
 import org.onap.portalapp.portal.utils.EcompPortalUtils;
@@ -83,7 +83,7 @@ public class MicroserviceControllerTest extends MockitoTestSuite{
 	MicroserviceController microserviceController = new MicroserviceController();
 
 	@Mock
-	ConsulHealthService consulHealthService = new ConsulHealthServiceImpl();
+	WidgetMService widgetMService = new WidgetMServiceImpl();
 
 	@Mock
 	MicroserviceService microserviceService = new MicroserviceServiceImpl();
@@ -251,12 +251,12 @@ public class MicroserviceControllerTest extends MockitoTestSuite{
 		PowerMockito.mockStatic(WidgetServiceHeaders.class);
 		PowerMockito.mockStatic(EcompPortalUtils.class);
 		String whatService = "widgets-service";
-		Mockito.when(consulHealthService.getServiceLocation(whatService, SystemProperties.getProperty("microservices.widget.local.port"))).thenReturn("Test");
+		Mockito.when(widgetMService.getServiceLocation(whatService, SystemProperties.getProperty("microservices.widget.local.port"))).thenReturn("Test");
 		Mockito.when(ans.getBody()).thenReturn(List);
 		ParameterizedTypeReference<List<WidgetCatalog>> typeRef = new ParameterizedTypeReference<List<WidgetCatalog>>() {
 		};
 		Mockito.when(template.exchange(
-				org.onap.portalapp.portal.utils.EcompPortalUtils.widgetMsProtocol() + "://" + consulHealthService.getServiceLocation(whatService, SystemProperties.getProperty("microservices.widget.local.port"))
+				org.onap.portalapp.portal.utils.EcompPortalUtils.widgetMsProtocol() + "://" + widgetMService.getServiceLocation(whatService, SystemProperties.getProperty("microservices.widget.local.port"))
 						+ "/widget/microservices/widgetCatalog/service/" + 1,
 				HttpMethod.GET, new HttpEntity(WidgetServiceHeaders.getInstance()), typeRef)).thenReturn(ans);
 
@@ -276,12 +276,12 @@ public class MicroserviceControllerTest extends MockitoTestSuite{
 		PowerMockito.mockStatic(WidgetServiceHeaders.class);
 		PowerMockito.mockStatic(EcompPortalUtils.class);
 		String whatService = "widgets-service";
-		Mockito.when(consulHealthService.getServiceLocation(whatService, SystemProperties.getProperty("microservices.widget.local.port"))).thenReturn("Test");
+		Mockito.when(widgetMService.getServiceLocation(whatService, SystemProperties.getProperty("microservices.widget.local.port"))).thenReturn("Test");
 		Mockito.when(ans.getBody()).thenReturn(List);
 		ParameterizedTypeReference<List<WidgetCatalog>> typeRef = new ParameterizedTypeReference<List<WidgetCatalog>>() {
 		};
 		Mockito.when(template.exchange(
-				org.onap.portalapp.portal.utils.EcompPortalUtils.widgetMsProtocol() + "://" + consulHealthService.getServiceLocation(whatService, SystemProperties.getProperty("microservices.widget.local.port"))
+				org.onap.portalapp.portal.utils.EcompPortalUtils.widgetMsProtocol() + "://" + widgetMService.getServiceLocation(whatService, SystemProperties.getProperty("microservices.widget.local.port"))
 						+ "/widget/microservices/widgetCatalog/service/" + 1,
 				HttpMethod.GET, new HttpEntity(WidgetServiceHeaders.getInstance()), typeRef)).thenReturn(ans);
 		PortalRestResponse<String> actuaPportalRestResponse = microserviceController.deleteMicroservice(mockedRequest,

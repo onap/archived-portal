@@ -6,3 +6,5 @@
 /debug-logs/
 /logs/
 /bin/
+/.apt_generated/
+/.apt_generated_tests/

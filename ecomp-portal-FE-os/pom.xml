@@ -185,7 +185,7 @@
 						<phase>generate-resources</phase>
 
 						<configuration>
-							<arguments>build --env=integ</arguments>
+							<arguments>build --env=integ --force</arguments>
 						</configuration>
 					</execution>
 

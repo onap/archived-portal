@@ -37,9 +37,11 @@
  */
 package org.onap.portalapp.portal.service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
@@ -51,6 +53,8 @@ import org.onap.portalapp.portal.logging.aop.EPMetricsLog;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.onap.portalapp.portal.service.AppsCacheService;
 import org.onap.portalapp.portal.service.AppsCacheServiceImple;
+import org.onap.portalapp.portal.transport.OnboardingApp;
+import org.onap.portalapp.portal.utils.EPCommonSystemProperties;
 
 @Service("appsCacheService")
 @org.springframework.context.annotation.Configuration
@@ -131,6 +135,24 @@ public class AppsCacheServiceImple implements AppsCacheService {
 		if(app != null)
 			return app.getAppRestEndpoint();
 		return null;
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<OnboardingApp> getAppsFullList() {
+		refreshAppsMap(quickRefreshCacheConf);
+		List<EPApp> appList = new ArrayList<EPApp> (appsMap.values());
+		appList.removeIf(app -> app.getId() == 1);
+		List<EPApp> appsFinalList = appList.stream()
+		.filter(app -> app.getEnabled() == true && app.getOpen() == false).collect(Collectors.toList());
+		
+		List<OnboardingApp> onboardingAppsList = new ArrayList<OnboardingApp>();
+		for (EPApp app : appsFinalList) {
+			OnboardingApp onboardingApp = new OnboardingApp();
+			appsService.createOnboardingFromApp(app, onboardingApp);
+			onboardingAppsList.add(onboardingApp);
+		}
+		return onboardingAppsList;	
 	}
 	
 	@Override

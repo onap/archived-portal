@@ -55,7 +55,7 @@ import org.onap.portalapp.portal.logging.aop.EPAuditLog;
 import org.onap.portalapp.portal.logging.aop.EPEELFLoggerAdvice;
 import org.onap.portalapp.portal.logging.logic.EPLogUtil;
 import org.onap.portalapp.portal.service.AppsCacheService;
-import org.onap.portalapp.portal.service.ConsulHealthService;
+import org.onap.portalapp.portal.service.WidgetMService;
 import org.onap.portalapp.portal.transport.Analytics;
 import org.onap.portalapp.portal.utils.EPCommonSystemProperties;
 import org.onap.portalapp.portal.utils.EcompPortalUtils;
@@ -89,7 +89,7 @@ import org.springframework.web.client.AsyncRestTemplate;
 @EPAuditLog
 @NoArgsConstructor
 public class WebAnalyticsExtAppController extends EPRestrictedRESTfulBaseController {
-	private ConsulHealthService consulHealthService;
+	private WidgetMService widgetMService;
 	private	AppsCacheService appCacheService;
 
 	private static final String MACHINE_LEARNING_SERVICE_CTX = "/ml_api";
@@ -102,9 +102,9 @@ public class WebAnalyticsExtAppController extends EPRestrictedRESTfulBaseControl
 	private final FailureCallback failureCallback = arg -> logger.error(EELFLoggerDelegate.errorLogger, "storeAuxAnalytics failed", arg);
 
 	@Autowired
-	public WebAnalyticsExtAppController(AppsCacheService appCacheService, ConsulHealthService consulHealthService) {
+	public WebAnalyticsExtAppController(AppsCacheService appCacheService, WidgetMService consulHealthService) {
 		this.appCacheService = appCacheService;
-		this.consulHealthService = consulHealthService;
+		this.widgetMService = consulHealthService;
 	}
 
 	/**
@@ -129,8 +129,8 @@ public class WebAnalyticsExtAppController extends EPRestrictedRESTfulBaseControl
 		}
 		if (app != null) {
 			String restEndPoint = app.getAppRestEndpoint();
-			if(restEndPoint.contains("/api")) {
-				version = restEndPoint.substring(restEndPoint.indexOf("/api")+4);
+			if(restEndPoint.indexOf("/api")!=-1) {
+				version = restEndPoint.substring(restEndPoint.indexOf("api"));
 			}
 		}
 		String endPoint = "/storeAnalytics";
@@ -242,7 +242,7 @@ public class WebAnalyticsExtAppController extends EPRestrictedRESTfulBaseControl
 		// send it!
 		ListenableFuture<ResponseEntity<String>> out = restTemplate.exchange(
 				EcompPortalUtils.widgetMsProtocol() + "://"
-						+ consulHealthService.getServiceLocation(CONSUL_ML_SERVICE_ID,
+						+ widgetMService.getServiceLocation(CONSUL_ML_SERVICE_ID,
 								SystemProperties.getProperty("microservices.m-learn.local.port"))
 						+ REGISTER_ACTION,
 				HttpMethod.POST, entity, String.class);

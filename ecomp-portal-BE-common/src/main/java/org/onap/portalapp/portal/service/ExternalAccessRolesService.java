@@ -509,4 +509,6 @@ public interface ExternalAccessRolesService {
 	 */
 	public List<EcompRole> missingUserApplicationRoles(String uebkey, String loginId, Set<EcompRole> CurrentUserRoles) throws Exception;
 
+	List<EPRole> getPortalAppRoleInfo(Long roleId);
+
 }

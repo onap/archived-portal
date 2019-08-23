@@ -859,7 +859,6 @@ public class EPAppCommonServiceImpl implements EPAppService {
 		List<OnboardingApp> onboardingAppsList = new ArrayList<OnboardingApp>();
 		for (EPApp app : apps) {
 			OnboardingApp onboardingApp = new OnboardingApp();
-			app.setAppPassword(EPCommonSystemProperties.APP_DISPLAY_PASSWORD); //to hide password from get request
 			createOnboardingFromApp(app, onboardingApp);
 			onboardingAppsList.add(onboardingApp);
 		}
@@ -1975,3 +1974,4 @@ public class EPAppCommonServiceImpl implements EPAppService {
 
 	}
 }
+

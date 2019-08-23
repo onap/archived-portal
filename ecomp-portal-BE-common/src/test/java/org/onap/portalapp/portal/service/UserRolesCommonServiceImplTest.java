@@ -55,7 +55,6 @@ import java.util.TreeSet;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.cxf.transport.http.HTTPException;
-import org.drools.core.command.assertion.AssertEquals;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
@@ -364,11 +363,11 @@ public class UserRolesCommonServiceImplTest {
 		Mockito.when(epAppCommonServiceImpl.getApp(mockApp.getId())).thenReturn(mockApp);
 		List<RoleInAppForUser> mockRoleInAppForUserList = new ArrayList<>();
 		RoleInAppForUser mockRoleInAppForUser = new RoleInAppForUser();
-		mockRoleInAppForUser.setIsApplied(true);
+		mockRoleInAppForUser.setIsApplied(false);
 		mockRoleInAppForUser.setRoleId(333l);
 		mockRoleInAppForUser.setRoleName("test1");
 		RoleInAppForUser mockRoleInAppForUser2 = new RoleInAppForUser();
-		mockRoleInAppForUser2.setIsApplied(true);
+		mockRoleInAppForUser2.setIsApplied(false);
 		mockRoleInAppForUser2.setRoleId(777l);
 		mockRoleInAppForUser2.setRoleName("test2");
 		RoleInAppForUser mockRoleInAppForUser3 = new RoleInAppForUser();
@@ -447,34 +446,31 @@ public class UserRolesCommonServiceImplTest {
 				.thenReturn(mockEcompRoleArray);
 		// syncAppRolesTest
 
-		Mockito.when(session.createQuery("from :name where appId = :appId"))
+		Mockito.when(session.createQuery("from EPRole where appId = :appId"))
 				.thenReturn(epRoleQuery);
 
-		Mockito.when(epRoleQuery.setParameter("name",EPRole.class.getName())).thenReturn(epRoleQuery);
 		Mockito.when(epRoleQuery.setParameter("appId",mockApp.getId())).thenReturn(epRoleQuery);
 
 		Mockito.doReturn(mockEPRoleList).when(epRoleQuery).list();
-		Mockito.when(session.createQuery("from :name where app.id=:appId and role_id=:roleId"))
+		Mockito.when(session.createQuery("from EPUserApp where app.id=:appId and role_id=:roleId"))
 				.thenReturn(epUserAppsQuery);
-		Mockito.when(epUserAppsQuery.setParameter("name",EPUserApp.class.getName())).thenReturn(epUserAppsQuery);
 		Mockito.when(epUserAppsQuery.setParameter("appId",mockApp.getId())).thenReturn(epUserAppsQuery);
 		Mockito.when(epUserAppsQuery.setParameter("roleId",15l)).thenReturn(epUserAppsQuery);
 		Mockito.doReturn(mockUserRolesList).when(epUserAppsQuery).list();
 
-		Mockito.when(session.createQuery("from :name where roleId=:roleId"))
+		Mockito.when(session.createQuery("from FunctionalMenuRole where roleId=:roleId"))
 				.thenReturn(epFunctionalMenuQuery);
-		Mockito.when(epFunctionalMenuQuery.setParameter("name",FunctionalMenuRole.class.getName())).thenReturn(epFunctionalMenuQuery);
 		Mockito.when(epFunctionalMenuQuery.setParameter("roleId",15l)).thenReturn(epFunctionalMenuQuery);
 		Mockito.doReturn(mockFunctionalMenuRolesList).when(epFunctionalMenuQuery).list();
 
-		Mockito.when(session.createQuery("from :name where menuId=:menuId"))
+		Mockito.when(session.createQuery("from FunctionalMenuRole where menuId=:menuId"))
 				.thenReturn(epFunctionalMenuQuery2);
-		Mockito.when(epFunctionalMenuQuery2.setParameter("name",FunctionalMenuRole.class.getName())).thenReturn(epFunctionalMenuQuery2);
-		Mockito.when(epFunctionalMenuQuery2.setParameter("menuId",10l)).thenReturn(epFunctionalMenuQuery2);
+		Mockito.when(epFunctionalMenuQuery2.setParameter(Matchers.anyString(),Matchers.anyLong())).thenReturn(epFunctionalMenuQuery2);
 		Mockito.doReturn(mockFunctionalMenuRolesList).when(epFunctionalMenuQuery2).list();
 
-		Mockito.when(session.createQuery("from " + FunctionalMenuItem.class.getName() + " where menuId=" + 10l))
+		Mockito.when(session.createQuery("from FunctionalMenuItem where menuId=:menuId"))
 				.thenReturn(epFunctionalMenuItemQuery);
+		Mockito.when(epFunctionalMenuItemQuery.setParameter(Matchers.anyString(),Matchers.anyLong())).thenReturn(epFunctionalMenuItemQuery);
 		Mockito.doReturn(mockFunctionalMenuItemList).when(epFunctionalMenuItemQuery).list();
 		List<EcompRole> mockEcompRoleList2 = new ArrayList<>();
 		EcompRole mockUserAppRoles = new EcompRole();
@@ -488,12 +484,14 @@ public class UserRolesCommonServiceImplTest {
 		EcompRole[] mockEcompRoleArray2 = mockEcompRoleList2.toArray(new EcompRole[mockEcompRoleList2.size()]);
 		Mockito.when(applicationsRestClientService.get(EcompRole[].class, mockApp.getId(),
 				String.format("/user/%s/roles", user.getOrgUserId()))).thenReturn(mockEcompRoleArray2);
-		// SyncUserRoleTest
-		Mockito.when(session
-				.createQuery("from " + EPUser.class.getName() + " where orgUserId='" + user.getOrgUserId() + "'"))
-				.thenReturn(epUserListQuery);
-		Mockito.doReturn(mockEpUserList).when(epUserListQuery).list();
+		
 
+		Mockito.when(session.createQuery(
+				"from EPUser where orgUserId=:userId"))
+				.thenReturn(epUserListQuery);
+		Mockito.when(epUserListQuery.setParameter("userId","guestT")).thenReturn(epUserListQuery);
+		Mockito.doReturn(mockEpUserList).when(epUserListQuery).list();
+		
 		List<EPUserApp> mockUserRolesList2 = new ArrayList<>();
 		EPUserApp mockEpUserAppRoles = new EPUserApp();
 		mockEpUserAppRoles.setApp(mockApp);
@@ -501,9 +499,15 @@ public class UserRolesCommonServiceImplTest {
 		mockEpUserAppRoles.setUserId(user.getId());
 		mockUserRolesList2.add(mockEpUserAppRoles);
 		Mockito.when(session.createQuery(
-				"from org.onap.portalapp.portal.domain.EPUserApp where app.id=2 and role.active = 'Y' and userId=2"))
+				"from EPUserApp where app.id=:appId and userId=:userId and role.active = 'Y'"))
 				.thenReturn(epUserRolesListQuery);
+		
+		Mockito.when(epUserRolesListQuery.setParameter("appId",2)).thenReturn(epUserRolesListQuery);
+		Mockito.when(epUserRolesListQuery.setParameter("userId",2)).thenReturn(epUserRolesListQuery);
+
 		Mockito.doReturn(mockUserRolesList2).when(epUserRolesListQuery).list();
+
+		
 		List<RoleInAppForUser> roleInAppForUser = userRolesCommonServiceImpl.getAppRolesForUser(2l, user.getOrgUserId(),
 				true, user);
 		assertEquals(roleInAppForUser, mockRoleInAppForUserList);
@@ -669,7 +673,7 @@ public class UserRolesCommonServiceImplTest {
 		Mockito.when(session.createSQLQuery("update fn_role set app_id = null where app_id = 1 "))
 				.thenReturn(epsetAppWithUserRoleUpdateEPRoleQuery);
 		ExternalRequestFieldsValidator actual = userRolesCommonServiceImpl.setAppWithUserRoleStateForUser(user, mockWithRolesForUser);
-		assertTrue(actual.isResult());
+		assertFalse(actual.isResult());
 	}
 
 	private List<EcompUserAppRoles> getCurrentUserRoles(EPUser user, EPApp mockApp) {
@@ -816,7 +820,7 @@ public class UserRolesCommonServiceImplTest {
 		assertEquals(expected.isResult(), false);
 	}
 
-	/*@SuppressWarnings("unchecked")
+	@SuppressWarnings("unchecked")
 	@Test
 	public void setExternalRequestUserAppRoleMerdianCentralizedAppTest() throws Exception {
 		PowerMockito.mockStatic(SystemProperties.class);
@@ -984,7 +988,7 @@ public class UserRolesCommonServiceImplTest {
 				.setExternalRequestUserAppRole(externalSystemUser, "POST");
 		assertTrue(mockExternalRequestFieldsValidator.equals(externalRequestFieldsValidator));
 	}
-*/
+
 	@SuppressWarnings("unchecked")
 	@Test
 	public void setExternalRequestUserAppRoleMerdianNonCentralizedAppTest() throws Exception {

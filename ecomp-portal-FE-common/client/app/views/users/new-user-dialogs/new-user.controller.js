@@ -46,8 +46,8 @@
             var isSystemUser = false;
 
             $scope.ngRepeatDemo = [
-		        {id: 'userButton', value: 'true', labelvalue: 'user'},
-		        {id: 'systemUserButton', value: 'false', labelvalue: 'system'}
+		        {id: 'userButton', value: 'true', labelvalue: 'User'},
+		        {id: 'systemUserButton', value: 'false', labelvalue: 'System'}
 		    ]
             
             $scope.selectedvalueradioButtonGroup = {

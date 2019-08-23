@@ -11,13 +11,13 @@
 -- -----------------------------------------------------------------------------------------------------------------
 set foreign_key_checks=1; 
 
-create database portal;
-
 SET GLOBAL character_set_client     = utf8;
 SET GLOBAL character_set_connection = utf8;
 SET GLOBAL character_set_database   = utf8;
 SET GLOBAL character_set_results    = utf8;
 SET GLOBAL character_set_server     = utf8;
+
+create database portal;
 
 use portal;
 
@@ -284,9 +284,9 @@ create table fn_user (
     address_id numeric(11,0),
     alert_method_cd character varying(10),
     hrid character varying(20),
-    org_user_id CHARACTER VARYING(20),
+    org_user_id CHARACTER VARYING(60),
     org_code character varying(30),
-    login_id character varying(25),
+    login_id character varying(60),
     login_pwd character varying(100),
     last_login_date timestamp,
     active_yn character varying(1) default 'y' not null,
@@ -312,10 +312,10 @@ create table fn_user (
     business_unit_name character varying(100),
     cost_center character varying(25),
     fin_loc_code character varying(10),
-    silo_status character varying(10)
+    silo_status character varying(10),
+    is_system_user character(1) default 'N',
+    language_id int(2) default 1
 );
-
-alter table fn_user add column language_id int(2) default 1;
 
 create table fn_language(
     language_id int(11) PRIMARY KEY NOT NULL AUTO_INCREMENT,
@@ -622,7 +622,7 @@ create table fn_app (
   ml_app_name varchar(50) not null default '?',
   ml_app_admin_id varchar(7) not null default '?',
   mots_id int(11) default null,
-  app_password varchar(256) not null default '?',
+  app_password varchar(256) default null,
   open char(1) default 'N',
   enabled char(1) default 'Y',
   thumbnail mediumblob null default null,
@@ -1145,7 +1145,7 @@ CREATE TABLE ep_microservice (
 	endpoint_url VARCHAR(200) NULL DEFAULT NULL,
 	security_type VARCHAR(50) NULL DEFAULT NULL,
 	username VARCHAR(50) NULL DEFAULT NULL,
-	password VARCHAR(50) NOT NULL,
+	password VARCHAR(50) NULL DEFAULT NULL,
 	active CHAR(1) NOT NULL DEFAULT 'Y',
 	PRIMARY KEY (id),
 	CONSTRAINT FK_FN_APP_EP_MICROSERVICE FOREIGN KEY (appId) REFERENCES fn_app (app_id)
@@ -1301,7 +1301,7 @@ create table  ep_endpoints_basic_auth_account (
 CREATE TABLE ep_app_function (
 app_id INT(11) NOT NULL,
 function_cd VARCHAR(250) NOT NULL,
-function_name VARCHAR(250) NOT NULL,
+function_name VARCHAR(500) NOT NULL,
 PRIMARY KEY (function_cd, app_id),
 INDEX fk_ep_app_function_app_id (app_id),
 CONSTRAINT fk_ep_app_function_app_id FOREIGN KEY (app_id) REFERENCES fn_app (app_id)

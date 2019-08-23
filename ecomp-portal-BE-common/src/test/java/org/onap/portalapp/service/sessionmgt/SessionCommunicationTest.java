@@ -47,17 +47,21 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
+import org.mockito.Matchers;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.onap.portalapp.portal.domain.EPApp;
+import org.onap.portalapp.portal.service.AppsCacheService;
+import org.onap.portalapp.portal.service.AppsCacheServiceImple;
 import org.onap.portalapp.portal.transport.OnboardingApp;
+import org.onap.portalsdk.core.onboarding.util.CipherUtil;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-import org.slf4j.MDC;
-
-import com.att.eelf.configuration.Configuration;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({URL.class, HttpURLConnection.class})
+@PrepareForTest({URL.class, HttpURLConnection.class,CipherUtil.class})
 public class SessionCommunicationTest {
 	
 	@Before
@@ -68,6 +72,8 @@ public class SessionCommunicationTest {
 	@InjectMocks
 	SessionCommunication sessionCommunication = new SessionCommunication();
 	
+	@Mock
+	AppsCacheService appsCacheService = new AppsCacheServiceImple();
 	
 	@Test
 	public void sendGetConnectionRefusedTest() throws Exception {
@@ -83,6 +89,36 @@ public class SessionCommunicationTest {
 		app.restUrl ="http://localhost:1234";
 		app.username = "test";
 		app.appPassword = "xyz";
+		URL u = PowerMockito.mock(URL.class);
+		HttpURLConnection huc = PowerMockito.mock(HttpURLConnection.class);
+		String url = "http://localhost:1234/sessionTimeOuts";
+		PowerMockito.whenNew(URL.class).withArguments(url).thenReturn(u);
+		PowerMockito.whenNew(HttpURLConnection.class).withAnyArguments().thenReturn(huc);
+		PowerMockito.when(huc.getResponseCode()).thenReturn(200);
+		String actual = sessionCommunication.sendGet(app);
+		assertEquals("", actual);
+	}
+	
+	@Test
+	public void sendGetConnectionRefusedTest1() throws Exception {
+		OnboardingApp app = new OnboardingApp();
+		app.setRestrictedApp(false);
+		app.setUebKey("test");
+		app.setUebSecret("test");
+		app.setUebTopicName("test");
+		app.isCentralAuth = true;
+		app.isEnabled = true;
+		app.isOpen =false;
+		app.name = "test";
+		app.restUrl ="http://localhost:1234";
+		app.username = "test";
+		app.appPassword = "";
+		EPApp epApp = new EPApp();
+		epApp.setUsername("test");
+		epApp.setAppPassword("xyz1234");
+		PowerMockito.mockStatic(CipherUtil.class);
+		PowerMockito.when(CipherUtil.decryptPKC(Matchers.anyString(),Matchers.anyString())).thenReturn("test");
+		Mockito.when(appsCacheService.getApp(1L)).thenReturn(epApp);
 		URL u = PowerMockito.mock(URL.class);
 		HttpURLConnection huc = PowerMockito.mock(HttpURLConnection.class);
 		String url = "http://localhost:1234/sessionTimeOuts";

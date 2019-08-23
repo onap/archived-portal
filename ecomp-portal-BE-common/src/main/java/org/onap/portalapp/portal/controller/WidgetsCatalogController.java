@@ -60,7 +60,7 @@ import org.onap.portalapp.portal.domain.WidgetServiceHeaders;
 import org.onap.portalapp.portal.ecomp.model.PortalRestResponse;
 import org.onap.portalapp.portal.ecomp.model.PortalRestStatusEnum;
 import org.onap.portalapp.portal.logging.aop.EPAuditLog;
-import org.onap.portalapp.portal.service.ConsulHealthService;
+import org.onap.portalapp.portal.service.WidgetMService;
 import org.onap.portalapp.portal.service.MicroserviceService;
 import org.onap.portalapp.portal.service.WidgetParameterService;
 import org.onap.portalapp.portal.utils.EPCommonSystemProperties;
@@ -108,7 +108,7 @@ public class WidgetsCatalogController extends EPRestrictedBaseController {
 	private String whatService = "widgets-service";
 
 	@Autowired
-	private ConsulHealthService consulHealthService;
+	private WidgetMService widgetMService;
 
 	@Autowired
 	private MicroserviceService microserviceService;
@@ -138,7 +138,7 @@ public class WidgetsCatalogController extends EPRestrictedBaseController {
 		try {
 			ResponseEntity<List> ans = template.exchange(
 					EcompPortalUtils.widgetMsProtocol() + "://"
-							+ consulHealthService.getServiceLocation(whatService,
+							+ widgetMService.getServiceLocation(whatService,
 									SystemProperties.getProperty(EPCommonSystemProperties.MS_WIDGET_LOCAL_PORT))
 							+ "/widget/microservices/widgetCatalog/" + loginName,
 					HttpMethod.GET, new HttpEntity<>(WidgetServiceHeaders.getInstance()), List.class);
@@ -158,7 +158,7 @@ public class WidgetsCatalogController extends EPRestrictedBaseController {
 		try {
 			ResponseEntity<List> ans = template.exchange(
 					EcompPortalUtils.widgetMsProtocol() + "://"
-							+ consulHealthService.getServiceLocation(whatService,
+							+ widgetMService.getServiceLocation(whatService,
 									SystemProperties.getProperty(EPCommonSystemProperties.MS_WIDGET_LOCAL_PORT))
 							+ "/widget/microservices/widgetCatalog",
 					HttpMethod.GET, new HttpEntity<>(WidgetServiceHeaders.getInstance()), List.class);
@@ -177,7 +177,7 @@ public class WidgetsCatalogController extends EPRestrictedBaseController {
 	public void updateWidgetCatalog(@RequestBody WidgetCatalog newWidgetCatalog, @PathVariable("widgetId") long widgetId) throws Exception {
 		template.exchange(
 				EcompPortalUtils.widgetMsProtocol() + "://"
-						+ consulHealthService.getServiceLocation(whatService,
+						+ widgetMService.getServiceLocation(whatService,
 								SystemProperties.getProperty(MS_WIDGET_LOCAL_PORT))
 						+ "/widget/microservices/widgetCatalog/" + widgetId,
 				HttpMethod.PUT, new HttpEntity<>(newWidgetCatalog, WidgetServiceHeaders.getInstance()), String.class);
@@ -187,7 +187,7 @@ public class WidgetsCatalogController extends EPRestrictedBaseController {
 	public void deleteOnboardingWidget(@PathVariable("widgetId") long widgetId) throws Exception {
 		template.exchange(
 				EcompPortalUtils.widgetMsProtocol() + "://"
-						+ consulHealthService.getServiceLocation(whatService,
+						+ widgetMService.getServiceLocation(whatService,
 								SystemProperties.getProperty(MS_WIDGET_LOCAL_PORT))
 						+ "/widget/microservices/widgetCatalog/" + widgetId,
 				HttpMethod.DELETE, new HttpEntity<>(WidgetServiceHeaders.getInstance()), String.class);
@@ -218,7 +218,7 @@ public class WidgetsCatalogController extends EPRestrictedBaseController {
 			multipartRequest.add("widget", request.getParameter("newWidget"));
 			respond = template.postForObject(
 					EcompPortalUtils.widgetMsProtocol() + "://"
-							+ consulHealthService.getServiceLocation(whatService,
+							+ widgetMService.getServiceLocation(whatService,
 									SystemProperties.getProperty(EPCommonSystemProperties.MS_WIDGET_LOCAL_PORT))
 							+ "/widget/microservices/widgetCatalog/" + widgetId,
 					new HttpEntity<>(multipartRequest, WidgetServiceHeaders.getInstance()), String.class);
@@ -269,7 +269,7 @@ public class WidgetsCatalogController extends EPRestrictedBaseController {
 
 			respond = template.postForObject(
 					EcompPortalUtils.widgetMsProtocol() + "://"
-							+ consulHealthService.getServiceLocation(whatService,
+							+ widgetMService.getServiceLocation(whatService,
 									SystemProperties.getProperty(EPCommonSystemProperties.MS_WIDGET_LOCAL_PORT))
 							+ "/widget/microservices/widgetCatalog",
 					new HttpEntity<>(multipartRequest, WidgetServiceHeaders.getInstance()), String.class);
@@ -291,7 +291,7 @@ public class WidgetsCatalogController extends EPRestrictedBaseController {
 	@RequestMapping(value = "/portalApi/microservices/{widgetId}/framework.js", method = RequestMethod.GET)
 	public String getWidgetFramework(@PathVariable("widgetId") long widgetId) throws Exception {
 		return template.getForObject(EcompPortalUtils.widgetMsProtocol() + "://"
-				+ consulHealthService.getServiceLocation(whatService,
+				+ widgetMService.getServiceLocation(whatService,
 						SystemProperties.getProperty(MS_WIDGET_LOCAL_PORT))
 				+ "/widget/microservices/" + widgetId + "/framework.js", String.class,
 				WidgetServiceHeaders.getInstance());
@@ -300,7 +300,7 @@ public class WidgetsCatalogController extends EPRestrictedBaseController {
 	@RequestMapping(value = "/portalApi/microservices/{widgetId}/controller.js", method = RequestMethod.GET)
 	public String getWidgetController(@PathVariable("widgetId") long widgetId) throws Exception {
 		return template.getForObject(EcompPortalUtils.widgetMsProtocol() + "://"
-				+ consulHealthService.getServiceLocation(whatService,
+				+ widgetMService.getServiceLocation(whatService,
 						SystemProperties.getProperty(MS_WIDGET_LOCAL_PORT))
 				+ "/widget/microservices/" + widgetId + "/controller.js", String.class,
 				WidgetServiceHeaders.getInstance());
@@ -309,7 +309,7 @@ public class WidgetsCatalogController extends EPRestrictedBaseController {
 	@RequestMapping(value = "/portalApi/microservices/{widgetId}/style.css", method = RequestMethod.GET)
 	public String getWidgetCSS(@PathVariable("widgetId") long widgetId) throws Exception {
 		return template.getForObject(EcompPortalUtils.widgetMsProtocol() + "://"
-				+ consulHealthService.getServiceLocation(whatService,
+				+ widgetMService.getServiceLocation(whatService,
 						SystemProperties.getProperty(MS_WIDGET_LOCAL_PORT))
 				+ "/widget/microservices/" + widgetId + "/styles.css", String.class,
 				WidgetServiceHeaders.getInstance());
@@ -323,7 +323,7 @@ public class WidgetsCatalogController extends EPRestrictedBaseController {
 		List<WidgetParameterResult> list = new ArrayList<>();
 		Long serviceId = template.exchange(
 				EcompPortalUtils.widgetMsProtocol() + "://"
-						+ consulHealthService.getServiceLocation(whatService,
+						+ widgetMService.getServiceLocation(whatService,
 								SystemProperties.getProperty(EPCommonSystemProperties.MS_WIDGET_LOCAL_PORT))
 						+ "/widget/microservices/widgetCatalog/parameters/" + widgetId,
 				HttpMethod.GET, new HttpEntity<>(WidgetServiceHeaders.getInstance()), Long.class).getBody();
@@ -370,7 +370,7 @@ public class WidgetsCatalogController extends EPRestrictedBaseController {
 		byte[] byteFile = template
 				.exchange(
 						EcompPortalUtils.widgetMsProtocol() + "://"
-								+ consulHealthService.getServiceLocation(whatService,
+								+ widgetMService.getServiceLocation(whatService,
 										SystemProperties.getProperty(EPCommonSystemProperties.MS_WIDGET_LOCAL_PORT))
 								+ "/widget/microservices/download/" + widgetId,
 						HttpMethod.GET, new HttpEntity<>(WidgetServiceHeaders.getInstance()), byte[].class)

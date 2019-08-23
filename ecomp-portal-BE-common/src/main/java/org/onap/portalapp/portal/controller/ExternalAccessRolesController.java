@@ -61,6 +61,7 @@ import org.onap.portalapp.portal.logging.aop.EPAuditLog;
 import org.onap.portalapp.portal.logging.aop.EPEELFLoggerAdvice;
 import org.onap.portalapp.portal.logging.logic.EPLogUtil;
 import org.onap.portalapp.portal.service.ExternalAccessRolesService;
+import org.onap.portalsdk.core.service.UserService;
 import org.onap.portalapp.portal.transport.CentralRole;
 import org.onap.portalapp.portal.transport.CentralRoleFunction;
 import org.onap.portalapp.portal.transport.CentralUser;
@@ -113,19 +114,14 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 	private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(ExternalAccessRolesController.class);
 	private static final DataValidator DATA_VALIDATOR = new DataValidator();
 
+	@Autowired
 	private AuditService auditService;
-	private ExternalAccessRolesService externalAccessRolesService;
-	private UserServiceCentalizedImpl userservice;
 
 	@Autowired
-	public ExternalAccessRolesController(AuditService auditService,
-		ExternalAccessRolesService externalAccessRolesService,
-		UserServiceCentalizedImpl userservice) {
-		this.auditService = auditService;
-		this.externalAccessRolesService = externalAccessRolesService;
-		this.userservice = userservice;
-	}
+	private ExternalAccessRolesService externalAccessRolesService;
 
+	@Autowired
+	private UserService userservice =  new UserServiceCentalizedImpl();
 
 	@ApiOperation(value = "Gets user role for an application.", response = CentralUser.class, responseContainer="List")
 	@RequestMapping(value = {

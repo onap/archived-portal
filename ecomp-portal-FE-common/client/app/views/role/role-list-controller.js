@@ -152,11 +152,9 @@ app.controller('roleListController', function ($scope,RoleService, applicationsS
             	   $scope.centralizedApps = res;
             	   for(var i = 0; i<res.length; i++){
             		      if(res[i].appId == 1){
-            		    	  $scope.getRolesForSelectedCentralizedApp(res[i].appId);
             		    	  $scope.apps.selectedCentralizedApp = res[i].appId;
             		    	  return;
             		      }  
-            		      $scope.getRolesForSelectedCentralizedApp(res[0].appId);
             		      $scope.apps.selectedCentralizedApp = res[0].appId;
             	   }
                 }

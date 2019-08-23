@@ -517,6 +517,7 @@ public class RoleManageController extends EPRestrictedBaseController {
 				return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, "Data is not valid", "ERROR");
 			}
 		}
+
 		EPUser user = EPUserUtils.getUserSession(request);
 		boolean saveOrUpdateResponse = false;
 		try {
@@ -691,6 +692,7 @@ public class RoleManageController extends EPRestrictedBaseController {
 				return null;
 			}
 		}
+
 		EPUser user = EPUserUtils.getUserSession(request);
 		List<CentralizedApp> applicationsList = null;
 		if (adminRolesService.isAccountAdmin(user) || adminRolesService.isSuperAdmin(user)

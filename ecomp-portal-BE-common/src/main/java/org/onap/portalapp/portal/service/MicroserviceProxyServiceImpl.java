@@ -76,7 +76,7 @@ public class MicroserviceProxyServiceImpl implements MicroserviceProxyService {
 	private static final String ADD_MARK = "&";
 
 	@Autowired
-	private ConsulHealthService consulHealthService;
+	private WidgetMService widgetMService;
 	@Autowired
 	MicroserviceService microserviceService;
 	@Autowired
@@ -104,7 +104,7 @@ public class MicroserviceProxyServiceImpl implements MicroserviceProxyService {
 		@SuppressWarnings({ "rawtypes", "unchecked" })
 		ResponseEntity<Long> ans = (ResponseEntity<Long>) template.exchange(
 				EcompPortalUtils.widgetMsProtocol() + "://"
-						+ consulHealthService.getServiceLocation(whatService,
+						+ widgetMService.getServiceLocation(whatService,
 								SystemProperties.getProperty("microservices.widget.local.port"))
 						+ "/widget/microservices/widgetCatalog/parameters/" + widgetId,
 				HttpMethod.GET, new HttpEntity(WidgetServiceHeaders.getInstance()), Long.class);

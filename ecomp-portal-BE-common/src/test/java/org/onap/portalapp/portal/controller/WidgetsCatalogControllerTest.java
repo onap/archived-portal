@@ -65,8 +65,8 @@ import org.onap.portalapp.portal.domain.WidgetServiceHeaders;
 import org.onap.portalapp.portal.ecomp.model.PortalRestResponse;
 import org.onap.portalapp.portal.ecomp.model.PortalRestStatusEnum;
 import org.onap.portalapp.portal.framework.MockitoTestSuite;
-import org.onap.portalapp.portal.service.ConsulHealthService;
-import org.onap.portalapp.portal.service.ConsulHealthServiceImpl;
+import org.onap.portalapp.portal.service.WidgetMService;
+import org.onap.portalapp.portal.service.WidgetMServiceImpl;
 import org.onap.portalapp.portal.service.MicroserviceService;
 import org.onap.portalapp.portal.service.MicroserviceServiceImpl;
 import org.onap.portalapp.portal.service.WidgetParameterService;
@@ -98,7 +98,7 @@ import org.springframework.web.client.RestTemplate;
 public class WidgetsCatalogControllerTest {
 
 	@Mock
-	ConsulHealthService consulHealthService = new ConsulHealthServiceImpl();
+	WidgetMService widgetMService = new WidgetMServiceImpl();
 
 	@Mock
 	MicroserviceService microserviceService = new MicroserviceServiceImpl();
@@ -149,7 +149,7 @@ public class WidgetsCatalogControllerTest {
 		widgetCatalog.setName("test");
 		widgetsList.add(widgetCatalog);
 		ResponseEntity<List> ans = new ResponseEntity<>(widgetsList, HttpStatus.OK);
-		Mockito.when(consulHealthService.getServiceLocation("widgets-service", "test")).thenReturn("test.com");
+		Mockito.when(widgetMService.getServiceLocation("widgets-service", "test")).thenReturn("test.com");
 		Mockito.when(template.exchange(Matchers.anyString(), Matchers.eq(HttpMethod.GET), Matchers.<HttpEntity<?>>any(),
 				Matchers.eq(List.class))).thenReturn(ans);
 		List<WidgetCatalog> expectedWidgets = widgetsCatalogController.getUserWidgetCatalog("guestT");
@@ -170,7 +170,7 @@ public class WidgetsCatalogControllerTest {
 		Mockito.when(CipherUtil
 				.decryptPKC(EcompPortalUtils.getPropertyOrDefault("microservices.widget.password", "widget_password")))
 				.thenReturn("abc");
-		Mockito.when(consulHealthService.getServiceLocation("widgets-service", "test")).thenReturn("test.com");
+		Mockito.when(widgetMService.getServiceLocation("widgets-service", "test")).thenReturn("test.com");
 		Mockito.doThrow(new NullPointerException()).when(template).exchange(Matchers.anyString(),
 				Matchers.eq(HttpMethod.GET), Matchers.<HttpEntity<?>>any(), Matchers.eq(List.class));
 		List<WidgetCatalog> expectedWidgets = widgetsCatalogController.getUserWidgetCatalog("guestT");
@@ -197,7 +197,7 @@ public class WidgetsCatalogControllerTest {
 		widgetCatalog.setName("test");
 		widgetsList.add(widgetCatalog);
 		ResponseEntity<List> ans = new ResponseEntity<>(widgetsList, HttpStatus.OK);
-		Mockito.when(consulHealthService.getServiceLocation("widgets-service", "test")).thenReturn("test.com");
+		Mockito.when(widgetMService.getServiceLocation("widgets-service", "test")).thenReturn("test.com");
 		Mockito.when(template.exchange(Matchers.anyString(), Matchers.eq(HttpMethod.GET), Matchers.<HttpEntity<?>>any(),
 				Matchers.eq(List.class))).thenReturn(ans);
 		List<WidgetCatalog> expectedWidgets = widgetsCatalogController.getWidgetCatalog();
@@ -218,7 +218,7 @@ public class WidgetsCatalogControllerTest {
 		Mockito.when(CipherUtil
 				.decryptPKC(EcompPortalUtils.getPropertyOrDefault("microservices.widget.password", "widget_password")))
 				.thenReturn("abc");
-		Mockito.when(consulHealthService.getServiceLocation("widgets-service", "test")).thenReturn("test.com");
+		Mockito.when(widgetMService.getServiceLocation("widgets-service", "test")).thenReturn("test.com");
 		Mockito.doThrow(new NullPointerException()).when(template).exchange(Matchers.anyString(),
 				Matchers.eq(HttpMethod.GET), Matchers.<HttpEntity<?>>any(), Matchers.eq(List.class));
 		List<WidgetCatalog> expectedWidgets = widgetsCatalogController.getUserWidgetCatalog("guestT");
@@ -239,9 +239,9 @@ public class WidgetsCatalogControllerTest {
 		Mockito.when(CipherUtil
 				.decryptPKC(EcompPortalUtils.getPropertyOrDefault("microservices.widget.password", "widget_password")))
 				.thenReturn("abc");
-		Mockito.when(consulHealthService.getServiceLocation("widgets-service", "test")).thenReturn("test.com");
+		Mockito.when(widgetMService.getServiceLocation("widgets-service", "test")).thenReturn("test.com");
 		ResponseEntity<List> ans = new ResponseEntity<>(HttpStatus.OK);
-		Mockito.when(consulHealthService.getServiceLocation("widgets-service", "test")).thenReturn("test.com");
+		Mockito.when(widgetMService.getServiceLocation("widgets-service", "test")).thenReturn("test.com");
 		Mockito.when(template.exchange(Matchers.anyString(), Matchers.eq(HttpMethod.PUT), Matchers.<HttpEntity<?>>any(),
 				Matchers.eq(List.class))).thenReturn(ans);
 		WidgetCatalog widget = new WidgetCatalog();
@@ -263,9 +263,9 @@ public class WidgetsCatalogControllerTest {
 		Mockito.when(CipherUtil
 				.decryptPKC(EcompPortalUtils.getPropertyOrDefault("microservices.widget.password", "widget_password")))
 				.thenReturn("abc");
-		Mockito.when(consulHealthService.getServiceLocation("widgets-service", "test")).thenReturn("test.com");
+		Mockito.when(widgetMService.getServiceLocation("widgets-service", "test")).thenReturn("test.com");
 		ResponseEntity<List> ans = new ResponseEntity<>(HttpStatus.OK);
-		Mockito.when(consulHealthService.getServiceLocation("widgets-service", "test")).thenReturn("test.com");
+		Mockito.when(widgetMService.getServiceLocation("widgets-service", "test")).thenReturn("test.com");
 		Mockito.when(template.exchange(Matchers.anyString(), Matchers.eq(HttpMethod.DELETE),
 				Matchers.<HttpEntity<?>>any(), Matchers.eq(List.class))).thenReturn(ans);
 		widgetsCatalogController.deleteOnboardingWidget(1l);
@@ -286,9 +286,9 @@ public class WidgetsCatalogControllerTest {
 		Mockito.when(CipherUtil
 				.decryptPKC(EcompPortalUtils.getPropertyOrDefault("microservices.widget.password", "widget_password")))
 				.thenReturn("abc");
-		Mockito.when(consulHealthService.getServiceLocation("widgets-service", "test")).thenReturn("test.com");
+		Mockito.when(widgetMService.getServiceLocation("widgets-service", "test")).thenReturn("test.com");
 		String ans = "success";
-		Mockito.when(consulHealthService.getServiceLocation("widgets-service", "test")).thenReturn("test.com");
+		Mockito.when(widgetMService.getServiceLocation("widgets-service", "test")).thenReturn("test.com");
 		Mockito.when(template.postForObject(Mockito.any(String.class), Mockito.any(HttpEntity.class),
 				Mockito.any(Class.class))).thenReturn(ans);
 		MockMultipartHttpServletRequest request = new MockMultipartHttpServletRequest();
@@ -316,9 +316,9 @@ public class WidgetsCatalogControllerTest {
 		Mockito.when(CipherUtil
 				.decryptPKC(EcompPortalUtils.getPropertyOrDefault("microservices.widget.password", "widget_password")))
 				.thenReturn("abc");
-		Mockito.when(consulHealthService.getServiceLocation("widgets-service", "test")).thenReturn("test.com");
+		Mockito.when(widgetMService.getServiceLocation("widgets-service", "test")).thenReturn("test.com");
 		String ans = "success";
-		Mockito.when(consulHealthService.getServiceLocation("widgets-service", "test")).thenReturn("test.com");
+		Mockito.when(widgetMService.getServiceLocation("widgets-service", "test")).thenReturn("test.com");
 		Mockito.when(template.postForObject(Mockito.any(String.class), Mockito.any(HttpEntity.class),
 				Mockito.any(Class.class))).thenReturn(ans);
 		MockMultipartHttpServletRequest request = new MockMultipartHttpServletRequest();
@@ -346,7 +346,7 @@ public class WidgetsCatalogControllerTest {
 		Mockito.when(CipherUtil
 				.decryptPKC(EcompPortalUtils.getPropertyOrDefault("microservices.widget.password", "widget_password")))
 				.thenReturn("abc");
-		Mockito.when(consulHealthService.getServiceLocation("widgets-service", "test")).thenReturn("test.com");
+		Mockito.when(widgetMService.getServiceLocation("widgets-service", "test")).thenReturn("test.com");
 		Mockito.when(template.getForObject(Mockito.anyString(), Mockito.any(Class.class), Mockito.any(String.class)))
 				.thenReturn("test123");
 		String result = widgetsCatalogController.getWidgetFramework(1l);
@@ -368,7 +368,7 @@ public class WidgetsCatalogControllerTest {
 		Mockito.when(CipherUtil
 				.decryptPKC(EcompPortalUtils.getPropertyOrDefault("microservices.widget.password", "widget_password")))
 				.thenReturn("abc");
-		Mockito.when(consulHealthService.getServiceLocation("widgets-service", "test")).thenReturn("test.com");
+		Mockito.when(widgetMService.getServiceLocation("widgets-service", "test")).thenReturn("test.com");
 		Mockito.when(template.getForObject(Mockito.anyString(), Mockito.any(Class.class), Mockito.any(String.class)))
 				.thenReturn("test123");
 		String result = widgetsCatalogController.getWidgetController(1);
@@ -390,7 +390,7 @@ public class WidgetsCatalogControllerTest {
 		Mockito.when(CipherUtil
 				.decryptPKC(EcompPortalUtils.getPropertyOrDefault("microservices.widget.password", "widget_password")))
 				.thenReturn("abc");
-		Mockito.when(consulHealthService.getServiceLocation("widgets-service", "test")).thenReturn("test.com");
+		Mockito.when(widgetMService.getServiceLocation("widgets-service", "test")).thenReturn("test.com");
 		Mockito.when(template.getForObject(Mockito.anyString(), Mockito.any(Class.class), Mockito.any(String.class)))
 				.thenReturn("test123");
 		String result = widgetsCatalogController.getWidgetCSS(1);
@@ -415,9 +415,9 @@ public class WidgetsCatalogControllerTest {
 		Mockito.when(CipherUtil
 				.decryptPKC(EcompPortalUtils.getPropertyOrDefault("microservices.widget.password", "widget_password")))
 				.thenReturn("abc");
-		Mockito.when(consulHealthService.getServiceLocation("widgets-service", "test")).thenReturn("test.com");
+		Mockito.when(widgetMService.getServiceLocation("widgets-service", "test")).thenReturn("test.com");
 		ResponseEntity<Long> ans = new ResponseEntity<>(1l, HttpStatus.OK);
-		Mockito.when(consulHealthService.getServiceLocation("widgets-service", "test")).thenReturn("test.com");
+		Mockito.when(widgetMService.getServiceLocation("widgets-service", "test")).thenReturn("test.com");
 		Mockito.when(template.exchange(Matchers.anyString(), Matchers.eq(HttpMethod.GET), Matchers.<HttpEntity<?>>any(),
 				Matchers.eq(Long.class))).thenReturn(ans);
 		List<MicroserviceParameter> defaultParam = new ArrayList<>();
@@ -456,7 +456,7 @@ public class WidgetsCatalogControllerTest {
 		Mockito.when(CipherUtil
 				.decryptPKC(EcompPortalUtils.getPropertyOrDefault("microservices.widget.password", "widget_password")))
 				.thenReturn("abc");
-		Mockito.when(consulHealthService.getServiceLocation("widgets-service", "test")).thenReturn("test.com");
+		Mockito.when(widgetMService.getServiceLocation("widgets-service", "test")).thenReturn("test.com");
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		ResponseEntity<byte[]> mockData = new ResponseEntity("testfile.zip".getBytes(), HttpStatus.OK);

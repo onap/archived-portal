@@ -98,6 +98,11 @@
 			<artifactId>jasypt-spring-boot-starter</artifactId>
 			<version>1.9</version>
 		</dependency>
+		<dependency>
+			<groupId>org.jsoup</groupId>
+			<artifactId>jsoup</artifactId>
+			<version>1.12.1</version>
+       </dependency>
 		<!-- hibernate-core depends on dom4j, which has optional dependencies. 
 			On jenkins, contrary to doc, mvn 3.0.5 packages the optional dependencies 
 			in the war. Workaround: exclude them explicitly. -->

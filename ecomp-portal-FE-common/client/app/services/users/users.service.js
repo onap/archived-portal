@@ -201,7 +201,7 @@
                 // this.$log.debug('getUserAppRoles response: ', JSON.stringify(res))
                 // If response comes back as a redirected HTML page which IS NOT a success
                 if (this.utilsService.isValidJSON(res)== false ||  res.data.httpStatusCode == '500' || res.data.status == 'ERROR') {
-                    deferred.reject('UsersService::updateUserAppRoles: Failed'  + res.data.message);
+                    deferred.reject(' Error:'  + res.data.message);
                 } else {
                     // this.$log.info('UsersService::updateUserAppRoles: Succeeded');
                     deferred.resolve(res.data);

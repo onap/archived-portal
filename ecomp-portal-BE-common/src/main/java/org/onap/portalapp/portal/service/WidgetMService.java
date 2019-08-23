@@ -2,7 +2,7 @@
  * ============LICENSE_START==========================================
  * ONAP Portal
  * ===================================================================
- * Copyright (C) 2017-2018 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
@@ -35,33 +35,25 @@
  *
  * 
  */
-
 package org.onap.portalapp.portal.service;
 
 import java.util.List;
 
-import org.onap.portalapp.portal.domain.EPApp;
-import org.onap.portalapp.portal.transport.OnboardingApp;
+import org.onap.portalapp.portal.exceptions.NoHealthyServiceException;
 
-public interface AppsCacheService {
-	
+import com.ecwid.consul.ConsulException;
+import com.orbitz.consul.model.health.ServiceHealth;
+
+public interface WidgetMService {
 	/**
-	 * returns an app by id from the cache
-	 * @param appId
-	 * @return corresponding App
+	 * This method returns the location of one healthy node if found in Consul -
+	 * If not found in / by Consul, it falls back to 'localhost'
+	 * 
+	 * @param service
+	 * @param fallbackPortOnLocalhost
+	 *            value provided by the calling service
+	 * @return Service location
 	 */
-	EPApp getApp(Long appId);
-	
-	/**
-	 * returns the corresponding application endpoint
-	 * @param appId
-	 * @return if appId exists in cache, then return corresponding application endpoint, null otherwise.
-	 */
-	String getAppEndpoint(Long appId);
+	public String getServiceLocation(String service, String fallbackPortOnLocalhost) throws NoHealthyServiceException;
 
-	EPApp getAppFromUeb(String appKey);
-
-	EPApp getAppFromUeb(String appKey, Integer quickCacheRefresh);
-
-	List<OnboardingApp> getAppsFullList();
 }

@@ -52,6 +52,7 @@ import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 import org.onap.portalapp.portal.service.SearchService;
 import org.onap.portalapp.portal.domain.EPApp;
+import org.onap.portalapp.portal.domain.EPRole;
 import org.onap.portalapp.portal.domain.EPUser;
 import org.onap.portalapp.portal.logging.aop.EPMetricsLog;
 import org.onap.portalapp.portal.transport.ExternalAccessUser;
@@ -95,6 +96,9 @@ public class PortalAdminServiceImpl implements PortalAdminService {
 	private EPAppService epAppService;
 	
 	RestTemplate template = new RestTemplate();
+	
+	@Autowired
+	ExternalAccessRolesService externalAccessRolesService;
 	
 	@PostConstruct
 	private void init() {
@@ -162,7 +166,13 @@ public class PortalAdminServiceImpl implements PortalAdminService {
 				transaction.commit();
 				// Add role in the external central auth system
 				if(user != null && EcompPortalUtils.checkIfRemoteCentralAccessAllowed()) {
-					 addPortalAdminInExternalCentralAuth(user.getOrgUserId(), PortalConstants.PORTAL_ADMIN_ROLE);
+					List<EPRole> roleList = externalAccessRolesService.getPortalAppRoleInfo(PortalConstants.SYS_ADMIN_ROLE_ID);
+					EPRole role = new EPRole();
+					if(roleList.size()>0){
+					 role = roleList.get(0);}
+					 logger.debug(EELFLoggerDelegate.debugLogger, "Requested RoleName is  "+role.getName());
+					
+					 addPortalAdminInExternalCentralAuth(user.getOrgUserId(), role.getName());
 				}
 			} catch (Exception e) {
 				logger.error(EELFLoggerDelegate.errorLogger, "createPortalAdmin failed", e);
@@ -228,7 +238,13 @@ public class PortalAdminServiceImpl implements PortalAdminService {
 					"user_id='" + userId + "' AND role_id='" + SYS_ADMIN_ROLE_ID + "'", null);
 			transaction.commit();
 			if(EcompPortalUtils.checkIfRemoteCentralAccessAllowed()){
-				deletePortalAdminInExternalCentralAuth(userId, PortalConstants.PORTAL_ADMIN_ROLE);
+				
+				List<EPRole> roleList = externalAccessRolesService.getPortalAppRoleInfo(PortalConstants.SYS_ADMIN_ROLE_ID);
+				EPRole role = new EPRole();
+				if(roleList.size()>0){
+				 role = roleList.get(0);}
+				 logger.debug(EELFLoggerDelegate.debugLogger, "Requested RoleName is  "+role.getName());
+				deletePortalAdminInExternalCentralAuth(userId, role.getName());
 			}
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "deletePortalAdmin failed", e);

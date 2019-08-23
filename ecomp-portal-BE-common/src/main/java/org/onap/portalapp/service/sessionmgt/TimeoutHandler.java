@@ -54,6 +54,7 @@ import org.springframework.scheduling.quartz.QuartzJobBean;
 import org.onap.portalapp.portal.logging.aop.EPMetricsLog;
 import org.onap.portalapp.portal.logging.format.EPAppMessagesEnum;
 import org.onap.portalapp.portal.logging.logic.EPLogUtil;
+import org.onap.portalapp.portal.service.AppsCacheService;
 import org.onap.portalapp.portal.service.EPAppService;
 import org.onap.portalapp.portal.transport.OnboardingApp;
 import org.onap.portalapp.portal.utils.EcompPortalUtils;
@@ -89,6 +90,7 @@ public class TimeoutHandler extends QuartzJobBean {
 	@Autowired
 	private SessionCommunication sessionCommunication;
 	
+	
 	@Override
 	protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
 		try {
@@ -102,8 +104,9 @@ public class TimeoutHandler extends QuartzJobBean {
 			
 			ManageService manageService = (ManageService) applicationContext.getBean("manageService");
 			EPAppService appService = (EPAppService) applicationContext.getBean("epAppService");
-
-			List<OnboardingApp> appList = appService.getEnabledNonOpenOnboardingApps();
+			AppsCacheService appsCacheService = (AppsCacheService)applicationContext.getBean("appsCacheService");
+			
+			List<OnboardingApp> appList = appsCacheService.getAppsFullList();
 			onboardedAppList = appList;
 			TypeReference<Hashtable<String, TimeoutVO>> typeRef = new TypeReference<Hashtable<String, TimeoutVO>>() {
 			};

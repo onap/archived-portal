@@ -49,6 +49,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -56,6 +57,7 @@ import org.onap.portalapp.portal.core.MockEPUser;
 import org.onap.portalapp.portal.domain.EPRole;
 import org.onap.portalapp.portal.framework.MockitoTestSuite;
 import org.onap.portalapp.portal.service.EPRoleServiceImpl;
+import org.onap.portalapp.portal.utils.PortalConstants;
 import org.onap.portalsdk.core.domain.RoleFunction;
 import org.onap.portalsdk.core.service.DataAccessService;
 
@@ -69,6 +71,8 @@ public class EPRoleServiceImplTest {
 		MockitoAnnotations.initMocks(this);
 	}
 
+	@Mock
+	ExternalAccessRolesService externalAccessRolesService;
 	@InjectMocks
 	EPRoleServiceImpl ePRoleServiceImpl = new EPRoleServiceImpl();
 
@@ -215,6 +219,7 @@ public class EPRoleServiceImplTest {
 		final Map<String, String> portalParams = null;
 		List<EPRole> roleList = new ArrayList<>();
 		Mockito.when(dataAccessService.executeNamedQuery("getPortalAppRoles", portalParams, null)).thenReturn(roleList);
+		Mockito.when(externalAccessRolesService.getPortalAppRoleInfo(Matchers.anyLong())).thenReturn(roleList);
 		assertNull(ePRoleServiceImpl.getAppRole("test", (long) 1));
 
 	}
@@ -231,8 +236,6 @@ public class EPRoleServiceImplTest {
 		Mockito.when((List<EPRole>) dataAccessService.executeNamedQuery("getAppRoles", params, null))
 				.thenReturn(roleList);
 		List<EPRole> expectedRoleList = (List<EPRole>) ePRoleServiceImpl.getAppRole("test", (long) 10);
-		System.out.println(expectedRoleList);
-
 	}
 
 	@Test

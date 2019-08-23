@@ -39,6 +39,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class StorageServiceImpl implements StorageService {
 
 	private static final Logger logger = LoggerFactory.getLogger(StorageServiceImpl.class);
+	private final String TMP_PATH = "/tmp/";
 
 	@Autowired
 	private SessionFactory sessionFactory;
@@ -98,13 +99,14 @@ public class StorageServiceImpl implements StorageService {
 				throw new StorageException(
 						"StorageServiceImpl.checkZipFile: Failed to store empty file " + file.getOriginalFilename());
 			}
-			String fileLocation = file.getOriginalFilename();
+
+			String fileLocation = TMP_PATH+file.getOriginalFilename();
 			logger.debug("StorageServiceImpl.checkZipFile: store the widget to:" + fileLocation);
 			convFile = new File(fileLocation);
 			try(FileOutputStream fos = new FileOutputStream(convFile)){
 				fos.write(file.getBytes());
 			}
-			map = unzipper.unzip_db(fileLocation, ".", "tempWidgets");
+			map = unzipper.unzip_db(fileLocation, TMP_PATH, "tempWidgets");
 			convFile.delete();
 		} catch (IOException e) {
 			logger.error("StorageServiceImpl.checkZipFile: Failed to store file " + file.getOriginalFilename(), e);

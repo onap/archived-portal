@@ -130,7 +130,7 @@
 	 
 	 <div class="b2b-modal-footer">
 	 	<div class="cta-button-group in">	
-	 		<button id="button-app-save" class="btn btn-alt btn-small" size="small" ng-click="saveRole(role, editRoleFunction);" href="javascript:void(0)">Save</button>
+	 		<button id="button-app-save" class="btn btn-alt btn-small" size="small" ng-disabled="!(role.name)" ng-click="saveRole(role, editRoleFunction);" href="javascript:void(0)">Save</button>
 						
 			<button id="button-app-cancel" class="btn btn-alt btn-small" ng-click="$dismiss('cancel')" role="button" tabindex="0" href="javascript:void(0)">Cancel</button>
 		</div>

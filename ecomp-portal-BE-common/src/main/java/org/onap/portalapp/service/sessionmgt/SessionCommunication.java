@@ -41,23 +41,33 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.onap.portalapp.portal.domain.EPApp;
 import org.onap.portalapp.portal.logging.aop.EPAuditLog;
 import org.onap.portalapp.portal.logging.aop.EPMetricsLog;
 import org.onap.portalapp.portal.logging.format.EPAppMessagesEnum;
 import org.onap.portalapp.portal.logging.logic.EPLogUtil;
+import org.onap.portalapp.portal.service.AppsCacheService;
 import org.onap.portalapp.portal.transport.OnboardingApp;
 import org.onap.portalapp.portal.utils.EPCommonSystemProperties;
 import org.onap.portalapp.portal.utils.EcompPortalUtils;
+import org.onap.portalapp.util.SystemType;
 import org.onap.portalsdk.core.exception.UrlAccessRestrictedException;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
+import org.onap.portalsdk.core.onboarding.exception.CipherUtilException;
+import org.onap.portalsdk.core.onboarding.util.CipherUtil;
+import org.onap.portalsdk.core.util.SystemProperties;
 import org.slf4j.MDC;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
+import org.apache.commons.lang.StringUtils;
 
 import com.att.eelf.configuration.Configuration;
 
@@ -66,6 +76,10 @@ import com.att.eelf.configuration.Configuration;
 @EnableAspectJAutoProxy
 public class SessionCommunication {
 	EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(SessionCommunication.class);
+	@Autowired
+	private AppsCacheService appsCacheService;
+	
+	private static final String BASIC_AUTHENTICATION_HEADER = "Authorization";
 
 	@EPAuditLog
 	public String sendGet(OnboardingApp app) throws Exception {
@@ -90,8 +104,17 @@ public class SessionCommunication {
 				con.setConnectTimeout(3000);
 				con.setReadTimeout(8000);
 				// add request header
+				Map<String,String> headers = getHeaders(app);
+				appUserName =headers.get("username");
+				encriptedPwdDB = headers.get("password");
+				
 				con.setRequestProperty("username", appUserName);
 				con.setRequestProperty("password", encriptedPwdDB);
+
+				
+				String encoding = Base64.getEncoder().encodeToString((appUserName + ":" + encriptedPwdDB).getBytes());
+				String encodingStr = "Basic " + encoding;
+				con.setRequestProperty(BASIC_AUTHENTICATION_HEADER, encodingStr);
 
 				// con.set
 				responseCode = con.getResponseCode();
@@ -153,9 +176,16 @@ public class SessionCommunication {
 			con.setConnectTimeout(3000);
 			con.setReadTimeout(15000);
 
-			// add request header
+			Map<String,String> headers = getHeaders(app);
+			appUserName =headers.get("username");
+			encriptedPwdDB = headers.get("password");
+			
 			con.setRequestProperty("username", appUserName);
 			con.setRequestProperty("password", encriptedPwdDB);
+			
+			String encoding = Base64.getEncoder().encodeToString((appUserName + ":" + encriptedPwdDB).getBytes());
+			String encodingStr = "Basic " + encoding;
+			con.setRequestProperty(BASIC_AUTHENTICATION_HEADER, encodingStr);
 
 			con.setRequestProperty("sessionMap", sessionTimeoutMap);
 			con.setDoInput(true);
@@ -209,11 +239,17 @@ public class SessionCommunication {
 				con.setConnectTimeout(3000);
 				con.setReadTimeout(15000);
 
-				// add request header
+				Map<String,String> headers = getHeaders(app);
+				appUserName =headers.get("username");
+				encriptedPwdDB = headers.get("password");
+				
 				con.setRequestProperty("username", appUserName);
 				con.setRequestProperty("password", encriptedPwdDB);
-
-				// con.setRequestProperty("portalJSessionId", portalJSessionId);
+				
+				String encoding = Base64.getEncoder().encodeToString((appUserName + ":" + encriptedPwdDB).getBytes());
+				String encodingStr = "Basic " + encoding;
+				con.setRequestProperty(BASIC_AUTHENTICATION_HEADER, encodingStr);
+				
 				con.setDoInput(true);
 				con.setDoOutput(true);
 				con.getOutputStream().flush();
@@ -286,5 +322,44 @@ public class SessionCommunication {
 			MDC.remove(Configuration.MDC_SERVICE_NAME);
 			MDC.remove(EPCommonSystemProperties.PARTNER_NAME);
 		}
+	}
+	
+	public Map<String,String> getHeaders(OnboardingApp app)
+	{
+		String encriptedPwdDB = "";
+		String appUserName = "";
+
+		
+		 Map<String,String> headersMap = new HashMap<>();
+		EPApp externalApp = null;
+
+		if(app.appPassword.isEmpty() || app.appPassword==null){
+			logger.debug(EELFLoggerDelegate.debugLogger, "Entering in the externalApp get app password contains null : {}");
+			externalApp = appsCacheService.getApp(1L);
+			logger.debug(EELFLoggerDelegate.debugLogger, "external App Information : {}",externalApp);
+
+			String mechidUsername=externalApp.getUsername();
+			logger.debug(EELFLoggerDelegate.debugLogger, "external App mechidUsername Information : {}",mechidUsername);
+
+			String password=externalApp.getAppPassword();
+			String decreptedexternalAppPwd = StringUtils.EMPTY;
+			try {
+				decreptedexternalAppPwd = CipherUtil.decryptPKC(password,
+						SystemProperties.getProperty(SystemProperties.Decryption_Key));
+			} catch (CipherUtilException e) {
+				logger.error(EELFLoggerDelegate.errorLogger, "failed to decreptedexternalAppPwd when external app pwd is null", e);
+			}
+			
+			appUserName =mechidUsername;
+			encriptedPwdDB = decreptedexternalAppPwd;
+		
+		}else{
+			appUserName = app.username;
+			encriptedPwdDB = app.appPassword;
+		}
+		
+		headersMap.put("username", appUserName);
+		headersMap.put("password", encriptedPwdDB);
+		return headersMap;
 	}
 }

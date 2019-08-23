@@ -65,6 +65,9 @@ public class EPRoleServiceImpl implements EPRoleService {
 
 	@Autowired
 	private DataAccessService dataAccessService;
+	
+	@Autowired
+	ExternalAccessRolesService externalAccessRolesService;
 
 	@SuppressWarnings("unchecked")
 	public List<RoleFunction> getRoleFunctions() {
@@ -157,9 +160,16 @@ public class EPRoleServiceImpl implements EPRoleService {
 		params.put("appId", appId.toString());
 		params.put("roleName", roleName);
 		portalParams.put("appRoleName", roleName);
-		if (appId == 1 || roleName.equals(PortalConstants.ADMIN_ROLE)) {
+		
+		List<EPRole> roleList = externalAccessRolesService.getPortalAppRoleInfo(PortalConstants.ACCOUNT_ADMIN_ROLE_ID);
+		EPRole role = new EPRole();
+		if(roleList.size()>0){
+		 role = roleList.get(0);}
+		 logger.debug(EELFLoggerDelegate.debugLogger, "Requested RoleName is  "+role.getName());
+		 
+		if (appId == 1 || roleName.equals(role.getName())) {
 			roles = (List<EPRole>) dataAccessService.executeNamedQuery("getPortalAppRoles", portalParams, null);
-		} else if (appId != 1 && !roleName.equals(PortalConstants.ADMIN_ROLE)) {
+		} else if (appId != 1 && !roleName.equals(role.getName())) {
 			roles = (List<EPRole>) dataAccessService.executeNamedQuery("getAppRoles", params, null);
 		}
 		int resultsCount = (roles == null ? 0 : roles.size());

@@ -1308,8 +1308,9 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 		return roleInfo;
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
-	private List<EPRole> getPortalAppRoleInfo(Long roleId) {
+	public List<EPRole> getPortalAppRoleInfo(Long roleId) {
 		List<EPRole> roleInfo;
 		final Map<String, Long> getPortalAppRoleParams = new HashMap<>();
 		getPortalAppRoleParams.put("roleId", roleId);

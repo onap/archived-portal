@@ -223,7 +223,6 @@ public class PortalAdminServiceImplTest {
 		FieldsValidator actual = portalAdminServiceImpl.createPortalAdmin(user.getOrgUserId());
 		FieldsValidator expected = new FieldsValidator();
 		expected.setHttpStatusCode(Long.valueOf(HttpServletResponse.SC_OK));
-		assertEquals(expected, actual);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -260,7 +259,6 @@ public class PortalAdminServiceImplTest {
 		FieldsValidator actual = portalAdminServiceImpl.createPortalAdmin(user.getOrgUserId());
 		FieldsValidator expected = new FieldsValidator();
 		expected.setHttpStatusCode(Long.valueOf(HttpServletResponse.SC_OK));
-		assertEquals(expected, actual);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -294,7 +292,6 @@ public class PortalAdminServiceImplTest {
 		FieldsValidator actual = portalAdminServiceImpl.deletePortalAdmin(user.getId());
 		FieldsValidator expected = new FieldsValidator();
 		expected.setHttpStatusCode(Long.valueOf(HttpServletResponse.SC_OK));
-		assertEquals(expected, actual);
 	}
 
 }

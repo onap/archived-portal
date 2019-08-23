@@ -1,0 +1,20 @@
+ARG FE_BASE_IMAGE=httpd:2.4.34-alpine
+FROM ${FE_BASE_IMAGE}
+
+ARG FE_DIR=build/public
+ARG HTTP_PROXY
+ARG HTTPS_PROXY
+# ARG PORTAL_CERT=truststoreONAPall.jks
+
+ARG FECONTEXT=ONAPPORTAL
+
+ENV http_proxy $HTTP_PROXY
+ENV https_proxy $HTTPS_PROXY
+RUN if [ -d /etc/apt ] && [ ! -z ${HTTP_PROXY} ]; then echo "Acquire::http::proxy  \"${HTTP_PROXY}\";" >> /etc/apt/apt.conf; fi && \
+    if [ -d /etc/apt ] && [ ! -z ${HTTPS_PROXY} ]; then echo "Acquire::https::proxy \"${HTTPS_PROXY}\";" >> /etc/apt/apt.conf; fi
+
+RUN addgroup -g 1000 -S portal && adduser -u 1000 -S portal -G portal && chown -R portal:portal . && rm /usr/local/apache2/htdocs/index.html
+
+USER portal:portal
+
+COPY ${FE_DIR} /usr/local/apache2/htdocs/${FECONTEXT}

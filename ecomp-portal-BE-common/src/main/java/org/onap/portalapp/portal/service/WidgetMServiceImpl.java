@@ -2,7 +2,7 @@
  * ============LICENSE_START==========================================
  * ONAP Portal
  * ===================================================================
- * Copyright (C) 2017-2018 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
@@ -35,33 +35,23 @@
  *
  * 
  */
-
 package org.onap.portalapp.portal.service;
 
-import java.util.List;
+import org.onap.portalapp.portal.utils.EcompPortalUtils;
+import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
+import org.springframework.stereotype.Component;
 
-import org.onap.portalapp.portal.domain.EPApp;
-import org.onap.portalapp.portal.transport.OnboardingApp;
+@Component
+public class WidgetMServiceImpl implements WidgetMService {
 
-public interface AppsCacheService {
-	
-	/**
-	 * returns an app by id from the cache
-	 * @param appId
-	 * @return corresponding App
-	 */
-	EPApp getApp(Long appId);
-	
-	/**
-	 * returns the corresponding application endpoint
-	 * @param appId
-	 * @return if appId exists in cache, then return corresponding application endpoint, null otherwise.
-	 */
-	String getAppEndpoint(Long appId);
+	private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(WidgetMServiceImpl.class);
 
-	EPApp getAppFromUeb(String appKey);
+	@Override
+	public String getServiceLocation(String service, String fallbackPortOnLocalHost) {	
+		logger.debug(logger.debugLogger, "Requested Service: "+ service);
+		String localFallbackServiceLocation = EcompPortalUtils.localOrDockerHost() + ":" + fallbackPortOnLocalHost;	
+		logger.debug(logger.debugLogger, "returned service location: "+ localFallbackServiceLocation);
+		return localFallbackServiceLocation;	
+	}
 
-	EPApp getAppFromUeb(String appKey, Integer quickCacheRefresh);
-
-	List<OnboardingApp> getAppsFullList();
 }

@@ -55,7 +55,7 @@ import org.onap.portalapp.portal.domain.WidgetServiceHeaders;
 import org.onap.portalapp.portal.ecomp.model.PortalRestResponse;
 import org.onap.portalapp.portal.ecomp.model.PortalRestStatusEnum;
 import org.onap.portalapp.portal.logging.aop.EPAuditLog;
-import org.onap.portalapp.portal.service.ConsulHealthService;
+import org.onap.portalapp.portal.service.WidgetMService;
 import org.onap.portalapp.portal.service.MicroserviceService;
 import org.onap.portalapp.portal.utils.EcompPortalUtils;
 import org.onap.portalsdk.core.util.SystemProperties;
@@ -84,7 +84,7 @@ public class MicroserviceController extends EPRestrictedBaseController {
 	RestTemplate template = new RestTemplate();
 
 	@Autowired
-	private ConsulHealthService consulHealthService;
+	private WidgetMService widgetMService;
 
 	@Autowired
 	private MicroserviceService microserviceService;
@@ -153,7 +153,7 @@ public class MicroserviceController extends EPRestrictedBaseController {
 			};
 			// If this service is assoicated with widgets, cannnot be deleted
 			ResponseEntity<List<WidgetCatalog>> ans = template.exchange(
-					EcompPortalUtils.widgetMsProtocol() + "://" + consulHealthService.getServiceLocation(whatService, SystemProperties.getProperty("microservices.widget.local.port"))
+					EcompPortalUtils.widgetMsProtocol() + "://" + widgetMService.getServiceLocation(whatService, SystemProperties.getProperty("microservices.widget.local.port"))
 							+ "/widget/microservices/widgetCatalog/service/" + serviceId,
 					HttpMethod.GET, new HttpEntity(WidgetServiceHeaders.getInstance()), typeRef);
 			List<WidgetCatalog> widgets = ans.getBody();
