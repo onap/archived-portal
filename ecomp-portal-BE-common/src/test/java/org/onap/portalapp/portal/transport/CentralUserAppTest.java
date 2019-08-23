@@ -40,55 +40,56 @@ package org.onap.portalapp.portal.transport;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-
 import org.junit.Test;
 
 public class CentralUserAppTest {
-	
-	private static final Long ID=1l;
-	private static final String TEST="test";
-	
-	private CentralUserApp buildCentralUserApp() {
-		CentralUserApp app=new CentralUserApp();
-		app.setUserId(ID);
-		app.setPriority((Integer)1);
-		CentralApp centralApp=new CentralApp();
-		centralApp.setName(TEST);
-		CentralRole role= new CentralRole.CentralRoleBuilder().createCentralRole();
-		role.setName(TEST);
-		app.setApp(centralApp);
-		app.setRole(role);
-		
-		return app;
-	}
-	
-	
-	@Test
-	public void test() {
-		CentralUserApp app1=buildCentralUserApp();
-		CentralUserApp app=new CentralUserApp();
-		app.setApp(app1.getApp());
-		app.setPriority(app1.getPriority());
-		app.setRole(app1.getRole());
-		app.setUserId(app1.getUserId());
-		assertEquals(app.hashCode(), app1.hashCode());
-		app.compareTo(app1);
-		assertTrue(app.equals(app1));
-		assertFalse(app.equals(null));
-		app.setRole(null);
-		assertFalse(app.equals(app1));
-		app.setRole(app1.getRole());
-		app.getRole().setName("test2");
-		
-		assertTrue(app.equals(app1));
-		
-	}
+
+    private static final Long ID = 1l;
+    private static final String TEST = "test";
+
+    private CentralUserApp buildCentralUserApp() {
+        CentralUserApp app = new CentralUserApp();
+        app.setUserId(ID);
+        app.setPriority((Integer) 1);
+        CentralApp centralApp = new CentralApp.CentralAppBuilder().createCentralApp();
+        centralApp.setName(TEST);
+        CentralRole role = new CentralRole.CentralRoleBuilder().createCentralRole();
+        role.setName(TEST);
+        app.setApp(centralApp);
+        app.setRole(role);
+
+        return app;
+    }
+
+    @Test
+    public void test() {
+        CentralUserApp app1 = buildCentralUserApp();
+        CentralUserApp app = new CentralUserApp();
+        app.setApp(app1.getApp());
+        app.setPriority(app1.getPriority());
+        app.setRole(app1.getRole());
+        app.setUserId(app1.getUserId());
+        assertEquals(app.hashCode(), app1.hashCode());
+        app.compareTo(app1);
+        assertTrue(app.equals(app1));
+        assertFalse(app.equals(null));
+        app.setRole(null);
+        assertFalse(app.equals(app1));
+        app.setRole(app1.getRole());
+        app.getRole().setName("test2");
+
+        assertTrue(app.equals(app1));
+    }
 
     public CentralV2UserApp mockCentralUserApp() {
         CentralV2UserApp centralV2UserApp = new CentralV2UserApp();
 
-        CentralApp app = new CentralApp((long) 1, null, null, ID, ID, ID, TEST, TEST, TEST, TEST, TEST, TEST, TEST,
-                TEST, TEST, TEST, TEST, TEST, TEST, null, TEST, TEST, TEST, TEST);
+        CentralApp app = new CentralApp.CentralAppBuilder().setId((long) 1).setCreated(null).setModified(null)
+                .setCreatedId(ID).setModifiedId(ID).setRowNum(ID).setName(TEST).setImageUrl(TEST).setDescription(TEST)
+                .setNotes(TEST).setUrl(TEST).setAlternateUrl(TEST).setRestEndpoint(TEST).setMlAppName(TEST)
+                .setMlAppAdminId(TEST).setMotsId(TEST).setAppPassword(TEST).setOpen(TEST).setEnabled(TEST)
+                .setThumbnail(null).setUsername(TEST).setUebKey(TEST).setUebSecret(TEST).setUebTopicName(TEST)
+                .createCentralApp();
 
         CentralV2Role role = new CentralV2Role();
 
@@ -99,16 +100,17 @@ public class CentralUserAppTest {
 
         return centralV2UserApp;
     }
-	
-	
-	
-	@Test
+
+    @Test
     public void centralUserAppTest() {
         CentralV2UserApp centralV2UserApp = mockCentralUserApp();
 
-        CentralApp app1 = new CentralApp((long) 1, null, null, ID, ID, ID, TEST, TEST, TEST, TEST, TEST, TEST, TEST,
-                TEST, TEST, TEST, TEST, TEST, TEST, null, TEST, TEST, TEST, TEST);
-
+        CentralApp app1 = new CentralApp.CentralAppBuilder().setId((long) 1).setCreated(null).setModified(null)
+                .setCreatedId(ID).setModifiedId(ID).setRowNum(ID).setName(TEST).setImageUrl(TEST).setDescription(TEST)
+                .setNotes(TEST).setUrl(TEST).setAlternateUrl(TEST).setRestEndpoint(TEST).setMlAppName(TEST)
+                .setMlAppAdminId(TEST).setMotsId(TEST).setAppPassword(TEST).setOpen(TEST).setEnabled(TEST)
+                .setThumbnail(null).setUsername(TEST).setUebKey(TEST).setUebSecret(TEST).setUebTopicName(TEST)
+                .createCentralApp();
 
         CentralV2Role role1 = new CentralV2Role();
 
@@ -119,29 +121,28 @@ public class CentralUserAppTest {
     }
 
     @Test
-	public void centralUserAppEqualsTest(){
-		CentralV2UserApp centralV2UserApp = mockCentralUserApp();
-		CentralV2UserApp centralV2UserApp2 = mockCentralUserApp();
+    public void centralUserAppEqualsTest() {
+        CentralV2UserApp centralV2UserApp = mockCentralUserApp();
+        CentralV2UserApp centralV2UserApp2 = mockCentralUserApp();
 
-		assertTrue(centralV2UserApp.equals(centralV2UserApp));
-		assertTrue(centralV2UserApp.equals(centralV2UserApp2));
-		assertFalse(centralV2UserApp.equals(new Long(1)));
-		centralV2UserApp2.setPriority(213);
-		assertFalse(centralV2UserApp.equals(centralV2UserApp2));
-	}
-	
-	@Test
-	public void unt_hashCodeTest(){
-		AppCatalogPersonalization appCatalogPersonalization=new AppCatalogPersonalization();
-		appCatalogPersonalization.setAppId(123L);
-		appCatalogPersonalization.setPending(true);
-		appCatalogPersonalization.setSelect(true);
-		AppCatalogPersonalization appCatalogPersonalization1 = new AppCatalogPersonalization();
-		appCatalogPersonalization1.setAppId(123L);
-		appCatalogPersonalization1.setPending(true);
-		appCatalogPersonalization1.setSelect(true);
-		assertEquals(appCatalogPersonalization.hashCode(), appCatalogPersonalization1.hashCode());
-		assertTrue(appCatalogPersonalization.equals(appCatalogPersonalization1));
-		
-	}
+        assertTrue(centralV2UserApp.equals(centralV2UserApp));
+        assertTrue(centralV2UserApp.equals(centralV2UserApp2));
+        assertFalse(centralV2UserApp.equals(new Long(1)));
+        centralV2UserApp2.setPriority(213);
+        assertFalse(centralV2UserApp.equals(centralV2UserApp2));
+    }
+
+    @Test
+    public void unt_hashCodeTest() {
+        AppCatalogPersonalization appCatalogPersonalization = new AppCatalogPersonalization();
+        appCatalogPersonalization.setAppId(123L);
+        appCatalogPersonalization.setPending(true);
+        appCatalogPersonalization.setSelect(true);
+        AppCatalogPersonalization appCatalogPersonalization1 = new AppCatalogPersonalization();
+        appCatalogPersonalization1.setAppId(123L);
+        appCatalogPersonalization1.setPending(true);
+        appCatalogPersonalization1.setSelect(true);
+        assertEquals(appCatalogPersonalization.hashCode(), appCatalogPersonalization1.hashCode());
+        assertTrue(appCatalogPersonalization.equals(appCatalogPersonalization1));
+    }
 }

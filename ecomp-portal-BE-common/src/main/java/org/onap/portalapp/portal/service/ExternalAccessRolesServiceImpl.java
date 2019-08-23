@@ -1179,14 +1179,19 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 									&& (globalRole.toLowerCase().startsWith("global_")))) {
 						CentralV2UserApp cua = new CentralV2UserApp();
 						cua.setUserId(null);
-						CentralApp cenApp = new CentralApp(1L, epApp.getCreated(), epApp.getModified(),
-								epApp.getCreatedId(), epApp.getModifiedId(), epApp.getRowNum(), epApp.getName(),
-								epApp.getImageUrl(), epApp.getDescription(), epApp.getNotes(), epApp.getUrl(),
-								epApp.getAlternateUrl(), epApp.getAppRestEndpoint(), epApp.getMlAppName(),
-								epApp.getMlAppAdminId(), String.valueOf(epApp.getMotsId()), epApp.getAppPassword(),
-								String.valueOf(epApp.getOpen()), String.valueOf(epApp.getEnabled()),
-								epApp.getThumbnail(), epApp.getUsername(), epApp.getUebKey(), epApp.getUebSecret(),
-								epApp.getUebTopicName());
+                        CentralApp cenApp = new CentralApp.CentralAppBuilder().setId(1L).setCreated(epApp.getCreated())
+                                .setModified(epApp.getModified()).setCreatedId(epApp.getCreatedId())
+                                .setModifiedId(epApp.getModifiedId()).setRowNum(epApp.getRowNum())
+                                .setName(epApp.getName()).setImageUrl(epApp.getImageUrl())
+                                .setDescription(epApp.getDescription()).setNotes(epApp.getNotes())
+                                .setUrl(epApp.getUrl()).setAlternateUrl(epApp.getAlternateUrl())
+                                .setRestEndpoint(epApp.getAppRestEndpoint()).setMlAppName(epApp.getMlAppName())
+                                .setMlAppAdminId(epApp.getMlAppAdminId()).setMotsId(String.valueOf(epApp.getMotsId()))
+                                .setAppPassword(epApp.getAppPassword()).setOpen(String.valueOf(epApp.getOpen()))
+                                .setEnabled(String.valueOf(epApp.getEnabled())).setThumbnail(epApp.getThumbnail())
+                                .setUsername(epApp.getUsername()).setUebKey(epApp.getUebKey())
+                                .setUebSecret(epApp.getUebSecret()).setUebTopicName(epApp.getUebTopicName())
+                                .createCentralApp();
 						cenApp.setAppPassword(EPCommonSystemProperties.APP_DISPLAY_PASSWORD);
 						cua.setApp(cenApp);
 						Long appId = null;
