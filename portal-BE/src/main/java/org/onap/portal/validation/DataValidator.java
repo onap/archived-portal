@@ -41,10 +41,12 @@
 package org.onap.portal.validation;
 
 import java.util.Set;
+import java.util.stream.Collectors;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -64,6 +66,10 @@ public class DataValidator {
        public <E> Set<ConstraintViolation<E>> getConstraintViolations(E classToValid) {
               Validator validator = VALIDATOR_FACTORY.getValidator();
               return validator.validate(classToValid);
+       }
+
+       public <E> String getConstraintViolationsString(E classToValid){
+              return getConstraintViolations(classToValid).stream().map(ConstraintViolation::getMessage).collect(Collectors.joining(", "));
        }
 
        public <E> boolean isValid(E classToValid) {
