@@ -101,7 +101,7 @@ public class FnUserService implements UserDetailsService {
               return fnUserDao.getUsersByOrgUserId(orgIds).orElse(new ArrayList<>());
        }
 
-       List<FnUser> etActiveUsers(){
+       List<FnUser> getActiveUsers(){
               return fnUserDao.findAll().stream().filter(fnUser -> "Y".equals(fnUser.getActiveYn())).collect(Collectors.toList());
        }
 
