@@ -40,8 +40,7 @@
 
 package org.onap.portal.domain.db.ep;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -95,6 +94,6 @@ public class EpEndpoints {
                cascade = CascadeType.ALL,
                fetch = FetchType.LAZY
        )
-       private List<EpEndpointsBasicAuthAccount> epEndpointsBasicAuthAccounts = new ArrayList<>();
+       private Set<EpEndpointsBasicAuthAccount> epEndpointsBasicAuthAccounts;
 
 }

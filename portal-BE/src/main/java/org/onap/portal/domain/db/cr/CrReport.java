@@ -42,8 +42,7 @@ package org.onap.portal.domain.db.cr;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -96,7 +95,7 @@ CREATE TABLE `cr_report` (
 })
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
+
 @Getter
 @Setter
 @Entity
@@ -206,34 +205,34 @@ public class CrReport implements Serializable {
                cascade = CascadeType.ALL,
                fetch = FetchType.LAZY
        )
-       private List<CrReportSchedule> crReportSchedules = new ArrayList<>();
+       private Set<CrReportSchedule> crReportSchedules;
        @OneToMany(
                targetEntity = CrReportAccess.class,
                mappedBy = "repId",
                cascade = CascadeType.ALL,
                fetch = FetchType.LAZY
        )
-       private List<CrReportAccess> crReportAccesses = new ArrayList<>();
+       private Set<CrReportAccess> crReportAccesses;
        @OneToMany(
                targetEntity = CrReportLog.class,
                mappedBy = "repId",
                cascade = CascadeType.ALL,
                fetch = FetchType.LAZY
        )
-       private List<CrReportLog> crReportLogs = new ArrayList<>();
+       private Set<CrReportLog> crReportLogs;
        @OneToMany(
                targetEntity = CrReportEmailSentLog.class,
                mappedBy = "repId",
                cascade = CascadeType.ALL,
                fetch = FetchType.LAZY
        )
-       private List<CrReportEmailSentLog> crReportEmailSentLogs = new ArrayList<>();
+       private Set<CrReportEmailSentLog> crReportEmailSentLogs;
        @OneToMany(
                targetEntity = CrReportFileHistory.class,
                mappedBy = "repId",
                cascade = CascadeType.ALL,
                fetch = FetchType.LAZY
        )
-       private List<CrReportFileHistory> crReportFileHistories = new ArrayList<>();
+       private Set<CrReportFileHistory> crReportFileHistories;
 
 }

@@ -41,9 +41,9 @@
 package org.onap.portal.domain.db.fn;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -59,22 +59,20 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedNativeQueries;
 import javax.persistence.NamedNativeQuery;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
-import javax.validation.Valid;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PastOrPresent;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
-import lombok.Builder.Default;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
+import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.validator.constraints.SafeHtml;
 import org.onap.portal.domain.db.cr.CrReportFileHistory;
 import org.onap.portal.domain.db.ep.EpPersUserWidgetPlacement;
@@ -82,7 +80,6 @@ import org.onap.portal.domain.db.ep.EpPersUserWidgetSel;
 import org.onap.portal.domain.db.ep.EpUserNotification;
 import org.onap.portal.domain.db.ep.EpUserRolesRequest;
 import org.onap.portal.domain.db.ep.EpWidgetCatalogParameter;
-import org.onap.portal.domain.dto.DomainVo;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -170,13 +167,16 @@ CREATE TABLE `fn_user` (
         uniqueConstraints = {
                 @UniqueConstraint(name = "fn_user_hrid", columnNames = "hrid"),
                 @UniqueConstraint(name = "fn_user_login_id", columnNames = "login_id")
+
         })
-@NoArgsConstructor
-@AllArgsConstructor
+
 @Getter
 @Setter
 @Entity
-@SequenceGenerator(name="seq", initialValue=1000, allocationSize=100000)
+@NoArgsConstructor
+@AllArgsConstructor
+@DynamicUpdate
+@SequenceGenerator(name = "seq", initialValue = 1000, allocationSize = 100000)
 public class FnUser implements UserDetails {
 
        @Id
@@ -184,13 +184,11 @@ public class FnUser implements UserDetails {
        @Column(name = "user_id", length = 11, nullable = false)
        @Digits(integer = 11, fraction = 0)
        private Long userId;
-       @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+       @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
        @JoinColumn(name = "org_id", columnDefinition = "int(11) DEFAULT NULL")
-       @Valid
        private FnOrg orgId;
        @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
        @JoinColumn(name = "manager_id")
-       @Valid
        private FnUser managerId;
        @Column(name = "first_name", length = 50, columnDefinition = "varchar(50) DEFAULT NULL")
        @Size(max = 50)
@@ -253,18 +251,16 @@ public class FnUser implements UserDetails {
        @Column(name = "active_yn", length = 1, columnDefinition = "character varying(1) default 'y'", nullable = false)
        @Size(max = 1)
        @SafeHtml
-       //@NotNull(message = "activeYn must not be null")
+       @NotNull(message = "activeYn must not be null")
        private String activeYn;
        @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
        @JoinColumn(name = "created_id")
-       @Valid
        private FnUser createdId;
        @Column(name = "created_date", columnDefinition = "datetime DEFAULT current_timestamp()", nullable = false)
        @PastOrPresent
        protected LocalDateTime createdDate;
        @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
        @JoinColumn(name = "modified_id")
-       @Valid
        private FnUser modifiedId;
        @Column(name = "modified_date", nullable = false, columnDefinition = "datetime default now()")
        @PastOrPresent
@@ -272,7 +268,7 @@ public class FnUser implements UserDetails {
        @Column(name = "is_internal_yn", length = 1, columnDefinition = "character varying(1) default 'n'", nullable = false)
        @Size(max = 1)
        @SafeHtml
-       //@NotNull(message = "isInternalYn must not be null")
+       @NotNull(message = "isInternalYn must not be null")
        private String isInternalYn;
        @Column(name = "address_line_1", length = 100, columnDefinition = "varchar(100) DEFAULT NULL")
        @Size(max = 100)
@@ -320,7 +316,6 @@ public class FnUser implements UserDetails {
        private String jobTitle;
        @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
        @JoinColumn(name = "timezone", columnDefinition = "int(11) DEFAULT NULL")
-       @Valid
        private FnLuTimezone timezone;
        @Column(name = "department", length = 25, columnDefinition = "varchar(25) DEFAULT NULL")
        @Size(max = 25)
@@ -346,97 +341,96 @@ public class FnUser implements UserDetails {
        @Size(max = 10)
        @SafeHtml
        private String siloStatus;
-       @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
        @JoinColumn(name = "language_id", nullable = false, columnDefinition = "int(11) DEFAULT 1")
-       @Valid
-       //@NotNull(message = "languageId must not be null")
+       @NotNull(message = "languageId must not be null")
        private FnLanguage languageId;
        @Column(name = "is_guest", columnDefinition = "boolean default 0", nullable = false)
        @NotNull(message = "guest must not be null")
        private boolean guest;
        @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "fnUserList")
-       private List<CrReportFileHistory> crReportFileHistorie = new ArrayList<>();
-       @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-       private List<FnRole> fnRoles = new ArrayList<>();
+       private Set<CrReportFileHistory> crReportFileHistorie;
        @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-       private List<FnMenuFunctional> fnRoleList = new ArrayList<>();
+       private Set<FnRole> fnRoles;
+       @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+       private Set<FnMenuFunctional> fnRoleList;
        @OneToMany(
                targetEntity = FnAuditLog.class,
                mappedBy = "userId",
                cascade = CascadeType.ALL,
                fetch = FetchType.LAZY
        )
-       private List<FnAuditLog> fnAuditLogs = new ArrayList<>();
+       private Set<FnAuditLog> fnAuditLogs;
        @OneToMany(
                targetEntity = FnUser.class,
                mappedBy = "createdId",
                cascade = CascadeType.ALL,
                fetch = FetchType.LAZY
        )
-       private List<FnUser> fnUsersCreatedId = new ArrayList<>();
+       private Set<FnUser> fnUsersCreatedId;
        @OneToMany(
                targetEntity = FnUser.class,
                mappedBy = "managerId",
                cascade = CascadeType.ALL,
                fetch = FetchType.LAZY
        )
-       private List<FnUser> fnUsersManagerId = new ArrayList<>();
+       private Set<FnUser> fnUsersManagerId;
        @OneToMany(
                targetEntity = FnUser.class,
                mappedBy = "modifiedId",
                cascade = CascadeType.ALL,
                fetch = FetchType.LAZY
        )
-       private List<FnUser> fnUsersModifiedId = new ArrayList<>();
+       private Set<FnUser> fnUsersModifiedId;
        @OneToMany(
                targetEntity = EpUserRolesRequest.class,
                mappedBy = "userId",
                cascade = CascadeType.ALL,
                fetch = FetchType.LAZY
        )
-       private List<EpUserRolesRequest> epUserRolesRequests = new ArrayList<>();
+       private Set<EpUserRolesRequest> epUserRolesRequests;
        @OneToMany(
                targetEntity = FnPersUserAppSel.class,
                mappedBy = "userId",
                cascade = CascadeType.ALL,
                fetch = FetchType.LAZY
        )
-       private List<FnPersUserAppSel> persUserAppSels = new ArrayList<>();
+       private Set<FnPersUserAppSel> persUserAppSels;
        @OneToMany(
                targetEntity = EpWidgetCatalogParameter.class,
                mappedBy = "userId",
                cascade = CascadeType.ALL,
                fetch = FetchType.LAZY
        )
-       private List<EpWidgetCatalogParameter> epWidgetCatalogParameters = new ArrayList<>();
+       private Set<EpWidgetCatalogParameter> epWidgetCatalogParameters;
        @OneToMany(
                targetEntity = EpPersUserWidgetPlacement.class,
                mappedBy = "userId",
                cascade = CascadeType.ALL,
                fetch = FetchType.LAZY
        )
-       private List<EpPersUserWidgetPlacement> epPersUserWidgetPlacements = new ArrayList<>();
+       private Set<EpPersUserWidgetPlacement> epPersUserWidgetPlacements;
        @OneToMany(
                targetEntity = EpPersUserWidgetSel.class,
                mappedBy = "userId",
                cascade = CascadeType.ALL,
                fetch = FetchType.LAZY
        )
-       private List<EpPersUserWidgetSel> epPersUserWidgetSels = new ArrayList<>();
+       private Set<EpPersUserWidgetSel> epPersUserWidgetSels;
        @OneToMany(
                targetEntity = FnUserRole.class,
                mappedBy = "userId",
                cascade = CascadeType.ALL,
                fetch = FetchType.LAZY
        )
-       private List<FnUserRole> fnUserRoles = new ArrayList<>();
+       private Set<FnUserRole> fnUserRoles;
        @OneToMany(
                targetEntity = EpUserNotification.class,
                mappedBy = "userId",
                cascade = CascadeType.ALL,
                fetch = FetchType.LAZY
        )
-       private List<EpUserNotification> epUserNotifications = new ArrayList<>();
+       private Set<EpUserNotification> epUserNotifications;
 
        @Override
        public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -75,7 +75,7 @@ CREATE TABLE `fn_restricted_url` (
 })
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
+
 @Getter
 @Setter
 @Entity

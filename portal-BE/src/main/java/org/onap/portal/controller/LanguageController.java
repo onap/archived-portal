@@ -47,6 +47,9 @@ import org.onap.portal.domain.db.fn.FnLanguage;
 import org.onap.portal.domain.db.fn.FnUser;
 import org.onap.portal.domain.dto.PortalRestResponse;
 import org.onap.portal.domain.dto.PortalRestStatusEnum;
+import org.onap.portal.domain.dto.fn.FnLanguageDto;
+import org.onap.portal.domain.mapper.FnLanguageMapper;
+import org.onap.portal.domain.mapper.FnUserMapper;
 import org.onap.portal.service.fn.FnLanguageService;
 import org.onap.portal.service.fn.FnUserService;
 import org.slf4j.Logger;
@@ -69,33 +72,47 @@ public class LanguageController {
        private final FnLanguageService languageService;
        private final FnUserService fnUserService;
 
+       private final FnUserMapper fnUserMapper;
+       private final FnLanguageMapper fnLanguageMapper;
+
        @Autowired
        public LanguageController(final FnLanguageService languageService,
-               final FnUserService fnUserService) {
+               final FnUserService fnUserService, final FnUserMapper fnUserMapper,
+               final FnLanguageMapper fnLanguageMapper) {
               this.languageService = languageService;
               this.fnUserService = fnUserService;
+              this.fnUserMapper = fnUserMapper;
+              this.fnLanguageMapper = fnLanguageMapper;
        }
 
        @GetMapping(value = "/language", produces = MediaType.APPLICATION_JSON_VALUE)
-       public List<FnLanguage> getLanguageList(final Principal principal) {
-              return languageService.getLanguages(principal);
+       public List<FnLanguageDto> getLanguageList(final Principal principal) {
+              return fnLanguageMapper.fnLanguageListToDtoList(languageService.getLanguages(principal));
        }
 
        @PostMapping(value = "/languageSetting/user/{loginId}")
        public PortalRestResponse<String> setUpUserLanguage(Principal principal, @RequestBody FnLanguage fnLanguage,
                @PathVariable("loginId") Long userId) {
               PortalRestResponse<String> response = new PortalRestResponse<>();
+              LOGGER.info("User " + principal.getName() + " try to setUpUserLanguage fnUser with id " + userId);
               try {
-                     if (fnUserService.getUser(userId).isPresent()) {
+                     if (fnUserService.existById(userId)) {
+                            LOGGER.info("User " + principal.getName() + " found fnUser with id " + userId);
+                            @SuppressWarnings("OptionalGetWithoutIsPresent")
                             FnUser user = fnUserService.getUser(userId).get();
                             user.setLanguageId(fnLanguage);
                             fnUserService.saveFnUser(principal, user);
+                            //response.setResponse(fnUserMapper.fnUserToFnUserDto(user).toString());
+                            response.setMessage("SUCCESS");
+                            response.setStatus(PortalRestStatusEnum.OK);
+                     } else {
+                            response.setMessage("FAILURE");
+                            response.setResponse("User for id:" + userId + " do not exist");
+                            response.setStatus(PortalRestStatusEnum.ERROR);
                      }
-                     response.setMessage("SUCCESS");
-                     response.setStatus(PortalRestStatusEnum.OK);
               } catch (Exception e) {
                      response.setMessage("FAILURE");
-                     response.setResponse(e.getMessage());
+                     response.setResponse(e.toString());
                      response.setStatus(PortalRestStatusEnum.ERROR);
                      return response;
               }

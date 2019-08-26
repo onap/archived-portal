@@ -38,62 +38,27 @@
  *
  */
 
-package org.onap.portal.domain.db.fn;
+package org.onap.portal.domain.mapper;
 
-import java.io.Serializable;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
-import javax.persistence.Table;
-import javax.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.hibernate.validator.constraints.SafeHtml;
-import org.onap.portal.domain.db.fn.FnQzPausedTriggerGrps.FnQzPausedTriggerGrpsID;
+import java.util.List;
+import java.util.stream.Collectors;
+import org.onap.portal.domain.db.fn.FnLanguage;
+import org.onap.portal.domain.dto.fn.FnLanguageDto;
+import org.springframework.stereotype.Component;
 
-/*
-CREATE TABLE `fn_qz_paused_trigger_grps` (
-        `SCHED_NAME` varchar(120) NOT NULL,
-        `TRIGGER_GROUP` varchar(200) NOT NULL,
-        PRIMARY KEY (`SCHED_NAME`,`TRIGGER_GROUP`)
-        )
-*/
+@Component
+public class FnLanguageMapper {
 
-@Table(name = "fn_qz_paused_trigger_grps")
-@NoArgsConstructor
-@AllArgsConstructor
+       public FnLanguageDto fnLanguageToDto(final FnLanguage fnLanguage){
+              FnLanguageDto dto = new FnLanguageDto();
+              dto.setLanguageId(fnLanguage.getLanguageId());
+              dto.setLanguageName(fnLanguage.getLanguageName());
+              dto.setLanguageAlias(fnLanguage.getLanguageAlias());
+              return dto;
+       }
 
-@Getter
-@Setter
-@Entity
-@IdClass(FnQzPausedTriggerGrpsID.class)
-public class FnQzPausedTriggerGrps {
-       @Id
-       @Size(max = 120)
-       @SafeHtml
-       @Column(name = "SCHED_NAME", length = 120, nullable = false)
-       private String schedName;
-       @Id
-       @Size(max = 120)
-       @SafeHtml
-       @Column(name = "TRIGGER_GROUP", length = 200, nullable = false)
-       private String triggerGroup;
-
-       @Getter
-       @Setter
-       @NoArgsConstructor
-       @EqualsAndHashCode
-       @AllArgsConstructor
-       public static class FnQzPausedTriggerGrpsID implements Serializable {
-              @Size(max = 120)
-              @SafeHtml
-              private String schedName;
-              @Size(max = 120)
-              @SafeHtml
-              private String triggerGroup;
+       public List<FnLanguageDto> fnLanguageListToDtoList(final List<FnLanguage> fnLanguages){
+              return fnLanguages.stream().map(this::fnLanguageToDto).collect(
+                      Collectors.toList());
        }
 }

@@ -69,7 +69,7 @@ CREATE TABLE `ep_ml_model` (
 @Table(name = "ep_ml_model")
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
+
 @Getter
 @Setter
 @Entity

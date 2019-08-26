@@ -80,7 +80,7 @@ CREATE TABLE `cr_report_access` (
 @Table(name = "cr_report_access")
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
+
 @Getter
 @Setter
 @Entity

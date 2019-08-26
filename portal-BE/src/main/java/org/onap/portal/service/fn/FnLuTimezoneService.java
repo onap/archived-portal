@@ -57,7 +57,7 @@ public class FnLuTimezoneService {
               this.fnLuTimezoneDao = fnLuTimezoneDao;
        }
 
-       public Optional<FnLuTimezone> getById(Integer id){
+       public Optional<FnLuTimezone> getById(Long id){
               return fnLuTimezoneDao.findById(id);
        }
 }

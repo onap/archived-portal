@@ -38,69 +38,63 @@
  *
  */
 
-package org.onap.portal.domain.db.fn;
+package org.onap.portal.domain.dto.fn;
 
-import java.util.Set;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Index;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.validation.constraints.Digits;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.hibernate.validator.constraints.SafeHtml;
 
-/*
-CREATE TABLE `fn_org` (
-        `org_id` int(11) NOT NULL,
-        `org_name` varchar(50) NOT NULL,
-        `access_cd` varchar(10) DEFAULT NULL,
-        PRIMARY KEY (`org_id`),
-        KEY `fn_org_access_cd` (`access_cd`) USING BTREE
-        )
-*/
+@Setter
+@Getter
 
-@Table(name = "fn_org", indexes = {
-        @Index(name = "fn_org_access_cd", columnList = "access_cd")
-})
 @NoArgsConstructor
 @AllArgsConstructor
-
-@Getter
-@Setter
-@Entity
-public class FnOrg {
-       @Id
-       @GeneratedValue(strategy = GenerationType.AUTO)
-       @Column(name = "org_id", nullable = false, length = 11)
-       @Digits(integer = 11, fraction = 0)
+public class FnUserDto {
+       private Long userId;
        private Long orgId;
-       @Column(name = "org_name", length = 50, nullable = false)
-       @Size(max = 50)
-       @SafeHtml
-       @NotNull
-       private String orgName;
-       @Column(name = "access_cd", length = 10, columnDefinition = "varchar(10) DEFAULT NULL")
-       @Size(max = 10)
-       @SafeHtml
-       private String accessCd;
-
-       @OneToMany(
-               targetEntity = FnUser.class,
-               mappedBy = "orgId",
-               cascade = CascadeType.ALL,
-               fetch = FetchType.LAZY
-       )
-       private Set<FnUser> fnUsers;
+       private Long managerId;
+       private String firstName;
+       private String middleName;
+       private String lastName;
+       private String phone;
+       private String fax;
+       private String cellular;
+       private String email;
+       private Long addressId;
+       private String alertMethodCd;
+       private String hrid;
+       private String orgUserId;
+       private String org_code;
+       private String loginId;
+       private String loginPwd;
+       protected LocalDateTime lastLoginDate;
+       private String activeYn;
+       private Long createdId;
+       protected LocalDateTime createdDate;
+       private Long modifiedId;
+       protected LocalDateTime modifiedDate;
+       private String isInternalYn = "n";
+       private String addressLine1;
+       private String addressLine2;
+       private String city;
+       private String stateCd;
+       private String zipCode;
+       private String countryCd;
+       private String locationClli;
+       private String orgManagerUserId;
+       private String company;
+       private String departmentName;
+       private String jobTitle;
+       private Long timezone;
+       private String department;
+       private String businessUnit;
+       private String businessUnitName;
+       private String cost_center;
+       private String finLocCode;
+       private String siloStatus;
+       private Long languageId;
+       private boolean guest;
 }

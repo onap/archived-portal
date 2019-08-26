@@ -41,8 +41,7 @@
 package org.onap.portal.domain.db.ep;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -78,7 +77,7 @@ CREATE TABLE `ep_app_function` (
 */
 
 @Table(name = "ep_app_function", indexes = {@Index(name = "fk_ep_app_function_app_id", columnList = "app_id")})
-@EqualsAndHashCode
+
 @Getter
 @Setter
 @Entity
@@ -108,7 +107,7 @@ public class EpAppFunction {
                cascade = CascadeType.ALL,
                fetch = FetchType.LAZY
        )
-       private List<EpAppRoleFunction> epAppRoleFunctions = new ArrayList<>();
+       private Set<EpAppRoleFunction> epAppRoleFunctions;
 
        @Getter
        @Setter

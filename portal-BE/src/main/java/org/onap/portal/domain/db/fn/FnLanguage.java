@@ -41,8 +41,7 @@
 package org.onap.portal.domain.db.fn;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -74,7 +73,7 @@ CREATE TABLE `fn_language` (
 @Table(name = "fn_language")
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
+
 @Getter
 @Setter
 @Entity
@@ -101,8 +100,17 @@ public class FnLanguage {
                targetEntity = FnUser.class,
                mappedBy = "languageId",
                cascade = CascadeType.ALL,
-               fetch = FetchType.EAGER
+               fetch = FetchType.LAZY
        )
-       private List<FnUser> fnUsers = new ArrayList<>();
+       private Set<FnUser> fnUsers;
 
+       @Override
+       public String toString() {
+              final StringBuilder sb = new StringBuilder("FnLanguage{");
+              sb.append("languageId=").append(languageId);
+              sb.append(", languageName='").append(languageName).append('\'');
+              sb.append(", languageAlias='").append(languageAlias).append('\'');
+              sb.append('}');
+              return sb.toString();
+       }
 }

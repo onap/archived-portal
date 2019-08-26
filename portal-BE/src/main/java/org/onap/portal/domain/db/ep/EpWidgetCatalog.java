@@ -40,8 +40,7 @@
 
 package org.onap.portal.domain.db.ep;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -122,40 +121,40 @@ public class EpWidgetCatalog {
                        @Index(name = "FK_EP_WIDGET_MICROSERVICE_EP_WIDGET", columnList = "widget_id")
                }
        )
-       private List<EpMicroservice> epMicroservices = new ArrayList<>();
+       private Set<EpMicroservice> epMicroservices;
        @OneToMany(
                targetEntity = EpWidgetCatalogRole.class,
                mappedBy = "widgetId",
                cascade = CascadeType.ALL,
                fetch = FetchType.LAZY
        )
-       private List<EpWidgetCatalogRole> widgetCatalogRoles = new ArrayList<>();
+       private Set<EpWidgetCatalogRole> widgetCatalogRoles;
        @OneToMany(
                targetEntity = EpPersUserWidgetSel.class,
                mappedBy = "widgetId",
                cascade = CascadeType.ALL,
                fetch = FetchType.LAZY
        )
-       private List<EpPersUserWidgetSel> epPersUserWidgetSels = new ArrayList<>();
+       private Set<EpPersUserWidgetSel> epPersUserWidgetSels;
        @OneToMany(
                targetEntity = EpPersUserWidgetSel.class,
                mappedBy = "widgetId",
                cascade = CascadeType.ALL,
                fetch = FetchType.LAZY
        )
-       private List<EpPersUserWidgetSel> persUserWidgetSels = new ArrayList<>();
+       private Set<EpPersUserWidgetSel> persUserWidgetSels;
        @OneToMany(
                targetEntity = EpPersUserWidgetPlacement.class,
                mappedBy = "widgetId",
                cascade = CascadeType.ALL,
                fetch = FetchType.LAZY
        )
-       private List<EpPersUserWidgetPlacement> epPersUserWidgetPlacements = new ArrayList<>();
+       private Set<EpPersUserWidgetPlacement> epPersUserWidgetPlacements;
        @OneToMany(
                targetEntity = EpWidgetCatalogParameter.class,
                mappedBy = "widgetId",
                cascade = CascadeType.ALL,
                fetch = FetchType.LAZY
        )
-       private List<EpWidgetCatalogParameter> epWidgetCatalogParameters = new ArrayList<>();
+       private Set<EpWidgetCatalogParameter> epWidgetCatalogParameters;
 }

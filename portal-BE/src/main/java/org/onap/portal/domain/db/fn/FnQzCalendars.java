@@ -68,7 +68,7 @@ CREATE TABLE `fn_qz_calendars` (
 @Table(name = "fn_qz_calendars")
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
+
 @Getter
 @Setter
 @Entity

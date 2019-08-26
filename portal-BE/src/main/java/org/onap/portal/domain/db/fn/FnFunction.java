@@ -40,8 +40,7 @@
 
 package org.onap.portal.domain.db.fn;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -88,19 +87,19 @@ public class FnFunction {
                cascade = CascadeType.ALL,
                fetch = FetchType.LAZY
        )
-       private List<FnRestrictedUrl> fnRestrictedUrls = new ArrayList<>();
+       private Set<FnRestrictedUrl> fnRestrictedUrls;
        @OneToMany(
                targetEntity = FnRoleFunction.class,
                mappedBy = "functionCd",
                cascade = CascadeType.ALL,
                fetch = FetchType.LAZY
        )
-       private List<FnRoleFunction> fnRoleFunctions = new ArrayList<>();
+       private Set<FnRoleFunction> fnRoleFunctions;
        @OneToMany(
                targetEntity = FnTab.class,
                mappedBy = "functionCd",
                cascade = CascadeType.ALL,
                fetch = FetchType.LAZY
        )
-       private List<FnTab> fnTabs = new ArrayList<>();
+       private Set<FnTab> fnTabs;
 }

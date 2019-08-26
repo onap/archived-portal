@@ -94,7 +94,7 @@ public class FnAuditLog {
        @Column(name = "log_id", length = 11, nullable = false, columnDefinition = "int(11) AUTO_INCREMENT")
        @Digits(integer = 11, fraction = 0)
        private Integer logId;
-       @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+       @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
        @JoinColumn(name = "user_id", nullable = false)
        @NotNull
        @Valid

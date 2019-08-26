@@ -40,8 +40,7 @@
 
 package org.onap.portal.domain.db.fn;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -154,7 +153,7 @@ public class FnRole {
                cascade = CascadeType.ALL,
                fetch = FetchType.LAZY
        )
-       private List<FnRoleFunction> fnRoleFunctions = new ArrayList<>();
+       private Set<FnRoleFunction> fnRoleFunctions;
        @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
        @JoinTable(
                name = "fn_user_pseudo_role",
@@ -164,7 +163,7 @@ public class FnRole {
                        @Index(name = "fk_pseudo_role_user_id", columnList = "user_id")
                }
        )
-       private List<FnUser> fnUsers = new ArrayList<>();
+       private Set<FnUser> fnUsers;
        @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
        @JoinTable(
                name = "fn_role_composite",
@@ -174,49 +173,50 @@ public class FnRole {
                        @Index(name = "fk_fn_role_composite_child", columnList = "child_role_id")
                }
        )
-       private List<FnRole> fnRoles = new ArrayList<>();
-       @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-       private List<FnRole> fnRoleList = new ArrayList<>();
+       private Set<FnRole> fnRoles;
+       @ManyToMany(cascade = CascadeType.ALL,
+               fetch = FetchType.LAZY)
+       private Set<FnRole> fnRoleList;
        @OneToMany(
                targetEntity = EpRoleNotification.class,
                mappedBy = "notificationID",
                cascade = CascadeType.ALL,
                fetch = FetchType.LAZY
        )
-       private List<EpRoleNotification> epRoleNotifications = new ArrayList<>();
+       private Set<EpRoleNotification> epRoleNotifications;
        @OneToMany(
                targetEntity = FnMenuFunctionalRoles.class,
                mappedBy = "roleId",
                cascade = CascadeType.ALL,
                fetch = FetchType.LAZY
        )
-       private List<FnMenuFunctionalRoles> fnMenuFunctionalRoles = new ArrayList<>();
+       private Set<FnMenuFunctionalRoles> fnMenuFunctionalRoles;
        @OneToMany(
                targetEntity = EpWidgetCatalogRole.class,
                mappedBy = "roleId",
                cascade = CascadeType.ALL,
                fetch = FetchType.LAZY
        )
-       private List<EpWidgetCatalogRole> epWidgetCatalogRoles = new ArrayList<>();
+       private Set<EpWidgetCatalogRole> epWidgetCatalogRoles;
        @OneToMany(
                targetEntity = EpAppRoleFunction.class,
                mappedBy = "fnRole",
                cascade = CascadeType.ALL,
                fetch = FetchType.LAZY
        )
-       private List<EpAppRoleFunction> epAppRoleFunctions = new ArrayList<>();
+       private Set<EpAppRoleFunction> epAppRoleFunctions;
        @OneToMany(
                targetEntity = EpUserRolesRequestDet.class,
                mappedBy = "requestedRoleId",
                cascade = CascadeType.ALL,
                fetch = FetchType.LAZY
        )
-       private List<EpUserRolesRequestDet> epUserRolesRequestDets = new ArrayList<>();
+       private Set<EpUserRolesRequestDet> epUserRolesRequestDets;
        @OneToMany(
                targetEntity = FnUserRole.class,
                mappedBy = "roleId",
                cascade = CascadeType.ALL,
                fetch = FetchType.LAZY
        )
-       private List<FnUserRole> fnUserRoles = new ArrayList<>();
+       private Set<FnUserRole> fnUserRoles;
 }

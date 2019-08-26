@@ -48,6 +48,7 @@ import org.junit.runner.RunWith;
 import org.onap.portal.domain.db.fn.FnLanguage;
 import org.onap.portal.domain.db.fn.FnLuTimezone;
 import org.onap.portal.domain.db.fn.FnUser;
+import org.onap.portal.domain.builder.FnUserBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -72,13 +73,13 @@ class FnUserServiceTest {
        void saveUser(){
               FnUser actual = fnUserService.getUser(1L).get();
 
-              FnUser expected = new FnUser();
+              FnUser expected = new FnUserBuilder().createFnUser();
               expected.setUserId(123L);
               expected.setFirstName("Demo");
               expected.setLastName("User");
               expected.setEmail("demo@openecomp.org");
               expected.setOrgUserId("demo");
-              expected.setTimezone(fnLuTimezoneService.getById(10).orElse(new FnLuTimezone()));
+              expected.setTimezone(fnLuTimezoneService.getById(10L).orElse(new FnLuTimezone()));
               expected.setLoginId("demo");
               expected.setLoginPwd("4Gl6WL1bmwviYm+XZa6pS1vC0qKXWtn9wcZWdLx61L0=");
               expected.setLastLoginDate(LocalDateTime.parse("2019-08-08T12:18:17"));
@@ -102,7 +103,7 @@ class FnUserServiceTest {
               FnUser actual = fnUserService.getUser(1L).get();
 
 
-              FnUser expected = new FnUser();
+              FnUser expected = new FnUserBuilder().createFnUser();
               expected.setUserId(1L);
               expected.setFirstName("Demo");
               expected.setLastName("User");
@@ -118,7 +119,7 @@ class FnUserServiceTest {
               expected.setIsInternalYn("N");
               expected.setStateCd("NJ");
               expected.setCountryCd("US");
-              expected.setTimezone(fnLuTimezoneService.getById(10).orElse(new FnLuTimezone()));
+              expected.setTimezone(fnLuTimezoneService.getById(10L).orElse(new FnLuTimezone()));
               expected.setLanguageId(fnLanguageService.findById(1L).orElse(new FnLanguage()));
 
 

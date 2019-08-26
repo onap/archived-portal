@@ -42,6 +42,7 @@ package org.onap.portal.domain.db.cr;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -116,19 +117,19 @@ public class CrTableSource {
                cascade = CascadeType.ALL,
                fetch = FetchType.LAZY
        )
-       private List<CrTableJoin> crTableJoins = new ArrayList<>();
+       private Set<CrTableJoin> crTableJoins;
        @OneToMany(
                targetEntity = CrTableJoin.class,
                mappedBy = "destTableName",
                cascade = CascadeType.ALL,
                fetch = FetchType.LAZY
        )
-       private List<CrTableJoin> crTableJoins1 = new ArrayList<>();
+       private Set<CrTableJoin> crTableJoins1;
        @OneToMany(
                targetEntity = CrTableRole.class,
                mappedBy = "tableName",
                cascade = CascadeType.ALL,
                fetch = FetchType.LAZY
        )
-       private List<CrTableRole> crTableRoles = new ArrayList<>();
+       private Set<CrTableRole> crTableRoles;
 }

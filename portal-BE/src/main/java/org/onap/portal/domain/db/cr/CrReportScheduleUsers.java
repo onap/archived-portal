@@ -78,7 +78,7 @@ CREATE TABLE `cr_report_schedule_users` (
 @Table(name = "cr_report_schedule_users")
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
+
 @Getter
 @Setter
 @Entity

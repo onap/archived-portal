@@ -38,69 +38,21 @@
  *
  */
 
-package org.onap.portal.domain.db.fn;
+package org.onap.portal.domain.dto.fn;
 
-import java.util.Set;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Index;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.validation.constraints.Digits;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.hibernate.validator.constraints.SafeHtml;
 
-/*
-CREATE TABLE `fn_org` (
-        `org_id` int(11) NOT NULL,
-        `org_name` varchar(50) NOT NULL,
-        `access_cd` varchar(10) DEFAULT NULL,
-        PRIMARY KEY (`org_id`),
-        KEY `fn_org_access_cd` (`access_cd`) USING BTREE
-        )
-*/
-
-@Table(name = "fn_org", indexes = {
-        @Index(name = "fn_org_access_cd", columnList = "access_cd")
-})
+@Setter
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 
-@Getter
-@Setter
-@Entity
-public class FnOrg {
-       @Id
-       @GeneratedValue(strategy = GenerationType.AUTO)
-       @Column(name = "org_id", nullable = false, length = 11)
-       @Digits(integer = 11, fraction = 0)
-       private Long orgId;
-       @Column(name = "org_name", length = 50, nullable = false)
-       @Size(max = 50)
-       @SafeHtml
-       @NotNull
-       private String orgName;
-       @Column(name = "access_cd", length = 10, columnDefinition = "varchar(10) DEFAULT NULL")
-       @Size(max = 10)
-       @SafeHtml
-       private String accessCd;
-
-       @OneToMany(
-               targetEntity = FnUser.class,
-               mappedBy = "orgId",
-               cascade = CascadeType.ALL,
-               fetch = FetchType.LAZY
-       )
-       private Set<FnUser> fnUsers;
+public class FnLanguageDto {
+       private Long languageId;
+       private String languageName;
+       private String languageAlias;
 }

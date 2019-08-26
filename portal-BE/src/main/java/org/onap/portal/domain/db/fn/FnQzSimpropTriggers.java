@@ -83,7 +83,7 @@ CREATE TABLE `fn_qz_simprop_triggers` (
 @Table(name = "fn_qz_simprop_triggers")
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
+
 @Getter
 @Setter
 @Entity
