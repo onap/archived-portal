@@ -107,7 +107,7 @@ public class LanguageController {
                             response.setStatus(PortalRestStatusEnum.OK);
                      } else {
                             response.setMessage("FAILURE");
-                            response.setResponse("User for id:" + userId + " do not exist");
+                            response.setResponse("User for id: " + userId + " do not exist");
                             response.setStatus(PortalRestStatusEnum.ERROR);
                      }
               } catch (Exception e) {
@@ -120,11 +120,11 @@ public class LanguageController {
        }
 
        @GetMapping(value = "/languageSetting/user/{loginId}", produces = MediaType.APPLICATION_JSON_VALUE)
-       public FnLanguage getUserLanguage(@PathVariable("loginId") final Long loginId) {
-              if (fnUserService.getUser(loginId).isPresent()) {
-                     return Optional.of(fnUserService.getUser(loginId).get().getLanguageId()).orElse(new FnLanguage());
+       public FnLanguageDto getUserLanguage(final Principal principal, @PathVariable("loginId") final Long loginId) {
+              if (fnUserService.existById(loginId)) {
+                     return fnLanguageMapper.fnLanguageToDto(Optional.of(fnUserService.getUser(loginId).get().getLanguageId()).orElse(new FnLanguage()));
               }
-              return new FnLanguage();
+              return new FnLanguageDto();
        }
 
        @PostMapping(value = "/language", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)

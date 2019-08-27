@@ -41,6 +41,7 @@
 package org.onap.portal.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -49,6 +50,7 @@ import org.onap.portal.domain.db.fn.FnLanguage;
 import org.onap.portal.domain.db.fn.FnUser;
 import org.onap.portal.domain.dto.PortalRestResponse;
 import org.onap.portal.domain.dto.PortalRestStatusEnum;
+import org.onap.portal.domain.dto.fn.FnLanguageDto;
 import org.onap.portal.service.fn.FnUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -139,6 +141,50 @@ class LanguageControllerTest {
               fnLanguageDao.delete(fnLanguage);
        }
 
+       @Test
+       void setUpUserLanguageWrongUserId(){
+              //Given
+              FnLanguage fnLanguage = new FnLanguage();
+              fnLanguage.setLanguageName("Polish");
+              fnLanguage.setLanguageAlias("PL");
+
+              PortalRestResponse<String> expected = new PortalRestResponse<>();
+              expected.setMessage("FAILURE");
+              expected.setStatus(PortalRestStatusEnum.ERROR);
+              expected.setResponse("User for id: 345 do not exist");
+
+              languageController.saveLanguage(principal, fnLanguage);
+              PortalRestResponse<String> actual = languageController.setUpUserLanguage(principal, fnLanguage, 345L);
+
+              assertEquals(expected.getMessage(), actual.getMessage());
+              assertEquals(expected.getStatus(), actual.getStatus());
+              assertEquals(expected.getResponse(), actual.getResponse());
 
 
+              //Clean up
+              fnLanguageDao.delete(fnLanguage);
+       }
+
+
+       @Test
+       void getUserLanguage() {
+              FnLanguageDto expected = new FnLanguageDto();
+              expected.setLanguageAlias("EN");
+              expected.setLanguageName("English");
+
+              FnLanguageDto actual = languageController.getUserLanguage(principal, 1L);
+
+              assertEquals(expected.getLanguageAlias(), actual.getLanguageAlias());
+              assertEquals(expected.getLanguageName(), actual.getLanguageName());
+       }
+
+       @Test
+       void getUserLanguageNotExistingUser() {
+              FnLanguageDto expected = new FnLanguageDto();
+
+              FnLanguageDto actual = languageController.getUserLanguage(principal, 456L);
+
+              assertNull(actual.getLanguageAlias());
+              assertNull(actual.getLanguageName());
+       }
 }

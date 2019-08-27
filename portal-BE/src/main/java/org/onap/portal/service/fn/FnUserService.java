@@ -59,7 +59,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class FnUserService implements UserDetailsService {
 
-       private final FnUserDao fnUserDao;
+       private FnUserDao fnUserDao;
 
        @Autowired
        public FnUserService(FnUserDao fnUserDao) {
@@ -71,7 +71,7 @@ public class FnUserService implements UserDetailsService {
        }
 
        @Override
-       public FnUser loadUserByUsername(String username) throws UsernameNotFoundException {
+       public FnUser loadUserByUsername(final String username) throws UsernameNotFoundException {
               Optional<FnUser> fnUser = fnUserDao.findByLoginId(username);
               if (fnUser.isPresent()) {
                      return fnUser.get();
@@ -80,36 +80,29 @@ public class FnUserService implements UserDetailsService {
               }
        }
 
-       public Optional<FnUser> getUser(Long id) {
+       public Optional<FnUser> getUser(final Long id) {
               return Optional.of(fnUserDao.getOne(id));
        }
 
        List<FnUser> getUserWithOrgUserId(final String orgUserIdValue){
-              Optional<List<FnUser>> fnUsers =  Optional.of(fnUserDao.findAll()
-                      .stream()
-                      .filter(fnUser -> orgUserIdValue.equals(fnUser.getOrgUserId()))
-                      .collect(Collectors.toList()));
-              return fnUsers.orElse(new ArrayList<>());
+              return fnUserDao.getUserWithOrgUserId(orgUserIdValue).orElse(new ArrayList<>());
        }
 
-       List<FnUser> getUsersByOrgIdsNotificationsResult(List<String> orgIds){
+       List<FnUser> getUsersByOrgIds(final List<String> orgIds){
               String ids = "(" + orgIds.stream().map(s -> "'" + s + "'").collect(Collectors.joining()) + ")";
-              return fnUserDao.getUsersByOrgUserId(ids).orElse(new ArrayList<>());
+              return fnUserDao.getUsersByOrgIds(orgIds).orElse(new ArrayList<>());
        }
 
-       List<FnUser> getUsersByOrgIdsNotificationsResult(String orgIds){
-              return fnUserDao.getUsersByOrgUserId(orgIds).orElse(new ArrayList<>());
-       }
 
        List<FnUser> getActiveUsers(){
-              return fnUserDao.findAll().stream().filter(fnUser -> "Y".equals(fnUser.getActiveYn())).collect(Collectors.toList());
+              return fnUserDao.getActiveUsers().orElse(new ArrayList<>());
        }
 
-       public void deleteUser(FnUser fnUser){
+       public void deleteUser(final FnUser fnUser){
               fnUserDao.delete(fnUser);
        }
 
-       public boolean existById(Long userId) {
+       public boolean existById(final Long userId) {
               return fnUserDao.existsById(userId);
        }
 }

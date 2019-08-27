@@ -39,13 +39,17 @@
 package org.onap.portal.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
-import lombok.AllArgsConstructor;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
+import org.onap.portal.domain.db.fn.FnUser;
 import org.onap.portal.domain.dto.PortalRestResponse;
 import org.onap.portal.domain.dto.PortalRestStatusEnum;
 import org.onap.portal.domain.dto.ProfileDetail;
+import org.onap.portal.service.fn.FnUserService;
+import org.onap.portalsdk.core.onboarding.exception.CipherUtilException;
+import org.onap.portalsdk.core.onboarding.util.CipherUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -54,14 +58,18 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@TestPropertySource(locations="classpath:test.properties")
+@TestPropertySource(locations = "classpath:test.properties")
 class UserControllerTest {
-       private UsernamePasswordAuthenticationToken principal = new UsernamePasswordAuthenticationToken("demo", "XZa6pS1vC0qKXWtn9wcZWdLx61L0=");
 
+       private UsernamePasswordAuthenticationToken principal = new UsernamePasswordAuthenticationToken("demo",
+               "XZa6pS1vC0qKXWtn9wcZWdLx61L0=");
+
+       private final FnUserService userService;
        private final UserController userController;
 
        @Autowired
-       UserControllerTest(UserController userController) {
+       UserControllerTest(final FnUserService userService, final UserController userController) {
+              this.userService = userService;
               this.userController = userController;
        }
 
@@ -73,7 +81,8 @@ class UserControllerTest {
               expectedDetails.setEmail("demo@openecomp.org");
               expectedDetails.setLoginId("demo");
               expectedDetails.setLoginPassword("*****");
-              PortalRestResponse<ProfileDetail> expected = new PortalRestResponse<>(PortalRestStatusEnum.OK, "success", expectedDetails);
+              PortalRestResponse<ProfileDetail> expected = new PortalRestResponse<>(PortalRestStatusEnum.OK, "success",
+                      expectedDetails);
 
               PortalRestResponse<ProfileDetail> actual = userController.getLoggedinUser(principal);
 
@@ -92,7 +101,8 @@ class UserControllerTest {
               expectedDetails.setLoginPassword("*****");
 
               PortalRestResponse<String> actual = userController.modifyLoggedinUser(principal, expectedDetails);
-              PortalRestResponse<String> expected = new PortalRestResponse<>(PortalRestStatusEnum.ERROR, "lastName must not be blank", null);
+              PortalRestResponse<String> expected = new PortalRestResponse<>(PortalRestStatusEnum.ERROR,
+                      "lastName must not be blank", null);
               assertEquals(expected, actual);
        }
 
@@ -108,5 +118,27 @@ class UserControllerTest {
               PortalRestResponse<String> actual = userController.modifyLoggedinUser(principal, expectedDetails);
               PortalRestResponse<String> expected = new PortalRestResponse<>(PortalRestStatusEnum.OK, "success", null);
               assertEquals(expected, actual);
+       }
+
+       @Test
+       void modifyLoggedinUserChangePassword() throws CipherUtilException {
+              ProfileDetail expectedDetails = new ProfileDetail();
+              expectedDetails.setFirstName("Demo");
+              expectedDetails.setLastName("User");
+              expectedDetails.setEmail("demo@openecomp.org");
+              expectedDetails.setLoginId("demo");
+              expectedDetails.setLoginPassword("123password");
+
+              FnUser user = userService.loadUserByUsername(principal.getName());
+              String oldPassword = user.getLoginPwd();
+
+              PortalRestResponse<String> actual = userController.modifyLoggedinUser(principal, expectedDetails);
+              PortalRestResponse<String> expected = new PortalRestResponse<>(PortalRestStatusEnum.OK, "success", null);
+
+              FnUser user2 = userService.loadUserByUsername(principal.getName());
+              String newPassword = user2.getLoginPwd();
+
+              assertEquals(expected, actual);
+              assertNotEquals(oldPassword, newPassword);
        }
 }

@@ -111,7 +111,7 @@ public class UserController {
                             user.setMiddleName(profileDetail.getMiddleName());
                             user.setLoginId(profileDetail.getLoginId());
                             if (!HIDDEN_DEFAULT_PASSWORD.equals(profileDetail.getLoginPassword())) {
-                                   user.setLoginPwd(CipherUtil.encryptPKC(profileDetail.getLoginPassword()));
+                                   user.setLoginPwd(CipherUtil.encryptPKC(profileDetail.getLoginPassword(), "AGLDdG4D04BKm2IxIWEr8o==!"));
                             }
                             userService.saveFnUser(principal, user);
                             // Update user info in the session
