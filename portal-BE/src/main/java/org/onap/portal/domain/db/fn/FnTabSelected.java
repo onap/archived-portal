@@ -73,7 +73,7 @@ CREATE TABLE `fn_tab_selected` (
 @Table(name = "fn_tab_selected")
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
+
 @Getter
 @Setter
 @Entity

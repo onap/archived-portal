@@ -41,8 +41,7 @@
 package org.onap.portal.domain.db.ep;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -148,12 +147,12 @@ public class EpNotification {
                cascade = CascadeType.ALL,
                fetch = FetchType.LAZY
        )
-       private List<EpRoleNotification> epRoleNotifications = new ArrayList<>();
+       private Set<EpRoleNotification> epRoleNotifications;
        @OneToMany(
                targetEntity = EpUserNotification.class,
                mappedBy = "notificationId",
                cascade = CascadeType.ALL,
                fetch = FetchType.LAZY
        )
-       private List<EpUserNotification> epUserNotifications = new ArrayList<>();
+       private Set<EpUserNotification> epUserNotifications;
 }

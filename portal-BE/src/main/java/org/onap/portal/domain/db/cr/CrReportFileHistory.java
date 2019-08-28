@@ -43,6 +43,7 @@ package org.onap.portal.domain.db.cr;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -176,5 +177,5 @@ public class CrReportFileHistory {
                joinColumns = {@JoinColumn(name = "hist_id", referencedColumnName = "hist_id")},
                inverseJoinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "user_id")}
        )
-       private List<FnUser> fnUserList = new ArrayList<>();
+       private Set<FnUser> fnUserList;
 }

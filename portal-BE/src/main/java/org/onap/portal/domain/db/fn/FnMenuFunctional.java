@@ -40,8 +40,7 @@
 
 package org.onap.portal.domain.db.fn;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -134,26 +133,26 @@ public class FnMenuFunctional {
                        @Index(name = "sys_c0014619", columnList = "menu_id")
                }
        )
-       private List<FnUser> fnUsers = new ArrayList<>();
+       private Set<FnUser> fnUsers;
        @OneToMany(
                targetEntity = FnMenuFunctionalAncestors.class,
                mappedBy = "menuId",
                cascade = CascadeType.ALL,
                fetch = FetchType.LAZY
        )
-       private List<FnMenuFunctionalAncestors> fnMenuFunctionalAncestorsMenuId = new ArrayList<>();
+       private Set<FnMenuFunctionalAncestors> fnMenuFunctionalAncestorsMenuId;
        @OneToMany(
                targetEntity = FnMenuFunctionalAncestors.class,
                mappedBy = "ancestorMenuId",
                cascade = CascadeType.ALL,
                fetch = FetchType.LAZY
        )
-       private List<FnMenuFunctionalAncestors> fnMenuFunctionalsAncestorMenuId = new ArrayList<>();
+       private Set<FnMenuFunctionalAncestors> fnMenuFunctionalsAncestorMenuId;
        @OneToMany(
                targetEntity = FnMenuFunctionalRoles.class,
                mappedBy = "menuId",
                cascade = CascadeType.ALL,
                fetch = FetchType.LAZY
        )
-       private List<FnMenuFunctionalRoles> fnMenuFunctionalRoles = new ArrayList<>();
+       private Set<FnMenuFunctionalRoles> fnMenuFunctionalRoles;
 }

@@ -70,7 +70,7 @@ CREATE TABLE `ep_ml_rec` (
 @Table(name = "ep_ml_rec")
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
+
 @Getter
 @Setter
 @Entity

@@ -41,8 +41,7 @@
 package org.onap.portal.domain.db.cr;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -128,5 +127,5 @@ public class CrFolder {
                cascade = CascadeType.ALL,
                fetch = FetchType.LAZY
        )
-       private List<CrFolder> crFolders = new ArrayList<>();
+       private Set<CrFolder> crFolders;
 }

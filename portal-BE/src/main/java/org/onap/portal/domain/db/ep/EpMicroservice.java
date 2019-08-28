@@ -40,8 +40,7 @@
 
 package org.onap.portal.domain.db.ep;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -90,7 +89,7 @@ CREATE TABLE `ep_microservice` (
 })
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
+
 @Getter
 @Setter
 @Entity
@@ -136,14 +135,14 @@ public class EpMicroservice {
        @SafeHtml
        private String active;
        @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-       private List<EpWidgetCatalog> epWidgetCatalogList = new ArrayList<>();
+       private Set<EpWidgetCatalog> epWidgetCatalogList;
        @OneToMany(
                targetEntity = EpMicroserviceParameter.class,
                mappedBy = "serviceId",
                cascade = CascadeType.ALL,
                fetch = FetchType.LAZY
        )
-       private List<EpMicroserviceParameter> epMicroserviceParameters = new ArrayList<>();
+       private Set<EpMicroserviceParameter> epMicroserviceParameters;
 
        public void copyOf(final EpMicroservice epMicroservice) {
               this.id = epMicroservice.getId();

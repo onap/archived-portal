@@ -40,8 +40,7 @@
 
 package org.onap.portal.domain.db.fn;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -112,7 +111,7 @@ public class FnMenu {
        @Size(max = 100)
        @SafeHtml
        private String label;
-       @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
        @JoinColumn(name = "parent_Id", columnDefinition = "int(11) DEFAULT NULL")
        @Valid
        private FnMenu parentId;
@@ -171,5 +170,5 @@ public class FnMenu {
                cascade = CascadeType.ALL,
                fetch = FetchType.LAZY
        )
-       private List<FnMenu> fnMenus = new ArrayList<>();
+       private Set<FnMenu> fnMenus;
 }

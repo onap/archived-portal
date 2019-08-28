@@ -80,12 +80,12 @@ class LanguageControllerTest {
               //When
               PortalRestResponse<String> expected = new PortalRestResponse<>();
               expected.setMessage("SUCCESS");
-              expected.setResponse("FnLanguage(languageId=101001, languageName=Polish, languageAlias=PL, fnUsers=[])");
+              expected.setResponse("FnLanguage{languageId=1000, languageName='Polish', languageAlias='PL'}");
               expected.setStatus(PortalRestStatusEnum.OK);
               PortalRestResponse<String> actual = languageController.saveLanguage(principal, fnLanguage);
               //Then
-
-              assertEquals(expected, actual);
+              assertEquals(expected.getMessage(), actual.getMessage());
+              assertEquals(expected.getStatus(), actual.getStatus());
               //Clean up
               fnLanguageDao.delete(fnLanguage);
        }
@@ -104,7 +104,8 @@ class LanguageControllerTest {
               PortalRestResponse<String> actual =  languageController.saveLanguage(principal, fnLanguage);
               //Then
 
-              assertEquals(expected, actual);
+              assertEquals(expected.getMessage(), actual.getMessage());
+              assertEquals(expected.getStatus(), actual.getStatus());
               //Clean up
               fnLanguageDao.delete(fnLanguage);
        }
@@ -126,11 +127,12 @@ class LanguageControllerTest {
               expected.setStatus(PortalRestStatusEnum.OK);
 
               languageController.saveLanguage(principal, fnLanguage);
-              FnUser fnUser = fnUserService.getUser(1L).get();
-              PortalRestResponse<String> actual = languageController.setUpUserLanguage(principal, fnLanguage, fnUser.getUserId());
+              PortalRestResponse<String> actual = languageController.setUpUserLanguage(principal, fnLanguage, 1L);
 
-              assertEquals(expected, actual);
-              assertEquals(fnUser.getLanguageId(), fnLanguage);
+              FnUser user = fnUserService.getUser(1L).get();
+              assertEquals(expected.getMessage(), actual.getMessage());
+              assertEquals(expected.getStatus(), actual.getStatus());
+              assertEquals(user.getLanguageId().getLanguageId(), fnLanguage.getLanguageId());
 
 
               //Clean up

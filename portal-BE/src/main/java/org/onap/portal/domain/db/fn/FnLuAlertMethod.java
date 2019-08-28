@@ -40,8 +40,7 @@
 
 package org.onap.portal.domain.db.fn;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -89,5 +88,5 @@ public class FnLuAlertMethod {
                cascade = CascadeType.ALL,
                fetch = FetchType.LAZY
        )
-       private List<FnUser> fnUsers = new ArrayList<>();
+       private Set<FnUser> fnUsers;
 }

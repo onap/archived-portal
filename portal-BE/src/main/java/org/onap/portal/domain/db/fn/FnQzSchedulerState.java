@@ -71,7 +71,7 @@ CREATE TABLE `fn_qz_scheduler_state` (
 @Table(name = "fn_qz_scheduler_state")
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
+
 @Getter
 @Setter
 @Entity

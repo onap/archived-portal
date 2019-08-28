@@ -73,7 +73,7 @@ CREATE TABLE `fn_qz_cron_triggers` (
 @Table(name = "fn_qz_cron_triggers")
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
+
 @Getter
 @Setter
 @Entity

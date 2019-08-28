@@ -41,8 +41,7 @@
 package org.onap.portal.domain.db.fn;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -86,7 +85,7 @@ CREATE TABLE `fn_qz_job_details` (
 })
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
+
 @Getter
 @Setter
 @Entity
@@ -145,7 +144,7 @@ public class FnQzJobDetails {
                cascade = CascadeType.ALL,
                fetch = FetchType.LAZY
        )
-       private List<FnQzTriggers> selectedTabCd = new ArrayList<>();
+       private Set<FnQzTriggers> selectedTabCd;
 
        @Getter
        @Setter

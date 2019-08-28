@@ -77,7 +77,7 @@ CREATE TABLE `fn_qz_blob_triggers` (
 })
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
+
 @Getter
 @Setter
 @Entity

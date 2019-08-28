@@ -108,4 +108,8 @@ public class FnUserService implements UserDetailsService {
        public void deleteUser(FnUser fnUser){
               fnUserDao.delete(fnUser);
        }
+
+       public boolean existById(Long userId) {
+              return fnUserDao.existsById(userId);
+       }
 }

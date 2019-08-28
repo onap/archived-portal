@@ -69,7 +69,7 @@ CREATE TABLE `cr_favorite_reports` (
 @Table(name = "cr_favorite_reports")
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
+
 @Getter
 @Setter
 @IdClass(CrFavoriteReportsId.class)

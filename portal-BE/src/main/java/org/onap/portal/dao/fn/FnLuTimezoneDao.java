@@ -47,6 +47,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 @Transactional
-public interface FnLuTimezoneDao extends JpaRepository<FnLuTimezone, Integer> {
+public interface FnLuTimezoneDao extends JpaRepository<FnLuTimezone, Long> {
 
 }

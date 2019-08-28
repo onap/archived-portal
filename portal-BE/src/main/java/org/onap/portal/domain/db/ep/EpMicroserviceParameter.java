@@ -40,8 +40,7 @@
 
 package org.onap.portal.domain.db.ep;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -88,7 +87,7 @@ CREATE TABLE `ep_microservice_parameter` (
 })
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
+
 @Getter
 @Setter
 @Entity
@@ -116,6 +115,6 @@ public class EpMicroserviceParameter {
                cascade = CascadeType.ALL,
                fetch = FetchType.LAZY
        )
-       private List<EpWidgetCatalogParameter> epWidgetCatalogParameters = new ArrayList<>();
+       private Set<EpWidgetCatalogParameter> epWidgetCatalogParameter;
 
 }

@@ -66,7 +66,7 @@ CREATE TABLE `fn_qz_locks` (
 @Table(name = "fn_qz_locks")
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
+
 @Getter
 @Setter
 @Entity

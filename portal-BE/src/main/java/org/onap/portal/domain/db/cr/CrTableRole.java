@@ -73,7 +73,7 @@ CREATE TABLE `cr_table_role` (
 @Table(name = "cr_table_role")
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
+
 @Getter
 @Setter
 @Entity

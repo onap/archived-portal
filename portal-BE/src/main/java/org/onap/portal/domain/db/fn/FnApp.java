@@ -41,8 +41,7 @@
 package org.onap.portal.domain.db.fn;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -227,61 +226,61 @@ public class FnApp extends DomainVo implements Serializable {
                cascade = CascadeType.ALL,
                fetch = FetchType.LAZY
        )
-       private List<FnMenuFunctionalRoles> fnMenuFunctionalRoles = new ArrayList<>();
+       private Set<FnMenuFunctionalRoles> fnMenuFunctionalRoles;
        @OneToMany(
                targetEntity = EpUserRolesRequest.class,
                mappedBy = "appId",
                cascade = CascadeType.ALL,
                fetch = FetchType.LAZY
        )
-       private List<EpUserRolesRequest> epUserRolesRequests = new ArrayList<>();
+       private Set<EpUserRolesRequest> epUserRolesRequests;
        @OneToMany(
                targetEntity = EpAppFunction.class,
                mappedBy = "appId",
                cascade = CascadeType.ALL,
                fetch = FetchType.LAZY
        )
-       private List<EpAppFunction> epAppFunctions = new ArrayList<>();
+       private Set<EpAppFunction> epAppFunctions;
        @OneToMany(
                targetEntity = EpAppRoleFunction.class,
                mappedBy = "appId",
                cascade = CascadeType.ALL,
                fetch = FetchType.LAZY
        )
-       private List<EpAppRoleFunction> epAppRoleFunctions = new ArrayList<>();
+       private Set<EpAppRoleFunction> epAppRoleFunctions;
        @OneToMany(
                targetEntity = FnUserRole.class,
                mappedBy = "appId",
                cascade = CascadeType.ALL,
                fetch = FetchType.LAZY
        )
-       private List<FnUserRole> fnUserRoles = new ArrayList<>();
+       private Set<FnUserRole> fnUserRoles;
        @OneToMany(
                targetEntity = EpWebAnalyticsSource.class,
                mappedBy = "appId",
                cascade = CascadeType.ALL,
                fetch = FetchType.LAZY
        )
-       private List<EpWebAnalyticsSource> epWebAnalyticsSources = new ArrayList<>();
+       private Set<EpWebAnalyticsSource> epWebAnalyticsSources;
        @OneToMany(
                targetEntity = EpWidgetCatalogRole.class,
                mappedBy = "appId",
                cascade = CascadeType.ALL,
                fetch = FetchType.LAZY
        )
-       private List<EpWidgetCatalogRole> epWidgetCatalogRoles = new ArrayList<>();
+       private Set<EpWidgetCatalogRole> epWidgetCatalogRoles;
        @OneToMany(
                targetEntity = EpMicroservice.class,
                mappedBy = "appId",
                cascade = CascadeType.ALL,
                fetch = FetchType.LAZY
        )
-       private List<EpMicroservice> epMicroservices = new ArrayList<>();
+       private Set<EpMicroservice> epMicroservices;
        @OneToMany(
                targetEntity = FnPersUserAppSel.class,
                mappedBy = "appId",
                cascade = CascadeType.ALL,
                fetch = FetchType.LAZY
        )
-       private List<FnPersUserAppSel> fnPersUserAppSels = new ArrayList<>();
+       private Set<FnPersUserAppSel> fnPersUserAppSels;
 }

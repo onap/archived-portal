@@ -103,7 +103,7 @@ CREATE TABLE `fn_user_role` (
         })
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
+
 @Getter
 @Setter
 @Entity
@@ -113,11 +113,11 @@ public class FnUserRole {
        @GeneratedValue(strategy = GenerationType.AUTO)
        @Column(name = "id", columnDefinition = "int(11) auto_increment")
        private Long id;
-       @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
        @JoinColumn(name = "user_id")
        @Valid
        private FnUser userId;
-       @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+       @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
        @JoinColumn(name = "role_id")
        @Valid
        private FnRole roleId;

@@ -95,7 +95,7 @@ CREATE TABLE `fn_qz_fired_triggers` (
 })
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
+
 @Getter
 @Setter
 @Entity

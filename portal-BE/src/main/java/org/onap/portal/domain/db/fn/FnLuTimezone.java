@@ -40,8 +40,7 @@
 
 package org.onap.portal.domain.db.fn;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -78,7 +77,7 @@ public class FnLuTimezone {
        @Id
        @GeneratedValue(strategy = GenerationType.AUTO)
        @Column(name = "timezone_id", length = 11, nullable = false)
-       private Integer timezoneId;
+       private Long timezoneId;
        @Column(name = "timezone_name", length = 100, nullable = false)
        @Size(max = 100)
        @SafeHtml
@@ -96,6 +95,6 @@ public class FnLuTimezone {
                cascade = CascadeType.ALL,
                fetch = FetchType.LAZY
        )
-       private List<FnUser> fnUsers = new ArrayList<>();
+       private Set<FnUser> fnUsers;
 
 }
