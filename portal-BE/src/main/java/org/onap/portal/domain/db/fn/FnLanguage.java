@@ -41,11 +41,16 @@
 package org.onap.portal.domain.db.fn;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import java.util.ArrayList;
+import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.constraints.Digits;
@@ -74,7 +79,7 @@ CREATE TABLE `fn_language` (
 @Setter
 @Entity
 @JsonInclude()
-@SequenceGenerator(name="seq", initialValue=3, allocationSize=100)
+@SequenceGenerator(name="seq", initialValue=1000, allocationSize=100000)
 public class FnLanguage {
 
        @Id
@@ -92,5 +97,12 @@ public class FnLanguage {
        @NotNull(message = "languageAlias must not be null")
        @SafeHtml
        private String languageAlias;
+       @OneToMany(
+               targetEntity = FnUser.class,
+               mappedBy = "languageId",
+               cascade = CascadeType.ALL,
+               fetch = FetchType.EAGER
+       )
+       private List<FnUser> fnUsers = new ArrayList<>();
 
 }

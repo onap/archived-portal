@@ -42,9 +42,7 @@ package org.onap.portal.controller;
 
 import java.security.Principal;
 import java.util.List;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import org.onap.portal.aop.service.FnLanguageServiceAOP;
+import java.util.Optional;
 import org.onap.portal.domain.db.fn.FnLanguage;
 import org.onap.portal.domain.db.fn.FnUser;
 import org.onap.portal.domain.dto.PortalRestResponse;
@@ -60,12 +58,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/auxapi")
 public class LanguageController {
+
        private static final Logger LOGGER = LoggerFactory.getLogger(LanguageController.class);
 
        private final FnLanguageService languageService;
@@ -78,39 +76,49 @@ public class LanguageController {
               this.fnUserService = fnUserService;
        }
 
-       @GetMapping(value = "/language", produces = "application/json;charset=UTF-8")
-       public List<FnLanguage> getLanguageList() {
-              return languageService.getLanguages();
+       @GetMapping(value = "/language", produces = MediaType.APPLICATION_JSON_VALUE)
+       public List<FnLanguage> getLanguageList(final Principal principal) {
+              return languageService.getLanguages(principal);
        }
 
        @PostMapping(value = "/languageSetting/user/{loginId}")
-       public void setUpUserLanguage(@RequestBody FnLanguage fnLanguage,
-               @PathVariable("loginId") Long loginId) {
-              if (fnUserService.getUser(loginId).isPresent()){
-                     FnUser user = fnUserService.getUser(loginId).get();
-                     user.setLanguage_id(fnLanguage.getLanguageId());
-                     fnUserService.saveFnUser(user);
+       public PortalRestResponse<String> setUpUserLanguage(Principal principal, @RequestBody FnLanguage fnLanguage,
+               @PathVariable("loginId") Long userId) {
+              PortalRestResponse<String> response = new PortalRestResponse<>();
+              try {
+                     if (fnUserService.getUser(userId).isPresent()) {
+                            FnUser user = fnUserService.getUser(userId).get();
+                            user.setLanguageId(fnLanguage);
+                            fnUserService.saveFnUser(principal, user);
+                     }
+                     response.setMessage("SUCCESS");
+                     response.setStatus(PortalRestStatusEnum.OK);
+              } catch (Exception e) {
+                     response.setMessage("FAILURE");
+                     response.setResponse(e.getMessage());
+                     response.setStatus(PortalRestStatusEnum.ERROR);
+                     return response;
               }
+              return response;
        }
 
-       @GetMapping(value = "/languageSetting/user/{loginId}")
-       public FnLanguage getUserLanguage(HttpServletRequest request, HttpServletResponse response,
-               @PathVariable("loginId") Long loginId) {
-              if (fnUserService.getUser(loginId).isPresent()){
-                     Long languageId = fnUserService.getUser(loginId).get().getLanguage_id();
-                     return languageService.findById(languageId).orElse(new FnLanguage());
+       @GetMapping(value = "/languageSetting/user/{loginId}", produces = MediaType.APPLICATION_JSON_VALUE)
+       public FnLanguage getUserLanguage(@PathVariable("loginId") final Long loginId) {
+              if (fnUserService.getUser(loginId).isPresent()) {
+                     return Optional.of(fnUserService.getUser(loginId).get().getLanguageId()).orElse(new FnLanguage());
               }
               return new FnLanguage();
        }
 
        @PostMapping(value = "/language", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-       public PortalRestResponse<String> saveLanguage(final Principal principal, @RequestBody final FnLanguage fnLanguage){
+       public PortalRestResponse<String> saveLanguage(final Principal principal,
+               @RequestBody final FnLanguage fnLanguage) {
               PortalRestResponse<String> response = new PortalRestResponse<>();
               try {
                      response.setMessage("SUCCESS");
                      response.setResponse(languageService.save(principal, fnLanguage).toString());
                      response.setStatus(PortalRestStatusEnum.OK);
-              } catch (Exception e){
+              } catch (Exception e) {
                      response.setMessage("FAILURE");
                      response.setResponse(e.getMessage());
                      response.setStatus(PortalRestStatusEnum.ERROR);

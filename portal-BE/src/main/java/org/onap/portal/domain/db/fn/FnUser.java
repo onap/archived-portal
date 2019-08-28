@@ -59,6 +59,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedNativeQueries;
 import javax.persistence.NamedNativeQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.Valid;
@@ -68,9 +70,11 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PastOrPresent;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import lombok.Builder.Default;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.validator.constraints.SafeHtml;
 import org.onap.portal.domain.db.cr.CrReportFileHistory;
 import org.onap.portal.domain.db.ep.EpPersUserWidgetPlacement;
@@ -172,10 +176,11 @@ CREATE TABLE `fn_user` (
 @Getter
 @Setter
 @Entity
-public class FnUser extends DomainVo implements UserDetails {
+@SequenceGenerator(name="seq", initialValue=1000, allocationSize=100000)
+public class FnUser implements UserDetails {
 
        @Id
-       @GeneratedValue(strategy = GenerationType.AUTO)
+       @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq")
        @Column(name = "user_id", length = 11, nullable = false)
        @Digits(integer = 11, fraction = 0)
        private Long userId;
@@ -248,7 +253,7 @@ public class FnUser extends DomainVo implements UserDetails {
        @Column(name = "active_yn", length = 1, columnDefinition = "character varying(1) default 'y'", nullable = false)
        @Size(max = 1)
        @SafeHtml
-       @NotNull
+       //@NotNull(message = "activeYn must not be null")
        private String activeYn;
        @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
        @JoinColumn(name = "created_id")
@@ -267,7 +272,7 @@ public class FnUser extends DomainVo implements UserDetails {
        @Column(name = "is_internal_yn", length = 1, columnDefinition = "character varying(1) default 'n'", nullable = false)
        @Size(max = 1)
        @SafeHtml
-       @NotNull
+       //@NotNull(message = "isInternalYn must not be null")
        private String isInternalYn;
        @Column(name = "address_line_1", length = 100, columnDefinition = "varchar(100) DEFAULT NULL")
        @Size(max = 100)
@@ -341,12 +346,13 @@ public class FnUser extends DomainVo implements UserDetails {
        @Size(max = 10)
        @SafeHtml
        private String siloStatus;
-       @Column(name = "language_id", length = 2, columnDefinition = "int(2) default 1", nullable = false)
-       @Digits(integer = 2, fraction = 0)
-       @NotNull
-       private Long language_id;
+       @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+       @JoinColumn(name = "language_id", nullable = false, columnDefinition = "int(11) DEFAULT 1")
+       @Valid
+       //@NotNull(message = "languageId must not be null")
+       private FnLanguage languageId;
        @Column(name = "is_guest", columnDefinition = "boolean default 0", nullable = false)
-       @NotNull
+       @NotNull(message = "guest must not be null")
        private boolean guest;
        @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "fnUserList")
        private List<CrReportFileHistory> crReportFileHistorie = new ArrayList<>();

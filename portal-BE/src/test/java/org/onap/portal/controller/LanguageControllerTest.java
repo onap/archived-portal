@@ -40,24 +40,27 @@
 
 package org.onap.portal.controller;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.onap.portal.dao.fn.FnLanguageDao;
 import org.onap.portal.domain.db.fn.FnLanguage;
+import org.onap.portal.domain.db.fn.FnUser;
 import org.onap.portal.domain.dto.PortalRestResponse;
 import org.onap.portal.domain.dto.PortalRestStatusEnum;
+import org.onap.portal.service.fn.FnUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @TestPropertySource(locations="classpath:test.properties")
+@Transactional
 class LanguageControllerTest {
        private UsernamePasswordAuthenticationToken principal = new UsernamePasswordAuthenticationToken("demo", "XZa6pS1vC0qKXWtn9wcZWdLx61L0=");
 
@@ -65,6 +68,8 @@ class LanguageControllerTest {
        private LanguageController languageController;
        @Autowired
        private FnLanguageDao fnLanguageDao;
+       @Autowired
+       private FnUserService fnUserService;
 
        @Test
        void saveLanguage() {
@@ -75,9 +80,9 @@ class LanguageControllerTest {
               //When
               PortalRestResponse<String> expected = new PortalRestResponse<>();
               expected.setMessage("SUCCESS");
-              expected.setResponse("FnLanguage(languageId=3, languageName=Polish, languageAlias=PL)");
+              expected.setResponse("FnLanguage(languageId=101001, languageName=Polish, languageAlias=PL, fnUsers=[])");
               expected.setStatus(PortalRestStatusEnum.OK);
-              PortalRestResponse<String> actual =  languageController.saveLanguage(principal, fnLanguage);
+              PortalRestResponse<String> actual = languageController.saveLanguage(principal, fnLanguage);
               //Then
 
               assertEquals(expected, actual);
@@ -103,5 +108,35 @@ class LanguageControllerTest {
               //Clean up
               fnLanguageDao.delete(fnLanguage);
        }
+
+       @Test
+       void getLanguageListTest(){
+              assertEquals(languageController.getLanguageList(principal).size(), 2);
+       }
+
+       @Test
+       void setUpUserLanguage(){
+              //Given
+              FnLanguage fnLanguage = new FnLanguage();
+              fnLanguage.setLanguageName("Polish");
+              fnLanguage.setLanguageAlias("PL");
+
+              PortalRestResponse<String> expected = new PortalRestResponse<>();
+              expected.setMessage("SUCCESS");
+              expected.setStatus(PortalRestStatusEnum.OK);
+
+              languageController.saveLanguage(principal, fnLanguage);
+              FnUser fnUser = fnUserService.getUser(1L).get();
+              PortalRestResponse<String> actual = languageController.setUpUserLanguage(principal, fnLanguage, fnUser.getUserId());
+
+              assertEquals(expected, actual);
+              assertEquals(fnUser.getLanguageId(), fnLanguage);
+
+
+              //Clean up
+              fnLanguageDao.delete(fnLanguage);
+       }
+
+
 
 }

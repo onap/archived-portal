@@ -40,34 +40,24 @@
 
 package org.onap.portal.service.fn;
 
-import java.security.Principal;
-import java.util.List;
 import java.util.Optional;
-import org.onap.portal.dao.fn.FnLanguageDao;
-import org.onap.portal.domain.db.fn.FnLanguage;
+import org.onap.portal.dao.fn.FnLuTimezoneDao;
+import org.onap.portal.domain.db.fn.FnLuTimezone;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@EnableAspectJAutoProxy
 @Transactional
-public class FnLanguageService {
-       private final FnLanguageDao fnLanguageDao;
+public class FnLuTimezoneService {
+       private final FnLuTimezoneDao fnLuTimezoneDao;
 
        @Autowired
-       public FnLanguageService(final FnLanguageDao fnLanguageDao) {
-              this.fnLanguageDao = fnLanguageDao;
+       public FnLuTimezoneService(final FnLuTimezoneDao fnLuTimezoneDao) {
+              this.fnLuTimezoneDao = fnLuTimezoneDao;
        }
 
-       public Optional<FnLanguage> findById(final Long id){
-              return fnLanguageDao.findById(id);
-       }
-       public List<FnLanguage> getLanguages(Principal principal){
-              return fnLanguageDao.findAll();
-       }
-       public FnLanguage save(final Principal principal, final FnLanguage fnLanguage){
-              return fnLanguageDao.save(fnLanguage);
+       public Optional<FnLuTimezone> getById(Integer id){
+              return fnLuTimezoneDao.findById(id);
        }
 }
