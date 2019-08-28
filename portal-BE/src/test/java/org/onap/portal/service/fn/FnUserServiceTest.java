@@ -43,6 +43,10 @@ package org.onap.portal.service.fn;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.onap.portal.domain.db.fn.FnLanguage;
@@ -167,4 +171,21 @@ class FnUserServiceTest {
               assertEquals(expected.getSiloStatus(), actual.getSiloStatus());
               assertEquals(expected.getLanguageId(), actual.getLanguageId());
        }
+
+       @Test
+       void getActiveUsers() {
+              assertEquals(12, fnUserService.getActiveUsers().size());
+       }
+
+       @Test
+       void getUserWithOrgUserId() {
+              assertEquals(1, fnUserService.getUserWithOrgUserId("cs0008").size());
+       }
+
+       @Test
+       void getUserWithOrgUserIds() {
+              List<String> ids = new ArrayList<>(Arrays.asList("cs0008", "op0001"));
+              assertEquals(2, fnUserService.getUsersByOrgIds(ids).size());
+       }
+
 }

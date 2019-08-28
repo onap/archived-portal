@@ -58,5 +58,12 @@ public interface FnUserDao extends JpaRepository<FnUser, Long> {
        FnUser getOne(Long integer);
 
        @Query
-       Optional<List<FnUser>> getUsersByOrgUserId(@Param("orgIds") String orgIds);
+       Optional<List<FnUser>> getUserWithOrgUserId(final @Param("orgId") String orgId);
+
+       @Query
+       Optional<List<FnUser>> getUsersByOrgIds(final @Param("orgIds") List<String> orgIds);
+
+       @Query
+       Optional<List<FnUser>> getActiveUsers();
+
 }

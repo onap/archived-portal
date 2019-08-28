@@ -43,7 +43,6 @@ package org.onap.portal.domain.db.fn;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -58,6 +57,8 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedNativeQueries;
 import javax.persistence.NamedNativeQuery;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
@@ -72,7 +73,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.validator.constraints.SafeHtml;
 import org.onap.portal.domain.db.cr.CrReportFileHistory;
 import org.onap.portal.domain.db.ep.EpPersUserWidgetPlacement;
@@ -148,13 +148,18 @@ CREATE TABLE `fn_user` (
         )
 */
 
-@NamedNativeQueries({
-        @NamedNativeQuery(
-                name = "getUsersByOrgUserId",
-                query = "SELECT * FROM FnUser WHERE where org_user_id in :orgIds"
+@NamedQueries({
+        @NamedQuery(
+                name = "FnUser.getUserWithOrgUserId",
+                query = "FROM FnUser WHERE orgUserId = :orgId"),
+        @NamedQuery(
+                name = "FnUser.getActiveUsers",
+                query = "FROM FnUser WHERE activeYn = 'Y'"),
+        @NamedQuery(
+                name = "FnUser.getUsersByOrgIds",
+                query = "FROM FnUser WHERE orgUserId IN :orgIds"
         )
 })
-
 @Table(name = "fn_user", indexes = {
         @Index(name = "fn_user_address_id", columnList = "address_id"),
         @Index(name = "fn_user_alert_method_cd", columnList = "alert_method_cd"),
@@ -350,7 +355,7 @@ public class FnUser implements UserDetails {
        private boolean guest;
        @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "fnUserList")
        private Set<CrReportFileHistory> crReportFileHistorie;
-       @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+       @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
        private Set<FnRole> fnRoles;
        @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
        private Set<FnMenuFunctional> fnRoleList;
