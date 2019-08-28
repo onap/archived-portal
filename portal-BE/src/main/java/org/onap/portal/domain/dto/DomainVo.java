@@ -50,7 +50,6 @@ import java.util.Set;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -59,7 +58,6 @@ import org.onap.portalsdk.core.domain.FusionVo;
 
 @Getter
 @Setter
-
 @NoArgsConstructor
 @AllArgsConstructor
 @Inheritance(strategy = InheritanceType.JOINED)

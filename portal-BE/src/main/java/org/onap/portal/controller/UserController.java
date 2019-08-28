@@ -41,17 +41,15 @@
 package org.onap.portal.controller;
 
 import java.security.Principal;
-import lombok.NoArgsConstructor;
 import org.onap.portal.domain.db.fn.FnUser;
 import org.onap.portal.domain.dto.PortalRestResponse;
 import org.onap.portal.domain.dto.PortalRestStatusEnum;
-import org.onap.portal.domain.dto.ProfileDetail;
+import org.onap.portal.domain.dto.transport.ProfileDetail;
 import org.onap.portal.service.fn.FnUserService;
 import org.onap.portal.validation.DataValidator;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.onap.portalsdk.core.onboarding.util.CipherUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;

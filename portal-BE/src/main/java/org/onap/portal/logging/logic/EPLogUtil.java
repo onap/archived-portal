@@ -173,7 +173,7 @@ public class EPLogUtil {
 	 */
 	private static String formatMessage(String message, Object... args) {
 		StringBuilder sbFormattedMessage = new StringBuilder();
-		if (args != null && args.length > 0 && message != null && message != "") {
+		if (args != null && args.length > 0 && message != null && !message.equals("")) {
 			MessageFormat mf = new MessageFormat(message);
 			sbFormattedMessage.append(mf.format(args));
 		} else {
