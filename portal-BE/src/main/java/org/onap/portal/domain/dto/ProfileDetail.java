@@ -38,22 +38,53 @@
 package org.onap.portal.domain.dto;
 
 
+import java.util.Objects;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Setter
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class ProfileDetail {
-
+       @NotBlank(message = "firstName must not be blank")
        private String firstName;
+       @NotBlank(message = "lastName must not be blank")
        private String lastName;
        private String middleName;
+       @Email
+       @NotBlank(message = "email must not be blank")
        private String email;
+       @NotBlank(message = "loginId must not be blank")
        private String loginId;
+       @NotBlank(message = "loginPassword must not be blank")
        private String loginPassword;
 
+       @Override
+       public boolean equals(Object o) {
+              if (this == o) {
+                     return true;
+              }
+              if (!(o instanceof ProfileDetail)) {
+                     return false;
+              }
+              ProfileDetail that = (ProfileDetail) o;
+              return Objects.equals(firstName, that.firstName) &&
+                      Objects.equals(lastName, that.lastName) &&
+                      Objects.equals(middleName, that.middleName) &&
+                      Objects.equals(email, that.email) &&
+                      Objects.equals(loginId, that.loginId) &&
+                      Objects.equals(loginPassword, that.loginPassword);
+       }
+
+       @Override
+       public int hashCode() {
+              return Objects.hash(firstName, lastName, middleName, email, loginId, loginPassword);
+       }
 }

@@ -41,80 +41,86 @@
 package org.onap.portal.controller;
 
 import java.security.Principal;
+import lombok.NoArgsConstructor;
 import org.onap.portal.domain.db.fn.FnUser;
 import org.onap.portal.domain.dto.PortalRestResponse;
 import org.onap.portal.domain.dto.PortalRestStatusEnum;
 import org.onap.portal.domain.dto.ProfileDetail;
 import org.onap.portal.service.fn.FnUserService;
+import org.onap.portal.validation.DataValidator;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.onap.portalsdk.core.onboarding.util.CipherUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@Controller
 public class UserController {
 
-	private static final String HIDDEN_DEFAULT_PASSWORD = "*****";
-	private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(UserController.class);
+       private static final String HIDDEN_DEFAULT_PASSWORD = "*****";
+       private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(UserController.class);
 
-	private final FnUserService userService;
+       private final FnUserService userService;
+       private final DataValidator dataValidator;
 
-	@Autowired
-	public UserController(FnUserService userService) {
-		this.userService = userService;
-	}
+       @Autowired
+       public UserController(final FnUserService userService,
+               final DataValidator dataValidator) {
+              this.userService = userService;
+              this.dataValidator = dataValidator;
+       }
 
-	@RequestMapping(value = { "/portalApi/loggedinUser" }, method = RequestMethod.GET, produces = "application/json")
-	public PortalRestResponse<ProfileDetail> getLoggedinUser(Principal principal) {
-		PortalRestResponse<ProfileDetail> portalRestResponse = null;
-		try {
-			FnUser user = userService.loadUserByUsername(principal.getName());
-			ProfileDetail profileDetail = new ProfileDetail(user.getFirstName(), user.getLastName(),
-					user.getMiddleName(), user.getEmail(), user.getLoginId(),  HIDDEN_DEFAULT_PASSWORD);
-			portalRestResponse = new PortalRestResponse<>(PortalRestStatusEnum.OK, "success",
-					profileDetail);
-		} catch (Exception e) {
-			portalRestResponse = new PortalRestResponse<>(PortalRestStatusEnum.ERROR, e.getMessage(),
-					null);
-			logger.error(EELFLoggerDelegate.errorLogger, "getLoggedinUser failed", e);
-		}
-		return portalRestResponse;
-	}
+       @RequestMapping(value = {"/portalApi/loggedinUser"}, method = RequestMethod.GET, produces = "application/json")
+       public PortalRestResponse<ProfileDetail> getLoggedinUser(Principal principal) {
+              PortalRestResponse<ProfileDetail> portalRestResponse = null;
+              try {
+                     FnUser user = userService.loadUserByUsername(principal.getName());
+                     ProfileDetail profileDetail = new ProfileDetail(user.getFirstName(), user.getLastName(),
+                             user.getMiddleName(), user.getEmail(), user.getLoginId(), HIDDEN_DEFAULT_PASSWORD);
+                     portalRestResponse = new PortalRestResponse<>(PortalRestStatusEnum.OK, "success",
+                             profileDetail);
+              } catch (Exception e) {
+                     portalRestResponse = new PortalRestResponse<>(PortalRestStatusEnum.ERROR, e.getMessage(),
+                             null);
+                     logger.error(EELFLoggerDelegate.errorLogger, "getLoggedinUser failed", e);
+              }
+              return portalRestResponse;
+       }
 
-	@RequestMapping(value = {
-			"/portalApi/modifyLoggedinUser" }, method = RequestMethod.PUT, produces = "application/json")
-	public PortalRestResponse<String> modifyLoggedinUser(Principal principal,
-			@RequestBody ProfileDetail profileDetail) {
-		PortalRestResponse<String> portalRestResponse = null;
-		try {
-			String errorMsg = "";
-			if (profileDetail.getFirstName().equals("") || profileDetail.getLastName().equals("")
-					|| profileDetail.getEmail().equals("") || profileDetail.getLoginId().equals("")
-					|| profileDetail.getLoginPassword().equals("")) {
-				errorMsg = "Required field(s) is missing";
-				portalRestResponse = new PortalRestResponse<>(PortalRestStatusEnum.ERROR, errorMsg, null);
-				logger.error(EELFLoggerDelegate.errorLogger, "modifyLoggedinUser failed", errorMsg);
-			} else {
-				FnUser user = userService.loadUserByUsername(principal.getName());
-				user.setFirstName(profileDetail.getFirstName());
-				user.setLastName(profileDetail.getLastName());
-				user.setEmail(profileDetail.getEmail());
-				user.setMiddleName(profileDetail.getMiddleName());
-				user.setLoginId(profileDetail.getLoginId());
-				if (!HIDDEN_DEFAULT_PASSWORD.equals(profileDetail.getLoginPassword())){
-					user.setLoginPwd(CipherUtil.encryptPKC(profileDetail.getLoginPassword()));
-				}
-				userService.saveFnUser(principal, user);
-				// Update user info in the session
-				portalRestResponse = new PortalRestResponse<>(PortalRestStatusEnum.OK, "success", null);
-			}
-		} catch (Exception e) {
-			portalRestResponse = new PortalRestResponse<>(PortalRestStatusEnum.ERROR, e.toString(), null);
-			logger.error(EELFLoggerDelegate.errorLogger, "modifyLoggedinUser failed", e);
-		}
-		return portalRestResponse;
-	}
+       @RequestMapping(value = {
+               "/portalApi/modifyLoggedinUser"}, method = RequestMethod.PUT, produces = "application/json")
+       public PortalRestResponse<String> modifyLoggedinUser(Principal principal,
+               @RequestBody ProfileDetail profileDetail) {
+              PortalRestResponse<String> portalRestResponse = null;
+              try {
+                     String errorMsg = "";
+                     if (!dataValidator.isValid(profileDetail)) {
+                            errorMsg = "Required field(s) is missing";
+                            portalRestResponse = new PortalRestResponse<>(PortalRestStatusEnum.ERROR, dataValidator.getConstraintViolationsString(profileDetail), null);
+                            logger.error(EELFLoggerDelegate.errorLogger, "modifyLoggedinUser failed", errorMsg);
+                     } else {
+                            FnUser user = userService.loadUserByUsername(principal.getName());
+                            user.setFirstName(profileDetail.getFirstName());
+                            user.setLastName(profileDetail.getLastName());
+                            user.setEmail(profileDetail.getEmail());
+                            user.setMiddleName(profileDetail.getMiddleName());
+                            user.setLoginId(profileDetail.getLoginId());
+                            if (!HIDDEN_DEFAULT_PASSWORD.equals(profileDetail.getLoginPassword())) {
+                                   user.setLoginPwd(CipherUtil.encryptPKC(profileDetail.getLoginPassword()));
+                            }
+                            userService.saveFnUser(principal, user);
+                            // Update user info in the session
+                            portalRestResponse = new PortalRestResponse<>(PortalRestStatusEnum.OK, "success", null);
+                     }
+              } catch (Exception e) {
+                     portalRestResponse = new PortalRestResponse<>(PortalRestStatusEnum.ERROR, e.toString(), null);
+                     logger.error(EELFLoggerDelegate.errorLogger, "modifyLoggedinUser failed", e);
+              }
+              return portalRestResponse;
+       }
 }
