@@ -59,7 +59,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 import org.hibernate.validator.constraints.SafeHtml;
 /*
 CREATE TABLE `fn_language` (
@@ -106,11 +105,10 @@ public class FnLanguage {
 
        @Override
        public String toString() {
-              final StringBuilder sb = new StringBuilder("FnLanguage{");
-              sb.append("languageId=").append(languageId);
-              sb.append(", languageName='").append(languageName).append('\'');
-              sb.append(", languageAlias='").append(languageAlias).append('\'');
-              sb.append('}');
-              return sb.toString();
+              String sb = "FnLanguage{" + "languageId=" + languageId
+                      + ", languageName='" + languageName + '\''
+                      + ", languageAlias='" + languageAlias + '\''
+                      + '}';
+              return sb;
        }
 }

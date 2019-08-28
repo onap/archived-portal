@@ -41,7 +41,6 @@
 package org.onap.portal.domain.db.cr;
 
 import java.io.Serializable;
-import java.math.BigInteger;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;

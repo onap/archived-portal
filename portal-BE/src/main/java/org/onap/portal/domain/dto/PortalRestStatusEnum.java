@@ -46,7 +46,7 @@ public enum PortalRestStatusEnum{
 	ERROR("error");
 	
 	private String value;
-	private PortalRestStatusEnum(String value){
+	PortalRestStatusEnum(String value){
 		this.value = value;
 	}
 	

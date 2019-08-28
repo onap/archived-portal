@@ -1,8 +1,10 @@
-/*-
+/*
  * ============LICENSE_START==========================================
  * ONAP Portal
  * ===================================================================
- * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ * ===================================================================
+ * Modifications Copyright (c) 2019 Samsung
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
@@ -35,56 +37,38 @@
  *
  *
  */
-package org.onap.portal.domain.dto;
 
+package org.onap.portal.domain.dto.transport;
 
-import java.util.Objects;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
+import java.io.Serializable;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
-@Setter
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
-public class ProfileDetail {
-       @NotBlank(message = "firstName must not be blank")
-       private String firstName;
-       @NotBlank(message = "lastName must not be blank")
-       private String lastName;
-       private String middleName;
-       @Email
-       @NotBlank(message = "email must not be blank")
-       private String email;
-       @NotBlank(message = "loginId must not be blank")
-       private String loginId;
-       @NotBlank(message = "loginPassword must not be blank")
-       private String loginPassword;
+public class FunctionalMenuItemWithRoles implements Serializable {
+	private static final long serialVersionUID = 1L;
 
-       @Override
-       public boolean equals(Object o) {
-              if (this == o) {
-                     return true;
-              }
-              if (!(o instanceof ProfileDetail)) {
-                     return false;
-              }
-              ProfileDetail that = (ProfileDetail) o;
-              return Objects.equals(firstName, that.firstName) &&
-                      Objects.equals(lastName, that.lastName) &&
-                      Objects.equals(middleName, that.middleName) &&
-                      Objects.equals(email, that.email) &&
-                      Objects.equals(loginId, that.loginId) &&
-                      Objects.equals(loginPassword, that.loginPassword);
-       }
+	private Long menuId;
+	private Integer column;
+	private String text;
+	private Integer parentMenuId;
+	private String url;
+	private Integer appid;
+	private List<Integer> roles;
 
-       @Override
-       public int hashCode() {
-              return Objects.hash(firstName, lastName, middleName, email, loginId, loginPassword);
-       }
+	public void normalize() {
+		if (this.column == null)
+			this.column = 1;
+		this.text = (this.text == null) ? "" : this.text.trim();
+		if (this.parentMenuId == null)
+			this.parentMenuId = -1;
+		this.url = (this.url == null) ? "" : this.url.trim();
+	}
+
 }

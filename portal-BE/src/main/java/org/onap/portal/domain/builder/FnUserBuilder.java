@@ -42,7 +42,6 @@ package org.onap.portal.domain.builder;
 
 import java.time.LocalDateTime;
 import java.util.Set;
-import java.util.UUID;
 import javax.validation.Valid;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.Email;
