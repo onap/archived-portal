@@ -38,57 +38,40 @@
  *
  */
 
-package org.onap.portal.domain.db.fn;
+package org.onap.portal.aop.service;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
-import javax.validation.constraints.Digits;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
-import org.hibernate.validator.constraints.SafeHtml;
-/*
-CREATE TABLE `fn_language` (
-        `language_id` int(11) NOT NULL AUTO_INCREMENT,
-        `language_name` varchar(100) NOT NULL,
-        `language_alias` varchar(100) NOT NULL,
-        PRIMARY KEY (`language_id`)
-        )
-*/
+import java.security.Principal;
+import java.util.stream.Collectors;
+import javax.validation.ConstraintViolation;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
+import org.onap.portal.domain.db.fn.FnLanguage;
+import org.onap.portal.validation.DataValidator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-@Table(name = "fn_language")
-@NoArgsConstructor
-@AllArgsConstructor
-@ToString
-@Getter
-@Setter
-@Entity
-@SequenceGenerator(name="seq", initialValue=3, allocationSize=100)
-public class FnLanguage {
+@Aspect
+@Component
+public class FnLanguageServiceAOP {
+       private static final Logger LOGGER = LoggerFactory.getLogger(FnLanguageServiceAOP.class);
 
-       @Id
-       @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq")
-       @Column(name = "language_id", length = 11, nullable = false, columnDefinition = "int(11) AUTO_INCREMENT")
-       @Digits(integer = 11, fraction = 0)
-       private Long languageId;
-       @Column(name = "language_name", length = 100, nullable = false)
-       @Size(max = 100)
-       @NotNull
-       @SafeHtml
-       private String languageName;
-       @Column(name = "language_alias", length = 100, nullable = false)
-       @Size(max = 100)
-       @NotNull
-       @SafeHtml
-       private String languageAlias;
+       @Autowired
+       private DataValidator dataValidator;
 
+       @Before("execution(* org.onap.portal.service.fn.FnLanguageService.save(..)) && args(principal, fnLanguage)")
+       public void save(final Principal principal, final FnLanguage fnLanguage) {
+              if (fnLanguage == null) {
+                     LOGGER.error("User " + principal.getName() + " try to save NULL fnLanguage");
+                     throw new NullPointerException("FnLanguage cannot be null or empty");
+              }
+              if (!dataValidator.isValid(fnLanguage)) {
+                     String violations = dataValidator.getConstraintViolations(fnLanguage).stream()
+                             .map(ConstraintViolation::getMessage)
+                             .collect(Collectors.joining(", "));
+                     LOGGER.error("User " + principal.getName() + " try to save not valid fnLanguage: " + violations);
+                     throw new IllegalArgumentException("FnLanguage is not valid, " + violations);
+              }
+       }
 }

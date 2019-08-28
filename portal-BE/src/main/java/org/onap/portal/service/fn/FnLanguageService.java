@@ -40,6 +40,7 @@
 
 package org.onap.portal.service.fn;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 import org.onap.portal.dao.fn.FnLanguageDao;
@@ -56,10 +57,13 @@ public class FnLanguageService {
               this.fnLanguageDao = fnLanguageDao;
        }
 
-       public Optional<FnLanguage> findById(Long id){
+       public Optional<FnLanguage> findById(final Long id){
               return fnLanguageDao.findById(id);
        }
        public List<FnLanguage> getLanguages(){
               return fnLanguageDao.findAll();
+       }
+       public FnLanguage save(final Principal principal, final FnLanguage fnLanguage){
+              return fnLanguageDao.save(fnLanguage);
        }
 }

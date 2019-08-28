@@ -38,57 +38,20 @@
  *
  */
 
-package org.onap.portal.domain.db.fn;
+package org.onap.portal.domain.dto;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
-import javax.validation.constraints.Digits;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
-import org.hibernate.validator.constraints.SafeHtml;
-/*
-CREATE TABLE `fn_language` (
-        `language_id` int(11) NOT NULL AUTO_INCREMENT,
-        `language_name` varchar(100) NOT NULL,
-        `language_alias` varchar(100) NOT NULL,
-        PRIMARY KEY (`language_id`)
-        )
-*/
-
-@Table(name = "fn_language")
-@NoArgsConstructor
-@AllArgsConstructor
-@ToString
-@Getter
-@Setter
-@Entity
-@SequenceGenerator(name="seq", initialValue=3, allocationSize=100)
-public class FnLanguage {
-
-       @Id
-       @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq")
-       @Column(name = "language_id", length = 11, nullable = false, columnDefinition = "int(11) AUTO_INCREMENT")
-       @Digits(integer = 11, fraction = 0)
-       private Long languageId;
-       @Column(name = "language_name", length = 100, nullable = false)
-       @Size(max = 100)
-       @NotNull
-       @SafeHtml
-       private String languageName;
-       @Column(name = "language_alias", length = 100, nullable = false)
-       @Size(max = 100)
-       @NotNull
-       @SafeHtml
-       private String languageAlias;
-
+public enum PortalRestStatusEnum{
+	OK("ok"),
+	WARN("WARNING"),
+	ERROR("error");
+	
+	private String value;
+	private PortalRestStatusEnum(String value){
+		this.value = value;
+	}
+	
+	@Override
+    public String toString() {
+        return value;
+    }
 }
