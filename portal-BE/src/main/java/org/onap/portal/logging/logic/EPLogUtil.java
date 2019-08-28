@@ -45,7 +45,7 @@ import static com.att.eelf.configuration.Configuration.MDC_ALERT_SEVERITY;
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
 import java.text.MessageFormat;
-import org.onap.portalapp.portal.logging.format.EPAppMessagesEnum;
+import org.onap.portal.logging.format.EPAppMessagesEnum;
 import org.onap.portalsdk.core.logging.format.AlarmSeverityEnum;
 import org.onap.portalsdk.core.logging.format.ErrorSeverityEnum;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;

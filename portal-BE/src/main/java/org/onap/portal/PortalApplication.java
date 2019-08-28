@@ -40,14 +40,20 @@
 
 package org.onap.portal;
 
+import org.apache.log4j.BasicConfigurator;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication
+@EntityScan("org.onap.portal.domain")
+@EnableJpaRepositories("org.onap.portal.dao")
 public class PortalApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(PortalApplication.class, args);
-	}
+       public static void main(String[] args) {
+              BasicConfigurator.resetConfiguration();
+              SpringApplication.run(PortalApplication.class, args);
+       }
 
 }
