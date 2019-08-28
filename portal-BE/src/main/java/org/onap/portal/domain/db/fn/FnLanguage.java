@@ -40,6 +40,7 @@
 
 package org.onap.portal.domain.db.fn;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -72,6 +73,7 @@ CREATE TABLE `fn_language` (
 @Getter
 @Setter
 @Entity
+@JsonInclude()
 @SequenceGenerator(name="seq", initialValue=3, allocationSize=100)
 public class FnLanguage {
 
@@ -82,12 +84,12 @@ public class FnLanguage {
        private Long languageId;
        @Column(name = "language_name", length = 100, nullable = false)
        @Size(max = 100)
-       @NotNull
+       @NotNull(message = "languageName must not be null")
        @SafeHtml
        private String languageName;
        @Column(name = "language_alias", length = 100, nullable = false)
        @Size(max = 100)
-       @NotNull
+       @NotNull(message = "languageAlias must not be null")
        @SafeHtml
        private String languageAlias;
 
