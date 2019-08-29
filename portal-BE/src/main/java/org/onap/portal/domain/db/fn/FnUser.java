@@ -78,6 +78,7 @@ import org.onap.portal.domain.db.ep.EpPersUserWidgetSel;
 import org.onap.portal.domain.db.ep.EpUserNotification;
 import org.onap.portal.domain.db.ep.EpUserRolesRequest;
 import org.onap.portal.domain.db.ep.EpWidgetCatalogParameter;
+import org.onap.portal.domain.dto.DomainVo;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -180,7 +181,7 @@ CREATE TABLE `fn_user` (
 @AllArgsConstructor
 @DynamicUpdate
 @SequenceGenerator(name = "seq", initialValue = 1000, allocationSize = 100000)
-public class FnUser implements UserDetails {
+public class FnUser extends DomainVo implements UserDetails {
 
        @Id
        @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq")

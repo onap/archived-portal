@@ -69,6 +69,7 @@ import org.onap.portal.domain.db.ep.EpAppRoleFunction;
 import org.onap.portal.domain.db.ep.EpRoleNotification;
 import org.onap.portal.domain.db.ep.EpUserRolesRequestDet;
 import org.onap.portal.domain.db.ep.EpWidgetCatalogRole;
+import org.onap.portal.domain.dto.DomainVo;
 
 /*
 CREATE TABLE `fn_role` (
@@ -120,7 +121,7 @@ CREATE TABLE `fn_role` (
 @Getter
 @Setter
 @Entity
-public class FnRole {
+public class FnRole extends DomainVo {
 
        @Id
        @GeneratedValue(strategy = GenerationType.AUTO)
@@ -133,11 +134,8 @@ public class FnRole {
        @SafeHtml
        private String roleName;
        @Column(name = "active_yn", length = 1, columnDefinition = "character varying(1) default 'y'", nullable = false)
-       @Pattern(regexp = "[YNyn]")
-       @Size(max = 1)
        @NotNull
-       @SafeHtml
-       private String activeYn;
+       private Boolean activeYn;
        @Column(name = "priority", length = 4, columnDefinition = "decimal(4,0) DEFAULT NULL")
        @Digits(integer = 4, fraction = 0)
        private Long priority;
