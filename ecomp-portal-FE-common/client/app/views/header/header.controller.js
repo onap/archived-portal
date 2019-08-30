@@ -256,7 +256,7 @@
                     return;
                 }
                 if (!ECOMP_URL_REGEX.test(url)) {
-                    url = 'http://' + url;
+                    url = 'https://' + url;
                 }
 
                 if(headerText.startsWith("vUSP")) {
