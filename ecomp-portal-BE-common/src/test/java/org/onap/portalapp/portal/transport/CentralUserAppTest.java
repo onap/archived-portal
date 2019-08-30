@@ -91,7 +91,7 @@ public class CentralUserAppTest {
                 .setThumbnail(null).setUsername(TEST).setUebKey(TEST).setUebSecret(TEST).setUebTopicName(TEST)
                 .createCentralApp();
 
-        CentralV2Role role = new CentralV2Role();
+        CentralV2Role role = new CentralV2Role.CentralV2RoleBuilder().createCentralV2Role();
 
         centralV2UserApp.setUserId((long) 1);
         centralV2UserApp.setApp(app);
@@ -112,7 +112,7 @@ public class CentralUserAppTest {
                 .setThumbnail(null).setUsername(TEST).setUebKey(TEST).setUebSecret(TEST).setUebTopicName(TEST)
                 .createCentralApp();
 
-        CentralV2Role role1 = new CentralV2Role();
+        CentralV2Role role1 = new CentralV2Role.CentralV2RoleBuilder().createCentralV2Role();
 
         assertEquals(centralV2UserApp.getUserId(), new Long(1));
         assertEquals(centralV2UserApp.getPriority(), new Integer((Integer) 123));

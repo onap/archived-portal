@@ -41,206 +41,282 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.SortedSet;
 import java.util.TreeSet;
-
 import org.onap.portalapp.portal.domain.CentralV2RoleFunction;
 
 @SuppressWarnings("rawtypes")
-public class CentralV2Role implements Serializable, Comparable{
-		/**
-	 * 
-	 */
-	private static final long serialVersionUID = -4332644961113063714L;
-		private Long id;
-		private Date created;
-		private Date modified;
-		private Long createdId;
-		private Long modifiedId;
-		private Long rowNum;
-		
-	    private String  name;
-	    private boolean active;
-	    private Integer priority;
-	    
-        private SortedSet<CentralV2RoleFunction> roleFunctions = new TreeSet<>();
-	    
-	    private SortedSet<CentralV2Role> childRoles = new TreeSet<>();
+public class CentralV2Role implements Serializable, Comparable {
+    /**
+    *
+    */
+    private static final long serialVersionUID = -4332644961113063714L;
+    private Long id;
+    private Date created;
+    private Date modified;
+    private Long createdId;
+    private Long modifiedId;
+    private Long rowNum;
 
-	    private SortedSet<CentralV2Role> parentRoles = new TreeSet<>();
+    private String name;
+    private boolean active;
+    private Integer priority;
 
-		public CentralV2Role(Long id, Date created, Date modified, Long createdId, Long modifiedId, Long rowNum,
-				String name, boolean active, Integer priority, SortedSet<CentralV2RoleFunction> roleFunctions,
-				SortedSet<CentralV2Role> childRoles, SortedSet<CentralV2Role> parentRoles) {
-			super();
-			this.id = id;
-			this.created = created;
-			this.modified = modified;
-			this.createdId = createdId;
-			this.modifiedId = modifiedId;
-			this.rowNum = rowNum;
-			this.name = name;
-			this.active = active;
-			this.priority = priority;
-			this.roleFunctions = roleFunctions;
-			this.childRoles = childRoles;
-			this.parentRoles = parentRoles;
-		}
-		
-		public CentralV2Role(){
-			
-		}
-		
-		public CentralV2Role(Long id, String name){
-			this.id = id;
-			this.name = name;
-		}
+    private SortedSet<CentralV2RoleFunction> roleFunctions = new TreeSet<>();
 
-		public Long getId() {
-			return id;
-		}
+    private SortedSet<CentralV2Role> childRoles = new TreeSet<>();
 
-		public void setId(Long id) {
-			this.id = id;
-		}
+    private SortedSet<CentralV2Role> parentRoles = new TreeSet<>();
 
-		public Date getCreated() {
-			return created;
-		}
+    public CentralV2Role(CentralV2RoleBuilder builder) {
+        super();
+        this.id = builder.id;
+        this.created = builder.created;
+        this.modified = builder.modified;
+        this.createdId = builder.createdId;
+        this.modifiedId = builder.modifiedId;
+        this.rowNum = builder.rowNum;
+        this.name = builder.name;
+        this.active = builder.active;
+        this.priority = builder.priority;
+        this.roleFunctions = builder.roleFunctions;
+        this.childRoles = builder.childRoles;
+        this.parentRoles = builder.parentRoles;
+    }
 
-		public void setCreated(Date created) {
-			this.created = created;
-		}
+    public CentralV2Role() {
 
-		public Date getModified() {
-			return modified;
-		}
+    }
 
-		public void setModified(Date modified) {
-			this.modified = modified;
-		}
+    public CentralV2Role(Long id, String name) {
+        this.id = id;
+        this.name = name;
+    }
 
-		public Long getCreatedId() {
-			return createdId;
-		}
+    public static class CentralV2RoleBuilder {
+        private Long id;
+        private Date created;
+        private Date modified;
+        private Long createdId;
+        private Long modifiedId;
+        private Long rowNum;
+        private String name;
+        private boolean active;
+        private Integer priority;
+        private SortedSet<CentralV2RoleFunction> roleFunctions;
+        private SortedSet<CentralV2Role> childRoles;
+        private SortedSet<CentralV2Role> parentRoles;
 
-		public void setCreatedId(Long createdId) {
-			this.createdId = createdId;
-		}
+        public CentralV2RoleBuilder setId(Long id) {
+            this.id = id;
+            return this;
+        }
 
-		public Long getModifiedId() {
-			return modifiedId;
-		}
+        public CentralV2RoleBuilder setCreated(Date created) {
+            this.created = created;
+            return this;
+        }
 
-		public void setModifiedId(Long modifiedId) {
-			this.modifiedId = modifiedId;
-		}
+        public CentralV2RoleBuilder setModified(Date modified) {
+            this.modified = modified;
+            return this;
+        }
 
-		public Long getRowNum() {
-			return rowNum;
-		}
+        public CentralV2RoleBuilder setCreatedId(Long createdId) {
+            this.createdId = createdId;
+            return this;
+        }
 
-		public void setRowNum(Long rowNum) {
-			this.rowNum = rowNum;
-		}
+        public CentralV2RoleBuilder setModifiedId(Long modifiedId) {
+            this.modifiedId = modifiedId;
+            return this;
+        }
 
-		public String getName() {
-			return name;
-		}
+        public CentralV2RoleBuilder setRowNum(Long rowNum) {
+            this.rowNum = rowNum;
+            return this;
+        }
 
-		public void setName(String name) {
-			this.name = name;
-		}
+        public CentralV2RoleBuilder setName(String name) {
+            this.name = name;
+            return this;
+        }
 
-		public boolean getActive() {
-			return active;
-		}
+        public CentralV2RoleBuilder setActive(boolean active) {
+            this.active = active;
+            return this;
+        }
 
-		public void setActive(boolean active) {
-			this.active = active;
-		}
+        public CentralV2RoleBuilder setPriority(Integer priority) {
+            this.priority = priority;
+            return this;
+        }
 
-		public Integer getPriority() {
-			return priority;
-		}
+        public CentralV2RoleBuilder setRoleFunctions(SortedSet<CentralV2RoleFunction> roleFunctions) {
+            this.roleFunctions = roleFunctions;
+            return this;
+        }
 
-		public void setPriority(Integer priority) {
-			this.priority = priority;
-		}
+        public CentralV2RoleBuilder setChildRoles(SortedSet<CentralV2Role> childRoles) {
+            this.childRoles = childRoles;
+            return this;
+        }
 
-		public SortedSet<CentralV2RoleFunction> getRoleFunctions() {
-			return roleFunctions;
-		}
+        public CentralV2RoleBuilder setParentRoles(SortedSet<CentralV2Role> parentRoles) {
+            this.parentRoles = parentRoles;
+            return this;
+        }
 
-		public void setRoleFunctions(SortedSet<CentralV2RoleFunction> roleFunctions) {
-			this.roleFunctions = roleFunctions;
-		}
+        public CentralV2Role createCentralV2Role() {
+            return new CentralV2Role(this);
+        }
+    }
 
-		public SortedSet<CentralV2Role> getChildRoles() {
-			return childRoles;
-		}
+    public Long getId() {
+        return id;
+    }
 
-		public void setChildRoles(SortedSet<CentralV2Role> childRoles) {
-			this.childRoles = childRoles;
-		}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-		public SortedSet<CentralV2Role> getParentRoles() {
-			return parentRoles;
-		}
+    public Date getCreated() {
+        return created;
+    }
 
-		public void setParentRoles(SortedSet<CentralV2Role> parentRoles) {
-			this.parentRoles = parentRoles;
-		}
-		public void addRoleFunction(CentralV2RoleFunction roleFunction) {
-			this.roleFunctions.add(roleFunction);
-		}
+    public void setCreated(Date created) {
+        this.created = created;
+    }
 
-		public void addChildRole(CentralV2Role role) {
-			this.childRoles.add(role);
-		}
+    public Date getModified() {
+        return modified;
+    }
 
-		public void addParentRole(CentralV2Role role) {
-			this.parentRoles.add(role);
-		}
-		
-		public int compareTo(Object obj){
-	    	CentralV2Role other = (CentralV2Role)obj;
+    public void setModified(Date modified) {
+        this.modified = modified;
+    }
 
-	    	String c1 = getName();
-	    	String c2 = other.getName();
+    public Long getCreatedId() {
+        return createdId;
+    }
 
-	    	return (c1 == null || c2 == null) ? 1 : c1.compareTo(c2);
-	    }
+    public void setCreatedId(Long createdId) {
+        this.createdId = createdId;
+    }
 
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + ((id == null) ? 0 : id.hashCode());
-			result = prime * result + ((name == null) ? 0 : name.hashCode());
-			return result;
-		}
+    public Long getModifiedId() {
+        return modifiedId;
+    }
 
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			CentralV2Role other = (CentralV2Role) obj;
-			if (id == null) {
-				if (other.id != null)
-					return false;
-			} else if (!id.equals(other.id))
-				return false;
-			if (name == null) {
-				if (other.name != null)
-					return false;
-			} else if (!name.equals(other.name))
-				return false;
-			return true;
-		}
-		
-		
-		
+    public void setModifiedId(Long modifiedId) {
+        this.modifiedId = modifiedId;
+    }
+
+    public Long getRowNum() {
+        return rowNum;
+    }
+
+    public void setRowNum(Long rowNum) {
+        this.rowNum = rowNum;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public boolean getActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    public Integer getPriority() {
+        return priority;
+    }
+
+    public void setPriority(Integer priority) {
+        this.priority = priority;
+    }
+
+    public SortedSet<CentralV2RoleFunction> getRoleFunctions() {
+        return roleFunctions;
+    }
+
+    public void setRoleFunctions(SortedSet<CentralV2RoleFunction> roleFunctions) {
+        this.roleFunctions = roleFunctions;
+    }
+
+    public SortedSet<CentralV2Role> getChildRoles() {
+        return childRoles;
+    }
+
+    public void setChildRoles(SortedSet<CentralV2Role> childRoles) {
+        this.childRoles = childRoles;
+    }
+
+    public SortedSet<CentralV2Role> getParentRoles() {
+        return parentRoles;
+    }
+
+    public void setParentRoles(SortedSet<CentralV2Role> parentRoles) {
+        this.parentRoles = parentRoles;
+    }
+
+    public void addRoleFunction(CentralV2RoleFunction roleFunction) {
+        this.roleFunctions.add(roleFunction);
+    }
+
+    public void addChildRole(CentralV2Role role) {
+        this.childRoles.add(role);
+    }
+
+    public void addParentRole(CentralV2Role role) {
+        this.parentRoles.add(role);
+    }
+
+    public int compareTo(Object obj) {
+        CentralV2Role other = (CentralV2Role) obj;
+
+        String c1 = getName();
+        String c2 = other.getName();
+
+        return (c1 == null || c2 == null) ? 1 : c1.compareTo(c2);
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        CentralV2Role other = (CentralV2Role) obj;
+        if (id == null) {
+            if (other.id != null)
+                return false;
+        } else if (!id.equals(other.id)) {
+            return false;
+        }
+        if (name == null) {
+            if (other.name != null)
+                return false;
+        } else if (!name.equals(other.name)) {
+            return false;
+        }
+        return true;
+    }
 }

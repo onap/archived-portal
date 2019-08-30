@@ -41,7 +41,6 @@ package org.onap.portalapp.portal.controller;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -55,10 +54,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.json.simple.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
@@ -96,7 +93,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.DelegatingServletInputStream;
 import org.springframework.web.servlet.ModelAndView;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -186,7 +182,7 @@ public class RoleManageControllerTest {
 		Mockito.when(externalAccessRolesService.getApp(CentralApp().getUebKey())).thenReturn(apps);
 		ResponseEntity<String> result = new ResponseEntity<>(HttpStatus.OK);
 		Mockito.when(externalAccessRolesService.getNameSpaceIfExists(apps.get(0))).thenReturn(result);
-		CentralV2Role answer = new CentralV2Role();
+		CentralV2Role answer = new CentralV2Role.CentralV2RoleBuilder().createCentralV2Role();
 		Mockito.when(externalAccessRolesService.getRoleInfo((long) 1, "test")).thenReturn(answer);
 		List<CentralV2RoleFunction> finalRoleFunctionList = new ArrayList<>();
 		Mockito.when(externalAccessRolesService.getRoleFuncList("test")).thenReturn(finalRoleFunctionList);
@@ -205,7 +201,7 @@ public class RoleManageControllerTest {
 	@Test(expected = Exception.class)
 	public void getRoleExceptionTest() throws Exception {
 		Mockito.when(appService.getApp((long) 1)).thenReturn(mockApp());
-		CentralV2Role answer = new CentralV2Role();
+		CentralV2Role answer = new CentralV2Role.CentralV2RoleBuilder().createCentralV2Role();
 		Mockito.when(externalAccessRolesService.getRoleInfo((long) 1, "test")).thenReturn(answer);
 		Mockito.when(externalAccessRolesService.getRoleFuncList("test")).thenThrow(nullPointerException);
 		roleManageController.getRole(mockedRequest, mockedResponse, (long) 1, null);
@@ -215,16 +211,16 @@ public class RoleManageControllerTest {
 	@Test
 	public void getRoleIfRoleIdNotNullTest() throws Exception {
 		Mockito.when(appService.getApp((long) 1)).thenReturn(CentralApp());
-		CentralV2Role answer = new CentralV2Role();
+		CentralV2Role answer = new CentralV2Role.CentralV2RoleBuilder().createCentralV2Role();
 		Mockito.when(externalAccessRolesService.getRoleInfo((long) 1, "test")).thenReturn(answer);
 		List<CentralV2RoleFunction> finalRoleFunctionList = new ArrayList<>();
 		Mockito.when(externalAccessRolesService.getRoleFuncList("test")).thenReturn(finalRoleFunctionList);
 		StringWriter sw = new StringWriter();
 		PrintWriter writer = new PrintWriter(sw);
 		Mockito.when(mockedResponse.getWriter()).thenReturn(writer);
-		CentralV2Role currentRole = new CentralV2Role();
+		CentralV2Role currentRole = new CentralV2Role.CentralV2RoleBuilder().createCentralV2Role();
 		SortedSet<CentralV2Role> parentRoles = new TreeSet<>();
-		CentralV2Role centralV2Role = new CentralV2Role();
+        CentralV2Role centralV2Role = new CentralV2Role.CentralV2RoleBuilder().createCentralV2Role();
 		centralV2Role.setName("test");
 		parentRoles.add(centralV2Role);
 		currentRole.setParentRoles(parentRoles);
@@ -714,7 +710,8 @@ public class RoleManageControllerTest {
 				.thenReturn(externalRequestFieldsValidator);
 		Map<String, Object> actual = roleManageController.saveRole(mockedRequest, mockedResponse, CentralApp().getId());
 		final Map<String, Object> expected = new HashMap<>();
-		expected.put("role", new CentralV2Role(null, "test"));
+        expected.put("role",
+                new CentralV2Role.CentralV2RoleBuilder().setId(null).setName("test").createCentralV2Role());
 		expected.put("status", "Success");
 		assertEquals(expected, actual);
 	}
@@ -765,7 +762,8 @@ public class RoleManageControllerTest {
 		ExternalRequestFieldsValidator externalRequestFieldsValidator = new ExternalRequestFieldsValidator(true, "");
 		Mockito.when(externalAccessRolesService.saveRoleForApplication(Matchers.any(), Matchers.any()))
 				.thenReturn(externalRequestFieldsValidator);
-		CentralV2Role cenV2Role = new CentralV2Role(1l, "test1");
+        CentralV2Role cenV2Role =
+                new CentralV2Role.CentralV2RoleBuilder().setId(1l).setName("test1").createCentralV2Role();
 		cenV2Role.setActive(true);
 		Mockito.when(externalAccessRolesService.getRoleInfo(Matchers.anyLong(), Matchers.any())).thenReturn(cenV2Role);
 		Map<String, Object> actual = roleManageController.saveRole(mockedRequest, mockedResponse, CentralApp().getId());
@@ -860,7 +858,7 @@ public class RoleManageControllerTest {
 		Mockito.when(externalAccessRolesService.getApp(Matchers.anyString())).thenReturn(appList);
 		ResponseEntity<String> response = new ResponseEntity<>(HttpStatus.OK);
 		Mockito.when(externalAccessRolesService.getNameSpaceIfExists(Matchers.anyObject())).thenReturn(response);
-		CentralV2Role role = new CentralV2Role(1l, "test");
+        CentralV2Role role = new CentralV2Role.CentralV2RoleBuilder().setId(1l).setName("test").createCentralV2Role();
 		role.setActive(true);
 		Role currentRole = new Role();
 		currentRole.setName("test");
@@ -927,7 +925,7 @@ public class RoleManageControllerTest {
 		Mockito.when(externalAccessRolesService.getApp(Matchers.anyString())).thenReturn(appList);
 		ResponseEntity<String> response = new ResponseEntity<>(HttpStatus.OK);
 		Mockito.when(externalAccessRolesService.getNameSpaceIfExists(Matchers.anyObject())).thenReturn(response);
-		CentralV2Role role = new CentralV2Role(1l, "test");
+        CentralV2Role role = new CentralV2Role.CentralV2RoleBuilder().setId(1l).setName("test").createCentralV2Role();
 		role.setActive(true);
 		Role currentRole = new Role();
 		currentRole.setName("test");

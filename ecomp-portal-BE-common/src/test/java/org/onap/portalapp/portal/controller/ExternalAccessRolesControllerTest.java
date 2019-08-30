@@ -417,7 +417,7 @@ public class ExternalAccessRolesControllerTest {
 		CentralRole expectedCentralRole = null;
 		List<EPApp> applicationList = new ArrayList<>();
 		long roleId = 1;
-		CentralV2Role centralV2Role = new CentralV2Role();
+		CentralV2Role centralV2Role = new CentralV2Role.CentralV2RoleBuilder().createCentralV2Role();
 		EPApp app = mockApp();
 		app.setCentralAuth(true);
 		applicationList.add(app);
@@ -438,7 +438,7 @@ public class ExternalAccessRolesControllerTest {
 		StringWriter sw = new StringWriter();
 		PrintWriter writer = new PrintWriter(sw);
 		Mockito.when(mockedResponse.getWriter()).thenReturn(writer);
-		CentralV2Role answer = new CentralV2Role();
+		CentralV2Role answer = new CentralV2Role.CentralV2RoleBuilder().createCentralV2Role();
 		long roleId = 1;
 		Mockito.when(externalAccessRolesService.getRoleInfo(roleId, mockedRequest.getHeader(uebKey)))
 				.thenReturn(answer);
@@ -461,11 +461,11 @@ public class ExternalAccessRolesControllerTest {
 
 	@Test
 	public void getV2RoleInfoValidationTest() throws Exception {
-		CentralV2Role expectedCentralRole = new CentralV2Role();
+		CentralV2Role expectedCentralRole = new CentralV2Role.CentralV2RoleBuilder().createCentralV2Role();
 		expectedCentralRole.setActive(false);
 		List<EPApp> applicationList = new ArrayList<>();
 		long roleId = 1;
-		CentralV2Role centralV2Role = new CentralV2Role();
+		CentralV2Role centralV2Role = new CentralV2Role.CentralV2RoleBuilder().createCentralV2Role();
 		EPApp app = mockApp();
 		app.setCentralAuth(true);
 		applicationList.add(app);
@@ -486,7 +486,7 @@ public class ExternalAccessRolesControllerTest {
 		StringWriter sw = new StringWriter();
 		PrintWriter writer = new PrintWriter(sw);
 		Mockito.when(mockedResponse.getWriter()).thenReturn(writer);
-		CentralV2Role answer = new CentralV2Role();
+		CentralV2Role answer = new CentralV2Role.CentralV2RoleBuilder().createCentralV2Role();
 		long roleId = 1;
 		Mockito.when(externalAccessRolesService.getRoleInfo(roleId, mockedRequest.getHeader(uebKey)))
 				.thenReturn(answer);
@@ -1286,7 +1286,7 @@ public class ExternalAccessRolesControllerTest {
 		Mockito.when(externalAccessRolesService.getNameSpaceIfExists(app)).thenReturn(response);
 		Mockito.doNothing().when(externalAccessRolesService).syncApplicationRolesWithEcompDB(app);
 		List<CentralV2Role> cenRoleList = new ArrayList<>();
-		CentralV2Role role = new CentralV2Role();
+		CentralV2Role role = new CentralV2Role.CentralV2RoleBuilder().createCentralV2Role();
 		role.setName("test");
 		cenRoleList.add(role);
 		Mockito.when(externalAccessRolesService.getActiveRoles(mockedRequest.getHeader(uebKey))).thenReturn(null);
