@@ -82,18 +82,7 @@ import org.onap.portalapp.portal.domain.EPUserAppRoles;
 import org.onap.portalapp.portal.domain.EPUserAppRolesRequest;
 import org.onap.portalapp.portal.domain.EPUserAppRolesRequestDetail;
 import org.onap.portalapp.portal.domain.ExternalSystemAccess;
-import org.onap.portalapp.portal.transport.AppWithRolesForUser;
-import org.onap.portalapp.portal.transport.CentralV2Role;
-import org.onap.portalapp.portal.transport.EPUserAppCurrentRoles;
-import org.onap.portalapp.portal.transport.EcompUserAppRoles;
-import org.onap.portalapp.portal.transport.ExternalRequestFieldsValidator;
-import org.onap.portalapp.portal.transport.FieldsValidator;
-import org.onap.portalapp.portal.transport.FunctionalMenuItem;
-import org.onap.portalapp.portal.transport.FunctionalMenuRole;
-import org.onap.portalapp.portal.transport.RemoteRole;
-import org.onap.portalapp.portal.transport.RemoteUserWithRoles;
-import org.onap.portalapp.portal.transport.RoleInAppForUser;
-import org.onap.portalapp.portal.transport.UserApplicationRoles;
+import org.onap.portalapp.portal.transport.*;
 import org.onap.portalapp.portal.utils.EPCommonSystemProperties;
 import org.onap.portalapp.portal.utils.EcompPortalUtils;
 import org.onap.portalapp.portal.utils.PortalConstants;
@@ -204,10 +193,14 @@ public class UserRolesCommonServiceImplTest {
 		Mockito.when(epAppCommonServiceImpl.getApp(mockApp.getId())).thenReturn(mockApp);
 		List<RoleInAppForUser> mockRoleInAppForUserList = getMockedRoleInAppUserList();
 		List<CentralV2Role> mockCenV2Role = new ArrayList<>();
-		CentralV2Role cenV2Role = new CentralV2Role(1l, null, null, null, null, null, "test1", true, null,
-				new TreeSet<>(), new TreeSet<>(), new TreeSet<>());
-		CentralV2Role cenV2Role2 = new CentralV2Role(16l, null, null, null, null, null, "test2", true, null,
-				new TreeSet<>(), new TreeSet<>(), new TreeSet<>());
+        CentralV2Role cenV2Role = new CentralV2Role.CentralV2RoleBuilder().setId(1l).setCreated(null).setModified(null)
+                .setCreatedId(null).setModifiedId(null).setRowNum(null).setName("test1").setActive(true)
+                .setPriority(null).setRoleFunctions(new TreeSet<>()).setChildRoles(new TreeSet<>())
+                .setParentRoles(new TreeSet<>()).createCentralV2Role();
+        CentralV2Role cenV2Role2 = new CentralV2Role.CentralV2RoleBuilder().setId(16l).setCreated(null)
+                .setModified(null).setCreatedId(null).setModifiedId(null).setRowNum(null).setName("test2")
+                .setActive(true).setPriority(null).setRoleFunctions(new TreeSet<>()).setChildRoles(new TreeSet<>())
+                .setParentRoles(new TreeSet<>()).createCentralV2Role();
 		mockCenV2Role.add(cenV2Role);
 		mockCenV2Role.add(cenV2Role2);
 		Mockito.when(externalAccessRolesServiceImpl.getRolesForApp(mockApp.getUebKey())).thenReturn(mockCenV2Role);

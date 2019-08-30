@@ -1229,11 +1229,14 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 						} else {
 							userRoleId = userApp.getRole().getAppRoleId();
 						}
-						CentralV2Role cenRole = new CentralV2Role(userRoleId, userApp.getRole().getCreated(),
-								userApp.getRole().getModified(), userApp.getRole().getCreatedId(),
-								userApp.getRole().getModifiedId(), userApp.getRole().getRowNum(),
-								userApp.getRole().getName(), userApp.getRole().getActive(),
-								userApp.getRole().getPriority(), roleFunctionSet, null, null);
+                        CentralV2Role cenRole = new CentralV2Role.CentralV2RoleBuilder().setId(userRoleId)
+                                .setCreated(userApp.getRole().getCreated()).setModified(userApp.getRole().getModified())
+                                .setCreatedId(userApp.getRole().getCreatedId())
+                                .setModifiedId(userApp.getRole().getModifiedId())
+                                .setRowNum(userApp.getRole().getRowNum()).setName(userApp.getRole().getName())
+                                .setActive(userApp.getRole().getActive()).setPriority(userApp.getRole().getPriority())
+                                .setRoleFunctions(roleFunctionSet).setChildRoles(null).setParentRoles(null)
+                                .createCentralV2Role();
 						cua.setRole(cenRole);
 						userAppList.getUserApps().add(cua);
 					}
@@ -1276,7 +1279,7 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 	public CentralV2Role getRoleInfo(Long roleId, String uebkey) throws Exception {
 		final Map<String, Long> params = new HashMap<>();
 		List<CentralV2Role> roleList = new ArrayList<>();
-		CentralV2Role cenRole = new CentralV2Role();
+        CentralV2Role cenRole = new CentralV2Role.CentralV2RoleBuilder().createCentralV2Role();
 		List<EPRole> roleInfo = null;
 		List<EPApp> app = null;
 		try {
@@ -1368,15 +1371,19 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 			SortedSet<CentralV2Role> childRoles = new TreeSet<>();
 			SortedSet<CentralV2Role> parentRoles = new TreeSet<>();
 			CentralV2Role cenRole = null;
-			if (role.getAppRoleId() == null) {
-				cenRole = new CentralV2Role(role.getId(), role.getCreated(), role.getModified(), role.getCreatedId(),
-						role.getModifiedId(), role.getRowNum(), role.getName(), role.getActive(), role.getPriority(),
-						roleFunctionSet, childRoles, parentRoles);
-			} else {
-				cenRole = new CentralV2Role(role.getAppRoleId(), role.getCreated(), role.getModified(),
-						role.getCreatedId(), role.getModifiedId(), role.getRowNum(), role.getName(), role.getActive(),
-						role.getPriority(), roleFunctionSet, childRoles, parentRoles);
-			}
+            if (role.getAppRoleId() == null) {
+                cenRole = new CentralV2Role.CentralV2RoleBuilder().setId(role.getId()).setCreated(role.getCreated())
+                        .setModified(role.getModified()).setCreatedId(role.getCreatedId())
+                        .setModifiedId(role.getModifiedId()).setRowNum(role.getRowNum()).setName(role.getName())
+                        .setActive(role.getActive()).setPriority(role.getPriority()).setRoleFunctions(roleFunctionSet)
+                        .setChildRoles(childRoles).setParentRoles(parentRoles).createCentralV2Role();
+            } else {
+                cenRole = new CentralV2Role.CentralV2RoleBuilder().setId(role.getAppRoleId())
+                        .setCreated(role.getCreated()).setModified(role.getModified()).setCreatedId(role.getCreatedId())
+                        .setModifiedId(role.getModifiedId()).setRowNum(role.getRowNum()).setName(role.getName())
+                        .setActive(role.getActive()).setPriority(role.getPriority()).setRoleFunctions(roleFunctionSet)
+                        .setChildRoles(childRoles).setParentRoles(parentRoles).createCentralV2Role();
+            }
 			roleList.add(cenRole);
 		}
 		return roleList;
@@ -3289,7 +3296,7 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 				}
 			}
 			if (!found) {
-				CentralV2Role cenrole = new CentralV2Role();
+				CentralV2Role cenrole = new CentralV2Role.CentralV2RoleBuilder().createCentralV2Role();
 				cenrole.setName(role.getRoleName());
 				cenrole.setId(role.getRoleId());
 				cenrole.setActive(role.isActive());
@@ -3336,9 +3343,11 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 	}
 
 	private CentralV2Role convertRoleToCentralV2Role(EPRole role) {
-		return new CentralV2Role(role.getId(), role.getCreated(), role.getModified(), role.getCreatedId(),
-				role.getModifiedId(), role.getRowNum(), role.getName(), role.getActive(), role.getPriority(),
-				new TreeSet<>(), new TreeSet<>(), new TreeSet<>());
+        return new CentralV2Role.CentralV2RoleBuilder().setId(role.getId()).setCreated(role.getCreated())
+                .setModified(role.getModified()).setCreatedId(role.getCreatedId()).setModifiedId(role.getModifiedId())
+                .setRowNum(role.getRowNum()).setName(role.getName()).setActive(role.getActive())
+                .setPriority(role.getPriority()).setRoleFunctions(new TreeSet<>()).setChildRoles(new TreeSet<>())
+                .setParentRoles(new TreeSet<>()).createCentralV2Role();
 	}
 
 	@Override

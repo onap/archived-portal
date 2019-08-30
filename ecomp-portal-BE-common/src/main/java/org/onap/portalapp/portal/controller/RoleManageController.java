@@ -46,10 +46,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import javax.validation.ConstraintViolation;
 import javax.validation.Valid;
 import javax.validation.Validation;
@@ -101,7 +99,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
-
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -333,7 +330,7 @@ public class RoleManageController extends EPRestrictedBaseController {
 							if (existRole.getName().equalsIgnoreCase(role.getName()))
 								throw new DuplicateRecordException("Role already exists: " + existRole.getName());
 
-						domainRole = new CentralV2Role();
+                        domainRole = new CentralV2Role.CentralV2RoleBuilder().createCentralV2Role();
 						domainRole.setName(role.getName());
 						domainRole.setPriority(role.getPriority());
 						domainRole.setActive(role.getActive());

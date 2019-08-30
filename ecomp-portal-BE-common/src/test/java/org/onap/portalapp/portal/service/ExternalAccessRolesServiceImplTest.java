@@ -82,16 +82,7 @@ import org.onap.portalapp.portal.ecomp.model.UploadRoleFunctionExtSystem;
 import org.onap.portalapp.portal.exceptions.InactiveApplicationException;
 import org.onap.portalapp.portal.exceptions.InvalidUserException;
 import org.onap.portalapp.portal.framework.MockitoTestSuite;
-import org.onap.portalapp.portal.transport.BulkUploadRoleFunction;
-import org.onap.portalapp.portal.transport.BulkUploadUserRoles;
-import org.onap.portalapp.portal.transport.CentralRole;
-import org.onap.portalapp.portal.transport.CentralUser;
-import org.onap.portalapp.portal.transport.CentralV2Role;
-import org.onap.portalapp.portal.transport.CentralizedAppRoles;
-import org.onap.portalapp.portal.transport.EcompUserRoles;
-import org.onap.portalapp.portal.transport.ExternalRequestFieldsValidator;
-import org.onap.portalapp.portal.transport.GlobalRoleWithApplicationRoleFunction;
-import org.onap.portalapp.portal.transport.LocalRole;
+import org.onap.portalapp.portal.transport.*;
 import org.onap.portalapp.portal.utils.EPCommonSystemProperties;
 import org.onap.portalapp.portal.utils.EcompPortalUtils;
 import org.onap.portalapp.portal.utils.PortalConstants;
@@ -820,8 +811,8 @@ public class ExternalAccessRolesServiceImplTest {
 		globalRoles.add(globalRole);
 		Mockito.when(dataAccessService.executeNamedQuery("getGlobalRolesOfPortal", null, null)).thenReturn(globalRoles);
 		List<CentralV2Role> expected = new ArrayList<>();
-		CentralV2Role cenV2Role = new CentralV2Role();
-		CentralV2Role cenV2Role2 = new CentralV2Role();
+		CentralV2Role cenV2Role = new CentralV2Role.CentralV2RoleBuilder().createCentralV2Role();
+		CentralV2Role cenV2Role2 = new CentralV2Role.CentralV2RoleBuilder().createCentralV2Role();
 		expected.add(cenV2Role);
 		expected.add(cenV2Role2);
 		List<CentralV2Role> actual = externalAccessRolesServiceImpl.getRolesForApp(app.getUebKey());
@@ -2366,7 +2357,7 @@ public class ExternalAccessRolesServiceImplTest {
 	@Test
 	public void convertV2CentralRoleListToOldVerisonCentralRoleListTest() {
 		List<CentralV2Role> v2CenRoleList = new ArrayList<>();
-		CentralV2Role cenV2Role = new CentralV2Role(2l, "test1");
+		CentralV2Role cenV2Role = new CentralV2Role.CentralV2RoleBuilder().setId(2l).setName("test1").createCentralV2Role();
 		CentralV2RoleFunction CentralV2Role = new CentralV2RoleFunction("testcode", "test_name");
 		SortedSet<CentralV2RoleFunction> setV2RoleFuncs = new TreeSet<>();
 		setV2RoleFuncs.add(CentralV2Role);
