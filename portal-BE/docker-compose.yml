@@ -1,0 +1,36 @@
+# docker-compose for ONAP portal containers: database, microservice, portal apps.
+# Relies on .env file, which CANNOT be specified via command-line option
+# Works in multiple environments; does not pull from a Nexus registry.
+# Exposes the portal apps docker (but not DB nor WMS dockers) on the host network.
+# Images must be pulled from ONAP Nexus registry after logging in like this:
+# docker login -u USER -p PASS nexus3.onap.org:10001
+# Uses healthcheck feature added in docker-compose v2.1
+
+version: '2.1'
+
+services:
+  portal-db:
+    image: portal_mariadb
+    container_name: portal_mariaDB
+    environment:
+      MYSQL_DATABASE: testdb
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+    networks:
+      - backend
+
+  portal-app:
+    image: portal_app
+    container_name: portal_APP
+    restart: on-failure
+    ports:
+      - 8080:8080
+    depends_on:
+      portal-db:
+        condition: service_healthy
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: bridge

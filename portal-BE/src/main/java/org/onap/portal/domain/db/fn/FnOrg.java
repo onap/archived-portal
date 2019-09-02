@@ -76,7 +76,6 @@ CREATE TABLE `fn_org` (
 })
 @NoArgsConstructor
 @AllArgsConstructor
-
 @Getter
 @Setter
 @Entity
@@ -91,7 +90,7 @@ public class FnOrg implements Serializable {
        @SafeHtml
        @NotNull
        private String orgName;
-       @Column(name = "access_cd", length = 10, columnDefinition = "varchar(10) DEFAULT NULL")
+       @Column(name = "access_cd", length = 10)
        @Size(max = 10)
        @SafeHtml
        private String accessCd;
