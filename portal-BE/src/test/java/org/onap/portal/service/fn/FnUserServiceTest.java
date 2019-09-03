@@ -84,7 +84,7 @@ class FnUserServiceTest {
               expected.setOrgUserId("demo");
               expected.setTimezone(fnLuTimezoneService.getById(10L).orElse(new FnLuTimezone()));
               expected.setLoginId("demo");
-              expected.setLoginPwd("4Gl6WL1bmwviYm+XZa6pS1vC0qKXWtn9wcZWdLx61L0=");
+              expected.setLoginPwd("demo123");
               expected.setLastLoginDate(LocalDateTime.parse("2019-08-08T12:18:17"));
               expected.setActiveYn("Y");
               expected.setCreatedDate(LocalDateTime.parse("2016-10-14T21:00"));
@@ -113,7 +113,7 @@ class FnUserServiceTest {
               expected.setEmail("demo@openecomp.org");
               expected.setOrgUserId("demo");
               expected.setLoginId("demo");
-              expected.setLoginPwd("4Gl6WL1bmwviYm+XZa6pS1vC0qKXWtn9wcZWdLx61L0=");
+              expected.setLoginPwd("demo123");
               expected.setLastLoginDate(LocalDateTime.parse("2019-08-08T12:18:17"));
               expected.setActiveYn("Y");
               expected.setCreatedDate(LocalDateTime.parse("2016-10-14T21:00"));

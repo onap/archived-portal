@@ -7,5 +7,6 @@ Portal: Tutorials
    :maxdepth: 2
  
    portal-sdk/index
+   portal-BE/index
 
 
