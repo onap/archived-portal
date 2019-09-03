@@ -36,7 +36,6 @@ INSERT INTO fn_display_text (language_id,text_id,text_label) VALUES (2,15,'应�
 INSERT INTO fn_language (language_name,language_alias) VALUES ('English','EN');
 INSERT INTO fn_language (language_name,language_alias) VALUES ('简体中文','CN');
 
-
 -- FN_FUNCTION
 Insert into fn_function (FUNCTION_CD,FUNCTION_NAME) values ('menu_process','Process List');
 Insert into fn_function (FUNCTION_CD,FUNCTION_NAME) values ('menu_job','Job Menu');
@@ -102,6 +101,15 @@ Insert into fn_lu_activity (ACTIVITY_CD,ACTIVITY) values ('dpa','Delete Portal A
 Insert into fn_lu_activity (ACTIVITY_CD,ACTIVITY) values ('uaa','Update Account Admin');
 Insert into fn_lu_activity (ACTIVITY_CD,ACTIVITY) values ('uu','Update User');
 
+-- new El Alto
+Insert into fn_lu_activity (ACTIVITY_CD,ACTIVITY) values ('eaaf','External auth add function');                            
+Insert into fn_lu_activity (ACTIVITY_CD,ACTIVITY) values ('eaar','External auth add role');
+Insert into fn_lu_activity (ACTIVITY_CD,ACTIVITY) values ('eadf','External auth delete function');
+Insert into fn_lu_activity (ACTIVITY_CD,ACTIVITY) values ('eadr','External auth delete role');
+Insert into fn_lu_activity (ACTIVITY_CD,ACTIVITY) values ('eauf','External auth update function');
+Insert into fn_lu_activity (ACTIVITY_CD,ACTIVITY) values ('eaurf','External auth update role and function');
+
+
 -- FN_LU_MENU_SET
 Insert into fn_lu_menu_set (MENU_SET_CD,MENU_SET_NAME) values ('APP','Application Menu');
 
@@ -131,7 +139,8 @@ Insert into fn_menu(MENU_ID,LABEL,PARENT_ID,SORT_ORDER,ACTION,FUNCTION_CD,ACTIVE
                                values(8,'Portal Admins',1,60,'root.portalAdmins','menu_admin','Y','APP','N','icon-controls-settingsconnectedactivity');
 
 Insert into fn_menu(MENU_ID,LABEL,PARENT_ID,SORT_ORDER,ACTION,FUNCTION_CD,ACTIVE_YN,MENU_SET_CD,SEPARATOR_YN,IMAGE_SRC)
-                               values(9,'Application Onboarding',1,70,'root.applications','menu_app_onboarding','Y','APP','N','icon-content-grid2');
+                               values(9,'Application Onboarding',1,70,'root.applications','menu_admin','Y','APP','N','icon-content-grid2');
+							   
 
 Insert into fn_menu(MENU_ID,LABEL,PARENT_ID,SORT_ORDER,ACTION,FUNCTION_CD,ACTIVE_YN,MENU_SET_CD,SEPARATOR_YN,IMAGE_SRC)
                                values(10,'Widget Onboarding',1,80,'root.widgetOnboarding','menu_admin','Y','APP','N','icon-content-grid2');
