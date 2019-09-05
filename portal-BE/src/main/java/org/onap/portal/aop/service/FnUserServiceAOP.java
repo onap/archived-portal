@@ -82,6 +82,7 @@ public class FnUserServiceAOP {
               try {
                      user = fnUserMapper.fnUserToFnUser(fnUser);
               } catch (NullPointerException e) {
+                  LOGGER.error("NullPointerException occured", e);
                      throw new NullPointerException(e.getLocalizedMessage() + ", " + e.getMessage());
               }
 

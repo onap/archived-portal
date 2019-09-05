@@ -50,29 +50,80 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ExternalAccessPerms implements Serializable, Comparable{
+public class ExternalAccessPerms implements Serializable, Comparable {
 
-	private static final long serialVersionUID = -200964838466882602L;
+    private static final long serialVersionUID = -200964838466882602L;
 
-	private String type;
-	private String instance;
-	private String action;
-	private String description;
+    private String type;
+    private String instance;
+    private String action;
+    private String description;
 
-	public ExternalAccessPerms(String type, String instance, String action) {
-		this.type = type;
-		this.instance = instance;
-		this.action = action;
-	}
+    public ExternalAccessPerms(String type, String instance, String action) {
+        this.type = type;
+        this.instance = instance;
+        this.action = action;
+    }
 
-	@Override
-	public int compareTo(Object obj){
-	ExternalAccessPerms other = (ExternalAccessPerms)obj;
+    @Override
+    public int compareTo(Object obj) {
+        ExternalAccessPerms other = (ExternalAccessPerms) obj;
 
-	String c1 = getInstance();
-	String c2 = other.getInstance();
+        String c1 = getInstance();
+        String c2 = other.getInstance();
 
-	return (c1 == null || c2 == null) ? 1 : c1.compareTo(c2);
-	}
+        return (c1 == null || c2 == null) ? 1 : c1.compareTo(c2);
+    }
 
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((action == null) ? 0 : action.hashCode());
+        result = prime * result + ((description == null) ? 0 : description.hashCode());
+        result = prime * result + ((instance == null) ? 0 : instance.hashCode());
+        result = prime * result + ((type == null) ? 0 : type.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        ExternalAccessPerms other = (ExternalAccessPerms) obj;
+        if (action == null) {
+            if (other.action != null)
+                return false;
+        } else if (!action.equals(other.action)) {
+            return false;
+        }
+        if (description == null) {
+            if (other.description != null)
+                return false;
+        } else if (!description.equals(other.description)) {
+            return false;
+        }
+        if (instance == null) {
+            if (other.instance != null) {
+                return false;
+            }
+        } else if (!instance.equals(other.instance)) {
+            return false;
+        }
+        if (type == null) {
+            if (other.type != null) {
+                return false;
+            }
+        } else if (!type.equals(other.type)) {
+            return false;
+        }
+        return true;
+    }
 }

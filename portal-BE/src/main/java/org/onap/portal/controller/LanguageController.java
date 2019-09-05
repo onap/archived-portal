@@ -111,6 +111,7 @@ public class LanguageController {
                             response.setStatus(PortalRestStatusEnum.ERROR);
                      }
               } catch (Exception e) {
+                     LOGGER.error("Exception in setUpUserLanguage", e);
                      response.setMessage("FAILURE");
                      response.setResponse(e.toString());
                      response.setStatus(PortalRestStatusEnum.ERROR);
@@ -136,6 +137,7 @@ public class LanguageController {
                      response.setResponse(languageService.save(principal, fnLanguage).toString());
                      response.setStatus(PortalRestStatusEnum.OK);
               } catch (Exception e) {
+                     LOGGER.error("Exception in saveLanguage", e);
                      response.setMessage("FAILURE");
                      response.setResponse(e.getMessage());
                      response.setStatus(PortalRestStatusEnum.ERROR);
