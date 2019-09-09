@@ -1,28 +1,8 @@
 # Dockerfile for image with ONAP Portal
+ARG BE_BASE_IMAGE=tomcat:8.5.35-jre8-alpine
+FROM ${BE_BASE_IMAGE}
 
-# Multistage to be able to have SDK war content and not war itself
-FROM busybox:latest AS war-decompress
-
-# Arguments are supplied by build.sh script
-# the defaults below only support testing
-ARG PORTAL_WAR=build/ecompportal-be-os.war
-ARG FE_DIR=build/public
-
-# Just variables, never passed in
-ARG PORTALCONTEXT=ONAPPORTAL
-
-RUN mkdir ${PORTALCONTEXT}
-
-# Portal has many parts
-COPY $PORTAL_WAR ${PORTALCONTEXT}
-RUN cd ${PORTALCONTEXT} && unzip -q *.war && rm *.war
-COPY ${FE_DIR} ${PORTALCONTEXT}/public
-
-# Yields an image 823 MB
-FROM openjdk:8-alpine
-# Yields an image 1.4 GB
-# FROM openjdk:8-jdk
-
+RUN apk add sudo && echo "portal ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 # Arguments are supplied by build.sh script
 # the defaults below only support testing
 ARG PORTAL_WAR=build/ecompportal-be-os.war
@@ -32,27 +12,32 @@ ARG HTTPS_PROXY
 # ARG PORTAL_CERT=truststoreONAPall.jks
 
 # Just variables, never passed in
-ARG TOMCAT_VERSION=8.0.37
-ARG TOMCAT=apache-tomcat-${TOMCAT_VERSION}
-ARG TOMCATTAR=${TOMCAT}.tar.gz
-ARG TOMCATHOME=/opt/${TOMCAT}
 ARG PORTALCONTEXT=ONAPPORTAL
+
+ARG TOMCAT=/usr/local/tomcat
+ARG TOMCATHOME=${TOMCAT}
+ARG SERVERXML=${SERVERXML}
 
 ENV http_proxy $HTTP_PROXY
 ENV https_proxy $HTTPS_PROXY
-RUN if [ ! -z ${HTTP_PROXY} ]; then echo "Acquire::http::proxy  \"${HTTP_PROXY}\";" >> /etc/apt/apt.conf; fi && \
-    if [ ! -z ${HTTPS_PROXY} ]; then echo "Acquire::https::proxy \"${HTTPS_PROXY}\";" >> /etc/apt/apt.conf; fi
 
-# Install Tomcat.  This image already has curl.
-WORKDIR /tmp
-RUN wget -q http://archive.apache.org/dist/tomcat/tomcat-8/v${TOMCAT_VERSION}/bin/${TOMCATTAR} && \
-    tar -xzf ${TOMCATTAR} && \
-    rm ${TOMCATTAR} &&\
-    rm -fr ${TOMCAT}/webapps/* &&\
-    mkdir -p /opt &&\
-    mv ${TOMCAT} /opt
+RUN if [ -d /etc/apt ] && [ ! -z ${HTTP_PROXY} ]; then echo "Acquire::http::proxy  \"${HTTP_PROXY}\";" >> /etc/apt/apt.conf; fi && \
+    if [ -d /etc/apt ] && [ ! -z ${HTTPS_PROXY} ]; then echo "Acquire::https::proxy \"${HTTPS_PROXY}\";" >> /etc/apt/apt.conf; fi
 
-COPY --from=war-decompress /${PORTALCONTEXT} ${TOMCATHOME}/webapps/${PORTALCONTEXT}/
+# Remove manager and sample apps
+RUN rm -rf ${TOMCAT}/webapps/[a-z]*
+RUN mkdir -p /opt
+COPY ${SERVERXML} ${TOMCAT}/conf
+# TODO: ????
+#RUN mv ${TOMCAT} /opt
+
+WORKDIR ${TOMCATHOME}/webapps
+RUN mkdir ${PORTALCONTEXT}
+
+# Portal has many parts
+COPY $PORTAL_WAR ${PORTALCONTEXT}
+RUN cd ${PORTALCONTEXT} && unzip -q *.war && rm *.war
+COPY ${FE_DIR} ${PORTALCONTEXT}/public
 
 VOLUME ${TOMCATHOME}/logs
 
@@ -65,4 +50,5 @@ ENV PATH $PATH:$JAVA_HOME/bin:${TOMCATHOME}/bin
 COPY start-apache-tomcat.sh /
 
 # Define default command
-CMD /start-apache-tomcat.sh
+ENV TOMCATHOME=$TOMCATHOME
+CMD /start-apache-tomcat.sh -b $TOMCATHOME
