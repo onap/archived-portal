@@ -40,6 +40,7 @@
 
 package org.onap.portal.domain.db.ep;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Set;
 import javax.persistence.CascadeType;
@@ -88,7 +89,7 @@ CREATE TABLE `ep_notification` (
 @Getter
 @Setter
 @Entity
-public class EpNotification {
+public class EpNotification implements Serializable {
        @Id
        @GeneratedValue(strategy = GenerationType.AUTO)
        @Column(name = "notification_ID", length = 11, nullable = false)

@@ -40,6 +40,7 @@
 
 package org.onap.portal.domain.db.ep;
 
+import java.io.Serializable;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -74,7 +75,7 @@ CREATE TABLE `ep_endpoints` (
 @Getter
 @Setter
 @Entity
-public class EpEndpoints {
+public class EpEndpoints implements Serializable {
        @Id
        @GeneratedValue(strategy = GenerationType.AUTO)
        @Column(name = "id", length = 11, nullable = false, columnDefinition = "int(11) AUTO_INCREMENT")

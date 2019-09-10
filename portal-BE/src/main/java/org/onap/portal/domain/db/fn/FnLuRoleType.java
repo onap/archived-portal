@@ -40,6 +40,7 @@
 
 package org.onap.portal.domain.db.fn;
 
+import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -67,7 +68,7 @@ CREATE TABLE `fn_lu_role_type` (
 @Getter
 @Setter
 @Entity
-public class FnLuRoleType {
+public class FnLuRoleType implements Serializable {
        @Id
        @Column(name = "role_type_id", nullable = false, length = 11)
        @Digits(integer = 11, fraction = 0)

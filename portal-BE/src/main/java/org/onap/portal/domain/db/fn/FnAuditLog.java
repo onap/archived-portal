@@ -40,6 +40,7 @@
 
 package org.onap.portal.domain.db.fn;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -88,7 +89,7 @@ CREATE TABLE `fn_audit_log` (
 @Getter
 @Setter
 @Entity
-public class FnAuditLog {
+public class FnAuditLog implements Serializable {
        @Id
        @GeneratedValue(strategy = GenerationType.AUTO)
        @Column(name = "log_id", length = 11, nullable = false, columnDefinition = "int(11) AUTO_INCREMENT")

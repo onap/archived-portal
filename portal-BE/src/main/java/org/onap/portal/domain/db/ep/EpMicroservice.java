@@ -40,6 +40,7 @@
 
 package org.onap.portal.domain.db.ep;
 
+import java.io.Serializable;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -88,11 +89,10 @@ CREATE TABLE `ep_microservice` (
 })
 @NoArgsConstructor
 @AllArgsConstructor
-
 @Getter
 @Setter
 @Entity
-public class EpMicroservice {
+public class EpMicroservice implements Serializable {
        @Id
        @GeneratedValue(strategy = GenerationType.AUTO)
        @Column(name = "id", length = 11, nullable = false)

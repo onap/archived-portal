@@ -78,7 +78,7 @@ CREATE TABLE `fn_tab_selected` (
 @Setter
 @Entity
 @IdClass(FnTabSelectedId.class)
-public class FnTabSelected {
+public class FnTabSelected implements Serializable{
        @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
        @JoinColumn(name = "selected_tab_cd", nullable = false)
        @NotNull

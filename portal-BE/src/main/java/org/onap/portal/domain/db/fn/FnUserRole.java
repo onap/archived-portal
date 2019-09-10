@@ -40,6 +40,7 @@
 
 package org.onap.portal.domain.db.fn;
 
+import java.io.Serializable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -106,7 +107,7 @@ CREATE TABLE `fn_user_role` (
 @Getter
 @Setter
 @Entity
-public class FnUserRole {
+public class FnUserRole implements Serializable {
 
        @Id
        @GeneratedValue(strategy = GenerationType.AUTO)

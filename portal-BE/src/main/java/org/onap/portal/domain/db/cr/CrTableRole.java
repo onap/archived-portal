@@ -78,7 +78,7 @@ CREATE TABLE `cr_table_role` (
 @Setter
 @Entity
 @IdClass(CrTableRoleId.class)
-public class CrTableRole {
+public class CrTableRole implements Serializable{
        @Id
        @Valid
        @JoinColumn(name = "table_name", nullable = false)

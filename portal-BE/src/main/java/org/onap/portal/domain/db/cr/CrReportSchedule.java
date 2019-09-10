@@ -40,6 +40,7 @@
 
 package org.onap.portal.domain.db.cr;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Set;
 import javax.persistence.CascadeType;
@@ -99,7 +100,7 @@ CREATE TABLE `cr_report_schedule` (
 @Getter
 @Setter
 @Entity
-public class CrReportSchedule {
+public class CrReportSchedule implements Serializable {
        @Id
        @GeneratedValue(strategy = GenerationType.AUTO)
        @Column(name = "schedule_id", length = 11, nullable = false)

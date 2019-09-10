@@ -40,6 +40,7 @@
 
 package org.onap.portal.domain.db.fn;
 
+import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -82,7 +83,7 @@ CREATE TABLE `fn_workflow` (
 @Getter
 @Setter
 @Entity
-public class FnWorkflow {
+public class FnWorkflow implements Serializable {
        @Id
        @GeneratedValue(strategy = GenerationType.AUTO)
        @Column(name = "id", nullable = false, length = 9, columnDefinition = "mediumint(9) AUTO_INCREMENT")

@@ -40,6 +40,7 @@
 
 package org.onap.portal.domain.db.ep;
 
+import java.io.Serializable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -89,7 +90,7 @@ CREATE TABLE `ep_widget_catalog_parameter` (
 @Getter
 @Setter
 @Entity
-public class EpWidgetCatalogParameter {
+public class EpWidgetCatalogParameter implements Serializable {
        @Id
        @GeneratedValue(strategy = GenerationType.AUTO)
        @Column(name = "id", length = 11, nullable = false, columnDefinition = "int(11) AUTO_INCREMENT")

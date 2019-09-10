@@ -40,6 +40,7 @@
 
 package org.onap.portal.domain.db.fn;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Set;
@@ -181,7 +182,7 @@ CREATE TABLE `fn_user` (
 @AllArgsConstructor
 @DynamicUpdate
 @SequenceGenerator(name = "seq", initialValue = 1000, allocationSize = 100000)
-public class FnUser extends DomainVo implements UserDetails {
+public class FnUser extends DomainVo implements UserDetails, Serializable {
 
        @Id
        @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq")

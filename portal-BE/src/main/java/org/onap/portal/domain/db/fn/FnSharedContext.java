@@ -40,6 +40,7 @@
 
 package org.onap.portal.domain.db.fn;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -78,7 +79,7 @@ CREATE TABLE `fn_shared_context` (
 @Getter
 @Setter
 @Entity
-public class FnSharedContext {
+public class FnSharedContext implements Serializable {
        @Id
        @GeneratedValue(strategy = GenerationType.AUTO)
        @Column(name = "id", nullable = false, length = 11, columnDefinition = "int(11) AUTO_INCREMENT")

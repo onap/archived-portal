@@ -84,7 +84,7 @@ CREATE TABLE `ep_app_function` (
 @IdClass(EpAppFunctionId.class)
 @NoArgsConstructor
 @AllArgsConstructor
-public class EpAppFunction {
+public class EpAppFunction implements Serializable{
        @Id
        @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
        @JoinColumn(name = "app_id")

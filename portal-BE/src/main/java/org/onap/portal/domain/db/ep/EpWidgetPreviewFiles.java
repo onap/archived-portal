@@ -40,6 +40,7 @@
 
 package org.onap.portal.domain.db.ep;
 
+import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -69,7 +70,7 @@ CREATE TABLE `ep_widget_preview_files` (
 @Getter
 @Setter
 @Entity
-public class EpWidgetPreviewFiles {
+public class EpWidgetPreviewFiles implements Serializable {
        @Id
        @GeneratedValue(strategy = GenerationType.AUTO)
        @Column(name = "preview_id", length = 11, nullable = false, columnDefinition = "int(11) AUTO_INCREMENT")

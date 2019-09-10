@@ -108,4 +108,22 @@ public class DomainVo extends FusionVo implements Serializable, Cloneable, Compa
        public Object clone() throws CloneNotSupportedException {
               return super.clone();
        }
+
+       public boolean equals(Object other) {
+              if (this == other) {
+                     return true;
+              } else if (other == null) {
+                     return false;
+              } else if (!(other instanceof DomainVo)) {
+                     return false;
+              } else {
+                     DomainVo castOther = (DomainVo)other;
+                     return this.getId().equals(castOther.getId())
+                             && this.getCreated().equals(castOther.getCreated())
+                             && this.getCreatedId().equals(castOther.getCreatedId())
+                             && this.getModified().equals(castOther.getModified())
+                             && this.getModifiedId() == castOther.getModifiedId();
+              }
+       }
+
 }

@@ -40,6 +40,7 @@
 
 package org.onap.portal.domain.db;
 
+import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -73,7 +74,7 @@ CREATE TABLE `schema_info` (
 @Getter
 @Setter
 @Entity
-public class SchemaInfo {
+public class SchemaInfo implements Serializable {
        @Id
        @Column(name = "SCHEMA_ID", length = 25, nullable = false)
        @Size(max = 25)

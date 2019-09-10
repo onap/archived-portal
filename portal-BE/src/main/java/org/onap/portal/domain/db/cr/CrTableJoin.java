@@ -40,6 +40,7 @@
 
 package org.onap.portal.domain.db.cr;
 
+import java.io.Serializable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -82,7 +83,7 @@ CREATE TABLE `cr_table_join` (
 @Getter
 @Setter
 @Entity
-public class CrTableJoin {
+public class CrTableJoin implements Serializable {
        //TODO Unique constrains {srcTableName, destTableName}?
        @Id
        @GeneratedValue(strategy = GenerationType.AUTO)

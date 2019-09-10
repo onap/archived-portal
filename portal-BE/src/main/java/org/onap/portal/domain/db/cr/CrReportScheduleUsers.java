@@ -82,7 +82,7 @@ CREATE TABLE `cr_report_schedule_users` (
 @Setter
 @Entity
 @IdClass(CrReportScheduleUsersId.class)
-public class CrReportScheduleUsers {
+public class CrReportScheduleUsers implements Serializable{
        @Id
        @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
        @JoinColumn(name = "schedule_id", nullable = false)

@@ -89,7 +89,6 @@ public class FnUserService implements UserDetailsService {
        }
 
        List<FnUser> getUsersByOrgIds(final List<String> orgIds){
-              String ids = "(" + orgIds.stream().map(s -> "'" + s + "'").collect(Collectors.joining()) + ")";
               return fnUserDao.getUsersByOrgIds(orgIds).orElse(new ArrayList<>());
        }
 

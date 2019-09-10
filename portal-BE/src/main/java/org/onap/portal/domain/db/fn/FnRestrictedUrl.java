@@ -80,7 +80,7 @@ CREATE TABLE `fn_restricted_url` (
 @Setter
 @Entity
 @IdClass(FnRestrictedUrlId.class)
-public class FnRestrictedUrl {
+public class FnRestrictedUrl implements Serializable{
        @Column(name = "restricted_url", length = 250, nullable = false)
        @Size(max = 250)
        @SafeHtml

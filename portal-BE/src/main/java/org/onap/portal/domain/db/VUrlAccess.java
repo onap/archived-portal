@@ -40,6 +40,7 @@
 
 package org.onap.portal.domain.db;
 
+import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -66,7 +67,7 @@ import org.hibernate.annotations.Subselect;
         + " from fn_restricted_url r")
 @Getter
 @NoArgsConstructor
-public class VUrlAccess {
+public class VUrlAccess implements Serializable {
        @Id
        @GeneratedValue(strategy = GenerationType.AUTO)
        @Column(name = "id", nullable = false)

@@ -40,6 +40,7 @@
 
 package org.onap.portal.domain.db.ep;
 
+import java.io.Serializable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -82,7 +83,7 @@ CREATE TABLE `ep_web_analytics_source` (
 @Getter
 @Setter
 @Entity
-public class EpWebAnalyticsSource {
+public class EpWebAnalyticsSource implements Serializable {
        @Id
        @GeneratedValue(strategy = GenerationType.AUTO)
        @Column(name = "resource_id", length = 11, nullable = false, columnDefinition = "int(11) AUTO_INCREMENT")

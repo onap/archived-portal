@@ -71,12 +71,11 @@ CREATE TABLE `ep_ml_user` (
 @Table(name = "ep_ml_user")
 @NoArgsConstructor
 @AllArgsConstructor
-
 @Getter
 @Setter
 @Entity
 @IdClass(EpMlUserId.class)
-public class EpMlUser {
+public class EpMlUser implements Serializable{
        @Id
        @Column(name = "time_stamp", nullable = false, columnDefinition = "datetime DEFAULT current_timestamp()")
        private LocalDateTime timeStamp;

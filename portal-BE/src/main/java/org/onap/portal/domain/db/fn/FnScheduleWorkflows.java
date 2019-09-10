@@ -40,6 +40,7 @@
 
 package org.onap.portal.domain.db.fn;
 
+import java.io.Serializable;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
@@ -79,7 +80,7 @@ CREATE TABLE `fn_schedule_workflows` (
 @Getter
 @Setter
 @Entity
-public class FnScheduleWorkflows {
+public class FnScheduleWorkflows implements Serializable {
        @Id
        @GeneratedValue(strategy = GenerationType.AUTO)
        @Column(name = "id_schedule_workflows", nullable = false, length = 25, columnDefinition = "bigint(25) AUTO_INCREMENT")

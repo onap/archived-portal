@@ -40,6 +40,7 @@
 
 package org.onap.portal.domain.db.ep;
 
+import java.io.Serializable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -84,7 +85,7 @@ CREATE TABLE `ep_pers_user_widget_sel` (
 @Getter
 @Setter
 @Entity
-public class EpPersUserWidgetSel {
+public class EpPersUserWidgetSel implements Serializable {
        @Id
        @GeneratedValue(strategy = GenerationType.AUTO)
        @Column(name = "id", length = 11, nullable = false)

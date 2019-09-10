@@ -76,7 +76,7 @@ CREATE TABLE `fn_qz_scheduler_state` (
 @Setter
 @Entity
 @IdClass(FnQzSchedulerStateID.class)
-public class FnQzSchedulerState {
+public class FnQzSchedulerState implements Serializable{
        @Id
        @Size(max = 120)
        @SafeHtml

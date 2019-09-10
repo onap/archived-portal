@@ -40,6 +40,7 @@
 
 package org.onap.portal.domain.db.cr;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Set;
 import javax.persistence.CascadeType;
@@ -90,7 +91,7 @@ CREATE TABLE `cr_folder` (
 @Getter
 @Setter
 @Entity
-public class CrFolder {
+public class CrFolder implements Serializable {
        @Id
        @GeneratedValue(strategy = GenerationType.AUTO)
        @Column(name = "folder_id", length = 11, nullable = false)

@@ -100,7 +100,7 @@ CREATE TABLE `fn_qz_fired_triggers` (
 @Setter
 @Entity
 @IdClass(FnQzFiredTriggersID.class)
-public class FnQzFiredTriggers {
+public class FnQzFiredTriggers implements Serializable{
        @Id
        @Size(max = 120)
        @SafeHtml

@@ -76,7 +76,6 @@ public class CrFilehistLog {
        @Id
        @Column(name = "schedule_id", length = 11, nullable = false)
        @Digits(integer = 11, fraction = 0)
-       @Positive
        private Long scheduledId;
        //TODO URL @URL
        @URL

@@ -40,6 +40,7 @@
 
 package org.onap.portal.domain.db.fn;
 
+import java.io.Serializable;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -79,7 +80,7 @@ CREATE TABLE `fn_org` (
 @Getter
 @Setter
 @Entity
-public class FnOrg {
+public class FnOrg implements Serializable {
        @Id
        @GeneratedValue(strategy = GenerationType.AUTO)
        @Column(name = "org_id", nullable = false, length = 11)

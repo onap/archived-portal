@@ -40,6 +40,7 @@
 
 package org.onap.portal.domain.db.fn;
 
+import java.io.Serializable;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -89,7 +90,7 @@ CREATE TABLE `fn_menu_functional` (
 @Getter
 @Setter
 @Entity
-public class FnMenuFunctional {
+public class FnMenuFunctional implements Serializable {
        @Id
        @GeneratedValue(strategy = GenerationType.AUTO)
        @Column(name = "menu_id", nullable = false, length = 11)

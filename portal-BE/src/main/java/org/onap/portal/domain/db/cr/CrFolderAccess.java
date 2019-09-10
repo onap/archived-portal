@@ -41,6 +41,7 @@
 package org.onap.portal.domain.db.cr;
 
 
+import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -77,7 +78,7 @@ CREATE TABLE `cr_folder_access` (
 @Getter
 @Setter
 @Entity
-public class CrFolderAccess {
+public class CrFolderAccess implements Serializable {
        @Id
        @GeneratedValue(strategy = GenerationType.AUTO)
        @Column(name = "folder_access_id", length = 11, nullable = false)

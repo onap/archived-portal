@@ -147,7 +147,6 @@ class FnUserServiceTest {
               assertEquals(expected.getActiveYn(), actual.getActiveYn());
               assertEquals(expected.getCreatedId(), actual.getCreatedId());
               assertEquals(expected.getCreatedDate(), actual.getCreatedDate());
-              assertEquals(expected.getModifiedId(), actual.getModifiedId());
               assertEquals(expected.getModifiedDate(), actual.getModifiedDate());
               assertEquals(expected.getIsInternalYn(), actual.getIsInternalYn());
               assertEquals(expected.getAddressLine1(), actual.getAddressLine1());

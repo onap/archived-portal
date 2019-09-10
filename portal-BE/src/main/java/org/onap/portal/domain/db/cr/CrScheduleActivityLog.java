@@ -40,6 +40,7 @@
 
 package org.onap.portal.domain.db.cr;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -69,7 +70,7 @@ CREATE TABLE `cr_schedule_activity_log` (
 @Getter
 @Setter
 @Entity
-public class CrScheduleActivityLog {
+public class CrScheduleActivityLog implements Serializable {
        @Id
        @Column(name = "schedule_id", nullable = false)
        @Digits(integer = 11, fraction = 0)

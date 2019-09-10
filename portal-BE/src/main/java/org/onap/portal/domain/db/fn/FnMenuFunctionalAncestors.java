@@ -40,6 +40,7 @@
 
 package org.onap.portal.domain.db.fn;
 
+import java.io.Serializable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -81,7 +82,7 @@ CREATE TABLE `fn_menu_functional_ancestors` (
 @Getter
 @Setter
 @Entity
-public class FnMenuFunctionalAncestors {
+public class FnMenuFunctionalAncestors implements Serializable {
        @Id
        @GeneratedValue(strategy = GenerationType.AUTO)
        @Column(name = "id", nullable = false, length = 11, columnDefinition = "int(11)  AUTO_INCREMENT")

@@ -45,7 +45,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.onap.portalsdk.core.domain.support.DomainVo;
+import org.onap.portal.domain.dto.DomainVo;
 
 @Getter
 @Setter
