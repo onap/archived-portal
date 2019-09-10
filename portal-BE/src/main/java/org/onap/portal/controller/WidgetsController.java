@@ -45,14 +45,19 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.onap.portal.domain.db.fn.FnUser;
+import org.onap.portal.domain.dto.transport.FieldsValidator;
 import org.onap.portal.domain.dto.transport.OnboardingWidget;
+import org.onap.portal.service.AdminRolesService;
 import org.onap.portal.service.WidgetService;
 import org.onap.portal.service.fn.FnUserService;
 import org.onap.portal.utils.EcompPortalUtils;
+import org.onap.portal.validation.DataValidator;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -65,11 +70,16 @@ public class WidgetsController {
 
        private final FnUserService fnUserService;
        private final WidgetService widgetService;
+       private final AdminRolesService adminRolesService;
+       private final DataValidator dataValidator;
 
        @Autowired
-       public WidgetsController(FnUserService fnUserService, WidgetService widgetService) {
+       public WidgetsController(FnUserService fnUserService, WidgetService widgetService,
+               AdminRolesService adminRolesService, DataValidator dataValidator) {
               this.fnUserService = fnUserService;
               this.widgetService = widgetService;
+              this.adminRolesService = adminRolesService;
+              this.dataValidator = dataValidator;
        }
 
        @RequestMapping(value = { "/portalApi/widgets" }, method = RequestMethod.GET, produces = "application/json")
@@ -91,5 +101,38 @@ public class WidgetsController {
 
               EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/widgets", "GET result =", response.getStatus());
               return onboardingWidgets;
+       }
+
+       @RequestMapping(value = { "/portalApi/widgets/{widgetId}" }, method = { RequestMethod.PUT }, produces = "application/json")
+       public FieldsValidator putOnboardingWidget(Principal principal, HttpServletRequest request, @PathVariable("widgetId") Long widgetId,
+               @RequestBody OnboardingWidget onboardingWidget, HttpServletResponse response) {
+              FnUser user = fnUserService.loadUserByUsername(principal.getName());
+              FieldsValidator fieldsValidator = null;
+              if (onboardingWidget!=null){
+                     if(!dataValidator.isValid(onboardingWidget)){
+                            fieldsValidator = new FieldsValidator();
+                            fieldsValidator.setHttpStatusCode((long)HttpServletResponse.SC_NOT_ACCEPTABLE);
+                            return fieldsValidator;
+                     }
+              }
+
+              if (userHasPermissions(user, response, "putOnboardingWidget")) {
+                     assert onboardingWidget != null;
+                     onboardingWidget.setId(widgetId);
+                     onboardingWidget.normalize();
+                     fieldsValidator = widgetService.setOnboardingWidget(user, onboardingWidget);
+                     response.setStatus(fieldsValidator.getHttpStatusCode().intValue());
+              }
+              EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/widgets/" + widgetId, "GET result =", response.getStatus());
+
+              return fieldsValidator;
+       }
+
+       private boolean userHasPermissions(FnUser user, HttpServletResponse response, String invocator) {
+              if (!adminRolesService.isSuperAdmin(user) && !adminRolesService.isAccountAdmin(user)) {
+                     EcompPortalUtils.setBadPermissions(user, response, invocator);
+                     return false;
+              }
+              return true;
        }
 }

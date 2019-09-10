@@ -66,6 +66,12 @@ public class Widget extends DomainVo {
 		this.url = "";
 	}
 
+	public Widget(Long appId, String name, String url) {
+		this.name = name;
+		this.url = url;
+		this.appId = appId;
+	}
+
 	public void setName(String name) {
 		if (StringUtils.isEmpty(name)) {
 			name = "";

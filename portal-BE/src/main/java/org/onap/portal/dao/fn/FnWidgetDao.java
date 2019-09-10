@@ -38,38 +38,15 @@
  *
  */
 
-package org.onap.portal.domain.dto.transport;
+package org.onap.portal.dao.fn;
 
-import java.util.ArrayList;
-import java.util.List;
-import javax.servlet.http.HttpServletResponse;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import org.onap.portal.domain.db.fn.FnWidget;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
-@Getter
-@Setter
-@ToString
-@NoArgsConstructor
-@AllArgsConstructor
-public class FieldsValidator {
+@Repository
+@Transactional
+public interface FnWidgetDao extends JpaRepository<FnWidget, Long> {
 
-	private Long httpStatusCode = (long) HttpServletResponse.SC_OK;
-	private Long errorCode;
-	private List<FieldName> fields = new ArrayList<>();
-
-	public void addProblematicFieldName(String fieldName){
-		fields.add(new FieldName(fieldName));
-	}
-
-	@Getter
-	@Setter
-	@ToString
-	@NoArgsConstructor
-	@AllArgsConstructor
-	public class FieldName {
-		public String name;
-	}
 }

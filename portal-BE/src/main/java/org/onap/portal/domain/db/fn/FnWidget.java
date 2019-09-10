@@ -38,38 +38,34 @@
  *
  */
 
-package org.onap.portal.domain.dto.transport;
+package org.onap.portal.domain.db.fn;
 
-import java.util.ArrayList;
-import java.util.List;
-import javax.servlet.http.HttpServletResponse;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
-@Getter
-@Setter
-@ToString
+@Table(name = "fn_widget")
 @NoArgsConstructor
 @AllArgsConstructor
-public class FieldsValidator {
-
-	private Long httpStatusCode = (long) HttpServletResponse.SC_OK;
-	private Long errorCode;
-	private List<FieldName> fields = new ArrayList<>();
-
-	public void addProblematicFieldName(String fieldName){
-		fields.add(new FieldName(fieldName));
-	}
-
-	@Getter
-	@Setter
-	@ToString
-	@NoArgsConstructor
-	@AllArgsConstructor
-	public class FieldName {
-		public String name;
-	}
+@Getter
+@Setter
+@Entity
+public class FnWidget {
+       @Id
+       private Long widgetId;
+       @Column(name = "WDG_NAME")
+       private String name;
+       @Column(name = "WDG_WIDTH")
+       private Integer width;
+       @Column(name = "WDG_HEIGHT")
+       private Integer height;
+       @Column(name = "WDG_URL")
+       private String url;
+       @Column(name = "APP_ID")
+       private Long appId;
 }
