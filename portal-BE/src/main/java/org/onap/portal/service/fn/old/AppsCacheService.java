@@ -137,12 +137,12 @@ public class AppsCacheService {
 
 	public List<OnboardingApp> getAppsFullList() {
 		refreshAppsMap(quickRefreshCacheConf);
-		List<FnApp> appList = new ArrayList<FnApp> (appsMap.values());
+		List<FnApp> appList = new ArrayList<>(appsMap.values());
 		appList.removeIf(app -> app.getId() == 1);
 		List<FnApp> appsFinalList = appList.stream()
 		.filter(app -> app.getEnabled() && !app.getOpen()).collect(Collectors.toList());
 		
-		List<OnboardingApp> onboardingAppsList = new ArrayList<OnboardingApp>();
+		List<OnboardingApp> onboardingAppsList = new ArrayList<>();
 		for (FnApp app : appsFinalList) {
 			OnboardingApp onboardingApp = new OnboardingApp();
 			appsService.createOnboardingFromApp(app, onboardingApp);
@@ -154,9 +154,7 @@ public class AppsCacheService {
 	public FnApp getApp(Long appId) {
 		refreshAppsMap(quickRefreshCacheConf);
 		FnApp app = appsMap.get(appId);
-		if(app != null)
-			return app;
-		return null;		
+		return app;
 	}
 
 	public FnApp getAppFromUeb(String appKey) {
@@ -166,9 +164,7 @@ public class AppsCacheService {
 	public FnApp getAppFromUeb(String appKey, Integer quickCacheRefresh) {
 		refreshAppsMap(quickCacheRefresh == 1 ? quickRefreshCacheConf:slowRefreshCacheConf);
 		FnApp app = uebAppsMap.get(appKey);
-		if(app != null)
-			return app;
-		return null;		
+		return app;
 	}
 
 }

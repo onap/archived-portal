@@ -49,6 +49,7 @@ import org.onap.portal.domain.db.fn.FnUser;
 import org.onap.portal.domain.dto.transport.FieldsValidator;
 import org.onap.portal.domain.dto.transport.OnboardingWidget;
 import org.onap.portal.domain.dto.transport.WidgetCatalogPersonalization;
+import org.onap.portal.logging.aop.EPAuditLog;
 import org.onap.portal.service.AdminRolesService;
 import org.onap.portal.service.PersUserWidgetService;
 import org.onap.portal.service.WidgetService;
@@ -59,14 +60,17 @@ import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+@EPAuditLog
 @RestController
-@Configuration
 @EnableAspectJAutoProxy
 public class WidgetsController {
 
@@ -89,7 +93,7 @@ public class WidgetsController {
               this.persUserWidgetService = persUserWidgetService;
        }
 
-       @RequestMapping(value = {"/portalApi/widgets"}, method = RequestMethod.GET, produces = "application/json")
+       @GetMapping(value = {"/portalApi/widgets"}, produces = MediaType.APPLICATION_JSON_VALUE)
        public List<OnboardingWidget> getOnboardingWidgets(Principal principal, HttpServletRequest request,
                HttpServletResponse response) {
               FnUser user = fnUserService.loadUserByUsername(principal.getName());
@@ -113,8 +117,7 @@ public class WidgetsController {
               return onboardingWidgets;
        }
 
-       @RequestMapping(value = {"/portalApi/widgets/{widgetId}"}, method = {
-               RequestMethod.PUT}, produces = "application/json")
+       @PutMapping(value = {"/portalApi/widgets/{widgetId}"}, produces = MediaType.APPLICATION_JSON_VALUE)
        public FieldsValidator putOnboardingWidget(Principal principal, HttpServletRequest request,
                @PathVariable("widgetId") Long widgetId,
                @RequestBody OnboardingWidget onboardingWidget, HttpServletResponse response) {
@@ -149,7 +152,7 @@ public class WidgetsController {
               return true;
        }
 
-       @RequestMapping(value = {"/portalApi/widgets"}, method = {RequestMethod.POST}, produces = "application/json")
+       @PostMapping(value = {"/portalApi/widgets"}, produces = MediaType.APPLICATION_JSON_VALUE)
        public FieldsValidator postOnboardingWidget(Principal principal, HttpServletRequest request,
                @RequestBody OnboardingWidget onboardingWidget, HttpServletResponse response) {
               FnUser user = fnUserService.loadUserByUsername(principal.getName());
@@ -175,8 +178,7 @@ public class WidgetsController {
               return fieldsValidator;
        }
 
-       @RequestMapping(value = {"/portalApi/widgets/{widgetId}"}, method = {
-               RequestMethod.DELETE}, produces = "application/json")
+       @DeleteMapping(value = {"/portalApi/widgets/{widgetId}"}, produces = MediaType.APPLICATION_JSON_VALUE)
        public FieldsValidator deleteOnboardingWidget(Principal principal, HttpServletRequest request,
                @PathVariable("widgetId") Long widgetId, HttpServletResponse response) {
               FnUser user = fnUserService.loadUserByUsername(principal.getName());
@@ -192,8 +194,7 @@ public class WidgetsController {
               return fieldsValidator;
        }
 
-       @RequestMapping(value = {
-               "portalApi/widgetCatalogSelection"}, method = RequestMethod.PUT, produces = "application/json")
+       @PutMapping(value = {"portalApi/widgetCatalogSelection"}, produces = MediaType.APPLICATION_JSON_VALUE)
        public FieldsValidator putWidgetCatalogSelection(Principal principal, HttpServletRequest request,
                @RequestBody WidgetCatalogPersonalization persRequest, HttpServletResponse response) throws IOException {
               FieldsValidator result = new FieldsValidator();
@@ -205,7 +206,6 @@ public class WidgetsController {
                             return result;
                      }
               }
-
               try {
                      if (persRequest.getWidgetId() == null || user == null) {
                             EcompPortalUtils.setBadPermissions(user, response, "putWidgetCatalogSelection");

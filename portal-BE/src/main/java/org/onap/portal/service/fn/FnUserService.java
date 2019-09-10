@@ -44,7 +44,6 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import org.onap.portal.dao.fn.FnUserDao;
 import org.onap.portal.domain.db.fn.FnUser;
 import org.springframework.beans.factory.annotation.Autowired;

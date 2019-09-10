@@ -38,41 +38,23 @@
  *
  */
 
-package org.onap.portal.domain.dto.ecomp;
+package org.onap.portal.service;
 
-import java.nio.charset.Charset;
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.commons.codec.binary.Base64;
 import org.onap.portal.utils.EcompPortalUtils;
-import org.onap.portalsdk.core.onboarding.util.CipherUtil;
-import org.springframework.http.HttpHeaders;
+import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
+import org.springframework.stereotype.Service;
 
-@Getter
-@Setter
-public class WidgetServiceHeaders {
+@Service
+public class WidgetMService {
 
-	private WidgetServiceHeaders(){}
-	
-	private static HttpHeaders widgetHeaders;
+       private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(WidgetMService.class);
 
-	public static HttpHeaders getInstance() throws Exception{
-		if(null == widgetHeaders){
-		   return new HttpHeaders(){{
-			   	
-				    String username = EcompPortalUtils
-						.getPropertyOrDefault("microservices.widget.username", "widget_user");
-				    String password = CipherUtil.decryptPKC(EcompPortalUtils.getPropertyOrDefault("microservices.widget.password", "widget_password"));
-			        String auth = username + ":" + password;
-			        byte[] encodedAuth = Base64.encodeBase64( 
-			           auth.getBytes(Charset.forName("US-ASCII")) );
-			        String authHeader = "Basic " + new String( encodedAuth );
-			        set( "Authorization", authHeader );
-			      }
-			   };
-		}
-		else 
-			return widgetHeaders;
-		
-	}
+       public String getServiceLocation(String service, String fallbackPortOnLocalHost) {
+              logger.debug(EELFLoggerDelegate.debugLogger, "Requested Service: " + service);
+              String localFallbackServiceLocation =
+                      EcompPortalUtils.localOrDockerHost() + ":" + fallbackPortOnLocalHost;
+              logger.debug(EELFLoggerDelegate.debugLogger,
+                      "returned service location: " + localFallbackServiceLocation);
+              return localFallbackServiceLocation;
+       }
 }

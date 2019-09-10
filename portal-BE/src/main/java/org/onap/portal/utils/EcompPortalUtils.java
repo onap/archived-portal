@@ -103,7 +103,7 @@ public class EcompPortalUtils {
 	 * @return List of tokens split from the source
 	 */
 	public static List<String> parsingByRegularExpression(String source, String regex) {
-		List<String> tokens = new ArrayList<String>();
+		List<String> tokens = new ArrayList<>();
 		if (source != null && source.length() > 0) {
 			String[] parsed = source.split(regex);
 			for (String token : parsed) {
@@ -225,7 +225,7 @@ public class EcompPortalUtils {
 		String responseCode = MDC.get(EPCommonSystemProperties.EXTERNAL_API_RESPONSE_CODE);
 		int responseCodeInt = 0;
 		try {
-			if (responseCode != null && responseCode != "") {
+			if (responseCode != null && !responseCode.isEmpty()) {
 				responseCodeInt = Integer.valueOf(responseCode);
 			}
 		} catch (Exception e) {
@@ -530,7 +530,7 @@ public class EcompPortalUtils {
 			logger.error(EELFLoggerDelegate.errorLogger,
 					"Please check in system.properties whether the property exists or not!");
 			return false;
-		} else if (new Boolean(rmtCentralAccess)) {
+		} else if (Boolean.valueOf(rmtCentralAccess)) {
 			logger.debug(EELFLoggerDelegate.debugLogger, "checkIfRemoteCentralAccessAllowed: {}", rmtCentralAccess);
 			result = true;
 		}

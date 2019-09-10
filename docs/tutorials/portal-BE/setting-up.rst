@@ -26,6 +26,7 @@ Building
 ::
 
     cd portal-BE/
+    If you get this error "unable to prepare context: path ".\r" not found" please use this command dos2unix build.sh
     ./build.sh
 
 Viewing your app
