@@ -38,26 +38,24 @@
  *
  */
 
-package org.onap.portal.domain.dto.ecomp;
+package org.onap.portal.dao.ep;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.onap.portal.domain.dto.DomainVo;
+import java.util.List;
+import org.onap.portal.domain.db.ep.EpMicroserviceParameter;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-public class WidgetCatalogParameter extends DomainVo{
-	
-	private static final long serialVersionUID = 1L;
+@Repository
+@Transactional
+public interface EpMicroserviceParameterDao extends JpaRepository<EpMicroserviceParameter, Long> {
 
-	private Long id;
-	private Long widgetId;
-	private Long userId;
-	private Long paramId;
-	private String userValue;
-
+       @Query
+       void deleteByServiceId(@Param("SERVICEID") Long userId);
+       @Query
+       void deleteMicroserviceParameterById(@Param("PARAMID") Long userId);
+       @Query
+       List<EpMicroserviceParameter> getParametersById(@Param("SERVICEID") long serviceId);
 }

@@ -51,6 +51,8 @@ import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.validation.Valid;
 import javax.validation.constraints.Digits;
@@ -80,6 +82,19 @@ CREATE TABLE `ep_widget_catalog_parameter` (
         )
 */
 
+@NamedQueries({
+        @NamedQuery(
+                name = "EpWidgetCatalogParameter.retrieveByParamId",
+                query = "FROM EpWidgetCatalogParameter WHERE paramId = :PARAMID"),
+        @NamedQuery(
+                name = "EpWidgetCatalogParameter.deleteWidgetCatalogParameter",
+                query = "DELETE FROM EpWidgetCatalogParameter WHERE paramId = :PARAMID"),
+        @NamedQuery(
+                name = "EpWidgetCatalogParameter.getUserParamById",
+                query = "FROM EpWidgetCatalogParameter WHERE paramId = :PARAMID and userId = :USERID and widgetId = :WIDGETID"
+        )
+})
+
 @Table(name = "ep_widget_catalog_parameter", indexes = {
         @Index(name = "EP_FN_USER_WIDGET_PARAMETER_FK", columnList = "user_id"),
         @Index(name = "EP_WIDGET_CATALOG_WIDGET_PARAMETER_FK", columnList = "widget_id"),
@@ -91,11 +106,12 @@ CREATE TABLE `ep_widget_catalog_parameter` (
 @Setter
 @Entity
 public class EpWidgetCatalogParameter implements Serializable {
+
        @Id
        @GeneratedValue(strategy = GenerationType.AUTO)
        @Column(name = "id", length = 11, nullable = false, columnDefinition = "int(11) AUTO_INCREMENT")
        @Digits(integer = 11, fraction = 0)
-       private Integer id;
+       private Long id;
        @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
        @JoinColumn(name = "widget_id", nullable = false)
        @NotNull

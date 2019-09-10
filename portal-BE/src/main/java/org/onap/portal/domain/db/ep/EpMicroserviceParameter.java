@@ -79,7 +79,14 @@ CREATE TABLE `ep_microservice_parameter` (
 @NamedQueries({
         @NamedQuery(
                 name = "EpMicroserviceParameter.deleteByServiceId",
-                query = "FROM EpMicroserviceParameter WHERE service_id =:serviceId")
+                query = "DELETE FROM EpMicroserviceParameter WHERE service_id =:SERVICEID"),
+        @NamedQuery(
+                name = "EpMicroserviceParameter.getParametersById",
+                query = "FROM EpMicroserviceParameter WHERE service_id =:SERVICEID"),
+        @NamedQuery(
+                name = "EpMicroserviceParameter.deleteMicroserviceParameterById",
+                query = "DELETE FROM EpMicroserviceParameter WHERE id =:PARAMID"
+        )
 })
 
 @Table(name = "ep_microservice_parameter", indexes = {
