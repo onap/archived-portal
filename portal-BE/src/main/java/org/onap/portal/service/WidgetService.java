@@ -244,4 +244,22 @@ public class WidgetService {
                       .getResultList();
        }
 
+       @Transactional
+       public FieldsValidator deleteOnboardingWidget(FnUser user, Long onboardingWidgetId) {
+              FieldsValidator fieldsValidator = new FieldsValidator();
+              synchronized (syncRests) {
+                     FnWidget widget = fnWidgetDao.getOne(onboardingWidgetId);
+                     if (widget != null && widget.getAppId() != null) { // widget exists
+                            if (!this.isUserAdminOfAppForWidget(adminRolesService.isSuperAdmin(user), user.getId(),
+                                    widget.getAppId())) {
+                                   fieldsValidator.setHttpStatusCode((long) HttpServletResponse.SC_FORBIDDEN);
+                            } else {
+                                   fnWidgetDao.deleteById(onboardingWidgetId);
+                                   fieldsValidator.setHttpStatusCode(
+                                           (long) HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                            }
+                     }
+              }
+              return fieldsValidator;
+       }
 }

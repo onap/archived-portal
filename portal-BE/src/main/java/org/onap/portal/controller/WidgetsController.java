@@ -40,6 +40,7 @@
 
 package org.onap.portal.controller;
 
+import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
@@ -47,7 +48,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.onap.portal.domain.db.fn.FnUser;
 import org.onap.portal.domain.dto.transport.FieldsValidator;
 import org.onap.portal.domain.dto.transport.OnboardingWidget;
+import org.onap.portal.domain.dto.transport.WidgetCatalogPersonalization;
 import org.onap.portal.service.AdminRolesService;
+import org.onap.portal.service.PersUserWidgetService;
 import org.onap.portal.service.WidgetService;
 import org.onap.portal.service.fn.FnUserService;
 import org.onap.portal.utils.EcompPortalUtils;
@@ -66,24 +69,29 @@ import org.springframework.web.bind.annotation.RestController;
 @Configuration
 @EnableAspectJAutoProxy
 public class WidgetsController {
+
        private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(WidgetsController.class);
 
        private final FnUserService fnUserService;
        private final WidgetService widgetService;
        private final AdminRolesService adminRolesService;
        private final DataValidator dataValidator;
+       private final PersUserWidgetService persUserWidgetService;
 
        @Autowired
-       public WidgetsController(FnUserService fnUserService, WidgetService widgetService,
-               AdminRolesService adminRolesService, DataValidator dataValidator) {
+       public WidgetsController(final FnUserService fnUserService, final WidgetService widgetService,
+               final AdminRolesService adminRolesService, final DataValidator dataValidator,
+               final PersUserWidgetService persUserWidgetService) {
               this.fnUserService = fnUserService;
               this.widgetService = widgetService;
               this.adminRolesService = adminRolesService;
               this.dataValidator = dataValidator;
+              this.persUserWidgetService = persUserWidgetService;
        }
 
-       @RequestMapping(value = { "/portalApi/widgets" }, method = RequestMethod.GET, produces = "application/json")
-       public List<OnboardingWidget> getOnboardingWidgets(Principal principal, HttpServletRequest request, HttpServletResponse response) {
+       @RequestMapping(value = {"/portalApi/widgets"}, method = RequestMethod.GET, produces = "application/json")
+       public List<OnboardingWidget> getOnboardingWidgets(Principal principal, HttpServletRequest request,
+               HttpServletResponse response) {
               FnUser user = fnUserService.loadUserByUsername(principal.getName());
               List<OnboardingWidget> onboardingWidgets = null;
 
@@ -94,24 +102,28 @@ public class WidgetsController {
                      if (!getType.isEmpty() && ("managed".equals(getType) || "all".equals(getType))) {
                             onboardingWidgets = widgetService.getOnboardingWidgets(user, "managed".equals(getType));
                      } else {
-                            logger.debug(EELFLoggerDelegate.debugLogger, "WidgetsController.getOnboardingApps - request must contain header 'X-Widgets-Type' with 'all' or 'managed'");
+                            logger.debug(EELFLoggerDelegate.debugLogger,
+                                    "WidgetsController.getOnboardingApps - request must contain header 'X-Widgets-Type' with 'all' or 'managed'");
                             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                      }
               }
 
-              EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/widgets", "GET result =", response.getStatus());
+              EcompPortalUtils
+                      .logAndSerializeObject(logger, "/portalApi/widgets", "GET result =", response.getStatus());
               return onboardingWidgets;
        }
 
-       @RequestMapping(value = { "/portalApi/widgets/{widgetId}" }, method = { RequestMethod.PUT }, produces = "application/json")
-       public FieldsValidator putOnboardingWidget(Principal principal, HttpServletRequest request, @PathVariable("widgetId") Long widgetId,
+       @RequestMapping(value = {"/portalApi/widgets/{widgetId}"}, method = {
+               RequestMethod.PUT}, produces = "application/json")
+       public FieldsValidator putOnboardingWidget(Principal principal, HttpServletRequest request,
+               @PathVariable("widgetId") Long widgetId,
                @RequestBody OnboardingWidget onboardingWidget, HttpServletResponse response) {
               FnUser user = fnUserService.loadUserByUsername(principal.getName());
               FieldsValidator fieldsValidator = null;
-              if (onboardingWidget!=null){
-                     if(!dataValidator.isValid(onboardingWidget)){
+              if (onboardingWidget != null) {
+                     if (!dataValidator.isValid(onboardingWidget)) {
                             fieldsValidator = new FieldsValidator();
-                            fieldsValidator.setHttpStatusCode((long)HttpServletResponse.SC_NOT_ACCEPTABLE);
+                            fieldsValidator.setHttpStatusCode((long) HttpServletResponse.SC_NOT_ACCEPTABLE);
                             return fieldsValidator;
                      }
               }
@@ -123,7 +135,8 @@ public class WidgetsController {
                      fieldsValidator = widgetService.setOnboardingWidget(user, onboardingWidget);
                      response.setStatus(fieldsValidator.getHttpStatusCode().intValue());
               }
-              EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/widgets/" + widgetId, "GET result =", response.getStatus());
+              EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/widgets/" + widgetId, "GET result =",
+                      response.getStatus());
 
               return fieldsValidator;
        }
@@ -134,5 +147,77 @@ public class WidgetsController {
                      return false;
               }
               return true;
+       }
+
+       @RequestMapping(value = {"/portalApi/widgets"}, method = {RequestMethod.POST}, produces = "application/json")
+       public FieldsValidator postOnboardingWidget(Principal principal, HttpServletRequest request,
+               @RequestBody OnboardingWidget onboardingWidget, HttpServletResponse response) {
+              FnUser user = fnUserService.loadUserByUsername(principal.getName());
+              FieldsValidator fieldsValidator = null;
+
+              if (onboardingWidget != null) {
+                     if (!dataValidator.isValid(onboardingWidget)) {
+                            fieldsValidator = new FieldsValidator();
+                            fieldsValidator.setHttpStatusCode((long) HttpServletResponse.SC_NOT_ACCEPTABLE);
+                            return fieldsValidator;
+                     }
+              }
+
+              if (userHasPermissions(user, response, "postOnboardingWidget")) {
+                     onboardingWidget.setId(null);
+                     onboardingWidget.normalize();
+                     fieldsValidator = widgetService.setOnboardingWidget(user, onboardingWidget);
+                     response.setStatus(fieldsValidator.getHttpStatusCode().intValue());
+              }
+
+              EcompPortalUtils
+                      .logAndSerializeObject(logger, "/portalApi/widgets", "POST result =", response.getStatus());
+              return fieldsValidator;
+       }
+
+       @RequestMapping(value = {"/portalApi/widgets/{widgetId}"}, method = {
+               RequestMethod.DELETE}, produces = "application/json")
+       public FieldsValidator deleteOnboardingWidget(Principal principal, HttpServletRequest request,
+               @PathVariable("widgetId") Long widgetId, HttpServletResponse response) {
+              FnUser user = fnUserService.loadUserByUsername(principal.getName());
+              FieldsValidator fieldsValidator = null;
+
+              if (userHasPermissions(user, response, "deleteOnboardingWidget")) {
+                     fieldsValidator = widgetService.deleteOnboardingWidget(user, widgetId);
+                     response.setStatus(fieldsValidator.getHttpStatusCode().intValue());
+              }
+
+              EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/widgets/" + widgetId, "DELETE result =",
+                      response.getStatus());
+              return fieldsValidator;
+       }
+
+       @RequestMapping(value = {
+               "portalApi/widgetCatalogSelection"}, method = RequestMethod.PUT, produces = "application/json")
+       public FieldsValidator putWidgetCatalogSelection(Principal principal, HttpServletRequest request,
+               @RequestBody WidgetCatalogPersonalization persRequest, HttpServletResponse response) throws IOException {
+              FieldsValidator result = new FieldsValidator();
+              FnUser user = fnUserService.loadUserByUsername(principal.getName());
+
+              if (persRequest != null) {
+                     if (!dataValidator.isValid(persRequest)) {
+                            result.setHttpStatusCode((long) HttpServletResponse.SC_NOT_ACCEPTABLE);
+                            return result;
+                     }
+              }
+
+              try {
+                     if (persRequest.getWidgetId() == null || user == null) {
+                            EcompPortalUtils.setBadPermissions(user, response, "putWidgetCatalogSelection");
+                     } else {
+                            persUserWidgetService
+                                    .setPersUserAppValue(user, persRequest.getWidgetId(), persRequest.getSelect());
+                     }
+              } catch (Exception e) {
+                     logger.error(EELFLoggerDelegate.errorLogger, "Failed in putAppCatalogSelection", e);
+                     response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
+              }
+              result.setHttpStatusCode((long) HttpServletResponse.SC_OK);
+              return result;
        }
 }

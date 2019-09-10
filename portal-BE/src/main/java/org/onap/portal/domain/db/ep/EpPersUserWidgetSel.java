@@ -50,6 +50,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.Valid;
@@ -62,6 +64,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.validator.constraints.SafeHtml;
 import org.onap.portal.domain.db.fn.FnUser;
+import org.onap.portal.domain.dto.DomainVo;
 
 /*
 CREATE TABLE `ep_pers_user_widget_sel` (
@@ -76,7 +79,11 @@ CREATE TABLE `ep_pers_user_widget_sel` (
         CONSTRAINT `fk_2_ep_pers_user_wid_sel_ep_wid` FOREIGN KEY (`widget_id`) REFERENCES `ep_widget_catalog` (`widget_id`)
         )
 */
-
+@NamedQueries({
+        @NamedQuery(
+                name = "EpPersUserWidgetSel.getEpPersUserWidgetSelForUserIdAndWidgetId",
+                query = "FROM EpPersUserWidgetSel WHERE userId = :USERID and widgetId = :WIDGETID")
+})
 @Table(name = "ep_pers_user_widget_sel", uniqueConstraints = {
         @UniqueConstraint(columnNames = {"user_id", "widget_id"})
 })
@@ -85,13 +92,14 @@ CREATE TABLE `ep_pers_user_widget_sel` (
 @Getter
 @Setter
 @Entity
-public class EpPersUserWidgetSel implements Serializable {
+public class EpPersUserWidgetSel extends DomainVo implements Serializable {
+
        @Id
        @GeneratedValue(strategy = GenerationType.AUTO)
        @Column(name = "id", length = 11, nullable = false)
        @Digits(integer = 11, fraction = 0)
        private Long id;
-       @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
        @JoinColumn(name = "user_id", nullable = false)
        @NotNull
        @Valid
