@@ -43,6 +43,7 @@ package org.onap.portal.controller;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
+import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.onap.portal.domain.db.fn.FnUser;
@@ -99,7 +100,7 @@ public class WidgetsController {
               FnUser user = fnUserService.loadUserByUsername(principal.getName());
               List<OnboardingWidget> onboardingWidgets = null;
 
-              if (user == null || user.isGuest()) {
+              if (user.getGuest()) {
                      EcompPortalUtils.setBadPermissions(user, response, "getOnboardingWidgets");
               } else {
                      String getType = request.getHeader("X-Widgets-Type");

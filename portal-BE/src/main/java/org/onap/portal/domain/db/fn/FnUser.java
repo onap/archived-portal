@@ -68,6 +68,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PastOrPresent;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -178,6 +179,7 @@ CREATE TABLE `fn_user` (
 @Getter
 @Setter
 @Entity
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @DynamicUpdate
@@ -253,11 +255,8 @@ public class FnUser extends DomainVo implements UserDetails, Serializable {
        @Column(name = "last_login_date", nullable = false, columnDefinition = "datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()")
        @PastOrPresent
        protected LocalDateTime lastLoginDate;
-       @Column(name = "active_yn", length = 1, nullable = false)
-       @Size(max = 1)
-       @SafeHtml
-       @NotNull(message = "activeYn must not be null")
-       private String activeYn;
+       @Column(name = "active_yn", nullable = false)
+       private Boolean activeYn;
        @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
        @JoinColumn(name = "created_id")
        private FnUser createdId;
@@ -270,11 +269,8 @@ public class FnUser extends DomainVo implements UserDetails, Serializable {
        @Column(name = "modified_date", nullable = false, columnDefinition = "datetime default now()")
        @PastOrPresent
        protected LocalDateTime modifiedDate;
-       @Column(name = "is_internal_yn", length = 1, columnDefinition = "character varying(1) default 'n'", nullable = false)
-       @Size(max = 1)
-       @SafeHtml
-       @NotNull(message = "isInternalYn must not be null")
-       private String isInternalYn;
+       @Column(name = "is_internal_yn", nullable = false, columnDefinition = "bit DEFAULT 0")
+       private Boolean isInternalYn;
        @Column(name = "address_line_1", length = 100)
        @Size(max = 100)
        @SafeHtml
@@ -350,9 +346,9 @@ public class FnUser extends DomainVo implements UserDetails, Serializable {
        @JoinColumn(name = "language_id", nullable = false, columnDefinition = "int(11) DEFAULT 1")
        @NotNull(message = "languageId must not be null")
        private FnLanguage languageId;
-       @Column(name = "is_guest", columnDefinition = "boolean default 0", nullable = false)
+       @Column(name = "is_guest", nullable = false, columnDefinition = "bit DEFAULT 0")
        @NotNull(message = "guest must not be null")
-       private boolean guest;
+       private Boolean guest;
        @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "fnUserList")
        private Set<CrReportFileHistory> crReportFileHistorie;
        @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)

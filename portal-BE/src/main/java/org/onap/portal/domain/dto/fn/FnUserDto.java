@@ -42,13 +42,14 @@ package org.onap.portal.domain.dto.fn;
 
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Setter
 @Getter
-
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class FnUserDto {
@@ -70,12 +71,12 @@ public class FnUserDto {
        private String loginId;
        private String loginPwd;
        protected LocalDateTime lastLoginDate;
-       private String activeYn;
+       private Boolean activeYn;
        private Long createdId;
        protected LocalDateTime createdDate;
        private Long modifiedId;
        protected LocalDateTime modifiedDate;
-       private String isInternalYn = "n";
+       private Boolean isInternalYn = false;
        private String addressLine1;
        private String addressLine2;
        private String city;
