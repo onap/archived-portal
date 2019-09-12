@@ -1,54 +1,40 @@
-# Dockerfile for image with ONAP Portal SDK demo app
+# Dockerfile for SDK image with ONAP Portal
 
-# Multistage to be able to have SDK war content and not war itself
-FROM busybox:latest AS war-decompress
+FROM tomcat:8.5.35-jre8-alpine
 
 # Arguments are supplied by build.sh script
 # the defaults below only support testing
 ARG SDK_WAR=build/epsdk-app-os.war
-
-# Just variables, never passed in
-ARG SDKCONTEXT=ONAPPORTALSDK
-
-RUN mkdir ${SDKCONTEXT}
-
-# SDK app has only a war
-COPY $SDK_WAR ${SDKCONTEXT}
-RUN cd ${SDKCONTEXT} && unzip -q *.war && rm *.war
-
-
-# Yields an image 823 MB
-FROM openjdk:8-alpine
-# Yields an image 1.4 GB
-# FROM openjdk:8-jdk
-ARG SDK_WAR=build/epsdk-app-os.war
 ARG HTTP_PROXY
 ARG HTTPS_PROXY
 
+
 # Just variables, never passed in
-ARG TOMCAT_VERSION=8.0.37
-ARG TOMCAT=apache-tomcat-${TOMCAT_VERSION}
-ARG TOMCATTAR=${TOMCAT}.tar.gz
-ARG TOMCATHOME=/opt/${TOMCAT}
 ARG SDKCONTEXT=ONAPPORTALSDK
 
+ARG TOMCAT=/usr/local/tomcat
+ARG TOMCATHOME=${TOMCAT}
+ARG SERVERXML=${SERVERXML}
 
 ENV http_proxy $HTTP_PROXY
 ENV https_proxy $HTTPS_PROXY
-RUN if [ ! -z ${HTTP_PROXY} ]; then echo "Acquire::http::proxy  \"${HTTP_PROXY}\";" >> /etc/apt/apt.conf; fi && \
-    if [ ! -z ${HTTPS_PROXY} ]; then echo "Acquire::https::proxy \"${HTTPS_PROXY}\";" >> /etc/apt/apt.conf; fi
+RUN if [ -d /etc/apt ] && [ ! -z ${HTTP_PROXY} ]; then echo "Acquire::http::proxy  \"${HTTP_PROXY}\";" >> /etc/apt/apt.conf; fi && \
+    if [ -d /etc/apt ] && [ ! -z ${HTTPS_PROXY} ]; then echo "Acquire::https::proxy \"${HTTPS_PROXY}\";" >> /etc/apt/apt.conf; fi
 
-# Install Tomcat.  This image already has curl.
+
 # Remove manager and sample apps
-WORKDIR /tmp
-RUN wget -q http://archive.apache.org/dist/tomcat/tomcat-8/v${TOMCAT_VERSION}/bin/${TOMCATTAR} && \
-    tar -xzf ${TOMCATTAR} && \
-    rm ${TOMCATTAR} &&\
-    rm -fr ${TOMCAT}/webapps/[a-z]* &&\
-    mkdir -p /opt &&\
-    mv ${TOMCAT} /opt
+RUN rm -rf ${TOMCAT}/webapps/[a-z]*
+RUN mkdir -p /opt
+COPY ${SERVERXML} ${TOMCAT}/conf
+# TODO: ????
+#RUN mv ${TOMCAT} /opt
 
-COPY --from=war-decompress /${SDKCONTEXT} ${TOMCATHOME}/webapps/${SDKCONTEXT}/
+WORKDIR ${TOMCATHOME}/webapps
+RUN mkdir ${SDKCONTEXT}
+
+# Portal has many parts
+COPY $SDK_WAR ${SDKCONTEXT}
+RUN cd ${SDKCONTEXT} && unzip -q *.war && rm *.war
 
 VOLUME ${TOMCATHOME}/logs
 
@@ -61,4 +47,5 @@ ENV PATH $PATH:$JAVA_HOME/bin:${TOMCATHOME}/bin
 COPY start-apache-tomcat.sh /
 
 # Define default command
-CMD /start-apache-tomcat.sh
+ENV TOMCATHOME=$TOMCATHOME
+CMD /start-apache-tomcat.sh -b $TOMCATHOME
