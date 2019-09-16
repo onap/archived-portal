@@ -40,6 +40,7 @@
 
 package org.onap.portal.domain.db.fn;
 
+import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -87,7 +88,7 @@ CREATE TABLE `fn_qz_simprop_triggers` (
 @Setter
 @Entity
 @IdClass(FnQzTriggersId.class)
-public class FnQzSimpropTriggers {
+public class FnQzSimpropTriggers implements Serializable {
        @Id
        @ManyToOne
        @JoinColumns(value = {

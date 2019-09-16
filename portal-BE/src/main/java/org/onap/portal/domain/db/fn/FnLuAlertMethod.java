@@ -40,6 +40,7 @@
 
 package org.onap.portal.domain.db.fn;
 
+import java.io.Serializable;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -70,7 +71,7 @@ CREATE TABLE `fn_lu_alert_method` (
 @Getter
 @Setter
 @Entity
-public class FnLuAlertMethod {
+public class FnLuAlertMethod implements Serializable {
        @Id
        @Column(name = "alert_method_cd", length = 10, nullable = false)
        @Size(max = 50)

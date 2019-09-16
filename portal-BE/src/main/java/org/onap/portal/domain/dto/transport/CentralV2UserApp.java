@@ -60,14 +60,13 @@ public class CentralV2UserApp implements Serializable, Comparable {
     private CentralV2Role role;
     private Integer priority;
 
-    public int compareTo(Object other) {
-        CentralV2UserApp castOther = (CentralV2UserApp) other;
+	public int compareTo(Object other){
+		CentralV2UserApp castOther = (CentralV2UserApp) other;
 
-        Long c1 = (this.getUserId() == null ? 0 : this.getUserId()) + (this.priority == null ? 0 : this.priority);
-        Long c2 = (castOther.getUserId() == null ? 0 : castOther.getUserId());
-        c2 += (castOther.getApp() == null || castOther.getApp().getId() == null ? 0 : castOther.getApp().getId());
-        c2 += (castOther.priority == null ? 0 : castOther.priority);
-
+		Long c1 = (this.getUserId() == null ? 0 : this.getUserId()) + (this.priority == null ? 0 : this.priority);
+		Long c2 = (castOther.getUserId() == null ? 0 : castOther.getUserId());
+		c2 += (castOther.getApp() == null || castOther.getApp().getId() == null ? 0 : castOther.getApp().getId());
+		c2 += (castOther.priority == null ? 0 : castOther.priority);
         return c1.compareTo(c2);
     }
 

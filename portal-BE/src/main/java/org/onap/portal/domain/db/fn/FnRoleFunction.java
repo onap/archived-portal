@@ -81,7 +81,7 @@ CREATE TABLE `fn_role_function` (
 @Setter
 @Entity
 @IdClass(FnRoleFunctionId.class)
-public class FnRoleFunction {
+public class FnRoleFunction implements Serializable{
 
        @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
        @JoinColumn(name = "role_Id", nullable = false)

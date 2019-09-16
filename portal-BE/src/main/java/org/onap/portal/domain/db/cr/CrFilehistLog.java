@@ -46,7 +46,6 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.Digits;
-import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -76,7 +75,6 @@ public class CrFilehistLog {
        @Id
        @Column(name = "schedule_id", length = 11, nullable = false)
        @Digits(integer = 11, fraction = 0)
-       @Positive
        private Long scheduledId;
        //TODO URL @URL
        @URL

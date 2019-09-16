@@ -40,6 +40,7 @@
 
 package org.onap.portal.domain.db.fn;
 
+import java.io.Serializable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -85,7 +86,7 @@ CREATE TABLE `fn_pers_user_app_sel` (
 @Getter
 @Setter
 @Entity
-public class FnPersUserAppSel extends DomainVo {
+public class FnPersUserAppSel extends DomainVo implements Serializable {
        @Id
        @GeneratedValue(strategy = GenerationType.AUTO)
        @Column(name = "id", length = 11, nullable = false, columnDefinition = "int(11) AUTO_INCREMENT")

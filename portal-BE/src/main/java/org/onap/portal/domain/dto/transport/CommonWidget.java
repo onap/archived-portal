@@ -50,7 +50,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.validator.constraints.SafeHtml;
-import org.onap.portalsdk.core.domain.support.DomainVo;
+import org.onap.portal.domain.dto.DomainVo;
 
 
 @Getter
@@ -59,7 +59,7 @@ import org.onap.portalsdk.core.domain.support.DomainVo;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class CommonWidget extends DomainVo{
+public class CommonWidget extends DomainVo {
 
 	private static final long serialVersionUID = 7897021982887364557L;
 

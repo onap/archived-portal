@@ -40,6 +40,7 @@
 
 package org.onap.portal.domain.db.fn;
 
+import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -65,7 +66,7 @@ CREATE TABLE `fn_lu_broadcast_site` (
 @Getter
 @Setter
 @Entity
-public class FnLuBroadcastSite {
+public class FnLuBroadcastSite implements Serializable {
        @Id
        @Column(name = "broadcast_site_cd", length = 50, nullable = false)
        @Size(max = 50)

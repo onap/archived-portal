@@ -40,6 +40,7 @@
 
 package org.onap.portal.domain.db.fn;
 
+import java.io.Serializable;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -70,7 +71,7 @@ CREATE TABLE `fn_function` (
 @Getter
 @Setter
 @Entity
-public class FnFunction {
+public class FnFunction implements Serializable {
        @Id
        @Column(name = "function_cd", length = 30, nullable = false)
        @Size(max = 30)

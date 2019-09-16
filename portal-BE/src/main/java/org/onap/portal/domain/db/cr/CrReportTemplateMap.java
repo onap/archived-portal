@@ -40,6 +40,7 @@
 
 package org.onap.portal.domain.db.cr;
 
+import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -67,7 +68,7 @@ CREATE TABLE `cr_report_template_map` (
 @Getter
 @Setter
 @Entity
-public class CrReportTemplateMap {
+public class CrReportTemplateMap implements Serializable {
        @Id
        @Column(name = "report_id", nullable = false)
        @NotNull

@@ -40,6 +40,7 @@
 
 package org.onap.portal.domain.db.fn;
 
+import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -77,7 +78,7 @@ CREATE TABLE `fn_qz_cron_triggers` (
 @Setter
 @Entity
 @IdClass(FnQzTriggersId.class)
-public class FnQzCronTriggers {
+public class FnQzCronTriggers implements Serializable {
        @Id
        @ManyToOne
        @JoinColumns(value = {

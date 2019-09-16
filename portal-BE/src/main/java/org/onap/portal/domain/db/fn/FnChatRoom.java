@@ -40,6 +40,7 @@
 
 package org.onap.portal.domain.db.fn;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -74,7 +75,7 @@ CREATE TABLE `fn_chat_room` (
 @Getter
 @Setter
 @Entity
-public class FnChatRoom {
+public class FnChatRoom implements Serializable {
        @Id
        @GeneratedValue(strategy = GenerationType.AUTO)
        @Column(name = "chat_room_id", nullable = false)

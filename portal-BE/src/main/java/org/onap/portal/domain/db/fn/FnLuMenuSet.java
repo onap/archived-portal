@@ -40,6 +40,7 @@
 
 package org.onap.portal.domain.db.fn;
 
+import java.io.Serializable;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -72,7 +73,7 @@ CREATE TABLE `fn_lu_menu_set` (
 @Getter
 @Setter
 @Entity
-public class FnLuMenuSet {
+public class FnLuMenuSet implements Serializable {
 
        @Id
        @GeneratedValue(strategy = GenerationType.AUTO)

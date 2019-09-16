@@ -40,6 +40,7 @@
 
 package org.onap.portal.domain.db.fn;
 
+import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.Set;
 import javax.persistence.CascadeType;
@@ -91,7 +92,7 @@ CREATE TABLE `fn_tab` (
 @Getter
 @Setter
 @Entity
-public class FnTab {
+public class FnTab implements Serializable {
        @Id
        @Column(name = "tab_cd", length = 30, nullable = false)
        @Size(max = 30)

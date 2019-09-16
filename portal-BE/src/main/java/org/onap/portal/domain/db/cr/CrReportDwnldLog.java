@@ -40,6 +40,7 @@
 
 package org.onap.portal.domain.db.cr;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -74,7 +75,7 @@ CREATE TABLE `cr_report_dwnld_log` (
 @Getter
 @Setter
 @Entity
-public class CrReportDwnldLog {
+public class CrReportDwnldLog implements Serializable {
        @Id
        @Column(name = "user_id", nullable = false)
        @Digits(integer = 11, fraction = 0)

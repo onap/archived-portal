@@ -40,6 +40,7 @@
 
 package org.onap.portal.domain.db.fn;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -69,7 +70,7 @@ CREATE TABLE `fn_chat_logs` (
 @Getter
 @Setter
 @Entity
-public class FnChatLogs {
+public class FnChatLogs implements Serializable {
        @Id
        @Column(name = "chat_log_id", nullable = false)
        private Long chatLogId;

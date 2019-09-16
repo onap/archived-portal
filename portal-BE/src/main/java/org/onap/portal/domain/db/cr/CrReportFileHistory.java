@@ -40,6 +40,7 @@
 
 package org.onap.portal.domain.db.cr;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Set;
 import javax.persistence.CascadeType;
@@ -104,7 +105,7 @@ CREATE TABLE `cr_report_file_history` (
 @Getter
 @Setter
 @Entity
-public class CrReportFileHistory {
+public class CrReportFileHistory implements Serializable {
        @Id
        @Column(name = "hist_id", nullable = false, length = 11)
        @Digits(integer = 11, fraction = 0)

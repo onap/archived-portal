@@ -40,6 +40,7 @@
 
 package org.onap.portal.domain.db.fn;
 
+import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -73,7 +74,7 @@ CREATE TABLE `fn_common_widget_data` (
 @Getter
 @Setter
 @Entity
-public class FnCommonWidgetData {
+public class FnCommonWidgetData implements Serializable {
        @Id
        @GeneratedValue(strategy = GenerationType.AUTO)
        @Column(name = "id", nullable = false, columnDefinition = "int(11) AUTO_INCREMENT")

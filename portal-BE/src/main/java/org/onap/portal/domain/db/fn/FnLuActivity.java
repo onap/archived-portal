@@ -40,6 +40,7 @@
 
 package org.onap.portal.domain.db.fn;
 
+import java.io.Serializable;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -70,7 +71,7 @@ CREATE TABLE `fn_lu_activity` (
 @Getter
 @Setter
 @Entity
-public class FnLuActivity {
+public class FnLuActivity implements Serializable {
        @Id
        @Column(name = "activity_cd", length = 50, nullable = false)
        @Size(max = 50)

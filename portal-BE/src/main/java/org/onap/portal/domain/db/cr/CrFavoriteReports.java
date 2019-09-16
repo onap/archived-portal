@@ -74,7 +74,7 @@ CREATE TABLE `cr_favorite_reports` (
 @Setter
 @IdClass(CrFavoriteReportsId.class)
 @Entity
-public class CrFavoriteReports {
+public class CrFavoriteReports implements Serializable{
        @Id
        @Column(name = "user_id", length = 11, nullable = false)
        @Digits(integer = 11, fraction = 0)

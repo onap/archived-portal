@@ -40,6 +40,7 @@
 
 package org.onap.portal.domain.db.fn;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -77,7 +78,7 @@ CREATE TABLE `fn_broadcast_message` (
 @Getter
 @Setter
 @Entity
-public class FnBroadcastMessage {
+public class FnBroadcastMessage implements Serializable {
 
        @Id
        @GeneratedValue(strategy = GenerationType.AUTO)

@@ -40,6 +40,7 @@
 
 package org.onap.portal.domain.db.cr;
 
+import java.io.Serializable;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -77,7 +78,7 @@ CREATE TABLE `cr_lu_file_type` (
 @Getter
 @Setter
 @Entity
-public class CrLuFileType {
+public class CrLuFileType implements Serializable {
        @Id
        @Column(name = "lookup_id", length = 2, nullable = false)
        @Digits(integer = 2, fraction = 0)

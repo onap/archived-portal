@@ -40,6 +40,7 @@
 
 package org.onap.portal.domain.db.cr;
 
+import java.io.Serializable;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -76,7 +77,7 @@ CREATE TABLE `cr_table_source` (
 @Getter
 @Setter
 @Entity
-public class CrTableSource {
+public class CrTableSource implements Serializable {
        @Id
        @Column(name = "table_name", length = 30, nullable = false)
        @Size(max = 30)

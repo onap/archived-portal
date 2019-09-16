@@ -45,7 +45,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.Set;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
@@ -66,8 +66,8 @@ public class DomainVo extends FusionVo implements Serializable, Cloneable, Compa
        private static final long serialVersionUID = 1L;
 
        protected Long id;
-       protected Date created;
-       protected Date modified;
+       protected LocalDateTime created;
+       protected LocalDateTime modified;
        protected FnUser createdId;
        protected FnUser modifiedId;
        protected Long rowNum;
@@ -108,4 +108,22 @@ public class DomainVo extends FusionVo implements Serializable, Cloneable, Compa
        public Object clone() throws CloneNotSupportedException {
               return super.clone();
        }
+
+       public boolean equals(Object other) {
+              if (this == other) {
+                     return true;
+              } else if (other == null) {
+                     return false;
+              } else if (!(other instanceof DomainVo)) {
+                     return false;
+              } else {
+                     DomainVo castOther = (DomainVo)other;
+                     return this.getId().equals(castOther.getId())
+                             && this.getCreated().equals(castOther.getCreated())
+                             && this.getCreatedId().equals(castOther.getCreatedId())
+                             && this.getModified().equals(castOther.getModified())
+                             && this.getModifiedId() == castOther.getModifiedId();
+              }
+       }
+
 }

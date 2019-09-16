@@ -40,6 +40,7 @@
 
 package org.onap.portal.domain.db.ep;
 
+import java.io.Serializable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -86,7 +87,7 @@ CREATE TABLE `ep_user_roles_request_det` (
 @Getter
 @Setter
 @Entity
-public class EpUserRolesRequestDet {
+public class EpUserRolesRequestDet implements Serializable {
 
        @Id
        @GeneratedValue(strategy = GenerationType.AUTO)

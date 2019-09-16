@@ -40,6 +40,7 @@
 
 package org.onap.portal.domain.db.cr;
 
+import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -68,7 +69,7 @@ CREATE TABLE `cr_remote_schema_info` (
 @Getter
 @Setter
 @Entity
-public class CrRemoteSchemaInfo {
+public class CrRemoteSchemaInfo implements Serializable {
        @Id
        @Column(name = "schema_prefix", length = 5, nullable = false)
        @Size(max = 5)

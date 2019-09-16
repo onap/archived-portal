@@ -53,13 +53,13 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.validator.constraints.SafeHtml;
-import org.onap.portalsdk.core.domain.support.DomainVo;
+import org.onap.portal.domain.dto.DomainVo;
 
 @Getter
 @Setter
 @Builder
 @ToString
-@EqualsAndHashCode()
+@EqualsAndHashCode(callSuper = false)
 @NoArgsConstructor
 @AllArgsConstructor
 public class EpNotificationItem extends DomainVo {

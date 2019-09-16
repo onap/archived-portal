@@ -71,7 +71,7 @@ CREATE TABLE `fn_qz_paused_trigger_grps` (
 @Setter
 @Entity
 @IdClass(FnQzPausedTriggerGrpsID.class)
-public class FnQzPausedTriggerGrps {
+public class FnQzPausedTriggerGrps implements Serializable{
        @Id
        @Size(max = 120)
        @SafeHtml

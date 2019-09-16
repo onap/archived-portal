@@ -60,6 +60,10 @@ public class FieldsValidator {
 	private Long errorCode;
 	private List<FieldName> fields = new ArrayList<>();
 
+	public void addProblematicFieldName(String fieldName){
+		fields.add(new FieldName(fieldName));
+	}
+
 	@Getter
 	@Setter
 	@ToString
@@ -68,5 +72,4 @@ public class FieldsValidator {
 	public class FieldName {
 		public String name;
 	}
-
 }

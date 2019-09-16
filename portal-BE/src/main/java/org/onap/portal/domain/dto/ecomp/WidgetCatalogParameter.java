@@ -58,6 +58,6 @@ public class WidgetCatalogParameter extends DomainVo{
 	private Long widgetId;
 	private Long userId;
 	private Long paramId;
-	private String user_value;
+	private String userValue;
 
 }

@@ -172,17 +172,9 @@ public class FnApp extends DomainVo implements Serializable {
        @NotNull
        private String appPassword;
        @Column(name = "open", length = 1, columnDefinition = "char(1) default 'N'")
-       @Pattern(regexp = "[YNyn]")
-       @Size(max = 1)
-       @NotNull
-       @SafeHtml
-       private String open;
+       private Boolean open;
        @Column(name = "ENABLED", length = 1, columnDefinition = "char(1) default 'N'")
-       @Pattern(regexp = "[YNyn]")
-       @Size(max = 1)
-       @NotNull
-       @SafeHtml
-       private String enabled;
+       private Boolean enabled;
        @Column(name = "active_yn", length = 1, columnDefinition = "char(1) default 'Y'")
        @Pattern(regexp = "[YNyn]")
        @Size(max = 1)
@@ -211,11 +203,7 @@ public class FnApp extends DomainVo implements Serializable {
        @Digits(integer = 11, fraction = 0)
        private Long appType;
        @Column(name = "auth_central", length = 1, columnDefinition = "char(1) not null default 'N'", nullable = false)
-       @Pattern(regexp = "[YNyn]")
-       @Size(max = 1)
-       @NotNull
-       @SafeHtml
-       private String authCentral;
+       private Boolean authCentral;
        @Column(name = "auth_namespace", length = 100)
        @Size(max = 100)
        @SafeHtml
@@ -283,4 +271,8 @@ public class FnApp extends DomainVo implements Serializable {
                fetch = FetchType.LAZY
        )
        private Set<FnPersUserAppSel> fnPersUserAppSels;
+
+       public Boolean isRestrictedApp() {
+              return (this.appType == 2);
+       }
 }

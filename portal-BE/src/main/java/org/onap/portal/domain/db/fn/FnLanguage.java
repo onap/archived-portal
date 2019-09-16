@@ -41,6 +41,7 @@
 package org.onap.portal.domain.db.fn;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import java.io.Serializable;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -56,6 +57,7 @@ import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -72,13 +74,13 @@ CREATE TABLE `fn_language` (
 @Table(name = "fn_language")
 @NoArgsConstructor
 @AllArgsConstructor
-
+@Builder
 @Getter
 @Setter
 @Entity
 @JsonInclude()
 @SequenceGenerator(name="seq", initialValue=1000, allocationSize=100000)
-public class FnLanguage {
+public class FnLanguage implements Serializable {
 
        @Id
        @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq")

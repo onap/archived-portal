@@ -61,7 +61,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 class UserControllerTest {
 
        private UsernamePasswordAuthenticationToken principal = new UsernamePasswordAuthenticationToken("demo",
-               "XZa6pS1vC0qKXWtn9wcZWdLx61L0=");
+               "demo123");
 
        private final FnUserService userService;
        private final UserController userController;

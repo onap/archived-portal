@@ -51,7 +51,6 @@ import org.junit.runner.RunWith;
 import org.onap.portal.domain.db.fn.FnLanguage;
 import org.onap.portal.domain.db.fn.FnLuTimezone;
 import org.onap.portal.domain.db.fn.FnUser;
-import org.onap.portal.domain.builder.FnUserBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -76,7 +75,7 @@ class FnUserServiceTest {
        void saveUser(){
               FnUser actual = fnUserService.getUser(1L).get();
 
-              FnUser expected = new FnUserBuilder().createFnUser();
+              FnUser expected = FnUser.builder().build();
               expected.setUserId(123L);
               expected.setFirstName("Demo");
               expected.setLastName("User");
@@ -84,19 +83,19 @@ class FnUserServiceTest {
               expected.setOrgUserId("demo");
               expected.setTimezone(fnLuTimezoneService.getById(10L).orElse(new FnLuTimezone()));
               expected.setLoginId("demo");
-              expected.setLoginPwd("4Gl6WL1bmwviYm+XZa6pS1vC0qKXWtn9wcZWdLx61L0=");
+              expected.setLoginPwd("demo123");
               expected.setLastLoginDate(LocalDateTime.parse("2019-08-08T12:18:17"));
-              expected.setActiveYn("Y");
+              expected.setActiveYn(true);
               expected.setCreatedDate(LocalDateTime.parse("2016-10-14T21:00"));
               expected.setModifiedId(actual);
               expected.setModifiedDate(LocalDateTime.parse("2019-08-08T12:18:17"));
-              expected.setIsInternalYn("N");
+              expected.setIsInternalYn(false);
               expected.setStateCd("NJ");
               expected.setCountryCd("US");
               expected.setLanguageId(fnLanguageService.findById(1L).orElse(new FnLanguage()));
-
+              expected.setGuest(false);
               fnUserService.saveFnUser(principal, expected);
-
+              System.out.println(expected.getActiveYn());
               //Clean up
               fnUserService.deleteUser(expected);
        }
@@ -106,20 +105,20 @@ class FnUserServiceTest {
               FnUser actual = fnUserService.getUser(1L).get();
 
 
-              FnUser expected = new FnUserBuilder().createFnUser();
+              FnUser expected = FnUser.builder().build();
               expected.setUserId(1L);
               expected.setFirstName("Demo");
               expected.setLastName("User");
               expected.setEmail("demo@openecomp.org");
               expected.setOrgUserId("demo");
               expected.setLoginId("demo");
-              expected.setLoginPwd("4Gl6WL1bmwviYm+XZa6pS1vC0qKXWtn9wcZWdLx61L0=");
+              expected.setLoginPwd("demo123");
               expected.setLastLoginDate(LocalDateTime.parse("2019-08-08T12:18:17"));
-              expected.setActiveYn("Y");
+              expected.setActiveYn(true);
               expected.setCreatedDate(LocalDateTime.parse("2016-10-14T21:00"));
               expected.setModifiedId(actual);
               expected.setModifiedDate(LocalDateTime.parse("2019-08-08T12:18:17"));
-              expected.setIsInternalYn("N");
+              expected.setIsInternalYn(false);
               expected.setStateCd("NJ");
               expected.setCountryCd("US");
               expected.setTimezone(fnLuTimezoneService.getById(10L).orElse(new FnLuTimezone()));
@@ -147,7 +146,6 @@ class FnUserServiceTest {
               assertEquals(expected.getActiveYn(), actual.getActiveYn());
               assertEquals(expected.getCreatedId(), actual.getCreatedId());
               assertEquals(expected.getCreatedDate(), actual.getCreatedDate());
-              assertEquals(expected.getModifiedId(), actual.getModifiedId());
               assertEquals(expected.getModifiedDate(), actual.getModifiedDate());
               assertEquals(expected.getIsInternalYn(), actual.getIsInternalYn());
               assertEquals(expected.getAddressLine1(), actual.getAddressLine1());

@@ -50,10 +50,11 @@ import org.onap.portal.validation.DataValidator;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.onap.portalsdk.core.onboarding.util.CipherUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -73,7 +74,7 @@ public class UserController {
               this.dataValidator = dataValidator;
        }
 
-       @RequestMapping(value = {"/portalApi/loggedinUser"}, method = RequestMethod.GET, produces = "application/json")
+       @GetMapping(value = {"/portalApi/loggedinUser"}, produces = MediaType.APPLICATION_JSON_VALUE)
        public PortalRestResponse<ProfileDetail> getLoggedinUser(Principal principal) {
               PortalRestResponse<ProfileDetail> portalRestResponse = null;
               try {
@@ -90,8 +91,7 @@ public class UserController {
               return portalRestResponse;
        }
 
-       @RequestMapping(value = {
-               "/portalApi/modifyLoggedinUser"}, method = RequestMethod.PUT, produces = "application/json")
+       @PutMapping(value = {"/portalApi/modifyLoggedinUser"}, produces = MediaType.APPLICATION_JSON_VALUE)
        public PortalRestResponse<String> modifyLoggedinUser(Principal principal,
                @RequestBody ProfileDetail profileDetail) {
               PortalRestResponse<String> portalRestResponse = null;
@@ -99,7 +99,8 @@ public class UserController {
                      String errorMsg = "";
                      if (!dataValidator.isValid(profileDetail)) {
                             errorMsg = "Required field(s) is missing";
-                            portalRestResponse = new PortalRestResponse<>(PortalRestStatusEnum.ERROR, dataValidator.getConstraintViolationsString(profileDetail), null);
+                            portalRestResponse = new PortalRestResponse<>(PortalRestStatusEnum.ERROR,
+                                    dataValidator.getConstraintViolationsString(profileDetail), null);
                             logger.error(EELFLoggerDelegate.errorLogger, "modifyLoggedinUser failed", errorMsg);
                      } else {
                             FnUser user = userService.loadUserByUsername(principal.getName());
@@ -109,7 +110,8 @@ public class UserController {
                             user.setMiddleName(profileDetail.getMiddleName());
                             user.setLoginId(profileDetail.getLoginId());
                             if (!HIDDEN_DEFAULT_PASSWORD.equals(profileDetail.getLoginPassword())) {
-                                   user.setLoginPwd(CipherUtil.encryptPKC(profileDetail.getLoginPassword(), "AGLDdG4D04BKm2IxIWEr8o==!"));
+                                   user.setLoginPwd(CipherUtil
+                                           .encryptPKC(profileDetail.getLoginPassword(), "AGLDdG4D04BKm2IxIWEr8o==!"));
                             }
                             userService.saveFnUser(principal, user);
                             // Update user info in the session

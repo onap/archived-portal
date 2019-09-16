@@ -40,6 +40,7 @@
 
 package org.onap.portal.domain.db.cr;
 
+import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -68,7 +69,7 @@ CREATE TABLE `cr_raptor_action_img` (
 @Getter
 @Setter
 @Entity
-public class CrRaptorActionImg {
+public class CrRaptorActionImg implements Serializable {
        @Id
        @Column(name = "image_id", length = 100, nullable = false)
        @Size(max = 100)

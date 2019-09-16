@@ -41,13 +41,13 @@
 package org.onap.portal.utils;
 
 public interface PortalConstants {
-	public static final Long PORTAL_APP_ID = 1L;
-	public static final Long DEFAULT_NOTIFICATION_CREATOR = 1L;
-	public static final String REST_AUX_API = "/auxapi";
-	public static final String PORTAL_AUX_API = "/portalApi";
-	public static final Long ACCOUNT_ADMIN_ROLE_ID = 999L;
-	public static final Long SYS_ADMIN_ROLE_ID = 1L;
-	public static final String ADMIN_ROLE = "Account Administrator";
-	public static final String PORTAL_ADMIN_ROLE = "System Administrator";
-	public static final Integer AUDIT_LOG_COMMENT_SIZE = 990;
+	Long PORTAL_APP_ID = 1L;
+	Long DEFAULT_NOTIFICATION_CREATOR = 1L;
+	String REST_AUX_API = "/auxapi";
+	String PORTAL_AUX_API = "/portalApi";
+	Long ACCOUNT_ADMIN_ROLE_ID = 999L;
+	Long SYS_ADMIN_ROLE_ID = 1L;
+	String ADMIN_ROLE = "Account Administrator";
+	String PORTAL_ADMIN_ROLE = "System Administrator";
+	Integer AUDIT_LOG_COMMENT_SIZE = 990;
 }

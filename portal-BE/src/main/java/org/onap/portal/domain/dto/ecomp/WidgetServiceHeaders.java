@@ -41,9 +41,7 @@
 package org.onap.portal.domain.dto.ecomp;
 
 import java.nio.charset.Charset;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.commons.codec.binary.Base64;
 import org.onap.portal.utils.EcompPortalUtils;

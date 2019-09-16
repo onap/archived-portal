@@ -40,6 +40,7 @@
 
 package org.onap.portal.domain.db.ep;
 
+import java.io.Serializable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -83,8 +84,7 @@ CREATE TABLE `ep_widget_catalog_role` (
 @Getter
 @Setter
 @Entity
-//TODO there is something wrong with "KEY"
-public class EpWidgetCatalogRole {
+public class EpWidgetCatalogRole implements Serializable {
        @Id
        @Column(name = "id", length = 11, nullable = false)
        @Digits(integer = 11, fraction = 0)

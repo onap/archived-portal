@@ -40,6 +40,7 @@
 
 package org.onap.portal.domain.db.fn;
 
+import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -73,7 +74,7 @@ CREATE TABLE `fn_audit_action` (
 @Getter
 @Setter
 @Entity
-public class FnAuditAction {
+public class FnAuditAction implements Serializable {
        @Id
        @GeneratedValue(strategy = GenerationType.AUTO)
        @Column(name = "role_id", nullable = false)

@@ -40,6 +40,7 @@
 
 package org.onap.portal.domain.db.fn;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -76,7 +77,7 @@ CREATE TABLE `fn_audit_action_log` (
 @Getter
 @Setter
 @Entity
-public class FnAuditActionLog {
+public class FnAuditActionLog implements Serializable {
 
        @Id
        @GeneratedValue(strategy = GenerationType.AUTO)

@@ -73,7 +73,7 @@ CREATE TABLE `fn_qz_calendars` (
 @Setter
 @Entity
 @IdClass(FnQzCalendarsId.class)
-public class FnQzCalendars {
+public class FnQzCalendars implements Serializable{
        @Id
        @SafeHtml
        @Column(name = "SCHED_NAME", length = 120, insertable = false, updatable = false)

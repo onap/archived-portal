@@ -60,8 +60,15 @@ public class EPUserApp extends DomainVo implements java.io.Serializable, Compara
 	private EPApp app;
 	@Valid
 	private EPRole role;
+
 	private Integer priority;
-	
+
+	public EPUserApp(final Long userId, final EPApp app, final EPRole role) {
+		this.userId = userId;
+		this.app = app;
+		this.role = role;
+	}
+
 	public Long getAppId() {
 		return this.getApp().getId();
 	}

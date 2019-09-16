@@ -40,6 +40,7 @@
 
 package org.onap.portal.domain.db.fn;
 
+import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -71,7 +72,7 @@ CREATE TABLE `fn_display_text` (
 @Getter
 @Setter
 @Entity
-public class FnDisplayText {
+public class FnDisplayText implements Serializable {
 
        @Id
        @GeneratedValue(strategy = GenerationType.AUTO)

@@ -40,6 +40,7 @@
 
 package org.onap.portal.domain.db.fn;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Set;
@@ -67,6 +68,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PastOrPresent;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -177,11 +179,12 @@ CREATE TABLE `fn_user` (
 @Getter
 @Setter
 @Entity
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @DynamicUpdate
 @SequenceGenerator(name = "seq", initialValue = 1000, allocationSize = 100000)
-public class FnUser extends DomainVo implements UserDetails {
+public class FnUser extends DomainVo implements UserDetails, Serializable {
 
        @Id
        @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq")
@@ -189,74 +192,71 @@ public class FnUser extends DomainVo implements UserDetails {
        @Digits(integer = 11, fraction = 0)
        private Long userId;
        @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-       @JoinColumn(name = "org_id", columnDefinition = "int(11) DEFAULT NULL")
+       @JoinColumn(name = "org_id")
        private FnOrg orgId;
        @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
        @JoinColumn(name = "manager_id")
        private FnUser managerId;
-       @Column(name = "first_name", length = 50, columnDefinition = "varchar(50) DEFAULT NULL")
+       @Column(name = "first_name", length = 50)
        @Size(max = 50)
        @SafeHtml
        private String firstName;
-       @Column(name = "middle_name", length = 50, columnDefinition = "varchar(50) DEFAULT NULL")
+       @Column(name = "middle_name", length = 50)
        @Size(max = 50)
        @SafeHtml
        private String middleName;
-       @Column(name = "last_name", length = 50, columnDefinition = "varchar(50) DEFAULT NULL")
+       @Column(name = "last_name", length = 50)
        @Size(max = 50)
        @SafeHtml
        private String lastName;
-       @Column(name = "phone", length = 25, columnDefinition = "varchar(25) DEFAULT NULL")
+       @Column(name = "phone", length = 25)
        @Size(max = 25)
        @SafeHtml
        private String phone;
-       @Column(name = "fax", length = 25, columnDefinition = "varchar(25) DEFAULT NULL")
+       @Column(name = "fax", length = 25)
        @Size(max = 25)
        @SafeHtml
        private String fax;
-       @Column(name = "cellular", length = 25, columnDefinition = "varchar(25) DEFAULT NULL")
+       @Column(name = "cellular", length = 25)
        @Size(max = 25)
        @SafeHtml
        private String cellular;
-       @Column(name = "email", length = 50, columnDefinition = "varchar(50) DEFAULT NULL")
+       @Column(name = "email", length = 50)
        @Size(max = 50)
        @Email
        @SafeHtml
        private String email;
-       @Column(name = "address_id", columnDefinition = "decimal(11,0) DEFAULT NULL")
+       @Column(name = "address_id")
        @Digits(integer = 11, fraction = 0)
        private Long addressId;
        @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-       @JoinColumn(name = "alert_method_cd", columnDefinition = "varchar(10) DEFAULT NULL")
+       @JoinColumn(name = "alert_method_cd")
        private FnLuAlertMethod alertMethodCd;
-       @Column(name = "hrid", length = 20, columnDefinition = "varchar(20) DEFAULT NULL")
+       @Column(name = "hrid", length = 20)
        @Size(max = 20)
        @SafeHtml
        private String hrid;
-       @Column(name = "org_user_id", length = 20, columnDefinition = "varchar(20) DEFAULT NULL")
+       @Column(name = "org_user_id", length = 20)
        @Size(max = 20)
        @SafeHtml
        private String orgUserId;
-       @Column(name = "org_code", length = 30, columnDefinition = "varchar(30) DEFAULT NULL")
+       @Column(name = "org_code", length = 30)
        @Size(max = 30)
        @SafeHtml
        private String org_code;
-       @Column(name = "login_id", length = 25, columnDefinition = "varchar(25) DEFAULT NULL")
+       @Column(name = "login_id", length = 25)
        @Size(max = 25)
        @SafeHtml
        private String loginId;
-       @Column(name = "login_pwd", length = 100, columnDefinition = "varchar(100) DEFAULT NULL")
+       @Column(name = "login_pwd", length = 100)
        @Size(max = 100)
        @SafeHtml
        private String loginPwd;
        @Column(name = "last_login_date", nullable = false, columnDefinition = "datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()")
        @PastOrPresent
        protected LocalDateTime lastLoginDate;
-       @Column(name = "active_yn", length = 1, columnDefinition = "character varying(1) default 'y'", nullable = false)
-       @Size(max = 1)
-       @SafeHtml
-       @NotNull(message = "activeYn must not be null")
-       private String activeYn;
+       @Column(name = "active_yn", nullable = false)
+       private Boolean activeYn;
        @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
        @JoinColumn(name = "created_id")
        private FnUser createdId;
@@ -269,79 +269,76 @@ public class FnUser extends DomainVo implements UserDetails {
        @Column(name = "modified_date", nullable = false, columnDefinition = "datetime default now()")
        @PastOrPresent
        protected LocalDateTime modifiedDate;
-       @Column(name = "is_internal_yn", length = 1, columnDefinition = "character varying(1) default 'n'", nullable = false)
-       @Size(max = 1)
-       @SafeHtml
-       @NotNull(message = "isInternalYn must not be null")
-       private String isInternalYn;
-       @Column(name = "address_line_1", length = 100, columnDefinition = "varchar(100) DEFAULT NULL")
+       @Column(name = "is_internal_yn", nullable = false, columnDefinition = "bit DEFAULT 0")
+       private Boolean isInternalYn;
+       @Column(name = "address_line_1", length = 100)
        @Size(max = 100)
        @SafeHtml
        private String addressLine1;
-       @Column(name = "address_line_2", length = 100, columnDefinition = "varchar(100) DEFAULT NULL")
+       @Column(name = "address_line_2", length = 100)
        @Size(max = 100)
        @SafeHtml
        private String addressLine2;
-       @Column(name = "city", length = 50, columnDefinition = "varchar(50) DEFAULT NULL")
+       @Column(name = "city", length = 50)
        @Size(max = 50)
        @SafeHtml
        private String city;
-       @Column(name = "state_cd", length = 3, columnDefinition = "varchar(3) DEFAULT NULL")
+       @Column(name = "state_cd", length = 3)
        @Size(max = 3)
        @SafeHtml
        private String stateCd;
-       @Column(name = "zip_code", length = 11, columnDefinition = "varchar(11) DEFAULT NULL")
+       @Column(name = "zip_code", length = 11)
        @Size(max = 11)
        @SafeHtml
        private String zipCode;
-       @Column(name = "country_cd", length = 3, columnDefinition = "varchar(3) DEFAULT NULL")
+       @Column(name = "country_cd", length = 3)
        @Size(max = 3)
        @SafeHtml
        private String countryCd;
-       @Column(name = "location_clli", length = 8, columnDefinition = "varchar(8) DEFAULT NULL")
+       @Column(name = "location_clli", length = 8)
        @Size(max = 8)
        @SafeHtml
        private String locationClli;
-       @Column(name = "org_manager_userid", length = 20, columnDefinition = "varchar(20) DEFAULT NULL")
+       @Column(name = "org_manager_userid", length = 20)
        @Size(max = 20)
        @SafeHtml
        private String orgManagerUserId;
-       @Column(name = "company", length = 100, columnDefinition = "varchar(100) DEFAULT NULL")
+       @Column(name = "company", length = 100)
        @Size(max = 100)
        @SafeHtml
        private String company;
-       @Column(name = "department_name", length = 200, columnDefinition = "varchar(100) DEFAULT NULL")
+       @Column(name = "department_name", length = 200)
        @Size(max = 200)
        @SafeHtml
        private String departmentName;
-       @Column(name = "job_title", length = 100, columnDefinition = "varchar(100) DEFAULT NULL")
+       @Column(name = "job_title", length = 100)
        @Size(max = 100)
        @SafeHtml
        private String jobTitle;
        @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-       @JoinColumn(name = "timezone", columnDefinition = "int(11) DEFAULT NULL")
+       @JoinColumn(name = "timezone")
        private FnLuTimezone timezone;
-       @Column(name = "department", length = 25, columnDefinition = "varchar(25) DEFAULT NULL")
+       @Column(name = "department", length = 25)
        @Size(max = 25)
        @SafeHtml
        private String department;
-       @Column(name = "business_unit", length = 25, columnDefinition = "varchar(25) DEFAULT NULL")
+       @Column(name = "business_unit", length = 25)
        @Size(max = 25)
        @SafeHtml
        private String businessUnit;
-       @Column(name = "business_unit_name", length = 100, columnDefinition = "varchar(100) DEFAULT NULL")
+       @Column(name = "business_unit_name", length = 100)
        @Size(max = 100)
        @SafeHtml
        private String businessUnitName;
-       @Column(name = "cost_center", length = 25, columnDefinition = "varchar(25) DEFAULT NULL")
+       @Column(name = "cost_center", length = 25)
        @Size(max = 25)
        @SafeHtml
        private String cost_center;
-       @Column(name = "fin_loc_code", length = 10, columnDefinition = "varchar(10) DEFAULT NULL")
+       @Column(name = "fin_loc_code", length = 10)
        @Size(max = 10)
        @SafeHtml
        private String finLocCode;
-       @Column(name = "silo_status", length = 10, columnDefinition = "varchar(10) DEFAULT NULL")
+       @Column(name = "silo_status", length = 10)
        @Size(max = 10)
        @SafeHtml
        private String siloStatus;
@@ -349,9 +346,9 @@ public class FnUser extends DomainVo implements UserDetails {
        @JoinColumn(name = "language_id", nullable = false, columnDefinition = "int(11) DEFAULT 1")
        @NotNull(message = "languageId must not be null")
        private FnLanguage languageId;
-       @Column(name = "is_guest", columnDefinition = "boolean default 0", nullable = false)
+       @Column(name = "is_guest", nullable = false, columnDefinition = "bit DEFAULT 0")
        @NotNull(message = "guest must not be null")
-       private boolean guest;
+       private Boolean guest;
        @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "fnUserList")
        private Set<CrReportFileHistory> crReportFileHistorie;
        @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)

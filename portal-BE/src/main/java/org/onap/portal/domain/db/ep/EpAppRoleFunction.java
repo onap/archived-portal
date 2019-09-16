@@ -41,6 +41,7 @@
 package org.onap.portal.domain.db.ep;
 
 
+import java.io.Serializable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -91,7 +92,7 @@ CREATE TABLE `ep_app_role_function` (
 @Getter
 @Setter
 @Entity
-public class EpAppRoleFunction {
+public class EpAppRoleFunction implements Serializable {
        @Id
        @GeneratedValue(strategy = GenerationType.AUTO)
        @Column(name = "id", length = 11, nullable = false, columnDefinition = "int(11) NOT NULL AUTO_INCREMENT")

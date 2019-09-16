@@ -40,6 +40,7 @@
 
 package org.onap.portal.domain.db.fn;
 
+import java.io.Serializable;
 import java.math.BigInteger;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -116,7 +117,7 @@ CREATE TABLE `fn_qz_triggers` (
 @Setter
 @Entity
 @IdClass(FnQzTriggersId.class)
-public class FnQzTriggers {
+public class FnQzTriggers implements Serializable {
        @ManyToOne
        @JoinColumns(value = {
                @JoinColumn(name = "SCHED_NAME", referencedColumnName = "SCHED_NAME"),

@@ -40,6 +40,7 @@
 
 package org.onap.portal.domain.db.fn;
 
+import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -72,7 +73,7 @@ CREATE TABLE `fn_lu_priority` (
 @Getter
 @Setter
 @Entity
-public class FnLuPriority {
+public class FnLuPriority implements Serializable {
        @Id
        @GeneratedValue(strategy = GenerationType.AUTO)
        @Column(name = "priority_id", nullable = false, length = 11)

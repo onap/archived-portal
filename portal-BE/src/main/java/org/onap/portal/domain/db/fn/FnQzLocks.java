@@ -71,7 +71,7 @@ CREATE TABLE `fn_qz_locks` (
 @Setter
 @Entity
 @IdClass(FnQzLocksID.class)
-public class FnQzLocks {
+public class FnQzLocks implements Serializable{
        @Id
        @Size(max = 120)
        @SafeHtml

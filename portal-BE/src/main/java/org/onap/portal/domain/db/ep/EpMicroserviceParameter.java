@@ -40,6 +40,7 @@
 
 package org.onap.portal.domain.db.ep;
 
+import java.io.Serializable;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -78,7 +79,14 @@ CREATE TABLE `ep_microservice_parameter` (
 @NamedQueries({
         @NamedQuery(
                 name = "EpMicroserviceParameter.deleteByServiceId",
-                query = "FROM EpMicroserviceParameter WHERE service_id =:serviceId")
+                query = "DELETE FROM EpMicroserviceParameter WHERE service_id =:SERVICEID"),
+        @NamedQuery(
+                name = "EpMicroserviceParameter.getParametersById",
+                query = "FROM EpMicroserviceParameter WHERE service_id =:SERVICEID"),
+        @NamedQuery(
+                name = "EpMicroserviceParameter.deleteMicroserviceParameterById",
+                query = "DELETE FROM EpMicroserviceParameter WHERE id =:PARAMID"
+        )
 })
 
 @Table(name = "ep_microservice_parameter", indexes = {
@@ -86,11 +94,10 @@ CREATE TABLE `ep_microservice_parameter` (
 })
 @NoArgsConstructor
 @AllArgsConstructor
-
 @Getter
 @Setter
 @Entity
-public class EpMicroserviceParameter {
+public class EpMicroserviceParameter implements Serializable {
 
        @Id
        @GeneratedValue(strategy = GenerationType.AUTO)

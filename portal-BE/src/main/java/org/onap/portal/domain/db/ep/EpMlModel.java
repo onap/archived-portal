@@ -69,12 +69,11 @@ CREATE TABLE `ep_ml_model` (
 @Table(name = "ep_ml_model")
 @NoArgsConstructor
 @AllArgsConstructor
-
 @Getter
 @Setter
 @Entity
 @IdClass(EpMlModelId.class)
-public class EpMlModel {
+public class EpMlModel implements Serializable{
        @Id
        @Digits(integer = 11, fraction = 0)
        @Column(name = "group_id", length = 11, nullable = false)

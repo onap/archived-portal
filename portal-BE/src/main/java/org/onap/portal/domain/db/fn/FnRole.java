@@ -40,6 +40,7 @@
 
 package org.onap.portal.domain.db.fn;
 
+import java.io.Serializable;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -58,7 +59,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -121,7 +121,7 @@ CREATE TABLE `fn_role` (
 @Getter
 @Setter
 @Entity
-public class FnRole extends DomainVo {
+public class FnRole extends DomainVo implements Serializable {
 
        @Id
        @GeneratedValue(strategy = GenerationType.AUTO)

@@ -40,6 +40,7 @@
 
 package org.onap.portal.domain.db.fn;
 
+import java.io.Serializable;
 import java.math.BigInteger;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -62,7 +63,7 @@ import org.hibernate.annotations.Subselect;
         + " from fn_role where isnull(fn_role.app_id)")
 @Getter
 @NoArgsConstructor
-public class FnRoleV {
+public class FnRoleV implements Serializable {
        @Id
        @Column(name = "role_id")
        private Integer roleId;

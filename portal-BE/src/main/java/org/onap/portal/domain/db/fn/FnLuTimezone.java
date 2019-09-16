@@ -40,6 +40,7 @@
 
 package org.onap.portal.domain.db.fn;
 
+import java.io.Serializable;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -73,7 +74,7 @@ CREATE TABLE `fn_lu_timezone` (
 @Getter
 @Setter
 @Entity
-public class FnLuTimezone {
+public class FnLuTimezone implements Serializable {
        @Id
        @GeneratedValue(strategy = GenerationType.AUTO)
        @Column(name = "timezone_id", length = 11, nullable = false)

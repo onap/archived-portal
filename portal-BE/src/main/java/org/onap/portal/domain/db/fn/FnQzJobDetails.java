@@ -90,7 +90,7 @@ CREATE TABLE `fn_qz_job_details` (
 @Setter
 @Entity
 @IdClass(FnQzJobDetailsID.class)
-public class FnQzJobDetails {
+public class FnQzJobDetails implements Serializable{
        @Id
        @SafeHtml
        @Size(max = 120)
