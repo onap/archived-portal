@@ -33,7 +33,7 @@
  *
  * ============LICENSE_END============================================
  *
- * 
+ *
  */
 package org.onap.portalapp.portal.controller;
 
@@ -85,163 +85,165 @@ import io.swagger.annotations.ApiOperation;
 @EnableAspectJAutoProxy
 @EPAuditLog
 public class TicketEventController implements BasicAuthenticationController {
-	private static final ValidatorFactory VALIDATOR_FACTORY = Validation.buildDefaultValidatorFactory();
+    private static final ValidatorFactory VALIDATOR_FACTORY = Validation.buildDefaultValidatorFactory();
 
-	@Autowired
-	private UserNotificationService userNotificationService;
-	
-	@Autowired
-	private TicketEventService ticketEventService;
+    @Autowired
+    private UserNotificationService userNotificationService;
 
-	private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(TicketEventController.class);
+    @Autowired
+    private TicketEventService ticketEventService;
 
-	public boolean isAuxRESTfulCall() {
-		return true;
-	}
+    private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(TicketEventController.class);
 
-	private final ObjectMapper mapper = new ObjectMapper();
+    public boolean isAuxRESTfulCall() {
+        return true;
+    }
 
+    private final ObjectMapper mapper = new ObjectMapper();
+    private static final String EVENT_DATE = "eventDate";
 
+    @ApiOperation(
+            value = "Accepts messages from external ticketing systems and creates notifications for Portal users.",
+            response = PortalRestResponse.class)
+    @RequestMapping(value = { "/ticketevent" }, method = RequestMethod.POST)
+    public PortalRestResponse<String> handleRequest(HttpServletRequest request, HttpServletResponse response,
+            @RequestBody String ticketEventJson) throws Exception {
 
-	@ApiOperation(value = "Accepts messages from external ticketing systems and creates notifications for Portal users.", response = PortalRestResponse.class)
-	@RequestMapping(value = { "/ticketevent" }, method = RequestMethod.POST)
-	public PortalRestResponse<String> handleRequest(HttpServletRequest request, HttpServletResponse response,
-			@RequestBody String ticketEventJson) throws Exception {
+        logger.debug(EELFLoggerDelegate.debugLogger, "Ticket Event notification" + ticketEventJson);
+        PortalRestResponse<String> portalResponse = new PortalRestResponse<>();
 
-		logger.debug(EELFLoggerDelegate.debugLogger, "Ticket Event notification" + ticketEventJson);
-		PortalRestResponse<String> portalResponse = new PortalRestResponse<>();
+        if (ticketEventJson != null) {
+            SecureString secureString = new SecureString(ticketEventJson);
+            Validator validator = VALIDATOR_FACTORY.getValidator();
 
-		if (ticketEventJson!=null){
-			SecureString secureString = new SecureString(ticketEventJson);
-			Validator validator = VALIDATOR_FACTORY.getValidator();
+            Set<ConstraintViolation<SecureString>> constraintViolations = validator.validate(secureString);
+            if (!constraintViolations.isEmpty()) {
+                portalResponse.setStatus(PortalRestStatusEnum.ERROR);
+                portalResponse.setMessage("Data is not valid");
+                return portalResponse;
+            }
+        }
 
-			Set<ConstraintViolation<SecureString>> constraintViolations = validator.validate(secureString);
-			if (!constraintViolations.isEmpty()){
-				portalResponse.setStatus(PortalRestStatusEnum.ERROR);
-				portalResponse.setMessage("Data is not valid");
-				return portalResponse;
-			}
-		}
+        try {
+            JsonNode ticketEventNotif = mapper.readTree(ticketEventJson);
 
-		try {
-			JsonNode ticketEventNotif = mapper.readTree(ticketEventJson);
+            // Reject request if required fields are missing.
+            String error = validateTicketEventMessage(ticketEventNotif);
+            if (error != null) {
+                portalResponse.setStatus(PortalRestStatusEnum.ERROR);
+                portalResponse.setMessage(error);
+                response.setStatus(400);
+                return portalResponse;
+            }
 
-			// Reject request if required fields are missing.
-			String error = validateTicketEventMessage(ticketEventNotif);
-			if (error != null) {
-				portalResponse.setStatus(PortalRestStatusEnum.ERROR);
-				portalResponse.setMessage(error);
-				response.setStatus(400);
-				return portalResponse;
-			}
+            EpNotificationItem epItem = new EpNotificationItem();
+            epItem.setCreatedDate(new Date());
+            epItem.setIsForOnlineUsers("Y");
+            epItem.setIsForAllRoles("N");
+            epItem.setActiveYn("Y");
 
-			EpNotificationItem epItem = new EpNotificationItem();
-			epItem.setCreatedDate(new Date());
-			epItem.setIsForOnlineUsers("Y");
-			epItem.setIsForAllRoles("N");
-			epItem.setActiveYn("Y");
+            JsonNode event = ticketEventNotif.get("event");
+            JsonNode header = event.get("header");
+            JsonNode body = event.get("body");
+            JsonNode application = ticketEventNotif.get("application");
+            epItem.setMsgDescription(body.toString());
+            Long eventDate = System.currentTimeMillis();
+            if (body.get(EVENT_DATE) != null) {
+                eventDate = body.get(EVENT_DATE).asLong();
+            }
+            String eventSource = header.get("eventSource").asText();
+            epItem.setMsgSource(eventSource);
+            String ticket = body.get("ticketNum").asText();
+            String hyperlink = ticketEventService.getNotificationHyperLink(application, ticket, eventSource);
+            if (body.get("notificationHyperlink") != null) {
+                hyperlink = body.get("notificationHyperlink").asText();
+            }
+            epItem.setNotificationHyperlink(hyperlink);
+            epItem.setStartTime(new Date(eventDate));
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(epItem.getStartTime());
+            int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
+            calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth + 30);
+            epItem.setEndTime(calendar.getTime());
+            String severityString = "1";
+            if (body.get("severity") != null) {
+                severityString = (body.get("severity").toString()).substring(1, 2);
+            }
+            Long severity = Long.parseLong(severityString);
+            epItem.setPriority(severity);
+            epItem.setCreatorId(null);
+            Set<EpRoleNotificationItem> roles = new HashSet<>();
+            JsonNode SubscriberInfo = ticketEventNotif.get("SubscriberInfo");
+            JsonNode userList = SubscriberInfo.get("UserList");
+            String UserIds[] = userList.toString().replace("[", "").replace("]", "").trim().replace("\"", "")
+                    .split(",");
+            String assetID = eventSource + ' '
+                    + userList.toString().replace("[", "").replace("]", "").trim().replace("\"", "") + ' '
+                    + new Date(eventDate);
+            if (body.get("assetID") != null) {
+                assetID = body.get("assetID").asText();
+            }
+            epItem.setMsgHeader(assetID);
+            List<EPUser> users = userNotificationService.getUsersByOrgIds(Arrays.asList(UserIds));
+            for (String userId : UserIds) {
+                EpRoleNotificationItem roleNotifItem = new EpRoleNotificationItem();
+                for (EPUser user : users) {
+                    if (user.getOrgUserId().equals(userId)) {
+                        roleNotifItem.setRecvUserId(user.getId().intValue());
+                        roles.add(roleNotifItem);
+                        break;
+                    }
+                }
 
-			JsonNode event = ticketEventNotif.get("event");
-			JsonNode header = event.get("header");
-			JsonNode body = event.get("body");
-			JsonNode application = ticketEventNotif.get("application");
-			epItem.setMsgDescription(body.toString());
-			Long eventDate = System.currentTimeMillis();
-			if (body.get("eventDate") != null) {
-				eventDate = body.get("eventDate").asLong();
-			}
-			String eventSource = header.get("eventSource").asText();
-			epItem.setMsgSource(eventSource);
-			String ticket = body.get("ticketNum").asText();
-			String hyperlink = ticketEventService.getNotificationHyperLink(application, ticket, eventSource);			
-			if(body.get("notificationHyperlink")!=null){
-				hyperlink=body.get("notificationHyperlink").asText();
-			}
-			epItem.setNotificationHyperlink(hyperlink);
-			epItem.setStartTime(new Date(eventDate));
-			Calendar calendar = Calendar.getInstance();
-			calendar.setTime(epItem.getStartTime());
-			int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
-			calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth + 30);
-			epItem.setEndTime(calendar.getTime());
-			String severityString = "1";
-			if (body.get("severity") != null) {
-				severityString = (body.get("severity").toString()).substring(1, 2);
-			}
-			Long severity = Long.parseLong(severityString);
-			epItem.setPriority(severity);
-			epItem.setCreatorId(null);
-			Set<EpRoleNotificationItem> roles = new HashSet<>();
-			JsonNode SubscriberInfo = ticketEventNotif.get("SubscriberInfo");
-			JsonNode userList = SubscriberInfo.get("UserList");
-			String UserIds[] = userList.toString().replace("[", "").replace("]", "").trim().replace("\"", "")
-					.split(",");
-			String assetID = eventSource + ' '
-					+ userList.toString().replace("[", "").replace("]", "").trim().replace("\"", "") + ' '
-					+ new Date(eventDate);
-			if (body.get("assetID") != null) {
-				assetID = body.get("assetID").asText();
-			}
-			epItem.setMsgHeader(assetID);
-			List<EPUser> users = userNotificationService.getUsersByOrgIds(Arrays.asList(UserIds));
-			for (String userId : UserIds) {
-				EpRoleNotificationItem roleNotifItem = new EpRoleNotificationItem();
-				for (EPUser user : users) {
-					if (user.getOrgUserId().equals(userId)) {
-						roleNotifItem.setRecvUserId(user.getId().intValue());
-						roles.add(roleNotifItem);
-						break;
-					}
-				}
+            }
+            epItem.setRoles(roles);
+            userNotificationService.saveNotification(epItem);
 
-			}
-			epItem.setRoles(roles);
-			userNotificationService.saveNotification(epItem);
+            portalResponse.setStatus(PortalRestStatusEnum.OK);
+            portalResponse.setMessage("processEventNotification: notification created");
+            portalResponse.setResponse("NotificationId is :" + epItem.notificationId);
+        } catch (Exception ex) {
+            portalResponse.setStatus(PortalRestStatusEnum.ERROR);
+            response.setStatus(400);
+            portalResponse.setMessage(ex.toString());
+        }
+        return portalResponse;
+    }
 
-			portalResponse.setStatus(PortalRestStatusEnum.OK);
-			portalResponse.setMessage("processEventNotification: notification created");
-			portalResponse.setResponse("NotificationId is :" + epItem.notificationId);
-		} catch (Exception ex) {
-			portalResponse.setStatus(PortalRestStatusEnum.ERROR);
-			response.setStatus(400);
-			portalResponse.setMessage(ex.toString());
-		}
-		return portalResponse;
-	}
+    /**
+     * Validates that mandatory fields are present.
+     *
+     * @param ticketEventNotif
+     * @return Error message if a problem is found; null if all is well.
+     */
+    private String validateTicketEventMessage(JsonNode ticketEventNotif) {
+        JsonNode application = ticketEventNotif.get("application");
+        JsonNode event = ticketEventNotif.get("event");
+        JsonNode header = event.get("header");
+        JsonNode eventSource = header.get("eventSource");
+        JsonNode body = event.get("body");
+        JsonNode SubscriberInfo = ticketEventNotif.get("SubscriberInfo");
+        JsonNode userList = SubscriberInfo.get("UserList");
 
-	/**
-	 * Validates that mandatory fields are present.
-	 * 
-	 * @param ticketEventNotif
-	 * @return Error message if a problem is found; null if all is well.
-	 */
-	private String validateTicketEventMessage(JsonNode ticketEventNotif) {
-		JsonNode application = ticketEventNotif.get("application");
-		JsonNode event = ticketEventNotif.get("event");
-		JsonNode header = event.get("header");
-		JsonNode eventSource=header.get("eventSource");
-		JsonNode body = event.get("body");
-		JsonNode SubscriberInfo = ticketEventNotif.get("SubscriberInfo");
-		JsonNode userList = SubscriberInfo.get("UserList");
+        if (application == null || application.asText().length() == 0 || application.asText().equalsIgnoreCase("null"))
+            return "Application is mandatory";
+        if (body == null)
+            return "body is mandatory";
+        if (eventSource == null || eventSource.asText().trim().length() == 0
+                || eventSource.asText().equalsIgnoreCase("null"))
+            return "Message Source is mandatory";
+        if (userList == null)
+            return "At least one user Id is mandatory";
+        JsonNode eventDate = body.get(EVENT_DATE);
 
-		if (application == null||application.asText().length()==0||application.asText().equalsIgnoreCase("null"))
-			return "Application is mandatory";
-		if (body == null)
-			return "body is mandatory";
-		if (eventSource == null||eventSource.asText().trim().length()==0||eventSource.asText().equalsIgnoreCase("null"))
-			return "Message Source is mandatory";
-		if (userList == null)
-			return "At least one user Id is mandatory";
-		JsonNode eventDate=body.get("eventDate");
-		
-		if(eventDate!=null&&eventDate.asText().length()==8)
-			return "EventDate is invalid";
-		String UserIds[] = userList.toString().replace("[", "").replace("]", "").trim().replace("\"", "")
-				.split(",");		
-		List<EPUser> users = userNotificationService.getUsersByOrgIds(Arrays.asList(UserIds));
-		if(users==null||users.size()==0)
-			return "Invalid Org User ID";
-		return null;
-	}
-	
+        if (eventDate != null && eventDate.asText().length() == 8)
+            return "EventDate is invalid";
+        String UserIds[] = userList.toString().replace("[", "").replace("]", "").trim().replace("\"", "")
+                .split(",");
+        List<EPUser> users = userNotificationService.getUsersByOrgIds(Arrays.asList(UserIds));
+        if (users == null || users.size() == 0)
+            return "Invalid Org User ID";
+        return null;
+    }
+
 }

@@ -33,7 +33,7 @@
  *
  * ============LICENSE_END============================================
  *
- * 
+ *
  */
 package org.onap.portalapp.portal.controller;
 
@@ -77,158 +77,161 @@ import org.onap.portalsdk.core.web.support.UserUtils;
 @EPAuditLog
 public class UserNotificationController extends EPRestrictedBaseController {
 
-	@Autowired
-	FunctionalMenuService functionalMenuService;
+    @Autowired
+    FunctionalMenuService functionalMenuService;
 
-	@Autowired
-	UserNotificationService userNotificationService;
+    @Autowired
+    UserNotificationService userNotificationService;
 
-	EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(UserNotificationController.class);
+    EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(UserNotificationController.class);
+    private static final String SUCCESS = "success";
+    private static final String FAILURE = "FAILURE";
 
-	@RequestMapping(value = {
-			"/portalApi/getFunctionalMenuRole" }, method = RequestMethod.GET, produces = "application/json")
-	public List<FunctionalMenuRole> getMenuIdRoleId(HttpServletRequest request, HttpServletResponse response) {
-		// EPUser user = EPUserUtils.getUserSession(request);
-		List<FunctionalMenuRole> menuRoleList = null;
-		menuRoleList = functionalMenuService.getFunctionalMenuRole();
-		return menuRoleList;
-	}
+    @RequestMapping(value = {
+            "/portalApi/getFunctionalMenuRole" }, method = RequestMethod.GET, produces = "application/json")
+    public List<FunctionalMenuRole> getMenuIdRoleId(HttpServletRequest request, HttpServletResponse response) {
+        // EPUser user = EPUserUtils.getUserSession(request);
+        List<FunctionalMenuRole> menuRoleList = null;
+        menuRoleList = functionalMenuService.getFunctionalMenuRole();
+        return menuRoleList;
+    }
 
-	@RequestMapping(value = {
-			"/portalApi/getNotifications" }, method = RequestMethod.GET, produces = "application/json")
-	public PortalRestResponse<List<EpNotificationItem>> getNotifications(HttpServletRequest request,
-			HttpServletResponse response) {
-		EPUser user = EPUserUtils.getUserSession(request);
-		PortalRestResponse<List<EpNotificationItem>> portalRestResponse = null;
-		try {
-			List<EpNotificationItem> notificationList = userNotificationService.getNotifications(user.getId());
-			portalRestResponse = new PortalRestResponse<List<EpNotificationItem>>(PortalRestStatusEnum.OK, "success",
-					notificationList);
-		} catch (Exception e) {
-			logger.error(EELFLoggerDelegate.errorLogger, "getAllAppsAndContacts failed", e);
-			portalRestResponse = new PortalRestResponse<List<EpNotificationItem>>(PortalRestStatusEnum.ERROR,
-					e.getMessage(), null);
-		}
-		return portalRestResponse;
-	}
+    @RequestMapping(value = {
+            "/portalApi/getNotifications" }, method = RequestMethod.GET, produces = "application/json")
+    public PortalRestResponse<List<EpNotificationItem>> getNotifications(HttpServletRequest request,
+            HttpServletResponse response) {
+        EPUser user = EPUserUtils.getUserSession(request);
+        PortalRestResponse<List<EpNotificationItem>> portalRestResponse = null;
+        try {
+            List<EpNotificationItem> notificationList = userNotificationService.getNotifications(user.getId());
+            portalRestResponse = new PortalRestResponse<>(PortalRestStatusEnum.OK, SUCCESS,
+                    notificationList);
+        } catch (Exception e) {
+            logger.error(EELFLoggerDelegate.errorLogger, "getAllAppsAndContacts failed", e);
+            portalRestResponse = new PortalRestResponse<>(PortalRestStatusEnum.ERROR,
+                    e.getMessage(), null);
+        }
+        return portalRestResponse;
+    }
 
-	@RequestMapping(value = {
-			"/portalApi/getAdminNotifications" }, method = RequestMethod.GET, produces = "application/json")
-	public List<EpNotificationItemVO> getAdminNotifications(HttpServletRequest request, HttpServletResponse response) {
-		List<EpNotificationItemVO> adminNotificationList = null;
-		EPUser user = EPUserUtils.getUserSession(request);
-		adminNotificationList = userNotificationService.getAdminNotificationVOS(user.getId());
-		return adminNotificationList;
-	}
+    @RequestMapping(value = {
+            "/portalApi/getAdminNotifications" }, method = RequestMethod.GET, produces = "application/json")
+    public List<EpNotificationItemVO> getAdminNotifications(HttpServletRequest request, HttpServletResponse response) {
+        List<EpNotificationItemVO> adminNotificationList = null;
+        EPUser user = EPUserUtils.getUserSession(request);
+        adminNotificationList = userNotificationService.getAdminNotificationVOS(user.getId());
+        return adminNotificationList;
+    }
 
-	@RequestMapping(value = "/portalApi/saveNotification", method = RequestMethod.POST, produces = "application/json")
-	public PortalRestResponse<String> save(HttpServletRequest request, HttpServletResponse response,
-			@RequestBody EpNotificationItem notificationItem) {
+    @RequestMapping(value = "/portalApi/saveNotification", method = RequestMethod.POST, produces = "application/json")
+    public PortalRestResponse<String> save(HttpServletRequest request, HttpServletResponse response,
+            @RequestBody EpNotificationItem notificationItem) {
 
-		if (notificationItem == null || notificationItem.getMsgHeader() == null)
-			return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, "FAILURE",
-					"Notification Header cannot be null or empty");
-		if (notificationItem.getEndTime().compareTo(notificationItem.getStartTime()) < 0) {
-			return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, "FAILURE",
-					"End Time should be greater than  start time");
-		}
+        if (notificationItem == null || notificationItem.getMsgHeader() == null)
+            return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, FAILURE,
+                    "Notification Header cannot be null or empty");
+        if (notificationItem.getEndTime().compareTo(notificationItem.getStartTime()) < 0) {
+            return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, FAILURE,
+                    "End Time should be greater than  start time");
+        }
 
-		if ((notificationItem.getIsForAllRoles() == "N") && notificationItem.getRoleIds().isEmpty()) {
-			return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, "FAILURE",
-					"No Roles Ids Exist for the selected Roles");
-		}
+        if ((notificationItem.getIsForAllRoles() == "N") && notificationItem.getRoleIds().isEmpty()) {
+            return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, FAILURE,
+                    "No Roles Ids Exist for the selected Roles");
+        }
 
-		Long creatorId = UserUtils.getUserIdAsLong(request);
-		notificationItem.setCreatorId(creatorId);
+        Long creatorId = UserUtils.getUserIdAsLong(request);
+        notificationItem.setCreatorId(creatorId);
 
-		// Front-end date picker does not accept a time value, so all
-		// values are the start of the chosen day in the local time zone.
-		// Move the end time value to the very end of the chosen day.
-		// Avoid Calendar.getDefault() which uses the server's locale.
-		Long endTime = notificationItem.getEndTime().getTime();
-		endTime += (23 * 3600 + 59 * 60 + 59) * 1000;
-		notificationItem.getEndTime().setTime(endTime);
+        // Front-end date picker does not accept a time value, so all
+        // values are the start of the chosen day in the local time zone.
+        // Move the end time value to the very end of the chosen day.
+        // Avoid Calendar.getDefault() which uses the server's locale.
+        Long endTime = notificationItem.getEndTime().getTime();
+        endTime += (23 * 3600 + 59 * 60 + 59) * 1000;
+        notificationItem.getEndTime().setTime(endTime);
 
-		try {
-			userNotificationService.saveNotification(notificationItem);
-		} catch (Exception e) {
-			return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, "FAILURE", e.getMessage());
-		}
-		return new PortalRestResponse<String>(PortalRestStatusEnum.OK, "SUCCESS", "");
-	}
+        try {
+            userNotificationService.saveNotification(notificationItem);
+        } catch (Exception e) {
+            logger.error(EELFLoggerDelegate.errorLogger, "saveNotification failed", e);
+            return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, FAILURE, e.getMessage());
+        }
+        return new PortalRestResponse<>(PortalRestStatusEnum.OK, "SUCCESS", "");
+    }
 
-	@RequestMapping(value = {
-			"/portalApi/notificationUpdateRate" }, method = RequestMethod.GET, produces = "application/json")
-	public PortalRestResponse<Map<String, String>> getNotificationUpdateRate(HttpServletRequest request) {
-		try {
-			String updateRate = SystemProperties.getProperty(EPCommonSystemProperties.NOTIFICATION_UPDATE_RATE);
-			String updateDuration = SystemProperties.getProperty(EPCommonSystemProperties.NOTIFICATION_UPDATE_DURATION);
-			Integer rateInMiliSec = Integer.valueOf(updateRate) * 1000;
-			Integer durationInMiliSec = Integer.valueOf(updateDuration) * 1000;
-			Map<String, String> results = new HashMap<String, String>();
-			results.put("updateRate", String.valueOf(rateInMiliSec));
-			results.put("updateDuration", String.valueOf(durationInMiliSec));
-			return new PortalRestResponse<>(PortalRestStatusEnum.OK, "success", results);
-		} catch (Exception e) {
-			logger.error(EELFLoggerDelegate.errorLogger, "getNotificationUpdateRate failed", e);
-			return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, e.toString(), null);
-		}
-	}
+    @RequestMapping(value = {
+            "/portalApi/notificationUpdateRate" }, method = RequestMethod.GET, produces = "application/json")
+    public PortalRestResponse<Map<String, String>> getNotificationUpdateRate(HttpServletRequest request) {
+        try {
+            String updateRate = SystemProperties.getProperty(EPCommonSystemProperties.NOTIFICATION_UPDATE_RATE);
+            String updateDuration = SystemProperties.getProperty(EPCommonSystemProperties.NOTIFICATION_UPDATE_DURATION);
+            Integer rateInMiliSec = Integer.valueOf(updateRate) * 1000;
+            Integer durationInMiliSec = Integer.valueOf(updateDuration) * 1000;
+            Map<String, String> results = new HashMap<>();
+            results.put("updateRate", String.valueOf(rateInMiliSec));
+            results.put("updateDuration", String.valueOf(durationInMiliSec));
+            return new PortalRestResponse<>(PortalRestStatusEnum.OK, SUCCESS, results);
+        } catch (Exception e) {
+            logger.error(EELFLoggerDelegate.errorLogger, "getNotificationUpdateRate failed", e);
+            return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, e.toString(), null);
+        }
+    }
 
-	@RequestMapping(value = {
-			"/portalApi/notificationRead" }, method = RequestMethod.GET, produces = "application/json")
-	public PortalRestResponse<Map<String, String>> notificationRead(
-			@RequestParam("notificationId") String notificationID, HttpServletRequest request) {
-		try {
-			userNotificationService.setNotificationRead(Long.parseLong(notificationID), UserUtils.getUserId(request));
-			return new PortalRestResponse<>(PortalRestStatusEnum.OK, "success", null);
-		} catch (Exception e) {
-			logger.error(EELFLoggerDelegate.errorLogger, "notificationRead failed", e);
-			return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, e.toString(), null);
-		}
-	}
+    @RequestMapping(value = {
+            "/portalApi/notificationRead" }, method = RequestMethod.GET, produces = "application/json")
+    public PortalRestResponse<Map<String, String>> notificationRead(
+            @RequestParam("notificationId") String notificationID, HttpServletRequest request) {
+        try {
+            userNotificationService.setNotificationRead(Long.parseLong(notificationID), UserUtils.getUserId(request));
+            return new PortalRestResponse<>(PortalRestStatusEnum.OK, SUCCESS, null);
+        } catch (Exception e) {
+            logger.error(EELFLoggerDelegate.errorLogger, "notificationRead failed", e);
+            return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, e.toString(), null);
+        }
+    }
 
-	@RequestMapping(value = {
-			"/portalApi/getNotificationHistory" }, method = RequestMethod.GET, produces = "application/json")
-	public List<EpNotificationItemVO> getNotificationHistory(HttpServletRequest request, HttpServletResponse response) {
-		EPUser user = EPUserUtils.getUserSession(request);
-		List<EpNotificationItemVO> notificationList = null;
-		notificationList = userNotificationService.getNotificationHistoryVO(user.getId());
-		return notificationList;
-	}
+    @RequestMapping(value = {
+            "/portalApi/getNotificationHistory" }, method = RequestMethod.GET, produces = "application/json")
+    public List<EpNotificationItemVO> getNotificationHistory(HttpServletRequest request, HttpServletResponse response) {
+        EPUser user = EPUserUtils.getUserSession(request);
+        List<EpNotificationItemVO> notificationList = null;
+        notificationList = userNotificationService.getNotificationHistoryVO(user.getId());
+        return notificationList;
+    }
 
-	@RequestMapping(value = { "/portalApi/notificationRole/{notificationId}/roles" }, method = {
-			RequestMethod.GET }, produces = "application/json")
-	public List<Integer> testGetRoles(HttpServletRequest request, @PathVariable("notificationId") Long notificationId) {
-		List<EpRoleNotificationItem> NotifRoles = userNotificationService.getNotificationRoles(notificationId);
-		ArrayList<Integer> rolesList = new ArrayList<Integer>();
-		for (EpRoleNotificationItem notifRole : NotifRoles) {
-			rolesList.add(notifRole.roleId);
-		}
-		return rolesList;
-	}
+    @RequestMapping(value = { "/portalApi/notificationRole/{notificationId}/roles" }, method = {
+            RequestMethod.GET }, produces = "application/json")
+    public List<Integer> testGetRoles(HttpServletRequest request, @PathVariable("notificationId") Long notificationId) {
+        List<EpRoleNotificationItem> notifRoles = userNotificationService.getNotificationRoles(notificationId);
+        ArrayList<Integer> rolesList = new ArrayList<>();
+        for (EpRoleNotificationItem notifRole : notifRoles) {
+            rolesList.add(notifRole.roleId);
+        }
+        return rolesList;
+    }
 
-	@RequestMapping(value = { "/portalApi/getNotificationAppRoles" }, method = {
-			RequestMethod.GET }, produces = "application/json")
-	public List<EcompAppRole> getNotificationAppRoles(HttpServletRequest request, HttpServletResponse response) {
-		List<EcompAppRole> epAppRoleList = null;
-		try {
-			epAppRoleList = userNotificationService.getAppRoleList();
-		} catch (Exception e) {
-			logger.error(EELFLoggerDelegate.errorLogger,
-					"Exception occurred while performing UserNofiticationController.getNotificationAppRoles. Details: ",
-					e);
-		}
-		return epAppRoleList;
-	}
+    @RequestMapping(value = { "/portalApi/getNotificationAppRoles" }, method = {
+            RequestMethod.GET }, produces = "application/json")
+    public List<EcompAppRole> getNotificationAppRoles(HttpServletRequest request, HttpServletResponse response) {
+        List<EcompAppRole> epAppRoleList = null;
+        try {
+            epAppRoleList = userNotificationService.getAppRoleList();
+        } catch (Exception e) {
+            logger.error(EELFLoggerDelegate.errorLogger,
+                    "Exception occurred while performing UserNofiticationController.getNotificationAppRoles. Details: ",
+                    e);
+        }
+        return epAppRoleList;
+    }
 
-	@RequestMapping(value = {
-			"/portalApi/getMessageRecipients" }, method = RequestMethod.GET, produces = "application/json")
-	public List<String> getMessageRecipients(@RequestParam("notificationId") Long notificationID) {
-		// EPUser user = EPUserUtils.getUserSession(request);
-		List<String> messageUserRecipients = null;
-		messageUserRecipients = userNotificationService.getMessageRecipients(notificationID);
-		return messageUserRecipients;
-	}
+    @RequestMapping(value = {
+            "/portalApi/getMessageRecipients" }, method = RequestMethod.GET, produces = "application/json")
+    public List<String> getMessageRecipients(@RequestParam("notificationId") Long notificationID) {
+        // EPUser user = EPUserUtils.getUserSession(request);
+        List<String> messageUserRecipients = null;
+        messageUserRecipients = userNotificationService.getMessageRecipients(notificationID);
+        return messageUserRecipients;
+    }
 
 }
