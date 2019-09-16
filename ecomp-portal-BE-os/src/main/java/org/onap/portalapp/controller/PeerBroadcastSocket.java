@@ -35,7 +35,7 @@
  *
  * ============LICENSE_END============================================
  *
- * 
+ *
  */
 package org.onap.portalapp.controller;
 
@@ -53,51 +53,50 @@ import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 
 @ServerEndpoint("/opencontact")
 public class PeerBroadcastSocket {
-	private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(PeerBroadcastSocket.class);
-	private static final ObjectMapper mapper = new ObjectMapper();
+    private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(PeerBroadcastSocket.class);
+    private static final ObjectMapper mapper = new ObjectMapper();
 
-	protected static final Map<String, Object> channelMap = new HashMap<>();
-	private Map<String, String> sessionMap = new HashMap<>();
+    private static final Map<String, Object> channelMap = new HashMap<>();
+    private Map<String, String> sessionMap = new HashMap<>();
 
-	@OnMessage
-	public void message(String message, Session session) {
-		try {
-			Map<String, Object> jsonObject = mapper.readValue(message, Map.class);
-			save(jsonObject, session);
-		} catch (Exception ex) {
-			logger.error(EELFLoggerDelegate.errorLogger, "Failed" + ex.getMessage());
-		}
-	}
+    @OnMessage
+    public void message(String message, Session session) {
+        try {
+            Map<String, Object> jsonObject = mapper.readValue(message, Map.class);
+            save(jsonObject, session);
+        } catch (Exception ex) {
+            logger.error(EELFLoggerDelegate.errorLogger, "Failed", ex);
+        }
+    }
 
-	@OnOpen
-	public void open(Session session) {
-		logger.info(EELFLoggerDelegate.debugLogger, "Channel opened");
-	}
+    @OnOpen
+    public void open(Session session) {
+        logger.info(EELFLoggerDelegate.debugLogger, "Channel opened");
+    }
 
-	@OnClose
-	public void close(Session session) {
-		String channel = sessionMap.get(session.getId());
-		if (channel != null) {
-			Object sessObj = channelMap.get(channel);
-			if (sessObj != null) {
-				try {
-					((Session) sessObj).close();
-				} catch (IOException e) {
-					logger.error(EELFLoggerDelegate.errorLogger, "Failed to close" + e.getMessage());
-				}
-			}
-			channelMap.remove(channel);
-		}
-		logger.info(EELFLoggerDelegate.debugLogger, "Channel closed");
-	}
+    @OnClose
+    public void close(Session session) {
+        String channel = sessionMap.get(session.getId());
+        if (channel != null) {
+            Object sessObj = channelMap.get(channel);
+            if (sessObj != null) {
+                try {
+                    ((Session) sessObj).close();
+                } catch (IOException e) {
+                    logger.error(EELFLoggerDelegate.errorLogger, "Failed to close", e);
+                }
+            }
+            channelMap.remove(channel);
+        }
+        logger.info(EELFLoggerDelegate.debugLogger, "Channel closed");
+    }
 
-	private void save(Map<String, Object> jsonObject, Session session) {
-		final Optional<String> from = Optional.of(jsonObject.get("from").toString());
-		if (from.isPresent() && channelMap.get(from.get()) == null) {
-			this.channelMap.put(from.toString(), session);
-			this.sessionMap.put(session.getId(), from.toString());
-		}
-	}
+    private void save(Map<String, Object> jsonObject, Session session) {
+        final Optional<String> from = Optional.of(jsonObject.get("from").toString());
+        if (from.isPresent() && channelMap.get(from.get()) == null) {
+            channelMap.put(from.toString(), session);
+            this.sessionMap.put(session.getId(), from.toString());
+        }
+    }
 
 }
-

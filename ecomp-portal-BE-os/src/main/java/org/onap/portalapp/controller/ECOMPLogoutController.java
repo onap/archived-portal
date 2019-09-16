@@ -33,7 +33,7 @@
  *
  * ============LICENSE_END============================================
  *
- * 
+ *
  */
 package org.onap.portalapp.controller;
 
@@ -62,72 +62,77 @@ import org.springframework.web.servlet.ModelAndView;
 @org.springframework.context.annotation.Configuration
 @EnableAspectJAutoProxy
 @Profile("src")
-public class ECOMPLogoutController extends EPUnRestrictedBaseController{
-	
-	private EPUser user;
-	private static final String EP_SERVICE = "EPService";
-	EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(ECOMPLogoutController.class);
+public class ECOMPLogoutController extends EPUnRestrictedBaseController {
 
-	@EPAuditLog
-	@RequestMapping(value = {"/logout.htm" }, method = RequestMethod.GET)
-	public ModelAndView logOut(HttpServletRequest request,
-	            						HttpServletResponse response) throws Exception {
-	
-		ModelAndView modelView = null;
-				
-		chatRoomLogout(request);
-		logger.debug(EELFLoggerDelegate.debugLogger, "ECOMPLogoutController.handleRequestInternal - Logout request received.");
-		
-		modelView = new ModelAndView("redirect:login.htm");
-		
-		/**
-		if (UserUtils.isClientMobileDevice(request)){
-		modelView.setViewName(modelView.getViewName().concat("?viewType=mobile"));
-		}
-		*/
-		String cookieDoamin = EPSystemProperties.getProperty(EPSystemProperties.COOKIE_DOMAIN);
-		Cookie epCookie = new Cookie(EP_SERVICE, "");
-		epCookie.setMaxAge(0);
-		epCookie.setDomain(cookieDoamin);
-		epCookie.setPath("/");
-		
-		Cookie appHeaderCookie = new Cookie("show_app_header", "");
-		appHeaderCookie.setMaxAge(0);
-		appHeaderCookie.setDomain(cookieDoamin);
-		appHeaderCookie.setPath("/");
-		
-		Cookie appTabCookie = new Cookie("cookieTabs", "");
-		appTabCookie.setMaxAge(0);
-		appTabCookie.setDomain(cookieDoamin);
-		appTabCookie.setPath("/");
-		
-		Cookie appVisInvisTabCookie = new Cookie("visInVisCookieTabs", "");
-		appVisInvisTabCookie.setMaxAge(0);
-		appVisInvisTabCookie.setDomain(cookieDoamin);
-		appVisInvisTabCookie.setPath("/");
-		
-	    response.addCookie(epCookie);	
-	    response.addCookie(appHeaderCookie);
-	    response.addCookie(appTabCookie);
-	    response.addCookie(appVisInvisTabCookie);
-		request.getSession().invalidate();
-		
-		logger.debug(EELFLoggerDelegate.debugLogger, "ECOMPLogoutController.handleRequestInternal - Successfully processed the logout request.");
-		
-		return modelView;
-	}
-	
-	@EPMetricsLog
-	public void chatRoomLogout(HttpServletRequest request){
-		request = ((ServletRequestAttributes)RequestContextHolder.currentRequestAttributes()).getRequest(); 
-		setUser(EPUserUtils.getUserSession(request));
-	}
-	
-	public EPUser getUser() {
-		return user;
-	}
-	
-	public void setUser(EPUser user) {
-		this.user = user;
-	}
+    private EPUser user;
+    private static final String EP_SERVICE = "EPService";
+    EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(ECOMPLogoutController.class);
+
+    @EPAuditLog
+    @RequestMapping(value = { "/logout.htm" }, method = RequestMethod.GET)
+    public ModelAndView logOut(HttpServletRequest request,
+            HttpServletResponse response) throws Exception {
+
+        ModelAndView modelView = null;
+
+        chatRoomLogout(request);
+        logger.debug(EELFLoggerDelegate.debugLogger,
+                "ECOMPLogoutController.handleRequestInternal - Logout request received.");
+
+        modelView = new ModelAndView("redirect:login.htm");
+
+        /**
+         * if (UserUtils.isClientMobileDevice(request)){
+         * modelView.setViewName(modelView.getViewName().concat("?viewType=mobile")); }
+         */
+        String cookieDoamin = EPSystemProperties.getProperty(EPSystemProperties.COOKIE_DOMAIN);
+        Cookie epCookie = new Cookie(EP_SERVICE, "");
+        epCookie.setSecure(true);
+        epCookie.setMaxAge(0);
+        epCookie.setDomain(cookieDoamin);
+        epCookie.setPath("/");
+
+        Cookie appHeaderCookie = new Cookie("show_app_header", "");
+        appHeaderCookie.setSecure(true);
+        appHeaderCookie.setMaxAge(0);
+        appHeaderCookie.setDomain(cookieDoamin);
+        appHeaderCookie.setPath("/");
+
+        Cookie appTabCookie = new Cookie("cookieTabs", "");
+        appTabCookie.setSecure(true);
+        appTabCookie.setMaxAge(0);
+        appTabCookie.setDomain(cookieDoamin);
+        appTabCookie.setPath("/");
+
+        Cookie appVisInvisTabCookie = new Cookie("visInVisCookieTabs", "");
+        appVisInvisTabCookie.setSecure(true);
+        appVisInvisTabCookie.setMaxAge(0);
+        appVisInvisTabCookie.setDomain(cookieDoamin);
+        appVisInvisTabCookie.setPath("/");
+
+        response.addCookie(epCookie);
+        response.addCookie(appHeaderCookie);
+        response.addCookie(appTabCookie);
+        response.addCookie(appVisInvisTabCookie);
+        request.getSession().invalidate();
+
+        logger.debug(EELFLoggerDelegate.debugLogger,
+                "ECOMPLogoutController.handleRequestInternal - Successfully processed the logout request.");
+
+        return modelView;
+    }
+
+    @EPMetricsLog
+    public void chatRoomLogout(HttpServletRequest request) {
+        request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+        setUser(EPUserUtils.getUserSession(request));
+    }
+
+    public EPUser getUser() {
+        return user;
+    }
+
+    public void setUser(EPUser user) {
+        this.user = user;
+    }
 }

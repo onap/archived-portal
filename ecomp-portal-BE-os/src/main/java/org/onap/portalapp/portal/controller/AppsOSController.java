@@ -39,23 +39,17 @@ package org.onap.portalapp.portal.controller;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
-
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
-import lombok.NoArgsConstructor;
 import org.json.JSONObject;
 import org.onap.portalapp.portal.domain.EPUser;
 import org.onap.portalapp.portal.ecomp.model.PortalRestResponse;
 import org.onap.portalapp.portal.ecomp.model.PortalRestStatusEnum;
 import org.onap.portalapp.portal.logging.aop.EPAuditLog;
-import org.onap.portalapp.portal.service.AdminRolesService;
-import org.onap.portalapp.portal.service.EPAppService;
-import org.onap.portalapp.portal.service.PersUserAppService;
 import org.onap.portalapp.portal.service.UserService;
 import org.onap.portalapp.util.EPUserUtils;
 import org.onap.portalapp.validation.SecureString;
@@ -68,6 +62,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import lombok.NoArgsConstructor;
 
 @RestController
 @Configuration
@@ -75,73 +70,74 @@ import org.springframework.web.bind.annotation.RestController;
 @EPAuditLog
 @NoArgsConstructor
 public class AppsOSController extends AppsController {
-	private static final ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
-	
-	private static final String FAILURE = "failure";
-	private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(AppsOSController.class);
+    private static final ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
 
-	@Autowired
-	UserService userService;
+    private static final String FAILURE = "failure";
+    private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(AppsOSController.class);
 
-       /**
-	 * Create new application's contact us details.
-	 * 
-	 * @param contactUs
-	 * @return
-	 */
-	@RequestMapping(value = "/portalApi/saveNewUser", method = RequestMethod.POST, produces = "application/json")
-	public PortalRestResponse<String> saveNewUser(HttpServletRequest request,@RequestBody EPUser newUser) {
-		EPUser user = EPUserUtils.getUserSession(request);
-		if (newUser == null)
-			return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, FAILURE,
-					"New User cannot be null or empty");
-		
-		if (!(super.getAdminRolesService().isSuperAdmin(user) || super.getAdminRolesService().isAccountAdmin(user))){
-			if(!user.getLoginId().equalsIgnoreCase(newUser.getLoginId()))
-				return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, FAILURE,
-						"UnAuthorized");
-		}
-			
+    @Autowired
+    UserService userService;
+
+    /**
+     * Create new application's contact us details.
+     *
+     * @param contactUs
+     * @return
+     */
+    @RequestMapping(value = "/portalApi/saveNewUser", method = RequestMethod.POST, produces = "application/json")
+    public PortalRestResponse<String> saveNewUser(HttpServletRequest request, @RequestBody EPUser newUser) {
+        EPUser user = EPUserUtils.getUserSession(request);
+        if (newUser == null)
+            return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, FAILURE,
+                    "New User cannot be null or empty");
+
+        if (!(super.getAdminRolesService().isSuperAdmin(user) || super.getAdminRolesService().isAccountAdmin(user))
+                && !user.getLoginId().equalsIgnoreCase(newUser.getLoginId())) {
+            return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, FAILURE,
+                    "UnAuthorized");
+        }
+
         String checkDuplicate = request.getParameter("isCheck");
-		String saveNewUser = FAILURE;
-		try {
-			saveNewUser = userService.saveNewUser(newUser,checkDuplicate);
-		} catch (Exception e) {
-			return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, saveNewUser, e.getMessage());
-		}
-		return new PortalRestResponse<>(PortalRestStatusEnum.OK, saveNewUser, "");
-	}
-	
-	@RequestMapping(value = { "/portalApi/currentUserProfile/{loginId}" }, method = RequestMethod.GET, produces = "application/json")
-	public String getCurrentUserProfile(HttpServletRequest request, @PathVariable("loginId") String loginId) {
+        String saveNewUser = FAILURE;
+        try {
+            saveNewUser = userService.saveNewUser(newUser, checkDuplicate);
+        } catch (Exception e) {
+            logger.error(EELFLoggerDelegate.errorLogger, "Exception in saveNewUser", e);
+            return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, saveNewUser, e.getMessage());
+        }
+        return new PortalRestResponse<>(PortalRestStatusEnum.OK, saveNewUser, "");
+    }
 
-		if(loginId != null){
-			Validator validator = validatorFactory.getValidator();
-			SecureString secureString = new SecureString(loginId);
-			Set<ConstraintViolation<SecureString>> constraintViolations = validator.validate(secureString);
+    @RequestMapping(value = { "/portalApi/currentUserProfile/{loginId}" }, method = RequestMethod.GET,
+            produces = "application/json")
+    public String getCurrentUserProfile(HttpServletRequest request, @PathVariable("loginId") String loginId) {
 
-			if (!constraintViolations.isEmpty()){
-				return "loginId is not valid";
-			}
-		}
+        if (loginId != null) {
+            Validator validator = validatorFactory.getValidator();
+            SecureString secureString = new SecureString(loginId);
+            Set<ConstraintViolation<SecureString>> constraintViolations = validator.validate(secureString);
 
-		
-		Map<String,String> map = new HashMap<>();
-		EPUser user;
-		try {
-			 user = (EPUser) userService.getUserByUserId(loginId).get(0);
-			 map.put("firstName", user.getFirstName());
-		     map.put("lastName", user.getLastName());
-		     map.put("email", user.getEmail());
-			 map.put("loginId", user.getLoginId());
-			 map.put("loginPwd",user.getLoginPwd());
-			 map.put("middleInitial",user.getMiddleInitial());
-		} catch (Exception e) {
-			logger.error(EELFLoggerDelegate.errorLogger, "Failed to get user info", e);
-		}
+            if (!constraintViolations.isEmpty()) {
+                return "loginId is not valid";
+            }
+        }
 
-		JSONObject j = new JSONObject(map);
-		return j.toString();
-	}
+        Map<String, String> map = new HashMap<>();
+        EPUser user;
+        try {
+            user = (EPUser) userService.getUserByUserId(loginId).get(0);
+            map.put("firstName", user.getFirstName());
+            map.put("lastName", user.getLastName());
+            map.put("email", user.getEmail());
+            map.put("loginId", user.getLoginId());
+            map.put("loginPwd", user.getLoginPwd());
+            map.put("middleInitial", user.getMiddleInitial());
+        } catch (Exception e) {
+            logger.error(EELFLoggerDelegate.errorLogger, "Failed to get user info", e);
+        }
+
+        JSONObject j = new JSONObject(map);
+        return j.toString();
+    }
 
 }
