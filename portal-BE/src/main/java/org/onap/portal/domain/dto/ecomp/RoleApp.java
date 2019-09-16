@@ -38,74 +38,31 @@
  *
  */
 
-package org.onap.portal.domain.dto;
+package org.onap.portal.domain.dto.ecomp;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.util.Date;
 import java.util.Set;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.onap.portal.domain.db.fn.FnUser;
-import org.onap.portalsdk.core.domain.FusionVo;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-public class DomainVo extends FusionVo implements Serializable, Cloneable, Comparable {
+public class RoleApp implements Serializable {
 
        private static final long serialVersionUID = 1L;
 
-       protected Long id;
-       protected Date created;
-       protected Date modified;
-       protected FnUser createdId;
-       protected FnUser modifiedId;
-       protected Long rowNum;
-       protected Serializable auditUserId;
-       protected Set auditTrail = null;
+       private Long roleId;
+       private String roleName;
+       private App app;
+       private Set<WidgetCatalog> widgets;
 
        @Override
-       public int compareTo(Object obj) {
-              Long c1 = this.getId();
-              Long c2 = ((org.onap.portalsdk.core.domain.support.DomainVo) obj).getId();
-              return c1 != null && c2 != null ? c1.compareTo(c2) : 1;
+       public String toString() {
+              return "Role [roleId=" + roleId + ", roleName=" + roleName + ", app=" + app + "]";
        }
 
-       public Object copy(boolean isIdNull) {
-              ByteArrayOutputStream baos = null;
-              ByteArrayInputStream bais = null;
-              ObjectOutputStream oos = null;
-              ObjectInputStream ois = null;
-              DomainVo newVo = null;
-
-              try {
-                     baos = new ByteArrayOutputStream();
-                     oos = new ObjectOutputStream(baos);
-                     oos.writeObject(this);
-                     bais = new ByteArrayInputStream(baos.toByteArray());
-                     ois = new ObjectInputStream(bais);
-                     newVo = (DomainVo) ois.readObject();
-                     if (isIdNull) {
-                            newVo.setId(null);
-                     }
-              } catch (Exception var8) {
-                     var8.printStackTrace();
-              }
-
-              return newVo;
-       }
-
-       public Object clone() throws CloneNotSupportedException {
-              return super.clone();
-       }
 }
