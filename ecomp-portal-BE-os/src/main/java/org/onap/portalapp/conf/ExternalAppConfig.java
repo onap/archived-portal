@@ -297,15 +297,18 @@ public class ExternalAppConfig extends AppConfig implements Configurable {
 	 * @return New instance of {@link SchedulerFactoryBean}
 	 */
 
-/*	@Bean
+   /*	
+    @Bean
 	public EPUebHelper epUebHelper() {
 		return new EPUebHelper();
 	}
-*/
+
 	@Bean
 	public HealthMonitor healthMonitor() {
 		return new HealthMonitor();
 	}
+	*/
+	
 
 	/**
 	 * Creates and returns a new instance of a {@link MainUebHandler}.

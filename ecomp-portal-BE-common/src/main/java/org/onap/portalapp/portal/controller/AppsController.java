@@ -789,7 +789,8 @@ public class AppsController extends EPRestrictedBaseController {
 				EcompPortalUtils.setBadPermissions(user, response, "postOnboardingApps");
 			} else {
 				newOnboardingApp.normalize();
-				checkIfNameSpaceIsValid(newOnboardingApp, fieldsValidator, response);
+				if(newOnboardingApp.isCentralAuth != null && newOnboardingApp.isCentralAuth)
+					checkIfNameSpaceIsValid(newOnboardingApp, fieldsValidator, response);
 				fieldsValidator = appService.addOnboardingApp(newOnboardingApp, user);
 				response.setStatus(fieldsValidator.httpStatusCode.intValue());
 			}
