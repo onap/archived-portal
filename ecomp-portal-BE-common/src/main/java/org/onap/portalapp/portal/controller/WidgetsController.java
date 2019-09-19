@@ -121,17 +121,18 @@ public class WidgetsController extends EPRestrictedBaseController {
 			@RequestBody OnboardingWidget onboardingWidget, HttpServletResponse response) {
 		EPUser user = EPUserUtils.getUserSession(request);
 		FieldsValidator fieldsValidator = null;
-		if (onboardingWidget!=null){
-			if(!dataValidator.isValid(onboardingWidget)){
+		if (onboardingWidget!=null && !dataValidator.isValid(onboardingWidget)){
 				fieldsValidator = new FieldsValidator();
 				fieldsValidator.setHttpStatusCode((long)HttpServletResponse.SC_NOT_ACCEPTABLE);
 				return fieldsValidator;
-			}
 		}
 
 		if (userHasPermissions(user, response, "putOnboardingWidget")) {
-			onboardingWidget.id = widgetId; // !
-			onboardingWidget.normalize();
+            if (onboardingWidget != null) {
+                onboardingWidget.id = widgetId; // !
+                onboardingWidget.normalize();
+            }
+
 			fieldsValidator = widgetService.setOnboardingWidget(user, onboardingWidget);
 			response.setStatus(fieldsValidator.httpStatusCode.intValue());
 		}
@@ -146,17 +147,18 @@ public class WidgetsController extends EPRestrictedBaseController {
 		EPUser user = EPUserUtils.getUserSession(request);
 		FieldsValidator fieldsValidator = null;
 
-		if (onboardingWidget!=null){
-			if(!dataValidator.isValid(onboardingWidget)){
+		if (onboardingWidget!=null && !dataValidator.isValid(onboardingWidget)){
 				fieldsValidator = new FieldsValidator();
 				fieldsValidator.setHttpStatusCode((long)HttpServletResponse.SC_NOT_ACCEPTABLE);
 				return fieldsValidator;
-			}
 		}
 
 		if (userHasPermissions(user, response, "postOnboardingWidget")) {
-			onboardingWidget.id = null; // !
-			onboardingWidget.normalize();
+		    
+            if (onboardingWidget != null) {
+                onboardingWidget.id = null; // !
+                onboardingWidget.normalize();
+            }
 			fieldsValidator = widgetService.setOnboardingWidget(user, onboardingWidget);
 			response.setStatus(fieldsValidator.httpStatusCode.intValue());
 		}

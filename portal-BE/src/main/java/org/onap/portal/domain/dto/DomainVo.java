@@ -54,7 +54,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.onap.portal.domain.db.fn.FnUser;
+import org.onap.portal.utils.EcompPortalUtils;
 import org.onap.portalsdk.core.domain.FusionVo;
+import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 
 @Getter
 @Setter
@@ -73,7 +75,8 @@ public class DomainVo extends FusionVo implements Serializable, Cloneable, Compa
        protected Long rowNum;
        protected Serializable auditUserId;
        protected Set auditTrail = null;
-
+       private static EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(DomainVo.class);
+       
        @Override
        public int compareTo(Object obj) {
               Long c1 = this.getId();
@@ -99,7 +102,7 @@ public class DomainVo extends FusionVo implements Serializable, Cloneable, Compa
                             newVo.setId(null);
                      }
               } catch (Exception var8) {
-                     var8.printStackTrace();
+                  logger.error("exception occured",var8);
               }
 
               return newVo;
