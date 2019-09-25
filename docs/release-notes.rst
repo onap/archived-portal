@@ -23,6 +23,12 @@ Maintanance release with bug fixes and security enhancements.
         * Fixed Sonar reported critical issues.
 
 **Known Issues**
+        * AAI UI’s new role "ui_view" is not registered in AAF, Portal cannot fetch it. So, the work around is
+
+           1. upload new role from Bulk Upload in Portal Roles page (create a csv file which has one line like:   ui_view,10 )
+           2. Sync Roles on same page
+           3. Assign this ui_view role to demo account in User page
+           4. Then demo user can access AAI UI app from Portal
 
 **Security Notes**
         * Security Enhancements - Fixed OJSI issues.
@@ -30,7 +36,7 @@ Maintanance release with bug fixes and security enhancements.
 
 Quick Links:
      - `PORTAL project page <https://wiki.onap.org/display/DW/Portal+Platform+Project>`_
-	 
+
      - `Passing Badge information for PORTAL <https://bestpractices.coreinfrastructure.org/en/projects/1441>`_
 
      - `Project Vulnerability Review Table for PORTAL <https://wiki.onap.org/pages/viewpage.action?pageId=68542388>`_
@@ -42,6 +48,9 @@ Quick Links:
         * The first time some apps are selected in the Applications panel, an error stating the webpage might be temporarily down, copy the presented URL to a new browser; once that is done, the application will open in the Portal.
 
 **Deprecation Notes**
+        * 2.6.0 portal/sdk is the last version to support the old AngularJS UI versions.
+        * Expect upgrade on Angular frontend and SpringBoot backend in next releases: The components like Policy, VID, SDC, AAI, MSB, SO – if any of them use portal/sdk java libraries, then please anticipate MAJOR changes to portal/sdk with respect to technology stack upgrade which is pending for long time on Angular frontend and SpringBoot backend.
+        * The tech stack upgrade helps resolve many security vulnerabilities and also provides latest rich UI and microservices features that components can take advantage of, just by upgrading to latest portal/sdk.
 
 **Other**
         * Below are the docker images released as part of Portal Platform project:
@@ -51,7 +60,7 @@ Quick Links:
         * onap/portal-wms:2.6.0
         * portal/sdk java artifacts - (Release branch: “release-2.6.0”)
 
-		
+
 Version: 2.5.0
 --------------
 :Release Date: 2019-06-13
