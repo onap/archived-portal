@@ -59,11 +59,13 @@ import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.validator.constraints.SafeHtml;
 import org.onap.portal.domain.db.fn.FnUser;
+import org.onap.portal.domain.dto.DomainVo;
 
 /*
 CREATE TABLE `ep_widget_catalog_parameter` (
@@ -85,7 +87,7 @@ CREATE TABLE `ep_widget_catalog_parameter` (
 @NamedQueries({
         @NamedQuery(
                 name = "EpWidgetCatalogParameter.retrieveByParamId",
-                query = "FROM EpWidgetCatalogParameter WHERE paramId = :PARAMID"),
+                query = "FROM EpWidgetCatalogParameter WHERE paramId.id = :PARAMID"),
         @NamedQuery(
                 name = "EpWidgetCatalogParameter.deleteWidgetCatalogParameter",
                 query = "DELETE FROM EpWidgetCatalogParameter WHERE paramId = :PARAMID"),
@@ -100,12 +102,14 @@ CREATE TABLE `ep_widget_catalog_parameter` (
         @Index(name = "EP_WIDGET_CATALOG_WIDGET_PARAMETER_FK", columnList = "widget_id"),
         @Index(name = "EP_PARAMETER_ID_WIDGET_PARAMETER_FK", columnList = "param_id")
 })
-@NoArgsConstructor
-@AllArgsConstructor
+
 @Getter
 @Setter
 @Entity
-public class EpWidgetCatalogParameter implements Serializable {
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class EpWidgetCatalogParameter extends DomainVo implements Serializable {
 
        @Id
        @GeneratedValue(strategy = GenerationType.AUTO)

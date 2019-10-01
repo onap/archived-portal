@@ -49,12 +49,12 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringUtils;
+import org.onap.portal.domain.db.ep.EpWidgetCatalogParameter;
 import org.onap.portal.domain.db.fn.FnUser;
 import org.onap.portal.domain.dto.PortalRestResponse;
 import org.onap.portal.domain.dto.PortalRestStatusEnum;
 import org.onap.portal.domain.dto.ecomp.MicroserviceParameter;
 import org.onap.portal.domain.dto.ecomp.WidgetCatalog;
-import org.onap.portal.domain.dto.ecomp.WidgetCatalogParameter;
 import org.onap.portal.domain.dto.ecomp.WidgetParameterResult;
 import org.onap.portal.domain.dto.ecomp.WidgetServiceHeaders;
 import org.onap.portal.logging.aop.EPAuditLog;
@@ -323,7 +323,7 @@ public class WidgetsCatalogController {
                             userResult.setParamId(param.getId());
                             userResult.setDefaultValue(param.getPara_value());
                             userResult.setParamKey(param.getPara_key());
-                            WidgetCatalogParameter userValue = epWidgetCatalogParameterService
+                            EpWidgetCatalogParameter userValue = epWidgetCatalogParameterService
                                     .getUserParamById(widgetId, user.getId(),
                                             param.getId());
                             if (userValue == null) {
@@ -338,7 +338,7 @@ public class WidgetsCatalogController {
        }
 
        @GetMapping(value = {"/portalApi/microservices/services/{paramId}"})
-       public List<WidgetCatalogParameter> getUserParameterById(@PathVariable("paramId") long paramId) {
+       public List<EpWidgetCatalogParameter> getUserParameterById(@PathVariable("paramId") long paramId) {
               return epWidgetCatalogParameterService.getUserParameterById(paramId);
        }
 
@@ -396,13 +396,13 @@ public class WidgetsCatalogController {
 
        @PostMapping(value = {"/portalApi/microservices/parameters"})
        public PortalRestResponse<String> saveWidgetParameter(Principal principal, HttpServletRequest request,
-               @RequestBody WidgetCatalogParameter widgetParameters) {
+               @RequestBody EpWidgetCatalogParameter widgetParameters) {
               FnUser user = fnUserService.loadUserByUsername(principal.getName());
-              widgetParameters.setUserId(user.getId());
+              widgetParameters.setUserId(user);
               try {
-                     WidgetCatalogParameter oldParam = epWidgetCatalogParameterService
-                             .getUserParamById(widgetParameters.getWidgetId(),
-                                     widgetParameters.getUserId(), widgetParameters.getParamId());
+                     EpWidgetCatalogParameter oldParam = epWidgetCatalogParameterService
+                             .getUserParamById(widgetParameters.getWidgetId().getWidgetId(),
+                                     widgetParameters.getUserId().getId(), widgetParameters.getParamId().getId());
                      if (oldParam != null) {
                             widgetParameters.setId(oldParam.getId());
                      }

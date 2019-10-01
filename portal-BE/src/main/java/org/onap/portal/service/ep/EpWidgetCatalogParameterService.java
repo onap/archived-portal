@@ -42,13 +42,10 @@ package org.onap.portal.service.ep;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import javax.transaction.Transactional;
 import org.onap.portal.dao.ep.EpMicroserviceParameterDao;
 import org.onap.portal.dao.ep.EpWidgetCatalogParameterDao;
-import org.onap.portal.dao.fn.EpWidgetCatalogDao;
-import org.onap.portal.dao.fn.FnUserDao;
 import org.onap.portal.domain.db.ep.EpWidgetCatalogParameter;
-import org.onap.portal.domain.dto.ecomp.WidgetCatalogParameter;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -60,23 +57,17 @@ public class EpWidgetCatalogParameterService {
 
        private final EpWidgetCatalogParameterDao epWidgetCatalogParameterDao;
        private final EpMicroserviceParameterDao epMicroserviceParameterDao;
-       private final EpWidgetCatalogDao epWidgetCatalogDao;
-       private final FnUserDao fnUserDao;
 
        @Autowired
        public EpWidgetCatalogParameterService(
                final EpWidgetCatalogParameterDao epWidgetCatalogParameterDao,
-               final EpMicroserviceParameterDao epMicroserviceParameterDao,
-               EpWidgetCatalogDao epWidgetCatalogDao, FnUserDao fnUserDao) {
+               final EpMicroserviceParameterDao epMicroserviceParameterDao) {
               this.epWidgetCatalogParameterDao = epWidgetCatalogParameterDao;
               this.epMicroserviceParameterDao = epMicroserviceParameterDao;
-              this.epWidgetCatalogDao = epWidgetCatalogDao;
-              this.fnUserDao = fnUserDao;
        }
 
-       public List<WidgetCatalogParameter> getUserParameterById(Long paramId) {
-              return mapEpWidgetListToWidgetList(
-                      epWidgetCatalogParameterDao.retrieveByParamId(paramId).orElse(new ArrayList<>()));
+       public List<EpWidgetCatalogParameter> getUserParameterById(Long paramId) {
+              return epWidgetCatalogParameterDao.retrieveByParamId(paramId).orElse(new ArrayList<>());
        }
 
        public void deleteUserParameterById(Long paramId) {
@@ -84,11 +75,11 @@ public class EpWidgetCatalogParameterService {
               epMicroserviceParameterDao.deleteMicroserviceParameterById(paramId);
        }
 
-       public WidgetCatalogParameter getUserParamById(Long widgetId, Long userId, Long paramId) {
-              WidgetCatalogParameter widgetParam = null;
-              List<WidgetCatalogParameter> list = mapEpWidgetListToWidgetList(
-                      epWidgetCatalogParameterDao.getUserParamById(widgetId, userId, paramId)
-                              .orElse(new ArrayList<>()));
+       public EpWidgetCatalogParameter getUserParamById(Long widgetId, Long userId, Long paramId) {
+              EpWidgetCatalogParameter widgetParam = null;
+              List<EpWidgetCatalogParameter> list = epWidgetCatalogParameterDao
+                      .getUserParamById(widgetId, userId, paramId)
+                      .orElse(new ArrayList<>());
               if (list.size() != 0) {
                      widgetParam = list.get(0);
               }
@@ -97,31 +88,8 @@ public class EpWidgetCatalogParameterService {
               return widgetParam;
        }
 
-       public void saveUserParameter(WidgetCatalogParameter newParameter) {
-              epWidgetCatalogParameterDao.saveAndFlush(mapToEpWidgetCatalogParameter(newParameter));
-       }
-
-       private EpWidgetCatalogParameter mapToEpWidgetCatalogParameter(WidgetCatalogParameter wcp){
-
-              return new EpWidgetCatalogParameter(wcp.getId(), epWidgetCatalogDao.findById(wcp.getWidgetId()).get(),
-                      fnUserDao.findById(wcp.getUserId()).get(),
-                      epMicroserviceParameterDao.findById(wcp.getParamId()).get(),
-                      wcp.getUserValue());
-       }
-
-       private List<EpWidgetCatalogParameter> mapToList(List<WidgetCatalogParameter> list){
-              return list.stream().map(this::mapToEpWidgetCatalogParameter).collect(Collectors.toList());
-       }
-
-       private WidgetCatalogParameter mapEpWidgetCatalogParametertoWidgetCatalogParameter(
-               EpWidgetCatalogParameter ewcp) {
-              return new WidgetCatalogParameter(ewcp.getId(), ewcp.getWidgetId().getWidgetId(),
-                      ewcp.getUserId().getId(), ewcp.getParamId().getId(), ewcp.getUserValue());
-       }
-
-       private List<WidgetCatalogParameter> mapEpWidgetListToWidgetList(
-               List<EpWidgetCatalogParameter> epWidgetCatalogParameters) {
-              return epWidgetCatalogParameters.stream().map(this::mapEpWidgetCatalogParametertoWidgetCatalogParameter)
-                      .collect(Collectors.toList());
+       @Transactional
+       public void saveUserParameter(EpWidgetCatalogParameter newParameter) {
+              epWidgetCatalogParameterDao.save(newParameter);
        }
 }

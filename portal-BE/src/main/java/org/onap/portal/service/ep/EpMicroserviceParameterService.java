@@ -84,4 +84,8 @@ public class EpMicroserviceParameterService {
        private List<MicroserviceParameter> mapToMicroserviceParameterList(final List<EpMicroserviceParameter> list){
               return list.stream().map(this::epWidgetCatalogParameterToMicroserviceParameter).collect(Collectors.toList());
        }
+
+       public EpMicroserviceParameter save(EpMicroserviceParameter epMicroserviceParameter){
+              return epMicroserviceParameterDao.save(epMicroserviceParameter);
+       }
 }

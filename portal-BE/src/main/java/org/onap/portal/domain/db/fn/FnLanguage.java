@@ -42,6 +42,7 @@ package org.onap.portal.domain.db.fn;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -100,10 +101,10 @@ public class FnLanguage implements Serializable {
        @OneToMany(
                targetEntity = FnUser.class,
                mappedBy = "languageId",
-               cascade = CascadeType.ALL,
-               fetch = FetchType.LAZY
+               cascade = CascadeType.PERSIST,
+               fetch = FetchType.EAGER
        )
-       private Set<FnUser> fnUsers;
+       private Set<FnUser> fnUsers = new HashSet<>();
 
        @Override
        public String toString() {
