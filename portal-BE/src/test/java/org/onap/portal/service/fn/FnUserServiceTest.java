@@ -73,29 +73,37 @@ class FnUserServiceTest {
 
        @Test
        void saveUser(){
-              FnUser actual = fnUserService.getUser(1L).get();
+              //Given
+              //FnLuTimezone fnLuTimezone = fnLuTimezoneService.getById(10L).get();
+              FnLanguage language = fnLanguageService.findById(1L).get();
 
               FnUser expected = FnUser.builder().build();
-              expected.setUserId(123L);
               expected.setFirstName("Demo");
               expected.setLastName("User");
               expected.setEmail("demo@openecomp.org");
               expected.setOrgUserId("demo");
-              expected.setTimezone(fnLuTimezoneService.getById(10L).orElse(new FnLuTimezone()));
-              expected.setLoginId("demo");
+              //expected.setTimezone(fnLuTimezone);
+              expected.setLoginId("demoTest");
               expected.setLoginPwd("demo123");
               expected.setLastLoginDate(LocalDateTime.parse("2019-08-08T12:18:17"));
               expected.setActiveYn(true);
               expected.setCreatedDate(LocalDateTime.parse("2016-10-14T21:00"));
-              expected.setModifiedId(actual);
               expected.setModifiedDate(LocalDateTime.parse("2019-08-08T12:18:17"));
               expected.setIsInternalYn(false);
               expected.setStateCd("NJ");
               expected.setCountryCd("US");
-              expected.setLanguageId(fnLanguageService.findById(1L).orElse(new FnLanguage()));
+              expected.setLanguageId(language);
               expected.setGuest(false);
+
+              //fnLuTimezone.getFnUsers().add(expected);
+              language.getFnUsers().add(expected);
+
+              //When
               fnUserService.saveFnUser(principal, expected);
-              System.out.println(expected.getActiveYn());
+              FnUser actual = fnUserService.getUser(expected.getUserId()).get();
+              //Then
+              assertEquals(expected.getUserId(), actual.getUserId());
+              assertEquals(expected.getLoginPwd(), actual.getLoginPwd());
               //Clean up
               fnUserService.deleteUser(expected);
        }

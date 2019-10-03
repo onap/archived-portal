@@ -42,40 +42,51 @@ package org.onap.portal.service.ep;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.transaction.Transactional;
-import org.onap.portal.dao.ep.EpMicroserviceParameterDao;
 import org.onap.portal.dao.ep.EpWidgetCatalogParameterDao;
 import org.onap.portal.domain.db.ep.EpWidgetCatalogParameter;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 public class EpWidgetCatalogParameterService {
 
        EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(EpWidgetCatalogParameterService.class);
 
        private final EpWidgetCatalogParameterDao epWidgetCatalogParameterDao;
-       private final EpMicroserviceParameterDao epMicroserviceParameterDao;
+       private final EpMicroserviceParameterService epMicroserviceParameterService;
 
        @Autowired
        public EpWidgetCatalogParameterService(
                final EpWidgetCatalogParameterDao epWidgetCatalogParameterDao,
-               final EpMicroserviceParameterDao epMicroserviceParameterDao) {
+               final EpMicroserviceParameterService epMicroserviceParameterService) {
               this.epWidgetCatalogParameterDao = epWidgetCatalogParameterDao;
-              this.epMicroserviceParameterDao = epMicroserviceParameterDao;
+              this.epMicroserviceParameterService = epMicroserviceParameterService;
        }
 
-       public List<EpWidgetCatalogParameter> getUserParameterById(Long paramId) {
+       public List<EpWidgetCatalogParameter> getUserParameterById(final Long paramId) {
               return epWidgetCatalogParameterDao.retrieveByParamId(paramId).orElse(new ArrayList<>());
        }
 
-       public void deleteUserParameterById(Long paramId) {
-              epWidgetCatalogParameterDao.deleteWidgetCatalogParameter(paramId);
-              epMicroserviceParameterDao.deleteMicroserviceParameterById(paramId);
+       public boolean deleteUserParameterById(final Long paramId) {
+              return (deleteByParamId(paramId) &&
+                      epMicroserviceParameterService.deleteMicroserviceParameterById(paramId));
        }
 
-       public EpWidgetCatalogParameter getUserParamById(Long widgetId, Long userId, Long paramId) {
+       @Transactional
+       public boolean deleteByParamId(final Long paramId) {
+              try {
+                     epWidgetCatalogParameterDao.deleteWidgetCatalogParameter(paramId);
+                     return true;
+              } catch (Exception e) {
+                     logger.error(EELFLoggerDelegate.errorLogger, e.getMessage());
+                     return false;
+              }
+       }
+
+       public EpWidgetCatalogParameter getUserParamById(final Long widgetId, final Long userId, final Long paramId) {
               EpWidgetCatalogParameter widgetParam = null;
               List<EpWidgetCatalogParameter> list = epWidgetCatalogParameterDao
                       .getUserParamById(widgetId, userId, paramId)
@@ -89,7 +100,7 @@ public class EpWidgetCatalogParameterService {
        }
 
        @Transactional
-       public void saveUserParameter(EpWidgetCatalogParameter newParameter) {
+       public void saveUserParameter(final EpWidgetCatalogParameter newParameter) {
               epWidgetCatalogParameterDao.save(newParameter);
        }
 }

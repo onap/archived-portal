@@ -93,7 +93,7 @@ public class FnUserServiceAOP {
                      LOGGER.error("User " + principal.getName() + " try to save not valid fnUser: " + violations);
                      throw new IllegalArgumentException("FnUser is not valid, " + violations);
               } else {
-                     LOGGER.error("User " + principal.getName() + " send valid fnUser");
+                     LOGGER.info("User " + principal.getName() + " send valid fnUser");
               }
        }
 }

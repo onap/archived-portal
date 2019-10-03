@@ -183,13 +183,11 @@ CREATE TABLE `fn_user` (
 @NoArgsConstructor
 @AllArgsConstructor
 @DynamicUpdate
-@SequenceGenerator(name = "seq", initialValue = 1000, allocationSize = 100000)
 public class FnUser extends DomainVo implements UserDetails, Serializable {
 
        @Id
-       @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq")
-       @Column(name = "user_id", length = 11, nullable = false)
-       @Digits(integer = 11, fraction = 0)
+       @GeneratedValue(strategy = GenerationType.IDENTITY)
+       @Column(name = "user_id", nullable = false)
        private Long userId;
        @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
        @JoinColumn(name = "org_id")

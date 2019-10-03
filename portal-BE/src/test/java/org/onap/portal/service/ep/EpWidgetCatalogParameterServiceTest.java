@@ -38,98 +38,55 @@
  *
  */
 
-package org.onap.portal.controller;
+package org.onap.portal.service.ep;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
-import javax.transaction.Transactional;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
+import org.onap.portal.controller.WidgetsCatalogController;
 import org.onap.portal.domain.db.ep.EpMicroserviceParameter;
 import org.onap.portal.domain.db.ep.EpWidgetCatalog;
 import org.onap.portal.domain.db.ep.EpWidgetCatalogParameter;
 import org.onap.portal.domain.db.fn.FnLanguage;
 import org.onap.portal.domain.db.fn.FnUser;
-import org.onap.portal.domain.dto.ecomp.WidgetCatalog;
-import org.onap.portal.service.ep.EpMicroserviceParameterService;
-import org.onap.portal.service.ep.EpWidgetCatalogParameterService;
-import org.onap.portal.service.ep.EpWidgetCatalogService;
 import org.onap.portal.service.fn.FnLanguageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @TestPropertySource(locations = "classpath:test.properties")
-public class WidgetsCatalogControllerTest {
+class EpWidgetCatalogParameterServiceTest {
        private UsernamePasswordAuthenticationToken principal = new UsernamePasswordAuthenticationToken("demo",
                "demo123");
        @Autowired
-       WidgetsCatalogController widgetsCatalogController;
+       private EpWidgetCatalogParameterService epWidgetCatalogParameterService;
        @Autowired
+       private WidgetsCatalogController widgetsCatalogController;
+       @Autowired
+       private
        FnLanguageService fnLanguageService;
        @Autowired
-       EpWidgetCatalogParameterService epWidgetCatalogParameterService;
+       private EpMicroserviceParameterService epMicroserviceParameterService;
        @Autowired
-       EpMicroserviceParameterService epMicroserviceParameterService;
-       @Autowired
+       private
        EpWidgetCatalogService epWidgetCatalogService;
 
        @Test
-       public void getUserWidgetCatalog() {
-              List<WidgetCatalog> actual = widgetsCatalogController.getUserWidgetCatalog("demo");
-              assertNull(actual);
-       }
-
-       @Test
-       public void getWidgetCatalog() {
-       }
-
-       @Test
-       public void updateWidgetCatalog() {
-       }
-
-       @Test
-       public void deleteOnboardingWidget() {
-       }
-
-       @Test
-       public void updateWidgetCatalogWithFiles() {
-       }
-
-       @Test
-       public void createWidgetCatalog() {
-       }
-
-       @Test
-       public void getWidgetFramework() {
-       }
-
-       @Test
-       public void getWidgetController() {
-       }
-
-       @Test
-       public void getWidgetCSS() {
-       }
-
-       @Test
-       public void getWidgetParameterResult() {
+       void deleteUserParameterById() {
        }
 
        @Test
        @Transactional
-       public void getUserParameterById() {
+       void deleteByParamId() {
               //Given
               EpWidgetCatalog widget = EpWidgetCatalog.builder()
                       .wdgName("Name")
@@ -147,52 +104,15 @@ public class WidgetsCatalogControllerTest {
               EpWidgetCatalogParameter data =  EpWidgetCatalogParameter.builder()
                       .widgetId(widget).userId(user).paramId(parameter).userValue("TestData").build();
               //When
+              assertEquals(0, widgetsCatalogController.getUserParameterById(parameter.getId()).size());
               epWidgetCatalogParameterService.saveUserParameter(data);
-              List<EpWidgetCatalogParameter> actual = widgetsCatalogController.getUserParameterById(parameter.getId());
               //Then
-              assertEquals(1, actual.size());
+              assertEquals(1, epWidgetCatalogParameterService.getUserParameterById(parameter.getId()).size());
+              epWidgetCatalogParameterService.deleteByParamId(parameter.getId());
+              assertEquals(0, epWidgetCatalogParameterService.getUserParameterById(parameter.getId()).size());
               //Clean
-       }
 
-       @Test
-       @Transactional
-       public void deleteUserParameterById() {
-              //Given
-              EpWidgetCatalog widget = EpWidgetCatalog.builder()
-                      .wdgName("Name")
-                      .wdgFileLoc("loc")
-                      .allUserFlag(true)
-                      .build();
-              epWidgetCatalogService.save(widget);
-              EpMicroserviceParameter parameter = new EpMicroserviceParameter();
-              epMicroserviceParameterService.save(parameter);
-              FnLanguage language = FnLanguage.builder().languageAlias("TS").languageName("TEST").build();
-              fnLanguageService.save(principal, language);
-              FnUser user = buildFnUser();
-              language.setFnUsers(new HashSet<>(Collections.singleton(user)));
-              user.setLanguageId(language);
-              EpWidgetCatalogParameter data =  EpWidgetCatalogParameter.builder()
-                      .widgetId(widget).userId(user).paramId(parameter).userValue("TestData").build();
-              //When
-              assertEquals(0, widgetsCatalogController.getUserParameterById(parameter.getId()).size());
-              epWidgetCatalogParameterService.saveUserParameter(data);
-              //Then assert
-              assertEquals(1, widgetsCatalogController.getUserParameterById(parameter.getId()).size());
-              assertTrue(widgetsCatalogController.deleteUserParameterById(parameter.getId()));
-              assertEquals(0, widgetsCatalogController.getUserParameterById(parameter.getId()).size());
 
-       }
-
-       @Test
-       public void doDownload() {
-       }
-
-       @Test
-       public void saveWidgetParameter() {
-       }
-
-       @Test
-       public void getUploadFlag() {
        }
 
        private FnUser buildFnUser(){

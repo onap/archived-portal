@@ -80,13 +80,11 @@ CREATE TABLE `fn_language` (
 @Setter
 @Entity
 @JsonInclude()
-@SequenceGenerator(name="seq", initialValue=1000, allocationSize=100000)
 public class FnLanguage implements Serializable {
 
        @Id
-       @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq")
-       @Column(name = "language_id", length = 11, nullable = false, columnDefinition = "int(11) AUTO_INCREMENT")
-       @Digits(integer = 11, fraction = 0)
+       @GeneratedValue(strategy = GenerationType.IDENTITY)
+       @Column(name = "language_id", length = 11, nullable = false)
        private Long languageId;
        @Column(name = "language_name", length = 100, nullable = false)
        @Size(max = 100)

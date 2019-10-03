@@ -59,6 +59,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -82,11 +83,7 @@ CREATE TABLE `ep_microservice_parameter` (
                 query = "DELETE FROM EpMicroserviceParameter WHERE service_id =:SERVICEID"),
         @NamedQuery(
                 name = "EpMicroserviceParameter.getParametersById",
-                query = "FROM EpMicroserviceParameter WHERE service_id =:SERVICEID"),
-        @NamedQuery(
-                name = "EpMicroserviceParameter.deleteMicroserviceParameterById",
-                query = "DELETE FROM EpMicroserviceParameter WHERE id =:PARAMID"
-        )
+                query = "FROM EpMicroserviceParameter WHERE service_id =:SERVICEID")
 })
 
 @Table(name = "ep_microservice_parameter", indexes = {
@@ -94,13 +91,14 @@ CREATE TABLE `ep_microservice_parameter` (
 })
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Getter
 @Setter
 @Entity
 public class EpMicroserviceParameter implements Serializable {
 
        @Id
-       @GeneratedValue(strategy = GenerationType.AUTO)
+       @GeneratedValue(strategy = GenerationType.IDENTITY)
        @Column(name = "id", length = 11, nullable = false)
        @Digits(integer = 11, fraction = 0)
        private Long id;

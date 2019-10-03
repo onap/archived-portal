@@ -84,16 +84,17 @@ CREATE TABLE `ep_widget_catalog_parameter` (
         )
 */
 
+
 @NamedQueries({
         @NamedQuery(
                 name = "EpWidgetCatalogParameter.retrieveByParamId",
                 query = "FROM EpWidgetCatalogParameter WHERE paramId.id = :PARAMID"),
         @NamedQuery(
                 name = "EpWidgetCatalogParameter.deleteWidgetCatalogParameter",
-                query = "DELETE FROM EpWidgetCatalogParameter WHERE paramId = :PARAMID"),
+                query = "DELETE FROM EpWidgetCatalogParameter WHERE paramId.id = :PARAMID"),
         @NamedQuery(
                 name = "EpWidgetCatalogParameter.getUserParamById",
-                query = "FROM EpWidgetCatalogParameter WHERE paramId = :PARAMID and userId = :USERID and widgetId = :WIDGETID"
+                query = "FROM EpWidgetCatalogParameter WHERE paramId.id = :PARAMID and userId.userId = :USERID and widgetId.widgetId = :WIDGETID"
         )
 })
 
@@ -126,7 +127,7 @@ public class EpWidgetCatalogParameter extends DomainVo implements Serializable {
        @NotNull
        @Valid
        private FnUser userId;
-       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
        @JoinColumn(name = "param_id", nullable = false)
        @NotNull
        @Valid

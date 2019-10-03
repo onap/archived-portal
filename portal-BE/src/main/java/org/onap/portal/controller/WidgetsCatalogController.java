@@ -343,8 +343,14 @@ public class WidgetsCatalogController {
        }
 
        @DeleteMapping(value = {"/portalApi/microservices/services/{paramId}"})
-       public void deleteUserParameterById(@PathVariable("paramId") long paramId) {
-              epWidgetCatalogParameterService.deleteUserParameterById(paramId);
+       public boolean deleteUserParameterById(@PathVariable("paramId") long paramId) {
+              try {
+                     epWidgetCatalogParameterService.deleteUserParameterById(paramId);
+                     return true;
+              }catch (Exception e){
+                     logger.error(EELFLoggerDelegate.errorLogger, e.getMessage());
+                     return false;
+              }
        }
 
        @GetMapping(value = {"/portalApi/microservices/download/{widgetId}"})

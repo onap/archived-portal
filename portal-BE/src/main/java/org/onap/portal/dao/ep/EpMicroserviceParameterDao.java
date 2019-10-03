@@ -55,7 +55,5 @@ public interface EpMicroserviceParameterDao extends JpaRepository<EpMicroservice
        @Query
        void deleteByServiceId(@Param("SERVICEID") Long userId);
        @Query
-       void deleteMicroserviceParameterById(@Param("PARAMID") Long userId);
-       @Query
        List<EpMicroserviceParameter> getParametersById(@Param("SERVICEID") long serviceId);
 }

@@ -87,7 +87,7 @@ CREATE TABLE `ep_widget_catalog` (
 @Builder
 public class EpWidgetCatalog implements Serializable {
        @Id
-       @GeneratedValue(strategy = GenerationType.AUTO)
+       @GeneratedValue(strategy = GenerationType.IDENTITY)
        @Column(name = "widget_id", nullable = false)
        private Long widgetId;
        @Column(name = "wdg_name", length = 100, columnDefinition = "varchar(100) default '?'", nullable = false)
