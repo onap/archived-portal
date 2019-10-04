@@ -55,18 +55,23 @@ import org.onap.portal.dao.fn.FnLanguageDao;
 import org.onap.portal.dao.fn.FnUserDao;
 import org.onap.portal.domain.db.fn.FnLanguage;
 import org.onap.portal.domain.db.fn.FnUser;
+import org.onap.portal.domain.db.fn.FnWidget;
+import org.onap.portal.domain.dto.transport.FieldsValidator;
 import org.onap.portal.domain.dto.transport.OnboardingWidget;
 import org.onap.portal.framework.MockitoTestSuite;
+import org.onap.portal.service.WidgetService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @TestPropertySource(locations = "classpath:test.properties")
+@Transactional
 public class WidgetsControllerTest {
 
        private UsernamePasswordAuthenticationToken principal = new UsernamePasswordAuthenticationToken("demo",
@@ -80,11 +85,11 @@ public class WidgetsControllerTest {
        @Autowired
        private WidgetsController widgetsController;
        @Autowired
-       private
-       FnUserDao fnUserDao;
+       private FnUserDao fnUserDao;
        @Autowired
-       private
-       FnLanguageDao fnLanguageDao;
+       private FnLanguageDao fnLanguageDao;
+       @Autowired
+       private WidgetService widgetService;
 
        private FnLanguage language = getFnLanguage();
        private FnUser questUser = getQuestUser();
@@ -140,7 +145,108 @@ public class WidgetsControllerTest {
        }
 
        @Test
-       public void putOnboardingWidget() {
+       public void putOnboardingWidgetSameWidget() {
+              //Given
+              UsernamePasswordAuthenticationToken notQuestprincipal = new UsernamePasswordAuthenticationToken("cs0008",
+                      "demo123");
+              fnUserDao.save(notQuestUser);
+              when(request.getHeader("X-Widgets-Type")).thenReturn("managed");
+
+              OnboardingWidget onboardingWidget = OnboardingWidget.builder()
+                      .id(123L)
+                      .name("Application")
+                      .appId(1421L)
+                      .appName("Application name")
+                      .width(123)
+                      .height(45)
+                      .url("testurl")
+                      .build();
+
+
+              FnWidget fnWidget = FnWidget.builder()
+                      .name("Application")
+                      .appId(453L)
+                      .width(123)
+                      .height(45)
+                      .url("testurl")
+                      .build();
+
+              widgetService.saveOne(fnWidget);
+
+              FieldsValidator expected = new FieldsValidator();
+              //When
+              FieldsValidator actual = widgetsController.putOnboardingWidget(principal, fnWidget.getWidgetId(), onboardingWidget, response);
+              //Then
+              assertEquals(expected.getErrorCode(), actual.getErrorCode());
+              assertEquals(expected.getHttpStatusCode(), actual.getHttpStatusCode());
+              assertEquals(expected.getFields(), actual.getFields());
+       }
+
+       @Test
+       public void putOnboardingWidgetAOP() {
+              //Given
+              UsernamePasswordAuthenticationToken notQuestprincipal = new UsernamePasswordAuthenticationToken("cs0008",
+                      "demo123");
+              fnUserDao.save(notQuestUser);
+              when(request.getHeader("X-Widgets-Type")).thenReturn("managed");
+
+              OnboardingWidget onboardingWidget = OnboardingWidget.builder()
+                      .id(123L)
+                      .name("")
+                      .appId(1L)
+                      .appName("")
+                      .width(123)
+                      .height(45)
+                      .url("testurl")
+                      .build();
+
+
+              FnWidget fnWidget = FnWidget.builder()
+                      .name("Application")
+                      .appId(1421L)
+                      .width(123)
+                      .height(45)
+                      .url("testurl")
+                      .build();
+
+              widgetService.saveOne(fnWidget);
+
+              FieldsValidator expected = new FieldsValidator();
+              expected.setHttpStatusCode(406L);
+              expected.addProblematicFieldName("appName can't be blank, appId value must be higher than 1");
+              //When
+              FieldsValidator actual = widgetsController.putOnboardingWidget(principal, fnWidget.getWidgetId(), onboardingWidget, response);
+              //Then
+              assertEquals(expected.getHttpStatusCode(), actual.getHttpStatusCode());
+              assertEquals(expected.getFields().size(), actual.getFields().size());
+       }
+
+       @Test
+       public void putOnboardingWidgetAOPXSSTest() {
+              //Given
+              UsernamePasswordAuthenticationToken notQuestprincipal = new UsernamePasswordAuthenticationToken("cs0008",
+                      "demo123");
+              fnUserDao.save(notQuestUser);
+              when(request.getHeader("X-Widgets-Type")).thenReturn("managed");
+
+              OnboardingWidget onboardingWidget = OnboardingWidget.builder()
+                      .id(123L)
+                      .name("<script>alert(“XSS”);</script>\n")
+                      .appId(34L)
+                      .appName("<ScRipT>alert(\"XSS\");</ScRipT>")
+                      .width(123)
+                      .height(45)
+                      .url("testurl")
+                      .build();
+
+              FieldsValidator expected = new FieldsValidator();
+              expected.setHttpStatusCode(406L);
+              expected.addProblematicFieldName("appName may have unsafe html content, name may have unsafe html content");
+              //When
+              FieldsValidator actual = widgetsController.putOnboardingWidget(principal, 15L, onboardingWidget, response);
+              //Then
+              assertEquals(expected.getHttpStatusCode(), actual.getHttpStatusCode());
+              assertEquals(expected.getFields().size(), actual.getFields().size());
        }
 
        @Test

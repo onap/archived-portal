@@ -62,14 +62,11 @@ public class FnUserServiceAOP {
 
        private final DataValidator dataValidator;
        private final FnUserMapper fnUserMapper;
-       private final FnUserService fnUserService;
 
        @Autowired
-       public FnUserServiceAOP(final DataValidator dataValidator, final FnUserMapper fnUserMapper,
-               final FnUserService fnUserService) {
+       public FnUserServiceAOP(final DataValidator dataValidator, final FnUserMapper fnUserMapper) {
               this.dataValidator = dataValidator;
               this.fnUserMapper = fnUserMapper;
-              this.fnUserService = fnUserService;
        }
 
        @Before("execution(* org.onap.portal.service.fn.FnUserService.saveFnUser(..)) && args(principal, fnUser)")

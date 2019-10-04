@@ -1,8 +1,10 @@
-/*-
+/*
  * ============LICENSE_START==========================================
  * ONAP Portal
  * ===================================================================
- * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ * ===================================================================
+ * Modifications Copyright (c) 2019 Samsung
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
@@ -33,7 +35,7 @@
  *
  * ============LICENSE_END============================================
  *
- * 
+ *
  */
 
 package org.onap.portal.exception;

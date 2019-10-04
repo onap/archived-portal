@@ -10,12 +10,12 @@ version: '3.1'
 
 services:
   portal-db:
-    image: mariadb
-#    image: mysql
+#    image: mariadb
+    image: mysql
     container_name: portal_mariaDB
     ports:
       - 3306:3306
-    restart: on-failure
+    restart: always
     environment:
       - MYSQL_DATABASE=testdb
       - MYSQL_USER=portal
@@ -29,7 +29,7 @@ services:
   portal-app:
     image: portal_app
     container_name: portal_APP
-    restart: on-failure
+    restart: always
     ports:
       - 8080:8080
     depends_on:

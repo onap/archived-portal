@@ -44,6 +44,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.constraints.NotNull;
 import org.onap.portal.dao.fn.FnWidgetDao;
 import org.onap.portal.domain.db.fn.FnUser;
 import org.onap.portal.domain.db.fn.FnWidget;
@@ -54,14 +55,17 @@ import org.onap.portal.domain.dto.transport.OnboardingWidget;
 import org.onap.portal.utils.EPCommonSystemProperties;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@EnableAspectJAutoProxy
+@Transactional
 public class WidgetService {
 
        private final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(WidgetService.class);
-       private final Long LONG_ECOMP_APP_ID = 1L;
        private final Long ACCOUNT_ADMIN_ROLE_ID = 999L;
 
        private static String baseSqlToken =
@@ -122,16 +126,9 @@ public class WidgetService {
                       + ":USERID";
        }
 
-       public FieldsValidator setOnboardingWidget(FnUser user, OnboardingWidget onboardingWidget) {
-              if (onboardingWidget.getAppName().isEmpty() || onboardingWidget.getUrl().isEmpty()
-                      || onboardingWidget.getAppId() == null
-                      || onboardingWidget.getAppId().equals(LONG_ECOMP_APP_ID) || onboardingWidget.getWidth() <= 0 ||
-                      onboardingWidget.getHeight() <= 0) {
-                     FieldsValidator fieldsValidator = new FieldsValidator();
-                     fieldsValidator.setHttpStatusCode((long) HttpServletResponse.SC_BAD_REQUEST);
-                     return fieldsValidator;
-              }
-              return this.updateOrSaveWidget(adminRolesService.isSuperAdmin(user), user.getId(), onboardingWidget);
+       @PreAuthorize("hasRole('System_Administrator')")
+       public FieldsValidator setOnboardingWidget(final FnUser user, final OnboardingWidget onboardingWidget) {
+              return this.updateOrSaveWidget(true, user.getId(), onboardingWidget);
        }
 
        private FieldsValidator updateOrSaveWidget(boolean superAdmin, Long userId, OnboardingWidget onboardingWidget) {
@@ -178,7 +175,6 @@ public class WidgetService {
                       .getResultList();
        }
 
-       @Transactional
        private void applyOnboardingWidget(OnboardingWidget onboardingWidget, FieldsValidator fieldsValidator) {
               boolean result;
               FnWidget widget;
@@ -199,11 +195,11 @@ public class WidgetService {
        }
 
        private void validateOnboardingWidget(OnboardingWidget onboardingWidget, FieldsValidator fieldsValidator) {
-              List<Widget> widgets = getWidgets(onboardingWidget);
+              List<FnWidget> widgets = getWidgets(onboardingWidget);
               boolean dublicatedUrl = false;
               boolean dublicatedName = false;
-              for (Widget widget : widgets) {
-                     if (onboardingWidget.getId() != null && onboardingWidget.getId().equals(widget.getId())) {
+              for (FnWidget widget : widgets) {
+                     if (onboardingWidget.getId() != null && onboardingWidget.getId().equals(widget.getWidgetId())) {
                             // widget should not be compared with itself
                             continue;
                      }
@@ -233,18 +229,10 @@ public class WidgetService {
               }
        }
 
-       private List<Widget> getWidgets(OnboardingWidget onboardingWidget) {
-              return entityManager.createQuery(
-                      "SELECT new org.onap.portal.domain.dto.ecomp.Widget(fn.APP_ID, fn.WDG_NAME, fn.WDG_URL) FROM FnWidget fn"
-                              + "WHERE  fn.WDG_URL = :WDGURL "
-                              + "AND fn.WDG_NAME = :WDGNAME "
-                              + "AND fn.APP_ID = :APPID", Widget.class)
-                      .setParameter("WDGURL", onboardingWidget.getUrl())
-                      .setParameter("WDGNAME", onboardingWidget.getName())
-                      .getResultList();
+       private List<FnWidget> getWidgets(final OnboardingWidget onboardingWidget) {
+              return fnWidgetDao.getForUrlNameAndAppId(onboardingWidget.getUrl(), onboardingWidget.getName(), onboardingWidget.getAppId()).orElse(new ArrayList<>());
        }
 
-       @Transactional
        public FieldsValidator deleteOnboardingWidget(FnUser user, Long onboardingWidgetId) {
               FieldsValidator fieldsValidator = new FieldsValidator();
               synchronized (syncRests) {
@@ -261,5 +249,9 @@ public class WidgetService {
                      }
               }
               return fieldsValidator;
+       }
+
+       public FnWidget saveOne(final FnWidget widget){
+              return fnWidgetDao.saveAndFlush(widget);
        }
 }

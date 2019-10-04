@@ -101,7 +101,7 @@ public class AdminRolesService {
                      userParams.put("userId", user.getId());
                      logger.debug(EELFLoggerDelegate.debugLogger, ADMIN_ACCOUNT, user.getId());
                      List<Integer> userAdminApps;
-                     String query = "select fa.app_id  from fn_user_role ur,fn_app fa where ur.user_id =:userId and ur.app_id=fa.app_id and ur.role_id= 999 and (fa.enabled = 'Y' || fa.app_id=1)";
+                     String query = "select fa.app_id from fn_user_role ur,fn_app fa where ur.user_id =:userId and ur.app_id=fa.app_id and ur.role_id= 999 and (fa.enabled = 'Y' || fa.app_id=1)";
                      userAdminApps = entityManager.createQuery(query, Integer.class).setParameter("userId", user.getId()).getResultList();
                      logger.debug(EELFLoggerDelegate.debugLogger, "Is account admin for userAdminApps() - for user {}, found userAdminAppsSize {}", user.getOrgUserId(), userAdminApps.size());
 

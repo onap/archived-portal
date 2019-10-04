@@ -42,21 +42,36 @@ package org.onap.portal.domain.db.fn;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.NamedNativeQueries;
+import javax.persistence.NamedNativeQuery;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Table(name = "fn_widget")
-@NoArgsConstructor
-@AllArgsConstructor
+@NamedQueries({
+        @NamedQuery(name = "FnWidget.getForUrlNameAndAppId",
+        query = "FROM FnWidget where url =:URL and name =:NAME and appId =:APPID")
+})
+
 @Getter
 @Setter
 @Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "fn_widget")
 public class FnWidget {
+
        @Id
+       @GeneratedValue(strategy = GenerationType.AUTO)
        private Long widgetId;
        @Column(name = "WDG_NAME")
        private String name;

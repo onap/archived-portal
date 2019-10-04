@@ -40,8 +40,12 @@
 
 package org.onap.portal.dao.fn;
 
+import java.util.List;
+import java.util.Optional;
 import org.onap.portal.domain.db.fn.FnWidget;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,4 +53,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public interface FnWidgetDao extends JpaRepository<FnWidget, Long> {
 
+       @Query
+       Optional<List<FnWidget>> getForUrlNameAndAppId(final @Param("URL") String url, final @Param("NAME") String name, final @Param("APPID") Long appId);
 }

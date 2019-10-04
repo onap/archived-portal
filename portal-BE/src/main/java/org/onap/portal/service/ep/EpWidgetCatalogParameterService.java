@@ -75,6 +75,10 @@ public class EpWidgetCatalogParameterService {
                       epMicroserviceParameterService.deleteMicroserviceParameterById(paramId));
        }
 
+       public EpWidgetCatalogParameter getById(final Long id){
+              return epWidgetCatalogParameterDao.getOne(id);
+       }
+
        @Transactional
        public boolean deleteByParamId(final Long paramId) {
               try {
@@ -90,8 +94,8 @@ public class EpWidgetCatalogParameterService {
               EpWidgetCatalogParameter widgetParam = null;
               List<EpWidgetCatalogParameter> list = epWidgetCatalogParameterDao
                       .getUserParamById(widgetId, userId, paramId)
-                      .orElse(new ArrayList<>());
-              if (list.size() != 0) {
+                      .orElse(null);
+              if (list != null && !list.isEmpty()) {
                      widgetParam = list.get(0);
               }
               logger.debug(EELFLoggerDelegate.debugLogger,
@@ -99,7 +103,6 @@ public class EpWidgetCatalogParameterService {
               return widgetParam;
        }
 
-       @Transactional
        public void saveUserParameter(final EpWidgetCatalogParameter newParameter) {
               epWidgetCatalogParameterDao.save(newParameter);
        }

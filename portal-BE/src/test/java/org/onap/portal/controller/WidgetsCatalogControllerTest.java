@@ -49,6 +49,7 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -58,6 +59,7 @@ import org.onap.portal.domain.db.ep.EpWidgetCatalogParameter;
 import org.onap.portal.domain.db.fn.FnLanguage;
 import org.onap.portal.domain.db.fn.FnUser;
 import org.onap.portal.domain.dto.ecomp.WidgetCatalog;
+import org.onap.portal.framework.MockitoTestSuite;
 import org.onap.portal.service.ep.EpMicroserviceParameterService;
 import org.onap.portal.service.ep.EpWidgetCatalogParameterService;
 import org.onap.portal.service.ep.EpWidgetCatalogService;
@@ -70,20 +72,21 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
+@Transactional
 @TestPropertySource(locations = "classpath:test.properties")
 public class WidgetsCatalogControllerTest {
        private UsernamePasswordAuthenticationToken principal = new UsernamePasswordAuthenticationToken("demo",
                "demo123");
        @Autowired
-       WidgetsCatalogController widgetsCatalogController;
+       private WidgetsCatalogController widgetsCatalogController;
        @Autowired
-       FnLanguageService fnLanguageService;
+       private FnLanguageService fnLanguageService;
        @Autowired
-       EpWidgetCatalogParameterService epWidgetCatalogParameterService;
+       private EpWidgetCatalogParameterService epWidgetCatalogParameterService;
        @Autowired
-       EpMicroserviceParameterService epMicroserviceParameterService;
+       private EpMicroserviceParameterService epMicroserviceParameterService;
        @Autowired
-       EpWidgetCatalogService epWidgetCatalogService;
+       private EpWidgetCatalogService epWidgetCatalogService;
 
        @Test
        public void getUserWidgetCatalog() {
@@ -128,7 +131,6 @@ public class WidgetsCatalogControllerTest {
        }
 
        @Test
-       @Transactional
        public void getUserParameterById() {
               //Given
               EpWidgetCatalog widget = EpWidgetCatalog.builder()
@@ -155,7 +157,6 @@ public class WidgetsCatalogControllerTest {
        }
 
        @Test
-       @Transactional
        public void deleteUserParameterById() {
               //Given
               EpWidgetCatalog widget = EpWidgetCatalog.builder()
@@ -189,10 +190,72 @@ public class WidgetsCatalogControllerTest {
 
        @Test
        public void saveWidgetParameter() {
+              //Given
+              EpWidgetCatalog widget = EpWidgetCatalog.builder()
+                      .wdgName("Name")
+                      .wdgFileLoc("loc")
+                      .allUserFlag(true)
+                      .build();
+              epWidgetCatalogService.save(widget);
+              EpMicroserviceParameter parameter = new EpMicroserviceParameter();
+              epMicroserviceParameterService.save(parameter);
+              FnLanguage language = FnLanguage.builder().languageAlias("TS").languageName("TEST").build();
+              fnLanguageService.save(principal, language);
+              FnUser user = buildFnUser();
+              language.setFnUsers(new HashSet<>(Collections.singleton(user)));
+              user.setLanguageId(language);
+              EpWidgetCatalogParameter data =  EpWidgetCatalogParameter.builder()
+                      .widgetId(widget).userId(user).paramId(parameter).userValue("TestData").build();
+
+              //When
+              widgetsCatalogController.saveWidgetParameter(principal, data);
+              //Then
+              EpWidgetCatalogParameter actual = epWidgetCatalogParameterService.getById(data.getId());
+
+              assertEquals("TestData", actual.getUserValue());
+
+       }
+
+       @Test
+       public void saveWidgetParameterOldParamTest() {
+              //Given
+              EpWidgetCatalog widget = EpWidgetCatalog.builder()
+                      .wdgName("Name")
+                      .wdgFileLoc("loc")
+                      .allUserFlag(true)
+                      .build();
+              epWidgetCatalogService.save(widget);
+              EpMicroserviceParameter parameter = new EpMicroserviceParameter();
+              epMicroserviceParameterService.save(parameter);
+              FnLanguage language = FnLanguage.builder().languageAlias("TS").languageName("TEST").build();
+              fnLanguageService.save(principal, language);
+              FnUser user = buildFnUser();
+              language.setFnUsers(new HashSet<>(Collections.singleton(user)));
+              user.setLanguageId(language);
+              EpWidgetCatalogParameter old =  EpWidgetCatalogParameter.builder()
+                      .widgetId(widget).userId(user).paramId(parameter).userValue("TestData").build();
+
+              //When
+              widgetsCatalogController.saveWidgetParameter(principal, old);
+
+              EpWidgetCatalogParameter newWidgetParameter =  EpWidgetCatalogParameter.builder()
+                      .widgetId(widget).userId(user).paramId(parameter).userValue("TestData2").build();
+
+              widgetsCatalogController.saveWidgetParameter(principal, newWidgetParameter);
+
+              EpWidgetCatalogParameter oldOne = epWidgetCatalogParameterService.getById(old.getId());
+
+              //Then
+              assertEquals("TestData2", oldOne.getUserValue());
+
        }
 
        @Test
        public void getUploadFlag() {
+              String expected = "";
+              String actual = widgetsCatalogController.getUploadFlag();
+
+              assertEquals(expected, actual);
        }
 
        private FnUser buildFnUser(){

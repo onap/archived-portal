@@ -38,56 +38,11 @@
  *
  */
 
-package org.onap.portal.domain.dto.transport;
+package org.onap.portal.exception;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import javax.servlet.http.HttpServletResponse;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+public class NotValidDataException extends Exception {
 
-@Getter
-@Setter
-@ToString
-@NoArgsConstructor
-@AllArgsConstructor
-public class FieldsValidator {
-
-	private Long httpStatusCode = (long) HttpServletResponse.SC_OK;
-	private Long errorCode;
-	private List<FieldName> fields = new ArrayList<>();
-
-	public void addProblematicFieldName(String fieldName){
-		fields.add(new FieldName(fieldName));
-	}
-
-	@Getter
-	@Setter
-	@ToString
-	@NoArgsConstructor
-	@AllArgsConstructor
-	public class FieldName {
-		public String name;
-
-		@Override
-		public boolean equals(Object o) {
-			if (this == o) {
-				return true;
-			}
-			if (!(o instanceof FieldName)) {
-				return false;
-			}
-			FieldName fieldName = (FieldName) o;
-			return Objects.equals(name, fieldName.name);
-		}
-
-		@Override
-		public int hashCode() {
-			return Objects.hash(name);
-		}
-	}
+       public NotValidDataException(String exceptionMsg) {
+              super(exceptionMsg);
+       }
 }
