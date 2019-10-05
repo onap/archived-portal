@@ -25,12 +25,17 @@ Maintanance release with bug fixes and security enhancements.
 **Known Issues**
 
 **Security Notes**
-        * Security Enhancements - Fixed OJSI issues.
+
+*Fixed Security Issues*
+
+*Known Security Issues*
+
+*Known Vulnerabilities in Used Modules*
         * Addressed security issues reported by NexusIQ Critical and Severe issues
 
 Quick Links:
      - `PORTAL project page <https://wiki.onap.org/display/DW/Portal+Platform+Project>`_
-	 
+
      - `Passing Badge information for PORTAL <https://bestpractices.coreinfrastructure.org/en/projects/1441>`_
 
      - `Project Vulnerability Review Table for PORTAL <https://wiki.onap.org/pages/viewpage.action?pageId=68542388>`_
@@ -51,7 +56,7 @@ Quick Links:
         * onap/portal-wms:2.6.0
         * portal/sdk java artifacts - (Release branch: “release-2.6.0”)
 
-		
+
 Version: 2.5.0
 --------------
 :Release Date: 2019-06-13
