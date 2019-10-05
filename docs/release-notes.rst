@@ -31,7 +31,12 @@ Maintanance release with bug fixes and security enhancements.
            4. Then demo user can access AAI UI app from Portal
 
 **Security Notes**
-        * Security Enhancements - Fixed OJSI issues.
+
+*Fixed Security Issues*
+
+*Known Security Issues*
+
+*Known Vulnerabilities in Used Modules*
         * Addressed security issues reported by NexusIQ Critical and Severe issues
 
 Quick Links:
