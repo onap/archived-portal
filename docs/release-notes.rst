@@ -34,6 +34,9 @@ Maintanance release with bug fixes and security enhancements.
 
 *Fixed Security Issues*
 
+        * CVE-2019-12122 - ONAP Portal allows to retrieve password of currently active user [`OJSI-65 <https://jira.onap.org/browse/OJSI-65>`_]
+        * CVE-2019-12121 - ONAP Portal is vulnerable for Padding Oracle attack [`OJSI-92 <https://jira.onap.org/browse/OJSI-92>`_]
+
 *Known Security Issues*
 
 *Known Vulnerabilities in Used Modules*
