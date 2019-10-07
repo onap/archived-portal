@@ -82,7 +82,7 @@ CREATE TABLE `ep_pers_user_widget_sel` (
 @NamedQueries({
         @NamedQuery(
                 name = "EpPersUserWidgetSel.getEpPersUserWidgetSelForUserIdAndWidgetId",
-                query = "FROM EpPersUserWidgetSel WHERE userId = :USERID and widgetId = :WIDGETID")
+                query = "FROM EpPersUserWidgetSel WHERE userId.userId = :USERID and widgetId.widgetId = :WIDGETID")
 })
 @Table(name = "ep_pers_user_widget_sel", uniqueConstraints = {
         @UniqueConstraint(columnNames = {"user_id", "widget_id"})

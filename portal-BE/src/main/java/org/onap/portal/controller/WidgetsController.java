@@ -49,7 +49,6 @@ import org.onap.portal.domain.db.fn.FnUser;
 import org.onap.portal.domain.dto.transport.FieldsValidator;
 import org.onap.portal.domain.dto.transport.OnboardingWidget;
 import org.onap.portal.domain.dto.transport.WidgetCatalogPersonalization;
-import org.onap.portal.exception.NotValidDataException;
 import org.onap.portal.logging.aop.EPAuditLog;
 import org.onap.portal.service.AdminRolesService;
 import org.onap.portal.service.PersUserWidgetService;
@@ -128,7 +127,7 @@ public class WidgetsController {
               onboardingWidget.setId(widgetId);
               onboardingWidget.normalize();
               try {
-                     fieldsValidator = widgetService.setOnboardingWidget(user, onboardingWidget);
+                     fieldsValidator = widgetService.setOnboardingWidget(user.getUserId(), onboardingWidget);
                      response.setStatus(fieldsValidator.getHttpStatusCode().intValue());
               } catch (IllegalArgumentException e) {
                      fieldsValidator = new FieldsValidator();
@@ -143,37 +142,25 @@ public class WidgetsController {
               return fieldsValidator;
        }
 
-       private boolean userHasPermissions(FnUser user, HttpServletResponse response, String invocator) {
-              if (!adminRolesService.isSuperAdmin(user) && !adminRolesService.isAccountAdmin(user)) {
-                     EcompPortalUtils.setBadPermissions(user, response, invocator);
-                     return false;
-              }
-              return true;
-       }
-
        @PostMapping(value = {"/portalApi/widgets"}, produces = MediaType.APPLICATION_JSON_VALUE)
+       @PreAuthorize("hasRole('System_Administrator') and hasRole('Account_Administrator')")
        public FieldsValidator postOnboardingWidget(Principal principal, HttpServletResponse response,
                @RequestBody OnboardingWidget onboardingWidget) {
               FnUser user = fnUserService.loadUserByUsername(principal.getName());
-              FieldsValidator fieldsValidator = new FieldsValidator();
+              FieldsValidator fieldsValidator;
 
-              if (onboardingWidget != null) {
-                     if (!dataValidator.isValid(onboardingWidget)) {
-                            fieldsValidator.setHttpStatusCode((long) HttpServletResponse.SC_NOT_ACCEPTABLE);
-                            return fieldsValidator;
-                     }
-              }
+              onboardingWidget.setId(null);
+              onboardingWidget.normalize();
 
-              if (userHasPermissions(user, response, "postOnboardingWidget")) {
-                     onboardingWidget.setId(null);
-                     onboardingWidget.normalize();
-                     try {
-                            fieldsValidator = widgetService.setOnboardingWidget(user, onboardingWidget);
-                     } catch (Exception e) {
-                            fieldsValidator.setHttpStatusCode((long) HttpServletResponse.SC_BAD_REQUEST);
-                     }
-                     response.setStatus(fieldsValidator.getHttpStatusCode().intValue());
+              try {
+                     fieldsValidator = widgetService.setOnboardingWidget(user.getUserId(), onboardingWidget);
+              } catch (IllegalArgumentException e) {
+                     fieldsValidator = new FieldsValidator();
+                     fieldsValidator.setHttpStatusCode((long) HttpServletResponse.SC_NOT_ACCEPTABLE);
+                     fieldsValidator.addProblematicFieldName(e.getMessage());
+                     return fieldsValidator;
               }
+              response.setStatus(fieldsValidator.getHttpStatusCode().intValue());
 
               EcompPortalUtils
                       .logAndSerializeObject(logger, "/portalApi/widgets", "POST result =", response.getStatus());
@@ -181,15 +168,14 @@ public class WidgetsController {
        }
 
        @DeleteMapping(value = {"/portalApi/widgets/{widgetId}"}, produces = MediaType.APPLICATION_JSON_VALUE)
+       @PreAuthorize("hasRole('System_Administrator') and hasRole('Account_Administrator')")
        public FieldsValidator deleteOnboardingWidget(Principal principal, HttpServletResponse response,
                @PathVariable("widgetId") Long widgetId) {
               FnUser user = fnUserService.loadUserByUsername(principal.getName());
-              FieldsValidator fieldsValidator = null;
+              FieldsValidator fieldsValidator;
 
-              if (userHasPermissions(user, response, "deleteOnboardingWidget")) {
-                     fieldsValidator = widgetService.deleteOnboardingWidget(user, widgetId);
-                     response.setStatus(fieldsValidator.getHttpStatusCode().intValue());
-              }
+              fieldsValidator = widgetService.deleteOnboardingWidget(user, widgetId);
+              response.setStatus(fieldsValidator.getHttpStatusCode().intValue());
 
               EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/widgets/" + widgetId, "DELETE result =",
                       response.getStatus());
@@ -202,23 +188,16 @@ public class WidgetsController {
               FieldsValidator result = new FieldsValidator();
               FnUser user = fnUserService.loadUserByUsername(principal.getName());
 
-              if (persRequest != null) {
-                     if (!dataValidator.isValid(persRequest)) {
-                            result.setHttpStatusCode((long) HttpServletResponse.SC_NOT_ACCEPTABLE);
-                            return result;
-                     }
-              }
               try {
                      assert persRequest != null;
-                     if (persRequest.getWidgetId() == null || user == null) {
-                            EcompPortalUtils.setBadPermissions(user, response, "putWidgetCatalogSelection");
-                     } else {
-                            persUserWidgetService
-                                    .setPersUserAppValue(user, persRequest.getWidgetId(), persRequest.getSelect());
-                     }
+                     persUserWidgetService
+                             .setPersUserAppValue(user, persRequest);
+              } catch (IllegalArgumentException iae) {
+                     logger.error(EELFLoggerDelegate.errorLogger, "Failed in putAppCatalogSelection", iae);
+                     response.sendError(HttpServletResponse.SC_NOT_ACCEPTABLE, iae.getMessage());
               } catch (Exception e) {
                      logger.error(EELFLoggerDelegate.errorLogger, "Failed in putAppCatalogSelection", e);
-                     response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
+                     response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
               }
               result.setHttpStatusCode((long) HttpServletResponse.SC_OK);
               return result;

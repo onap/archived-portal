@@ -53,6 +53,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedNativeQueries;
 import javax.persistence.NamedNativeQuery;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
@@ -82,14 +84,23 @@ CREATE TABLE `fn_user_role` (
 @NamedNativeQueries({
         @NamedNativeQuery(
                 name = "FnUserRole.retrieveUserRoleOnUserIdAndRoleIdAndAppId",
-                query = "select * from FnUserRole where user_id= :userId"
+                query = "FROM FnUserRole where user_id= :userId"
                         + " and role_id= :roleId"
                         + " and app_id= :appId"),
         @NamedNativeQuery(
                 name = "FnUserRole.retrieveCachedAppRolesForUser",
-                query = "select * from FnUserRole where user_id= :userId"
+                query = "FROM FnUserRole where user_id= :userId"
                         + " and user_id= :userId"
                         + " and app_id= :appId")
+})
+
+@NamedQueries({
+        @NamedQuery(
+                name = "FnUserRole.getAdminUserRoles",
+                query = "FROM FnUserRole fn "
+                        + "WHERE  fn.userId.userId = :USERID "
+                        + "AND fn.roleId.roleId = :ROLEID "
+                        + "AND fn.appId.appId = :APPID")
 })
 
 @Table(

@@ -44,14 +44,14 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.constraints.NotNull;
 import org.onap.portal.dao.fn.FnWidgetDao;
 import org.onap.portal.domain.db.fn.FnUser;
+import org.onap.portal.domain.db.fn.FnUserRole;
 import org.onap.portal.domain.db.fn.FnWidget;
 import org.onap.portal.domain.dto.ecomp.EPUserApp;
-import org.onap.portal.domain.dto.ecomp.Widget;
 import org.onap.portal.domain.dto.transport.FieldsValidator;
 import org.onap.portal.domain.dto.transport.OnboardingWidget;
+import org.onap.portal.service.fn.FnUserRoleService;
 import org.onap.portal.utils.EPCommonSystemProperties;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,13 +82,15 @@ public class WidgetService {
        private final AdminRolesService adminRolesService;
        private final EntityManager entityManager;
        private final FnWidgetDao fnWidgetDao;
+       private final FnUserRoleService fnUserRoleService;
 
        @Autowired
        public WidgetService(final AdminRolesService adminRolesService, final EntityManager entityManager,
-               final FnWidgetDao fnWidgetDao) {
+               final FnWidgetDao fnWidgetDao, FnUserRoleService fnUserRoleService) {
               this.adminRolesService = adminRolesService;
               this.entityManager = entityManager;
               this.fnWidgetDao = fnWidgetDao;
+              this.fnUserRoleService = fnUserRoleService;
        }
 
        private static final Object syncRests = new Object();
@@ -127,8 +129,8 @@ public class WidgetService {
        }
 
        @PreAuthorize("hasRole('System_Administrator')")
-       public FieldsValidator setOnboardingWidget(final FnUser user, final OnboardingWidget onboardingWidget) {
-              return this.updateOrSaveWidget(true, user.getId(), onboardingWidget);
+       public FieldsValidator setOnboardingWidget(final Long userId, final OnboardingWidget onboardingWidget) {
+              return this.updateOrSaveWidget(true, userId, onboardingWidget);
        }
 
        private FieldsValidator updateOrSaveWidget(boolean superAdmin, Long userId, OnboardingWidget onboardingWidget) {
@@ -157,22 +159,14 @@ public class WidgetService {
 
        private boolean isUserAdminOfAppForWidget(boolean superAdmin, Long userId, Long appId) {
               if (!superAdmin) {
-                     List<EPUserApp> userRoles = getAdminUserRoles(userId, appId);
+                     List<FnUserRole> userRoles = getAdminUserRoles(userId, appId);
                      return (userRoles.size() > 0);
               }
               return true;
        }
 
-       private List<EPUserApp> getAdminUserRoles(Long userId, Long appId) {
-              return entityManager.createQuery(
-                      "SELECT new org.onap.portal.domain.dto.ecomp.EPUserApp(fn.userId, fn.roleId, fn.appId) FROM FnUserRole fn"
-                              + "WHERE  fn.userId = :USERID "
-                              + "AND fn.roleId = :ROLEID "
-                              + "AND fn.appId = :APPID", EPUserApp.class)
-                      .setParameter("USERID", userId)
-                      .setParameter("ROLEID", ACCOUNT_ADMIN_ROLE_ID)
-                      .setParameter("APPID", appId)
-                      .getResultList();
+       private List<FnUserRole> getAdminUserRoles(Long userId, Long appId) {
+              return fnUserRoleService.getAdminUserRoles(userId, ACCOUNT_ADMIN_ROLE_ID, appId);
        }
 
        private void applyOnboardingWidget(OnboardingWidget onboardingWidget, FieldsValidator fieldsValidator) {
@@ -238,7 +232,7 @@ public class WidgetService {
               synchronized (syncRests) {
                      FnWidget widget = fnWidgetDao.getOne(onboardingWidgetId);
                      if (widget != null && widget.getAppId() != null) { // widget exists
-                            if (!this.isUserAdminOfAppForWidget(adminRolesService.isSuperAdmin(user), user.getId(),
+                            if (!this.isUserAdminOfAppForWidget(adminRolesService.isSuperAdmin(user), user.getUserId(),
                                     widget.getAppId())) {
                                    fieldsValidator.setHttpStatusCode((long) HttpServletResponse.SC_FORBIDDEN);
                             } else {

@@ -38,23 +38,28 @@
  *
  */
 
-package org.onap.portal.domain.dto.transport;
+package org.onap.portal.service.fn;
 
-import javax.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import java.util.ArrayList;
+import java.util.List;
+import org.onap.portal.dao.fn.FnUserRoleDao;
+import org.onap.portal.domain.db.fn.FnUserRole;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-public class WidgetCatalogPersonalization {
+@Service
+@Transactional
+public class FnUserRoleService {
 
-       @NotNull
-       private Long widgetId;
-       @NotNull
-       private Boolean select;
+       private final FnUserRoleDao fnUserRoleDao;
 
+       @Autowired
+       public FnUserRoleService(FnUserRoleDao fnUserRoleDao) {
+              this.fnUserRoleDao = fnUserRoleDao;
+       }
+
+       public List<FnUserRole> getAdminUserRoles(final Long userId, final Long roleId, final Long appId) {
+              return fnUserRoleDao.getAdminUserRoles(userId, roleId, appId).orElse(new ArrayList<>());
+       }
 }

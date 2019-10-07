@@ -38,23 +38,21 @@
  *
  */
 
-package org.onap.portal.domain.dto.transport;
+package org.onap.portal.dao.fn;
 
-import javax.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import java.util.List;
+import java.util.Optional;
+import org.onap.portal.domain.db.fn.FnUserRole;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-public class WidgetCatalogPersonalization {
+@Repository
+@Transactional
+public interface FnUserRoleDao extends JpaRepository<FnUserRole, Long> {
 
-       @NotNull
-       private Long widgetId;
-       @NotNull
-       private Boolean select;
-
+       @Query
+       Optional<List<FnUserRole>> getAdminUserRoles(final @Param("USERID") Long userId, final @Param("ROLEID") Long roleId, final @Param("APPID") Long appId);
 }

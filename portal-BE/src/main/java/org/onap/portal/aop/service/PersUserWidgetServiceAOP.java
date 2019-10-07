@@ -38,23 +38,35 @@
  *
  */
 
-package org.onap.portal.domain.dto.transport;
+package org.onap.portal.aop.service;
 
-import javax.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
+import org.onap.portal.domain.db.fn.FnUser;
+import org.onap.portal.domain.dto.transport.WidgetCatalogPersonalization;
+import org.onap.portal.validation.DataValidator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-public class WidgetCatalogPersonalization {
+@Aspect
+@Component
+public class PersUserWidgetServiceAOP {
 
-       @NotNull
-       private Long widgetId;
-       @NotNull
-       private Boolean select;
+       private static final Logger LOGGER = LoggerFactory.getLogger(PersUserWidgetServiceAOP.class);
 
+       private final DataValidator dataValidator;
+
+       @Autowired
+       public PersUserWidgetServiceAOP(DataValidator dataValidator) {
+              this.dataValidator = dataValidator;
+       }
+
+       @Before("execution(* org.onap.portal.service.PersUserWidgetService.setPersUserAppValue(..)) && args(user, personalization)")
+       public void setOnboardingWidget(FnUser user, WidgetCatalogPersonalization personalization) {
+              if (!dataValidator.isValid(personalization)) {
+                     throw new IllegalArgumentException(dataValidator.getConstraintViolationsString(personalization));
+              }
+       }
 }
