@@ -41,9 +41,13 @@
 package org.onap.portal.service.fn;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import org.onap.portal.dao.fn.FnUserRoleDao;
 import org.onap.portal.domain.db.fn.FnUserRole;
+import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,7 +55,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 public class FnUserRoleService {
-
+       private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(FnUserRoleService.class);
        private final FnUserRoleDao fnUserRoleDao;
 
        @Autowired
@@ -61,5 +65,18 @@ public class FnUserRoleService {
 
        public List<FnUserRole> getAdminUserRoles(final Long userId, final Long roleId, final Long appId) {
               return fnUserRoleDao.getAdminUserRoles(userId, roleId, appId).orElse(new ArrayList<>());
+       }
+
+       public boolean isSuperAdmin(final String orgUserId, final Long roleId, final Long appId){
+              List<FnUserRole> roles = getUserRolesForRoleIdAndAppId(roleId, appId).stream().filter(role -> role.getUserId().getOrgUserId().equals(orgUserId)).collect(Collectors.toList());
+              return !roles.isEmpty();
+       }
+
+       private List<FnUserRole> getUserRolesForRoleIdAndAppId(final Long roleId, final Long appId){
+              return Optional.of(fnUserRoleDao.getUserRolesForRoleIdAndAppId(roleId, appId)).orElse(new ArrayList<>());
+       }
+
+       public FnUserRole saveOne(final FnUserRole fnUserRole){
+              return fnUserRoleDao.save(fnUserRole);
        }
 }

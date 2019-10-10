@@ -43,6 +43,7 @@ package org.onap.portal.dao.fn;
 import java.util.List;
 import java.util.Optional;
 import org.onap.portal.domain.db.fn.FnUserRole;
+import org.onap.portal.domain.dto.ecomp.UserRole;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -54,5 +55,11 @@ import org.springframework.transaction.annotation.Transactional;
 public interface FnUserRoleDao extends JpaRepository<FnUserRole, Long> {
 
        @Query
-       Optional<List<FnUserRole>> getAdminUserRoles(final @Param("USERID") Long userId, final @Param("ROLEID") Long roleId, final @Param("APPID") Long appId);
+       Optional<List<FnUserRole>> getAdminUserRoles(final @Param("userId") Long userId, final @Param("roleId") Long roleId, final @Param("appId") Long appId);
+
+       @Query
+       List<UserRole> isSuperAdmin(final @Param("orgUserId") String orgUserId, final @Param("roleId") Long roleId, final @Param("appId") Long appId);
+
+       @Query
+       List<FnUserRole> getUserRolesForRoleIdAndAppId(final @Param("roleId") Long roleId, final @Param("appId") Long appId);
 }

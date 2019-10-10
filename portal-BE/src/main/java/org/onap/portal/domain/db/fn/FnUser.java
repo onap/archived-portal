@@ -43,6 +43,7 @@ package org.onap.portal.domain.db.fn;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.persistence.CascadeType;

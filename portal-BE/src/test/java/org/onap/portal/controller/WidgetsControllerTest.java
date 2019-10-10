@@ -329,7 +329,7 @@ public class WidgetsControllerTest {
 
 
               FieldsValidator expected = new FieldsValidator();
-              expected.setHttpStatusCode(403L);
+              expected.setHttpStatusCode(500L);
               expected.addProblematicFieldName("appName can't be blank, appId value must be higher than 1");
 
               //When

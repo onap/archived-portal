@@ -38,34 +38,15 @@
  *
  */
 
-package org.onap.portal.domain.dto.ecomp;
+package org.onap.portal.dao.fn;
 
-import java.io.Serializable;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import org.onap.portal.domain.db.fn.FnRole;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-public class UserRole implements Serializable {
+@Repository
+@Transactional
+public interface FnRoleDao extends JpaRepository<FnRole, Long> {
 
-       private static final long serialVersionUID = 1L;
-
-       private Long userId;
-       private String orgUserId;
-       private Long roleId;
-       private Long appId;
-       private String firstName;
-       private String lastName;
-       private String roleName;
-
-       public UserRole(Long userId, String orgUserId, Long roleId, Long appId) {
-              this.userId = userId;
-              this.orgUserId = orgUserId;
-              this.roleId = roleId;
-              this.appId = appId;
-       }
 }

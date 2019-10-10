@@ -171,9 +171,9 @@ public class FnApp extends DomainVo implements Serializable {
        @SafeHtml
        @NotNull
        private String appPassword;
-       @Column(name = "open", length = 1, columnDefinition = "char(1) default 'N'")
+       @Column(name = "_open", length = 1, columnDefinition = "char(1) default 'N'")
        private Boolean open;
-       @Column(name = "ENABLED", length = 1, columnDefinition = "char(1) default 'N'")
+       @Column(name = "_enabled", length = 1, columnDefinition = "char(1) default 'N'")
        private Boolean enabled;
        @Column(name = "active_yn", length = 1, columnDefinition = "char(1) default 'Y'")
        @Pattern(regexp = "[YNyn]")
@@ -181,7 +181,7 @@ public class FnApp extends DomainVo implements Serializable {
        @NotNull
        @SafeHtml
        private String activeYn;
-       @Column(name = "thumbnail", columnDefinition = "mediumblob null default null")
+       @Column(name = "_thumbnail", columnDefinition = "mediumblob null default null")
        private byte[] thumbnail;
        @Column(name = "app_username", length = 50)
        @Size(max = 50)

@@ -72,7 +72,7 @@ public class WidgetService {
                " new org.onap.portal.domain.dto.transport.OnboardingWidget("
                        + "widget.WIDGET_ID,widget.WDG_NAME,widget.APP_ID,"
                        + "app.APP_NAME,widget.WDG_WIDTH,widget.WDG_HEIGHT,"
-                       + "widget.WDG_URL) widget.WIDGET_ID,widget.WDG_NAME,widget.APP_ID,app.APP_NAME,widget.WDG_WIDTH,widget.WDG_HEIGHT,widget.WDG_URL from FN_WIDGET widget join FN_APP app ON widget.APP_ID = app.APP_ID";
+                       + "widget.WDG_URL, widget.WIDGET_ID,widget.WDG_NAME,widget.APP_ID,app.APP_NAME,widget.WDG_WIDTH,widget.WDG_HEIGHT,widget.WDG_URL) from FN_WIDGET widget join FN_APP app ON widget.APP_ID = app.APP_ID";
 
        private static final String urlField = "url";
        private static final Long DUBLICATED_FIELD_VALUE_ECOMP_ERROR = new Long(
@@ -96,7 +96,7 @@ public class WidgetService {
        private static final Object syncRests = new Object();
 
        public List<OnboardingWidget> getOnboardingWidgets(FnUser user, boolean managed) {
-              if (adminRolesService.isSuperAdmin(user)) {
+              if (adminRolesService.isSuperAdmin(user.getOrgUserId())) {
                      return entityManager.createQuery(sqlWidgetsForAllApps(), OnboardingWidget.class).getResultList();
               } else if (managed) {
                      if (adminRolesService.isAccountAdmin(user)) {
@@ -232,7 +232,7 @@ public class WidgetService {
               synchronized (syncRests) {
                      FnWidget widget = fnWidgetDao.getOne(onboardingWidgetId);
                      if (widget != null && widget.getAppId() != null) { // widget exists
-                            if (!this.isUserAdminOfAppForWidget(adminRolesService.isSuperAdmin(user), user.getUserId(),
+                            if (!this.isUserAdminOfAppForWidget(adminRolesService.isSuperAdmin(user.getOrgUserId()), user.getUserId(),
                                     widget.getAppId())) {
                                    fieldsValidator.setHttpStatusCode((long) HttpServletResponse.SC_FORBIDDEN);
                             } else {
