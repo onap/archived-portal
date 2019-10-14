@@ -66,7 +66,7 @@ public class UserRoles implements Serializable {
 		setOrgUserId(user.getOrgUserId());
 		setFirstName(user.getFirstName());
 		setLastName(user.getLastName());
-		setGuestSession(user.getUser_Id() == -1);
+		setGuestSession(user.getUserId() == -1);
 
 		addRole(user.getRoleName());
 	}

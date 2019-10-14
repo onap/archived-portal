@@ -41,27 +41,39 @@
 package org.onap.portal.domain.dto.transport;
 
 import java.io.Serializable;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.SafeHtml;
 
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 public class OnboardingWidget implements Serializable {
 
        private static final long serialVersionUID = 1L;
 
        private Long id;
-       @SafeHtml
+       @SafeHtml(message = "name may have unsafe html content")
        private String name;
+       @NotNull(message = "appId can't be null")
+       @Min(message = "appId value must be higher than 1",value = 2)
        private Long appId;
-       @SafeHtml
+       @SafeHtml(message = "appName may have unsafe html content")
+       @NotBlank(message = "appName can't be blank")
        private String appName;
+       @Positive(message = "width must be positive number")
        private Integer width;
+       @Positive(message = "height must be positive number")
        private Integer height;
-       @SafeHtml
+       @SafeHtml(message = "url may have unsafe html content")
+       @NotBlank(message = "url can't be blank")
        private String url;
 
        public OnboardingWidget(Long id, String name, Long appId,

@@ -51,16 +51,22 @@
                   <artifactId>spring-boot-starter-aop</artifactId>
                   <version>2.1.6.RELEASE</version>
             </dependency>
+            <!-- https://mvnrepository.com/artifact/org.springframework/spring-context-support -->
+            <dependency>
+                  <groupId>org.springframework</groupId>
+                  <artifactId>spring-context-support</artifactId>
+                  <version>5.2.0.RELEASE</version>
+            </dependency>
             <dependency>
                   <groupId>com.h2database</groupId>
                   <artifactId>h2</artifactId>
                   <scope>runtime</scope>
             </dependency>
-            <!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
+            <!-- https://mvnrepository.com/artifact/org.mariadb.jdbc/mariadb-java-client -->
             <dependency>
-                  <groupId>mysql</groupId>
-                  <artifactId>mysql-connector-java</artifactId>
-                  <version>8.0.17</version>
+                  <groupId>org.mariadb.jdbc</groupId>
+                  <artifactId>mariadb-java-client</artifactId>
+                  <version>2.5.0</version>
             </dependency>
             <!-- https://mvnrepository.com/artifact/org.glassfish/javax.el -->
             <dependency>
@@ -101,12 +107,12 @@
             <dependency>
                   <groupId>org.onap.portal.sdk</groupId>
                   <artifactId>epsdk-logger</artifactId>
-                  <version>2.6.0-SNAPSHOT</version>
+                  <version>2.6.0</version>
             </dependency>
             <dependency>
                   <groupId>org.onap.portal.sdk</groupId>
                   <artifactId>epsdk-core</artifactId>
-                  <version>2.6.0-SNAPSHOT</version>
+                  <version>2.6.0</version>
             </dependency>
             <dependency>
                   <groupId>org.springframework.boot</groupId>
@@ -132,6 +138,57 @@
                   <groupId>javax.servlet</groupId>
                   <artifactId>javax.servlet-api</artifactId>
                   <version>4.0.1</version>
+                  <scope>compile</scope>
+            </dependency>
+            <dependency>
+                  <groupId>io.swagger</groupId>
+                  <artifactId>swagger-annotations</artifactId>
+                  <version>2.0.0-rc2</version>
+                  <scope>compile</scope>
+            </dependency>
+            <dependency>
+                  <groupId>io.swagger</groupId>
+                  <artifactId>swagger-annotations</artifactId>
+                  <version>2.0.0-rc2</version>
+                  <scope>compile</scope>
+            </dependency>
+            <dependency>
+                  <groupId>io.swagger</groupId>
+                  <artifactId>swagger-annotations</artifactId>
+                  <version>1.5.20</version>
+            </dependency>
+            <dependency>
+                  <groupId>io.swagger</groupId>
+                  <artifactId>swagger-annotations</artifactId>
+                  <version>2.0.0-rc2</version>
+                  <scope>compile</scope>
+            </dependency>
+            <dependency>
+                  <groupId>io.swagger</groupId>
+                  <artifactId>swagger-annotations</artifactId>
+                  <version>1.5.20</version>
+            </dependency>
+            <dependency>
+                  <groupId>io.swagger</groupId>
+                  <artifactId>swagger-annotations</artifactId>
+                  <version>2.0.0-rc2</version>
+                  <scope>compile</scope>
+            </dependency>
+            <dependency>
+                  <groupId>io.swagger</groupId>
+                  <artifactId>swagger-annotations</artifactId>
+                  <version>2.0.0-rc2</version>
+                  <scope>compile</scope>
+            </dependency>
+            <dependency>
+                  <groupId>io.swagger</groupId>
+                  <artifactId>swagger-annotations</artifactId>
+                  <version>1.5.20</version>
+            </dependency>
+            <dependency>
+                  <groupId>org.apache.cxf</groupId>
+                  <artifactId>cxf-rt-rs-client</artifactId>
+                  <version>3.3.2</version>
                   <scope>compile</scope>
             </dependency>
       </dependencies>

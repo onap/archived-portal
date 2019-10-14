@@ -6,14 +6,21 @@
 # docker login -u USER -p PASS nexus3.onap.org:10001
 # Uses healthcheck feature added in docker-compose v2.1
 
-version: '2.1'
+version: '3.1'
 
 services:
   portal-db:
-    image: portal_mariadb
+    image: mariadb
+#    image: mysql
     container_name: portal_mariaDB
+    ports:
+      - 3306:3306
+    restart: always
     environment:
-      MYSQL_DATABASE: testdb
+      - MYSQL_DATABASE=testdb
+      - MYSQL_USER=portal
+      - MYSQL_PASSWORD=Test123456
+      - MYSQL_RANDOM_ROOT_PASSWORD=yes
     healthcheck:
       test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
     networks:
@@ -22,12 +29,11 @@ services:
   portal-app:
     image: portal_app
     container_name: portal_APP
-    restart: on-failure
+    restart: always
     ports:
       - 8080:8080
     depends_on:
-      portal-db:
-        condition: service_healthy
+      - portal-db
     networks:
       - backend
 

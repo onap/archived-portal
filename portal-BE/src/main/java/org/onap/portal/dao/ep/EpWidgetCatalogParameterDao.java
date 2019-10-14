@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import org.onap.portal.domain.db.ep.EpWidgetCatalogParameter;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -17,6 +18,7 @@ public interface EpWidgetCatalogParameterDao extends JpaRepository<EpWidgetCatal
        Optional<List<EpWidgetCatalogParameter>> retrieveByParamId(@Param("PARAMID") Long paramId);
 
        @Query
+       @Modifying
        void deleteWidgetCatalogParameter(@Param("PARAMID") Long paramId);
 
        @Query

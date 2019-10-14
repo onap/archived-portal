@@ -54,11 +54,18 @@ public class UserRole implements Serializable {
 
        private static final long serialVersionUID = 1L;
 
-       private Long user_Id;
-       private Long roleId;
+       private Long userId;
        private String orgUserId;
+       private Long roleId;
+       private Long appId;
        private String firstName;
        private String lastName;
        private String roleName;
 
+       public UserRole(Long userId, String orgUserId, Long roleId, Long appId) {
+              this.userId = userId;
+              this.orgUserId = orgUserId;
+              this.roleId = roleId;
+              this.appId = appId;
+       }
 }

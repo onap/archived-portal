@@ -51,8 +51,10 @@ import org.onap.portal.domain.dto.ecomp.MicroserviceParameter;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 public class EpMicroserviceParameterService {
 
        EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(EpWidgetCatalogParameterService.class);
@@ -83,5 +85,20 @@ public class EpMicroserviceParameterService {
 
        private List<MicroserviceParameter> mapToMicroserviceParameterList(final List<EpMicroserviceParameter> list){
               return list.stream().map(this::epWidgetCatalogParameterToMicroserviceParameter).collect(Collectors.toList());
+       }
+
+       public EpMicroserviceParameter save(EpMicroserviceParameter epMicroserviceParameter){
+              return epMicroserviceParameterDao.save(epMicroserviceParameter);
+       }
+
+       @Transactional
+       public boolean deleteMicroserviceParameterById(final Long paramid){
+              try {
+                     epMicroserviceParameterDao.deleteById(paramid);
+                     return true;
+              }catch (Exception e){
+                     logger.error(EELFLoggerDelegate.errorLogger, e.getMessage());
+                     return false;
+              }
        }
 }

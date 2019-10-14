@@ -42,6 +42,7 @@ package org.onap.portal.domain.db.fn;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -79,13 +80,11 @@ CREATE TABLE `fn_language` (
 @Setter
 @Entity
 @JsonInclude()
-@SequenceGenerator(name="seq", initialValue=1000, allocationSize=100000)
 public class FnLanguage implements Serializable {
 
        @Id
-       @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq")
-       @Column(name = "language_id", length = 11, nullable = false, columnDefinition = "int(11) AUTO_INCREMENT")
-       @Digits(integer = 11, fraction = 0)
+       @GeneratedValue(strategy = GenerationType.IDENTITY)
+       @Column(name = "language_id", length = 11, nullable = false)
        private Long languageId;
        @Column(name = "language_name", length = 100, nullable = false)
        @Size(max = 100)
@@ -100,10 +99,10 @@ public class FnLanguage implements Serializable {
        @OneToMany(
                targetEntity = FnUser.class,
                mappedBy = "languageId",
-               cascade = CascadeType.ALL,
-               fetch = FetchType.LAZY
+               cascade = CascadeType.PERSIST,
+               fetch = FetchType.EAGER
        )
-       private Set<FnUser> fnUsers;
+       private Set<FnUser> fnUsers = new HashSet<>();
 
        @Override
        public String toString() {

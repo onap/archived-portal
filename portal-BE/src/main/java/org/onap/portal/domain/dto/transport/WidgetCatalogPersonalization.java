@@ -40,6 +40,7 @@
 
 package org.onap.portal.domain.dto.transport;
 
+import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -51,7 +52,9 @@ import lombok.Setter;
 @AllArgsConstructor
 public class WidgetCatalogPersonalization {
 
+       @NotNull
        private Long widgetId;
+       @NotNull
        private Boolean select;
 
 }

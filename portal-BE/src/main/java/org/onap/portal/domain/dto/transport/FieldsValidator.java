@@ -42,6 +42,7 @@ package org.onap.portal.domain.dto.transport;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import javax.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -71,5 +72,22 @@ public class FieldsValidator {
 	@AllArgsConstructor
 	public class FieldName {
 		public String name;
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) {
+				return true;
+			}
+			if (!(o instanceof FieldName)) {
+				return false;
+			}
+			FieldName fieldName = (FieldName) o;
+			return Objects.equals(name, fieldName.name);
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(name);
+		}
 	}
 }

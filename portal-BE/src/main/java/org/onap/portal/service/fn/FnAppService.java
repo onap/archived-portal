@@ -41,6 +41,8 @@
 package org.onap.portal.service.fn;
 
 import java.util.List;
+import java.util.Optional;
+import javax.persistence.EntityExistsException;
 import org.onap.portal.dao.fn.FnAppDao;
 import org.onap.portal.domain.db.fn.FnApp;
 import org.onap.portal.domain.dto.transport.OnboardingApp;
@@ -65,6 +67,10 @@ public class FnAppService {
 
        public List<FnApp> getAppsFullList() {
               return fnAppDao.findAll();
+       }
+
+       public FnApp getById(final Long id){
+              return Optional.of(fnAppDao.getOne(id)).orElseThrow(EntityExistsException::new);
        }
 
        public void createOnboardingFromApp(FnApp app, OnboardingApp onboardingApp) {

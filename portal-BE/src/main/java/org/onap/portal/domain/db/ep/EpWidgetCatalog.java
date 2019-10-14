@@ -60,6 +60,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -83,11 +84,11 @@ CREATE TABLE `ep_widget_catalog` (
 @Getter
 @Setter
 @Entity
+@Builder
 public class EpWidgetCatalog implements Serializable {
        @Id
-       @GeneratedValue(strategy = GenerationType.AUTO)
-       @Column(name = "widget_id", length = 11, nullable = false)
-       @Digits(integer = 11, fraction = 0)
+       @GeneratedValue(strategy = GenerationType.IDENTITY)
+       @Column(name = "widget_id", nullable = false)
        private Long widgetId;
        @Column(name = "wdg_name", length = 100, columnDefinition = "varchar(100) default '?'", nullable = false)
        @Size(max = 100)
@@ -106,12 +107,9 @@ public class EpWidgetCatalog implements Serializable {
        @NotNull
        @SafeHtml
        private String wdgFileLoc;
-       @Column(name = "all_user_flag", length = 1, columnDefinition = "char(1) not null default 'N'", nullable = false)
-       @Pattern(regexp = "[YNyn]")
-       @Size(max = 1)
-       @SafeHtml
+       @Column(name = "all_user_flag", length = 1, columnDefinition = "boolean default '0'", nullable = false)
        @NotNull
-       private String allUserFlag;
+       private Boolean allUserFlag;
        @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
        @JoinTable(
                name = "ep_widget_microservice",

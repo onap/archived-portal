@@ -49,12 +49,12 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringUtils;
+import org.onap.portal.domain.db.ep.EpWidgetCatalogParameter;
 import org.onap.portal.domain.db.fn.FnUser;
 import org.onap.portal.domain.dto.PortalRestResponse;
 import org.onap.portal.domain.dto.PortalRestStatusEnum;
 import org.onap.portal.domain.dto.ecomp.MicroserviceParameter;
 import org.onap.portal.domain.dto.ecomp.WidgetCatalog;
-import org.onap.portal.domain.dto.ecomp.WidgetCatalogParameter;
 import org.onap.portal.domain.dto.ecomp.WidgetParameterResult;
 import org.onap.portal.domain.dto.ecomp.WidgetServiceHeaders;
 import org.onap.portal.logging.aop.EPAuditLog;
@@ -301,7 +301,8 @@ public class WidgetsCatalogController {
        }
 
        @GetMapping(value = {"/portalApi/microservices/parameters/{widgetId}"})
-       public PortalRestResponse<List<WidgetParameterResult>> getWidgetParameterResult(Principal principal, HttpServletRequest request,
+       public PortalRestResponse<List<WidgetParameterResult>> getWidgetParameterResult(Principal principal,
+               HttpServletRequest request,
                @PathVariable("widgetId") long widgetId) throws Exception {
               FnUser user = fnUserService.loadUserByUsername(principal.getName());
 
@@ -317,14 +318,15 @@ public class WidgetsCatalogController {
                      return new PortalRestResponse<>(PortalRestStatusEnum.WARN,
                              "No service parameters for this widget", list);
               } else {
-                     List<MicroserviceParameter> defaultParam = epMicroserviceParameterService.getParametersById(serviceId);
+                     List<MicroserviceParameter> defaultParam = epMicroserviceParameterService
+                             .getParametersById(serviceId);
                      for (MicroserviceParameter param : defaultParam) {
                             WidgetParameterResult userResult = new WidgetParameterResult();
                             userResult.setParamId(param.getId());
                             userResult.setDefaultValue(param.getPara_value());
                             userResult.setParamKey(param.getPara_key());
-                            WidgetCatalogParameter userValue = epWidgetCatalogParameterService
-                                    .getUserParamById(widgetId, user.getId(),
+                            EpWidgetCatalogParameter userValue = epWidgetCatalogParameterService
+                                    .getUserParamById(widgetId, user.getUserId(),
                                             param.getId());
                             if (userValue == null) {
                                    userResult.setUserValue(param.getPara_value());
@@ -334,17 +336,23 @@ public class WidgetsCatalogController {
                             list.add(userResult);
                      }
               }
-              return new PortalRestResponse<List<WidgetParameterResult>>(PortalRestStatusEnum.OK, "SUCCESS", list);
+              return new PortalRestResponse<>(PortalRestStatusEnum.OK, "SUCCESS", list);
        }
 
        @GetMapping(value = {"/portalApi/microservices/services/{paramId}"})
-       public List<WidgetCatalogParameter> getUserParameterById(@PathVariable("paramId") long paramId) {
+       public List<EpWidgetCatalogParameter> getUserParameterById(@PathVariable("paramId") long paramId) {
               return epWidgetCatalogParameterService.getUserParameterById(paramId);
        }
 
        @DeleteMapping(value = {"/portalApi/microservices/services/{paramId}"})
-       public void deleteUserParameterById(@PathVariable("paramId") long paramId) {
-              epWidgetCatalogParameterService.deleteUserParameterById(paramId);
+       public boolean deleteUserParameterById(@PathVariable("paramId") long paramId) {
+              try {
+                     epWidgetCatalogParameterService.deleteUserParameterById(paramId);
+                     return true;
+              } catch (Exception e) {
+                     logger.error(EELFLoggerDelegate.errorLogger, e.getMessage());
+                     return false;
+              }
        }
 
        @GetMapping(value = {"/portalApi/microservices/download/{widgetId}"})
@@ -395,29 +403,34 @@ public class WidgetsCatalogController {
        }
 
        @PostMapping(value = {"/portalApi/microservices/parameters"})
-       public PortalRestResponse<String> saveWidgetParameter(Principal principal, HttpServletRequest request,
-               @RequestBody WidgetCatalogParameter widgetParameters) {
+       public PortalRestResponse<String> saveWidgetParameter(Principal principal,
+               @RequestBody EpWidgetCatalogParameter widgetParameters) {
               FnUser user = fnUserService.loadUserByUsername(principal.getName());
-              widgetParameters.setUserId(user.getId());
+              widgetParameters.setUserId(user);
               try {
-                     WidgetCatalogParameter oldParam = epWidgetCatalogParameterService
-                             .getUserParamById(widgetParameters.getWidgetId(),
-                                     widgetParameters.getUserId(), widgetParameters.getParamId());
+                     EpWidgetCatalogParameter oldParam = epWidgetCatalogParameterService
+                             .getUserParamById(widgetParameters.getWidgetId().getWidgetId(),
+                                     widgetParameters.getUserId().getUserId(), widgetParameters.getParamId().getId());
                      if (oldParam != null) {
-                            widgetParameters.setId(oldParam.getId());
+                            oldParam.setParamId(widgetParameters.getParamId());
+                            oldParam.setUserId(widgetParameters.getUserId());
+                            oldParam.setUserValue(widgetParameters.getUserValue());
+                            oldParam.setWidgetId(widgetParameters.getWidgetId());
+                            epWidgetCatalogParameterService.saveUserParameter(oldParam);
+                     } else {
+                            epWidgetCatalogParameterService.saveUserParameter(widgetParameters);
                      }
-                     epWidgetCatalogParameterService.saveUserParameter(widgetParameters);
 
               } catch (Exception e) {
                      logger.error(EELFLoggerDelegate.errorLogger, "saveWidgetParameter failed", e);
-                     return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, "FAILURE", e.getMessage());
+                     return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, "FAILURE", e.getMessage());
               }
               return new PortalRestResponse<>(PortalRestStatusEnum.OK, "SUCCESS", "");
        }
 
        @GetMapping(value = {"/portalApi/microservices/uploadFlag"})
        public String getUploadFlag() {
-              String uplaodFlag = "";
+              String uplaodFlag;
               try {
                      uplaodFlag = SystemProperties.getProperty(EPCommonSystemProperties.MS_WIDGET_UPLOAD_FLAG);
               } catch (Exception e) {

@@ -40,12 +40,18 @@
 
 package org.onap.portal.service.fn;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import org.onap.portal.controller.UserRolesController;
 import org.onap.portal.dao.fn.FnUserDao;
 import org.onap.portal.domain.db.fn.FnUser;
+import org.onap.portal.domain.dto.transport.UserWithNameSurnameTitle;
+import org.onap.portal.utils.EcompPortalUtils;
+import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -57,6 +63,8 @@ import org.springframework.transaction.annotation.Transactional;
 @EnableAspectJAutoProxy
 @Transactional
 public class FnUserService implements UserDetailsService {
+
+       private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(FnUserService.class);
 
        private FnUserDao fnUserDao;
 
@@ -83,24 +91,28 @@ public class FnUserService implements UserDetailsService {
               return Optional.of(fnUserDao.getOne(id));
        }
 
-       List<FnUser> getUserWithOrgUserId(final String orgUserIdValue){
+       List<FnUser> getUserWithOrgUserId(final String orgUserIdValue) {
               return fnUserDao.getUserWithOrgUserId(orgUserIdValue).orElse(new ArrayList<>());
        }
 
-       List<FnUser> getUsersByOrgIds(final List<String> orgIds){
+       List<FnUser> getUsersByOrgIds(final List<String> orgIds) {
               return fnUserDao.getUsersByOrgIds(orgIds).orElse(new ArrayList<>());
        }
 
 
-       List<FnUser> getActiveUsers(){
+       List<FnUser> getActiveUsers() {
               return fnUserDao.getActiveUsers().orElse(new ArrayList<>());
        }
 
-       public void deleteUser(final FnUser fnUser){
+       public void deleteUser(final FnUser fnUser) {
               fnUserDao.delete(fnUser);
        }
 
        public boolean existById(final Long userId) {
               return fnUserDao.existsById(userId);
        }
-}
+
+       public List<FnUser> findAll() {
+              return fnUserDao.findAll();
+       }
+       }

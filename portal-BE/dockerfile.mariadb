@@ -1,7 +1,0 @@
-FROM mariadb:latest
-
-ADD my.cnf /etc/mysql/my.cnf
-ENV MYSQL_USER portal
-ENV MYSQL_PASSWORD Test123456
-ENV MYSQL_ROOT_PASSWORD klasjfhaskrigudsb
-EXPOSE 3306

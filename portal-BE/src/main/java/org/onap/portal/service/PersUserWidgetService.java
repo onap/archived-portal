@@ -46,14 +46,22 @@ import java.util.stream.Collectors;
 import org.onap.portal.dao.ep.EpPersUserWidgetSelDao;
 import org.onap.portal.dao.fn.EpWidgetCatalogDao;
 import org.onap.portal.domain.db.ep.EpPersUserWidgetSel;
+import org.onap.portal.domain.db.ep.EpWidgetCatalog;
 import org.onap.portal.domain.db.fn.FnUser;
 import org.onap.portal.domain.dto.ecomp.PersUserWidgetSelection;
+import org.onap.portal.domain.dto.transport.WidgetCatalogPersonalization;
+import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 public class PersUserWidgetService {
 
+       private static final Logger LOGGER = LoggerFactory.getLogger(PersUserWidgetService.class);
        private final EpPersUserWidgetSelDao epPersUserWidgetSelDao;
        private final EpWidgetCatalogDao epWidgetCatalogDao;
 
@@ -64,44 +72,36 @@ public class PersUserWidgetService {
               this.epWidgetCatalogDao = epWidgetCatalogDao;
        }
 
-       public void setPersUserAppValue(FnUser user, Long widgetId, Boolean select) {
-              if (user == null || widgetId == null) {
-                     throw new IllegalArgumentException("setPersUserAppValue: Null values");
-              }
-
-              List<PersUserWidgetSelection> persList = getUserWidgetSelction(user, widgetId);
+       public void setPersUserAppValue(FnUser user, WidgetCatalogPersonalization personalization) {
+              List<PersUserWidgetSelection> persList = getUserWidgetSelction(user, personalization.getWidgetId());
+              LOGGER.info("Error: " + persList.size());
               // Key constraint limits to 1 row
-              PersUserWidgetSelection persRow = null;
+              PersUserWidgetSelection persRow;
               if (persList.size() == 1) {
                      persRow = persList.get(0);
               } else {
-                     persRow = new PersUserWidgetSelection(null, user.getId(), widgetId, null);
+                     persRow = new PersUserWidgetSelection(null, user.getUserId(), personalization.getWidgetId(), null);
               }
-              if (select) {
-                     if (persRow.getId() != null) {
-                            epPersUserWidgetSelDao.deleteById(persRow.getId());
-                     }
-                     persRow.setStatusCode("S"); // show
-                     EpPersUserWidgetSel epPersUserWidgetSel = new EpPersUserWidgetSel();
-                     epPersUserWidgetSel.setUserId(user);
-                     epPersUserWidgetSel.setWidgetId(epWidgetCatalogDao.findById(widgetId).get());
-                     epPersUserWidgetSelDao.saveAndFlush(epPersUserWidgetSel);
-              } else {
-                     if (persRow.getId() != null) {
-                            epPersUserWidgetSelDao.deleteById(persRow.getId());
-                     }
-                     persRow.setStatusCode("H"); // Hide
-                     EpPersUserWidgetSel epPersUserWidgetSel = new EpPersUserWidgetSel();
-                     epPersUserWidgetSel.setUserId(user);
-                     epPersUserWidgetSel.setWidgetId(epWidgetCatalogDao.findById(widgetId).get());
-                     epPersUserWidgetSelDao.saveAndFlush(epPersUserWidgetSel);
+
+              if (persRow.getId() != null) {
+                     epPersUserWidgetSelDao.deleteById(persRow.getId());
               }
+
+              persRow.setStatusCode(personalization.getSelect() ? "S" : "H"); // Show / Hide
+              EpPersUserWidgetSel epPersUserWidgetSel = new EpPersUserWidgetSel();
+              epPersUserWidgetSel.setUserId(user);
+              epPersUserWidgetSel.setWidgetId(
+                      epWidgetCatalogDao.findById(personalization.getWidgetId()).orElse(new EpWidgetCatalog()));
+              epPersUserWidgetSelDao.saveAndFlush(epPersUserWidgetSel);
        }
 
        private List<PersUserWidgetSelection> getUserWidgetSelction(FnUser user, Long widgetId) {
-              return epPersUserWidgetSelDao.getEpPersUserWidgetSelForUserIdAndWidgetId(user.getId(), widgetId)
-                      .orElse(new ArrayList<>()).stream().map(
-                              this::epPersUserWidgetSelToPersUserWidgetSelection).collect(Collectors.toList());
+              return epPersUserWidgetSelDao
+                      .getEpPersUserWidgetSelForUserIdAndWidgetId(user.getId(), widgetId)
+                      .orElse(new ArrayList<>())
+                      .stream()
+                      .map(this::epPersUserWidgetSelToPersUserWidgetSelection)
+                      .collect(Collectors.toList());
        }
 
        private PersUserWidgetSelection epPersUserWidgetSelToPersUserWidgetSelection(EpPersUserWidgetSel widgetSel) {

@@ -76,7 +76,6 @@ CREATE TABLE `fn_qz_simple_triggers` (
 @Table(name = "fn_qz_simple_triggers")
 @NoArgsConstructor
 @AllArgsConstructor
-
 @Getter
 @Setter
 @Entity

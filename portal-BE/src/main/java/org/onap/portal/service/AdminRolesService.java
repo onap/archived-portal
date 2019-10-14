@@ -47,15 +47,17 @@ import javax.persistence.EntityManager;
 import org.onap.portal.domain.db.fn.FnRole;
 import org.onap.portal.domain.db.fn.FnUser;
 import org.onap.portal.domain.db.fn.FnUserRole;
-import org.onap.portal.domain.dto.ecomp.UserRole;
 import org.onap.portal.logging.format.EPAppMessagesEnum;
 import org.onap.portal.logging.logic.EPLogUtil;
+import org.onap.portal.service.fn.FnUserRoleService;
 import org.onap.portal.service.fn.FnUserService;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 public class AdminRolesService {
 
        private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(AdminRolesService.class);
@@ -63,36 +65,31 @@ public class AdminRolesService {
        private final Long SYS_ADMIN_ROLE_ID = 1L;
        private final Long ACCOUNT_ADMIN_ROLE_ID = 999L;
        private final Long ECOMP_APP_ID = 1L;
-       private final String ADMIN_ACCOUNT= "Is account admin for user {}";
+       private final String ADMIN_ACCOUNT = "Is account admin for user {}";
 
        private final EntityManager entityManager;
        private final FnUserService fnUserService;
+       private final FnUserRoleService fnUserRoleService;
 
        @Autowired
        public AdminRolesService(final EntityManager entityManager,
-               FnUserService fnUserService) {
+               final FnUserService fnUserService, final FnUserRoleService fnUserRoleService) {
               this.entityManager = entityManager;
               this.fnUserService = fnUserService;
+              this.fnUserRoleService = fnUserRoleService;
        }
 
-       public boolean isSuperAdmin(FnUser user) {
-              if ((user != null) && (user.getOrgUserId() != null)) {
-                     String sql = "SELECT user.USER_ID, user.org_user_id, userrole.ROLE_ID, userrole.APP_ID FROM fn_user_role userrole "
-                             + "INNER JOIN fn_user user ON user.USER_ID = userrole.USER_ID " + "WHERE user.org_user_id = '"
-                             + user.getOrgUserId() + "' " + "AND userrole.ROLE_ID = '" + SYS_ADMIN_ROLE_ID + "' "
-                             + "AND userrole.APP_ID = '" + ECOMP_APP_ID + "';";
-                     try {
-                            List userRoleList = entityManager.createNativeQuery(sql, UserRole.class).getResultList();
-                            if (userRoleList != null && userRoleList.size() > 0) {
-                                   return true;
-                            }
-                     } catch (Exception e) {
-                            EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeDaoSystemError, e);
-                            logger.error(EELFLoggerDelegate.errorLogger,
-                                    "Exception occurred while executing isSuperAdmin operation", e);
-                     }
+       public boolean isSuperAdmin(final String orgUserId) {
+              boolean isSuperAdmin;
+              try {
+                     isSuperAdmin = fnUserRoleService
+                             .isSuperAdmin(orgUserId, SYS_ADMIN_ROLE_ID, ECOMP_APP_ID);
+              } catch (Exception e) {
+                     logger.error("isSuperAdmin exception: " + e.toString());
+                     throw e;
               }
-              return false;
+              logger.info("isSuperAdmin " + isSuperAdmin);
+              return isSuperAdmin;
        }
 
        public boolean isAccountAdmin(FnUser user) {
@@ -101,22 +98,28 @@ public class AdminRolesService {
                      userParams.put("userId", user.getId());
                      logger.debug(EELFLoggerDelegate.debugLogger, ADMIN_ACCOUNT, user.getId());
                      List<Integer> userAdminApps;
-                     String query = "select fa.app_id  from fn_user_role ur,fn_app fa where ur.user_id =:userId and ur.app_id=fa.app_id and ur.role_id= 999 and (fa.enabled = 'Y' || fa.app_id=1)";
-                     userAdminApps = entityManager.createQuery(query, Integer.class).setParameter("userId", user.getId()).getResultList();
-                     logger.debug(EELFLoggerDelegate.debugLogger, "Is account admin for userAdminApps() - for user {}, found userAdminAppsSize {}", user.getOrgUserId(), userAdminApps.size());
-
+                     String query = "select fa.app_id from fn_user_role ur,fn_app fa where ur.user_id =:userId and ur.app_id=fa.app_id and ur.role_id= 999 and (fa.enabled = 'Y' || fa.app_id=1)";
+                     userAdminApps = entityManager.createQuery(query, Integer.class)
+                             .setParameter("userId", user.getId()).getResultList();
+                     logger.debug(EELFLoggerDelegate.debugLogger,
+                             "Is account admin for userAdminApps() - for user {}, found userAdminAppsSize {}",
+                             user.getOrgUserId(), userAdminApps.size());
 
                      if (user.getId() != null) {
                             for (FnUserRole userApp : user.getFnUserRoles()) {
-                                   if (userApp.getRoleId().getId().equals(ACCOUNT_ADMIN_ROLE_ID)||(userAdminApps.size()>1)) {
-                                          logger.debug(EELFLoggerDelegate.debugLogger, "Is account admin for userAdminApps() - for user {}, found Id {}", user.getOrgUserId(), userApp.getRoleId().getId());
+                                   if (userApp.getRoleId().getId().equals(ACCOUNT_ADMIN_ROLE_ID) || (
+                                           userAdminApps.size() > 1)) {
+                                          logger.debug(EELFLoggerDelegate.debugLogger,
+                                                  "Is account admin for userAdminApps() - for user {}, found Id {}",
+                                                  user.getOrgUserId(), userApp.getRoleId().getId());
                                           return true;
                                    }
                             }
                      }
               } catch (Exception e) {
                      EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeDaoSystemError, e);
-                     logger.error(EELFLoggerDelegate.errorLogger, "Exception occurred while executing isAccountAdmin operation",
+                     logger.error(EELFLoggerDelegate.errorLogger,
+                             "Exception occurred while executing isAccountAdmin operation",
                              e);
               }
               return false;
@@ -129,7 +132,8 @@ public class AdminRolesService {
                             for (FnUserRole userApp : currentUser.getFnUserRoles()) {
                                    if (!userApp.getAppId().getId().equals(ECOMP_APP_ID)) {
                                           FnRole role = userApp.getRoleId();
-                                          if (!role.getId().equals(SYS_ADMIN_ROLE_ID) && !role.getId().equals(ACCOUNT_ADMIN_ROLE_ID)) {
+                                          if (!role.getId().equals(SYS_ADMIN_ROLE_ID) && !role.getId()
+                                                  .equals(ACCOUNT_ADMIN_ROLE_ID)) {
                                                  if (role.getActiveYn()) {
                                                         return true;
                                                  }
@@ -139,7 +143,8 @@ public class AdminRolesService {
                      }
               } catch (Exception e) {
                      EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeDaoSystemError, e);
-                     logger.error(EELFLoggerDelegate.errorLogger, "Exception occurred while executing isUser operation", e);
+                     logger.error(EELFLoggerDelegate.errorLogger, "Exception occurred while executing isUser operation",
+                             e);
               }
               return false;
        }

@@ -43,6 +43,8 @@ package org.onap.portal.domain.db.fn;
 import java.io.Serializable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.ColumnResult;
+import javax.persistence.ConstructorResult;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -53,15 +55,20 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedNativeQueries;
 import javax.persistence.NamedNativeQuery;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
+import javax.persistence.SqlResultSetMapping;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.Valid;
 import javax.validation.constraints.Digits;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.onap.portal.domain.dto.ecomp.UserRole;
 
 /*
 CREATE TABLE `fn_user_role` (
@@ -82,14 +89,63 @@ CREATE TABLE `fn_user_role` (
 @NamedNativeQueries({
         @NamedNativeQuery(
                 name = "FnUserRole.retrieveUserRoleOnUserIdAndRoleIdAndAppId",
-                query = "select * from FnUserRole where user_id= :userId"
+                query = "FROM FnUserRole where user_id= :userId"
                         + " and role_id= :roleId"
                         + " and app_id= :appId"),
         @NamedNativeQuery(
                 name = "FnUserRole.retrieveCachedAppRolesForUser",
-                query = "select * from FnUserRole where user_id= :userId"
+                query = "FROM FnUserRole where user_id= :userId"
                         + " and user_id= :userId"
-                        + " and app_id= :appId")
+                        + " and app_id= :appId"),
+        @NamedNativeQuery(
+                name = "FnUserRole.isSuperAdmin",
+                query = "SELECT"
+                        + "  user.USER_ID as userId,"
+                        + "  user.org_user_id as orgUserId,"
+                        + "  userrole.ROLE_ID as roleId,"
+                        + "  userrole.APP_ID as appId"
+                        + " FROM"
+                        + "  fn_user_role userrole"
+                        + "  INNER JOIN fn_user user ON user.USER_ID = userrole.USER_ID"
+                        + " WHERE"
+                        + "  user.org_user_id = :orgUserId"
+                        + "  AND userrole.ROLE_ID =:roleId"
+                        + "  AND userrole.APP_ID =:appId",
+                resultSetMapping = "UserRole",
+                resultClass = UserRole.class
+        )
+})
+
+@SqlResultSetMapping(
+        name = "UserRole",
+        classes = {
+                @ConstructorResult(
+                        targetClass = UserRole.class,
+                        columns = {
+                                @ColumnResult(name = "userId", type = Long.class),
+                                @ColumnResult(name = "orgUserId", type = String.class),
+                                @ColumnResult(name = "roleId", type = Long.class),
+                                @ColumnResult(name = "appId", type = Long.class)
+                        }
+                )
+        }
+)
+
+@NamedQueries({
+        @NamedQuery(
+                name = "FnUserRole.getAdminUserRoles",
+                query = "FROM FnUserRole fn "
+                        + "WHERE  fn.userId.userId = :userId "
+                        + "AND fn.roleId.roleId = :roleId "
+                        + "AND fn.appId.appId = :appId"),
+        @NamedQuery(
+                name = "FnUserRole.getUserRolesForRoleIdAndAppId",
+                query = "FROM\n"
+                        + "  FnUserRole userrole\n"
+                        + "WHERE\n"
+                        + "  userrole.roleId.roleId = :roleId\n"
+                        + "  AND userrole.appId.appId = :appId"
+        )
 })
 
 @Table(
@@ -103,7 +159,7 @@ CREATE TABLE `fn_user_role` (
         })
 @NoArgsConstructor
 @AllArgsConstructor
-
+@Builder
 @Getter
 @Setter
 @Entity
