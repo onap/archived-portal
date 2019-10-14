@@ -12,7 +12,7 @@ Version: 2.6.0
 .. toctree::
     :maxdepth: 1
 
-Maintanance release with bug fixes and security enhancements.
+Maintenance release with bug fixes and security enhancements.
 
 **No New Features**
 
