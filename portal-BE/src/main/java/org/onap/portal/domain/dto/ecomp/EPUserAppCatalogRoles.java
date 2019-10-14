@@ -57,10 +57,16 @@ import org.onap.portal.domain.dto.DomainVo;
 public class EPUserAppCatalogRoles extends DomainVo {
 
 	private static final long serialVersionUID = -5259869298825093816L;
-
 	private Long requestedRoleId;
-	private String rolename;
+	private String roleName;
 	private String requestStatus;
 	private Long appId;
 
+	public EPUserAppCatalogRoles(Long reqId, Long requestedRoleId, String roleName, String requestStatus, Long appId) {
+		super(reqId);
+		this.requestedRoleId = requestedRoleId;
+		this.roleName = roleName;
+		this.requestStatus = requestStatus;
+		this.appId = appId;
+	}
 }

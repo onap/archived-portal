@@ -102,7 +102,7 @@ CREATE TABLE `fn_role` (
                 query = "FROM FnRole where role_id =:roleId and app_id is null"),
         @NamedQuery(
                 name = "FnRole.retrieveAppRoleByAppRoleIdAndByAppId",
-                query = "FROM FnRole where app_role_id =:appRoleId and app_id =:appId"),
+                query = "FROM FnRole where appRoleId =:appRoleId and appId =:appId"),
         @NamedQuery(
                 name = "FnRole.retrieveAppRoleByRoleIdAndAppId",
                 query = "FROM FnRole where role_id =:roleId and app_id =:appId"),

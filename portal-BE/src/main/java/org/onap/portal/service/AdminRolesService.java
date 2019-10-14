@@ -47,7 +47,6 @@ import javax.persistence.EntityManager;
 import org.onap.portal.domain.db.fn.FnRole;
 import org.onap.portal.domain.db.fn.FnUser;
 import org.onap.portal.domain.db.fn.FnUserRole;
-import org.onap.portal.domain.dto.ecomp.UserRole;
 import org.onap.portal.logging.format.EPAppMessagesEnum;
 import org.onap.portal.logging.logic.EPLogUtil;
 import org.onap.portal.service.fn.FnUserRoleService;

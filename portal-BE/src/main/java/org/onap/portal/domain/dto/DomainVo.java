@@ -76,7 +76,11 @@ public class DomainVo extends FusionVo implements Serializable, Cloneable, Compa
        protected Serializable auditUserId;
        protected Set auditTrail = null;
        private static EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(DomainVo.class);
-       
+
+       public DomainVo(Long id) {
+              this.id = id;
+       }
+
        @Override
        public int compareTo(Object obj) {
               Long c1 = this.getId();

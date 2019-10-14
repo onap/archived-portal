@@ -1,10 +1,8 @@
-/*
+/*-
  * ============LICENSE_START==========================================
  * ONAP Portal
  * ===================================================================
- * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
- * ===================================================================
- * Modifications Copyright (c) 2019 Samsung
+ * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
@@ -35,23 +33,12 @@
  *
  * ============LICENSE_END============================================
  *
- *
+ * 
  */
+package org.onap.portal.utils;
 
-package org.onap.portal.dao.fn;
+public enum SystemType {
 
-import java.util.List;
-import org.onap.portal.domain.db.fn.FnRole;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
-
-@Repository
-@Transactional
-public interface FnRoleDao extends JpaRepository<FnRole, Long> {
-
-       @Query
-       List<FnRole> retrieveAppRoleByAppRoleIdAndByAppId(final @Param("appId") Long appId,  final @Param("appRoleId") Long appRoleId);
+	APPLICATION,
+//	SYSTEM
 }

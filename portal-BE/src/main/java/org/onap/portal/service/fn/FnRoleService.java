@@ -40,9 +40,13 @@
 
 package org.onap.portal.service.fn;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import javax.persistence.EntityExistsException;
 import org.onap.portal.dao.fn.FnRoleDao;
 import org.onap.portal.domain.db.fn.FnRole;
+import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,6 +54,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 public class FnRoleService {
+       private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(FnRoleService.class);
+
+
        private final FnRoleDao fnRoleDao;
 
        @Autowired
@@ -57,7 +64,24 @@ public class FnRoleService {
               this.fnRoleDao = fnRoleDao;
        }
 
-       public FnRole getById(final Long id){
+       public FnRole getById(final Long id) {
               return fnRoleDao.findById(id).orElseThrow(EntityExistsException::new);
+       }
+
+       public FnRole getRole(final Long appId, final Long appRoleId) {
+
+              String sql = "SELECT * FROM fn_role where APP_ID = :appId AND APP_ROLE_ID = :appRoleId";
+
+              List<FnRole> roles = Optional.of(fnRoleDao.retrieveAppRoleByAppRoleIdAndByAppId(appId, appRoleId)).orElse(new ArrayList<>());
+              if (!roles.isEmpty()) {
+                     logger.error(EELFLoggerDelegate.errorLogger,
+                             String.format(
+                                     "search by appId=%s, appRoleid=%s should have returned 0 or 1 results. Got %d. This is an internal server error.",
+                                     appId, appRoleId, roles.size()));
+                     logger.error(EELFLoggerDelegate.errorLogger,
+                             "Trying to recover from duplicates by returning the first search result. This issue should be treated, it is probably not critical because duplicate roles should be similar.");
+                     return roles.get(0);
+              }
+              return null;
        }
 }

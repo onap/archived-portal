@@ -342,7 +342,7 @@ public class FnUser extends DomainVo implements UserDetails, Serializable {
        @SafeHtml
        private String siloStatus;
        @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-       @JoinColumn(name = "language_id", nullable = false, columnDefinition = "int(11) DEFAULT 1")
+       @JoinColumn(name = "language_id", nullable = false, columnDefinition = "bigint DEFAULT 1")
        @NotNull(message = "languageId must not be null")
        private FnLanguage languageId;
        @Column(name = "is_guest", nullable = false, columnDefinition = "bit DEFAULT 0")

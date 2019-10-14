@@ -10,8 +10,8 @@ version: '3.1'
 
 services:
   portal-db:
-#    image: mariadb
-    image: mysql
+    image: mariadb
+#    image: mysql
     container_name: portal_mariaDB
     ports:
       - 3306:3306
