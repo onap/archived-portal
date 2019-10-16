@@ -33,7 +33,7 @@
  *
  * ============LICENSE_END============================================
  *
- * 
+ *
  */
 package org.onap.portalapp.portal.controller;
 
@@ -110,6 +110,7 @@ public class AppContactUsController extends EPRestrictedBaseController {
 			portalRestResponse = new PortalRestResponse<>(PortalRestStatusEnum.OK, SUCCESS,
 				contactUsPortalResponse);
 		} catch (Exception e) {
+            logger.error(EELFLoggerDelegate.errorLogger, "getPortalDetails failed", e);
 			return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, FAILURE, e.getMessage());
 		}
 		return portalRestResponse;
@@ -162,7 +163,7 @@ public class AppContactUsController extends EPRestrictedBaseController {
 	/**
 	 * Answers a list of objects with category-application-function details. Not
 	 * all applications participate in the functional menu.
-	 * 
+	 *
 	 * @param request HttpServletRequest
 	 * @return PortalRestResponse<List<AppCategoryFunctionsItem>>
 	 */
@@ -185,7 +186,7 @@ public class AppContactUsController extends EPRestrictedBaseController {
 
 	/**
 	 * Accepts a new application's contact us details.
-	 * 
+	 *
 	 * @param contactUs AppContactUsItem
 	 * @return PortalRestResponse<String>
 	 */
@@ -232,7 +233,7 @@ public class AppContactUsController extends EPRestrictedBaseController {
 	/**
 	 * Deletes the specified application's contact-us details entry from the
 	 * table.
-	 * 
+	 *
 	 * @param id app ID
 	 * @return PortalRestResponse<String>
 	 */
