@@ -18,8 +18,8 @@ services:
     restart: always
     environment:
       - MYSQL_DATABASE=testdb
-      - MYSQL_USER=portal
-      - MYSQL_PASSWORD=Test123456
+      - MYSQL_USER=${spring_datasource_username}
+      - MYSQL_PASSWORD=${spring_datasource_password}
       - MYSQL_RANDOM_ROOT_PASSWORD=yes
     healthcheck:
       test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
@@ -32,6 +32,9 @@ services:
     restart: always
     ports:
       - 8080:8080
+    environment:
+      - spring.datasource.username=${spring_datasource_username}
+      - spring.datasource.password=${spring_datasource_password}
     depends_on:
       - portal-db
     networks:
