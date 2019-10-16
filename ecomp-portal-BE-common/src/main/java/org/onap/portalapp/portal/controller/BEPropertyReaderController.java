@@ -33,7 +33,7 @@
  *
  * ============LICENSE_END============================================
  *
- * 
+ *
  */
 package org.onap.portalapp.portal.controller;
 
@@ -47,17 +47,22 @@ import org.onap.portalapp.portal.domain.BEProperty;
 import org.onap.portalapp.portal.ecomp.model.PortalRestResponse;
 import org.onap.portalapp.portal.ecomp.model.PortalRestStatusEnum;
 import org.onap.portalsdk.core.controller.FusionBaseController;
+import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.onap.portalsdk.core.util.SystemProperties;
 
 @RestController
 @RequestMapping("/portalApi/properties")
 public class BEPropertyReaderController extends FusionBaseController{
+
+    private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(BEPropertyReaderController.class);
+
 	@RequestMapping(value = "/readProperty", method = RequestMethod.GET, produces = "application/json")
 	public PortalRestResponse<BEProperty> readProperty(HttpServletRequest request, @RequestParam String key) {
 		try {
 			return new PortalRestResponse<>(PortalRestStatusEnum.OK, "success", new BEProperty(key, SystemProperties.getProperty(key)));
 		} catch (Exception e) {
+            logger.error(EELFLoggerDelegate.errorLogger, "readProperty failed", e);
 			return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, e.toString(), null);
-		}		
+		}
 	}
 }

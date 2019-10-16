@@ -33,7 +33,7 @@
  *
  * ============LICENSE_END============================================
  *
- * 
+ *
  */
 package org.onap.portalapp.portal.controller;
 
@@ -53,6 +53,7 @@ import org.onap.portalapp.portal.logging.aop.EPAuditLog;
 import org.onap.portalapp.portal.service.AdminRolesService;
 import org.onap.portalapp.portal.service.BasicAuthAccountService;
 import org.onap.portalapp.util.EPUserUtils;
+import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -67,6 +68,13 @@ import org.springframework.web.bind.annotation.RestController;
 @EPAuditLog
 public class BasicAuthAccountController extends EPRestrictedBaseController {
 
+    private static final String FAILURE = "FAILURE";
+    private static final String SUCCESS = "SUCCESS";
+    private static final String AUTHORIZATION_REQUIRED = "Authorization Required";
+    private static final String ADMIN_ONLY_OPERATIONS = "Admin Only Operation! ";
+
+    private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(BasicAuthAccountController.class);
+
 	@Autowired
 	private BasicAuthAccountService basicAuthAccountService;
 
@@ -75,7 +83,7 @@ public class BasicAuthAccountController extends EPRestrictedBaseController {
 
 	/**
 	 * Saves Basic Authentication account for external systems
-	 * 
+	 *
 	 * @param request
 	 *            HttpServletRequest
 	 * @param response
@@ -92,12 +100,12 @@ public class BasicAuthAccountController extends EPRestrictedBaseController {
 
 		EPUser user = EPUserUtils.getUserSession(request);
 		if (!adminRolesService.isSuperAdmin(user)) {
-			return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, "Authorization Required",
-					"Admin Only Operation! ");
+            return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, AUTHORIZATION_REQUIRED,
+                    ADMIN_ONLY_OPERATIONS);
 		}
 
 		if (newBasicAuthAccount == null) {
-			return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, "FAILURE",
+            return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, FAILURE,
 					"newBasicAuthAccount cannot be null or empty");
 		}
 		long accountId = basicAuthAccountService.saveBasicAuthAccount(newBasicAuthAccount);
@@ -111,15 +119,16 @@ public class BasicAuthAccountController extends EPRestrictedBaseController {
 				basicAuthAccountService.saveEndpointAccount(accountId, endpointId);
 			}
 		} catch (Exception e) {
-			return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, "FAILURE", e.getMessage());
+            logger.error(EELFLoggerDelegate.errorLogger, "createBasicAuthAccount failed", e);
+            return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, FAILURE, e.getMessage());
 		}
 
-		return new PortalRestResponse<String>(PortalRestStatusEnum.OK, "SUCCESS", "");
+        return new PortalRestResponse<>(PortalRestStatusEnum.OK, SUCCESS, "");
 	}
 
 	/**
 	 * Returns list of all BasicAuthCredentials in the system
-	 * 
+	 *
 	 * @param request
 	 *            HttpServletRequest
 	 * @param response
@@ -135,17 +144,17 @@ public class BasicAuthAccountController extends EPRestrictedBaseController {
 
 		EPUser user = EPUserUtils.getUserSession(request);
 		if (!adminRolesService.isSuperAdmin(user)) {
-			return new PortalRestResponse<List<BasicAuthCredentials>>(PortalRestStatusEnum.ERROR,
+            return new PortalRestResponse<>(PortalRestStatusEnum.ERROR,
 					"UnAuthorized! Admin Only Operation", new ArrayList<>());
 		}
 
-		return new PortalRestResponse<List<BasicAuthCredentials>>(PortalRestStatusEnum.OK, "Success",
+        return new PortalRestResponse<>(PortalRestStatusEnum.OK, "Success",
 				basicAuthAccountService.getAccountData());
 	}
 
 	/**
 	 * Updates an existing BasicAuthCredentials account
-	 * 
+	 *
 	 * @param request
 	 *            HttpServletRequest
 	 * @param response
@@ -165,25 +174,26 @@ public class BasicAuthAccountController extends EPRestrictedBaseController {
 
 		EPUser user = EPUserUtils.getUserSession(request);
 		if (!adminRolesService.isSuperAdmin(user)) {
-			return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, "Authorization Required",
-					"Admin Only Operation! ");
+            return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, AUTHORIZATION_REQUIRED,
+                    ADMIN_ONLY_OPERATIONS);
 		}
 
 		if (newBasicAuthAccount == null) {
-			return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, "FAILURE",
+            return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, FAILURE,
 					"BasicAuthCredentials cannot be null or empty");
 		}
 		try {
 			basicAuthAccountService.updateBasicAuthAccount(accountId, newBasicAuthAccount);
 		} catch (Exception e) {
-			return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, "FAILURE", e.getMessage());
+            logger.error(EELFLoggerDelegate.errorLogger, "updateAccount failed", e);
+            return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, FAILURE, e.getMessage());
 		}
-		return new PortalRestResponse<String>(PortalRestStatusEnum.OK, "SUCCESS", "");
+        return new PortalRestResponse<>(PortalRestStatusEnum.OK, SUCCESS, "");
 	}
 
 	/**
 	 * deletes an existing BasicAuthCredentials account
-	 * 
+	 *
 	 * @param request
 	 *            HttpServletRequest
 	 * @param response
@@ -200,16 +210,17 @@ public class BasicAuthAccountController extends EPRestrictedBaseController {
 
 		EPUser user = EPUserUtils.getUserSession(request);
 		if (!adminRolesService.isSuperAdmin(user)) {
-			return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, "Authorization Required",
-					"Admin Only Operation! ");
+            return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, AUTHORIZATION_REQUIRED,
+                    ADMIN_ONLY_OPERATIONS);
 		}
 
 		try {
 			basicAuthAccountService.deleteEndpointAccout(accountId);
 		} catch (Exception e) {
-			return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, "FAILURE", e.getMessage());
+            logger.error(EELFLoggerDelegate.errorLogger, "deleteAccount failed", e);
+            return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, FAILURE, e.getMessage());
 		}
-		return new PortalRestResponse<String>(PortalRestStatusEnum.OK, "SUCCESS", "");
+        return new PortalRestResponse<>(PortalRestStatusEnum.OK, SUCCESS, "");
 	}
 
 }

@@ -85,6 +85,11 @@ import io.swagger.annotations.ApiOperation;
 @EnableAspectJAutoProxy
 @EPAuditLog
 public class TicketEventController implements BasicAuthenticationController {
+
+    private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(TicketEventController.class);
+
+    private static final String EVENT_DATE = "eventDate";
+    private final ObjectMapper objectMapper = new ObjectMapper();
     private static final ValidatorFactory VALIDATOR_FACTORY = Validation.buildDefaultValidatorFactory();
 
     @Autowired
@@ -93,14 +98,9 @@ public class TicketEventController implements BasicAuthenticationController {
     @Autowired
     private TicketEventService ticketEventService;
 
-    private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(TicketEventController.class);
-
     public boolean isAuxRESTfulCall() {
         return true;
     }
-
-    private final ObjectMapper mapper = new ObjectMapper();
-    private static final String EVENT_DATE = "eventDate";
 
     @ApiOperation(
             value = "Accepts messages from external ticketing systems and creates notifications for Portal users.",
@@ -125,7 +125,7 @@ public class TicketEventController implements BasicAuthenticationController {
         }
 
         try {
-            JsonNode ticketEventNotif = mapper.readTree(ticketEventJson);
+            JsonNode ticketEventNotif = objectMapper.readTree(ticketEventJson);
 
             // Reject request if required fields are missing.
             String error = validateTicketEventMessage(ticketEventNotif);
@@ -173,9 +173,9 @@ public class TicketEventController implements BasicAuthenticationController {
             epItem.setPriority(severity);
             epItem.setCreatorId(null);
             Set<EpRoleNotificationItem> roles = new HashSet<>();
-            JsonNode SubscriberInfo = ticketEventNotif.get("SubscriberInfo");
-            JsonNode userList = SubscriberInfo.get("UserList");
-            String UserIds[] = userList.toString().replace("[", "").replace("]", "").trim().replace("\"", "")
+            JsonNode subscriberInfo = ticketEventNotif.get("SubscriberInfo");
+            JsonNode userList = subscriberInfo.get("UserList");
+            String userIds[] = userList.toString().replace("[", "").replace("]", "").trim().replace("\"", "")
                     .split(",");
             String assetID = eventSource + ' '
                     + userList.toString().replace("[", "").replace("]", "").trim().replace("\"", "") + ' '
@@ -184,8 +184,8 @@ public class TicketEventController implements BasicAuthenticationController {
                 assetID = body.get("assetID").asText();
             }
             epItem.setMsgHeader(assetID);
-            List<EPUser> users = userNotificationService.getUsersByOrgIds(Arrays.asList(UserIds));
-            for (String userId : UserIds) {
+            List<EPUser> users = userNotificationService.getUsersByOrgIds(Arrays.asList(userIds));
+            for (String userId : userIds) {
                 EpRoleNotificationItem roleNotifItem = new EpRoleNotificationItem();
                 for (EPUser user : users) {
                     if (user.getOrgUserId().equals(userId)) {
@@ -203,6 +203,7 @@ public class TicketEventController implements BasicAuthenticationController {
             portalResponse.setMessage("processEventNotification: notification created");
             portalResponse.setResponse("NotificationId is :" + epItem.notificationId);
         } catch (Exception ex) {
+            logger.error(EELFLoggerDelegate.errorLogger, "Expection in handleRequest", ex);
             portalResponse.setStatus(PortalRestStatusEnum.ERROR);
             response.setStatus(400);
             portalResponse.setMessage(ex.toString());
@@ -222,15 +223,15 @@ public class TicketEventController implements BasicAuthenticationController {
         JsonNode header = event.get("header");
         JsonNode eventSource = header.get("eventSource");
         JsonNode body = event.get("body");
-        JsonNode SubscriberInfo = ticketEventNotif.get("SubscriberInfo");
-        JsonNode userList = SubscriberInfo.get("UserList");
+        JsonNode subscriberInfo = ticketEventNotif.get("SubscriberInfo");
+        JsonNode userList = subscriberInfo.get("UserList");
 
-        if (application == null || application.asText().length() == 0 || application.asText().equalsIgnoreCase("null"))
+        if (application == null || application.asText().length() == 0 || "null".equalsIgnoreCase(application.asText()))
             return "Application is mandatory";
         if (body == null)
             return "body is mandatory";
         if (eventSource == null || eventSource.asText().trim().length() == 0
-                || eventSource.asText().equalsIgnoreCase("null"))
+                || "null".equalsIgnoreCase(eventSource.asText()))
             return "Message Source is mandatory";
         if (userList == null)
             return "At least one user Id is mandatory";
@@ -238,10 +239,10 @@ public class TicketEventController implements BasicAuthenticationController {
 
         if (eventDate != null && eventDate.asText().length() == 8)
             return "EventDate is invalid";
-        String UserIds[] = userList.toString().replace("[", "").replace("]", "").trim().replace("\"", "")
+        String[] userIds = userList.toString().replace("[", "").replace("]", "").trim().replace("\"", "")
                 .split(",");
-        List<EPUser> users = userNotificationService.getUsersByOrgIds(Arrays.asList(UserIds));
-        if (users == null || users.size() == 0)
+        List<EPUser> users = userNotificationService.getUsersByOrgIds(Arrays.asList(userIds));
+        if (users == null || users.isEmpty())
             return "Invalid Org User ID";
         return null;
     }
