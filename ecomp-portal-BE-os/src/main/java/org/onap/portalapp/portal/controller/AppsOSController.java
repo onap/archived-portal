@@ -52,6 +52,7 @@ import org.onap.portalapp.portal.ecomp.model.PortalRestStatusEnum;
 import org.onap.portalapp.portal.logging.aop.EPAuditLog;
 import org.onap.portalapp.portal.service.UserService;
 import org.onap.portalapp.util.EPUserUtils;
+import org.onap.portalapp.validation.DataValidator;
 import org.onap.portalapp.validation.SecureString;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,7 +71,7 @@ import lombok.NoArgsConstructor;
 @EPAuditLog
 @NoArgsConstructor
 public class AppsOSController extends AppsController {
-    private static final ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
+    private final DataValidator dataValidator = new DataValidator();
 
     private static final String FAILURE = "failure";
     private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(AppsOSController.class);
@@ -90,7 +91,10 @@ public class AppsOSController extends AppsController {
         if (newUser == null)
             return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, FAILURE,
                     "New User cannot be null or empty");
-
+        if (!dataValidator.isValid(newUser)) {
+            return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, FAILURE,
+                    "New User is not safe html");
+        }
         if (!(super.getAdminRolesService().isSuperAdmin(user) || super.getAdminRolesService().isAccountAdmin(user))
                 && !user.getLoginId().equalsIgnoreCase(newUser.getLoginId())) {
             return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, FAILURE,
@@ -113,11 +117,7 @@ public class AppsOSController extends AppsController {
     public String getCurrentUserProfile(HttpServletRequest request, @PathVariable("loginId") String loginId) {
 
         if (loginId != null) {
-            Validator validator = validatorFactory.getValidator();
-            SecureString secureString = new SecureString(loginId);
-            Set<ConstraintViolation<SecureString>> constraintViolations = validator.validate(secureString);
-
-            if (!constraintViolations.isEmpty()) {
+            if (!dataValidator.isValid(new SecureString(loginId))) {
                 return "loginId is not valid";
             }
         }
