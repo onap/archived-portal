@@ -296,6 +296,47 @@ public class ExternalAppsRestfulControllerTest {
         assertEquals(543L, createdNofification.getRoleIds().get(0).longValue());
     }
 
+	@Test
+	public void publishNotificationXSSTest() throws Exception {
+		// input
+		EpNotificationItem notificationItem = new EpNotificationItem();
+		List<Long> roleList = new ArrayList<Long>();
+		Long role1 = 1L;
+		roleList.add(role1);
+		notificationItem.setRoleIds(roleList);
+		notificationItem.setPriority(1L);
+		notificationItem.setMsgHeader("<script>alert(‘XSS’)</script>");
+		notificationItem.setMsgDescription("Test Description");
+		Date currentDate = new Date();
+		Calendar c = Calendar.getInstance();
+		c.setTime(currentDate);
+		c.add(Calendar.DATE, 1);
+		Date currentDatePlusOne = c.getTime();
+		notificationItem.setStartTime(currentDate);
+		notificationItem.setEndTime(currentDatePlusOne);
+
+		// mock calls
+		Mockito.when(mockedRequest.getHeader("uebkey")).thenReturn("RxH3983AHiyBOQmj");
+		Map<String, String> params = new HashMap<>();
+		params.put("appKey", "RxH3983AHiyBOQmj");
+		List<EPApp> apps = new ArrayList<>();
+		EPApp app = new EPApp();
+		app.setId(123L);
+		apps.add(app);
+		Mockito.when(DataAccessService.executeNamedQuery("getMyAppDetailsByUebKey", params, null)).thenReturn(apps);
+		EPRole role = new EPRole();
+		role.setId(543L);
+		Mockito.when(epRoleService.getRole(123L, 1L)).thenReturn(role);
+
+		// run
+		Mockito.when(userNotificationService.saveNotification(notificationItem)).thenReturn("Test");
+		PortalAPIResponse response = externalAppsRestfulController.publishNotification(mockedRequest, notificationItem);
+		// verify answer
+		assertNotNull(response);
+		assertEquals("error", response.getStatus());
+		assertEquals("failed", response.getMessage());
+	}
+
     @Test
     public void publishNotificationTest_EmptyAppHeader() throws Exception {
         // input
