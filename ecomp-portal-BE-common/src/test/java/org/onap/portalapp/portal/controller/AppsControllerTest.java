@@ -129,6 +129,33 @@ public class AppsControllerTest extends MockitoTestSuite{
 	MockEPUser mockUser = new MockEPUser();
 
 	@Test
+	public void putOnboardingAppXSSTest() {
+		EPUser user = mockUser.mockEPUser();
+		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
+		OnboardingApp onboardingApp = new OnboardingApp();
+		onboardingApp.setUebTopicName("test<img src=‘~‘ onerror=prompt(123)>");
+		Mockito.when(adminRolesService.isSuperAdmin(user)).thenReturn(true);
+		Mockito.when(appService.modifyOnboardingApp(onboardingApp, user)).thenReturn(null);
+		Mockito.when(mockedResponse.getStatus()).thenReturn(200);
+		FieldsValidator actualFieldValidator = appsController.putOnboardingApp(mockedRequest, onboardingApp,
+		mockedResponse);
+		assertNull(actualFieldValidator);
+	}
+
+	@Test
+	public void postOnboardingAppXSSTest() {
+		EPUser user = mockUser.mockEPUser();
+		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
+		OnboardingApp onboardingApp = new OnboardingApp();
+		onboardingApp.setUebKey("test<img src=‘~‘ onerror=prompt(123)>");
+		Mockito.when(adminRolesService.isSuperAdmin(user)).thenReturn(true);
+		Mockito.when(appService.addOnboardingApp(onboardingApp, user)).thenReturn(null);
+		FieldsValidator actualFieldValidator = appsController.postOnboardingApp(mockedRequest, onboardingApp,
+		mockedResponse);
+		assertNull(actualFieldValidator);
+	}
+
+	@Test
 	public void getUserAppsTest() {
 		EPUser user = mockUser.mockEPUser();
 		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);

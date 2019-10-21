@@ -739,6 +739,11 @@ public class AppsController extends EPRestrictedBaseController {
 			user = EPUserUtils.getUserSession(request);
 			if (!adminRolesService.isSuperAdmin(user) && !adminRolesService.isAccountAdminOfAnyActiveorInactiveApplication(user, oldEPApp) ) {
 				EcompPortalUtils.setBadPermissions(user, response, "putOnboardingApp");
+			} else if(!dataValidator.isValid(modifiedOnboardingApp)){
+				logger.error(EELFLoggerDelegate.errorLogger, "putOnboardingApp is not valid");
+				EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/onboardingApps", "POST result =",
+												response.getStatus());
+				return fieldsValidator;
 			} else {
 				if((oldEPApp.getCentralAuth() && modifiedOnboardingApp.isCentralAuth && !oldEPApp.getNameSpace().equalsIgnoreCase(modifiedOnboardingApp.nameSpace) && modifiedOnboardingApp.nameSpace!= null ) || (!oldEPApp.getCentralAuth() && modifiedOnboardingApp.isCentralAuth && modifiedOnboardingApp.nameSpace!= null))
 				{
