@@ -79,6 +79,15 @@ public class BasicAuthAccountServiceImplTest {
 		basicAuthAccountServiceImpl.saveBasicAuthAccount(basicAuthCredentials);
 		
 	}
+
+		@Test(expected= Exception.class)
+	public void saveBasicAuthAccountValidTest() throws Exception {
+				BasicAuthCredentials basicAuthCredentials = new BasicAuthCredentials();
+				basicAuthCredentials.setPassword("<IMG SRC=\"jav\tascript:alert('XSS');\">");
+				Mockito.doNothing().when(dataAccessService).saveDomainObject(basicAuthCredentials, null);
+				basicAuthAccountServiceImpl.saveBasicAuthAccount(basicAuthCredentials);
+
+	}
 	
 	@Test
 	public void saveBasicAuthAccountTest_password() throws Exception{

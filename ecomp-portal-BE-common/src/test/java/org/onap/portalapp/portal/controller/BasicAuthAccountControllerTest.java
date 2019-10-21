@@ -135,6 +135,28 @@ public class BasicAuthAccountControllerTest extends MockitoTestSuite {
 	}
 
 	@Test
+	public void createBasicAuthAccountXSSTest() throws Exception {
+		BasicAuthCredentials basicAuthCredentials = basicAuthCredentials();
+		basicAuthCredentials.setPassword("<script>alert(“XSS”);</script>");
+
+		EPUser user = mockUser.mockEPUser();
+		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
+		Mockito.when(adminRolesService.isSuperAdmin(user)).thenReturn(true);
+		PortalRestResponse<String> expectedResponse = new PortalRestResponse<String>();
+		expectedResponse.setMessage("createBasicAuthAccount() failed, new credential are not safe");
+		expectedResponse.setResponse("");
+		PortalRestStatusEnum portalRestStatusEnum = null;
+		expectedResponse.setStatus(portalRestStatusEnum.ERROR);
+		long accountd = 1;
+
+		Mockito.when(basicAuthAccountService.saveBasicAuthAccount(basicAuthCredentials)).thenReturn(accountd);
+
+		PortalRestResponse<String> actualResponse = basicAuthAccountController.createBasicAuthAccount(mockedRequest,
+			mockedResponse, basicAuthCredentials);
+		assertEquals(actualResponse, expectedResponse);
+	}
+
+	@Test
 	public void createBasicAuthAccountAdminTest() throws Exception {
 		BasicAuthCredentials basicAuthCredentials = basicAuthCredentials();
 		EPUser user = mockUser.mockEPUser();

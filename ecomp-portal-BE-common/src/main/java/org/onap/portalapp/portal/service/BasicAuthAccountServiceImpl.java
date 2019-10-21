@@ -49,6 +49,7 @@ import org.onap.portalapp.portal.domain.EPEndpoint;
 import org.onap.portalapp.portal.domain.EPEndpointAccount;
 import org.onap.portalapp.portal.logging.aop.EPMetricsLog;
 import org.onap.portalapp.portal.utils.EPCommonSystemProperties;
+import org.onap.portalapp.validation.DataValidator;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.onap.portalsdk.core.onboarding.util.CipherUtil;
 import org.onap.portalsdk.core.service.DataAccessService;
@@ -62,12 +63,16 @@ import org.springframework.stereotype.Service;
 @EPMetricsLog
 public class BasicAuthAccountServiceImpl implements BasicAuthAccountService{
 	EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(MicroserviceServiceImpl.class);
-
+	private final DataValidator dataValidator = new DataValidator();
 	@Autowired
 	private DataAccessService dataAccessService;
 
 	@Override
 	public Long saveBasicAuthAccount(BasicAuthCredentials newCredential) throws Exception {
+
+		if(!dataValidator.isValid(newCredential)){
+			throw new Exception("saveBasicAuthAccount() failed, new credential are not safe");
+		}
 		if (newCredential.getPassword() != null)
 			newCredential.setPassword(encryptedPassword(newCredential.getPassword()));
 		try{

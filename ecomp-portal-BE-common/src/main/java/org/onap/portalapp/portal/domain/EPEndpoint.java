@@ -37,6 +37,7 @@
  */
 package org.onap.portalapp.portal.domain;
 
+import org.hibernate.validator.constraints.SafeHtml;
 import org.onap.portalsdk.core.domain.support.DomainVo;
 
 public class EPEndpoint extends DomainVo {
@@ -48,6 +49,7 @@ public class EPEndpoint extends DomainVo {
 	}
 
 	private Long id;
+	@SafeHtml
 	private String name;
 
 	public Long getId() {

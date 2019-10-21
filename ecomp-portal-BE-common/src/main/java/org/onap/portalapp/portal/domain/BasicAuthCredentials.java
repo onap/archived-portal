@@ -39,21 +39,24 @@ package org.onap.portalapp.portal.domain;
 
 import java.util.List;
 
+import javax.validation.Valid;
+import org.hibernate.validator.constraints.SafeHtml;
 import org.onap.portalsdk.core.domain.support.DomainVo;
 
 public class BasicAuthCredentials extends DomainVo {
 	
 	private static final long serialVersionUID = 1L;
 
-	public BasicAuthCredentials() {
-
-	}
-	
 	private Long id;
+	@SafeHtml
 	private String applicationName;
+	@SafeHtml
 	private String username;
+	@SafeHtml
 	private String password;
+	@SafeHtml
 	private String isActive;
+	@Valid
 	private List<EPEndpoint> endpoints;
 	
 	public Long getId() {

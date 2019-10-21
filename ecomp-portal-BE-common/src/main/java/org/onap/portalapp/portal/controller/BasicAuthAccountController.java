@@ -53,6 +53,7 @@ import org.onap.portalapp.portal.logging.aop.EPAuditLog;
 import org.onap.portalapp.portal.service.AdminRolesService;
 import org.onap.portalapp.portal.service.BasicAuthAccountService;
 import org.onap.portalapp.util.EPUserUtils;
+import org.onap.portalapp.validation.DataValidator;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
@@ -74,6 +75,7 @@ public class BasicAuthAccountController extends EPRestrictedBaseController {
     private static final String ADMIN_ONLY_OPERATIONS = "Admin Only Operation! ";
 
     private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(BasicAuthAccountController.class);
+    private final DataValidator dataValidator = new DataValidator();
 
 	@Autowired
 	private BasicAuthAccountService basicAuthAccountService;
@@ -98,6 +100,8 @@ public class BasicAuthAccountController extends EPRestrictedBaseController {
 	public PortalRestResponse<String> createBasicAuthAccount(HttpServletRequest request, HttpServletResponse response,
 			@RequestBody BasicAuthCredentials newBasicAuthAccount) throws Exception {
 
+
+
 		EPUser user = EPUserUtils.getUserSession(request);
 		if (!adminRolesService.isSuperAdmin(user)) {
             return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, AUTHORIZATION_REQUIRED,
@@ -108,7 +112,18 @@ public class BasicAuthAccountController extends EPRestrictedBaseController {
             return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, FAILURE,
 					"newBasicAuthAccount cannot be null or empty");
 		}
-		long accountId = basicAuthAccountService.saveBasicAuthAccount(newBasicAuthAccount);
+
+		if(!dataValidator.isValid(newBasicAuthAccount)){
+			return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, "createBasicAuthAccount() failed, new credential are not safe",
+				"");
+		}
+
+		long accountId;
+		try {
+			accountId = basicAuthAccountService.saveBasicAuthAccount(newBasicAuthAccount);
+		} catch (Exception e){
+			return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, FAILURE, e.getMessage());
+		}
 
 		List<Long> endpointIdList = new ArrayList<>();
 		try {
