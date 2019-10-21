@@ -58,6 +58,7 @@ import org.onap.portalapp.portal.logging.aop.EPAuditLog;
 import org.onap.portalapp.portal.service.WidgetMService;
 import org.onap.portalapp.portal.service.MicroserviceService;
 import org.onap.portalapp.portal.utils.EcompPortalUtils;
+import org.onap.portalapp.validation.DataValidator;
 import org.onap.portalsdk.core.util.SystemProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
@@ -78,7 +79,7 @@ import org.springframework.web.client.RestTemplate;
 @EnableAspectJAutoProxy
 @EPAuditLog
 public class MicroserviceController extends EPRestrictedBaseController {
-	public static final ValidatorFactory VALIDATOR_FACTORY = Validation.buildDefaultValidatorFactory();
+	private final DataValidator dataValidator = new DataValidator();
 	
 	String whatService = "widgets-service";
 	RestTemplate template = new RestTemplate();
@@ -96,10 +97,7 @@ public class MicroserviceController extends EPRestrictedBaseController {
 			return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, "FAILURE",
 				"MicroserviceData cannot be null or empty");
 		}else {
-			Validator validator = VALIDATOR_FACTORY.getValidator();
-
-			Set<ConstraintViolation<MicroserviceData>> constraintViolations = validator.validate(newServiceData);
-			if(!constraintViolations.isEmpty()){
+			if(!dataValidator.isValid(newServiceData)){
 				return new PortalRestResponse<>(PortalRestStatusEnum.ERROR,
 					"ERROR", "MicroserviceData is not valid");
 			}
@@ -129,10 +127,7 @@ public class MicroserviceController extends EPRestrictedBaseController {
 			return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, "FAILURE",
 				"MicroserviceData cannot be null or empty");
 		}else {
-			Validator validator = VALIDATOR_FACTORY.getValidator();
-
-			Set<ConstraintViolation<MicroserviceData>> constraintViolations = validator.validate(newServiceData);
-			if(!constraintViolations.isEmpty()){
+			if(!dataValidator.isValid(newServiceData)){
 				return new PortalRestResponse<>(PortalRestStatusEnum.ERROR,
 					"ERROR", "MicroserviceData is not valid");
 			}
