@@ -39,6 +39,7 @@ package org.onap.portalapp.portal.transport;
 
 import java.io.Serializable;
 import java.util.List;
+import org.hibernate.validator.constraints.SafeHtml;
 
 // This type is used to read the Json in from the API call from the Front End
 public class FunctionalMenuItemWithRoles implements Serializable {
@@ -47,11 +48,11 @@ public class FunctionalMenuItemWithRoles implements Serializable {
 	public Long menuId;
 	
 	public Integer column;
-	
+	@SafeHtml
 	public String text;
 	
 	public Integer parentMenuId;
-	
+	@SafeHtml
 	public String url;
 
 	public Integer appid;

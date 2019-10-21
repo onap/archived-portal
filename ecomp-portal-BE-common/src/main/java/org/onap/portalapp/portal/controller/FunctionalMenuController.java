@@ -33,7 +33,7 @@
  *
  * ============LICENSE_END============================================
  *
- * 
+ *
  */
 package org.onap.portalapp.portal.controller;
 
@@ -71,9 +71,11 @@ import org.onap.portalapp.portal.transport.FunctionalMenuItemWithRoles;
 import org.onap.portalapp.portal.utils.EPCommonSystemProperties;
 import org.onap.portalapp.portal.utils.EcompPortalUtils;
 import org.onap.portalapp.util.EPUserUtils;
+import org.onap.portalapp.validation.DataValidator;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.onap.portalsdk.core.util.SystemProperties;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -86,12 +88,13 @@ import org.springframework.web.bind.annotation.RestController;
  * Supports menus at the top of the Portal app landing page.
  */
 @RestController
-@org.springframework.context.annotation.Configuration
+@Configuration
 @EnableAspectJAutoProxy
 @EPAuditLog
 public class FunctionalMenuController extends EPRestrictedBaseController {
 
 	private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(FunctionalMenuController.class);
+	private final DataValidator dataValidator = new DataValidator();
 
 	@Autowired
 	private AdminRolesService adminRolesService;
@@ -104,7 +107,7 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 
 	/**
 	 * RESTful service method to fetch all the FunctionalMenuItems.
-	 * 
+	 *
 	 * @param request
 	 *            HttpServletRequest
 	 * @param response
@@ -127,7 +130,7 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 
 	/**
 	 * RESTful service method to get ONAP Portal Title.
-	 * 
+	 *
 	 * @param request
 	 *            HttpServletRequest
 	 * @param response
@@ -152,7 +155,7 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 	 * RESTful service method to fetch all the FunctionalMenuItems, both active and
 	 * inactive, for the EditFunctionalMenu feature. Can only be accessed by the
 	 * portal admin.
-	 * 
+	 *
 	 * @param request
 	 *            HttpServletRequest
 	 * @param response
@@ -182,7 +185,7 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 	/**
 	 * RESTful service method to fetch all the FunctionalMenuItems, active , for the
 	 * Functional menu in notification Tree feature.
-	 * 
+	 *
 	 * @param request
 	 *            HttpServletRequest
 	 * @param response
@@ -209,7 +212,7 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 	/**
 	 * RESTful service method to fetch all FunctionalMenuItems associated with an
 	 * application.
-	 * 
+	 *
 	 * @param request
 	 *            HttpServletRequest
 	 * @param appId
@@ -236,7 +239,7 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 	/**
 	 * RESTful service method to fetch all FunctionalMenuItems associated with the
 	 * applications and roles that a user has access to.
-	 * 
+	 *
 	 * @param request
 	 *            HttpServletRequest
 	 * @param orgUserId
@@ -264,7 +267,7 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 	/**
 	 * RESTful service method to fetch all FunctionalMenuItems associated with the
 	 * applications and roles that the authenticated user has access to.
-	 * 
+	 *
 	 * @param request
 	 *            HttpServletRequest
 	 * @param response
@@ -299,7 +302,7 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 	/**
 	 * RESTful service method to fetch the details for a functional menu item.
 	 * Requirement: you must be the ONAP portal super admin user.
-	 * 
+	 *
 	 * @param request
 	 *            HttpServletRequest
 	 * @param response
@@ -333,9 +336,9 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 
 	/**
 	 * RESTful service method to create a new menu item.
-	 * 
+	 *
 	 * Requirement: you must be the ONAP portal super admin user.
-	 * 
+	 *
 	 * @param request
 	 *            HttpServletRequest
 	 * @param response
@@ -349,6 +352,14 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 			@RequestBody FunctionalMenuItemWithRoles menuItemJson, HttpServletResponse response) {
 		EPUser user = EPUserUtils.getUserSession(request);
 		FieldsValidator fieldsValidator = null;
+
+		if(!dataValidator.isValid(menuItemJson)){
+			fieldsValidator = new FieldsValidator();
+			logger.warn(EELFLoggerDelegate.debugLogger,"FunctionalMenuController.createFunctionalMenuItem not valid object");
+			fieldsValidator.httpStatusCode = (long)HttpServletResponse.SC_NOT_ACCEPTABLE;
+			return fieldsValidator;
+		}
+
 		if (!adminRolesService.isSuperAdmin(user)) {
 			logger.debug(EELFLoggerDelegate.debugLogger,
 					"FunctionalMenuController.createFunctionalMenuItem bad permissions");
@@ -365,9 +376,9 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 
 	/**
 	 * RESTful service method to update an existing menu item
-	 * 
+	 *
 	 * Requirement: you must be the ONAP portal super admin user.
-	 * 
+	 *
 	 * @param request
 	 *            HttpServletRequest
 	 * @param response
@@ -381,6 +392,14 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 			@RequestBody FunctionalMenuItemWithRoles menuItemJson, HttpServletResponse response) {
 		EPUser user = EPUserUtils.getUserSession(request);
 		FieldsValidator fieldsValidator = null;
+
+           if(!dataValidator.isValid(menuItemJson)){
+			   fieldsValidator = new FieldsValidator();
+			   logger.warn(EELFLoggerDelegate.debugLogger,"FunctionalMenuController.createFunctionalMenuItem not valid object");
+			   fieldsValidator.httpStatusCode = (long)HttpServletResponse.SC_NOT_ACCEPTABLE;
+			   return fieldsValidator;
+           }
+
 		if (!adminRolesService.isSuperAdmin(user)) {
 			EcompPortalUtils.setBadPermissions(user, response, "editFunctionalMenuItem");
 		} else {
@@ -395,7 +414,7 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 
 	/**
 	 * RESTful service method to delete a menu item
-	 * 
+	 *
 	 * @param request
 	 *            HttpServletRequest
 	 * @param response
@@ -423,7 +442,7 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 
 	/**
 	 * RESTful service to regenerate table
-	 * 
+	 *
 	 * @param request
 	 *            HttpServletRequest
 	 * @param response
@@ -450,7 +469,7 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 
 	/**
 	 * RESful service to set a favorite item.
-	 * 
+	 *
 	 * @param request
 	 *            HttpServletRequest
 	 * @param response
@@ -476,7 +495,7 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 	/**
 	 * RESTful service to get favorites for the current user as identified in the
 	 * session
-	 * 
+	 *
 	 * @param request
 	 *            HttpServletRequest
 	 * @param response
@@ -499,7 +518,7 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 	/**
 	 * RESTful service to delete a favorite menu item for the current user as
 	 * identified in the session.
-	 * 
+	 *
 	 * @param request
 	 *            HttpServletRequest
 	 * @param response
@@ -528,7 +547,7 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 	 * session (i.e., the CSP cookie); if that fails, calls the shared context
 	 * service to read the information from the database. Gives back what it found,
 	 * any of which may be null, as a JSON collection.
-	 * 
+	 *
 	 * @param request
 	 *            HttpServletRequest
 	 * @param response
@@ -611,7 +630,7 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 	};
 
 	/**
-	 * 
+	 *
 	 * @param request
 	 *            HttpServletRequest
 	 * @param userId

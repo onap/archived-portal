@@ -175,6 +175,24 @@ public class FunctionalMenuControllerTest extends MockitoTestSuite {
 
 	}
 
+		@Test
+	public void editFunctionalMenuItemXSSTest(){
+		FunctionalMenuItemWithRoles menuItemJson = new FunctionalMenuItemWithRoles();
+		menuItemJson.url = "1<b>tes<img src=‘~‘ onerror=prompt(32)>t_menu";
+		FieldsValidator	actualFieldsValidator = new FieldsValidator();
+		FieldsValidator expectedFieldsValidator = new FieldsValidator();
+		List<FieldName> fields = new ArrayList<>();
+		expectedFieldsValidator.setHttpStatusCode(406L);
+		expectedFieldsValidator.setFields(fields);
+		expectedFieldsValidator.setErrorCode(null);
+		EPUser user = mockUser.mockEPUser();
+		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
+		Mockito.when(adminRolesService.isSuperAdmin(user)).thenReturn(true);
+		Mockito.when(functionalMenuService.editFunctionalMenuItem(menuItemJson)).thenReturn(actualFieldsValidator);
+		actualFieldsValidator = functionalMenuController.editFunctionalMenuItem(mockedRequest, menuItemJson, mockedResponse);
+		assertEquals(actualFieldsValidator, expectedFieldsValidator);
+	}
+
 	@Test
 	public void getAppListTestIfAppDoesnotExistsInBusinessCardApplicationRolesList() throws IOException {
 
@@ -459,7 +477,7 @@ public class FunctionalMenuControllerTest extends MockitoTestSuite {
 		Mockito.when(adminRolesService.isSuperAdmin(user)).thenReturn(false);
 		Mockito.when(functionalMenuService.createFunctionalMenuItem(menuItemJson)).thenReturn(expectedFieldsValidator);
 		actualFieldsValidator = functionalMenuController.createFunctionalMenuItem(mockedRequest, menuItemJson, mockedResponse);
-		assertEquals(actualFieldsValidator, expectedFieldsValidator);
+		assertEquals(expectedFieldsValidator, actualFieldsValidator);
 	}
 	
 	@Test
@@ -574,7 +592,7 @@ public class FunctionalMenuControllerTest extends MockitoTestSuite {
 		Mockito.when(adminRolesService.isSuperAdmin(user)).thenReturn(false); 
 		Mockito.when(functionalMenuService.editFunctionalMenuItem(menuItemJson)).thenReturn(actualFieldsValidator);
 		actualFieldsValidator = functionalMenuController.editFunctionalMenuItem(mockedRequest, menuItemJson, mockedResponse);
-		assertEquals(actualFieldsValidator, expectedFieldsValidator);
+		assertEquals(expectedFieldsValidator, actualFieldsValidator);
 	}
 	
 	@Test
