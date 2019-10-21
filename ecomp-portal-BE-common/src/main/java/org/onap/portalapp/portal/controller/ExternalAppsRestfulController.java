@@ -66,6 +66,8 @@ import org.onap.portalapp.portal.transport.FunctionalMenuItem;
 import org.onap.portalapp.portal.utils.EPCommonSystemProperties;
 import org.onap.portalapp.portal.utils.EcompPortalUtils;
 import org.onap.portalapp.portal.utils.PortalConstants;
+import org.onap.portalapp.validation.DataValidator;
+import org.onap.portalapp.validation.SecureString;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.onap.portalsdk.core.onboarding.crossapi.PortalAPIResponse;
 import org.slf4j.MDC;
@@ -90,6 +92,7 @@ import io.swagger.annotations.ApiOperation;
 public class ExternalAppsRestfulController extends EPRestrictedRESTfulBaseController {
 
 	private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(ExternalAppsRestfulController.class);
+	private final DataValidator DATA_VALIDATOR = new DataValidator();
 
 	@Autowired
 	private FunctionalMenuService functionalMenuService;
@@ -111,6 +114,11 @@ public class ExternalAppsRestfulController extends EPRestrictedRESTfulBaseContro
 	@ResponseBody
 	public PortalAPIResponse publishNotification(HttpServletRequest request,
 			@RequestBody EpNotificationItem notificationItem) throws Exception {
+
+		if(!DATA_VALIDATOR.isValid(notificationItem)){
+			PortalAPIResponse response = new PortalAPIResponse(false, "failed");
+			return response;
+		}
 		String appKey = request.getHeader("uebkey");
 		EPApp app = findEpApp(appKey);
 		List<Long> postRoleIds = new ArrayList<Long>();
@@ -119,8 +127,8 @@ public class ExternalAppsRestfulController extends EPRestrictedRESTfulBaseContro
             EPRole role = epRoleService.getRole(app.getId(), roleId);
             if (role != null)
                 postRoleIds.add(role.getId());
-        }
-    }
+        	}
+    	}
 
 		// --- recreate the user notification object with the POrtal Role Ids
 		EpNotificationItem postItem = new EpNotificationItem();
