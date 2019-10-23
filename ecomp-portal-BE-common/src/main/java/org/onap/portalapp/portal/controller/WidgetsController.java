@@ -33,7 +33,7 @@
  *
  * ============LICENSE_END============================================
  *
- * 
+ *
  */
 package org.onap.portalapp.portal.controller;
 
@@ -71,152 +71,159 @@ import org.springframework.web.bind.annotation.RestController;
 @EnableAspectJAutoProxy
 @EPAuditLog
 public class WidgetsController extends EPRestrictedBaseController {
-	private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(WidgetsController.class);
-	private static final DataValidator dataValidator = new DataValidator();
+    private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(WidgetsController.class);
+    private static final DataValidator dataValidator = new DataValidator();
 
-	private AdminRolesService adminRolesService;
-	private WidgetService widgetService;
-	private PersUserWidgetService persUserWidgetService;
+    private AdminRolesService adminRolesService;
+    private WidgetService widgetService;
+    private PersUserWidgetService persUserWidgetService;
 
-	@Autowired
-	public WidgetsController(AdminRolesService adminRolesService,
-		WidgetService widgetService, PersUserWidgetService persUserWidgetService) {
-		this.adminRolesService = adminRolesService;
-		this.widgetService = widgetService;
-		this.persUserWidgetService = persUserWidgetService;
-	}
+    @Autowired
+    public WidgetsController(AdminRolesService adminRolesService,
+            WidgetService widgetService, PersUserWidgetService persUserWidgetService) {
+        this.adminRolesService = adminRolesService;
+        this.widgetService = widgetService;
+        this.persUserWidgetService = persUserWidgetService;
+    }
 
-	@RequestMapping(value = { "/portalApi/widgets" }, method = RequestMethod.GET, produces = "application/json")
-	public List<OnboardingWidget> getOnboardingWidgets(HttpServletRequest request, HttpServletResponse response) {
-		EPUser user = EPUserUtils.getUserSession(request);
-		List<OnboardingWidget> onboardingWidgets = null;
+    @RequestMapping(value = { "/portalApi/widgets" }, method = RequestMethod.GET, produces = "application/json")
+    public List<OnboardingWidget> getOnboardingWidgets(HttpServletRequest request, HttpServletResponse response) {
+        EPUser user = EPUserUtils.getUserSession(request);
+        List<OnboardingWidget> onboardingWidgets = null;
 
-		if (user == null || user.isGuest()) {
-			EcompPortalUtils.setBadPermissions(user, response, "getOnboardingWidgets");
-		} else {
-			String getType = request.getHeader("X-Widgets-Type");
-			if (!StringUtils.isEmpty(getType) && ("managed".equals(getType) || "all".equals(getType))) {
-				onboardingWidgets = widgetService.getOnboardingWidgets(user, "managed".equals(getType));
-			} else {
-				logger.debug(EELFLoggerDelegate.debugLogger, "WidgetsController.getOnboardingApps - request must contain header 'X-Widgets-Type' with 'all' or 'managed'");
-				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			}
-		}
-		
-		EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/widgets", "GET result =", response.getStatus());
-		return onboardingWidgets;
-	}
+        if (user == null || user.isGuest()) {
+            EcompPortalUtils.setBadPermissions(user, response, "getOnboardingWidgets");
+        } else {
+            String getType = request.getHeader("X-Widgets-Type");
+            if (!StringUtils.isEmpty(getType) && ("managed".equals(getType) || "all".equals(getType))) {
+                onboardingWidgets = widgetService.getOnboardingWidgets(user, "managed".equals(getType));
+            } else {
+                logger.debug(EELFLoggerDelegate.debugLogger,
+                        "WidgetsController.getOnboardingApps - request must contain header 'X-Widgets-Type' with 'all' or 'managed'");
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            }
+        }
 
-	private boolean userHasPermissions(EPUser user, HttpServletResponse response, String invocator) {
-		if (!adminRolesService.isSuperAdmin(user) && !adminRolesService.isAccountAdmin(user)) {
-			EcompPortalUtils.setBadPermissions(user, response, invocator);
-			return false;
-		}
-		return true;
-	}
+        EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/widgets", "GET result =", response.getStatus());
+        return onboardingWidgets;
+    }
 
-	// Attention: real json has all OnboardingWidget fields except "id", we use OnboardingWidget for not to create new class for parsing
-	@RequestMapping(value = { "/portalApi/widgets/{widgetId}" }, method = { RequestMethod.PUT }, produces = "application/json")
-	public FieldsValidator putOnboardingWidget(HttpServletRequest request, @PathVariable("widgetId") Long widgetId,
-			@RequestBody OnboardingWidget onboardingWidget, HttpServletResponse response) {
-		EPUser user = EPUserUtils.getUserSession(request);
-		FieldsValidator fieldsValidator = null;
-		if (onboardingWidget!=null && !dataValidator.isValid(onboardingWidget)){
-				fieldsValidator = new FieldsValidator();
-				fieldsValidator.setHttpStatusCode((long)HttpServletResponse.SC_NOT_ACCEPTABLE);
-				return fieldsValidator;
-		}
+    private boolean userHasPermissions(EPUser user, HttpServletResponse response, String invocator) {
+        if (!adminRolesService.isSuperAdmin(user) && !adminRolesService.isAccountAdmin(user)) {
+            EcompPortalUtils.setBadPermissions(user, response, invocator);
+            return false;
+        }
+        return true;
+    }
 
-		if (userHasPermissions(user, response, "putOnboardingWidget")) {
+    // Attention: real json has all OnboardingWidget fields except "id", we use OnboardingWidget for not
+    // to create new class for parsing
+    @RequestMapping(value = { "/portalApi/widgets/{widgetId}" }, method = { RequestMethod.PUT },
+            produces = "application/json")
+    public FieldsValidator putOnboardingWidget(HttpServletRequest request, @PathVariable("widgetId") Long widgetId,
+            @RequestBody OnboardingWidget onboardingWidget, HttpServletResponse response) {
+        EPUser user = EPUserUtils.getUserSession(request);
+        FieldsValidator fieldsValidator = null;
+        if (onboardingWidget != null && !dataValidator.isValid(onboardingWidget)) {
+            fieldsValidator = new FieldsValidator();
+            fieldsValidator.setHttpStatusCode((long) HttpServletResponse.SC_NOT_ACCEPTABLE);
+            return fieldsValidator;
+        }
+
+        if (userHasPermissions(user, response, "putOnboardingWidget")) {
             if (onboardingWidget != null) {
                 onboardingWidget.id = widgetId; // !
                 onboardingWidget.normalize();
             }
 
-			fieldsValidator = widgetService.setOnboardingWidget(user, onboardingWidget);
-			response.setStatus(fieldsValidator.httpStatusCode.intValue());
-		}
-		EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/widgets/" + widgetId, "GET result =", response.getStatus());
+            fieldsValidator = widgetService.setOnboardingWidget(user, onboardingWidget);
+            response.setStatus(fieldsValidator.httpStatusCode.intValue());
+        }
+        EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/widgets/" + widgetId, "GET result =",
+                response.getStatus());
 
-		return fieldsValidator;
-	}
+        return fieldsValidator;
+    }
 
-	// Attention: real json has all OnboardingWidget fields except "id", we use OnboardingWidget for not to create new class for parsing
-	@RequestMapping(value = { "/portalApi/widgets" }, method = { RequestMethod.POST }, produces = "application/json")
-	public FieldsValidator postOnboardingWidget(HttpServletRequest request, @RequestBody OnboardingWidget onboardingWidget, HttpServletResponse response) {
-		EPUser user = EPUserUtils.getUserSession(request);
-		FieldsValidator fieldsValidator = null;
+    // Attention: real json has all OnboardingWidget fields except "id", we use OnboardingWidget for not
+    // to create new class for parsing
+    @RequestMapping(value = { "/portalApi/widgets" }, method = { RequestMethod.POST }, produces = "application/json")
+    public FieldsValidator postOnboardingWidget(HttpServletRequest request,
+            @RequestBody OnboardingWidget onboardingWidget, HttpServletResponse response) {
+        EPUser user = EPUserUtils.getUserSession(request);
+        FieldsValidator fieldsValidator = null;
 
-		if (onboardingWidget!=null && !dataValidator.isValid(onboardingWidget)){
-				fieldsValidator = new FieldsValidator();
-				fieldsValidator.setHttpStatusCode((long)HttpServletResponse.SC_NOT_ACCEPTABLE);
-				return fieldsValidator;
-		}
+        if (onboardingWidget != null && !dataValidator.isValid(onboardingWidget)) {
+            fieldsValidator = new FieldsValidator();
+            fieldsValidator.setHttpStatusCode((long) HttpServletResponse.SC_NOT_ACCEPTABLE);
+            return fieldsValidator;
+        }
 
-		if (userHasPermissions(user, response, "postOnboardingWidget")) {
-		    
+        if (userHasPermissions(user, response, "postOnboardingWidget")) {
+
             if (onboardingWidget != null) {
                 onboardingWidget.id = null; // !
                 onboardingWidget.normalize();
             }
-			fieldsValidator = widgetService.setOnboardingWidget(user, onboardingWidget);
-			response.setStatus(fieldsValidator.httpStatusCode.intValue());
-		}
+            fieldsValidator = widgetService.setOnboardingWidget(user, onboardingWidget);
+            response.setStatus(fieldsValidator.httpStatusCode.intValue());
+        }
 
-		EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/widgets", "POST result =", response.getStatus());
-		return fieldsValidator;
-	}
+        EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/widgets", "POST result =", response.getStatus());
+        return fieldsValidator;
+    }
 
-	@RequestMapping(value = { "/portalApi/widgets/{widgetId}" }, method = { RequestMethod.DELETE }, produces = "application/json")
-	public FieldsValidator deleteOnboardingWidget(HttpServletRequest request, @PathVariable("widgetId") Long widgetId, HttpServletResponse response) {
-		EPUser user = EPUserUtils.getUserSession(request);
-		FieldsValidator fieldsValidator = null;
+    @RequestMapping(value = { "/portalApi/widgets/{widgetId}" }, method = { RequestMethod.DELETE },
+            produces = "application/json")
+    public FieldsValidator deleteOnboardingWidget(HttpServletRequest request, @PathVariable("widgetId") Long widgetId,
+            HttpServletResponse response) {
+        EPUser user = EPUserUtils.getUserSession(request);
+        FieldsValidator fieldsValidator = null;
 
-		if (userHasPermissions(user, response, "deleteOnboardingWidget")) {
-			fieldsValidator = widgetService.deleteOnboardingWidget(user, widgetId);
-			response.setStatus(fieldsValidator.httpStatusCode.intValue());
-		}
+        if (userHasPermissions(user, response, "deleteOnboardingWidget")) {
+            fieldsValidator = widgetService.deleteOnboardingWidget(user, widgetId);
+            response.setStatus(fieldsValidator.httpStatusCode.intValue());
+        }
 
-		EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/widgets/" + widgetId, "DELETE result =", response.getStatus());
-		return fieldsValidator;
-	}
+        EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/widgets/" + widgetId, "DELETE result =",
+                response.getStatus());
+        return fieldsValidator;
+    }
 
-	/**
-	 * service to accept a user's action made on the application
-	 * catalog.
-	 * 
-	 * @param request
-	 * @param selectRequest
-	 *            JSON with data including application ID
-	 * @param response
-	 * @return FieldsValidator
-	 * @throws IOException
-	 */
-	@RequestMapping(value = { "portalApi/widgetCatalogSelection" }, method = RequestMethod.PUT, produces = "application/json")
-	public FieldsValidator putWidgetCatalogSelection(HttpServletRequest request,
-			@RequestBody WidgetCatalogPersonalization persRequest, HttpServletResponse response) throws IOException {
-		FieldsValidator result = new FieldsValidator();
-		EPUser user = EPUserUtils.getUserSession(request);
+    /**
+     * service to accept a user's action made on the application catalog.
+     *
+     * @param request
+     * @param selectRequest JSON with data including application ID
+     * @param response
+     * @return FieldsValidator
+     * @throws IOException
+     */
+    @RequestMapping(value = { "portalApi/widgetCatalogSelection" }, method = RequestMethod.PUT,
+            produces = "application/json")
+    public FieldsValidator putWidgetCatalogSelection(HttpServletRequest request,
+            @RequestBody WidgetCatalogPersonalization persRequest, HttpServletResponse response) throws IOException {
+        FieldsValidator result = new FieldsValidator();
+        EPUser user = EPUserUtils.getUserSession(request);
 
-		if (persRequest!=null){
-			if(!dataValidator.isValid(persRequest)){
-				result.httpStatusCode = (long)HttpServletResponse.SC_NOT_ACCEPTABLE;
-				return result;
-			}
-		}
+        if (persRequest != null) {
+            if (!dataValidator.isValid(persRequest)) {
+                result.httpStatusCode = (long) HttpServletResponse.SC_NOT_ACCEPTABLE;
+                return result;
+            }
+        }
 
-
-		try {
-			if (persRequest.getWidgetId() == null || user == null) {
-				EcompPortalUtils.setBadPermissions(user, response, "putWidgetCatalogSelection");
-			} else {
-				persUserWidgetService.setPersUserAppValue(user, persRequest.getWidgetId(), persRequest.getSelect());
-			}
-		} catch (Exception e) {
-			logger.error(EELFLoggerDelegate.errorLogger, "Failed in putAppCatalogSelection", e);
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
-		}
-		result.httpStatusCode = (long) HttpServletResponse.SC_OK;
-		return result;
-	}
+        try {
+            if (persRequest == null || persRequest.getWidgetId() == null || user == null) {
+                EcompPortalUtils.setBadPermissions(user, response, "putWidgetCatalogSelection");
+            } else {
+                persUserWidgetService.setPersUserAppValue(user, persRequest.getWidgetId(), persRequest.getSelect());
+            }
+        } catch (Exception e) {
+            logger.error(EELFLoggerDelegate.errorLogger, "Failed in putAppCatalogSelection", e);
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
+        }
+        result.httpStatusCode = (long) HttpServletResponse.SC_OK;
+        return result;
+    }
 }
