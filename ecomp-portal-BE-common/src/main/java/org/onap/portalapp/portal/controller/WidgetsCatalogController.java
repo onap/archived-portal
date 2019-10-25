@@ -33,7 +33,7 @@
  *
  * ============LICENSE_END============================================
  *
- * 
+ *
  */
 package org.onap.portalapp.portal.controller;
 
@@ -100,8 +100,12 @@ public class WidgetsCatalogController extends EPRestrictedBaseController {
 	private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(WidgetsCatalogController.class);
 
 	private static final String MS_WIDGET_LOCAL_PORT = "microservices.widget.local.port";
-	
+
 	private static final String UNAUTHORIZED_OR_FORBIDDEN_FOR_A_DISABLED_USER = "Unauthorized or  Forbidden for a disabled user";
+
+    private static final String MS_WIDGET_CATALOG_URL = "/widget/microservices/widgetCatalog/";
+
+    private static final String MS_WIDGET_URL = "/widget/microservices/";
 
 	private RestTemplate template = new RestTemplate();
 
@@ -140,7 +144,7 @@ public class WidgetsCatalogController extends EPRestrictedBaseController {
 					EcompPortalUtils.widgetMsProtocol() + "://"
 							+ widgetMService.getServiceLocation(whatService,
 									SystemProperties.getProperty(EPCommonSystemProperties.MS_WIDGET_LOCAL_PORT))
-							+ "/widget/microservices/widgetCatalog/" + loginName,
+                            + MS_WIDGET_CATALOG_URL + loginName,
 					HttpMethod.GET, new HttpEntity<>(WidgetServiceHeaders.getInstance()), List.class);
 			widgets = ans.getBody();
 		} catch (Exception e) {
@@ -179,7 +183,7 @@ public class WidgetsCatalogController extends EPRestrictedBaseController {
 				EcompPortalUtils.widgetMsProtocol() + "://"
 						+ widgetMService.getServiceLocation(whatService,
 								SystemProperties.getProperty(MS_WIDGET_LOCAL_PORT))
-						+ "/widget/microservices/widgetCatalog/" + widgetId,
+                        + MS_WIDGET_CATALOG_URL + widgetId,
 				HttpMethod.PUT, new HttpEntity<>(newWidgetCatalog, WidgetServiceHeaders.getInstance()), String.class);
 	}
 
@@ -189,7 +193,7 @@ public class WidgetsCatalogController extends EPRestrictedBaseController {
 				EcompPortalUtils.widgetMsProtocol() + "://"
 						+ widgetMService.getServiceLocation(whatService,
 								SystemProperties.getProperty(MS_WIDGET_LOCAL_PORT))
-						+ "/widget/microservices/widgetCatalog/" + widgetId,
+                        + MS_WIDGET_CATALOG_URL + widgetId,
 				HttpMethod.DELETE, new HttpEntity<>(WidgetServiceHeaders.getInstance()), String.class);
 	}
 
@@ -201,16 +205,13 @@ public class WidgetsCatalogController extends EPRestrictedBaseController {
 		String fileName;
 		String tmpFolderName = "/tmp/";
 		String respond = null;
-		FileOutputStream fo = null;
-		try {
-			mRequest = (MultipartHttpServletRequest) request;
-			MultipartFile mFile = mRequest.getFile("file");
-			fileName = mFile.getOriginalFilename();
-			fo = new FileOutputStream(tmpFolderName + fileName);
-			fo.write(mFile.getBytes());
-			// silence sonar scan by calling close here
-			fo.close();
-			fo = null;
+        try {
+            mRequest = (MultipartHttpServletRequest) request;
+            MultipartFile mFile = mRequest.getFile("file");
+            fileName = mFile.getOriginalFilename();
+            try (FileOutputStream fo = new FileOutputStream(tmpFolderName + fileName)) {
+                fo.write(mFile.getBytes());
+            }
 
 			HttpHeaders header = new HttpHeaders();
 			header.setContentType(MediaType.MULTIPART_FORM_DATA);
@@ -220,47 +221,38 @@ public class WidgetsCatalogController extends EPRestrictedBaseController {
 					EcompPortalUtils.widgetMsProtocol() + "://"
 							+ widgetMService.getServiceLocation(whatService,
 									SystemProperties.getProperty(EPCommonSystemProperties.MS_WIDGET_LOCAL_PORT))
-							+ "/widget/microservices/widgetCatalog/" + widgetId,
+                            + MS_WIDGET_CATALOG_URL + widgetId,
 					new HttpEntity<>(multipartRequest, WidgetServiceHeaders.getInstance()), String.class);
 			File f = new File(tmpFolderName + fileName);
 			f.delete();
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "updateWidgetCatalogWithFiles failed", e);
-		} finally {
-			try {
-				if (fo != null)
-					fo.close();
-			} catch (IOException e) {
-				logger.error(EELFLoggerDelegate.errorLogger, "updateWidgetCatalogWithFiles failed 2", e);
-			}
-		}
+        }
 		return respond;
 	}
 
 	@RequestMapping(value = { "/portalApi/microservices/widgetCatalog" }, method = RequestMethod.POST)
 	public String createWidgetCatalog(HttpServletRequest request)
 			throws Exception {
-		
+
 		if (StringUtils.isNotBlank(SystemProperties.getProperty(EPCommonSystemProperties.MS_WIDGET_UPLOAD_FLAG))
-				&& SystemProperties.getProperty(EPCommonSystemProperties.MS_WIDGET_UPLOAD_FLAG).equalsIgnoreCase("false")) {
+                && "false".equalsIgnoreCase(
+                        SystemProperties.getProperty(EPCommonSystemProperties.MS_WIDGET_UPLOAD_FLAG))) {
 			return UNAUTHORIZED_OR_FORBIDDEN_FOR_A_DISABLED_USER;
 		}
-		
+
 		MultipartHttpServletRequest mRequest;
 		MultiValueMap<String, Object> multipartRequest = new LinkedMultiValueMap<>();
 		String fileName;
 		String tmpFolderName = "/tmp/";
 		String respond = null;
-		FileOutputStream fo = null;
 		try {
 			mRequest = (MultipartHttpServletRequest) request;
 			MultipartFile mFile = mRequest.getFile("file");
 			fileName = mFile.getOriginalFilename();
-			fo = new FileOutputStream(tmpFolderName + fileName);
-			fo.write(mFile.getBytes());
-			// silence sonar scan by calling close here
-			fo.close();
-			fo = null;
+            try (FileOutputStream fo = new FileOutputStream(tmpFolderName + fileName)) {
+                fo.write(mFile.getBytes());
+            }
 
 			HttpHeaders header = new HttpHeaders();
 			header.setContentType(MediaType.MULTIPART_FORM_DATA);
@@ -277,13 +269,6 @@ public class WidgetsCatalogController extends EPRestrictedBaseController {
 			f.delete();
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "createWidgetCatalog failed", e);
-		} finally {
-			try {
-				if (fo != null)
-					fo.close();
-			} catch (IOException e) {
-				logger.error(EELFLoggerDelegate.errorLogger, "createWidgetCatalog failed 2", e);
-			}
 		}
 		return respond;
 	}
@@ -293,7 +278,7 @@ public class WidgetsCatalogController extends EPRestrictedBaseController {
 		return template.getForObject(EcompPortalUtils.widgetMsProtocol() + "://"
 				+ widgetMService.getServiceLocation(whatService,
 						SystemProperties.getProperty(MS_WIDGET_LOCAL_PORT))
-				+ "/widget/microservices/" + widgetId + "/framework.js", String.class,
+                + MS_WIDGET_URL + widgetId + "/framework.js", String.class,
 				WidgetServiceHeaders.getInstance());
 	}
 
@@ -302,7 +287,7 @@ public class WidgetsCatalogController extends EPRestrictedBaseController {
 		return template.getForObject(EcompPortalUtils.widgetMsProtocol() + "://"
 				+ widgetMService.getServiceLocation(whatService,
 						SystemProperties.getProperty(MS_WIDGET_LOCAL_PORT))
-				+ "/widget/microservices/" + widgetId + "/controller.js", String.class,
+                + MS_WIDGET_URL + widgetId + "/controller.js", String.class,
 				WidgetServiceHeaders.getInstance());
 	}
 
@@ -311,7 +296,7 @@ public class WidgetsCatalogController extends EPRestrictedBaseController {
 		return template.getForObject(EcompPortalUtils.widgetMsProtocol() + "://"
 				+ widgetMService.getServiceLocation(whatService,
 						SystemProperties.getProperty(MS_WIDGET_LOCAL_PORT))
-				+ "/widget/microservices/" + widgetId + "/styles.css", String.class,
+                + MS_WIDGET_URL + widgetId + "/styles.css", String.class,
 				WidgetServiceHeaders.getInstance());
 	}
 
@@ -329,7 +314,7 @@ public class WidgetsCatalogController extends EPRestrictedBaseController {
 				HttpMethod.GET, new HttpEntity<>(WidgetServiceHeaders.getInstance()), Long.class).getBody();
 		if (serviceId == null) {
 			// return ok/sucess and no service parameter for this widget
-			return new PortalRestResponse<List<WidgetParameterResult>>(PortalRestStatusEnum.WARN,
+            return new PortalRestResponse<>(PortalRestStatusEnum.WARN,
 					"No service parameters for this widget", list);
 		} else {
 			List<MicroserviceParameter> defaultParam = microserviceService.getParametersById(serviceId);
@@ -348,13 +333,12 @@ public class WidgetsCatalogController extends EPRestrictedBaseController {
 				list.add(userResult);
 			}
 		}
-		return new PortalRestResponse<List<WidgetParameterResult>>(PortalRestStatusEnum.OK, "SUCCESS", list);
+        return new PortalRestResponse<>(PortalRestStatusEnum.OK, "SUCCESS", list);
 	}
 
 	@RequestMapping(value = { "/portalApi/microservices/services/{paramId}" }, method = RequestMethod.GET)
 	public List<WidgetCatalogParameter> getUserParameterById(	@PathVariable("paramId") long paramId) {
-		List<WidgetCatalogParameter> list = widgetParameterService.getUserParameterById(paramId);
-		return list;
+        return widgetParameterService.getUserParameterById(paramId);
 	}
 
 	@RequestMapping(value = { "/portalApi/microservices/services/{paramId}" }, method = RequestMethod.DELETE)
@@ -398,7 +382,7 @@ public class WidgetsCatalogController extends EPRestrictedBaseController {
 			String headerValue = String.format("attachment; filename=\"%s\"", downloadFile.getName());
 			downloadFile.delete();
 			response.setHeader(headerKey, headerValue);
-	
+
 			byte[] buffer = new byte[32 * 1024];
 			int bytesRead;
 			while ((bytesRead = inputStream.read(buffer)) != -1) {
@@ -426,11 +410,11 @@ public class WidgetsCatalogController extends EPRestrictedBaseController {
 
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "saveWidgetParameter failed", e);
-			return new PortalRestResponse<String>(PortalRestStatusEnum.ERROR, "FAILURE", e.getMessage());
+			return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, "FAILURE", e.getMessage());
 		}
-		return new PortalRestResponse<String>(PortalRestStatusEnum.OK, "SUCCESS", "");
+		return new PortalRestResponse<>(PortalRestStatusEnum.OK, "SUCCESS", "");
 	}
-	
+
 	@RequestMapping(value = { "/portalApi/microservices/uploadFlag" }, method = RequestMethod.GET)
 	public String getUploadFlag() {
 	     String uplaodFlag="";

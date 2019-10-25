@@ -74,7 +74,7 @@ public class WidgetMSController {
 					widgetMService.getServiceLocation(service, null));
 		}
 		 catch (Exception e) {
-			logger.error(EELFLoggerDelegate.errorLogger, "Couldn't get the service location");
+			logger.error(EELFLoggerDelegate.errorLogger, "Couldn't get the service location", e);
 			return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, "Error!",
 					"Couldn't get the service location");
 		
