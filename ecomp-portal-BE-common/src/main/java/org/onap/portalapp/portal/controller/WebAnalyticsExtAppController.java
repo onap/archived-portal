@@ -96,10 +96,12 @@ public class WebAnalyticsExtAppController extends EPRestrictedRESTfulBaseControl
 	private static final String REGISTER_ACTION = MACHINE_LEARNING_SERVICE_CTX + "/" + "registerAction";
 	private static final String CONSUL_ML_SERVICE_ID = "machine-learning";
 	private static final String APP_KEY = "uebkey";
+	private static final String ERROR_MSG = " Error retrieving Application to capture app name for analytics; Proceeding with empty app name";
 	private final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(WebAnalyticsExtAppController.class);
 	private final AsyncRestTemplate restTemplate = new AsyncRestTemplate();
 	private final SuccessCallback<ResponseEntity<String>> successCallback = arg -> logger.info(EELFLoggerDelegate.debugLogger, arg.getBody());
 	private final FailureCallback failureCallback = arg -> logger.error(EELFLoggerDelegate.errorLogger, "storeAuxAnalytics failed", arg);
+
 
 	@Autowired
 	public WebAnalyticsExtAppController(AppsCacheService appCacheService, WidgetMService consulHealthService) {
@@ -124,8 +126,8 @@ public class WebAnalyticsExtAppController extends EPRestrictedRESTfulBaseControl
 		try {
 			app = getApp(request);
 		} catch (Exception e) {
-			logger.error(EELFLoggerDelegate.errorLogger,
-					" Error retrieving Application to capture app name for analytics; Proceeding with empty app name");
+            logger.error(EELFLoggerDelegate.errorLogger,
+                    ERROR_MSG, e);
 		}
 		if (app != null) {
 			String restEndPoint = app.getAppRestEndpoint();
@@ -168,19 +170,19 @@ public class WebAnalyticsExtAppController extends EPRestrictedRESTfulBaseControl
 		try {
 			MDC.put(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP, EPEELFLoggerAdvice.getCurrentDateTimeUTC());
 			String appName = "";
-			try {
-				appName = getAppName(request, appName);
-			} catch (Exception e) {
-				logger.error(EELFLoggerDelegate.errorLogger,
-						" Error retrieving Application to capture app name for analytics; Proceeding with empty app name");
-			}
+            try {
+                appName = getAppName(request, appName);
+            } catch (Exception e) {
+                logger.error(EELFLoggerDelegate.errorLogger,
+                        ERROR_MSG, e);
+            }
 
-			try {
-				storeAuxAnalytics(analyticsMap, appName);
-			} catch (Exception e) {
-				logger.error(EELFLoggerDelegate.errorLogger,
-						" Error retrieving Application to capture app name for analytics; Proceeding with empty app name");
-			}
+            try {
+                storeAuxAnalytics(analyticsMap, appName);
+            } catch (Exception e) {
+                logger.error(EELFLoggerDelegate.errorLogger,
+                        ERROR_MSG, e);
+            }
 
 			MDC.put(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP, EPEELFLoggerAdvice.getCurrentDateTimeUTC());
 
@@ -216,7 +218,7 @@ public class WebAnalyticsExtAppController extends EPRestrictedRESTfulBaseControl
 	private EPApp getApp(HttpServletRequest request) {
 		String appKeyValue = request.getHeader(APP_KEY);
 		EPApp appRecord = null;
-		if (appKeyValue == null || appKeyValue.equals("")) {
+		if (appKeyValue == null || "".equals(appKeyValue)) {
 			logger.error(EELFLoggerDelegate.errorLogger, " App Key unavailable; Proceeding with null app name");
 		} else {
 			 appRecord = appCacheService.getAppFromUeb(appKeyValue);
