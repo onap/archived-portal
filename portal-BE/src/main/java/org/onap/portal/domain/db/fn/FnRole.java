@@ -53,13 +53,10 @@ import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.NamedNativeQueries;
-import javax.persistence.NamedNativeQuery;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -113,8 +110,18 @@ CREATE TABLE `fn_role` (
                 name = "FnRole.retrieveActiveRolesOfApplication",
                 query = "from FnRole where active_yn = 'Y' and app_id=:appId"),
         @NamedQuery(name = "FnRole.retrieveRoleToUpdateInExternalAuthSystem",
-                query = "FROM FnRole where role_name =:roleName and app_id =:appId")
-})
+                query = "FROM FnRole where role_name =:roleName and app_id =:appId"),
+        @NamedQuery(
+                name = "FnRole.getUserRoleOnUserIdAndAppId",
+                query = " FROM"
+                        + "  FnRole fr,\n"
+                        + "  FnUserRole fur\n"
+                        + " WHERE\n"
+                        + "  fr.roleId = fur.roleId\n"
+                        + "  AND fur.userId = :userId"
+                        + "  AND fur.appId = :appId\n"
+                        + "  AND fr.activeYn = 'y'")
+        })
 
 @Table(name = "fn_role", indexes = {
         @Index(name = "fn_role_name_app_id_idx", columnList = "role_name, app_id", unique = true)

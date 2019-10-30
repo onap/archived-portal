@@ -54,6 +54,7 @@ import java.util.HashSet;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import javax.servlet.http.HttpServletRequest;
 import javax.sql.DataSource;
 import org.h2.tools.RunScript;
 import org.hibernate.Session;
@@ -68,6 +69,8 @@ import org.onap.portal.domain.db.fn.FnLanguage;
 import org.onap.portal.domain.db.fn.FnRole;
 import org.onap.portal.domain.db.fn.FnUser;
 import org.onap.portal.domain.db.fn.FnUserRole;
+import org.onap.portal.domain.dto.ecomp.ExternalSystemAccess;
+import org.onap.portal.framework.MockitoTestSuite;
 import org.onap.portal.service.fn.FnAppService;
 import org.onap.portal.service.fn.FnLanguageService;
 import org.onap.portal.service.fn.FnLuTimezoneService;
@@ -126,5 +129,14 @@ class UserRolesControllerTest {
               boolean actual = userRolesController.checkIfUserIsSuperAdmin(principal);
               //Then
               assertEquals(expected, actual);
+       }
+
+       @Test
+       void readExternalRequestAccess() {
+              ExternalSystemAccess expected = new ExternalSystemAccess("external_access_enable", false);
+              ExternalSystemAccess actual = userRolesController.readExternalRequestAccess();
+
+              assertEquals(expected.getAccessValue(), actual.getAccessValue());
+              assertEquals(expected.getKey(), actual.getKey());
        }
 }

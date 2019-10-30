@@ -38,23 +38,15 @@
  *
  */
 
-package org.onap.portal.dao.fn;
+package org.onap.portal.dao.ep;
 
-import java.util.List;
-import org.onap.portal.domain.db.fn.FnRole;
+import org.onap.portal.domain.db.ep.EpUserRolesRequestDet;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 @Transactional
-public interface FnRoleDao extends JpaRepository<FnRole, Long> {
+public interface EpUserRolesRequestDetDao extends JpaRepository<EpUserRolesRequestDet, Long> {
 
-       @Query
-       List<FnRole> retrieveAppRoleByAppRoleIdAndByAppId(final @Param("appId") Long appId,
-               final @Param("appRoleId") Long appRoleId);
-
-       List<FnRole> getUserRoleOnUserIdAndAppId(final @Param("userId") Long userId, final @Param("appId") Long appId);
 }

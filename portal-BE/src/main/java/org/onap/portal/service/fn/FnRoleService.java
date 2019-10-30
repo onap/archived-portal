@@ -84,4 +84,12 @@ public class FnRoleService {
               }
               return null;
        }
+
+       public List<FnRole> retrieveAppRoleByAppRoleIdAndByAppId(Long appId, Long appRoleId){
+              return Optional.of(fnRoleDao.retrieveAppRoleByAppRoleIdAndByAppId(appId, appRoleId)).orElse(new ArrayList<>());
+       }
+
+       public List<FnRole> getUserRoleOnUserIdAndAppId(final Long userId, final Long appId) {
+              return Optional.of(fnRoleDao.getUserRoleOnUserIdAndAppId(userId, appId)).orElse(new ArrayList<>());
+       }
 }

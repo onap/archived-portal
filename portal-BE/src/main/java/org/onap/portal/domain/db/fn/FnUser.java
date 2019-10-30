@@ -44,7 +44,10 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -82,6 +85,7 @@ import org.onap.portal.domain.db.ep.EpUserNotification;
 import org.onap.portal.domain.db.ep.EpUserRolesRequest;
 import org.onap.portal.domain.db.ep.EpWidgetCatalogParameter;
 import org.onap.portal.domain.dto.DomainVo;
+import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -185,6 +189,8 @@ CREATE TABLE `fn_user` (
 @AllArgsConstructor
 @DynamicUpdate
 public class FnUser extends DomainVo implements UserDetails, Serializable {
+
+       private static EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(FnUser.class);
 
        @Id
        @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -474,4 +480,44 @@ public class FnUser extends DomainVo implements UserDetails, Serializable {
               return this.firstName + " " + this.lastName;
        }
 
+       public SortedSet<FnRole> getAppEPRoles(FnApp app) {
+
+                     logger.debug(EELFLoggerDelegate.debugLogger, "In EPUser.getAppEPRoles() - app = {}", app.getAppName());
+
+                     SortedSet<FnRole> roles = new TreeSet<>();
+                     Set<FnUserRole> userAppRoles = getFnUserRoles();
+
+                     logger.debug(EELFLoggerDelegate.debugLogger, "In EPUser.getAppEPRoles() - userApps = {} ", userAppRoles.size());
+
+                     Iterator<FnUserRole> userAppRolesIterator = userAppRoles.iterator();
+
+              FnUserRole userAppRole;
+                     // getting default app
+                     while (userAppRolesIterator.hasNext()) {
+                            FnUserRole tempUserApp = userAppRolesIterator.next();
+                            if (tempUserApp.getAppId().getId().equals(app.getId())) {
+
+                                   logger.debug(EELFLoggerDelegate.debugLogger,
+                                           "In EPUser.getAppEPRoles() - for user {}, found application {}", this.getFullName(),
+                                           app.getAppName());
+
+                                   userAppRole = tempUserApp;
+
+                                   FnRole role = userAppRole.getRoleId();
+                                   if (role.getActiveYn()) {
+                                          logger.debug(EELFLoggerDelegate.debugLogger,
+                                                  "In EPUser.getAppEPRoles() - Role {} is active - adding for user {} and app {}",
+                                                  role.getRoleName(), this.getFullName(), app.getAppName());
+                                          roles.add(role);
+                                   } else {
+                                          logger.debug(EELFLoggerDelegate.debugLogger,
+                                                  "In EPUser.getAppEPRoles() - Role {} is NOT active - NOT adding for user {} and app {}",
+                                                  role.getRoleName(), this.getFullName(), app.getAppName());
+                                   }
+                            }
+                     }
+                     logger.debug(EELFLoggerDelegate.debugLogger, "In EPUser.getAppEPRoles() - roles = {}", roles.size());
+
+                     return roles;
+              }
 }

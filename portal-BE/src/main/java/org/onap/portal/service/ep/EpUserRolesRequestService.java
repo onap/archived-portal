@@ -38,23 +38,25 @@
  *
  */
 
-package org.onap.portal.dao.fn;
+package org.onap.portal.service.ep;
 
-import java.util.List;
-import org.onap.portal.domain.db.fn.FnRole;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
+import org.onap.portal.dao.ep.EpUserRolesRequestDao;
+import org.onap.portal.domain.db.ep.EpUserRolesRequest;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Repository
+@Service
 @Transactional
-public interface FnRoleDao extends JpaRepository<FnRole, Long> {
+public class EpUserRolesRequestService {
+       private final EpUserRolesRequestDao epUserRolesRequestDao;
 
-       @Query
-       List<FnRole> retrieveAppRoleByAppRoleIdAndByAppId(final @Param("appId") Long appId,
-               final @Param("appRoleId") Long appRoleId);
+       @Autowired
+       public EpUserRolesRequestService(EpUserRolesRequestDao epUserRolesRequestDao) {
+              this.epUserRolesRequestDao = epUserRolesRequestDao;
+       }
 
-       List<FnRole> getUserRoleOnUserIdAndAppId(final @Param("userId") Long userId, final @Param("appId") Long appId);
+       public EpUserRolesRequest saveOne(EpUserRolesRequest epUserRolesRequest){
+              return epUserRolesRequestDao.save(epUserRolesRequest);
+       }
 }

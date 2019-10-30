@@ -1,0 +1,392 @@
+/*
+ * ============LICENSE_START==========================================
+ * ONAP Portal
+ * ===================================================================
+ * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ * ===================================================================
+ * Modifications Copyright (c) 2019 Samsung
+ * ===================================================================
+ *
+ * Unless otherwise specified, all software contained herein is licensed
+ * under the Apache License, Version 2.0 (the "License");
+ * you may not use this software except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *             http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Unless otherwise specified, all documentation contained herein is licensed
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
+ * you may not use this documentation except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *             https://creativecommons.org/licenses/by/4.0/
+ *
+ * Unless required by applicable law or agreed to in writing, documentation
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * ============LICENSE_END============================================
+ *
+ *
+ */
+
+package org.onap.portal.service;
+
+import static com.att.eelf.configuration.Configuration.MDC_KEY_REQUEST_ID;
+
+import com.google.gson.Gson;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Base64;
+import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import org.apache.commons.lang.StringUtils;
+import org.apache.cxf.jaxrs.client.WebClient;
+import org.apache.cxf.jaxrs.impl.ResponseImpl;
+import org.apache.cxf.transport.http.HTTPException;
+import org.onap.portal.domain.db.fn.FnApp;
+import org.onap.portal.logging.aop.EPMetricsLog;
+import org.onap.portal.logging.format.EPAppMessagesEnum;
+import org.onap.portal.logging.logic.EPLogUtil;
+import org.onap.portal.service.fn.old.AppsCacheService;
+import org.onap.portal.utils.EPCommonSystemProperties;
+import org.onap.portal.utils.EcompPortalUtils;
+import org.onap.portal.utils.SystemType;
+import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
+import org.onap.portalsdk.core.onboarding.exception.CipherUtilException;
+import org.onap.portalsdk.core.onboarding.util.CipherUtil;
+import org.onap.portalsdk.core.util.SystemProperties;
+import org.slf4j.MDC;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+@Service
+public class ApplicationsRestClientService {
+
+       private static final String PASSWORD_HEADER = "password";
+       private static final String APP_USERNAME_HEADER = "username";
+       private static final String BASIC_AUTHENTICATION_HEADER = "Authorization";
+
+       private static EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(ApplicationsRestClientService.class);
+
+       Gson gson = null;
+
+       private final AppsCacheService appsCacheService;
+
+       @Autowired
+       public ApplicationsRestClientService(AppsCacheService appsCacheService) {
+              this.appsCacheService = appsCacheService;
+       }
+
+       private static boolean isHttpSuccess(int status) {
+              return status / 100 == 2;
+       }
+
+       @EPMetricsLog
+       private void verifyResponse(Response response, String restPath) throws HTTPException {
+              int status = response.getStatus();
+              logger.debug(EELFLoggerDelegate.debugLogger, "http response status=" + status);
+              MDC.put(EPCommonSystemProperties.EXTERNAL_API_RESPONSE_CODE, Integer.toString(status));
+              if (!isHttpSuccess(status)) {
+                     String errMsg =
+                             "Failed. Status=" + status + restPath + "; [" + ((ResponseImpl) response).getStatusInfo()
+                                     .getReasonPhrase().toString()
+                                     + "]";
+                     URL url = null;
+                     try {
+                            // must not be null to avoid NPE in HTTPException constructor
+                            url = new URL("http://null");
+                            if (((ResponseImpl) response).getLocation() != null) {
+                                   url = ((ResponseImpl) response).getLocation().toURL();
+                            }
+                     } catch (MalformedURLException e) {
+                            // never mind. it is only for the debug message.
+                            logger.warn(EELFLoggerDelegate.errorLogger, "Failed to build URL", e);
+                     }
+                     logger.error(EELFLoggerDelegate.errorLogger,
+                             "http response failed. " + restPath + errMsg + "; url=" + url);
+                     EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeIncorrectHttpStatusError);
+                     throw new HTTPException(status, errMsg, url);
+              }
+       }
+
+       private WebClient createClientForApp(long appId, String restPath) {
+              return createClientFor(appId, restPath, SystemType.APPLICATION);
+       }
+
+       private static WebClient createClientForPath(String baseUri, String path) {
+              logger.info(EELFLoggerDelegate.debugLogger, "Creating web client for " + baseUri + "   +   " + path);
+              WebClient client = WebClient.create(baseUri);
+              client.type(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON);
+              client.path(path);
+              return client;
+       }
+
+       //TODO Need to implement the mylogins once the endpoint is confirmed
+       @EPMetricsLog
+       private WebClient createClientFor(long appSystemId, String restPath, SystemType type) {
+              logger.debug(EELFLoggerDelegate.debugLogger,
+                      "creating client for appId=" + appSystemId + "; restPath=" + restPath);
+              FnApp externalApp = null;
+
+              if (type == SystemType.APPLICATION) {
+                     externalApp = appsCacheService.getApp(appSystemId);
+              } else {
+                     // TO DO
+              }
+
+              if (externalApp != null) {
+                     String appBaseUri = (type == SystemType.APPLICATION) ? externalApp.getAppRestEndpoint() : "";
+                     String username = (type == SystemType.APPLICATION) ? externalApp.getAppUsername() : "";
+                     String encriptedPwd = (type == SystemType.APPLICATION) ? externalApp.getAppPassword() : "";
+
+                     String appName = (type == SystemType.APPLICATION) ? externalApp.getAppName() : "";
+                     String decreptedAppPwd = StringUtils.EMPTY;
+
+                     // Set local context
+                     MDC.put(EPCommonSystemProperties.PROTOCOL, EPCommonSystemProperties.HTTP);
+                     if (appBaseUri != null && appBaseUri.contains("https")) {
+                            MDC.put(EPCommonSystemProperties.PROTOCOL, EPCommonSystemProperties.HTTPS);
+                     }
+                     MDC.put(EPCommonSystemProperties.FULL_URL, appBaseUri + restPath);
+                     MDC.put(EPCommonSystemProperties.TARGET_ENTITY, appName);
+                     MDC.put(EPCommonSystemProperties.TARGET_SERVICE_NAME, restPath);
+
+                     if (!encriptedPwd.isEmpty() || encriptedPwd != null || StringUtils.isEmpty(encriptedPwd)) {
+                            try {
+                                   decreptedAppPwd = CipherUtil.decryptPKC(encriptedPwd,
+                                           SystemProperties.getProperty(SystemProperties.Decryption_Key));
+                            } catch (Exception e) {
+                                   logger.error(EELFLoggerDelegate.errorLogger, "createClientFor failed to decrypt", e);
+                            }
+                     }
+                     WebClient client = createClientForPath(appBaseUri, restPath);
+
+                     if (externalApp.getAppPassword().isEmpty() || externalApp.getAppPassword() == null) {
+                            logger.debug(EELFLoggerDelegate.debugLogger,
+                                    "Entering in the externalApp get app password contains null : {}");
+
+                            externalApp = appsCacheService.getApp(1L);
+                            logger.debug(EELFLoggerDelegate.debugLogger, "external App Information : {}", externalApp);
+
+                            String mechidUsername = externalApp.getAppUsername();
+                            logger.debug(EELFLoggerDelegate.debugLogger, "external App mechidUsername Information : {}",
+                                    mechidUsername);
+
+                            String password = externalApp.getAppPassword();
+                            String decreptedexternalAppPwd = StringUtils.EMPTY;
+                            try {
+                                   decreptedexternalAppPwd = CipherUtil.decryptPKC(password,
+                                           SystemProperties.getProperty(SystemProperties.Decryption_Key));
+                            } catch (CipherUtilException e) {
+                                   logger.error(EELFLoggerDelegate.errorLogger,
+                                           "failed to decreptedexternalAppPwd when external app pwd is null", e);
+                            }
+
+                            username = mechidUsername;
+                            decreptedAppPwd = decreptedexternalAppPwd;
+
+                     } else {
+                            logger.debug(EELFLoggerDelegate.debugLogger,
+                                    "Entering in the externalApp get app password  is not null : {}");
+
+                            // support basic authentication for some partners
+                            String encoding = Base64.getEncoder()
+                                    .encodeToString((username + ":" + decreptedAppPwd).getBytes());
+                            String encodingStr = "Basic " + encoding;
+                            client.header(BASIC_AUTHENTICATION_HEADER, encodingStr);
+                     }
+
+                     // But still keep code downward compatible for non compliant apps
+                     client.header(APP_USERNAME_HEADER, username);
+                     client.header(PASSWORD_HEADER, decreptedAppPwd);
+
+                     String encoding = Base64.getEncoder()
+                             .encodeToString((username + ":" + decreptedAppPwd).getBytes());
+                     String encodingStr = "Basic " + encoding;
+                     client.header(BASIC_AUTHENTICATION_HEADER, encodingStr);
+                     client.header(SystemProperties.ECOMP_REQUEST_ID, MDC.get(MDC_KEY_REQUEST_ID));
+                     client.header(SystemProperties.USERAGENT_NAME, EPCommonSystemProperties.ECOMP_PORTAL_BE);
+                     logger.debug(EELFLoggerDelegate.debugLogger,
+                             String.format(
+                                     "check the partner application URL App %d found, baseUri=[%s], Headers: [%s=%s]",
+                                     appSystemId, appBaseUri,
+                                     APP_USERNAME_HEADER, username));
+                     return client;
+              }
+              return null;
+       }
+
+       public <T> T post(Class<T> clazz, long appId, Object payload, String restPath, SystemType type)
+               throws HTTPException {
+              WebClient client = null;
+              Response response = null;
+              T t = null;
+
+              client = createClientFor(appId, restPath, type);
+              EcompPortalUtils.logAndSerializeObject(logger, restPath, "POST request =", payload);
+
+              try {
+                     if (client != null) {
+                            response = client.post(payload);
+                     } else {
+                            logger.error(EELFLoggerDelegate.errorLogger,
+                                    "Unable to create the Webclient to make the '" + restPath + "' API call.");
+                     }
+              } catch (Exception e) {
+                     MDC.put(EPCommonSystemProperties.EXTERNAL_API_RESPONSE_CODE,
+                             Integer.toString(HttpServletResponse.SC_INTERNAL_SERVER_ERROR));
+                     EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeRestApiGeneralError, e);
+                     logger.error(EELFLoggerDelegate.errorLogger,
+                             "Exception occurred while making the POST REST API call", e);
+              }
+
+              if (response != null) {
+                     //verifyResponse(response);
+                     verifyResponse(response, restPath);
+                     // String contentType = response.getHeaderString("Content-Type");
+                     if (clazz != null) {
+                            String str = ((ResponseImpl) response).readEntity(String.class);
+                            EcompPortalUtils.logAndSerializeObject(logger, restPath, "POST result =", str);
+                            try {
+                                   t = (T) gson.fromJson(str, clazz);
+
+                                   //t = gson.fromJson(str, clazz);
+                            } catch (Exception e) {
+                                   EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeInvalidJsonInput, e);
+                            }
+                     }
+              }
+              return t;
+       }
+
+       public <T> T post(Class<T> clazz, long appId, Object payload, String restPath) throws HTTPException {
+              return post(clazz, appId, payload, restPath, SystemType.APPLICATION);
+       }
+
+       public <T> T put(Class<T> clazz, long appId, Object payload, String restPath) throws HTTPException {
+              WebClient client = null;
+              Response response = null;
+              T t = null;
+
+              logger.debug(EELFLoggerDelegate.debugLogger,
+                      "Entering to createClientForApp method for payload: {} and restPath: {} and appId: {}",
+                      payload.toString(), restPath, appId);
+
+              client = createClientForApp(appId, restPath);
+              EcompPortalUtils.logAndSerializeObject(logger, restPath, "PUT request =", payload);
+
+              logger.debug(EELFLoggerDelegate.debugLogger,
+                      "Finished createClientForApp method for payload: {} and restPath: {} and appId: {}",
+                      payload.toString(), restPath, appId);
+
+              try {
+                     if (client != null) {
+                            logger.debug(EELFLoggerDelegate.debugLogger,
+                                    "Entering to PUT for payload: {} and restPath: {} and appId: {}",
+                                    payload.toString(), restPath, appId);
+
+                            response = client.put(payload);
+
+                            logger.debug(EELFLoggerDelegate.debugLogger,
+                                    "Finished to PUT for payload: {} and restPath: {} and appId: {}",
+                                    payload.toString(), restPath, appId);
+
+                     } else {
+                            logger.error(EELFLoggerDelegate.errorLogger,
+                                    "Unable to create the Webclient to make the '" + restPath + "' API call.");
+                     }
+              } catch (Exception e) {
+                     MDC.put(EPCommonSystemProperties.EXTERNAL_API_RESPONSE_CODE,
+                             Integer.toString(HttpServletResponse.SC_INTERNAL_SERVER_ERROR));
+                     EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeRestApiGeneralError, e);
+                     logger.error(EELFLoggerDelegate.errorLogger,
+                             "Exception occurred while making the PUT REST API call", e);
+              }
+
+              if (response != null) {
+                     //verifyResponse(response);
+                     verifyResponse(response, restPath);
+                     String str = ((ResponseImpl) response).readEntity(String.class);
+                     EcompPortalUtils.logAndSerializeObject(logger, restPath, "PUT result =", str);
+                     try {
+                            t = gson.fromJson(str, clazz);
+                     } catch (Exception e) {
+                            EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeInvalidJsonInput, e);
+                     }
+              }
+              return t;
+       }
+
+       protected Response getResponse(long appId, String restPath) {
+              WebClient webClient = null;
+              Response response = null;
+
+              webClient = createClientForApp(appId, restPath);
+              EcompPortalUtils.logAndSerializeObject(logger, restPath, "GET request =", "no-payload");
+
+              try {
+                     if (webClient != null) {
+                            response = webClient.get();
+                     } else {
+                            logger.error(EELFLoggerDelegate.errorLogger,
+                                    "Unable to create the Webclient to make the '" + restPath + "' API call.");
+                     }
+              } catch (Exception e) {
+                     MDC.put(EPCommonSystemProperties.EXTERNAL_API_RESPONSE_CODE,
+                             Integer.toString(HttpServletResponse.SC_INTERNAL_SERVER_ERROR));
+                     EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeRestApiGeneralError, e);
+                     logger.error(EELFLoggerDelegate.errorLogger,
+                             "Exception occurred while making the GET REST API call", e);
+              }
+              return response;
+       }
+
+       public <T> T get(Class<T> clazz, long appId, String restPath) throws HTTPException {
+              T t = null;
+              Response response = getResponse(appId, restPath);
+
+              if (response != null) {
+                     //verifyResponse(response);
+                     verifyResponse(response, restPath);
+			/* It is not recommendable to use the implementation class org.apache.cxf.jaxrs.impl.ResponseImpl in the code,
+			but had to force this in-order to prevent conflict with the ResponseImpl class of Jersey Client which
+			doesn't work as expected. Created Portal-253 for tracking */
+                     String str = ((ResponseImpl) response).readEntity(String.class);
+
+                     EcompPortalUtils.logAndSerializeObject(logger, restPath, "GET result =", str);
+                     try {
+                            t = gson.fromJson(str, clazz);
+                     } catch (Exception e) {
+                            EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeInvalidJsonInput, e);
+                     }
+              }
+
+              return t;
+       }
+
+       public String getIncomingJsonString(final Long appId, final String restPath) throws HTTPException {
+              Response response = getResponse(appId, restPath);
+
+              if (response != null) {
+                     //verifyResponse(response);
+                     verifyResponse(response,restPath);
+			/* It is not recommendable to use the implementation class org.apache.cxf.jaxrs.impl.ResponseImpl in the code,
+			but had to force this in-order to prevent conflict with the ResponseImpl class of Jersey Client which
+			doesn't work as expected. Created Portal-253 for tracking  */
+                     String incomingJson = ((ResponseImpl)response).readEntity(String.class);
+                     return incomingJson;
+              }
+
+              return "";
+       }
+}

@@ -38,23 +38,41 @@
  *
  */
 
-package org.onap.portal.dao.fn;
+package org.onap.portal.service.fn;
 
+import static org.junit.Assert.assertEquals;
+
+import java.util.ArrayList;
 import java.util.List;
-import org.onap.portal.domain.db.fn.FnRole;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
+import javax.transaction.Transactional;
+import org.junit.Assert;
+import org.junit.jupiter.api.Test;
+import org.junit.runner.RunWith;
+import org.onap.portal.domain.db.fn.FnUser;
+import org.onap.portal.domain.dto.ecomp.EPUserAppCatalogRoles;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit4.SpringRunner;
 
-@Repository
+@RunWith(SpringRunner.class)
+@SpringBootTest
 @Transactional
-public interface FnRoleDao extends JpaRepository<FnRole, Long> {
+@TestPropertySource(locations = "classpath:test.properties")
+class FnUserRoleServiceTest {
+       @Autowired
+       private FnUserRoleService fnUserRoleService;
+       @Autowired
+       private FnUserService fnUserService;
 
-       @Query
-       List<FnRole> retrieveAppRoleByAppRoleIdAndByAppId(final @Param("appId") Long appId,
-               final @Param("appRoleId") Long appRoleId);
+       @Test
+       void getUserAppCatalogRoles() {
+              FnUser user = fnUserService.loadUserByUsername("demo");
 
-       List<FnRole> getUserRoleOnUserIdAndAppId(final @Param("userId") Long userId, final @Param("appId") Long appId);
+              List<EPUserAppCatalogRoles> actual = fnUserRoleService.getUserAppCatalogRoles(user, "appName");
+
+              List<EPUserAppCatalogRoles> expected = new ArrayList<>();
+
+              assertEquals(expected, actual);
+       }
 }

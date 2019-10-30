@@ -44,6 +44,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.onap.portal.domain.db.ep.EpUserRolesRequest;
 import org.onap.portal.domain.dto.DomainVo;
 
 @Getter
@@ -56,6 +57,6 @@ public class EPUserAppRolesRequestDetail extends DomainVo {
 
 	private Long reqRoleId;
 	private String reqType;
-	private EPUserAppRolesRequest epRequestIdData;
+	private EpUserRolesRequest epRequestIdData;
 
 }

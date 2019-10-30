@@ -66,6 +66,7 @@ import lombok.Setter;
 import org.hibernate.validator.constraints.SafeHtml;
 import org.onap.portal.domain.db.fn.FnApp;
 import org.onap.portal.domain.db.fn.FnUser;
+import org.onap.portal.domain.dto.ecomp.EPUserAppRolesRequestDetail;
 
 /*
 CREATE TABLE `ep_user_roles_request` (
@@ -123,4 +124,8 @@ public class EpUserRolesRequest implements Serializable {
                fetch = FetchType.LAZY
        )
        private Set<EpUserRolesRequestDet> epUserRolesRequestDets;
+
+       public void setEpRequestIdDetail(Set<EpUserRolesRequestDet> epMyLoginsDetail) {
+              this.epUserRolesRequestDets = epMyLoginsDetail;
+       }
 }
