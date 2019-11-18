@@ -38,32 +38,22 @@
  *
  */
 
-package org.onap.portal.service.ep;
+package org.onap.portal.dao.ep;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import org.onap.portal.dao.ep.EpUserRolesRequestDetDao;
-import org.onap.portal.domain.db.ep.EpUserRolesRequestDet;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.onap.portal.domain.db.ep.EpAppFunction;
+import org.onap.portal.domain.db.ep.EpAppFunction.EpAppFunctionId;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-@Service
+@Repository
 @Transactional
-public class EpUserRolesRequestDetService {
-       private final EpUserRolesRequestDetDao epUserRolesRequestDetDao;
+public interface EpAppFunctionDao extends JpaRepository<EpAppFunction, EpAppFunctionId> {
 
-       @Autowired
-       public EpUserRolesRequestDetService(EpUserRolesRequestDetDao epUserRolesRequestDetDao) {
-              this.epUserRolesRequestDetDao = epUserRolesRequestDetDao;
-       }
+  @Query
+  List<EpAppFunction> getAppRoleFunctionList(final @Param("roleId") Long roleId, final @Param("appId") Long appId);
 
-       public EpUserRolesRequestDet saveOne(EpUserRolesRequestDet epUserRolesRequestDet){
-              return epUserRolesRequestDetDao.save(epUserRolesRequestDet);
-       }
-
-       public List<EpUserRolesRequestDet> appRolesRequestDetailList(final Long reqId){
-              return Optional.of(epUserRolesRequestDetDao.appRolesRequestDetailList(reqId)).orElse(new ArrayList<>());
-       }
 }

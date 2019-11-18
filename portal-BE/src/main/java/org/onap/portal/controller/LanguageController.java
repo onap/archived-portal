@@ -101,7 +101,7 @@ public class LanguageController {
                             @SuppressWarnings("OptionalGetWithoutIsPresent")
                             FnUser user = fnUserService.getUser(userId).get();
                             user.setLanguageId(fnLanguage);
-                            fnUserService.saveFnUser(principal, user);
+                            fnUserService.saveFnUser(user);
                             //response.setResponse(fnUserMapper.fnUserToFnUserDto(user).toString());
                             response.setMessage("SUCCESS");
                             response.setStatus(PortalRestStatusEnum.OK);

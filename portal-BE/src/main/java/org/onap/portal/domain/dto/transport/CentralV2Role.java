@@ -41,62 +41,65 @@
 package org.onap.portal.domain.dto.transport;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.onap.portal.domain.db.ep.EpAppFunction;
 
 @Getter
 @Setter
+@Builder
 @EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
 public class CentralV2Role implements Serializable, Comparable {
 
-       private static final long serialVersionUID = -4332644961113063714L;
+  private static final long serialVersionUID = -4332644961113063714L;
 
-       private Long id;
-       private Date created;
-       private Date modified;
-       private Long createdId;
-       private Long modifiedId;
-       private Long rowNum;
-       private String name;
-       private boolean active;
-       private Integer priority;
-       private SortedSet<CentralV2RoleFunction> roleFunctions = new TreeSet<>();
-       private SortedSet<CentralV2Role> childRoles = new TreeSet<>();
-       private SortedSet<CentralV2Role> parentRoles = new TreeSet<>();
+  private Long id;
+  private LocalDateTime created;
+  private LocalDateTime modified;
+  private Long createdId;
+  private Long modifiedId;
+  private Long rowNum;
+  private String name;
+  private boolean active;
+  private Integer priority;
+  private SortedSet<EpAppFunction> roleFunctions = new TreeSet<>();
+  private SortedSet<CentralV2Role> childRoles = new TreeSet<>();
+  private SortedSet<CentralV2Role> parentRoles = new TreeSet<>();
 
-       public CentralV2Role(Long id, String name) {
-              this.id = id;
-              this.name = name;
-       }
+  public CentralV2Role(Long id, String name) {
+    this.id = id;
+    this.name = name;
+  }
 
-       public void addRoleFunction(CentralV2RoleFunction roleFunction) {
-              this.roleFunctions.add(roleFunction);
-       }
+  public void addRoleFunction(EpAppFunction roleFunction) {
+    this.roleFunctions.add(roleFunction);
+  }
 
-       public void addChildRole(CentralV2Role role) {
-              this.childRoles.add(role);
-       }
+  public void addChildRole(CentralV2Role role) {
+    this.childRoles.add(role);
+  }
 
-       public void addParentRole(CentralV2Role role) {
-              this.parentRoles.add(role);
-       }
+  public void addParentRole(CentralV2Role role) {
+    this.parentRoles.add(role);
+  }
 
-       @Override
-       public int compareTo(Object obj) {
-              CentralV2Role other = (CentralV2Role) obj;
+  @Override
+  public int compareTo(Object obj) {
+    CentralV2Role other = (CentralV2Role) obj;
 
-              String c1 = getName();
-              String c2 = other.getName();
+    String c1 = getName();
+    String c2 = other.getName();
 
-              return (c1 == null || c2 == null) ? 1 : c1.compareTo(c2);
-       }
+    return (c1 == null || c2 == null) ? 1 : c1.compareTo(c2);
+  }
 
 }

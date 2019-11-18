@@ -38,32 +38,58 @@
  *
  */
 
-package org.onap.portal.service.ep;
+package org.onap.portal.domain.db.fn;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import org.onap.portal.dao.ep.EpUserRolesRequestDetDao;
-import org.onap.portal.domain.db.ep.EpUserRolesRequestDet;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import java.io.Serializable;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.Index;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.validation.Valid;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.onap.portal.domain.db.fn.FnRoleComposite.FnRoleCompositeId;
 
-@Service
-@Transactional
-public class EpUserRolesRequestDetService {
-       private final EpUserRolesRequestDetDao epUserRolesRequestDetDao;
+@Table(name = "fn_role_composite", indexes = {
+    @Index(name = "fk_fn_role_composite_child", columnList = "child_role_id")
+})
+@Getter
+@Setter
+@Entity
+@NoArgsConstructor
+@AllArgsConstructor
+@IdClass(FnRoleCompositeId.class)
+public class FnRoleComposite implements Serializable{
 
-       @Autowired
-       public EpUserRolesRequestDetService(EpUserRolesRequestDetDao epUserRolesRequestDetDao) {
-              this.epUserRolesRequestDetDao = epUserRolesRequestDetDao;
-       }
+  @Id
+  @Valid
+  @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @JoinColumn(name = "parent_role_id")
+  private FnRole parentRoles;
+  @Id
+  @Valid
+  @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @JoinColumn(name = "child_role_id")
+  private FnRole childRoles;
 
-       public EpUserRolesRequestDet saveOne(EpUserRolesRequestDet epUserRolesRequestDet){
-              return epUserRolesRequestDetDao.save(epUserRolesRequestDet);
-       }
+  @Getter
+  @Setter
+  @NoArgsConstructor
+  @EqualsAndHashCode
+  @AllArgsConstructor
+  public class FnRoleCompositeId implements Serializable {
 
-       public List<EpUserRolesRequestDet> appRolesRequestDetailList(final Long reqId){
-              return Optional.of(epUserRolesRequestDetDao.appRolesRequestDetailList(reqId)).orElse(new ArrayList<>());
-       }
+    @Valid
+    private FnRole parentRoles;
+    @Valid
+    private FnRole childRoles;
+  }
 }

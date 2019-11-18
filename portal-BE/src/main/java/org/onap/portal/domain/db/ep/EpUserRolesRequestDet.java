@@ -51,6 +51,8 @@ import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.Valid;
@@ -77,6 +79,13 @@ CREATE TABLE `ep_user_roles_request_det` (
         CONSTRAINT `fk_user_roles_req_fn_role_id` FOREIGN KEY (`requested_role_id`) REFERENCES `fn_role` (`role_id`)
         )
 */
+
+@NamedQueries({
+    @NamedQuery(
+        name = "EpUserRolesRequestDet.appRolesRequestDetailList",
+        query = "FROM EpUserRolesRequestDet where reqId.reqId = :reqId"
+    )
+})
 
 @Table(name = "ep_user_roles_request_det", indexes = {
         @Index(name = "fk_user_roles_req_fn_req_id", columnList = "req_id"),

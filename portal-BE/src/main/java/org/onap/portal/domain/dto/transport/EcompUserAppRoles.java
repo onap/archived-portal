@@ -61,5 +61,4 @@ public class EcompUserAppRoles implements Serializable {
        private Integer priority;
        private Long roleId;
        private String roleName;
-
 }

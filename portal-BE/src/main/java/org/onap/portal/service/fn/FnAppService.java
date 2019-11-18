@@ -40,9 +40,13 @@
 
 package org.onap.portal.service.fn;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.TreeSet;
 import javax.persistence.EntityExistsException;
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import org.onap.portal.dao.fn.FnAppDao;
 import org.onap.portal.domain.db.fn.FnApp;
 import org.onap.portal.domain.dto.transport.OnboardingApp;
@@ -56,56 +60,72 @@ import org.springframework.stereotype.Service;
 @Service
 public class FnAppService {
 
-       private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(FnAppService.class);
+  private static final String SUPER_ADMIN_ROLE_ID = "1";
 
-       private final FnAppDao fnAppDao;
+  private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(FnAppService.class);
 
-       @Autowired
-       public FnAppService(final FnAppDao fnAppDao) {
-              this.fnAppDao = fnAppDao;
-       }
+  private final FnAppDao fnAppDao;
+  private final EntityManager entityManager;
 
-       public List<FnApp> getAppsFullList() {
-              return fnAppDao.findAll();
-       }
+  @Autowired
+  public FnAppService(final FnAppDao fnAppDao, EntityManager entityManager) {
+    this.fnAppDao = fnAppDao;
+    this.entityManager = entityManager;
+  }
 
-       public FnApp getById(final Long id){
-              return Optional.of(fnAppDao.getOne(id)).orElseThrow(EntityExistsException::new);
-       }
+  public List<FnApp> getAppsFullList() {
+    return fnAppDao.findAll();
+  }
 
-       public void createOnboardingFromApp(FnApp app, OnboardingApp onboardingApp) {
-              onboardingApp.setId(app.getId());
-              onboardingApp.setName(app.getAppName());
-              onboardingApp.setImageUrl(app.getAppImageUrl());
-              onboardingApp.setDescription(app.getAppDescription());
-              onboardingApp.setNotes(app.getAppNotes());
-              onboardingApp.setUrl(app.getAppUrl());
-              onboardingApp.setAlternateUrl(app.getAppAlternateUrl());
-              onboardingApp.setRestUrl(app.getAppRestEndpoint());
-              onboardingApp.setIsOpen(app.getOpen());
-              onboardingApp.setIsEnabled(app.getEnabled());
-              onboardingApp.setUsername(app.getAppUsername());
-              onboardingApp.setAppPassword((app.getAppPassword().equals(EPCommonSystemProperties.APP_DISPLAY_PASSWORD))
-                      ? EPCommonSystemProperties.APP_DISPLAY_PASSWORD : decryptedPassword(app.getAppPassword(), app));
-              onboardingApp.setUebTopicName(app.getUebTopicName());
-              onboardingApp.setUebKey(app.getUebKey());
-              onboardingApp.setUebSecret(app.getUebSecret());
-              onboardingApp.setIsCentralAuth(app.getAuthCentral());
-              onboardingApp.setNameSpace(app.getAuthNamespace());
-              onboardingApp.setRestrictedApp(app.isRestrictedApp());
-       }
+  public FnApp getById(final Long id) {
+    return Optional.of(fnAppDao.getOne(id)).orElseThrow(EntityExistsException::new);
+  }
 
-       private String decryptedPassword(String encryptedAppPwd, FnApp app) {
-              String result = "";
-              if (encryptedAppPwd != null && !encryptedAppPwd.isEmpty()) {
-                     try {
-                            result = CipherUtil.decryptPKC(encryptedAppPwd,
-                                    SystemProperties.getProperty(SystemProperties.Decryption_Key));
-                     } catch (Exception e) {
-                            logger.error(EELFLoggerDelegate.errorLogger,
-                                    "decryptedPassword failed for app " + app.getAppName(), e);
-                     }
-              }
-              return result;
-       }
+  public void createOnboardingFromApp(FnApp app, OnboardingApp onboardingApp) {
+    onboardingApp.setId(app.getId());
+    onboardingApp.setName(app.getAppName());
+    onboardingApp.setImageUrl(app.getAppImageUrl());
+    onboardingApp.setDescription(app.getAppDescription());
+    onboardingApp.setNotes(app.getAppNotes());
+    onboardingApp.setUrl(app.getAppUrl());
+    onboardingApp.setAlternateUrl(app.getAppAlternateUrl());
+    onboardingApp.setRestUrl(app.getAppRestEndpoint());
+    onboardingApp.setIsOpen(app.getOpen());
+    onboardingApp.setIsEnabled(app.getEnabled());
+    onboardingApp.setUsername(app.getAppUsername());
+    onboardingApp.setAppPassword((app.getAppPassword().equals(EPCommonSystemProperties.APP_DISPLAY_PASSWORD))
+        ? EPCommonSystemProperties.APP_DISPLAY_PASSWORD : decryptedPassword(app.getAppPassword(), app));
+    onboardingApp.setUebTopicName(app.getUebTopicName());
+    onboardingApp.setUebKey(app.getUebKey());
+    onboardingApp.setUebSecret(app.getUebSecret());
+    onboardingApp.setIsCentralAuth(app.getAuthCentral());
+    onboardingApp.setNameSpace(app.getAuthNamespace());
+    onboardingApp.setRestrictedApp(app.isRestrictedApp());
+  }
+
+  private String decryptedPassword(String encryptedAppPwd, FnApp app) {
+    String result = "";
+    if (encryptedAppPwd != null && !encryptedAppPwd.isEmpty()) {
+      try {
+        result = CipherUtil.decryptPKC(encryptedAppPwd,
+            SystemProperties.getProperty(SystemProperties.Decryption_Key));
+      } catch (Exception e) {
+        logger.error(EELFLoggerDelegate.errorLogger,
+            "decryptedPassword failed for app " + app.getAppName(), e);
+      }
+    }
+    return result;
+  }
+
+  List<FnApp> getUserRemoteApps(String id) {
+/*    StringBuilder sb = new StringBuilder();
+    sb.append("SELECT * FROM FnApp join FN_USER_ROLE ON FN_USER_ROLE.APP_ID = FN_APP.APP_ID where ");
+    sb.append("FN_USER_ROLE.USER_ID = ").append(id).append(" AND FN_USER_ROLE.ROLE_ID != ")
+        .append(SUPER_ADMIN_ROLE_ID);
+    sb.append(" AND FN_APP.ENABLED = 'Y'");
+
+    Query query = entityManager.createQuery(sb.toString());
+    List<FnApp> adminApps = query.getResultList();*/
+    return new ArrayList<>();
+  }
 }

@@ -51,6 +51,8 @@ import javax.persistence.IdClass;
 import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.Valid;
@@ -64,6 +66,7 @@ import lombok.Setter;
 import org.hibernate.validator.constraints.SafeHtml;
 import org.onap.portal.domain.db.ep.EpAppFunction.EpAppFunctionId;
 import org.onap.portal.domain.db.fn.FnApp;
+import org.onap.portal.domain.dto.DomainVo;
 
 /*
 CREATE TABLE `ep_app_function` (
@@ -76,6 +79,20 @@ CREATE TABLE `ep_app_function` (
         )
 */
 
+@NamedQueries({
+    @NamedQuery(
+        name = "EpAppFunction.getAppRoleFunctionList",
+        query = "from\n"
+            + "  EpAppRoleFunction rf,\n"
+            + "  EpAppFunction f\n"
+            + " where\n"
+            + "  rf.fnRole.roleId = :roleId\n"
+            + "  and rf.appId.appId = :appId\n"
+            + "  and rf.appId.appId = f.appId.appId\n"
+            + "  and rf.epAppFunction.functionCd = f.functionCd"
+    )
+})
+
 @Table(name = "ep_app_function", indexes = {@Index(name = "fk_ep_app_function_app_id", columnList = "app_id")})
 
 @Getter
@@ -84,7 +101,7 @@ CREATE TABLE `ep_app_function` (
 @IdClass(EpAppFunctionId.class)
 @NoArgsConstructor
 @AllArgsConstructor
-public class EpAppFunction implements Serializable{
+public class EpAppFunction extends DomainVo implements Serializable{
        @Id
        @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
        @JoinColumn(name = "app_id")
@@ -101,6 +118,14 @@ public class EpAppFunction implements Serializable{
        @NotNull
        @SafeHtml
        private String functionName;
+
+       private Long roleId;
+       private String type;
+       @SafeHtml
+       private String action;
+       @SafeHtml
+       private String editUrl;
+
        @OneToMany(
                targetEntity = EpAppRoleFunction.class,
                mappedBy = "epAppFunction",
@@ -108,6 +133,17 @@ public class EpAppFunction implements Serializable{
                fetch = FetchType.LAZY
        )
        private Set<EpAppRoleFunction> epAppRoleFunctions;
+
+       public EpAppFunction(Long id, String code, String name, FnApp appId, String type, String action,String editUrl) {
+              super();
+              this.id = id;
+              this.functionCd = code;
+              this.functionName = name;
+              this.appId = appId;
+              this.type = type;
+              this.action = action;
+              this.editUrl = editUrl;
+       }
 
        @Getter
        @Setter

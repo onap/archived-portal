@@ -54,42 +54,60 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 public class FnRoleService {
-       private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(FnRoleService.class);
+
+  private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(FnRoleService.class);
 
 
-       private final FnRoleDao fnRoleDao;
+  private final FnRoleDao fnRoleDao;
 
-       @Autowired
-       public FnRoleService(FnRoleDao fnRoleDao) {
-              this.fnRoleDao = fnRoleDao;
-       }
+  @Autowired
+  public FnRoleService(FnRoleDao fnRoleDao) {
+    this.fnRoleDao = fnRoleDao;
+  }
 
-       public FnRole getById(final Long id) {
-              return fnRoleDao.findById(id).orElseThrow(EntityExistsException::new);
-       }
+  public FnRole getById(final Long id) {
+    return fnRoleDao.findById(id).orElseThrow(EntityExistsException::new);
+  }
 
-       public FnRole getRole(final Long appId, final Long appRoleId) {
+  public FnRole getRole(final Long appId, final Long appRoleId) {
 
-              String sql = "SELECT * FROM fn_role where APP_ID = :appId AND APP_ROLE_ID = :appRoleId";
+    String sql = "SELECT * FROM fn_role where APP_ID = :appId AND APP_ROLE_ID = :appRoleId";
 
-              List<FnRole> roles = Optional.of(fnRoleDao.retrieveAppRoleByAppRoleIdAndByAppId(appId, appRoleId)).orElse(new ArrayList<>());
-              if (!roles.isEmpty()) {
-                     logger.error(EELFLoggerDelegate.errorLogger,
-                             String.format(
-                                     "search by appId=%s, appRoleid=%s should have returned 0 or 1 results. Got %d. This is an internal server error.",
-                                     appId, appRoleId, roles.size()));
-                     logger.error(EELFLoggerDelegate.errorLogger,
-                             "Trying to recover from duplicates by returning the first search result. This issue should be treated, it is probably not critical because duplicate roles should be similar.");
-                     return roles.get(0);
-              }
-              return null;
-       }
+    List<FnRole> roles = Optional.of(fnRoleDao.retrieveAppRoleByAppRoleIdAndByAppId(appId, appRoleId))
+        .orElse(new ArrayList<>());
+    if (!roles.isEmpty()) {
+      logger.error(EELFLoggerDelegate.errorLogger,
+          String.format(
+              "search by appId=%s, appRoleid=%s should have returned 0 or 1 results. Got %d. This is an internal server error.",
+              appId, appRoleId, roles.size()));
+      logger.error(EELFLoggerDelegate.errorLogger,
+          "Trying to recover from duplicates by returning the first search result. This issue should be treated, it is probably not critical because duplicate roles should be similar.");
+      return roles.get(0);
+    }
+    return null;
+  }
 
-       public List<FnRole> retrieveAppRoleByAppRoleIdAndByAppId(Long appId, Long appRoleId){
-              return Optional.of(fnRoleDao.retrieveAppRoleByAppRoleIdAndByAppId(appId, appRoleId)).orElse(new ArrayList<>());
-       }
+  public List<FnRole> retrieveAppRoleByAppRoleIdAndByAppId(final Long appId, final Long appRoleId) {
+    return Optional.of(fnRoleDao.retrieveAppRoleByAppRoleIdAndByAppId(appId, appRoleId)).orElse(new ArrayList<>());
+  }
 
-       public List<FnRole> getUserRoleOnUserIdAndAppId(final Long userId, final Long appId) {
-              return Optional.of(fnRoleDao.getUserRoleOnUserIdAndAppId(userId, appId)).orElse(new ArrayList<>());
-       }
+  public List<FnRole> getUserRoleOnUserIdAndAppId(final Long userId, final Long appId) {
+    return Optional.of(fnRoleDao.getUserRoleOnUserIdAndAppId(userId, appId)).orElse(new ArrayList<>());
+  }
+
+  public List<FnRole> retrieveAppRoleByRoleIdWhereAppIdIsNull(final Long roleId) {
+    return Optional.of(fnRoleDao.retrieveAppRoleByRoleIdWhereAppIdIsNull(roleId)).orElse(new ArrayList<>());
+  }
+
+  public List<FnRole> retrieveAppRolesWhereAppIdIsNull() {
+    return Optional.of(fnRoleDao.retrieveAppRolesWhereAppIdIsNull()).orElse(new ArrayList<>());
+  }
+
+  public List<FnRole> retrieveAppRolesByAppId(final Long id) {
+    return Optional.of(fnRoleDao.retrieveAppRolesByAppId(id)).orElse(new ArrayList<>());
+  }
+
+  public List<FnRole> retrieveAppRolesByRoleNameAndByAppId(final String roleName, final Long appId) {
+    return Optional.of(fnRoleDao.retrieveAppRolesByRoleNameAndByAppId(roleName, appId)).orElse(new ArrayList<>());
+  }
 }

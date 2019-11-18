@@ -47,6 +47,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -56,9 +57,14 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import javax.persistence.Tuple;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.transport.http.HTTPException;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.onap.portal.dao.fn.FnUserRoleDao;
 import org.onap.portal.domain.db.ep.EpUserRolesRequest;
 import org.onap.portal.domain.db.ep.EpUserRolesRequestDet;
@@ -69,325 +75,409 @@ import org.onap.portal.domain.db.fn.FnUserRole;
 import org.onap.portal.domain.dto.ecomp.EPUserAppCatalogRoles;
 import org.onap.portal.domain.dto.ecomp.ExternalSystemAccess;
 import org.onap.portal.domain.dto.transport.AppWithRolesForUser;
+import org.onap.portal.domain.dto.transport.ExternalAccessUserRoleDetail;
 import org.onap.portal.domain.dto.transport.FieldsValidator;
 import org.onap.portal.domain.dto.transport.RemoteRole;
 import org.onap.portal.domain.dto.transport.RemoteUserWithRoles;
 import org.onap.portal.domain.dto.transport.RoleInAppForUser;
 import org.onap.portal.domain.dto.transport.UserApplicationRoles;
+import org.onap.portal.exception.SyncUserRolesException;
+import org.onap.portal.logging.format.EPAppMessagesEnum;
+import org.onap.portal.logging.logic.EPLogUtil;
 import org.onap.portal.service.ApplicationsRestClientService;
+import org.onap.portal.service.ExternalAccessRolesService;
 import org.onap.portal.service.ep.EpUserRolesRequestDetService;
 import org.onap.portal.service.ep.EpUserRolesRequestService;
 import org.onap.portal.utils.EPCommonSystemProperties;
+import org.onap.portal.utils.EcompPortalUtils;
 import org.onap.portal.utils.PortalConstants;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
+import org.onap.portalsdk.core.restful.domain.EcompRole;
 import org.onap.portalsdk.core.util.SystemProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
 @Service
 @Transactional
 public class FnUserRoleService {
 
-       private static final String USER_APP_CATALOG_ROLES =
-               "select\n"
-                       + "  A.reqId as reqId,\n"
-                       + "  B.requestedRoleId.roleId as requestedRoleId,\n"
-                       + "  A.requestStatus as requestStatus,\n"
-                       + "  A.appId.appId as appId,\n"
-                       + "  (\n"
-                       + "    select\n"
-                       + "      roleName\n"
-                       + "    from\n"
-                       + "      FnRole\n"
-                       + "    where\n"
-                       + "      roleId = B.requestedRoleId.roleId\n"
-                       + "  ) as roleName\n"
-                       + "from\n"
-                       + "  EpUserRolesRequest A\n"
-                       + "  left join EpUserRolesRequestDet B on A.reqId = B.reqId.reqId\n"
-                       + "where\n"
-                       + "  A.userId.userId = :userid\n"
-                       + "  and A.appId IN (\n"
-                       + "    select\n"
-                       + "      appId\n"
-                       + "    from\n"
-                       + "      FnApp\n"
-                       + "    where\n"
-                       + "      appName = :appName\n"
-                       + "  )\n"
-                       + "  and A.requestStatus = 'P'\n";
+  private static final String GET_ROLE_FUNCTIONS_OF_USERFOR_ALLTHE_APPLICATIONS =
+      "select\n"
+          + "  distinct ep.function_cd functionCd\n"
+          + "from\n"
+          + "  fn_user_role fu,\n"
+          + "  ep_app_role_function ep,\n"
+          + "  ep_app_function ea\n"
+          + "where\n"
+          + "  fu.role_id = ep.role_id\n"
+          + "  and fu.app_id = ep.app_id\n"
+          + "  and fu.user_id = 'userId'\n"
+          + "  and ea.function_cd = ep.function_cd\n"
+          + "  and exists (\n"
+          + "    select\n"
+          + "      fa.app_id\n"
+          + "    from\n"
+          + "      fn_user fu,\n"
+          + "      fn_user_role ur,\n"
+          + "      fn_app fa\n"
+          + "    where\n"
+          + "      fu.user_id = 'userId'\n"
+          + "      and fu.user_id = ur.user_id\n"
+          + "      and ur.app_id = fa.app_id\n"
+          + "      and fa.enabled = 'Y'\n"
+          + "  )";
 
-       private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(FnUserRoleService.class);
-       private final FnUserRoleDao fnUserRoleDao;
-       private final FnAppService fnAppService;
-       private final FnRoleService fnRoleService;
-       private final FnUserService fnUserService;
-       private final EpUserRolesRequestService epUserRolesRequestService;
-       private final EpUserRolesRequestDetService epUserRolesRequestDetService;
-       private final EntityManager entityManager;
-       private final ApplicationsRestClientService applicationsRestClientService;
+  private static final String USER_APP_CATALOG_ROLES =
+      "select\n"
+          + "  A.reqId as reqId,\n"
+          + "  B.requestedRoleId.roleId as requestedRoleId,\n"
+          + "  A.requestStatus as requestStatus,\n"
+          + "  A.appId.appId as appId,\n"
+          + "  (\n"
+          + "    select\n"
+          + "      roleName\n"
+          + "    from\n"
+          + "      FnRole\n"
+          + "    where\n"
+          + "      roleId = B.requestedRoleId.roleId\n"
+          + "  ) as roleName\n"
+          + "from\n"
+          + "  EpUserRolesRequest A\n"
+          + "  left join EpUserRolesRequestDet B on A.reqId = B.reqId.reqId\n"
+          + "where\n"
+          + "  A.userId.userId = :userid\n"
+          + "  and A.appId IN (\n"
+          + "    select\n"
+          + "      appId\n"
+          + "    from\n"
+          + "      FnApp\n"
+          + "    where\n"
+          + "      appName = :appName\n"
+          + "  )\n"
+          + "  and A.requestStatus = 'P'\n";
 
-       @Autowired
-       public FnUserRoleService(FnUserRoleDao fnUserRoleDao, FnAppService fnAppService,
-               FnRoleService fnRoleService,
-               FnUserService fnUserService,
-               EpUserRolesRequestService epUserRolesRequestService,
-               EpUserRolesRequestDetService epUserRolesRequestDetService,
-               EntityManager entityManager,
-               ApplicationsRestClientService applicationsRestClientService) {
-              this.fnUserRoleDao = fnUserRoleDao;
-              this.fnAppService = fnAppService;
-              this.fnRoleService = fnRoleService;
-              this.fnUserService = fnUserService;
-              this.epUserRolesRequestService = epUserRolesRequestService;
-              this.epUserRolesRequestDetService = epUserRolesRequestDetService;
-              this.entityManager = entityManager;
-              this.applicationsRestClientService = applicationsRestClientService;
-       }
+  private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(FnUserRoleService.class);
 
-       public List<FnUserRole> getAdminUserRoles(final Long userId, final Long roleId, final Long appId) {
-              return fnUserRoleDao.getAdminUserRoles(userId, roleId, appId).orElse(new ArrayList<>());
-       }
+  private final FnUserRoleDao fnUserRoleDao;
+  private final FnAppService fnAppService;
+  private final FnRoleService fnRoleService;
+  private final FnUserService fnUserService;
+  private final EpUserRolesRequestService epUserRolesRequestService;
+  private final EpUserRolesRequestDetService epUserRolesRequestDetService;
+  private final EntityManager entityManager;
+  private final ApplicationsRestClientService applicationsRestClientService;
 
-       public boolean isSuperAdmin(final String orgUserId, final Long roleId, final Long appId) {
-              List<FnUserRole> roles = getUserRolesForRoleIdAndAppId(roleId, appId).stream()
-                      .filter(role -> role.getUserId().getOrgUserId().equals(orgUserId)).collect(Collectors.toList());
-              return !roles.isEmpty();
-       }
+  @Autowired
+  public FnUserRoleService(FnUserRoleDao
+      fnUserRoleDao,
+      FnAppService fnAppService,
+      FnRoleService fnRoleService,
+      FnUserService fnUserService,
+      EpUserRolesRequestService epUserRolesRequestService,
+      EpUserRolesRequestDetService epUserRolesRequestDetService,
+      EntityManager entityManager,
+      ApplicationsRestClientService applicationsRestClientService) {
+    this.fnUserRoleDao = fnUserRoleDao;
+    this.fnAppService = fnAppService;
+    this.fnRoleService = fnRoleService;
+    this.fnUserService = fnUserService;
+    this.epUserRolesRequestService = epUserRolesRequestService;
+    this.epUserRolesRequestDetService = epUserRolesRequestDetService;
+    this.entityManager = entityManager;
+    this.applicationsRestClientService = applicationsRestClientService;
+  }
 
-       private List<FnUserRole> getUserRolesForRoleIdAndAppId(final Long roleId, final Long appId) {
-              return Optional.of(fnUserRoleDao.getUserRolesForRoleIdAndAppId(roleId, appId)).orElse(new ArrayList<>());
-       }
+  public List<FnUserRole> getAdminUserRoles(final Long userId, final Long roleId, final Long appId) {
+    return fnUserRoleDao.getAdminUserRoles(userId, roleId, appId).orElse(new ArrayList<>());
+  }
 
-       public FnUserRole saveOne(final FnUserRole fnUserRole) {
-              return fnUserRoleDao.save(fnUserRole);
-       }
+  public boolean isSuperAdmin(final String orgUserId, final Long roleId, final Long appId) {
+    List<FnUserRole> roles = getUserRolesForRoleIdAndAppId(roleId, appId).stream()
+        .filter(role -> role.getUserId().getOrgUserId().equals(orgUserId)).collect(Collectors.toList());
+    return !roles.isEmpty();
+  }
 
-       public ExternalSystemAccess getExternalRequestAccess() {
-              ExternalSystemAccess res = null;
-              try {
-                     res = new ExternalSystemAccess(EPCommonSystemProperties.EXTERNAL_ACCESS_ENABLE,
-                             Boolean.parseBoolean(
-                                     SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_ACCESS_ENABLE)));
-              } catch (Exception e) {
-                     logger.error(EELFLoggerDelegate.errorLogger, "getExternalRequestAccess failed" + e.getMessage());
-              }
-              return res;
-       }
+  private List<FnUserRole> getUserRolesForRoleIdAndAppId(final Long roleId, final Long appId) {
+    return Optional.of(fnUserRoleDao.getUserRolesForRoleIdAndAppId(roleId, appId)).orElse(new ArrayList<>());
+  }
 
-       public List<EPUserAppCatalogRoles> getUserAppCatalogRoles(FnUser userid, String appName) {
-              List<Tuple> tuples = entityManager.createQuery(USER_APP_CATALOG_ROLES, Tuple.class)
-                      .setParameter("userid", userid.getUserId())
-                      .setParameter("appName", appName)
-                      .getResultList();
-              return tuples.stream().map(this::tupleToEPUserAppCatalogRoles).collect(Collectors.toList());
-       }
+  public FnUserRole saveOne(final FnUserRole fnUserRole) {
+    return fnUserRoleDao.save(fnUserRole);
+  }
 
-       private EPUserAppCatalogRoles tupleToEPUserAppCatalogRoles(Tuple tuple) {
-              return new EPUserAppCatalogRoles((Long) tuple.get("reqId"), (Long) tuple.get("requestedRoleId"),
-                      (String) tuple.get("roleName"), (String) tuple.get("requestStatus"), (Long) tuple.get("appId"));
-       }
+  public ExternalSystemAccess getExternalRequestAccess() {
+    ExternalSystemAccess res = null;
+    try {
+      res = new ExternalSystemAccess(EPCommonSystemProperties.EXTERNAL_ACCESS_ENABLE,
+          Boolean.parseBoolean(
+              SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_ACCESS_ENABLE)));
+    } catch (Exception e) {
+      logger.error(EELFLoggerDelegate.errorLogger, "getExternalRequestAccess failed" + e.getMessage());
+    }
+    return res;
+  }
 
-       private boolean postUserRolesToMylogins(AppWithRolesForUser userAppRolesData,
-               ApplicationsRestClientService applicationsRestClientService, Long appId, Long userId)
-               throws JsonProcessingException, HTTPException {
-              boolean result = false;
-              ObjectMapper mapper = new ObjectMapper();
-              mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-              String userRolesAsString = mapper.writeValueAsString(userAppRolesData);
-              logger.error(EELFLoggerDelegate.errorLogger,
-                      "Should not be reached here, as the endpoint is not defined yet from the Mylogins");
-              applicationsRestClientService.post(AppWithRolesForUser.class, appId, userRolesAsString,
-                      String.format("/user/%s/myLoginroles", userId));
-              return result;
-       }
+  public List<EPUserAppCatalogRoles> getUserAppCatalogRoles(FnUser userid, String appName) {
+    List<Tuple> tuples = entityManager.createQuery(USER_APP_CATALOG_ROLES, Tuple.class)
+        .setParameter("userid", userid.getUserId())
+        .setParameter("appName", appName)
+        .getResultList();
+    return Optional.of(tuples.stream().map(this::tupleToEPUserAppCatalogRoles).collect(Collectors.toList()))
+        .orElse(new ArrayList<>());
+  }
 
-       public FieldsValidator putUserAppRolesRequest(AppWithRolesForUser newAppRolesForUser, FnUser user) {
-              FieldsValidator fieldsValidator = new FieldsValidator();
-              List<FnRole> appRole;
-              try {
-                     logger.error(EELFLoggerDelegate.errorLogger,
-                             "Should not be reached here, still the endpoint is yet to be defined");
-                     boolean result = postUserRolesToMylogins(newAppRolesForUser, applicationsRestClientService,
-                             newAppRolesForUser.getAppId(), user.getId());
-                     logger.debug(EELFLoggerDelegate.debugLogger, "putUserAppRolesRequest: result {}", result);
-                     FnApp app = fnAppService.getById(newAppRolesForUser.getAppId());
-                     EpUserRolesRequest epUserRolesRequest = new EpUserRolesRequest();
-                     epUserRolesRequest.setCreatedDate(LocalDateTime.now());
-                     epUserRolesRequest.setUpdatedDate(LocalDateTime.now());
-                     epUserRolesRequest.setUserId(user);
-                     epUserRolesRequest.setAppId(app);
-                     epUserRolesRequest.setRequestStatus("P");
-                     List<RoleInAppForUser> appRoleIdList = newAppRolesForUser.getAppRoles();
-                     Set<EpUserRolesRequestDet> appRoleDetails = new LinkedHashSet<>();
-                     epUserRolesRequestService.saveOne(epUserRolesRequest);
-                     for (RoleInAppForUser userAppRoles : appRoleIdList) {
-                            Boolean isAppliedVal = userAppRoles.getIsApplied();
-                            if (isAppliedVal) {
-                                   appRole = fnRoleService
-                                           .retrieveAppRoleByAppRoleIdAndByAppId(newAppRolesForUser.getAppId(),
-                                                   userAppRoles.getRoleId());
-                                   if (!appRole.isEmpty()) {
-                                          EpUserRolesRequestDet epAppRoleDetail = new EpUserRolesRequestDet();
-                                          epAppRoleDetail.setRequestedRoleId(appRole.get(0));
-                                          epAppRoleDetail.setRequestType("P");
-                                          epAppRoleDetail.setReqId(epUserRolesRequest);
-                                          epUserRolesRequestDetService.saveOne(epAppRoleDetail);
-                                   }
-                            }
-                     }
-                     epUserRolesRequest.setEpRequestIdDetail(appRoleDetails);
-                     fieldsValidator.setHttpStatusCode((long) HttpServletResponse.SC_OK);
+  private EPUserAppCatalogRoles tupleToEPUserAppCatalogRoles(Tuple tuple) {
+    return new EPUserAppCatalogRoles((Long) tuple.get("reqId"), (Long) tuple.get("requestedRoleId"),
+        (String) tuple.get("roleName"), (String) tuple.get("requestStatus"), (Long) tuple.get("appId"));
+  }
 
-              } catch (Exception e) {
-                     logger.error(EELFLoggerDelegate.errorLogger, "putUserAppRolesRequest failed", e);
-                     fieldsValidator.setHttpStatusCode((long) HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-              }
-              return fieldsValidator;
-       }
+  private boolean postUserRolesToMylogins(AppWithRolesForUser userAppRolesData,
+      ApplicationsRestClientService applicationsRestClientService, Long appId, Long userId)
+      throws JsonProcessingException, HTTPException {
+    boolean result = false;
+    ObjectMapper mapper = new ObjectMapper();
+    mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    String userRolesAsString = mapper.writeValueAsString(userAppRolesData);
+    logger.error(EELFLoggerDelegate.errorLogger,
+        "Should not be reached here, as the endpoint is not defined yet from the Mylogins");
+    applicationsRestClientService.post(AppWithRolesForUser.class, appId, userRolesAsString,
+        String.format("/user/%s/myLoginroles", userId));
+    return result;
+  }
 
-       public List<FnRole> importRolesFromRemoteApplication(Long appId) throws HTTPException {
-              FnRole[] appRolesFull = applicationsRestClientService.get(FnRole[].class, appId, "/rolesFull");
-              List<FnRole> rolesList = Arrays.asList(appRolesFull);
-              for (FnRole externalAppRole : rolesList) {
+  public FieldsValidator putUserAppRolesRequest(AppWithRolesForUser newAppRolesForUser, FnUser user) {
+    FieldsValidator fieldsValidator = new FieldsValidator();
+    List<FnRole> appRole;
+    try {
+      logger.error(EELFLoggerDelegate.errorLogger,
+          "Should not be reached here, still the endpoint is yet to be defined");
+      boolean result = postUserRolesToMylogins(newAppRolesForUser, applicationsRestClientService,
+          newAppRolesForUser.getAppId(), user.getId());
+      logger.debug(EELFLoggerDelegate.debugLogger, "putUserAppRolesRequest: result {}", result);
+      FnApp app = fnAppService.getById(newAppRolesForUser.getAppId());
+      EpUserRolesRequest epUserRolesRequest = new EpUserRolesRequest();
+      epUserRolesRequest.setCreatedDate(LocalDateTime.now());
+      epUserRolesRequest.setUpdatedDate(LocalDateTime.now());
+      epUserRolesRequest.setUserId(user);
+      epUserRolesRequest.setAppId(app);
+      epUserRolesRequest.setRequestStatus("P");
+      List<RoleInAppForUser> appRoleIdList = newAppRolesForUser.getAppRoles();
+      Set<EpUserRolesRequestDet> appRoleDetails = new LinkedHashSet<>();
+      epUserRolesRequestService.saveOne(epUserRolesRequest);
+      for (RoleInAppForUser userAppRoles : appRoleIdList) {
+        Boolean isAppliedVal = userAppRoles.getIsApplied();
+        if (isAppliedVal) {
+          appRole = fnRoleService
+              .retrieveAppRoleByAppRoleIdAndByAppId(newAppRolesForUser.getAppId(),
+                  userAppRoles.getRoleId());
+          if (!appRole.isEmpty()) {
+            EpUserRolesRequestDet epAppRoleDetail = new EpUserRolesRequestDet();
+            epAppRoleDetail.setRequestedRoleId(appRole.get(0));
+            epAppRoleDetail.setRequestType("P");
+            epAppRoleDetail.setReqId(epUserRolesRequest);
+            epUserRolesRequestDetService.saveOne(epAppRoleDetail);
+          }
+        }
+      }
+      epUserRolesRequest.setEpRequestIdDetail(appRoleDetails);
+      fieldsValidator.setHttpStatusCode((long) HttpServletResponse.SC_OK);
 
-                     // Try to find an existing extern role for the app in the local
-                     // onap DB. If so, then use its id to update the existing external
-                     // application role record.
-                     Long externAppId = externalAppRole.getId();
-                     FnRole existingAppRole = fnRoleService.getRole(appId, externAppId);
-                     if (existingAppRole != null) {
-                            logger.debug(EELFLoggerDelegate.debugLogger,
-                                    String.format(
-                                            "ecomp role already exists for app=%s; appRoleId=%s. No need to import this one.",
-                                            appId, externAppId));
-                            continue;
-                     }
-                     // persistExternalRoleInEcompDb(externalAppRole, appId,
-                     // roleService);
-              }
+    } catch (Exception e) {
+      logger.error(EELFLoggerDelegate.errorLogger, "putUserAppRolesRequest failed", e);
+      fieldsValidator.setHttpStatusCode((long) HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+    }
+    return fieldsValidator;
+  }
 
-              return rolesList;
-       }
+  public List<FnRole> importRolesFromRemoteApplication(Long appId) throws HTTPException {
+    FnRole[] appRolesFull = applicationsRestClientService.get(FnRole[].class, appId, "/rolesFull");
+    List<FnRole> rolesList = Arrays.asList(appRolesFull);
+    for (FnRole externalAppRole : rolesList) {
 
-       public List<UserApplicationRoles> getUsersFromAppEndpoint(Long appId) throws HTTPException {
-              ArrayList<UserApplicationRoles> userApplicationRoles = new ArrayList<>();
+      // Try to find an existing extern role for the app in the local
+      // onap DB. If so, then use its id to update the existing external
+      // application role record.
+      Long externAppId = externalAppRole.getId();
+      FnRole existingAppRole = fnRoleService.getRole(appId, externAppId);
+      if (existingAppRole != null) {
+        logger.debug(EELFLoggerDelegate.debugLogger,
+            String.format(
+                "ecomp role already exists for app=%s; appRoleId=%s. No need to import this one.",
+                appId, externAppId));
+      }
+    }
 
-              FnApp app = fnAppService.getById(appId);
-              //If local or centralized application
-              if (PortalConstants.PORTAL_APP_ID.equals(appId) || app.getAuthCentral()) {
-                     List<FnUser> userList = fnUserService.getActiveUsers();
-                     for (FnUser user : userList) {
-                            UserApplicationRoles userWithAppRoles = convertToUserApplicationRoles(appId, user, app);
-                            if (userWithAppRoles.getRoles() != null && userWithAppRoles.getRoles().size() > 0) {
-                                   userApplicationRoles.add(userWithAppRoles);
-                            }
-                     }
+    return rolesList;
+  }
 
-              }
-              // remote app
-              else {
-                     RemoteUserWithRoles[] remoteUsers = null;
-                     String remoteUsersString = applicationsRestClientService.getIncomingJsonString(appId, "/users");
+  public List<UserApplicationRoles> getUsersFromAppEndpoint(Long appId) throws HTTPException {
+    ArrayList<UserApplicationRoles> userApplicationRoles = new ArrayList<>();
 
-                     remoteUsers = doGetUsers(isAppUpgradeVersion(app), remoteUsersString);
+    FnApp app = fnAppService.getById(appId);
+    //If local or centralized application
+    if (PortalConstants.PORTAL_APP_ID.equals(appId) || app.getAuthCentral()) {
+      List<FnUser> userList = fnUserService.getActiveUsers();
+      for (FnUser user : userList) {
+        UserApplicationRoles userWithAppRoles = convertToUserApplicationRoles(appId, user, app);
+        if (userWithAppRoles.getRoles() != null && userWithAppRoles.getRoles().size() > 0) {
+          userApplicationRoles.add(userWithAppRoles);
+        }
+      }
 
-                     userApplicationRoles = new ArrayList<>();
-                     for (RemoteUserWithRoles remoteUser : remoteUsers) {
-                            UserApplicationRoles userWithRemoteAppRoles = convertToUserApplicationRoles(appId,
-                                    remoteUser);
-                            if (userWithRemoteAppRoles.getRoles() != null
-                                    && userWithRemoteAppRoles.getRoles().size() > 0) {
-                                   userApplicationRoles.add(userWithRemoteAppRoles);
-                            } else {
-                                   logger.debug(EELFLoggerDelegate.debugLogger,
-                                           "User " + userWithRemoteAppRoles.getOrgUserId()
-                                                   + " doesn't have any roles assigned to any app.");
-                            }
-                     }
-              }
+    }
+    // remote app
+    else {
+      RemoteUserWithRoles[] remoteUsers;
+      String remoteUsersString = applicationsRestClientService.getIncomingJsonString(appId, "/users");
 
-              return userApplicationRoles;
-       }
+      remoteUsers = doGetUsers(remoteUsersString);
 
-       private UserApplicationRoles convertToUserApplicationRoles(Long appId, RemoteUserWithRoles remoteUser) {
-              UserApplicationRoles userWithRemoteAppRoles = new UserApplicationRoles();
-              userWithRemoteAppRoles.setAppId(appId);
-              userWithRemoteAppRoles.setOrgUserId(remoteUser.getOrgUserId());
-              userWithRemoteAppRoles.setFirstName(remoteUser.getFirstName());
-              userWithRemoteAppRoles.setLastName(remoteUser.getLastName());
-              userWithRemoteAppRoles.setRoles(remoteUser.getRoles());
-              return userWithRemoteAppRoles;
-       }
+      userApplicationRoles = new ArrayList<>();
+      for (RemoteUserWithRoles remoteUser : remoteUsers) {
+        UserApplicationRoles userWithRemoteAppRoles = convertToUserApplicationRoles(appId,
+            remoteUser);
+        if (userWithRemoteAppRoles.getRoles() != null
+            && userWithRemoteAppRoles.getRoles().size() > 0) {
+          userApplicationRoles.add(userWithRemoteAppRoles);
+        } else {
+          logger.debug(EELFLoggerDelegate.debugLogger,
+              "User " + userWithRemoteAppRoles.getOrgUserId()
+                  + " doesn't have any roles assigned to any app.");
+        }
+      }
+    }
 
-       private boolean isAppUpgradeVersion(FnApp app) {
-              return true;
-       }
+    return userApplicationRoles;
+  }
 
-       private RemoteUserWithRoles[] doGetUsers(boolean postOpenSource, String remoteUsersString) {
+  private UserApplicationRoles convertToUserApplicationRoles(Long appId, RemoteUserWithRoles remoteUser) {
+    UserApplicationRoles userWithRemoteAppRoles = new UserApplicationRoles();
+    userWithRemoteAppRoles.setAppId(appId);
+    userWithRemoteAppRoles.setOrgUserId(remoteUser.getOrgUserId());
+    userWithRemoteAppRoles.setFirstName(remoteUser.getFirstName());
+    userWithRemoteAppRoles.setLastName(remoteUser.getLastName());
+    userWithRemoteAppRoles.setRoles(remoteUser.getRoles());
+    return userWithRemoteAppRoles;
+  }
 
-              ObjectMapper mapper = new ObjectMapper();
-              try {
-                     return mapper.readValue(remoteUsersString, RemoteUserWithRoles[].class);
-              } catch (IOException e) {
-                     logger.error(EELFLoggerDelegate.errorLogger,
-                             "doGetUsers : Failed : Unexpected property in incoming JSON",
-                             e);
-                     logger.error(EELFLoggerDelegate.errorLogger,
-                             "doGetUsers : Incoming JSON that caused it --> " + remoteUsersString);
-              }
+  private RemoteUserWithRoles[] doGetUsers(String remoteUsersString) {
 
-              return new RemoteUserWithRoles[0];
-       }
+    ObjectMapper mapper = new ObjectMapper();
+    try {
+      return mapper.readValue(remoteUsersString, RemoteUserWithRoles[].class);
+    } catch (IOException e) {
+      logger.error(EELFLoggerDelegate.errorLogger,
+          "doGetUsers : Failed : Unexpected property in incoming JSON",
+          e);
+      logger.error(EELFLoggerDelegate.errorLogger,
+          "doGetUsers : Incoming JSON that caused it --> " + remoteUsersString);
+    }
 
-       private UserApplicationRoles convertToUserApplicationRoles(Long appId, FnUser user, FnApp app) {
-              UserApplicationRoles userWithRemoteAppRoles = new UserApplicationRoles();
-              userWithRemoteAppRoles.setAppId(appId);
-              userWithRemoteAppRoles.setOrgUserId(user.getOrgUserId());
-              userWithRemoteAppRoles.setFirstName(user.getFirstName());
-              userWithRemoteAppRoles.setLastName(user.getLastName());
-              userWithRemoteAppRoles.setRoles(convertToRemoteRoleList(user, app));
-              return userWithRemoteAppRoles;
-       }
+    return new RemoteUserWithRoles[0];
+  }
 
-       private List<RemoteRole> convertToRemoteRoleList(FnUser user, FnApp app) {
-              List<RemoteRole> roleList = new ArrayList<>();
-              SortedSet<FnRole> roleSet = user.getAppEPRoles(app);
-              for (FnRole role : roleSet) {
-                     logger.debug(EELFLoggerDelegate.debugLogger, "In convertToRemoteRoleList() - for user {}, found Name {}", user.getOrgUserId(), role.getRoleName());
-                     RemoteRole rRole = new RemoteRole();
-                     rRole.setId(role.getId());
-                     rRole.setName(role.getRoleName());
-                     roleList.add(rRole);
-              }
+  private UserApplicationRoles convertToUserApplicationRoles(Long appId, FnUser user, FnApp app) {
+    UserApplicationRoles userWithRemoteAppRoles = new UserApplicationRoles();
+    userWithRemoteAppRoles.setAppId(appId);
+    userWithRemoteAppRoles.setOrgUserId(user.getOrgUserId());
+    userWithRemoteAppRoles.setFirstName(user.getFirstName());
+    userWithRemoteAppRoles.setLastName(user.getLastName());
+    userWithRemoteAppRoles.setRoles(convertToRemoteRoleList(user, app));
+    return userWithRemoteAppRoles;
+  }
 
-              //Get the active roles of user for that application using query
-              List<FnRole> userEpRoleList = fnRoleService.getUserRoleOnUserIdAndAppId(user.getId(), app.getId());
+  private List<RemoteRole> convertToRemoteRoleList(FnUser user, FnApp app) {
+    List<RemoteRole> roleList = new ArrayList<>();
+    SortedSet<FnRole> roleSet = user.getAppEPRoles(app);
+    for (FnRole role : roleSet) {
+      logger.debug(EELFLoggerDelegate.debugLogger,
+          "In convertToRemoteRoleList() - for user {}, found Name {}", user.getOrgUserId(),
+          role.getRoleName());
+      RemoteRole rRole = new RemoteRole();
+      rRole.setId(role.getId());
+      rRole.setName(role.getRoleName());
+      roleList.add(rRole);
+    }
 
-              for (FnRole remoteUserRoleList : userEpRoleList) {
+    //Get the active roles of user for that application using query
+    List<FnRole> userEpRoleList = fnRoleService.getUserRoleOnUserIdAndAppId(user.getId(), app.getId());
 
-                     RemoteRole remoteRoleListId = roleList.stream().filter(x -> remoteUserRoleList.getId().equals(x.getId()))
-                             .findAny().orElse(null);
-                     if (remoteRoleListId == null) {
-                            logger.debug(EELFLoggerDelegate.debugLogger,
-                                    "Adding the role to the rolelist () - for user {}, found Name {}", user.getOrgUserId(),
+    for (FnRole remoteUserRoleList : userEpRoleList) {
 
-                                    remoteUserRoleList.getRoleName());
-                            RemoteRole role = new RemoteRole();
-                            role.setId(remoteUserRoleList.getId());
-                            role.setName(remoteUserRoleList.getRoleName());
+      RemoteRole remoteRoleListId = roleList.stream()
+          .filter(x -> remoteUserRoleList.getId().equals(x.getId()))
+          .findAny().orElse(null);
+      if (remoteRoleListId == null) {
+        logger.debug(EELFLoggerDelegate.debugLogger,
+            "Adding the role to the rolelist () - for user {}, found Name {}",
+            user.getOrgUserId(),
 
-                            roleList.add(role);
-                     }
+            remoteUserRoleList.getRoleName());
+        RemoteRole role = new RemoteRole();
+        role.setId(remoteUserRoleList.getId());
+        role.setName(remoteUserRoleList.getRoleName());
 
-              }
+        roleList.add(role);
+      }
 
-              logger.debug(EELFLoggerDelegate.debugLogger, "rolelist size of the USER() - for user {}, found RoleListSize {}", user.getOrgUserId(), roleList.size());
+    }
 
-              return roleList;
+    logger.debug(EELFLoggerDelegate.debugLogger,
+        "rolelist size of the USER() - for user {}, found RoleListSize {}", user.getOrgUserId(),
+        roleList.size());
+    return roleList;
+  }
 
+  public List getRoleFunctionsOfUserforAlltheApplications(Long userId) {
+    List<Tuple> tuples = entityManager
+        .createQuery(GET_ROLE_FUNCTIONS_OF_USERFOR_ALLTHE_APPLICATIONS, Tuple.class)
+        .setParameter("userid", userId)
+        .getResultList();
+    return Optional.of(tuples.stream().map(tuple -> tuple.get("functionCd")).collect(Collectors.toList()))
+        .orElse(new ArrayList<>());
+  }
 
+  public List<FnUserRole> retrieveByAppIdAndUserId(final Long appId, final String userId) {
+    return Optional.of(fnUserRoleDao.retrieveByAppIdAndUserId(appId, userId)).orElse(new ArrayList<>());
+  }
 
-       }
+  public String updateRemoteUserProfile(String orgUserId, long appId) {
+    ObjectMapper mapper = new ObjectMapper();
+    mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    FnUser client = fnUserService.loadUserByUsername(orgUserId);
+    FnUser newUser = new FnUser();
+    newUser.setActiveYn(client.getActiveYn());
+    newUser.setFirstName(client.getFirstName());
+    newUser.setLastName(client.getLastName());
+    newUser.setLoginId(client.getLoginId());
+    newUser.setLoginPwd(client.getLoginPwd());
+    newUser.setMiddleName(client.getMiddleName());
+    newUser.setEmail(client.getEmail());
+    newUser.setOrgUserId(client.getLoginId());
+    try {
+      String userAsString = mapper.writeValueAsString(newUser);
+      List<FnApp> appList = fnAppService.getUserRemoteApps(client.getId().toString());
+      // applicationsRestClientService.post(EPUser.class, appId,
+      // userAsString, String.format("/user", orgUserId));
+      for (FnApp eachApp : appList) {
+        try {
+          applicationsRestClientService.post(FnUser.class, eachApp.getId(), userAsString,
+              String.format("/user/%s", orgUserId));
+        } catch (Exception e) {
+          logger.error(EELFLoggerDelegate.errorLogger, "Failed to update user: " + client.getOrgUserId()
+              + " in remote app. appId = " + eachApp.getId());
+        }
+      }
+    } catch (Exception e) {
+      logger.error(EELFLoggerDelegate.errorLogger, "updateRemoteUserProfile failed", e);
+      return "failure";
+    }
+    return "success";
+  }
+
+  public void deleteById(final Long id) {
+    fnUserRoleDao.deleteById(id);
+  }
 }

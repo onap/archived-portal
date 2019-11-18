@@ -364,6 +364,7 @@ public class WidgetsControllerTest {
                       .modifiedDate(LocalDateTime.now())
                       .isInternalYn(true)
                       .languageId(language)
+                      .isSystemUser(true)
                       .guest(true)
                       .build();
        }
@@ -377,6 +378,7 @@ public class WidgetsControllerTest {
                       .createdDate(LocalDateTime.now())
                       .modifiedDate(LocalDateTime.now())
                       .isInternalYn(true)
+                      .isSystemUser(true)
                       .languageId(language)
                       .guest(false)
                       .build();

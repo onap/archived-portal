@@ -144,7 +144,10 @@ CREATE TABLE `fn_user_role` (
                         + "  FnUserRole userrole\n"
                         + "WHERE\n"
                         + "  userrole.roleId.roleId = :roleId\n"
-                        + "  AND userrole.appId.appId = :appId"
+                        + "  AND userrole.appId.appId = :appId"),
+        @NamedQuery(
+            name = "FnUserRole.retrieveByAppIdAndUserId",
+            query = "from FnUserRole where appId.appId =:appId and userId.userId =:userId"
         )
 })
 

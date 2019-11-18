@@ -38,32 +38,49 @@
  *
  */
 
-package org.onap.portal.service.ep;
+package org.onap.portal.service;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import org.onap.portal.dao.ep.EpUserRolesRequestDetDao;
-import org.onap.portal.domain.db.ep.EpUserRolesRequestDet;
+import java.util.stream.Collectors;
+import javax.persistence.EntityManager;
+import javax.persistence.Tuple;
+import org.onap.portal.domain.dto.transport.EcompUserAppRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
-public class EpUserRolesRequestDetService {
-       private final EpUserRolesRequestDetDao epUserRolesRequestDetDao;
+public class EcompUserAppRolesService {
 
-       @Autowired
-       public EpUserRolesRequestDetService(EpUserRolesRequestDetDao epUserRolesRequestDetDao) {
-              this.epUserRolesRequestDetDao = epUserRolesRequestDetDao;
-       }
+  private final static String QUERY = "select\n"
+      + "  fr.role_name as roleName,\n"
+      + "  fu.app_id as appId,\n"
+      + "  fu.user_id as userId,\n"
+      + "  fu.priority as priority,\n"
+      + "  fu.role_id as roleId\n"
+      + " from\n"
+      + "  fn_user_role fu\n"
+      + "  left outer join fn_role fr on fu.role_id = fr.role_id\n"
+      + " where\n"
+      + "  fu.user_id = :userId\n"
+      + "  and fu.app_id = :appId";
 
-       public EpUserRolesRequestDet saveOne(EpUserRolesRequestDet epUserRolesRequestDet){
-              return epUserRolesRequestDetDao.save(epUserRolesRequestDet);
-       }
+  private final EntityManager entityManager;
 
-       public List<EpUserRolesRequestDet> appRolesRequestDetailList(final Long reqId){
-              return Optional.of(epUserRolesRequestDetDao.appRolesRequestDetailList(reqId)).orElse(new ArrayList<>());
-       }
+  @Autowired
+  public EcompUserAppRolesService(EntityManager entityManager) {
+    this.entityManager = entityManager;
+  }
+
+
+  public List<EcompUserAppRoles> getUserAppExistingRoles(final Long appId, final Long userId){
+    List<Tuple> tuples = entityManager.createQuery(QUERY, Tuple.class)
+        .setParameter("appId", appId)
+        .setParameter("userId", userId)
+        .getResultList();
+    return tuples.stream().map(this::tupleToEcompUserAppRoles).collect(Collectors.toList());
+  }
+
+  private EcompUserAppRoles tupleToEcompUserAppRoles(Tuple tuple){
+    return new EcompUserAppRoles((String)tuple.get("appId"), (Long) tuple.get("userId"), (Integer) tuple.get("priority"), (Long) tuple.get("roleId"), (String) tuple.get("roleName"));
+  }
 }

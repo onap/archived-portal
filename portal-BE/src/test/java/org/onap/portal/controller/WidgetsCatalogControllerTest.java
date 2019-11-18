@@ -265,6 +265,7 @@ public class WidgetsCatalogControllerTest {
                       .modifiedDate(LocalDateTime.now())
                       .createdDate(LocalDateTime.now())
                       .isInternalYn(true)
+                      .isSystemUser(true)
                       .guest(false)
                       .build();
        }

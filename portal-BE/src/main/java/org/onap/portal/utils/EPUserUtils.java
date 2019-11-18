@@ -58,6 +58,7 @@ import lombok.NoArgsConstructor;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.onap.portal.domain.db.fn.FnRole;
+import org.onap.portal.domain.db.fn.FnRoleComposite;
 import org.onap.portal.domain.db.fn.FnUser;
 import org.onap.portal.domain.db.fn.FnUserRole;
 import org.onap.portal.exception.RoleFunctionException;
@@ -249,7 +250,7 @@ public class EPUserUtils {
 
               // Additionally; the account admin role is overloaded between onap
               // portal and partners; lets also include that
-              for (FnUserRole epUserApp : user.getFnUserRoles()) {
+              for (FnUserRole epUserApp : user.getUserApps()) {
                      FnRole role = epUserApp.getRoleId();
 
                      if (role.getActiveYn() && role.getRoleId().equals(ACCOUNT_ADMIN_ROLE_ID)) {
@@ -272,8 +273,8 @@ public class EPUserUtils {
         */
        @SuppressWarnings({"rawtypes", "unchecked"})
        private static void addChildRoles(FnRole role, HashMap roles) {
-              Set<FnRole> childRoles = role.getFnRoles();
-              if (childRoles != null && !childRoles.isEmpty()) {
+              Set<FnRole> childRoles = role.getChildRoles().stream().map(FnRoleComposite::getChildRoles).collect(Collectors.toSet());
+              if (!childRoles.isEmpty()) {
                      for (Object o : childRoles) {
                             FnRole childRole = (FnRole) o;
                             if (childRole.getActiveYn()) {

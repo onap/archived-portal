@@ -51,17 +51,30 @@ import org.apache.cxf.transport.http.HTTPException;
 import org.onap.portal.domain.db.fn.FnRole;
 import org.onap.portal.domain.db.fn.FnUser;
 import org.onap.portal.domain.dto.ecomp.EPUserAppCatalogRoles;
+import org.onap.portal.domain.dto.ecomp.EcompAuditLog;
 import org.onap.portal.domain.dto.ecomp.ExternalSystemAccess;
+import org.onap.portal.domain.dto.ecomp.PortalRestResponse;
+import org.onap.portal.domain.dto.ecomp.PortalRestStatusEnum;
 import org.onap.portal.domain.dto.transport.AppWithRolesForUser;
+import org.onap.portal.domain.dto.transport.ExternalRequestFieldsValidator;
 import org.onap.portal.domain.dto.transport.FieldsValidator;
+import org.onap.portal.domain.dto.transport.RoleInAppForUser;
 import org.onap.portal.domain.dto.transport.UserApplicationRoles;
+import org.onap.portal.logging.aop.EPEELFLoggerAdvice;
+import org.onap.portal.logging.logic.EPLogUtil;
 import org.onap.portal.service.AdminRolesService;
 import org.onap.portal.service.ApplicationsRestClientService;
 import org.onap.portal.service.fn.FnUserRoleService;
 import org.onap.portal.service.fn.FnUserService;
+import org.onap.portal.utils.EPCommonSystemProperties;
 import org.onap.portal.utils.EcompPortalUtils;
+import org.onap.portal.utils.PortalConstants;
+import org.onap.portalsdk.core.domain.AuditLog;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.onap.portalsdk.core.restful.domain.EcompRole;
+import org.onap.portalsdk.core.service.AuditServiceImpl;
+import org.onap.portalsdk.core.util.SystemProperties;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -81,6 +94,7 @@ public class UserRolesController {
        private final FnUserRoleService fnUserRoleService;
        private final AdminRolesService adminRolesService;
        private final ApplicationsRestClientService applicationsRestClientService;
+       private final AuditServiceImpl auditService = new AuditServiceImpl();
 
 /*
        private final UserRolesService userRolesService;
@@ -316,112 +330,112 @@ public class UserRolesController {
                      }
                      return result;
               }
+              */
 
-              @RequestMapping(value = {"/portalApi/userAppRoles"}, method = {
-                      RequestMethod.PUT}, produces = "application/json")
-              public PortalRestResponse<String> putAppWithUserRoleStateForUser(Principal principal,
-                      @RequestBody AppWithRolesForUser newAppRolesForUser, HttpServletResponse response) {
-                     // FieldsValidator fieldsValidator = new FieldsValidator();
-                     PortalRestResponse<String> portalResponse = new PortalRestResponse<>();
-                     StringBuilder sbUserApps = new StringBuilder();
-                     if (newAppRolesForUser != null) {
-                            sbUserApps.append("User '" + newAppRolesForUser.getOrgUserId());
-                            if (newAppRolesForUser.getAppId() != null && !newAppRolesForUser.getAppRoles().isEmpty()) {
-                                   sbUserApps.append("' has roles = { ");
-                                   for (RoleInAppForUser appRole : newAppRolesForUser.getAppRoles()) {
-                                          if (appRole.isApplied) {
-                                                 sbUserApps.append(appRole.roleName + " ,");
-                                          }
+       @RequestMapping(value = {"/portalApi/userAppRoles"}, method = {
+               RequestMethod.PUT}, produces = "application/json")
+       public PortalRestResponse<String> putAppWithUserRoleStateForUser(Principal principal,
+               @RequestBody AppWithRolesForUser newAppRolesForUser, HttpServletResponse response) {
+              // FieldsValidator fieldsValidator = new FieldsValidator();
+              PortalRestResponse<String> portalResponse = new PortalRestResponse<>();
+              StringBuilder sbUserApps = new StringBuilder();
+              if (newAppRolesForUser != null) {
+                     sbUserApps.append("User '").append(newAppRolesForUser.getOrgUserId());
+                     if (newAppRolesForUser.getAppId() != null && !newAppRolesForUser.getAppRoles().isEmpty()) {
+                            sbUserApps.append("' has roles = { ");
+                            for (RoleInAppForUser appRole : newAppRolesForUser.getAppRoles()) {
+                                   if (appRole.getIsApplied()) {
+                                          sbUserApps.append(appRole.getRoleName()).append(" ,");
                                    }
-                                   sbUserApps.deleteCharAt(sbUserApps.length() - 1);
-                                   sbUserApps.append("} assigned for the app " + newAppRolesForUser.getAppId());
-                            } else {
-                                   sbUserApps.append("' has no roles assigned for app " + newAppRolesForUser.getAppId());
                             }
-                     }
-                     logger.info(EELFLoggerDelegate.applicationLogger, "putAppWithUserRoleStateForUser: {}",
-                             sbUserApps.toString());
-
-                     FnUser user = fnUserService.loadUserByUsername(principal.getName());
-                     // boolean changesApplied = false;
-                     ExternalRequestFieldsValidator changesApplied = null;
-
-                     if (!adminRolesService.isAccountAdmin(user) && !adminRolesService.isRoleAdmin(user)) {
-                            EcompPortalUtils.setBadPermissions(user, response, "putAppWithUserRoleStateForUser");
-                     } else if (newAppRolesForUser == null) {
-                            logger.error(EELFLoggerDelegate.errorLogger,
-                                    "putAppWithUserRoleStateForUser: newAppRolesForUser is null");
+                            sbUserApps.deleteCharAt(sbUserApps.length() - 1);
+                            sbUserApps.append("} assigned for the app ").append(newAppRolesForUser.getAppId());
                      } else {
-                            changesApplied = userRolesService.setAppWithUserRoleStateForUser(user, newAppRolesForUser);
-                            try {
-                                   if (changesApplied.isResult()) {
-                                          logger.info(EELFLoggerDelegate.applicationLogger,
-                                                  "putAppWithUserRoleStateForUser: succeeded for app {}, user {}",
-                                                  newAppRolesForUser.getAppId(),
-                                                  newAppRolesForUser.getAppId());
-
-                                          MDC.put(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP,
-                                                  EPEELFLoggerAdvice.getCurrentDateTimeUTC());
-                                          AuditLog auditLog = new AuditLog();
-                                          auditLog.setUserId(user.getId());
-                                          auditLog.setActivityCode(EcompAuditLog.CD_ACTIVITY_UPDATE_USER);
-                                          auditLog.setAffectedRecordId(newAppRolesForUser.getOrgUserId());
-                                          auditLog.setComments(EcompPortalUtils.truncateString(sbUserApps.toString(),
-                                                  PortalConstants.AUDIT_LOG_COMMENT_SIZE));
-                                          auditService.logActivity(auditLog, null);
-
-                                          MDC.put(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP,
-                                                  EPEELFLoggerAdvice.getCurrentDateTimeUTC());
-                                          EcompPortalUtils.calculateDateTimeDifferenceForLog(
-                                                  MDC.get(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP),
-                                                  MDC.get(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP));
-                                          logger.info(EELFLoggerDelegate.auditLogger,
-                                                  EPLogUtil.formatAuditLogMessage(
-                                                          "UserRolesController.putAppWithUserRoleStateForUser",
-                                                          EcompAuditLog.CD_ACTIVITY_UPDATE_USER, user.getOrgUserId(),
-                                                          newAppRolesForUser.getOrgUserId(), sbUserApps.toString()));
-                                          MDC.remove(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP);
-                                          MDC.remove(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP);
-                                          MDC.remove(SystemProperties.MDC_TIMER);
-                                          portalResponse = new PortalRestResponse<>(PortalRestStatusEnum.OK, "success", null);
-
-                                   }
-                                   if (!changesApplied.isResult()) {
-                                          throw new Exception(changesApplied.getDetailMessage());
-                                   }
-
-                            } catch (Exception e) {
-                                   logger.error(EELFLoggerDelegate.errorLogger,
-                                           "putAppWithUserRoleStateForUser: failed for app {}, user {}",
-                                           newAppRolesForUser.getAppId(),
-                                           newAppRolesForUser.getOrgUserId(), e);
-                                   portalResponse = new PortalRestResponse<>(PortalRestStatusEnum.ERROR, e.getMessage(), null);
-                            }
+                            sbUserApps.append("' has no roles assigned for app ").append(newAppRolesForUser.getAppId());
                      }
-
-                     EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/userAppRoles", "put result =", changesApplied);
-                     return portalResponse;
               }
+              logger.info(EELFLoggerDelegate.applicationLogger, "putAppWithUserRoleStateForUser: {}",
+                      sbUserApps.toString());
 
-              @RequestMapping(value = {"/portalApi/updateRemoteUserProfile"}, method = {
-                      RequestMethod.GET}, produces = "application/json")
-              public PortalRestResponse<String> updateRemoteUserProfile(HttpServletRequest request) {
+              FnUser user = fnUserService.loadUserByUsername(principal.getName());
+              // boolean changesApplied = false;
+              ExternalRequestFieldsValidator changesApplied = null;
 
-                     String updateRemoteUserFlag = FAILURE;
+              if (!adminRolesService.isAccountAdmin(user) && !adminRolesService.isRoleAdmin(user)) {
+                     EcompPortalUtils.setBadPermissions(user, response, "putAppWithUserRoleStateForUser");
+              } else if (newAppRolesForUser == null) {
+                     logger.error(EELFLoggerDelegate.errorLogger,
+                             "putAppWithUserRoleStateForUser: newAppRolesForUser is null");
+              } else {
+                     changesApplied = adminRolesService.setAppWithUserRoleStateForUser(user, newAppRolesForUser);
                      try {
-                            // saveNewUser = userService.saveNewUser(newUser);
-                            String orgUserId = request.getParameter("loginId");
-                            Long appId = Long.parseLong(request.getParameter("appId"));
-                            userRolesService.updateRemoteUserProfile(orgUserId, appId);
+                            if (changesApplied.isResult()) {
+                                   logger.info(EELFLoggerDelegate.applicationLogger,
+                                           "putAppWithUserRoleStateForUser: succeeded for app {}, user {}",
+                                           newAppRolesForUser.getAppId(),
+                                           newAppRolesForUser.getAppId());
+
+                                   MDC.put(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP,
+                                           EPEELFLoggerAdvice.getCurrentDateTimeUTC());
+                                   AuditLog auditLog = new AuditLog();
+                                   auditLog.setUserId(user.getId());
+                                   auditLog.setActivityCode(EcompAuditLog.CD_ACTIVITY_UPDATE_USER);
+                                   auditLog.setAffectedRecordId(newAppRolesForUser.getOrgUserId());
+                                   auditLog.setComments(EcompPortalUtils.truncateString(sbUserApps.toString(),
+                                           PortalConstants.AUDIT_LOG_COMMENT_SIZE));
+                                   auditService.logActivity(auditLog, null);
+
+                                   MDC.put(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP,
+                                           EPEELFLoggerAdvice.getCurrentDateTimeUTC());
+                                   EcompPortalUtils.calculateDateTimeDifferenceForLog(
+                                           MDC.get(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP),
+                                           MDC.get(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP));
+                                   logger.info(EELFLoggerDelegate.auditLogger,
+                                           EPLogUtil.formatAuditLogMessage(
+                                                   "UserRolesController.putAppWithUserRoleStateForUser",
+                                                   EcompAuditLog.CD_ACTIVITY_UPDATE_USER, user.getOrgUserId(),
+                                                   newAppRolesForUser.getOrgUserId(), sbUserApps.toString()));
+                                   MDC.remove(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP);
+                                   MDC.remove(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP);
+                                   MDC.remove(SystemProperties.MDC_TIMER);
+                                   portalResponse = new PortalRestResponse<>(PortalRestStatusEnum.OK, "success", null);
+
+                            }
+                            if (!changesApplied.isResult()) {
+                                   throw new Exception(changesApplied.getDetailMessage());
+                            }
 
                      } catch (Exception e) {
-                            logger.error(EELFLoggerDelegate.errorLogger, "updateRemoteUserProfile failed", e);
-                            return new PortalRestResponse<>(PortalRestStatusEnum.OK, updateRemoteUserFlag, e.getMessage());
+                            logger.error(EELFLoggerDelegate.errorLogger,
+                                    "putAppWithUserRoleStateForUser: failed for app {}, user {}",
+                                    newAppRolesForUser.getAppId(),
+                                    newAppRolesForUser.getOrgUserId(), e);
+                            portalResponse = new PortalRestResponse<>(PortalRestStatusEnum.ERROR, e.getMessage(), null);
                      }
-                     return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, updateRemoteUserFlag, "");
-
               }
-       */
+
+              EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/userAppRoles", "put result =", changesApplied);
+              return portalResponse;
+       }
+
+       @RequestMapping(value = {"/portalApi/updateRemoteUserProfile"}, method = {
+               RequestMethod.GET}, produces = "application/json")
+       public PortalRestResponse<String> updateRemoteUserProfile(HttpServletRequest request) {
+
+              String updateRemoteUserFlag = FAILURE;
+              try {
+                     // saveNewUser = userService.saveNewUser(newUser);
+                     String orgUserId = request.getParameter("loginId");
+                     long appId = Long.parseLong(request.getParameter("appId"));
+                     fnUserRoleService.updateRemoteUserProfile(orgUserId, appId);
+              } catch (Exception e) {
+                     logger.error(EELFLoggerDelegate.errorLogger, "updateRemoteUserProfile failed", e);
+                     return new PortalRestResponse<>(PortalRestStatusEnum.OK, updateRemoteUserFlag, e.getMessage());
+              }
+              return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, updateRemoteUserFlag, "");
+
+       }
+
        @RequestMapping(value = {"/portalApi/app/{appId}/users"}, method = {
                RequestMethod.GET}, produces = "application/json")
        public List<UserApplicationRoles> getUsersFromAppEndpoint(@PathVariable("appId") Long appId) {
@@ -488,9 +502,8 @@ public class UserRolesController {
        public FieldsValidator putAppWithUserRoleRequest(Principal principal,
                @RequestBody AppWithRolesForUser newAppRolesForUser, HttpServletResponse response) {
               FieldsValidator fieldsValidator = null;
+              FnUser user = fnUserService.loadUserByUsername(principal.getName());
               try {
-
-                     FnUser user = fnUserService.loadUserByUsername(principal.getName());
                      fieldsValidator = fnUserRoleService.putUserAppRolesRequest(newAppRolesForUser, user);
                      response.setStatus(0);
 
@@ -505,6 +518,7 @@ public class UserRolesController {
        }
 
 
+       @SuppressWarnings("ConstantConditions")
        @RequestMapping(value = {"/portalApi/appCatalogRoles"}, method = {
                RequestMethod.GET}, produces = "application/json")
        public List<EPUserAppCatalogRoles> getUserAppCatalogRoles(Principal principal,

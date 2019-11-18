@@ -38,32 +38,13 @@
  *
  */
 
-package org.onap.portal.service.ep;
+package org.onap.portal.exception;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import org.onap.portal.dao.ep.EpUserRolesRequestDetDao;
-import org.onap.portal.domain.db.ep.EpUserRolesRequestDet;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+public class SyncUserRolesException extends Exception{
 
-@Service
-@Transactional
-public class EpUserRolesRequestDetService {
-       private final EpUserRolesRequestDetDao epUserRolesRequestDetDao;
+  public SyncUserRolesException(String msg) {
+    super(msg);
+  }
 
-       @Autowired
-       public EpUserRolesRequestDetService(EpUserRolesRequestDetDao epUserRolesRequestDetDao) {
-              this.epUserRolesRequestDetDao = epUserRolesRequestDetDao;
-       }
-
-       public EpUserRolesRequestDet saveOne(EpUserRolesRequestDet epUserRolesRequestDet){
-              return epUserRolesRequestDetDao.save(epUserRolesRequestDet);
-       }
-
-       public List<EpUserRolesRequestDet> appRolesRequestDetailList(final Long reqId){
-              return Optional.of(epUserRolesRequestDetDao.appRolesRequestDetailList(reqId)).orElse(new ArrayList<>());
-       }
 }
+

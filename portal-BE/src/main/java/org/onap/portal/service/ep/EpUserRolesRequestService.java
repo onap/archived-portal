@@ -40,6 +40,9 @@
 
 package org.onap.portal.service.ep;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import org.onap.portal.dao.ep.EpUserRolesRequestDao;
 import org.onap.portal.domain.db.ep.EpUserRolesRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,5 +61,9 @@ public class EpUserRolesRequestService {
 
        public EpUserRolesRequest saveOne(EpUserRolesRequest epUserRolesRequest){
               return epUserRolesRequestDao.save(epUserRolesRequest);
+       }
+
+       public List<EpUserRolesRequest> userAppRolesRequestList(final Long userId, final Long appId){
+              return Optional.of(epUserRolesRequestDao.userAppRolesRequestList(userId, appId)).orElse(new ArrayList<>());
        }
 }

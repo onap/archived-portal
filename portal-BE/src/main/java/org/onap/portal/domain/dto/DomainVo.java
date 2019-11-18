@@ -65,6 +65,7 @@ import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class DomainVo extends FusionVo implements Serializable, Cloneable, Comparable {
 
+       private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(DomainVo.class);
        private static final long serialVersionUID = 1L;
 
        protected Long id;
@@ -75,7 +76,6 @@ public class DomainVo extends FusionVo implements Serializable, Cloneable, Compa
        protected Long rowNum;
        protected Serializable auditUserId;
        protected Set auditTrail = null;
-       private static EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(DomainVo.class);
 
        public DomainVo(Long id) {
               this.id = id;

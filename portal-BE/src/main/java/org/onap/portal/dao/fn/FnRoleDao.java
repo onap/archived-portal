@@ -52,9 +52,22 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public interface FnRoleDao extends JpaRepository<FnRole, Long> {
 
-       @Query
-       List<FnRole> retrieveAppRoleByAppRoleIdAndByAppId(final @Param("appId") Long appId,
-               final @Param("appRoleId") Long appRoleId);
+  @Query
+  List<FnRole> retrieveAppRoleByAppRoleIdAndByAppId(final @Param("appId") Long appId,
+      final @Param("appRoleId") Long appRoleId);
 
-       List<FnRole> getUserRoleOnUserIdAndAppId(final @Param("userId") Long userId, final @Param("appId") Long appId);
+  @Query
+  List<FnRole> getUserRoleOnUserIdAndAppId(final @Param("userId") Long userId, final @Param("appId") Long appId);
+
+  @Query
+  List<FnRole> retrieveAppRoleByRoleIdWhereAppIdIsNull(final @Param("roleId") Long roleId);
+
+  @Query
+  List<FnRole> retrieveAppRolesWhereAppIdIsNull();
+
+  @Query
+  List<FnRole> retrieveAppRolesByAppId(final @Param("appId") Long id);
+
+  @Query
+  List<FnRole> retrieveAppRolesByRoleNameAndByAppId(final @Param("roleName") String roleName, final @Param("appId") Long appId);
 }

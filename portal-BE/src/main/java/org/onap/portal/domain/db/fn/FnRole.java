@@ -44,11 +44,13 @@ import java.io.Serializable;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Embeddable;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
@@ -85,46 +87,44 @@ CREATE TABLE `fn_role` (
 */
 
 @NamedQueries({
-        @NamedQuery(
-                name = "FnRole.retrieveAppRolesByRoleNameAndByAppId",
-                query = "FROM FnRole where role_name =:roleName and app_id =:appId"),
-        @NamedQuery(
-                name = "FnRole.retrieveAppRolesByAppId",
-                query = "FROM FnRole where app_id =:appId"),
-        @NamedQuery(
-                name = "FnRole.retrieveAppRolesWhereAppIdIsNull",
-                query = "FROM FnRole where app_id is null"),
-        @NamedQuery(
-                name = "FnRole.retrieveAppRoleByRoleIdWhereAppIdIsNull",
-                query = "FROM FnRole where role_id =:roleId and app_id is null"),
-        @NamedQuery(
-                name = "FnRole.retrieveAppRoleByAppRoleIdAndByAppId",
-                query = "FROM FnRole where appRoleId =:appRoleId and appId =:appId"),
-        @NamedQuery(
-                name = "FnRole.retrieveAppRoleByRoleIdAndAppId",
-                query = "FROM FnRole where role_id =:roleId and app_id =:appId"),
-        @NamedQuery(
-                name = "FnRole.retrieveAppRolesByRoleNameAndWhereAppIdIsNull",
-                query = "FROM FnRole where role_name =:roleName and app_id is null"),
-        @NamedQuery(
-                name = "FnRole.retrieveActiveRolesOfApplication",
-                query = "from FnRole where active_yn = 'Y' and app_id=:appId"),
-        @NamedQuery(name = "FnRole.retrieveRoleToUpdateInExternalAuthSystem",
-                query = "FROM FnRole where role_name =:roleName and app_id =:appId"),
-        @NamedQuery(
-                name = "FnRole.getUserRoleOnUserIdAndAppId",
-                query = " FROM"
-                        + "  FnRole fr,\n"
-                        + "  FnUserRole fur\n"
-                        + " WHERE\n"
-                        + "  fr.roleId = fur.roleId\n"
-                        + "  AND fur.userId = :userId"
-                        + "  AND fur.appId = :appId\n"
-                        + "  AND fr.activeYn = 'y'")
-        })
+    @NamedQuery(
+        name = "FnRole.retrieveAppRolesByRoleNameAndByAppId",
+        query = "FROM FnRole where roleName =:roleName and appId =:appId"),
+    @NamedQuery(
+        name = "FnRole.retrieveAppRolesByAppId",
+        query = "FROM FnRole where appId =:appId"),
+    @NamedQuery(
+        name = "FnRole.retrieveAppRolesWhereAppIdIsNull",
+        query = "FROM FnRole where appId is null"),
+    @NamedQuery(
+        name = "FnRole.retrieveAppRoleByRoleIdWhereAppIdIsNull",
+        query = "FROM FnRole where roleId =:roleId and appId is null"),
+    @NamedQuery(
+        name = "FnRole.retrieveAppRoleByAppRoleIdAndByAppId",
+        query = "FROM FnRole where appRoleId =:appRoleId and appId =:appId"),
+    @NamedQuery(
+        name = "FnRole.retrieveAppRoleByRoleIdAndAppId",
+        query = "FROM FnRole where roleId =:roleId and appId =:appId"),
+    @NamedQuery(
+        name = "FnRole.retrieveAppRolesByRoleNameAndWhereAppIdIsNull",
+        query = "FROM FnRole where roleName =:roleName and appId is null"),
+    @NamedQuery(
+        name = "FnRole.retrieveActiveRolesOfApplication",
+        query = "from FnRole where active_yn = 'Y' and appId=:appId"),
+    @NamedQuery(
+        name = "FnRole.getUserRoleOnUserIdAndAppId",
+        query = " FROM"
+            + "  FnRole fr,\n"
+            + "  FnUserRole fur\n"
+            + " WHERE\n"
+            + "  fr.roleId = fur.roleId\n"
+            + "  AND fur.userId = :userId"
+            + "  AND fur.appId = :appId\n"
+            + "  AND fr.activeYn = 'y'")
+})
 
 @Table(name = "fn_role", indexes = {
-        @Index(name = "fn_role_name_app_id_idx", columnList = "role_name, app_id", unique = true)
+    @Index(name = "fn_role_name_app_id_idx", columnList = "role_name, app_id", unique = true)
 })
 @NoArgsConstructor
 @AllArgsConstructor
@@ -133,98 +133,114 @@ CREATE TABLE `fn_role` (
 @Entity
 public class FnRole extends DomainVo implements Serializable {
 
-       @Id
-       @GeneratedValue(strategy = GenerationType.AUTO)
-       @Column(name = "role_id", length = 11, nullable = false)
-       @Digits(integer = 11, fraction = 0)
-       private Long roleId;
-       @Column(name = "role_name", length = 300, nullable = false)
-       @Size(max = 300)
-       @NotNull
-       @SafeHtml
-       private String roleName;
-       @Column(name = "active_yn", length = 1, columnDefinition = "character varying(1) default 'y'", nullable = false)
-       @NotNull
-       private Boolean activeYn;
-       @Column(name = "priority", length = 4, columnDefinition = "decimal(4,0) DEFAULT NULL")
-       @Digits(integer = 4, fraction = 0)
-       private Long priority;
-       @Column(name = "app_Id", length = 11, columnDefinition = "int(11) default null")
-       @Digits(integer = 11, fraction = 0)
-       private Long appId;
-       @Column(name = "app_role_id", length = 11, columnDefinition = "int(11) default null")
-       @Digits(integer = 11, fraction = 0)
-       private Long appRoleId;
-       @OneToMany(
-               targetEntity = FnRoleFunction.class,
-               mappedBy = "roleId",
-               cascade = CascadeType.ALL,
-               fetch = FetchType.LAZY
-       )
-       private Set<FnRoleFunction> fnRoleFunctions;
-       @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-       @JoinTable(
-               name = "fn_user_pseudo_role",
-               joinColumns = {@JoinColumn(name = "pseudo_role_Id", referencedColumnName = "role_id")},
-               inverseJoinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "user_id")},
-               indexes = {
-                       @Index(name = "fk_pseudo_role_user_id", columnList = "user_id")
-               }
-       )
-       private Set<FnUser> fnUsers;
-       @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-       @JoinTable(
-               name = "fn_role_composite",
-               joinColumns = {@JoinColumn(name = "parent_role_id", referencedColumnName = "role_id")},
-               inverseJoinColumns = {@JoinColumn(name = "child_role_id", referencedColumnName = "role_id")},
-               indexes = {
-                       @Index(name = "fk_fn_role_composite_child", columnList = "child_role_id")
-               }
-       )
-       private Set<FnRole> fnRoles;
-       @ManyToMany(cascade = CascadeType.ALL,
-               fetch = FetchType.LAZY)
-       private Set<FnRole> fnRoleList;
-       @OneToMany(
-               targetEntity = EpRoleNotification.class,
-               mappedBy = "notificationID",
-               cascade = CascadeType.ALL,
-               fetch = FetchType.LAZY
-       )
-       private Set<EpRoleNotification> epRoleNotifications;
-       @OneToMany(
-               targetEntity = FnMenuFunctionalRoles.class,
-               mappedBy = "roleId",
-               cascade = CascadeType.ALL,
-               fetch = FetchType.LAZY
-       )
-       private Set<FnMenuFunctionalRoles> fnMenuFunctionalRoles;
-       @OneToMany(
-               targetEntity = EpWidgetCatalogRole.class,
-               mappedBy = "roleId",
-               cascade = CascadeType.ALL,
-               fetch = FetchType.LAZY
-       )
-       private Set<EpWidgetCatalogRole> epWidgetCatalogRoles;
-       @OneToMany(
-               targetEntity = EpAppRoleFunction.class,
-               mappedBy = "fnRole",
-               cascade = CascadeType.ALL,
-               fetch = FetchType.LAZY
-       )
-       private Set<EpAppRoleFunction> epAppRoleFunctions;
-       @OneToMany(
-               targetEntity = EpUserRolesRequestDet.class,
-               mappedBy = "requestedRoleId",
-               cascade = CascadeType.ALL,
-               fetch = FetchType.LAZY
-       )
-       private Set<EpUserRolesRequestDet> epUserRolesRequestDets;
-       @OneToMany(
-               targetEntity = FnUserRole.class,
-               mappedBy = "roleId",
-               cascade = CascadeType.ALL,
-               fetch = FetchType.LAZY
-       )
-       private Set<FnUserRole> fnUserRoles;
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  @Column(name = "role_id", length = 11, nullable = false)
+  @Digits(integer = 11, fraction = 0)
+  private Long roleId;
+  @Column(name = "role_name", length = 300, nullable = false)
+  @Size(max = 300)
+  @NotNull
+  @SafeHtml
+  private String roleName;
+  @Column(name = "active_yn", length = 1, columnDefinition = "character varying(1) default 'y'", nullable = false)
+  @NotNull
+  private Boolean activeYn;
+  @Column(name = "priority", length = 4, columnDefinition = "decimal(4,0) DEFAULT NULL")
+  @Digits(integer = 4, fraction = 0)
+  private Integer priority;
+  @Column(name = "app_Id", length = 11, columnDefinition = "int(11) default null")
+  @Digits(integer = 11, fraction = 0)
+  private Long appId;
+  @Column(name = "app_role_id", length = 11, columnDefinition = "int(11) default null")
+  @Digits(integer = 11, fraction = 0)
+  private Long appRoleId;
+  @OneToMany(
+      targetEntity = FnRoleFunction.class,
+      mappedBy = "roleId",
+      cascade = CascadeType.ALL,
+      fetch = FetchType.LAZY
+  )
+  private Set<FnRoleFunction> fnRoleFunctions;
+  @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+  @JoinTable(
+      name = "fn_user_pseudo_role",
+      joinColumns = {@JoinColumn(name = "pseudo_role_Id", referencedColumnName = "role_id")},
+      inverseJoinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "user_id")},
+      indexes = {
+          @Index(name = "fk_pseudo_role_user_id", columnList = "user_id")
+      }
+  )
+  private Set<FnUser> fnUsers;
+  @OneToMany(
+      targetEntity = FnRoleComposite.class,
+      mappedBy = "childRoles",
+      cascade = CascadeType.ALL,
+      fetch = FetchType.LAZY
+  )
+  private Set<FnRoleComposite> childRoles;
+  @OneToMany(
+      targetEntity = FnRoleComposite.class,
+      mappedBy = "parentRoles",
+      cascade = CascadeType.ALL,
+      fetch = FetchType.LAZY
+  )
+  private Set<FnRoleComposite> parentRoles;
+  @ManyToMany(cascade = CascadeType.ALL,
+      fetch = FetchType.LAZY)
+  private Set<FnRoleFunction> roleFunctions;
+  @OneToMany(
+      targetEntity = EpRoleNotification.class,
+      mappedBy = "notificationID",
+      cascade = CascadeType.ALL,
+      fetch = FetchType.LAZY
+  )
+  private Set<EpRoleNotification> epRoleNotifications;
+  @OneToMany(
+      targetEntity = FnMenuFunctionalRoles.class,
+      mappedBy = "roleId",
+      cascade = CascadeType.ALL,
+      fetch = FetchType.LAZY
+  )
+  private Set<FnMenuFunctionalRoles> fnMenuFunctionalRoles;
+  @OneToMany(
+      targetEntity = EpWidgetCatalogRole.class,
+      mappedBy = "roleId",
+      cascade = CascadeType.ALL,
+      fetch = FetchType.LAZY
+  )
+  private Set<EpWidgetCatalogRole> epWidgetCatalogRoles;
+  @OneToMany(
+      targetEntity = EpAppRoleFunction.class,
+      mappedBy = "fnRole",
+      cascade = CascadeType.ALL,
+      fetch = FetchType.LAZY
+  )
+  private Set<EpAppRoleFunction> epAppRoleFunctions;
+  @OneToMany(
+      targetEntity = EpUserRolesRequestDet.class,
+      mappedBy = "requestedRoleId",
+      cascade = CascadeType.ALL,
+      fetch = FetchType.LAZY
+  )
+  private Set<EpUserRolesRequestDet> epUserRolesRequestDets;
+  @OneToMany(
+      targetEntity = FnUserRole.class,
+      mappedBy = "roleId",
+      cascade = CascadeType.ALL,
+      fetch = FetchType.LAZY
+  )
+  private Set<FnUserRole> fnUserRoles;
+
+  public FnRole(Long roleId, String roleName, Boolean activeYn, Integer priority,
+      Set<FnRoleFunction> fnRoleFunctions, Set<FnRoleComposite> childRoles,
+      Set<FnRoleComposite> parentRoles) {
+    this.roleId = roleId;
+    this.roleName = roleName;
+    this.activeYn = activeYn;
+    this.priority = priority;
+    this.fnRoleFunctions = fnRoleFunctions;
+    this.childRoles = childRoles;
+    this.parentRoles = parentRoles;
+  }
 }

@@ -91,6 +91,7 @@ class FnUserServiceTest {
               expected.setModifiedDate(LocalDateTime.parse("2019-08-08T12:18:17"));
               expected.setIsInternalYn(false);
               expected.setStateCd("NJ");
+              expected.setIsSystemUser(true);
               expected.setCountryCd("US");
               expected.setLanguageId(language);
               expected.setGuest(false);
@@ -99,7 +100,7 @@ class FnUserServiceTest {
               language.getFnUsers().add(expected);
 
               //When
-              fnUserService.saveFnUser(principal, expected);
+              fnUserService.saveFnUser(expected);
               FnUser actual = fnUserService.getUser(expected.getUserId()).get();
               //Then
               assertEquals(expected.getUserId(), actual.getUserId());

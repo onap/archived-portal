@@ -113,7 +113,7 @@ public class UserController {
                                    user.setLoginPwd(CipherUtil
                                            .encryptPKC(profileDetail.getLoginPassword(), "AGLDdG4D04BKm2IxIWEr8o==!"));
                             }
-                            userService.saveFnUser(principal, user);
+                            userService.saveFnUser(user);
                             // Update user info in the session
                             portalRestResponse = new PortalRestResponse<>(PortalRestStatusEnum.OK, "success", null);
                      }

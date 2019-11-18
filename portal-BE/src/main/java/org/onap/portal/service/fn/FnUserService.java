@@ -40,17 +40,11 @@
 
 package org.onap.portal.service.fn;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import org.onap.portal.controller.UserRolesController;
 import org.onap.portal.dao.fn.FnUserDao;
 import org.onap.portal.domain.db.fn.FnUser;
-import org.onap.portal.domain.dto.transport.UserWithNameSurnameTitle;
-import org.onap.portal.utils.EcompPortalUtils;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
@@ -73,7 +67,7 @@ public class FnUserService implements UserDetailsService {
               this.fnUserDao = fnUserDao;
        }
 
-       public FnUser saveFnUser(final Principal principal, final FnUser fnUser) {
+       public FnUser saveFnUser(final FnUser fnUser) {
               return fnUserDao.save(fnUser);
        }
 
@@ -91,7 +85,7 @@ public class FnUserService implements UserDetailsService {
               return Optional.of(fnUserDao.getOne(id));
        }
 
-       List<FnUser> getUserWithOrgUserId(final String orgUserIdValue) {
+       public List<FnUser> getUserWithOrgUserId(final String orgUserIdValue) {
               return fnUserDao.getUserWithOrgUserId(orgUserIdValue).orElse(new ArrayList<>());
        }
 

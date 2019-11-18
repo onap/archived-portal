@@ -40,30 +40,23 @@
 
 package org.onap.portal.service.ep;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import org.onap.portal.dao.ep.EpUserRolesRequestDetDao;
-import org.onap.portal.domain.db.ep.EpUserRolesRequestDet;
+import org.onap.portal.dao.ep.EpAppFunctionDao;
+import org.onap.portal.domain.db.ep.EpAppFunction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
-public class EpUserRolesRequestDetService {
-       private final EpUserRolesRequestDetDao epUserRolesRequestDetDao;
+public class EpAppFunctionService {
 
-       @Autowired
-       public EpUserRolesRequestDetService(EpUserRolesRequestDetDao epUserRolesRequestDetDao) {
-              this.epUserRolesRequestDetDao = epUserRolesRequestDetDao;
-       }
+  private final EpAppFunctionDao epAppFunctionDao;
 
-       public EpUserRolesRequestDet saveOne(EpUserRolesRequestDet epUserRolesRequestDet){
-              return epUserRolesRequestDetDao.save(epUserRolesRequestDet);
-       }
+  @Autowired
+  public EpAppFunctionService(EpAppFunctionDao epAppFunctionDao) {
+    this.epAppFunctionDao = epAppFunctionDao;
+  }
 
-       public List<EpUserRolesRequestDet> appRolesRequestDetailList(final Long reqId){
-              return Optional.of(epUserRolesRequestDetDao.appRolesRequestDetailList(reqId)).orElse(new ArrayList<>());
-       }
+  public List<EpAppFunction> getAppRoleFunctionList(final Long roleId, final Long appId) {
+    return epAppFunctionDao.getAppRoleFunctionList(roleId, appId);
+  }
 }
