@@ -47,24 +47,17 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
-import javax.persistence.Query;
 import javax.persistence.Tuple;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.transport.http.HTTPException;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
 import org.onap.portal.dao.fn.FnUserRoleDao;
 import org.onap.portal.domain.db.ep.EpUserRolesRequest;
 import org.onap.portal.domain.db.ep.EpUserRolesRequestDet;
@@ -75,21 +68,17 @@ import org.onap.portal.domain.db.fn.FnUserRole;
 import org.onap.portal.domain.dto.ecomp.EPUserAppCatalogRoles;
 import org.onap.portal.domain.dto.ecomp.ExternalSystemAccess;
 import org.onap.portal.domain.dto.transport.AppWithRolesForUser;
-import org.onap.portal.domain.dto.transport.ExternalAccessUserRoleDetail;
 import org.onap.portal.domain.dto.transport.FieldsValidator;
 import org.onap.portal.domain.dto.transport.RemoteRole;
 import org.onap.portal.domain.dto.transport.RemoteUserWithRoles;
+import org.onap.portal.domain.dto.transport.Role;
 import org.onap.portal.domain.dto.transport.RoleInAppForUser;
 import org.onap.portal.domain.dto.transport.UserApplicationRoles;
-import org.onap.portal.exception.SyncUserRolesException;
-import org.onap.portal.logging.format.EPAppMessagesEnum;
-import org.onap.portal.logging.logic.EPLogUtil;
 import org.onap.portal.service.ApplicationsRestClientService;
-import org.onap.portal.service.ExternalAccessRolesService;
+import org.onap.portal.service.ep.EpAppFunctionService;
 import org.onap.portal.service.ep.EpUserRolesRequestDetService;
 import org.onap.portal.service.ep.EpUserRolesRequestService;
 import org.onap.portal.utils.EPCommonSystemProperties;
-import org.onap.portal.utils.EcompPortalUtils;
 import org.onap.portal.utils.PortalConstants;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.onap.portalsdk.core.restful.domain.EcompRole;
@@ -97,7 +86,6 @@ import org.onap.portalsdk.core.util.SystemProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
 
 @Service
 @Transactional
@@ -164,6 +152,7 @@ public class FnUserRoleService {
   private final FnAppService fnAppService;
   private final FnRoleService fnRoleService;
   private final FnUserService fnUserService;
+  private final EpAppFunctionService epAppFunctionService;
   private final EpUserRolesRequestService epUserRolesRequestService;
   private final EpUserRolesRequestDetService epUserRolesRequestDetService;
   private final EntityManager entityManager;
@@ -175,6 +164,7 @@ public class FnUserRoleService {
       FnAppService fnAppService,
       FnRoleService fnRoleService,
       FnUserService fnUserService,
+      EpAppFunctionService epAppFunctionService,
       EpUserRolesRequestService epUserRolesRequestService,
       EpUserRolesRequestDetService epUserRolesRequestDetService,
       EntityManager entityManager,
@@ -183,10 +173,15 @@ public class FnUserRoleService {
     this.fnAppService = fnAppService;
     this.fnRoleService = fnRoleService;
     this.fnUserService = fnUserService;
+    this.epAppFunctionService = epAppFunctionService;
     this.epUserRolesRequestService = epUserRolesRequestService;
     this.epUserRolesRequestDetService = epUserRolesRequestDetService;
     this.entityManager = entityManager;
     this.applicationsRestClientService = applicationsRestClientService;
+  }
+
+  public List<FnUserRole> retrieveByAppIdAndRoleId(final Long appId, final Long roleId) {
+    return Optional.of(fnUserRoleDao.retrieveByAppIdAndRoleId(appId, roleId)).orElse(new ArrayList<>());
   }
 
   public List<FnUserRole> getAdminUserRoles(final Long userId, final Long roleId, final Long appId) {
@@ -479,5 +474,69 @@ public class FnUserRoleService {
 
   public void deleteById(final Long id) {
     fnUserRoleDao.deleteById(id);
+  }
+
+  public List<RoleInAppForUser> constructRolesInAppForUserGet(List<Role> appRoles, FnRole[] userAppRoles,
+      Boolean extRequestValue) {
+    List<RoleInAppForUser> rolesInAppForUser = new ArrayList<>();
+
+    Set<Long> userAppRolesMap = new HashSet<>();
+    if (userAppRoles != null) {
+      for (FnRole ecompRole : userAppRoles) {
+        userAppRolesMap.add(ecompRole.getAppId());
+      }
+      logger.debug(EELFLoggerDelegate.debugLogger, "In constructRolesInAppForUserGet() - userAppRolesMap = {}",
+          userAppRolesMap);
+
+    } else {
+      logger.error(EELFLoggerDelegate.errorLogger,
+          "constructRolesInAppForUserGet has received userAppRoles list empty.");
+    }
+
+    if (appRoles != null) {
+      for (Role ecompRole : appRoles) {
+        logger.debug(EELFLoggerDelegate.debugLogger, "In constructRolesInAppForUserGet() - appRoles not null = {}",
+            ecompRole);
+
+        if (ecompRole.getId().equals(PortalConstants.ACCOUNT_ADMIN_ROLE_ID) && !extRequestValue) {
+          continue;
+        }
+        RoleInAppForUser roleForUser = new RoleInAppForUser(ecompRole.getId(), ecompRole.getName());
+        roleForUser.setIsApplied(userAppRolesMap.contains(ecompRole.getId()));
+        rolesInAppForUser.add(roleForUser);
+        logger.debug(EELFLoggerDelegate.debugLogger, "In constructRolesInAppForUserGet() - rolesInAppForUser = {}",
+            rolesInAppForUser);
+
+      }
+    } else {
+      logger.error(EELFLoggerDelegate.errorLogger,
+          "constructRolesInAppForUser has received appRoles list empty.");
+    }
+    return rolesInAppForUser;
+  }
+
+  public List<RoleInAppForUser> constructRolesInAppForUserGet(EcompRole[] appRoles, EcompRole[] userAppRoles) {
+    List<RoleInAppForUser> rolesInAppForUser = new ArrayList<>();
+
+    Set<Long> userAppRolesMap = new HashSet<>();
+    if (userAppRoles != null) {
+      for (EcompRole ecompRole : userAppRoles) {
+        userAppRolesMap.add(ecompRole.getId());
+      }
+    } else {
+      logger.error(EELFLoggerDelegate.errorLogger,
+          "constructRolesInAppForUserGet has received userAppRoles list empty");
+    }
+
+    if (appRoles != null) {
+      for (EcompRole ecompRole : appRoles) {
+        RoleInAppForUser roleForUser = new RoleInAppForUser(ecompRole.getId(), ecompRole.getName());
+        roleForUser.setIsApplied(userAppRolesMap.contains(ecompRole.getId()));
+        rolesInAppForUser.add(roleForUser);
+      }
+    } else {
+      logger.error(EELFLoggerDelegate.errorLogger, "constructRolesInAppForUser has received appRoles list empty");
+    }
+    return rolesInAppForUser;
   }
 }

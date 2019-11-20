@@ -70,7 +70,7 @@ public class FnRoleV implements Serializable {
        @Column(name = "role_name")
        private String roleName;
        @Column(name = "active_yn")
-       private String activeYn;
+       private Boolean activeYn;
        @Column(name = "priority")
        private BigInteger priority;
        @Column(name = "app_Id")

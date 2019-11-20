@@ -38,42 +38,28 @@
  *
  */
 
-package org.onap.portal.service.ep;
+package org.onap.portal.service.fn;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import org.onap.portal.dao.ep.EpAppFunctionDao;
-import org.onap.portal.domain.db.ep.EpAppFunction;
+import org.onap.portal.dao.fn.FnMenuFunctionalDao;
+import org.onap.portal.domain.db.fn.FnMenuFunctional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class EpAppFunctionService {
+public class FnMenuFunctionalService {
 
-  private final EpAppFunctionDao epAppFunctionDao;
+  private final FnMenuFunctionalDao fnMenuFunctionalDao;
 
   @Autowired
-  public EpAppFunctionService(EpAppFunctionDao epAppFunctionDao) {
-    this.epAppFunctionDao = epAppFunctionDao;
+  public FnMenuFunctionalService(FnMenuFunctionalDao fnMenuFunctionalDao) {
+    this.fnMenuFunctionalDao = fnMenuFunctionalDao;
   }
 
-  public List<EpAppFunction> getAppRoleFunctionList(final Long roleId, final Long appId) {
-
-    return Optional.of(epAppFunctionDao.getAppRoleFunctionList(roleId, appId))
-        .orElse(new ArrayList<>())
-        .stream()
-        .filter(distinctByKey(EpAppFunction::getAppId))
-        .filter(distinctByKey(EpAppFunction::getFunctionCd))
-        .filter(distinctByKey(EpAppFunction::getFunctionName))
-        .collect(Collectors.toList());
+  public List<FnMenuFunctional> retrieveByMenuId(final Long menuId) {
+    return Optional.of(fnMenuFunctionalDao.retrieveByMenuId(menuId)).orElse(new ArrayList<>());
   }
 
-  private <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
-    List<Object> seen = new ArrayList<>();
-    return t -> seen.add(keyExtractor.apply(t));
-  }
 }

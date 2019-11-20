@@ -51,6 +51,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.onap.portal.domain.db.ep.EpAppFunction;
+import org.onap.portal.domain.db.fn.FnRoleFunction;
 
 @Getter
 @Setter
@@ -71,8 +72,11 @@ public class CentralV2Role implements Serializable, Comparable {
   private String name;
   private boolean active;
   private Integer priority;
-  private SortedSet<EpAppFunction> roleFunctions = new TreeSet<>();
+  @Builder.Default
+  private SortedSet<FnRoleFunction> roleFunctions = new TreeSet<>();
+  @Builder.Default
   private SortedSet<CentralV2Role> childRoles = new TreeSet<>();
+  @Builder.Default
   private SortedSet<CentralV2Role> parentRoles = new TreeSet<>();
 
   public CentralV2Role(Long id, String name) {
@@ -80,7 +84,7 @@ public class CentralV2Role implements Serializable, Comparable {
     this.name = name;
   }
 
-  public void addRoleFunction(EpAppFunction roleFunction) {
+  public void addRoleFunction(FnRoleFunction roleFunction) {
     this.roleFunctions.add(roleFunction);
   }
 

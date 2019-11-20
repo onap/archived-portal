@@ -38,42 +38,39 @@
  *
  */
 
-package org.onap.portal.service.ep;
+package org.onap.portal.service.fn;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import org.onap.portal.dao.ep.EpAppFunctionDao;
-import org.onap.portal.domain.db.ep.EpAppFunction;
+import org.onap.portal.dao.fn.FnMenuFunctionalRolesDao;
+import org.onap.portal.domain.db.fn.FnMenuFunctionalRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class EpAppFunctionService {
-
-  private final EpAppFunctionDao epAppFunctionDao;
+public class FnMenuFunctionalRolesService {
+  private final FnMenuFunctionalRolesDao fnMenuFunctionalRolesDao;
 
   @Autowired
-  public EpAppFunctionService(EpAppFunctionDao epAppFunctionDao) {
-    this.epAppFunctionDao = epAppFunctionDao;
+  public FnMenuFunctionalRolesService(FnMenuFunctionalRolesDao fnMenuFunctionalRolesDao) {
+    this.fnMenuFunctionalRolesDao = fnMenuFunctionalRolesDao;
   }
 
-  public List<EpAppFunction> getAppRoleFunctionList(final Long roleId, final Long appId) {
-
-    return Optional.of(epAppFunctionDao.getAppRoleFunctionList(roleId, appId))
-        .orElse(new ArrayList<>())
-        .stream()
-        .filter(distinctByKey(EpAppFunction::getAppId))
-        .filter(distinctByKey(EpAppFunction::getFunctionCd))
-        .filter(distinctByKey(EpAppFunction::getFunctionName))
-        .collect(Collectors.toList());
+  public void deleteById(final Long id){
+    fnMenuFunctionalRolesDao.deleteById(id);
   }
 
-  private <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
-    List<Object> seen = new ArrayList<>();
-    return t -> seen.add(keyExtractor.apply(t));
+  public void delete(final FnMenuFunctionalRoles id){
+    fnMenuFunctionalRolesDao.delete(id);
   }
+
+  public List<FnMenuFunctionalRoles> retrieveByroleId(final Long roleId){
+    return Optional.of(fnMenuFunctionalRolesDao.retrieveByRoleId(roleId)).orElse(new ArrayList<>());
+  }
+
+  public List<FnMenuFunctionalRoles> retrieveByMenuId(final Long menuId){
+    return Optional.of(fnMenuFunctionalRolesDao.retrieveByMenuId(menuId)).orElse(new ArrayList<>());
+  }
+
 }

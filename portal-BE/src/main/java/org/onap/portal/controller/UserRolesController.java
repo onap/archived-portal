@@ -88,31 +88,31 @@ import org.springframework.web.bind.annotation.RestController;
 @Configuration
 public class UserRolesController {
 
-       private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(UserRolesController.class);
+  private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(UserRolesController.class);
 
-       private final FnUserService fnUserService;
-       private final FnUserRoleService fnUserRoleService;
-       private final AdminRolesService adminRolesService;
-       private final ApplicationsRestClientService applicationsRestClientService;
-       private final AuditServiceImpl auditService = new AuditServiceImpl();
+  private final FnUserService fnUserService;
+  private final FnUserRoleService fnUserRoleService;
+  private final AdminRolesService adminRolesService;
+  private final ApplicationsRestClientService applicationsRestClientService;
+  private final AuditServiceImpl auditService = new AuditServiceImpl();
 
 /*
        private final UserRolesService userRolesService;
        private final SearchService searchService;*/
 
 
-       private static final String FAILURE = "failure";
+  private static final String FAILURE = "failure";
 
-       @Autowired
-       public UserRolesController(final FnUserService fnUserService,
-               FnUserRoleService fnUserRoleService,
-               final AdminRolesService adminRolesService,
-               ApplicationsRestClientService applicationsRestClientService) {
-              this.fnUserService = fnUserService;
-              this.fnUserRoleService = fnUserRoleService;
-              this.adminRolesService = adminRolesService;
-              this.applicationsRestClientService = applicationsRestClientService;
-       }
+  @Autowired
+  public UserRolesController(final FnUserService fnUserService,
+      FnUserRoleService fnUserRoleService,
+      final AdminRolesService adminRolesService,
+      ApplicationsRestClientService applicationsRestClientService) {
+    this.fnUserService = fnUserService;
+    this.fnUserRoleService = fnUserRoleService;
+    this.adminRolesService = adminRolesService;
+    this.applicationsRestClientService = applicationsRestClientService;
+  }
 
 
        /*
@@ -260,317 +260,317 @@ public class UserRolesController {
 
                      return fieldsValidator;
               }
+*/
+
+  @RequestMapping(value = {"/portalApi/userAppRoles"}, method = {
+      RequestMethod.GET}, produces = "application/json")
+  public List<RoleInAppForUser> getAppRolesForUser(Principal principal,
+      @RequestParam("user") String orgUserId,
+      @RequestParam("app") Long appid, @RequestParam("externalRequest") Boolean extRequestValue,
+      @RequestParam("isSystemUser") Boolean isSystemUser,
+      HttpServletResponse response) {
+    FnUser user = fnUserService.loadUserByUsername(principal.getName());
+    List<RoleInAppForUser> result = null;
+    String feErrorString = "";
+    if (!adminRolesService.isAccountAdmin(user) && !adminRolesService.isRoleAdmin(user.getUserId())) {
+      logger.debug(EELFLoggerDelegate.debugLogger,
+          "getAppRolesForUser: Accountadminpermissioncheck {}, RoleAdmincheck {}",
+          adminRolesService.isAccountAdmin(user), adminRolesService.isRoleAdmin(user.getUserId()));
+      EcompPortalUtils.setBadPermissions(user, response, "getAppRolesForUser");
+      feErrorString = EcompPortalUtils.getFEErrorString(true, response.getStatus());
+    } else {
+      if (isSystemUser || EcompPortalUtils.legitimateUserId(orgUserId)) {
+        result = adminRolesService.getAppRolesForUser(appid, orgUserId, extRequestValue, user.getUserId());
+        logger.debug(EELFLoggerDelegate.debugLogger, "getAppRolesForUser: result {}, appId {}",
+            result, appid);
+        int responseCode = EcompPortalUtils.getExternalAppResponseCode();
+        if (responseCode != 0 && responseCode != 200) {
+          // external error
+          response.setStatus(responseCode);
+          feErrorString = EcompPortalUtils.getFEErrorString(false, responseCode);
+        } else if (result == null) {
+          // If the result is null, there was an internal onap error
+          // in the service call.
+          response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+          feErrorString = EcompPortalUtils.getFEErrorString(true,
+              HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
+      } else {
+        logger.info(EELFLoggerDelegate.errorLogger, "getAppRolesForUser - no Organization User ID");
+        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        feErrorString = EcompPortalUtils.getFEErrorString(true, HttpServletResponse.SC_BAD_REQUEST);
+      }
+    }
+
+    StringBuilder sbUserApps = new StringBuilder();
+    if (result != null && !result.isEmpty()) {
+      sbUserApps.append("User '").append(orgUserId).append("' has Roles={");
+      for (RoleInAppForUser appRole : result) {
+        if (appRole.getIsApplied()) {
+          sbUserApps.append(appRole.getRoleName()).append(", ");
+        }
+      }
+      sbUserApps.append("} assigned to the appId '").append(appid).append("'.");
+    } else {
+      // Not sure creating an empty object will make any difference
+      // but would like to give it a shot for defect #DE221057
+      if (result == null) {
+        result = new ArrayList<>();
+      }
+      sbUserApps.append("User '").append(orgUserId).append("' and appid ").append(appid).append(" has no roles");
+    }
+    logger.info(EELFLoggerDelegate.errorLogger, sbUserApps.toString());
+
+    EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/userAppRoles", "get result =", result);
+    if (!feErrorString.isEmpty()) {
+      logger.debug(EELFLoggerDelegate.debugLogger, "LR: FEErrorString to header: " + feErrorString);
+
+      response.addHeader("FEErrorString", feErrorString);
+      response.addHeader("Access-Control-Expose-Headers", "FEErrorString");
+    }
+    return result;
+  }
 
 
-              @RequestMapping(value = {"/portalApi/userAppRoles"}, method = {
-                      RequestMethod.GET}, produces = "application/json")
-              public List<RoleInAppForUser> getAppRolesForUser(Principal principal,
-                      @RequestParam("user") String orgUserId,
-                      @RequestParam("app") Long appid, @RequestParam("externalRequest") Boolean extRequestValue,
-                      @RequestParam("isSystemUser") Boolean isSystemUser,
-                      HttpServletResponse response) {
-                     FnUser user = fnUserService.loadUserByUsername(principal.getName());
-                     List<RoleInAppForUser> result = null;
-                     String feErrorString = "";
-                     if (!adminRolesService.isAccountAdmin(user) && !adminRolesService.isRoleAdmin(user)) {
-                            logger.debug(EELFLoggerDelegate.debugLogger,
-                                    "getAppRolesForUser: Accountadminpermissioncheck {}, RoleAdmincheck {}",
-                                    adminRolesService.isAccountAdmin(user), adminRolesService.isRoleAdmin(user));
-                            EcompPortalUtils.setBadPermissions(user, response, "getAppRolesForUser");
-                            feErrorString = EcompPortalUtils.getFEErrorString(true, response.getStatus());
-                     } else {
-                            if ((!isSystemUser && EcompPortalUtils.legitimateUserId(orgUserId)) || isSystemUser) {
-                                   result = userRolesService.getAppRolesForUser(appid, orgUserId, extRequestValue, user);
-                                   logger.debug(EELFLoggerDelegate.debugLogger, "getAppRolesForUser: result {}, appId {}",
-                                           result, appid);
-                                   int responseCode = EcompPortalUtils.getExternalAppResponseCode();
-                                   if (responseCode != 0 && responseCode != 200) {
-                                          // external error
-                                          response.setStatus(responseCode);
-                                          feErrorString = EcompPortalUtils.getFEErrorString(false, responseCode);
-                                   } else if (result == null) {
-                                          // If the result is null, there was an internal onap error
-                                          // in the service call.
-                                          response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                                          feErrorString = EcompPortalUtils.getFEErrorString(true,
-                                                  HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                                   }
-                            } else {
-                                   logger.info(EELFLoggerDelegate.errorLogger, "getAppRolesForUser - no Organization User ID");
-                                   response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                                   feErrorString = EcompPortalUtils.getFEErrorString(true, HttpServletResponse.SC_BAD_REQUEST);
-                            }
-                     }
+  @RequestMapping(value = {"/portalApi/userAppRoles"}, method = {
+      RequestMethod.PUT}, produces = "application/json")
+  public PortalRestResponse<String> putAppWithUserRoleStateForUser(Principal principal,
+      @RequestBody AppWithRolesForUser newAppRolesForUser, HttpServletResponse response) {
+    // FieldsValidator fieldsValidator = new FieldsValidator();
+    PortalRestResponse<String> portalResponse = new PortalRestResponse<>();
+    StringBuilder sbUserApps = new StringBuilder();
+    if (newAppRolesForUser != null) {
+      sbUserApps.append("User '").append(newAppRolesForUser.getOrgUserId());
+      if (newAppRolesForUser.getAppId() != null && !newAppRolesForUser.getAppRoles().isEmpty()) {
+        sbUserApps.append("' has roles = { ");
+        for (RoleInAppForUser appRole : newAppRolesForUser.getAppRoles()) {
+          if (appRole.getIsApplied()) {
+            sbUserApps.append(appRole.getRoleName()).append(" ,");
+          }
+        }
+        sbUserApps.deleteCharAt(sbUserApps.length() - 1);
+        sbUserApps.append("} assigned for the app ").append(newAppRolesForUser.getAppId());
+      } else {
+        sbUserApps.append("' has no roles assigned for app ").append(newAppRolesForUser.getAppId());
+      }
+    }
+    logger.info(EELFLoggerDelegate.applicationLogger, "putAppWithUserRoleStateForUser: {}",
+        sbUserApps.toString());
 
-                     StringBuilder sbUserApps = new StringBuilder();
-                     if (result != null && !result.isEmpty()) {
-                            sbUserApps.append("User '" + orgUserId + "' has Roles={");
-                            for (RoleInAppForUser appRole : result) {
-                                   if (appRole.isApplied) {
-                                          sbUserApps.append(appRole.roleName + ", ");
-                                   }
-                            }
-                            sbUserApps.append("} assigned to the appId '" + appid + "'.");
-                     } else {
-                            // Not sure creating an empty object will make any difference
-                            // but would like to give it a shot for defect #DE221057
-                            if (result == null) {
-                                   result = new ArrayList<>();
-                            }
-                            sbUserApps.append("User '" + orgUserId + "' and appid " + appid + " has no roles");
-                     }
-                     logger.info(EELFLoggerDelegate.errorLogger, sbUserApps.toString());
+    FnUser user = fnUserService.loadUserByUsername(principal.getName());
+    // boolean changesApplied = false;
+    ExternalRequestFieldsValidator changesApplied = null;
 
-                     EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/userAppRoles", "get result =", result);
-                     if (feErrorString != "") {
-                            logger.debug(EELFLoggerDelegate.debugLogger, "LR: FEErrorString to header: " + feErrorString);
+    if (!adminRolesService.isAccountAdmin(user) && !adminRolesService.isRoleAdmin(user.getUserId())) {
+      EcompPortalUtils.setBadPermissions(user, response, "putAppWithUserRoleStateForUser");
+    } else if (newAppRolesForUser == null) {
+      logger.error(EELFLoggerDelegate.errorLogger,
+          "putAppWithUserRoleStateForUser: newAppRolesForUser is null");
+    } else {
+      changesApplied = adminRolesService.setAppWithUserRoleStateForUser(user, newAppRolesForUser);
+      try {
+        if (changesApplied.isResult()) {
+          logger.info(EELFLoggerDelegate.applicationLogger,
+              "putAppWithUserRoleStateForUser: succeeded for app {}, user {}",
+              newAppRolesForUser.getAppId(),
+              newAppRolesForUser.getAppId());
 
-                            response.addHeader("FEErrorString", feErrorString);
-                            response.addHeader("Access-Control-Expose-Headers", "FEErrorString");
-                     }
-                     return result;
-              }
-              */
+          MDC.put(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP,
+              EPEELFLoggerAdvice.getCurrentDateTimeUTC());
+          AuditLog auditLog = new AuditLog();
+          auditLog.setUserId(user.getId());
+          auditLog.setActivityCode(EcompAuditLog.CD_ACTIVITY_UPDATE_USER);
+          auditLog.setAffectedRecordId(newAppRolesForUser.getOrgUserId());
+          auditLog.setComments(EcompPortalUtils.truncateString(sbUserApps.toString(),
+              PortalConstants.AUDIT_LOG_COMMENT_SIZE));
+          auditService.logActivity(auditLog, null);
 
-       @RequestMapping(value = {"/portalApi/userAppRoles"}, method = {
-               RequestMethod.PUT}, produces = "application/json")
-       public PortalRestResponse<String> putAppWithUserRoleStateForUser(Principal principal,
-               @RequestBody AppWithRolesForUser newAppRolesForUser, HttpServletResponse response) {
-              // FieldsValidator fieldsValidator = new FieldsValidator();
-              PortalRestResponse<String> portalResponse = new PortalRestResponse<>();
-              StringBuilder sbUserApps = new StringBuilder();
-              if (newAppRolesForUser != null) {
-                     sbUserApps.append("User '").append(newAppRolesForUser.getOrgUserId());
-                     if (newAppRolesForUser.getAppId() != null && !newAppRolesForUser.getAppRoles().isEmpty()) {
-                            sbUserApps.append("' has roles = { ");
-                            for (RoleInAppForUser appRole : newAppRolesForUser.getAppRoles()) {
-                                   if (appRole.getIsApplied()) {
-                                          sbUserApps.append(appRole.getRoleName()).append(" ,");
-                                   }
-                            }
-                            sbUserApps.deleteCharAt(sbUserApps.length() - 1);
-                            sbUserApps.append("} assigned for the app ").append(newAppRolesForUser.getAppId());
-                     } else {
-                            sbUserApps.append("' has no roles assigned for app ").append(newAppRolesForUser.getAppId());
-                     }
-              }
-              logger.info(EELFLoggerDelegate.applicationLogger, "putAppWithUserRoleStateForUser: {}",
-                      sbUserApps.toString());
+          MDC.put(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP,
+              EPEELFLoggerAdvice.getCurrentDateTimeUTC());
+          EcompPortalUtils.calculateDateTimeDifferenceForLog(
+              MDC.get(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP),
+              MDC.get(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP));
+          logger.info(EELFLoggerDelegate.auditLogger,
+              EPLogUtil.formatAuditLogMessage(
+                  "UserRolesController.putAppWithUserRoleStateForUser",
+                  EcompAuditLog.CD_ACTIVITY_UPDATE_USER, user.getOrgUserId(),
+                  newAppRolesForUser.getOrgUserId(), sbUserApps.toString()));
+          MDC.remove(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP);
+          MDC.remove(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP);
+          MDC.remove(SystemProperties.MDC_TIMER);
+          portalResponse = new PortalRestResponse<>(PortalRestStatusEnum.OK, "success", null);
 
-              FnUser user = fnUserService.loadUserByUsername(principal.getName());
-              // boolean changesApplied = false;
-              ExternalRequestFieldsValidator changesApplied = null;
+        }
+        if (!changesApplied.isResult()) {
+          throw new Exception(changesApplied.getDetailMessage());
+        }
 
-              if (!adminRolesService.isAccountAdmin(user) && !adminRolesService.isRoleAdmin(user)) {
-                     EcompPortalUtils.setBadPermissions(user, response, "putAppWithUserRoleStateForUser");
-              } else if (newAppRolesForUser == null) {
-                     logger.error(EELFLoggerDelegate.errorLogger,
-                             "putAppWithUserRoleStateForUser: newAppRolesForUser is null");
-              } else {
-                     changesApplied = adminRolesService.setAppWithUserRoleStateForUser(user, newAppRolesForUser);
-                     try {
-                            if (changesApplied.isResult()) {
-                                   logger.info(EELFLoggerDelegate.applicationLogger,
-                                           "putAppWithUserRoleStateForUser: succeeded for app {}, user {}",
-                                           newAppRolesForUser.getAppId(),
-                                           newAppRolesForUser.getAppId());
+      } catch (Exception e) {
+        logger.error(EELFLoggerDelegate.errorLogger,
+            "putAppWithUserRoleStateForUser: failed for app {}, user {}",
+            newAppRolesForUser.getAppId(),
+            newAppRolesForUser.getOrgUserId(), e);
+        portalResponse = new PortalRestResponse<>(PortalRestStatusEnum.ERROR, e.getMessage(), null);
+      }
+    }
 
-                                   MDC.put(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP,
-                                           EPEELFLoggerAdvice.getCurrentDateTimeUTC());
-                                   AuditLog auditLog = new AuditLog();
-                                   auditLog.setUserId(user.getId());
-                                   auditLog.setActivityCode(EcompAuditLog.CD_ACTIVITY_UPDATE_USER);
-                                   auditLog.setAffectedRecordId(newAppRolesForUser.getOrgUserId());
-                                   auditLog.setComments(EcompPortalUtils.truncateString(sbUserApps.toString(),
-                                           PortalConstants.AUDIT_LOG_COMMENT_SIZE));
-                                   auditService.logActivity(auditLog, null);
+    EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/userAppRoles", "put result =", changesApplied);
+    return portalResponse;
+  }
 
-                                   MDC.put(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP,
-                                           EPEELFLoggerAdvice.getCurrentDateTimeUTC());
-                                   EcompPortalUtils.calculateDateTimeDifferenceForLog(
-                                           MDC.get(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP),
-                                           MDC.get(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP));
-                                   logger.info(EELFLoggerDelegate.auditLogger,
-                                           EPLogUtil.formatAuditLogMessage(
-                                                   "UserRolesController.putAppWithUserRoleStateForUser",
-                                                   EcompAuditLog.CD_ACTIVITY_UPDATE_USER, user.getOrgUserId(),
-                                                   newAppRolesForUser.getOrgUserId(), sbUserApps.toString()));
-                                   MDC.remove(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP);
-                                   MDC.remove(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP);
-                                   MDC.remove(SystemProperties.MDC_TIMER);
-                                   portalResponse = new PortalRestResponse<>(PortalRestStatusEnum.OK, "success", null);
+  @RequestMapping(value = {"/portalApi/updateRemoteUserProfile"}, method = {
+      RequestMethod.GET}, produces = "application/json")
+  public PortalRestResponse<String> updateRemoteUserProfile(HttpServletRequest request) {
 
-                            }
-                            if (!changesApplied.isResult()) {
-                                   throw new Exception(changesApplied.getDetailMessage());
-                            }
+    String updateRemoteUserFlag = FAILURE;
+    try {
+      // saveNewUser = userService.saveNewUser(newUser);
+      String orgUserId = request.getParameter("loginId");
+      long appId = Long.parseLong(request.getParameter("appId"));
+      fnUserRoleService.updateRemoteUserProfile(orgUserId, appId);
+    } catch (Exception e) {
+      logger.error(EELFLoggerDelegate.errorLogger, "updateRemoteUserProfile failed", e);
+      return new PortalRestResponse<>(PortalRestStatusEnum.OK, updateRemoteUserFlag, e.getMessage());
+    }
+    return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, updateRemoteUserFlag, "");
 
-                     } catch (Exception e) {
-                            logger.error(EELFLoggerDelegate.errorLogger,
-                                    "putAppWithUserRoleStateForUser: failed for app {}, user {}",
-                                    newAppRolesForUser.getAppId(),
-                                    newAppRolesForUser.getOrgUserId(), e);
-                            portalResponse = new PortalRestResponse<>(PortalRestStatusEnum.ERROR, e.getMessage(), null);
-                     }
-              }
+  }
 
-              EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/userAppRoles", "put result =", changesApplied);
-              return portalResponse;
-       }
+  @RequestMapping(value = {"/portalApi/app/{appId}/users"}, method = {
+      RequestMethod.GET}, produces = "application/json")
+  public List<UserApplicationRoles> getUsersFromAppEndpoint(@PathVariable("appId") Long appId) {
+    try {
+      logger.debug(EELFLoggerDelegate.debugLogger, "/portalApi/app/{}/users was invoked", appId);
+      return fnUserRoleService.getUsersFromAppEndpoint(appId);
+    } catch (Exception e) {
+      logger.error(EELFLoggerDelegate.errorLogger, "getUsersFromAppEndpoint failed", e);
+      return new ArrayList<>();
+    }
+  }
 
-       @RequestMapping(value = {"/portalApi/updateRemoteUserProfile"}, method = {
-               RequestMethod.GET}, produces = "application/json")
-       public PortalRestResponse<String> updateRemoteUserProfile(HttpServletRequest request) {
+  @RequestMapping(value = {"/portalApi/app/{appId}/roles"}, method = {
+      RequestMethod.GET}, produces = "application/json")
+  public List<EcompRole> testGetRoles(HttpServletRequest request, @PathVariable("appId") Long appId)
+      throws HTTPException {
+    EcompRole[] appRoles = applicationsRestClientService.get(EcompRole[].class, appId, "/roles");
+    List<EcompRole> rolesList = Arrays.asList(appRoles);
+    EcompPortalUtils
+        .logAndSerializeObject(logger, "/portalApi/app/{appId}/roles", "response for appId=" + appId,
+            rolesList);
 
-              String updateRemoteUserFlag = FAILURE;
-              try {
-                     // saveNewUser = userService.saveNewUser(newUser);
-                     String orgUserId = request.getParameter("loginId");
-                     long appId = Long.parseLong(request.getParameter("appId"));
-                     fnUserRoleService.updateRemoteUserProfile(orgUserId, appId);
-              } catch (Exception e) {
-                     logger.error(EELFLoggerDelegate.errorLogger, "updateRemoteUserProfile failed", e);
-                     return new PortalRestResponse<>(PortalRestStatusEnum.OK, updateRemoteUserFlag, e.getMessage());
-              }
-              return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, updateRemoteUserFlag, "");
-
-       }
-
-       @RequestMapping(value = {"/portalApi/app/{appId}/users"}, method = {
-               RequestMethod.GET}, produces = "application/json")
-       public List<UserApplicationRoles> getUsersFromAppEndpoint(@PathVariable("appId") Long appId) {
-              try {
-                     logger.debug(EELFLoggerDelegate.debugLogger, "/portalApi/app/{}/users was invoked", appId);
-                     return fnUserRoleService.getUsersFromAppEndpoint(appId);
-              } catch (Exception e) {
-                     logger.error(EELFLoggerDelegate.errorLogger, "getUsersFromAppEndpoint failed", e);
-                     return new ArrayList<>();
-              }
-       }
-
-       @RequestMapping(value = {"/portalApi/app/{appId}/roles"}, method = {
-               RequestMethod.GET}, produces = "application/json")
-       public List<EcompRole> testGetRoles(HttpServletRequest request, @PathVariable("appId") Long appId)
-               throws HTTPException {
-              EcompRole[] appRoles = applicationsRestClientService.get(EcompRole[].class, appId, "/roles");
-              List<EcompRole> rolesList = Arrays.asList(appRoles);
-              EcompPortalUtils
-                      .logAndSerializeObject(logger, "/portalApi/app/{appId}/roles", "response for appId=" + appId,
-                              rolesList);
-
-              return rolesList;
-       }
+    return rolesList;
+  }
 
 
-       @RequestMapping(value = {"/portalApi/admin/import/app/{appId}/roles"}, method = {
-               RequestMethod.GET}, produces = "application/json")
-       public List<FnRole> importRolesFromRemoteApplication(@PathVariable("appId") Long appId) throws HTTPException {
-              List<FnRole> rolesList = fnUserRoleService.importRolesFromRemoteApplication(appId);
-              EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/admin/import/app/{appId}/roles",
-                      "response for appId=" + appId, rolesList);
+  @RequestMapping(value = {"/portalApi/admin/import/app/{appId}/roles"}, method = {
+      RequestMethod.GET}, produces = "application/json")
+  public List<FnRole> importRolesFromRemoteApplication(@PathVariable("appId") Long appId) throws HTTPException {
+    List<FnRole> rolesList = fnUserRoleService.importRolesFromRemoteApplication(appId);
+    EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/admin/import/app/{appId}/roles",
+        "response for appId=" + appId, rolesList);
 
-              return rolesList;
-       }
-
-
-       @RequestMapping(value = {"/portalApi/app/{appId}/user/{orgUserId}/roles"}, method = {
-               RequestMethod.GET}, produces = "application/json")
-       public EcompRole testGetRoles(@PathVariable("appId") Long appId,
-               @PathVariable("orgUserId") String orgUserId) throws Exception {
-              if (!EcompPortalUtils.legitimateUserId(orgUserId)) {
-                     String msg = "Error /user/<user>/roles not legitimate orgUserId = " + orgUserId;
-                     logger.error(EELFLoggerDelegate.errorLogger, msg);
-                     throw new Exception(msg);
-              }
-              EcompRole[] roles = applicationsRestClientService.get(EcompRole[].class, appId,
-                      String.format("/user/%s/roles", orgUserId));
-              if (roles.length != 1) {
-                     String msg =
-                             "Error /user/<user>/roles returned array. expected size 1 recieved size = " + roles.length;
-                     logger.error(EELFLoggerDelegate.errorLogger, msg);
-                     throw new Exception(msg);
-              }
-
-              EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/app/{appId}/user/{orgUserId}/roles",
-                      "response for appId='" + appId + "' and orgUserId='" + orgUserId + "'", roles[0]);
-              return roles[0];
-       }
+    return rolesList;
+  }
 
 
-       @RequestMapping(value = {"/portalApi/saveUserAppRoles"}, method = {
-               RequestMethod.PUT}, produces = "application/json")
-       public FieldsValidator putAppWithUserRoleRequest(Principal principal,
-               @RequestBody AppWithRolesForUser newAppRolesForUser, HttpServletResponse response) {
-              FieldsValidator fieldsValidator = null;
-              FnUser user = fnUserService.loadUserByUsername(principal.getName());
-              try {
-                     fieldsValidator = fnUserRoleService.putUserAppRolesRequest(newAppRolesForUser, user);
-                     response.setStatus(0);
+  @RequestMapping(value = {"/portalApi/app/{appId}/user/{orgUserId}/roles"}, method = {
+      RequestMethod.GET}, produces = "application/json")
+  public EcompRole testGetRoles(@PathVariable("appId") Long appId,
+      @PathVariable("orgUserId") String orgUserId) throws Exception {
+    if (!EcompPortalUtils.legitimateUserId(orgUserId)) {
+      String msg = "Error /user/<user>/roles not legitimate orgUserId = " + orgUserId;
+      logger.error(EELFLoggerDelegate.errorLogger, msg);
+      throw new Exception(msg);
+    }
+    EcompRole[] roles = applicationsRestClientService.get(EcompRole[].class, appId,
+        String.format("/user/%s/roles", orgUserId));
+    if (roles.length != 1) {
+      String msg =
+          "Error /user/<user>/roles returned array. expected size 1 recieved size = " + roles.length;
+      logger.error(EELFLoggerDelegate.errorLogger, msg);
+      throw new Exception(msg);
+    }
 
-              } catch (Exception e) {
-                     logger.error(EELFLoggerDelegate.errorLogger, "putAppWithUserRoleRequest failed", e);
-
-              }
-              // return fieldsValidator;
-              EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/saveUserAppRoles", "PUT result =",
-                      response.getStatus());
-              return fieldsValidator;
-       }
-
-
-       @SuppressWarnings("ConstantConditions")
-       @RequestMapping(value = {"/portalApi/appCatalogRoles"}, method = {
-               RequestMethod.GET}, produces = "application/json")
-       public List<EPUserAppCatalogRoles> getUserAppCatalogRoles(Principal principal,
-               @RequestParam("appName") String appName) {
-              FnUser user = fnUserService.loadUserByUsername(principal.getName());
-              List<EPUserAppCatalogRoles> userAppRoleList = null;
-              try {
-                     userAppRoleList = fnUserRoleService.getUserAppCatalogRoles(user, appName);
-              } catch (Exception e) {
-                     logger.error(EELFLoggerDelegate.errorLogger, "putUserWidgetsSortPref failed", e);
-
-              }
-              userAppRoleList.sort(getUserAppCatalogRolesComparator);
-              EcompPortalUtils
-                      .logAndSerializeObject(logger, "/portalApi/userApplicationRoles", "result =", userAppRoleList);
-
-              return userAppRoleList;
-
-       }
+    EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/app/{appId}/user/{orgUserId}/roles",
+        "response for appId='" + appId + "' and orgUserId='" + orgUserId + "'", roles[0]);
+    return roles[0];
+  }
 
 
-       private Comparator<EPUserAppCatalogRoles> getUserAppCatalogRolesComparator =
-               Comparator.comparing(EPUserAppCatalogRoles::getRoleName);
+  @RequestMapping(value = {"/portalApi/saveUserAppRoles"}, method = {
+      RequestMethod.PUT}, produces = "application/json")
+  public FieldsValidator putAppWithUserRoleRequest(Principal principal,
+      @RequestBody AppWithRolesForUser newAppRolesForUser, HttpServletResponse response) {
+    FieldsValidator fieldsValidator = null;
+    FnUser user = fnUserService.loadUserByUsername(principal.getName());
+    try {
+      fieldsValidator = fnUserRoleService.putUserAppRolesRequest(newAppRolesForUser, user);
+      response.setStatus(0);
 
-       @RequestMapping(value = "/portalApi/externalRequestAccessSystem", method = RequestMethod.GET,
-               produces = "application/json")
-       public ExternalSystemAccess readExternalRequestAccess() {
-              ExternalSystemAccess result = null;
-              try {
-                     result = fnUserRoleService.getExternalRequestAccess();
-                     EcompPortalUtils
-                             .logAndSerializeObject(logger, "/portalApi/externalRequestAccessSystem", "GET result =",
-                                     result);
-              } catch (Exception e) {
-                     logger.error(EELFLoggerDelegate.errorLogger,
-                             "readExternalRequestAccess failed: " + e.getMessage());
-              }
-              return result;
+    } catch (Exception e) {
+      logger.error(EELFLoggerDelegate.errorLogger, "putAppWithUserRoleRequest failed", e);
 
-       }
+    }
+    // return fieldsValidator;
+    EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/saveUserAppRoles", "PUT result =",
+        response.getStatus());
+    return fieldsValidator;
+  }
 
-       @RequestMapping(value = {"/portalApi/checkIfUserIsSuperAdmin"}, method = RequestMethod.GET,
-               produces = "application/json")
-       public boolean checkIfUserIsSuperAdmin(Principal principal) {
-              FnUser user = fnUserService.loadUserByUsername(principal.getName());
 
-              boolean isSuperAdmin = false;
-              try {
-                     isSuperAdmin = adminRolesService.isSuperAdmin(user.getOrgUserId());
-              } catch (Exception e) {
-                     logger.error(EELFLoggerDelegate.errorLogger, "checkIfUserIsSuperAdmin failed: " + e.getMessage());
-              }
-              return isSuperAdmin;
-       }
+  @SuppressWarnings("ConstantConditions")
+  @RequestMapping(value = {"/portalApi/appCatalogRoles"}, method = {
+      RequestMethod.GET}, produces = "application/json")
+  public List<EPUserAppCatalogRoles> getUserAppCatalogRoles(Principal principal,
+      @RequestParam("appName") String appName) {
+    FnUser user = fnUserService.loadUserByUsername(principal.getName());
+    List<EPUserAppCatalogRoles> userAppRoleList = null;
+    try {
+      userAppRoleList = fnUserRoleService.getUserAppCatalogRoles(user, appName);
+    } catch (Exception e) {
+      logger.error(EELFLoggerDelegate.errorLogger, "putUserWidgetsSortPref failed", e);
+
+    }
+    userAppRoleList.sort(getUserAppCatalogRolesComparator);
+    EcompPortalUtils
+        .logAndSerializeObject(logger, "/portalApi/userApplicationRoles", "result =", userAppRoleList);
+
+    return userAppRoleList;
+
+  }
+
+
+  private Comparator<EPUserAppCatalogRoles> getUserAppCatalogRolesComparator =
+      Comparator.comparing(EPUserAppCatalogRoles::getRoleName);
+
+  @RequestMapping(value = "/portalApi/externalRequestAccessSystem", method = RequestMethod.GET,
+      produces = "application/json")
+  public ExternalSystemAccess readExternalRequestAccess() {
+    ExternalSystemAccess result = null;
+    try {
+      result = fnUserRoleService.getExternalRequestAccess();
+      EcompPortalUtils
+          .logAndSerializeObject(logger, "/portalApi/externalRequestAccessSystem", "GET result =",
+              result);
+    } catch (Exception e) {
+      logger.error(EELFLoggerDelegate.errorLogger,
+          "readExternalRequestAccess failed: " + e.getMessage());
+    }
+    return result;
+
+  }
+
+  @RequestMapping(value = {"/portalApi/checkIfUserIsSuperAdmin"}, method = RequestMethod.GET,
+      produces = "application/json")
+  public boolean checkIfUserIsSuperAdmin(Principal principal) {
+    FnUser user = fnUserService.loadUserByUsername(principal.getName());
+
+    boolean isSuperAdmin = false;
+    try {
+      isSuperAdmin = adminRolesService.isSuperAdmin(user.getOrgUserId());
+    } catch (Exception e) {
+      logger.error(EELFLoggerDelegate.errorLogger, "checkIfUserIsSuperAdmin failed: " + e.getMessage());
+    }
+    return isSuperAdmin;
+  }
 }

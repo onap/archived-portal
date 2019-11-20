@@ -81,6 +81,10 @@ public class FnAppService {
     return Optional.of(fnAppDao.getOne(id)).orElseThrow(EntityExistsException::new);
   }
 
+  public List<FnApp> getByUebKey(final String uebKey){
+    return Optional.of(fnAppDao.getByUebKey(uebKey)).orElse(new ArrayList<>());
+  }
+
   public void createOnboardingFromApp(FnApp app, OnboardingApp onboardingApp) {
     onboardingApp.setId(app.getId());
     onboardingApp.setName(app.getAppName());

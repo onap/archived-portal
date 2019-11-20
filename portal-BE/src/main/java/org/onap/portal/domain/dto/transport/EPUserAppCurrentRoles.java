@@ -42,10 +42,46 @@ package org.onap.portal.domain.dto.transport;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.io.Serializable;
+import javax.persistence.ColumnResult;
+import javax.persistence.ConstructorResult;
+import javax.persistence.NamedNativeQuery;
+import javax.persistence.SqlResultSetMapping;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+@NamedNativeQuery(
+		name = "EPUserAppCurrentRoles",
+		query = "select\n"
+				+ "  distinct fu.role_id,\n"
+				+ "  fr.user_id,\n"
+				+ "  fu.role_name,\n"
+				+ "  fu.priority\n"
+				+ " from\n"
+				+ "  fn_role fu\n"
+				+ "  left outer join fn_user_role fr ON fu.role_id = fr.role_id\n"
+				+ "  and fu.app_id = fr.app_id\n"
+				+ "  and fr.role_id != 999\n"
+				+ " where\n"
+				+ "  fu.app_id = :appId\n"
+				+ "  and fr.user_id = :userId\n"
+				+ "  and fu.active_yn = 'Y'\n",
+		resultSetMapping = "EPUserAppCurrentRoles"
+)
+
+@SqlResultSetMapping(
+		name = "EPUserAppCurrentRoles",
+		classes = @ConstructorResult(
+				targetClass = EPUserAppCurrentRoles.class,
+				columns = {
+						@ColumnResult(name = "roleName"),
+						@ColumnResult(name = "userId"),
+						@ColumnResult(name = "priority"),
+						@ColumnResult(name = "roleId")
+				}
+		)
+)
 
 @Getter
 @Setter

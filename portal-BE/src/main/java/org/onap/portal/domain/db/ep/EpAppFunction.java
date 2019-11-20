@@ -101,62 +101,64 @@ CREATE TABLE `ep_app_function` (
 @IdClass(EpAppFunctionId.class)
 @NoArgsConstructor
 @AllArgsConstructor
-public class EpAppFunction extends DomainVo implements Serializable{
-       @Id
-       @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-       @JoinColumn(name = "app_id")
-       @Valid
-       private FnApp appId;
-       @Id
-       @Column(name = "function_cd", length = 250, nullable = false)
-       @Size(max = 250)
-       @NotNull
-       @SafeHtml
-       private String functionCd;
-       @Column(name = "function_name", length = 250, nullable = false)
-       @Size(max = 250)
-       @NotNull
-       @SafeHtml
-       private String functionName;
+public class EpAppFunction extends DomainVo implements Serializable {
 
-       private Long roleId;
-       private String type;
-       @SafeHtml
-       private String action;
-       @SafeHtml
-       private String editUrl;
+  @Id
+  @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+  @JoinColumn(name = "app_id")
+  @Valid
+  private FnApp appId;
+  @Id
+  @Column(name = "function_cd", length = 250, nullable = false)
+  @Size(max = 250)
+  @NotNull
+  @SafeHtml
+  private String functionCd;
+  @Column(name = "function_name", length = 250, nullable = false)
+  @Size(max = 250)
+  @NotNull
+  @SafeHtml
+  private String functionName;
 
-       @OneToMany(
-               targetEntity = EpAppRoleFunction.class,
-               mappedBy = "epAppFunction",
-               cascade = CascadeType.ALL,
-               fetch = FetchType.LAZY
-       )
-       private Set<EpAppRoleFunction> epAppRoleFunctions;
+  private Long roleId;
+  private String type;
+  @SafeHtml
+  private String action;
+  @SafeHtml
+  private String editUrl;
 
-       public EpAppFunction(Long id, String code, String name, FnApp appId, String type, String action,String editUrl) {
-              super();
-              this.id = id;
-              this.functionCd = code;
-              this.functionName = name;
-              this.appId = appId;
-              this.type = type;
-              this.action = action;
-              this.editUrl = editUrl;
-       }
+  @OneToMany(
+      targetEntity = EpAppRoleFunction.class,
+      mappedBy = "epAppFunction",
+      cascade = CascadeType.ALL,
+      fetch = FetchType.LAZY
+  )
+  private Set<EpAppRoleFunction> epAppRoleFunctions;
 
-       @Getter
-       @Setter
-       @EqualsAndHashCode
-       @NoArgsConstructor
-       @AllArgsConstructor
-       public static class EpAppFunctionId implements Serializable {
-              @Valid
-              private FnApp appId;
-              @Size(max = 250)
-              @NotNull
-              @SafeHtml
-              private String functionCd;
-       }
+  public EpAppFunction(Long id, String code, String name, FnApp appId, String type, String action, String editUrl) {
+    super();
+    this.id = id;
+    this.functionCd = code;
+    this.functionName = name;
+    this.appId = appId;
+    this.type = type;
+    this.action = action;
+    this.editUrl = editUrl;
+  }
+
+  @Getter
+  @Setter
+  @EqualsAndHashCode
+  @NoArgsConstructor
+  @AllArgsConstructor
+  public static class EpAppFunctionId implements Serializable {
+
+    @Valid
+    private FnApp appId;
+    @Size(max = 250)
+    @NotNull
+    @SafeHtml
+    private String functionCd;
+  }
 }
 

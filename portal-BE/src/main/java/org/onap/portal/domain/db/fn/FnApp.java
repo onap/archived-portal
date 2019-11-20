@@ -102,9 +102,13 @@ CREATE TABLE `fn_app` (
 */
 
 @NamedQueries({
-        @NamedQuery(
-                name = "FnApp.retrieveWhereAuthCentralIsYAndOpenIsNAndAuthNamespaceIsNotNull",
-                query = "from FnApp where auth_central = 'Y' and open = 'N' and auth_namespace is not null")
+    @NamedQuery(
+        name = "FnApp.retrieveWhereAuthCentralIsYAndOpenIsNAndAuthNamespaceIsNotNull",
+        query = "from FnApp where authCentral = 'Y' and open = 'N' and authNamespace is not null"),
+    @NamedQuery(
+        name = "FnApp.getByUebKey",
+        query = "from FnApp where uebKey = :uebKey"
+    )
 })
 
 @Table(name = "fn_app")
@@ -117,162 +121,162 @@ CREATE TABLE `fn_app` (
 @Entity
 public class FnApp extends DomainVo implements Serializable {
 
-       @Id
-       @GeneratedValue(strategy = GenerationType.AUTO)
-       @Column(name = "app_Id", length = 11, nullable = false)
-       @Digits(integer = 11, fraction = 0)
-       private Long appId;
-       @Column(name = "app_name", length = 100, nullable = false, columnDefinition = "varchar(100) not null default '?'")
-       @Size(max = 100)
-       @SafeHtml
-       @NotNull
-       private String appName;
-       @Column(name = "app_image_url", length = 256)
-       @Size(max = 256)
-       @SafeHtml
-       private String appImageUrl;
-       @Column(name = "app_description", length = 512)
-       @Size(max = 256)
-       @SafeHtml
-       private String appDescription;
-       @Column(name = "app_notes", length = 4096)
-       @Size(max = 4096)
-       @SafeHtml
-       private String appNotes;
-       @Column(name = "app_url", length = 256)
-       @Size(max = 256)
-       @SafeHtml
-       //TODO URL
-       @URL
-       private String appUrl;
-       @Column(name = "app_alternate_url", length = 256)
-       @Size(max = 256)
-       @SafeHtml
-       private String appAlternateUrl;
-       @Column(name = "app_rest_endpoint", length = 2000)
-       @Size(max = 2000)
-       @SafeHtml
-       private String appRestEndpoint;
-       @Column(name = "ml_app_name", length = 50, nullable = false, columnDefinition = "varchar(50) not null default '?'")
-       @Size(max = 50)
-       @SafeHtml
-       @NotNull
-       private String ml_app_name;
-       @Column(name = "ml_app_admin_id", length = 7, nullable = false, columnDefinition = "varchar(7) not null default '?'")
-       @Size(max = 7)
-       @SafeHtml
-       @NotNull
-       private String mlAppAdminId;
-       @Column(name = "mots_id", length = 11)
-       @Digits(integer = 11, fraction = 0)
-       private Long motsId;
-       @Column(name = "app_password", length = 256, nullable = false, columnDefinition = "varchar(256) not null default '?'")
-       @Size(max = 256)
-       @SafeHtml
-       @NotNull
-       private String appPassword;
-       @Column(name = "_open", length = 1, columnDefinition = "char(1) default 'N'")
-       private Boolean open;
-       @Column(name = "_enabled", length = 1, columnDefinition = "char(1) default 'N'")
-       private Boolean enabled;
-       @Column(name = "active_yn", length = 1, columnDefinition = "char(1) default 'Y'")
-       @Pattern(regexp = "[YNyn]")
-       @Size(max = 1)
-       @NotNull
-       @SafeHtml
-       private String activeYn;
-       @Column(name = "_thumbnail", columnDefinition = "mediumblob null default null")
-       private byte[] thumbnail;
-       @Column(name = "app_username", length = 50)
-       @Size(max = 50)
-       @SafeHtml
-       private String appUsername;
-       @Column(name = "ueb_key", length = 256)
-       @Size(max = 256)
-       @SafeHtml
-       private String uebKey;
-       @Column(name = "ueb_secret", length = 256)
-       @Size(max = 256)
-       @SafeHtml
-       private String uebSecret;
-       @Column(name = "ueb_topic_name", length = 256)
-       @Size(max = 256)
-       @SafeHtml
-       private String uebTopicName;
-       @Column(name = "app_type", length = 11, columnDefinition = "int(11) not null default 1")
-       @Digits(integer = 11, fraction = 0)
-       private Long appType;
-       @Column(name = "auth_central", length = 1, columnDefinition = "char(1) not null default 'N'", nullable = false)
-       private Boolean authCentral;
-       @Column(name = "auth_namespace", length = 100)
-       @Size(max = 100)
-       @SafeHtml
-       private String authNamespace;
-       @OneToMany(
-               targetEntity = FnMenuFunctionalRoles.class,
-               mappedBy = "appId",
-               cascade = CascadeType.ALL,
-               fetch = FetchType.LAZY
-       )
-       private Set<FnMenuFunctionalRoles> fnMenuFunctionalRoles;
-       @OneToMany(
-               targetEntity = EpUserRolesRequest.class,
-               mappedBy = "appId",
-               cascade = CascadeType.ALL,
-               fetch = FetchType.LAZY
-       )
-       private Set<EpUserRolesRequest> epUserRolesRequests;
-       @OneToMany(
-               targetEntity = EpAppFunction.class,
-               mappedBy = "appId",
-               cascade = CascadeType.ALL,
-               fetch = FetchType.LAZY
-       )
-       private Set<EpAppFunction> epAppFunctions;
-       @OneToMany(
-               targetEntity = EpAppRoleFunction.class,
-               mappedBy = "appId",
-               cascade = CascadeType.ALL,
-               fetch = FetchType.LAZY
-       )
-       private Set<EpAppRoleFunction> epAppRoleFunctions;
-       @OneToMany(
-               targetEntity = FnUserRole.class,
-               mappedBy = "appId",
-               cascade = CascadeType.ALL,
-               fetch = FetchType.LAZY
-       )
-       private Set<FnUserRole> fnUserRoles;
-       @OneToMany(
-               targetEntity = EpWebAnalyticsSource.class,
-               mappedBy = "appId",
-               cascade = CascadeType.ALL,
-               fetch = FetchType.LAZY
-       )
-       private Set<EpWebAnalyticsSource> epWebAnalyticsSources;
-       @OneToMany(
-               targetEntity = EpWidgetCatalogRole.class,
-               mappedBy = "appId",
-               cascade = CascadeType.ALL,
-               fetch = FetchType.LAZY
-       )
-       private Set<EpWidgetCatalogRole> epWidgetCatalogRoles;
-       @OneToMany(
-               targetEntity = EpMicroservice.class,
-               mappedBy = "appId",
-               cascade = CascadeType.ALL,
-               fetch = FetchType.LAZY
-       )
-       private Set<EpMicroservice> epMicroservices;
-       @OneToMany(
-               targetEntity = FnPersUserAppSel.class,
-               mappedBy = "appId",
-               cascade = CascadeType.ALL,
-               fetch = FetchType.LAZY
-       )
-       private Set<FnPersUserAppSel> fnPersUserAppSels;
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  @Column(name = "app_Id", length = 11, nullable = false)
+  @Digits(integer = 11, fraction = 0)
+  private Long appId;
+  @Column(name = "app_name", length = 100, nullable = false, columnDefinition = "varchar(100) not null default '?'")
+  @Size(max = 100)
+  @SafeHtml
+  @NotNull
+  private String appName;
+  @Column(name = "app_image_url", length = 256)
+  @Size(max = 256)
+  @SafeHtml
+  private String appImageUrl;
+  @Column(name = "app_description", length = 512)
+  @Size(max = 256)
+  @SafeHtml
+  private String appDescription;
+  @Column(name = "app_notes", length = 4096)
+  @Size(max = 4096)
+  @SafeHtml
+  private String appNotes;
+  @Column(name = "app_url", length = 256)
+  @Size(max = 256)
+  @SafeHtml
+  //TODO URL
+  @URL
+  private String appUrl;
+  @Column(name = "app_alternate_url", length = 256)
+  @Size(max = 256)
+  @SafeHtml
+  private String appAlternateUrl;
+  @Column(name = "app_rest_endpoint", length = 2000)
+  @Size(max = 2000)
+  @SafeHtml
+  private String appRestEndpoint;
+  @Column(name = "ml_app_name", length = 50, nullable = false, columnDefinition = "varchar(50) not null default '?'")
+  @Size(max = 50)
+  @SafeHtml
+  @NotNull
+  private String ml_app_name;
+  @Column(name = "ml_app_admin_id", length = 7, nullable = false, columnDefinition = "varchar(7) not null default '?'")
+  @Size(max = 7)
+  @SafeHtml
+  @NotNull
+  private String mlAppAdminId;
+  @Column(name = "mots_id", length = 11)
+  @Digits(integer = 11, fraction = 0)
+  private Long motsId;
+  @Column(name = "app_password", length = 256, nullable = false, columnDefinition = "varchar(256) not null default '?'")
+  @Size(max = 256)
+  @SafeHtml
+  @NotNull
+  private String appPassword;
+  @Column(name = "_open", length = 1, columnDefinition = "char(1) default 'N'")
+  private Boolean open;
+  @Column(name = "_enabled", length = 1, columnDefinition = "char(1) default 'N'")
+  private Boolean enabled;
+  @Column(name = "active_yn", length = 1, columnDefinition = "char(1) default 'Y'")
+  @Pattern(regexp = "[YNyn]")
+  @Size(max = 1)
+  @NotNull
+  @SafeHtml
+  private String activeYn;
+  @Column(name = "_thumbnail", columnDefinition = "mediumblob null default null")
+  private byte[] thumbnail;
+  @Column(name = "app_username", length = 50)
+  @Size(max = 50)
+  @SafeHtml
+  private String appUsername;
+  @Column(name = "ueb_key", length = 256)
+  @Size(max = 256)
+  @SafeHtml
+  private String uebKey;
+  @Column(name = "ueb_secret", length = 256)
+  @Size(max = 256)
+  @SafeHtml
+  private String uebSecret;
+  @Column(name = "ueb_topic_name", length = 256)
+  @Size(max = 256)
+  @SafeHtml
+  private String uebTopicName;
+  @Column(name = "app_type", length = 11, columnDefinition = "int(11) not null default 1")
+  @Digits(integer = 11, fraction = 0)
+  private Long appType;
+  @Column(name = "auth_central", length = 1, columnDefinition = "char(1) not null default 'N'", nullable = false)
+  private Boolean authCentral;
+  @Column(name = "auth_namespace", length = 100)
+  @Size(max = 100)
+  @SafeHtml
+  private String authNamespace;
+  @OneToMany(
+      targetEntity = FnMenuFunctionalRoles.class,
+      mappedBy = "appId",
+      cascade = CascadeType.ALL,
+      fetch = FetchType.LAZY
+  )
+  private Set<FnMenuFunctionalRoles> fnMenuFunctionalRoles;
+  @OneToMany(
+      targetEntity = EpUserRolesRequest.class,
+      mappedBy = "appId",
+      cascade = CascadeType.ALL,
+      fetch = FetchType.LAZY
+  )
+  private Set<EpUserRolesRequest> epUserRolesRequests;
+  @OneToMany(
+      targetEntity = EpAppFunction.class,
+      mappedBy = "appId",
+      cascade = CascadeType.ALL,
+      fetch = FetchType.LAZY
+  )
+  private Set<EpAppFunction> epAppFunctions;
+  @OneToMany(
+      targetEntity = EpAppRoleFunction.class,
+      mappedBy = "appId",
+      cascade = CascadeType.ALL,
+      fetch = FetchType.LAZY
+  )
+  private Set<EpAppRoleFunction> epAppRoleFunctions;
+  @OneToMany(
+      targetEntity = FnUserRole.class,
+      mappedBy = "appId",
+      cascade = CascadeType.ALL,
+      fetch = FetchType.LAZY
+  )
+  private Set<FnUserRole> fnUserRoles;
+  @OneToMany(
+      targetEntity = EpWebAnalyticsSource.class,
+      mappedBy = "appId",
+      cascade = CascadeType.ALL,
+      fetch = FetchType.LAZY
+  )
+  private Set<EpWebAnalyticsSource> epWebAnalyticsSources;
+  @OneToMany(
+      targetEntity = EpWidgetCatalogRole.class,
+      mappedBy = "appId",
+      cascade = CascadeType.ALL,
+      fetch = FetchType.LAZY
+  )
+  private Set<EpWidgetCatalogRole> epWidgetCatalogRoles;
+  @OneToMany(
+      targetEntity = EpMicroservice.class,
+      mappedBy = "appId",
+      cascade = CascadeType.ALL,
+      fetch = FetchType.LAZY
+  )
+  private Set<EpMicroservice> epMicroservices;
+  @OneToMany(
+      targetEntity = FnPersUserAppSel.class,
+      mappedBy = "appId",
+      cascade = CascadeType.ALL,
+      fetch = FetchType.LAZY
+  )
+  private Set<FnPersUserAppSel> fnPersUserAppSels;
 
-       public Boolean isRestrictedApp() {
-              return (this.appType == 2);
-       }
+  public Boolean isRestrictedApp() {
+    return (this.appType == 2);
+  }
 }

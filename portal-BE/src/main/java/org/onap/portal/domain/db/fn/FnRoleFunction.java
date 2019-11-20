@@ -53,11 +53,13 @@ import javax.persistence.Table;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.onap.portal.domain.db.fn.FnRoleFunction.FnRoleFunctionId;
+import org.onap.portal.domain.dto.DomainVo;
 
 /*
 CREATE TABLE `fn_role_function` (
@@ -77,11 +79,12 @@ CREATE TABLE `fn_role_function` (
 })
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Getter
 @Setter
 @Entity
 @IdClass(FnRoleFunctionId.class)
-public class FnRoleFunction implements Serializable{
+public class FnRoleFunction extends DomainVo implements Serializable{
 
        @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
        @JoinColumn(name = "role_Id", nullable = false)
@@ -95,6 +98,7 @@ public class FnRoleFunction implements Serializable{
        @NotNull
        @Id
        private FnFunction functionCd;
+
 
        @Getter
        @Setter

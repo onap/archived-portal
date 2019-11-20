@@ -54,6 +54,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.Valid;
@@ -82,6 +84,14 @@ CREATE TABLE `fn_menu_functional` (
   CONSTRAINT `fk_fn_menu_func_parent_menu_id` FOREIGN KEY (`parent_menu_id`) REFERENCES `fn_menu_functional` (`menu_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 )
 */
+
+@NamedQueries({
+    @NamedQuery(
+        name = "FnMenuFunctional.retrieveByMenuId",
+        query = "from FnMenuFunctionalRoles where menuId =:menuId"
+    )
+}
+)
 
 @Table(name = "fn_menu_functional", indexes = {@Index(columnList = "parent_menu_id", name = "fk_fn_menu_func_parent_menu_id_idx")
 })

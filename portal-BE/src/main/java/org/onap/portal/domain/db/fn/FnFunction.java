@@ -52,6 +52,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -68,6 +69,7 @@ CREATE TABLE `fn_function` (
 @Table(name = "fn_function")
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Getter
 @Setter
 @Entity
@@ -82,6 +84,10 @@ public class FnFunction implements Serializable {
        @SafeHtml
        @NotNull
        private String functionName;
+       private String code;
+       private String name;
+       private String type;
+       private String action;
        @OneToMany(
                targetEntity = FnRestrictedUrl.class,
                mappedBy = "functionCd",

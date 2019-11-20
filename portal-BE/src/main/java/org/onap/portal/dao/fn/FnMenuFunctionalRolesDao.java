@@ -38,42 +38,25 @@
  *
  */
 
-package org.onap.portal.service.ep;
+package org.onap.portal.dao.fn;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import org.onap.portal.dao.ep.EpAppFunctionDao;
-import org.onap.portal.domain.db.ep.EpAppFunction;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.onap.portal.domain.db.fn.FnMenuFunctionalRoles;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
-@Service
-public class EpAppFunctionService {
+@Transactional
+@Repository
+public interface FnMenuFunctionalRolesDao extends JpaRepository<FnMenuFunctionalRoles, Long> {
 
-  private final EpAppFunctionDao epAppFunctionDao;
+  @Query
+  List<FnMenuFunctionalRoles> retrieveByRoleId(final @Param("roleId") Long roleId);
 
-  @Autowired
-  public EpAppFunctionService(EpAppFunctionDao epAppFunctionDao) {
-    this.epAppFunctionDao = epAppFunctionDao;
-  }
+  @Query
+  List<FnMenuFunctionalRoles> retrieveByMenuId(final @Param("menuId") Long menuId);
 
-  public List<EpAppFunction> getAppRoleFunctionList(final Long roleId, final Long appId) {
 
-    return Optional.of(epAppFunctionDao.getAppRoleFunctionList(roleId, appId))
-        .orElse(new ArrayList<>())
-        .stream()
-        .filter(distinctByKey(EpAppFunction::getAppId))
-        .filter(distinctByKey(EpAppFunction::getFunctionCd))
-        .filter(distinctByKey(EpAppFunction::getFunctionName))
-        .collect(Collectors.toList());
-  }
-
-  private <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
-    List<Object> seen = new ArrayList<>();
-    return t -> seen.add(keyExtractor.apply(t));
-  }
 }

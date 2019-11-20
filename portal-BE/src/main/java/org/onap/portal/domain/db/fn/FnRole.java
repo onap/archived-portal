@@ -63,6 +63,7 @@ import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -110,7 +111,7 @@ CREATE TABLE `fn_role` (
         query = "FROM FnRole where roleName =:roleName and appId is null"),
     @NamedQuery(
         name = "FnRole.retrieveActiveRolesOfApplication",
-        query = "from FnRole where active_yn = 'Y' and appId=:appId"),
+        query = "from FnRole where activeYn = 'Y' and appId=:appId"),
     @NamedQuery(
         name = "FnRole.getUserRoleOnUserIdAndAppId",
         query = " FROM"
@@ -120,7 +121,16 @@ CREATE TABLE `fn_role` (
             + "  fr.roleId = fur.roleId\n"
             + "  AND fur.userId = :userId"
             + "  AND fur.appId = :appId\n"
-            + "  AND fr.activeYn = 'y'")
+            + "  AND fr.activeYn = 'y'"),
+    @NamedQuery(
+        name = "FnRole.getGlobalRolesOfPortal",
+        query = "from"
+            + "  FnRole"
+            + " where"
+            + "  roleName like 'global_%'"
+            + "  and appId is null"
+            + "  and activeYn = 'Y'"
+    )
 })
 
 @Table(name = "fn_role", indexes = {
@@ -128,6 +138,7 @@ CREATE TABLE `fn_role` (
 })
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Getter
 @Setter
 @Entity

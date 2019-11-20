@@ -87,79 +87,83 @@ CREATE TABLE `fn_user_role` (
 */
 
 @NamedNativeQueries({
-        @NamedNativeQuery(
-                name = "FnUserRole.retrieveUserRoleOnUserIdAndRoleIdAndAppId",
-                query = "FROM FnUserRole where user_id= :userId"
-                        + " and role_id= :roleId"
-                        + " and app_id= :appId"),
-        @NamedNativeQuery(
-                name = "FnUserRole.retrieveCachedAppRolesForUser",
-                query = "FROM FnUserRole where user_id= :userId"
-                        + " and user_id= :userId"
-                        + " and app_id= :appId"),
-        @NamedNativeQuery(
-                name = "FnUserRole.isSuperAdmin",
-                query = "SELECT"
-                        + "  user.USER_ID as userId,"
-                        + "  user.org_user_id as orgUserId,"
-                        + "  userrole.ROLE_ID as roleId,"
-                        + "  userrole.APP_ID as appId"
-                        + " FROM"
-                        + "  fn_user_role userrole"
-                        + "  INNER JOIN fn_user user ON user.USER_ID = userrole.USER_ID"
-                        + " WHERE"
-                        + "  user.org_user_id = :orgUserId"
-                        + "  AND userrole.ROLE_ID =:roleId"
-                        + "  AND userrole.APP_ID =:appId",
-                resultSetMapping = "UserRole",
-                resultClass = UserRole.class
-        )
+    @NamedNativeQuery(
+        name = "FnUserRole.retrieveUserRoleOnUserIdAndRoleIdAndAppId",
+        query = "FROM FnUserRole where user_id= :userId"
+            + " and role_id= :roleId"
+            + " and app_id= :appId"),
+    @NamedNativeQuery(
+        name = "FnUserRole.retrieveCachedAppRolesForUser",
+        query = "FROM FnUserRole where user_id= :userId"
+            + " and user_id= :userId"
+            + " and app_id= :appId"),
+    @NamedNativeQuery(
+        name = "FnUserRole.isSuperAdmin",
+        query = "SELECT"
+            + "  user.USER_ID as userId,"
+            + "  user.org_user_id as orgUserId,"
+            + "  userrole.ROLE_ID as roleId,"
+            + "  userrole.APP_ID as appId"
+            + " FROM"
+            + "  fn_user_role userrole"
+            + "  INNER JOIN fn_user user ON user.USER_ID = userrole.USER_ID"
+            + " WHERE"
+            + "  user.org_user_id = :orgUserId"
+            + "  AND userrole.ROLE_ID =:roleId"
+            + "  AND userrole.APP_ID =:appId",
+        resultSetMapping = "UserRole",
+        resultClass = UserRole.class
+    )
 })
 
 @SqlResultSetMapping(
-        name = "UserRole",
-        classes = {
-                @ConstructorResult(
-                        targetClass = UserRole.class,
-                        columns = {
-                                @ColumnResult(name = "userId", type = Long.class),
-                                @ColumnResult(name = "orgUserId", type = String.class),
-                                @ColumnResult(name = "roleId", type = Long.class),
-                                @ColumnResult(name = "appId", type = Long.class)
-                        }
-                )
-        }
+    name = "UserRole",
+    classes = {
+        @ConstructorResult(
+            targetClass = UserRole.class,
+            columns = {
+                @ColumnResult(name = "userId", type = Long.class),
+                @ColumnResult(name = "orgUserId", type = String.class),
+                @ColumnResult(name = "roleId", type = Long.class),
+                @ColumnResult(name = "appId", type = Long.class)
+            }
+        )
+    }
 )
 
 @NamedQueries({
-        @NamedQuery(
-                name = "FnUserRole.getAdminUserRoles",
-                query = "FROM FnUserRole fn "
-                        + "WHERE  fn.userId.userId = :userId "
-                        + "AND fn.roleId.roleId = :roleId "
-                        + "AND fn.appId.appId = :appId"),
-        @NamedQuery(
-                name = "FnUserRole.getUserRolesForRoleIdAndAppId",
-                query = "FROM\n"
-                        + "  FnUserRole userrole\n"
-                        + "WHERE\n"
-                        + "  userrole.roleId.roleId = :roleId\n"
-                        + "  AND userrole.appId.appId = :appId"),
-        @NamedQuery(
-            name = "FnUserRole.retrieveByAppIdAndUserId",
-            query = "from FnUserRole where appId.appId =:appId and userId.userId =:userId"
-        )
+    @NamedQuery(
+        name = "FnUserRole.getAdminUserRoles",
+        query = "FROM FnUserRole fn "
+            + " WHERE  fn.userId.userId = :userId "
+            + " AND fn.roleId.roleId = :roleId "
+            + " AND fn.appId.appId = :appId"),
+    @NamedQuery(
+        name = "FnUserRole.getUserRolesForRoleIdAndAppId",
+        query = "FROM"
+            + "  FnUserRole userrole"
+            + " WHERE"
+            + "  userrole.roleId.roleId = :roleId"
+            + "  AND userrole.appId.appId = :appId"),
+    @NamedQuery(
+        name = "FnUserRole.retrieveByAppIdAndUserId",
+        query = "from FnUserRole where appId.appId =:appId and userId.userId =:userId"
+    ),
+    @NamedQuery(
+        name = "FnUserRole.retrieveByAppIdAndRoleId",
+        query = "from FnUserRole where appId.appId =:appId and roleId.roleId =:roleId"
+    )
 })
 
 @Table(
-        name = "fn_user_role",
-        indexes = {
-                @Index(name = "fn_user_role_role_id", columnList = "role_id"),
-                @Index(name = "fn_user_role_user_id", columnList = "user_id"),
-                @Index(name = "fk_fn_user__ref_178_fn_app_idx", columnList = "app_id")},
-        uniqueConstraints = {
-                @UniqueConstraint(name = "fn_user_role_id", columnNames = {"role_id", "user_id", "app_id"})
-        })
+    name = "fn_user_role",
+    indexes = {
+        @Index(name = "fn_user_role_role_id", columnList = "role_id"),
+        @Index(name = "fn_user_role_user_id", columnList = "user_id"),
+        @Index(name = "fk_fn_user__ref_178_fn_app_idx", columnList = "app_id")},
+    uniqueConstraints = {
+        @UniqueConstraint(name = "fn_user_role_id", columnNames = {"role_id", "user_id", "app_id"})
+    })
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -168,23 +172,23 @@ CREATE TABLE `fn_user_role` (
 @Entity
 public class FnUserRole implements Serializable {
 
-       @Id
-       @GeneratedValue(strategy = GenerationType.AUTO)
-       @Column(name = "id", columnDefinition = "int(11) auto_increment")
-       private Long id;
-       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-       @JoinColumn(name = "user_id")
-       @Valid
-       private FnUser userId;
-       @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-       @JoinColumn(name = "role_id")
-       @Valid
-       private FnRole roleId;
-       @Column(name = "priority", length = 4, columnDefinition = "decimal(4,0) DEFAULT NULL")
-       @Digits(integer = 4, fraction = 0)
-       private Long priority;
-       @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-       @JoinColumn(name = "app_Id")
-       @Valid
-       private FnApp appId;
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  @Column(name = "id", columnDefinition = "int(11) auto_increment")
+  private Long id;
+  @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @JoinColumn(name = "user_id")
+  @Valid
+  private FnUser userId;
+  @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @JoinColumn(name = "role_id")
+  @Valid
+  private FnRole roleId;
+  @Column(name = "priority", length = 4, columnDefinition = "decimal(4,0) DEFAULT NULL")
+  @Digits(integer = 4, fraction = 0)
+  private Long priority;
+  @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+  @JoinColumn(name = "app_Id")
+  @Valid
+  private FnApp appId;
 }

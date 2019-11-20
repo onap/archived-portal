@@ -43,9 +43,12 @@ package org.onap.portal.service.fn;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import javax.persistence.EntityExistsException;
+import javax.print.attribute.standard.Fidelity;
 import org.onap.portal.dao.fn.FnRoleDao;
 import org.onap.portal.domain.db.fn.FnRole;
+import org.onap.portal.service.ExternalAccessRolesService;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -70,9 +73,6 @@ public class FnRoleService {
   }
 
   public FnRole getRole(final Long appId, final Long appRoleId) {
-
-    String sql = "SELECT * FROM fn_role where APP_ID = :appId AND APP_ROLE_ID = :appRoleId";
-
     List<FnRole> roles = Optional.of(fnRoleDao.retrieveAppRoleByAppRoleIdAndByAppId(appId, appRoleId))
         .orElse(new ArrayList<>());
     if (!roles.isEmpty()) {
@@ -85,6 +85,21 @@ public class FnRoleService {
       return roles.get(0);
     }
     return null;
+  }
+
+  public List<FnRole> getAppRoles(Long appId) {
+    List<FnRole> applicationRoles;
+    try {
+      if (appId == 1) {
+        applicationRoles = retrieveAppRolesWhereAppIdIsNull();
+      } else {
+        applicationRoles = retrieveAppRolesByAppId(appId);
+      }
+    } catch (Exception e) {
+      logger.error(EELFLoggerDelegate.errorLogger, "getAppRoles: failed", e);
+      throw e;
+    }
+    return applicationRoles;
   }
 
   public List<FnRole> retrieveAppRoleByAppRoleIdAndByAppId(final Long appId, final Long appRoleId) {
@@ -109,5 +124,27 @@ public class FnRoleService {
 
   public List<FnRole> retrieveAppRolesByRoleNameAndByAppId(final String roleName, final Long appId) {
     return Optional.of(fnRoleDao.retrieveAppRolesByRoleNameAndByAppId(roleName, appId)).orElse(new ArrayList<>());
+  }
+
+  public List<FnRole> retrieveActiveRolesOfApplication(final Long appId) {
+    return Optional.of(fnRoleDao.retrieveActiveRolesOfApplication(appId)).orElse(new ArrayList<>());
+  }
+
+  public List<FnRole> getGlobalRolesOfPortal() {
+    List<FnRole> globalRoles = new ArrayList<>();
+    try {
+      globalRoles = Optional.of(fnRoleDao.getGlobalRolesOfPortal()).orElse(new ArrayList<>());
+    } catch (Exception e) {
+      logger.error(EELFLoggerDelegate.errorLogger, "getGlobalRolesOfPortal failed", e);
+    }
+    return globalRoles;
+  }
+
+  public void delete(FnRole role) {
+    fnRoleDao.delete(role);
+  }
+
+  public FnRole saveOne(final FnRole role){
+    return fnRoleDao.save(role);
   }
 }

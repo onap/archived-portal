@@ -69,5 +69,11 @@ public interface FnRoleDao extends JpaRepository<FnRole, Long> {
   List<FnRole> retrieveAppRolesByAppId(final @Param("appId") Long id);
 
   @Query
+  List<FnRole> retrieveActiveRolesOfApplication(final @Param("appId") Long appId);
+
+  @Query
   List<FnRole> retrieveAppRolesByRoleNameAndByAppId(final @Param("roleName") String roleName, final @Param("appId") Long appId);
+
+  @Query
+  List<FnRole> getGlobalRolesOfPortal();
 }
