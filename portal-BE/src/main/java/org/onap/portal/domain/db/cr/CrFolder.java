@@ -54,6 +54,7 @@ import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
@@ -93,7 +94,8 @@ CREATE TABLE `cr_folder` (
 @Entity
 public class CrFolder implements Serializable {
        @Id
-       @GeneratedValue(strategy = GenerationType.AUTO)
+
+  @GeneratedValue(strategy = GenerationType.AUTO)
        @Column(name = "folder_id", length = 11, nullable = false)
        @Digits(integer = 11, fraction = 0)
        @Positive
@@ -114,7 +116,7 @@ public class CrFolder implements Serializable {
        @Column(name = "create_date", nullable = false, columnDefinition = "datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()")
        @NotNull
        private LocalDateTime createDate;
-       @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+       @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
        @JoinColumn(name = "parent_Folder_Id")
        private CrFolder parentFolderId;
        @Column(name = "public_Yn", length = 1, nullable = false, columnDefinition = "varchar(1) DEFAULT 'n'")
@@ -125,7 +127,7 @@ public class CrFolder implements Serializable {
        @OneToMany(
                targetEntity = CrFolder.class,
                mappedBy = "parentFolderId",
-               cascade = CascadeType.ALL,
+               cascade = CascadeType.MERGE,
                fetch = FetchType.LAZY
        )
        private Set<CrFolder> crFolders;

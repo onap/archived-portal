@@ -47,6 +47,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
@@ -80,7 +81,8 @@ CREATE TABLE `cr_folder_access` (
 @Entity
 public class CrFolderAccess implements Serializable {
        @Id
-       @GeneratedValue(strategy = GenerationType.AUTO)
+
+  @GeneratedValue(strategy = GenerationType.AUTO)
        @Column(name = "folder_access_id", length = 11, nullable = false)
        @Digits(integer = 11, fraction = 0)
        @Positive

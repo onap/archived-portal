@@ -50,9 +50,9 @@ import org.mockito.runners.MockitoJUnitRunner;
 public class MockitoTestSuite {
 
 
-       public MockHttpServletRequestWrapper mockedRequest = new MockHttpServletRequestWrapper(
+       public final MockHttpServletRequestWrapper mockedRequest = new MockHttpServletRequestWrapper(
                Mockito.mock(HttpServletRequest.class));
-       public HttpServletResponse mockedResponse = Mockito.mock(HttpServletResponse.class);
+       public final HttpServletResponse mockedResponse = Mockito.mock(HttpServletResponse.class);
 
        public HttpServletResponse getMockedResponse() {
               return mockedResponse;
@@ -64,7 +64,7 @@ public class MockitoTestSuite {
 
        public class MockHttpServletRequestWrapper extends HttpServletRequestWrapper {
 
-              HttpSession session = Mockito.mock(HttpSession.class);
+              final HttpSession session = Mockito.mock(HttpSession.class);
 
               public MockHttpServletRequestWrapper(HttpServletRequest request) {
                      super(request);

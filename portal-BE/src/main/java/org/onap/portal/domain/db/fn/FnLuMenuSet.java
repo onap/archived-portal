@@ -54,6 +54,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -70,13 +71,13 @@ CREATE TABLE `fn_lu_menu_set` (
 @Table(name = "fn_lu_menu_set")
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Getter
 @Setter
 @Entity
 public class FnLuMenuSet implements Serializable {
 
        @Id
-       @GeneratedValue(strategy = GenerationType.AUTO)
        @Column(name = "menu_set_cd", length = 10, nullable = false)
        @Size(max = 10)
        @NotNull
@@ -90,7 +91,7 @@ public class FnLuMenuSet implements Serializable {
        @OneToMany(
                targetEntity = FnMenu.class,
                mappedBy = "menuSetCd",
-               cascade = CascadeType.ALL,
+               cascade = CascadeType.MERGE,
                fetch = FetchType.LAZY
        )
        private Set<FnMenu> fnMenus;

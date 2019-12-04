@@ -50,9 +50,8 @@ import org.springframework.stereotype.Component;
 public class FnUserMapper {
               public FnUserDto fnUserToFnUserDto(final FnUser fnUser){
               return FnUserDto.builder()
-                      .userId(fnUser.getUserId())
+                      .userId(fnUser.getId())
                       .orgId(fnUser.getOrgId().getOrgId())
-                      .managerId(fnUser.getManagerId().getUserId())
                       .firstName(fnUser.getFirstName())
                       .middleName(fnUser.getMiddleName())
                       .lastName(fnUser.getLastName())
@@ -69,9 +68,7 @@ public class FnUserMapper {
                       .loginPwd(fnUser.getLoginPwd())
                       .lastLoginDate(fnUser.getLastLoginDate())
                       .activeYn(fnUser.getActiveYn())
-                      .createdId(fnUser.getCreatedId().getUserId())
                       .createdDate(fnUser.getCreatedDate())
-                      .modifiedId(fnUser.getModifiedId().getUserId())
                       .modifiedDate(fnUser.getModifiedDate())
                       .isInternalYn(fnUser.getIsInternalYn())
                       .addressLine1(fnUser.getAddressLine1())
@@ -100,9 +97,8 @@ public class FnUserMapper {
 
        public FnUser fnUserToFnUser(final FnUser fnUser){
               return FnUser.builder()
-                      .userId(fnUser.getUserId())
+                      .id(fnUser.getId())
                       .orgId(fnUser.getOrgId())
-                      .managerId(fnUser.getManagerId())
                       .firstName(fnUser.getFirstName())
                       .middleName(fnUser.getMiddleName())
                       .lastName(fnUser.getLastName())
@@ -119,9 +115,7 @@ public class FnUserMapper {
                       .loginPwd(fnUser.getLoginPwd())
                       .lastLoginDate(fnUser.getLastLoginDate())
                       .activeYn(fnUser.getActiveYn())
-                      .createdId(fnUser.getCreatedId())
                       .createdDate(fnUser.getCreatedDate())
-                      .modifiedId(fnUser.getModifiedId())
                       .modifiedDate(fnUser.getModifiedDate())
                       .isInternalYn(fnUser.getIsInternalYn())
                       .addressLine1(fnUser.getAddressLine1())

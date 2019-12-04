@@ -52,6 +52,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -73,7 +74,7 @@ CREATE TABLE `fn_qz_cron_triggers` (
 @Table(name = "fn_qz_cron_triggers")
 @NoArgsConstructor
 @AllArgsConstructor
-
+@Builder
 @Getter
 @Setter
 @Entity

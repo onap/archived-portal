@@ -43,10 +43,8 @@ package org.onap.portal.service.fn;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.TreeSet;
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
-import javax.persistence.Query;
 import org.onap.portal.dao.fn.FnAppDao;
 import org.onap.portal.domain.db.fn.FnApp;
 import org.onap.portal.domain.dto.transport.OnboardingApp;
@@ -62,7 +60,7 @@ public class FnAppService {
 
   private static final String SUPER_ADMIN_ROLE_ID = "1";
 
-  private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(FnAppService.class);
+  private final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(FnAppService.class);
 
   private final FnAppDao fnAppDao;
   private final EntityManager entityManager;
@@ -83,6 +81,10 @@ public class FnAppService {
 
   public List<FnApp> getByUebKey(final String uebKey){
     return Optional.of(fnAppDao.getByUebKey(uebKey)).orElse(new ArrayList<>());
+  }
+
+  public List<FnApp> getCentralizedApps(){
+    return Optional.of(fnAppDao.getCentralizedApps()).orElse(new ArrayList<>());
   }
 
   public void createOnboardingFromApp(FnApp app, OnboardingApp onboardingApp) {

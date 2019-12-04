@@ -58,6 +58,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -83,41 +84,43 @@ CREATE TABLE `ep_app_role_function` (
 */
 
 @Table(name = "ep_app_role_function", indexes = {
-        @Index(name = "fk_ep_app_role_function_ep_app_func_role_id", columnList = "app_id, role_id, function_cd", unique = true),
-        @Index(name = "fk_ep_app_role_function_ep_app_func", columnList = "app_id, function_cd"),
-        @Index(name = "fk_ep_app_role_function_role_id", columnList = "role_id")
+    @Index(name = "fk_ep_app_role_function_ep_app_func_role_id", columnList = "app_id, role_id, function_cd", unique = true),
+    @Index(name = "fk_ep_app_role_function_ep_app_func", columnList = "app_id, function_cd"),
+    @Index(name = "fk_ep_app_role_function_role_id", columnList = "role_id")
 })
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
 @Entity
+@Builder
 public class EpAppRoleFunction implements Serializable {
-       @Id
-       @GeneratedValue(strategy = GenerationType.AUTO)
-       @Column(name = "id", length = 11, nullable = false, columnDefinition = "int(11) NOT NULL AUTO_INCREMENT")
-       @Digits(integer = 11, fraction = 0)
-       private Integer id;
-       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-       @JoinColumn(name = "app_id", insertable = false, updatable = false)
-       @Valid
-       @NotNull
-       private FnApp appId;
-       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-       @JoinColumn(name = "role_id")
-       @Valid
-       @NotNull
-       private FnRole fnRole;
-       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-       @JoinColumns({
-               @JoinColumn(name = "app_id", referencedColumnName = "app_id"),
-               @JoinColumn(name = "function_cd", referencedColumnName = "function_cd")
-       })
-       @Valid
-       @NotNull
-       private EpAppFunction epAppFunction;
-       @Column(name = "role_app_id", length = 20)
-       @Digits(integer = 20, fraction = 0)
-       @SafeHtml
-       private String roleAppId;
+
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  @Column(name = "id", length = 11, nullable = false, columnDefinition = "int(11) AUTO_INCREMENT")
+  @Digits(integer = 11, fraction = 0)
+  private Integer id;
+  @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+  @JoinColumn(name = "app_id", insertable = false, updatable = false, columnDefinition = "bigint")
+  @Valid
+  @NotNull
+  private FnApp appId;
+  @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+  @JoinColumn(name = "role_id", columnDefinition = "bigint")
+  @Valid
+  @NotNull
+  private FnRole fnRole;
+  @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+  @JoinColumns({
+      @JoinColumn(name = "app_id", referencedColumnName = "app_id"),
+      @JoinColumn(name = "function_cd", referencedColumnName = "function_cd")
+  })
+  @Valid
+  @NotNull
+  private EpAppFunction epAppFunction;
+  @Column(name = "role_app_id", length = 20)
+  @Digits(integer = 20, fraction = 0)
+  @SafeHtml
+  private String roleAppId;
 }

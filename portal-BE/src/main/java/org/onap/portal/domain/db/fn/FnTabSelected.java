@@ -54,6 +54,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -73,13 +74,13 @@ CREATE TABLE `fn_tab_selected` (
 @Table(name = "fn_tab_selected")
 @NoArgsConstructor
 @AllArgsConstructor
-
+@Builder
 @Getter
 @Setter
 @Entity
 @IdClass(FnTabSelectedId.class)
 public class FnTabSelected implements Serializable{
-       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
        @JoinColumn(name = "selected_tab_cd", nullable = false)
        @NotNull
        @Valid

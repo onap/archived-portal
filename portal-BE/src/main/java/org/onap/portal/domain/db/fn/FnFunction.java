@@ -75,9 +75,7 @@ CREATE TABLE `fn_function` (
 @Entity
 public class FnFunction implements Serializable {
        @Id
-       @Column(name = "function_cd", length = 30, nullable = false)
-       @Size(max = 30)
-       @SafeHtml
+       @Column(name = "function_cd", nullable = false)
        private String functionCd;
        @Column(name = "function_name", length = 50, nullable = false)
        @Size(max = 50)
@@ -91,21 +89,21 @@ public class FnFunction implements Serializable {
        @OneToMany(
                targetEntity = FnRestrictedUrl.class,
                mappedBy = "functionCd",
-               cascade = CascadeType.ALL,
+               cascade = CascadeType.MERGE,
                fetch = FetchType.LAZY
        )
        private Set<FnRestrictedUrl> fnRestrictedUrls;
        @OneToMany(
                targetEntity = FnRoleFunction.class,
                mappedBy = "functionCd",
-               cascade = CascadeType.ALL,
+               cascade = CascadeType.MERGE,
                fetch = FetchType.LAZY
        )
        private Set<FnRoleFunction> fnRoleFunctions;
        @OneToMany(
                targetEntity = FnTab.class,
                mappedBy = "functionCd",
-               cascade = CascadeType.ALL,
+               cascade = CascadeType.MERGE,
                fetch = FetchType.LAZY
        )
        private Set<FnTab> fnTabs;

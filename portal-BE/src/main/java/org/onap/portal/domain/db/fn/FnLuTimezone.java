@@ -50,10 +50,12 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -71,6 +73,7 @@ CREATE TABLE `fn_lu_timezone` (
 @Table(name = "fn_lu_timezone")
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Getter
 @Setter
 @Entity
@@ -83,17 +86,17 @@ public class FnLuTimezone implements Serializable {
        @Size(max = 100)
        @SafeHtml
        @NotNull
-       private String timezone_name;
+       private String timezoneName;
        @Column(name = "timezone_value", length = 100, nullable = false)
        @Size(max = 100)
        @SafeHtml
        @NotNull
-       private String timezone_value;
+       private String timezoneValue;
 
        @OneToMany(
                targetEntity = FnUser.class,
                mappedBy = "timezone",
-               cascade = CascadeType.ALL,
+               cascade = CascadeType.MERGE,
                fetch = FetchType.LAZY
        )
        private Set<FnUser> fnUsers;

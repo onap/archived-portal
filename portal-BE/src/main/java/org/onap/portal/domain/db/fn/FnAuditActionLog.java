@@ -47,6 +47,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.PastOrPresent;
@@ -80,7 +81,8 @@ CREATE TABLE `fn_audit_action_log` (
 public class FnAuditActionLog implements Serializable {
 
        @Id
-       @GeneratedValue(strategy = GenerationType.AUTO)
+
+  @GeneratedValue(strategy = GenerationType.AUTO)
        @Column(name = "audit_log_id", nullable = false, columnDefinition = "int(11) AUTO_INCREMENT")
        private Integer auditLogId;
        @Column(name = "audit_action_cd", length = 200)

@@ -46,8 +46,11 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
@@ -81,6 +84,8 @@ CREATE TABLE `cr_lu_file_type` (
 public class CrLuFileType implements Serializable {
        @Id
        @Column(name = "lookup_id", length = 2, nullable = false)
+
+  @GeneratedValue(strategy = GenerationType.AUTO)
        @Digits(integer = 2, fraction = 0)
        @Positive
        private Long lookupId;
@@ -101,7 +106,7 @@ public class CrLuFileType implements Serializable {
        @OneToMany(
                targetEntity = CrReportFileHistory.class,
                mappedBy = "fileTypeId",
-               cascade = CascadeType.ALL,
+               cascade = CascadeType.MERGE,
                fetch = FetchType.LAZY
        )
        private Set<CrReportFileHistory> crReportFileHistories;

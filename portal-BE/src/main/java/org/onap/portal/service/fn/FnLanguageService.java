@@ -67,7 +67,7 @@ public class FnLanguageService {
        public List<FnLanguage> getLanguages(Principal principal){
               return fnLanguageDao.findAll();
        }
-       public FnLanguage save(final Principal principal, final FnLanguage fnLanguage){
-              return fnLanguageDao.save(fnLanguage);
+       public FnLanguage save(final FnLanguage fnLanguage){
+              return fnLanguageDao.saveAndFlush(fnLanguage);
        }
 }

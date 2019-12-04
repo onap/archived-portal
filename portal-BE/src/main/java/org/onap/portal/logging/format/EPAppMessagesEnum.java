@@ -321,14 +321,14 @@ public enum EPAppMessagesEnum implements EELFResolvableErrorEnum {
 
        ;
 
-       ErrorTypeEnum eType;
-       AlarmSeverityEnum alarmSeverity;
-       EPErrorCodesEnum messageCode;
-       ErrorSeverityEnum errorSeverity;
-       String errorCode;
-       String errorDescription;
-       String details;
-       String resolution;
+       final ErrorTypeEnum eType;
+       final AlarmSeverityEnum alarmSeverity;
+       final EPErrorCodesEnum messageCode;
+       final ErrorSeverityEnum errorSeverity;
+       final String errorCode;
+       final String errorDescription;
+       final String details;
+       final String resolution;
 
        EPAppMessagesEnum(EPErrorCodesEnum messageCode, ErrorTypeEnum eType, AlarmSeverityEnum alarmSeverity,
                ErrorSeverityEnum errorSeverity, String errorCode, String errorDescription,

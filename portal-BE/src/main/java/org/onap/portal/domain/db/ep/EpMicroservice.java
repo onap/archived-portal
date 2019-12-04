@@ -54,12 +54,14 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.Valid;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -89,6 +91,7 @@ CREATE TABLE `ep_microservice` (
 })
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Getter
 @Setter
 @Entity
@@ -106,8 +109,8 @@ public class EpMicroservice implements Serializable {
        @Size(max = 50)
        @SafeHtml
        private String description;
-       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-       @JoinColumn(name = "app_Id")
+       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+       @JoinColumn(name = "app_Id", columnDefinition = "bigint")
        @Valid
        private FnApp appId;
        @Column(name = "endpoint_url", length = 200)
@@ -128,17 +131,14 @@ public class EpMicroservice implements Serializable {
        @Size(max = 50)
        @SafeHtml
        private String password;
-       @Column(name = "active", length = 1, columnDefinition = "CHAR(1) DEFAULT 'Y'")
-       @Pattern(regexp = "[YNyn]")
-       @Size(max = 1)
-       @SafeHtml
-       private String active;
-       @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+       @Column(name = "active", length = 1, columnDefinition = "boolean DEFAULT true")
+       private Boolean active = true;
+       @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
        private Set<EpWidgetCatalog> epWidgetCatalogList;
        @OneToMany(
                targetEntity = EpMicroserviceParameter.class,
                mappedBy = "serviceId",
-               cascade = CascadeType.ALL,
+               cascade = CascadeType.MERGE,
                fetch = FetchType.LAZY
        )
        private Set<EpMicroserviceParameter> epMicroserviceParameters;

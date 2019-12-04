@@ -53,7 +53,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class EpWidgetCatalogParameterService {
 
-       EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(EpWidgetCatalogParameterService.class);
+       final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(EpWidgetCatalogParameterService.class);
 
        private final EpWidgetCatalogParameterDao epWidgetCatalogParameterDao;
        private final EpMicroserviceParameterService epMicroserviceParameterService;

@@ -60,17 +60,17 @@ public class FnLanguageServiceAOP {
        @Autowired
        private DataValidator dataValidator;
 
-       @Before("execution(* org.onap.portal.service.fn.FnLanguageService.save(..)) && args(principal, fnLanguage)")
-       public void save(final Principal principal, final FnLanguage fnLanguage) {
+       @Before("execution(* org.onap.portal.service.fn.FnLanguageService.save(..)) && args(fnLanguage)")
+       public void save(final FnLanguage fnLanguage) {
               if (fnLanguage == null) {
-                     LOGGER.info("User " + principal.getName() + " try to save NULL fnLanguage");
+                     LOGGER.info("User " +  " try to save NULL fnLanguage");
                      throw new NullPointerException("FnLanguage cannot be null or empty");
               }
               if (!dataValidator.isValid(fnLanguage)) {
                      String violations = dataValidator.getConstraintViolations(fnLanguage).stream()
                              .map(ConstraintViolation::getMessage)
                              .collect(Collectors.joining(", "));
-                     LOGGER.info("User " + principal.getName() + " try to save not valid fnLanguage: " + violations);
+                     LOGGER.info("User " + " try to save not valid fnLanguage: " + violations);
                      throw new IllegalArgumentException("FnLanguage is not valid, " + violations);
               }
        }

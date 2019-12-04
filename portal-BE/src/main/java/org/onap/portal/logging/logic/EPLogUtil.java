@@ -55,7 +55,7 @@ import org.springframework.http.HttpStatus;
 public class EPLogUtil {
 
 	// This class has no logger of its own; it uses loggers passed to it.
-	private static EELFLogger errorLogger = EELFManager.getInstance().getErrorLogger();
+	private static final EELFLogger errorLogger = EELFManager.getInstance().getErrorLogger();
 
 	/**
 	 * Formats and writes a message to the error log with the class name and the

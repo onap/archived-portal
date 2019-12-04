@@ -78,18 +78,13 @@ public class WidgetsController {
 
        private final FnUserService fnUserService;
        private final WidgetService widgetService;
-       private final AdminRolesService adminRolesService;
-       private final DataValidator dataValidator;
        private final PersUserWidgetService persUserWidgetService;
 
        @Autowired
        public WidgetsController(final FnUserService fnUserService, final WidgetService widgetService,
-               final AdminRolesService adminRolesService, final DataValidator dataValidator,
                final PersUserWidgetService persUserWidgetService) {
               this.fnUserService = fnUserService;
               this.widgetService = widgetService;
-              this.adminRolesService = adminRolesService;
-              this.dataValidator = dataValidator;
               this.persUserWidgetService = persUserWidgetService;
        }
 
@@ -127,7 +122,7 @@ public class WidgetsController {
               onboardingWidget.setId(widgetId);
               onboardingWidget.normalize();
               try {
-                     fieldsValidator = widgetService.setOnboardingWidget(user.getUserId(), onboardingWidget);
+                     fieldsValidator = widgetService.setOnboardingWidget(user.getId(), onboardingWidget);
                      response.setStatus(fieldsValidator.getHttpStatusCode().intValue());
               } catch (IllegalArgumentException e) {
                      fieldsValidator = new FieldsValidator();
@@ -153,7 +148,7 @@ public class WidgetsController {
               onboardingWidget.normalize();
 
               try {
-                     fieldsValidator = widgetService.setOnboardingWidget(user.getUserId(), onboardingWidget);
+                     fieldsValidator = widgetService.setOnboardingWidget(user.getId(), onboardingWidget);
               } catch (IllegalArgumentException e) {
                      fieldsValidator = new FieldsValidator();
                      fieldsValidator.setHttpStatusCode((long) HttpServletResponse.SC_NOT_ACCEPTABLE);

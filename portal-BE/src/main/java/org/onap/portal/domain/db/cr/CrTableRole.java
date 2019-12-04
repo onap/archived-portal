@@ -82,7 +82,7 @@ public class CrTableRole implements Serializable{
        @Id
        @Valid
        @JoinColumn(name = "table_name", nullable = false)
-       @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+       @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
        private CrTableSource tableName;
        @Id
        @Digits(integer = 11, fraction = 0)

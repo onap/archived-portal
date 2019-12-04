@@ -53,6 +53,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.Valid;
 import javax.validation.constraints.Digits;
@@ -102,7 +103,8 @@ CREATE TABLE `cr_report_schedule` (
 @Entity
 public class CrReportSchedule implements Serializable {
        @Id
-       @GeneratedValue(strategy = GenerationType.AUTO)
+
+  @GeneratedValue(strategy = GenerationType.AUTO)
        @Column(name = "schedule_id", length = 11, nullable = false)
        @Digits(integer = 11, fraction = 0)
        @Positive
@@ -112,7 +114,7 @@ public class CrReportSchedule implements Serializable {
        @Positive
        @NotNull
        private Long schedUserId;
-       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
        @JoinColumn(name = "rep_id", nullable = false)
        @Valid
        @NotNull
@@ -180,7 +182,7 @@ public class CrReportSchedule implements Serializable {
        @OneToMany(
                targetEntity = CrReportScheduleUsers.class,
                mappedBy = "scheduleId",
-               cascade = CascadeType.ALL,
+               cascade = CascadeType.MERGE,
                fetch = FetchType.LAZY
        )
        private Set<CrReportScheduleUsers> crReportScheduleUsers;

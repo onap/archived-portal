@@ -84,7 +84,7 @@ CREATE TABLE `cr_report_schedule_users` (
 @IdClass(CrReportScheduleUsersId.class)
 public class CrReportScheduleUsers implements Serializable{
        @Id
-       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
        @JoinColumn(name = "schedule_id", nullable = false)
        @Valid
        @NotNull

@@ -57,6 +57,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.Valid;
 import javax.validation.constraints.Digits;
@@ -64,6 +65,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -97,6 +99,7 @@ CREATE TABLE `fn_menu_functional` (
 })
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Getter
 @Setter
 @Entity
@@ -114,7 +117,7 @@ public class FnMenuFunctional implements Serializable {
        @SafeHtml
        @NotNull
        private String text;
-       @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+       @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
        @JoinColumn(name = "parent_menu_id")
        @Valid
        private FnMenuFunctional parentMenuId;
@@ -125,21 +128,18 @@ public class FnMenuFunctional implements Serializable {
        //TODO URL
        @URL
        private String url;
-       @Column(name = "active_yn", length = 1, columnDefinition = "varchar(1) default 'Y'", nullable = false)
-       @Pattern(regexp = "[YNyn]")
-       @Size(max = 1)
+       @Column(name = "active_yn", length = 1, columnDefinition = "boolean default true", nullable = false)
        @NotNull
-       @SafeHtml
-       private String activeYn;
+       private Boolean activeYn = true;
        @Column(name = "image_src", length = 100, columnDefinition = "varchar(100) default null")
        @Size(max = 100)
        @SafeHtml
        private String imageSrc;
-       @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+       @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
        @JoinTable(
                name = "fn_menu_favorites",
                joinColumns = {@JoinColumn(name = "menu_id", referencedColumnName = "menu_id")},
-               inverseJoinColumns = {@JoinColumn(name = "role_Id", referencedColumnName = "user_id")},
+               inverseJoinColumns = {@JoinColumn(name = "role_Id", referencedColumnName = "id", columnDefinition = "bigint")},
                indexes = {
                        @Index(name = "sys_c0014619", columnList = "menu_id")
                }
@@ -148,21 +148,21 @@ public class FnMenuFunctional implements Serializable {
        @OneToMany(
                targetEntity = FnMenuFunctionalAncestors.class,
                mappedBy = "menuId",
-               cascade = CascadeType.ALL,
+               cascade = CascadeType.MERGE,
                fetch = FetchType.LAZY
        )
        private Set<FnMenuFunctionalAncestors> fnMenuFunctionalAncestorsMenuId;
        @OneToMany(
                targetEntity = FnMenuFunctionalAncestors.class,
                mappedBy = "ancestorMenuId",
-               cascade = CascadeType.ALL,
+               cascade = CascadeType.MERGE,
                fetch = FetchType.LAZY
        )
        private Set<FnMenuFunctionalAncestors> fnMenuFunctionalsAncestorMenuId;
        @OneToMany(
                targetEntity = FnMenuFunctionalRoles.class,
                mappedBy = "menuId",
-               cascade = CascadeType.ALL,
+               cascade = CascadeType.MERGE,
                fetch = FetchType.LAZY
        )
        private Set<FnMenuFunctionalRoles> fnMenuFunctionalRoles;

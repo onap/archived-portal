@@ -60,7 +60,7 @@ public class FnUserService implements UserDetailsService {
 
        private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(FnUserService.class);
 
-       private FnUserDao fnUserDao;
+       private final FnUserDao fnUserDao;
 
        @Autowired
        public FnUserService(FnUserDao fnUserDao) {

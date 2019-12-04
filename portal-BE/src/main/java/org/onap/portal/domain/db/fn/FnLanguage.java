@@ -51,10 +51,9 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -73,6 +72,10 @@ CREATE TABLE `fn_language` (
 */
 
 @Table(name = "fn_language")
+
+@NamedQuery(name = "FnLanguage.getByLanguageAlias",
+query = "FROM FnLanguage WHERE languageAlias =: alias")
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -83,7 +86,7 @@ CREATE TABLE `fn_language` (
 public class FnLanguage implements Serializable {
 
        @Id
-       @GeneratedValue(strategy = GenerationType.IDENTITY)
+       @GeneratedValue(strategy = GenerationType.AUTO)
        @Column(name = "language_id", length = 11, nullable = false)
        private Long languageId;
        @Column(name = "language_name", length = 100, nullable = false)
@@ -99,7 +102,7 @@ public class FnLanguage implements Serializable {
        @OneToMany(
                targetEntity = FnUser.class,
                mappedBy = "languageId",
-               cascade = CascadeType.PERSIST,
+               cascade = CascadeType.MERGE,
                fetch = FetchType.EAGER
        )
        private Set<FnUser> fnUsers = new HashSet<>();
@@ -111,5 +114,12 @@ public class FnLanguage implements Serializable {
                       + ", languageAlias='" + languageAlias + '\''
                       + '}';
               return sb;
+       }
+
+       public FnLanguage(
+           @Size(max = 100) @NotNull(message = "languageName must not be null") @SafeHtml String languageName,
+           @Size(max = 100) @NotNull(message = "languageAlias must not be null") @SafeHtml String languageAlias) {
+              this.languageName = languageName;
+              this.languageAlias = languageAlias;
        }
 }

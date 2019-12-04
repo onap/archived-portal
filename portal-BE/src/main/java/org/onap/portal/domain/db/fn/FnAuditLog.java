@@ -52,12 +52,14 @@ import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.Valid;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -86,6 +88,7 @@ CREATE TABLE `fn_audit_log` (
 })
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Getter
 @Setter
 @Entity
@@ -95,12 +98,12 @@ public class FnAuditLog implements Serializable {
        @Column(name = "log_id", length = 11, nullable = false, columnDefinition = "int(11) AUTO_INCREMENT")
        @Digits(integer = 11, fraction = 0)
        private Integer logId;
-       @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-       @JoinColumn(name = "user_id", nullable = false)
+       @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
+       @JoinColumn(name = "user_id", nullable = false, columnDefinition = "bigint")
        @NotNull
        @Valid
        private FnUser userId;
-       @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+       @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
        @JoinColumn(name = "activity_cd", nullable = false)
        @NotNull
        @Valid

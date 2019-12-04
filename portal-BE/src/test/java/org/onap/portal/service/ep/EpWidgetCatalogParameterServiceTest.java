@@ -48,12 +48,14 @@ import java.util.HashSet;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.onap.portal.controller.WidgetsCatalogController;
+import org.onap.portal.dao.fn.FnLanguageDao;
 import org.onap.portal.domain.db.ep.EpMicroserviceParameter;
 import org.onap.portal.domain.db.ep.EpWidgetCatalog;
 import org.onap.portal.domain.db.ep.EpWidgetCatalogParameter;
 import org.onap.portal.domain.db.fn.FnLanguage;
 import org.onap.portal.domain.db.fn.FnUser;
 import org.onap.portal.service.fn.FnLanguageService;
+import org.onap.portal.service.fn.FnUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -67,27 +69,29 @@ import org.springframework.transaction.annotation.Transactional;
 @TestPropertySource(locations = "classpath:test.properties")
 class EpWidgetCatalogParameterServiceTest {
 
-       private UsernamePasswordAuthenticationToken principal = new UsernamePasswordAuthenticationToken("demo",
+       private final UsernamePasswordAuthenticationToken principal = new UsernamePasswordAuthenticationToken("demo",
                "demo123");
 
-       private EpWidgetCatalogParameterService epWidgetCatalogParameterService;
-       private WidgetsCatalogController widgetsCatalogController;
-       private FnLanguageService fnLanguageService;
-       private EpMicroserviceParameterService epMicroserviceParameterService;
-       private EpWidgetCatalogService epWidgetCatalogService;
+       private final EpWidgetCatalogParameterService epWidgetCatalogParameterService;
+       private final WidgetsCatalogController widgetsCatalogController;
+       private final FnUserService fnUserService;
+       private final EpMicroserviceParameterService epMicroserviceParameterService;
+       private final EpWidgetCatalogService epWidgetCatalogService;
+       private final FnLanguageDao fnLanguageDao;
 
        @Autowired
        public EpWidgetCatalogParameterServiceTest(
-               EpWidgetCatalogParameterService epWidgetCatalogParameterService,
-               WidgetsCatalogController widgetsCatalogController,
-               FnLanguageService fnLanguageService,
-               EpMicroserviceParameterService epMicroserviceParameterService,
-               EpWidgetCatalogService epWidgetCatalogService) {
+           EpWidgetCatalogParameterService epWidgetCatalogParameterService,
+           WidgetsCatalogController widgetsCatalogController,
+           FnUserService fnUserService,
+           EpMicroserviceParameterService epMicroserviceParameterService,
+           EpWidgetCatalogService epWidgetCatalogService, FnLanguageDao fnLanguageDao) {
               this.epWidgetCatalogParameterService = epWidgetCatalogParameterService;
               this.widgetsCatalogController = widgetsCatalogController;
-              this.fnLanguageService = fnLanguageService;
+              this.fnUserService = fnUserService;
               this.epMicroserviceParameterService = epMicroserviceParameterService;
               this.epWidgetCatalogService = epWidgetCatalogService;
+              this.fnLanguageDao = fnLanguageDao;
        }
 
        @Test
@@ -105,11 +109,8 @@ class EpWidgetCatalogParameterServiceTest {
               epWidgetCatalogService.save(widget);
               EpMicroserviceParameter parameter = new EpMicroserviceParameter();
               epMicroserviceParameterService.save(parameter);
-              FnLanguage language = FnLanguage.builder().languageAlias("TS").languageName("TEST").build();
-              fnLanguageService.save(principal, language);
               FnUser user = buildFnUser();
-              language.setFnUsers(new HashSet<>(Collections.singleton(user)));
-              user.setLanguageId(language);
+              fnUserService.saveFnUser(user);
               EpWidgetCatalogParameter data = EpWidgetCatalogParameter.builder()
                       .widgetId(widget).userId(user).paramId(parameter).userValue("TestData").build();
               //When
@@ -134,11 +135,8 @@ class EpWidgetCatalogParameterServiceTest {
               epWidgetCatalogService.save(widget);
               EpMicroserviceParameter parameter = new EpMicroserviceParameter();
               epMicroserviceParameterService.save(parameter);
-              FnLanguage language = FnLanguage.builder().languageAlias("TS").languageName("TEST").build();
-              fnLanguageService.save(principal, language);
               FnUser user = buildFnUser();
-              language.setFnUsers(new HashSet<>(Collections.singleton(user)));
-              user.setLanguageId(language);
+              fnUserService.saveFnUser(user);
               EpWidgetCatalogParameter data = EpWidgetCatalogParameter.builder()
                       .widgetId(widget).userId(user).paramId(parameter).userValue("TestData").build();
               //When
@@ -146,7 +144,7 @@ class EpWidgetCatalogParameterServiceTest {
               epWidgetCatalogParameterService.saveUserParameter(data);
               Long id = data.getId();
               assertEquals(1, epWidgetCatalogParameterService.getUserParameterById(parameter.getId()).size());
-              EpWidgetCatalogParameter actual = epWidgetCatalogParameterService.getUserParamById(widget.getWidgetId(), user.getUserId(), parameter.getId());
+              EpWidgetCatalogParameter actual = epWidgetCatalogParameterService.getUserParamById(widget.getWidgetId(), user.getId(), parameter.getId());
               //Then
               assertEquals(id, actual.getId());
               assertEquals(data.getUserValue(), actual.getUserValue());
@@ -156,6 +154,7 @@ class EpWidgetCatalogParameterServiceTest {
        }
 
        private FnUser buildFnUser() {
+              FnLanguage language = fnLanguageDao.getByLanguageAlias("EN");
               return FnUser.builder()
                       .lastLoginDate(LocalDateTime.now())
                       .activeYn(true)
@@ -164,6 +163,7 @@ class EpWidgetCatalogParameterServiceTest {
                       .isInternalYn(true)
                       .isSystemUser(true)
                       .guest(false)
+                      .languageId(language)
                       .build();
        }
 }

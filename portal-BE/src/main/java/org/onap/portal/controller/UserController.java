@@ -62,7 +62,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 
        private static final String HIDDEN_DEFAULT_PASSWORD = "*****";
-       private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(UserController.class);
+       private final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(UserController.class);
 
        private final FnUserService userService;
        private final DataValidator dataValidator;

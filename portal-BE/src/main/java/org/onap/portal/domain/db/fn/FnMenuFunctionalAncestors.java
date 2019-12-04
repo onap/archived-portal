@@ -51,10 +51,12 @@ import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -79,6 +81,7 @@ CREATE TABLE `fn_menu_functional_ancestors` (
 })
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Getter
 @Setter
 @Entity
@@ -88,11 +91,11 @@ public class FnMenuFunctionalAncestors implements Serializable {
        @Column(name = "id", nullable = false, length = 11, columnDefinition = "int(11)  AUTO_INCREMENT")
        @Digits(integer = 11, fraction = 0)
        private Integer id;
-       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
        @JoinColumn(name = "menu_id", nullable = false)
        @NotNull
        private FnMenuFunctional menuId;
-       @ManyToOne(fetch = FetchType.LAZY, cascade =CascadeType.ALL)
+       @ManyToOne(fetch = FetchType.LAZY, cascade =CascadeType.MERGE)
        @JoinColumn(name = "ancestor_menu_id", nullable = false)
        @NotNull
        private FnMenuFunctional ancestorMenuId;

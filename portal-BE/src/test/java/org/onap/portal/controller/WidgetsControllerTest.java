@@ -50,6 +50,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.onap.portal.dao.fn.FnLanguageDao;
@@ -62,6 +63,7 @@ import org.onap.portal.domain.dto.transport.OnboardingWidget;
 import org.onap.portal.domain.dto.transport.WidgetCatalogPersonalization;
 import org.onap.portal.framework.MockitoTestSuite;
 import org.onap.portal.service.WidgetService;
+import org.onap.portal.service.fn.FnLanguageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -76,13 +78,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class WidgetsControllerTest {
 
-       private UsernamePasswordAuthenticationToken principal = new UsernamePasswordAuthenticationToken("demo",
+       private final UsernamePasswordAuthenticationToken principal = new UsernamePasswordAuthenticationToken("demo",
                "demo123");
 
-       MockitoTestSuite mockitoTestSuite = new MockitoTestSuite();
+       final MockitoTestSuite mockitoTestSuite = new MockitoTestSuite();
 
-       HttpServletRequest request = mockitoTestSuite.getMockedRequest();
-       HttpServletResponse response = mockitoTestSuite.getMockedResponse();
+       final HttpServletRequest request = mockitoTestSuite.getMockedRequest();
+       final HttpServletResponse response = mockitoTestSuite.getMockedResponse();
 
        @Autowired
        private WidgetsController widgetsController;
@@ -92,10 +94,20 @@ public class WidgetsControllerTest {
        private FnLanguageDao fnLanguageDao;
        @Autowired
        private WidgetService widgetService;
+       @Autowired
+       private  FnLanguageService fnLanguageService;
 
-       private FnLanguage language = getFnLanguage();
-       private FnUser questUser = getQuestUser();
-       private FnUser notQuestUser = getNotQuestUser();
+       private FnLanguage language;
+       private FnUser questUser;
+       private FnUser notQuestUser;
+
+       @Before
+       public void init(){
+              this.language = getFnLanguage();
+              this.questUser = getQuestUser();
+              this.notQuestUser = getNotQuestUser();
+       }
+
 
        @Test(expected = UsernameNotFoundException.class)
        public void getOnboardingWidgetsNullUserTest() {
@@ -384,7 +396,10 @@ public class WidgetsControllerTest {
                       .build();
        }
 
+
        private FnLanguage getFnLanguage() {
-              return FnLanguage.builder().languageName("Polish").languageAlias("Pl").build();
+              FnLanguage tmp = FnLanguage.builder().languageName("Polish").languageAlias("Pl").build();
+              fnLanguageService.save(tmp);
+              return tmp;
        }
 }

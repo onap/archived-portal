@@ -45,9 +45,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
@@ -55,7 +52,6 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.Valid;
-import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -64,7 +60,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.validator.constraints.SafeHtml;
 import org.onap.portal.domain.db.fn.FnUser;
-import org.onap.portal.domain.dto.DomainVo;
+import org.onap.portal.domain.db.DomainVo;
 
 /*
 CREATE TABLE `ep_pers_user_widget_sel` (
@@ -82,7 +78,7 @@ CREATE TABLE `ep_pers_user_widget_sel` (
 @NamedQueries({
         @NamedQuery(
                 name = "EpPersUserWidgetSel.getEpPersUserWidgetSelForUserIdAndWidgetId",
-                query = "FROM EpPersUserWidgetSel WHERE userId.userId = :USERID and widgetId.widgetId = :WIDGETID")
+                query = "FROM EpPersUserWidgetSel WHERE userId.id = :USERID and widgetId.widgetId = :WIDGETID")
 })
 @Table(name = "ep_pers_user_widget_sel", uniqueConstraints = {
         @UniqueConstraint(columnNames = {"user_id", "widget_id"})
@@ -94,17 +90,12 @@ CREATE TABLE `ep_pers_user_widget_sel` (
 @Entity
 public class EpPersUserWidgetSel extends DomainVo implements Serializable {
 
-       @Id
-       @GeneratedValue(strategy = GenerationType.AUTO)
-       @Column(name = "id", length = 11, nullable = false)
-       @Digits(integer = 11, fraction = 0)
-       private Long id;
-       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-       @JoinColumn(name = "user_id", nullable = false)
+       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+       @JoinColumn(name = "user_id", nullable = false, columnDefinition = "bigint")
        @NotNull
        @Valid
        private FnUser userId;
-       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
        @JoinColumn(name = "widget_id", nullable = false)
        @NotNull
        @Valid

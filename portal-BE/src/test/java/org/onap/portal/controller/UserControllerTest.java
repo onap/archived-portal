@@ -60,7 +60,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 @TestPropertySource(locations = "classpath:test.properties")
 class UserControllerTest {
 
-       private UsernamePasswordAuthenticationToken principal = new UsernamePasswordAuthenticationToken("demo",
+       private final UsernamePasswordAuthenticationToken principal = new UsernamePasswordAuthenticationToken("demo",
                "demo123");
 
        private final FnUserService userService;

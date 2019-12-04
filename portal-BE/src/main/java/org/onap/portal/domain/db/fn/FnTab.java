@@ -59,6 +59,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -89,6 +90,7 @@ CREATE TABLE `fn_tab` (
 })
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Getter
 @Setter
 @Entity
@@ -112,34 +114,31 @@ public class FnTab implements Serializable {
        @SafeHtml
        @NotNull
        private String action;
-       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
        @JoinColumn(name = "function_cd", nullable = false)
        @NotNull
        @Valid
        private FnFunction functionCd;
-       @Column(name = "active_yn", length = 1, nullable = false)
-       @Pattern(regexp = "[YNyn]")
-       @Size(max = 1)
+       @Column(name = "active_yn", nullable = false)
        @NotNull
-       @SafeHtml
-       private String activeYn;
+       private Boolean activeYn;
        @Column(name = "sort_order", length = 11, nullable = false)
        @Digits(integer = 11, fraction = 0)
        @NotNull
-       private BigInteger sortDrder;
+       private Long sortDrder;
        @Column(name = "parent_tab_cd", length = 30, columnDefinition = "varchar(30) DEFAULT NULL")
        @Size(max = 30)
        @SafeHtml
        private String parentTabCd;
-       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
        @JoinColumn(name = "tab_set_cd", nullable = false)
        @NotNull
        @Valid
-       private FnLuTabSet fnLuTabSet;
+       private FnLuTabSet tabSetCd;
        @OneToMany(
                targetEntity = FnTabSelected.class,
                mappedBy = "selectedTabCd",
-               cascade = CascadeType.ALL,
+               cascade = CascadeType.MERGE,
                fetch = FetchType.LAZY
        )
        private Set<FnTabSelected> selectedTabCd;

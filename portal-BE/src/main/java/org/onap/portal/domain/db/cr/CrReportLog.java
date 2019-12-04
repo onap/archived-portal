@@ -52,6 +52,7 @@ import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.Valid;
 import javax.validation.constraints.Digits;
@@ -87,10 +88,11 @@ CREATE TABLE `cr_report_log` (
 @Entity
 public class CrReportLog implements Serializable {
        @Id
-       @GeneratedValue(strategy = GenerationType.AUTO)
+
+  @GeneratedValue(strategy = GenerationType.AUTO)
        @JoinColumn(name = "id")
        private Long id;
-       @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+       @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
        @JoinColumn(name = "rep_id")
        @NotNull
        @Valid

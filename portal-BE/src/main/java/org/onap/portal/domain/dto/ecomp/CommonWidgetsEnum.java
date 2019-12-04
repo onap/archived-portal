@@ -45,7 +45,7 @@ public enum CommonWidgetsEnum{
 	EVENTS("events"),
 	RESOURCES("resources");
 	
-	private String value;
+	private final String value;
 	CommonWidgetsEnum(String value){
 		this.value = value;
 	}

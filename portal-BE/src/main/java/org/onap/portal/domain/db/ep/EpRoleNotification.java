@@ -51,6 +51,7 @@ import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.Valid;
 import javax.validation.constraints.Digits;
@@ -87,16 +88,17 @@ CREATE TABLE `ep_role_notification` (
 @Entity
 public class EpRoleNotification implements Serializable {
        @Id
-       @GeneratedValue(strategy = GenerationType.AUTO)
+
+  @GeneratedValue(strategy = GenerationType.AUTO)
        @Column(name = "ID", length = 11, nullable = false, columnDefinition = "int(11) AUTO_INCREMENT")
        @Digits(integer = 11, fraction = 0)
        private Long id;
-       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
        @JoinColumn(name = "notification_ID")
        @Valid
        private EpNotification notificationID;
-       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-       @JoinColumn(name = "role_ID")
+       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+       @JoinColumn(name = "role_ID", columnDefinition = "bigint")
        @Valid
        private FnRole roleID;
        @Column(name = "recv_user_id", length = 11, columnDefinition = "int(11) DEFAULT NULL")

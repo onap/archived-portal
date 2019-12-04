@@ -61,6 +61,7 @@ import org.onap.portal.domain.db.fn.FnRole;
 import org.onap.portal.domain.db.fn.FnRoleComposite;
 import org.onap.portal.domain.db.fn.FnUser;
 import org.onap.portal.domain.db.fn.FnUserRole;
+import org.onap.portal.domain.dto.transport.Role;
 import org.onap.portal.exception.RoleFunctionException;
 import org.onap.portal.service.fn.old.EPRoleFunctionService;
 import org.onap.portalsdk.core.domain.RoleFunction;
@@ -253,7 +254,7 @@ public class EPUserUtils {
               for (FnUserRole epUserApp : user.getUserApps()) {
                      FnRole role = epUserApp.getRoleId();
 
-                     if (role.getActiveYn() && role.getRoleId().equals(ACCOUNT_ADMIN_ROLE_ID)) {
+                     if (role.getActiveYn() && role.getId().equals(ACCOUNT_ADMIN_ROLE_ID)) {
                             roles.put(role.getId(), role);
 
                             // let's take a recursive trip down the tree to add all child
@@ -273,7 +274,10 @@ public class EPUserUtils {
         */
        @SuppressWarnings({"rawtypes", "unchecked"})
        private static void addChildRoles(FnRole role, HashMap roles) {
-              Set<FnRole> childRoles = role.getChildRoles().stream().map(FnRoleComposite::getChildRoles).collect(Collectors.toSet());
+              List<Role> childRoles = role.getChildRoles()
+                  .stream()
+                  .map(FnRoleComposite::getChildRoles)
+                  .collect(Collectors.toList());
               if (!childRoles.isEmpty()) {
                      for (Object o : childRoles) {
                             FnRole childRole = (FnRole) o;

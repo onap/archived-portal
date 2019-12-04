@@ -52,45 +52,47 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-       @Autowired
-       private FnUserService fnUserService;
 
-       @Override
-       protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-              auth.userDetailsService(fnUserService)
-                      .passwordEncoder(new PasswordEncoder() {
-                             @Override
-                             public String encode(CharSequence rawPassword) {
-                                    return rawPassword.toString();
-                             }
+  @Autowired
+  private FnUserService fnUserService;
 
-                             @Override
-                             public boolean matches(CharSequence rawPassword, String encodedPassword) {
-                                    return true;
-                             }
-                      });
-       }
+  @Override
+  protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+    auth.userDetailsService(fnUserService)
+        .passwordEncoder(new PasswordEncoder() {
+          @Override
+          public String encode(CharSequence rawPassword) {
+            return rawPassword.toString();
+          }
 
-       @Override
-       protected void configure(HttpSecurity http) throws Exception {
-              http
-                      .authorizeRequests()
-                      .antMatchers("/img/**").permitAll()
-                      .anyRequest().authenticated()
-                      .and()
-                      .formLogin()
-                      .loginPage("/login")
-                      .permitAll()
-                      .and()
-                      .logout()
-                      .permitAll()
-                      .and()
-                      .httpBasic();
+          @Override
+          public boolean matches(CharSequence rawPassword, String encodedPassword) {
+            return true;
+          }
+        });
+  }
 
-              http.csrf().disable();
-              http.headers().frameOptions().disable();
+  @Override
+  protected void configure(HttpSecurity http) throws Exception {
+    http
+        .authorizeRequests()
+        .antMatchers("/img/**").permitAll()
+        .antMatchers("/h2-console/**").permitAll()
+        .anyRequest().authenticated()
+        .and()
+        .formLogin()
+        .loginPage("/login")
+        .permitAll()
+        .and()
+        .logout()
+        .permitAll()
+        .and()
+        .httpBasic();
 
-       }
+    http.csrf().disable();
+    http.headers().frameOptions().disable();
+
+  }
 
 
 }

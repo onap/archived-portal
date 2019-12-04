@@ -41,25 +41,25 @@
 package org.onap.portal.domain.db.fn;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
 import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.Valid;
+import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.onap.portal.domain.db.fn.FnRoleFunction.FnRoleFunctionId;
-import org.onap.portal.domain.dto.DomainVo;
+import org.onap.portal.domain.db.DomainVo;
+import org.onap.portal.domain.dto.transport.Role;
 
 /*
 CREATE TABLE `fn_role_function` (
@@ -74,41 +74,37 @@ CREATE TABLE `fn_role_function` (
 */
 
 @Table(name = "fn_role_function", indexes = {
-        @Index(name = "fn_role_function_function_cd", columnList = "function_cd"),
-        @Index(name = "fn_role_function_role_id", columnList = "role_id")
-})
+    @Index(name = "fn_role_function_function_cd", columnList = "function_cd"),
+    @Index(name = "fn_role_function_role_id", columnList = "role"),
+    @Index(name = "fn_role_function_roleId_functionCd", columnList = "role, function_cd", unique = true)})
+
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 @Getter
 @Setter
 @Entity
-@IdClass(FnRoleFunctionId.class)
-public class FnRoleFunction extends DomainVo implements Serializable{
+public class FnRoleFunction extends DomainVo implements Serializable {
 
-       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-       @JoinColumn(name = "role_Id", nullable = false)
-       @Valid
-       @NotNull
-       @Id
-       private FnRole roleId;
-       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-       @JoinColumn(name = "function_cd", nullable = false)
-       @Valid
-       @NotNull
-       @Id
-       private FnFunction functionCd;
+  @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+  @JoinColumn(name = "role", nullable = false, columnDefinition = "bigint")
+  @Valid
+  @NotNull
+  private FnRole role;
+  @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+  @JoinColumn(name = "function_cd", nullable = false, columnDefinition = "varchar(255) not null")
+  @Valid
+  @NotNull
+  private FnFunction functionCd;
 
-
-       @Getter
-       @Setter
-       @NoArgsConstructor
-       @EqualsAndHashCode
-       @AllArgsConstructor
-       public static class FnRoleFunctionId implements Serializable {
-              @Valid
-              private FnRole roleId;
-              @Valid
-              private FnFunction functionCd;
-       }
+  @Builder
+  public FnRoleFunction(@Digits(integer = 11, fraction = 0) Long id,
+      LocalDateTime created, LocalDateTime modified, Long rowNum, Serializable auditUserId,
+      DomainVo createdId, DomainVo modifiedId, Set<DomainVo> fnUsersCreatedId,
+      Set<DomainVo> fnUsersModifiedId,
+      @Valid @NotNull FnRole role,
+      @Valid @NotNull FnFunction functionCd) {
+    super(id, created, modified, rowNum, auditUserId, createdId, modifiedId, fnUsersCreatedId, fnUsersModifiedId);
+    this.role = role;
+    this.functionCd = functionCd;
+  }
 }

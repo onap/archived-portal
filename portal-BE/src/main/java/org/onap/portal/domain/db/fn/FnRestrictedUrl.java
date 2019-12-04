@@ -53,6 +53,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -75,7 +76,7 @@ CREATE TABLE `fn_restricted_url` (
 })
 @NoArgsConstructor
 @AllArgsConstructor
-
+@Builder
 @Getter
 @Setter
 @Entity
@@ -85,11 +86,9 @@ public class FnRestrictedUrl implements Serializable{
        @Size(max = 250)
        @SafeHtml
        @Id
-       private String restricted_url;
+       private String restrictedUrl;
        @ManyToOne()
-       @JoinColumn(name = "function_cd", nullable = false)
-       @Valid
-       @NotNull
+       @JoinColumn(name = "function_cd")
        @Id
        private FnFunction functionCd;
 
@@ -101,8 +100,7 @@ public class FnRestrictedUrl implements Serializable{
        public static class FnRestrictedUrlId implements Serializable {
               @Size(max = 250)
               @SafeHtml
-              private String restricted_url;
-              @Valid
+              private String restrictedUrl;
               @NotNull
               private FnFunction functionCd;
        }

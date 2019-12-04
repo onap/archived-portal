@@ -48,7 +48,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.validator.constraints.SafeHtml;
-import org.onap.portal.domain.dto.DomainVo;
+import org.onap.portal.domain.db.DomainVo;
 
 @Getter
 @Setter

@@ -52,11 +52,12 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.Valid;
 import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.onap.portal.domain.db.fn.FnRoleComposite.FnRoleCompositeId;
+import org.onap.portal.domain.db.fn.compositePK.FnRoleCompositeId;
+import org.onap.portal.domain.dto.transport.Role;
 
 @Table(name = "fn_role_composite", indexes = {
     @Index(name = "fk_fn_role_composite_child", columnList = "child_role_id")
@@ -64,6 +65,7 @@ import org.onap.portal.domain.db.fn.FnRoleComposite.FnRoleCompositeId;
 @Getter
 @Setter
 @Entity
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @IdClass(FnRoleCompositeId.class)
@@ -71,25 +73,13 @@ public class FnRoleComposite implements Serializable{
 
   @Id
   @Valid
-  @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-  @JoinColumn(name = "parent_role_id")
-  private FnRole parentRoles;
+  @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+  @JoinColumn(name = "parent_role_id", nullable = false, columnDefinition = "bigint")
+  private Role parentRoles;
   @Id
   @Valid
-  @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-  @JoinColumn(name = "child_role_id")
-  private FnRole childRoles;
+  @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+  @JoinColumn(name = "child_role_id", nullable = false, columnDefinition = "bigint")
+  private Role childRoles;
 
-  @Getter
-  @Setter
-  @NoArgsConstructor
-  @EqualsAndHashCode
-  @AllArgsConstructor
-  public class FnRoleCompositeId implements Serializable {
-
-    @Valid
-    private FnRole parentRoles;
-    @Valid
-    private FnRole childRoles;
-  }
 }

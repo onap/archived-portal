@@ -48,7 +48,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.validator.constraints.SafeHtml;
-import org.onap.portal.domain.dto.DomainVo;
+import org.onap.portal.domain.db.DomainVo;
 
 @Getter
 @Setter
@@ -59,7 +59,6 @@ public class MicroserviceData extends DomainVo {
 
 	private static final long serialVersionUID = 1L;
 
-	private Long id;
 	@SafeHtml
 	private String name;
 	@SafeHtml

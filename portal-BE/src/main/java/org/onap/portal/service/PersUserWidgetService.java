@@ -50,7 +50,6 @@ import org.onap.portal.domain.db.ep.EpWidgetCatalog;
 import org.onap.portal.domain.db.fn.FnUser;
 import org.onap.portal.domain.dto.ecomp.PersUserWidgetSelection;
 import org.onap.portal.domain.dto.transport.WidgetCatalogPersonalization;
-import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,7 +79,7 @@ public class PersUserWidgetService {
               if (persList.size() == 1) {
                      persRow = persList.get(0);
               } else {
-                     persRow = new PersUserWidgetSelection(null, user.getUserId(), personalization.getWidgetId(), null);
+                     persRow = new PersUserWidgetSelection(null, user.getId(), personalization.getWidgetId(), null);
               }
 
               if (persRow.getId() != null) {

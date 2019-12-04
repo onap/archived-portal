@@ -45,7 +45,7 @@ import org.hibernate.validator.constraints.SafeHtml;
 public class SecureString {
 
        @SafeHtml
-       private String data;
+       private final String data;
 
        public SecureString(String string) {
               this.data = string;

@@ -57,6 +57,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
+import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.Tuple;
@@ -77,7 +78,9 @@ import org.onap.portal.domain.db.fn.FnRole;
 import org.onap.portal.domain.db.fn.FnRoleFunction;
 import org.onap.portal.domain.db.fn.FnUser;
 import org.onap.portal.domain.db.fn.FnUserRole;
+import org.onap.portal.domain.dto.transport.AppNameIdIsAdmin;
 import org.onap.portal.domain.dto.transport.AppWithRolesForUser;
+import org.onap.portal.domain.dto.transport.AppsListWithAdminRole;
 import org.onap.portal.domain.dto.transport.CentralV2Role;
 import org.onap.portal.domain.dto.transport.EPUserAppCurrentRoles;
 import org.onap.portal.domain.dto.transport.EcompUserAppRoles;
@@ -125,11 +128,11 @@ import org.springframework.web.client.RestTemplate;
 @Transactional
 public class AdminRolesService {
 
-  private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(AdminRolesService.class);
+  private final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(AdminRolesService.class);
   private static final Object syncRests = new Object();
-  private RestTemplate template = new RestTemplate();
+  private final RestTemplate template = new RestTemplate();
 
-  private final Long SYS_ADMIN_ROLE_ID = 1L;
+  private Long SYS_ADMIN_ROLE_ID = 38L;
   private final Long ACCOUNT_ADMIN_ROLE_ID = 999L;
   private final Long ECOMP_APP_ID = 1L;
   private final String ADMIN_ACCOUNT = "Is account admin for user {}";
@@ -179,11 +182,11 @@ public class AdminRolesService {
     this.epUserRolesRequestService = epUserRolesRequestService;
   }
 
-  public boolean isSuperAdmin(final String orgUserId) {
+  public boolean isSuperAdmin(final String loginId) {
     boolean isSuperAdmin;
     try {
       isSuperAdmin = fnUserRoleService
-          .isSuperAdmin(orgUserId, SYS_ADMIN_ROLE_ID, ECOMP_APP_ID);
+          .isSuperAdmin(loginId, SYS_ADMIN_ROLE_ID, ECOMP_APP_ID);
     } catch (Exception e) {
       logger.error("isSuperAdmin exception: " + e.toString());
       throw e;
@@ -225,7 +228,7 @@ public class AdminRolesService {
       FnUser currentUser = fnUserService.getUser(user.getId()).orElseThrow(Exception::new);
       if (currentUser != null && currentUser.getId() != null) {
         for (FnUserRole userApp : currentUser.getUserApps()) {
-          if (!userApp.getAppId().getId().equals(ECOMP_APP_ID)) {
+          if (!userApp.getFnAppId().getId().equals(ECOMP_APP_ID)) {
             FnRole role = userApp.getRoleId();
             if (!role.getId().equals(SYS_ADMIN_ROLE_ID) && !role.getId()
                 .equals(ACCOUNT_ADMIN_ROLE_ID)) {
@@ -325,12 +328,12 @@ public class AdminRolesService {
       try {
         FnApp app = fnAppService.getById(appId);
 
-        boolean checkIfUserisApplicationAccAdmin = isAccountAdminOfApplication(user.getUserId(),
+        boolean checkIfUserisApplicationAccAdmin = isAccountAdminOfApplication(user.getId(),
             app);
         Set<EcompRole> rolesGotDeletedFromApprover = new TreeSet<>();
 
         boolean checkIfUserIsOnlyRoleAdmin =
-            isRoleAdmin(user.getUserId()) && !checkIfUserisApplicationAccAdmin;
+            isRoleAdmin(user.getId()) && !checkIfUserisApplicationAccAdmin;
         if (checkIfUserIsOnlyRoleAdmin) {
           for (RoleInAppForUser roleInAppForUser : roleInAppForUserList) {
             if (!roleInAppForUser.getIsApplied()) {
@@ -542,8 +545,8 @@ public class AdminRolesService {
           .filter(applicationRole -> epRole.getId().equals(applicationRole.getId())).findAny().orElse(null);
       if (appRole != null) {
         role.setId(appRole.getAppRoleId());
-        role.setName(epRole.getName());
-        role.setRoleFunctions(epRole.getRoleFunctions());
+        role.setRoleName(epRole.getName());
+        role.setFnRoleFunctions(epRole.getRoleFunctions());
       }
       roles.add(role);
     }
@@ -556,8 +559,15 @@ public class AdminRolesService {
   }
 
   private FnRole roleToFnRole(Role role) {
-    return new FnRole(role.getId(), role.getName(), role.isActive(), role.getPriority(), role.getRoleFunctions(),
-        role.getChildRoles(), role.getParentRoles());
+    return FnRole.builder()
+        .id(role.getId())
+        .roleName(role.getRoleName())
+        .activeYn(role.getActiveYn())
+        .priority(role.getPriority())
+        .fnRoleFunctions(role.getFnRoleFunctions())
+        .childRoles(role.getChildRoles())
+        .parentRoles(role.getParentRoles())
+        .build();
   }
 
   private Set<EcompRole> postUsersRolesToRemoteApp(List<RoleInAppForUser> roleInAppForUserList, ObjectMapper mapper,
@@ -769,7 +779,7 @@ public class AdminRolesService {
       // have account admin or system admin as GUI will not send these roles
       if (!isPortalRequest) {
         FnUser user = fnUserService.getUserWithOrgUserId(orgUserId).get(0);
-        userAppList = ecompUserAppRolesService.getUserAppExistingRoles(app.getAppId(), user.getUserId());
+        userAppList = ecompUserAppRolesService.getUserAppExistingRoles(app.getId(), user.getId());
         if (!roleInAppUser.isEmpty()) {
           for (EcompUserAppRoles userApp : userAppList) {
             if (userApp.getRoleId().equals(PortalConstants.SYS_ADMIN_ROLE_ID)
@@ -1090,9 +1100,9 @@ public class AdminRolesService {
         }
 
         for (FnUserRole userRole : userRoles) {
-          if (!PortalConstants.ACCOUNT_ADMIN_ROLE_ID.equals(userRole.getRoleId().getRoleId())
+          if (!PortalConstants.ACCOUNT_ADMIN_ROLE_ID.equals(userRole.getRoleId().getId())
               && !PortalConstants.SYS_ADMIN_ROLE_ID
-              .equals(userRole.getRoleId().getRoleId())
+              .equals(userRole.getRoleId().getId())
               && !extRequestValue) {
             syncUserRolesExtension(userRole, appId,
                 newUserAppRolesMap);
@@ -1101,7 +1111,7 @@ public class AdminRolesService {
             syncUserRolesExtension(userRole, appId,
                 newUserAppRolesMap);
           } else if (extRequestValue && !PortalConstants.ACCOUNT_ADMIN_ROLE_ID
-              .equals(userRole.getRoleId().getRoleId())) {
+              .equals(userRole.getRoleId().getId())) {
             syncUserRolesExtension(userRole, appId,
                 newUserAppRolesMap);
           }
@@ -1159,7 +1169,7 @@ public class AdminRolesService {
             }
 
             userApp.setUserId(client);
-            userApp.setAppId(app);
+            userApp.setFnAppId(app);
             fnUserRoleService.saveOne(userApp);
           }
 
@@ -1207,7 +1217,7 @@ public class AdminRolesService {
 
     Long userAppRoleId;
     if (PortalConstants.PORTAL_APP_ID.equals(appId)) { // local app
-      userAppRoleId = userRole.getRoleId().getRoleId();
+      userAppRoleId = userRole.getRoleId().getId();
     } else { // remote app
       userAppRoleId = userRole.getId();
     }
@@ -1220,9 +1230,8 @@ public class AdminRolesService {
   }
 
   private Role fnRoleToRole(final FnRole role) {
-    return Role.builder().name(role.getRoleName()).active(role.getActiveYn()).priority(role.getPriority())
-        .roleFunctions(role.getFnRoleFunctions()).childRoles(role.getChildRoles()).parentRoles(role.getParentRoles())
-        .build();
+    return new Role(null, null, null, null, null, null, null, null, null, role.getRoleName(), null, role.getActiveYn(),
+        role.getPriority(), role.getFnRoleFunctions(), role.getChildRoles(), role.getParentRoles());
   }
 
   @SuppressWarnings("unchecked")
@@ -1238,21 +1247,21 @@ public class AdminRolesService {
           List<CentralV2Role> cenRoleList = externalAccessRolesService.getRolesForApp(app.getUebKey());
           for (CentralV2Role cenRole : cenRoleList) {
             Role role = new Role();
-            role.setActive(cenRole.isActive());
+            role.setActiveYn(cenRole.isActive());
             role.setId(cenRole.getId());
-            role.setName(cenRole.getName());
+            role.setRoleName(cenRole.getName());
             role.setPriority(cenRole.getPriority());
             roleList.add(role);
           }
         } else {
           Optional<FnUser> user = fnUserService.getUser(userId);
-          if (user.isPresent()){
+          if (user.isPresent()) {
             roleList = user.get().getFnRoles().stream().map(this::fnRoleToRole).collect(Collectors.toList());
           }
         }
         List<Role> activeRoleList = new ArrayList<>();
         for (Role role : roleList) {
-          if (role.isActive()) {
+          if (role.getActiveYn()) {
             if (role.getId() != 1) { // prevent portal admin from being added
               activeRoleList.add(role);
             } else if (extRequestValue) {
@@ -1541,7 +1550,7 @@ public class AdminRolesService {
         for (FnRole role : obsoleteRoles) {
           logger.debug(EELFLoggerDelegate.debugLogger, "syncAppRoles: obsolete role: " + role.toString());
           Long roleId = role.getId();
-          List<FnUserRole> userRoles = fnUserRoleService.retrieveByAppIdAndRoleId(appId, roleId);
+          List<FnUserRole> userRoles = fnUserRoleService.getUserRolesForRoleIdAndAppId(roleId, appId);
 
           logger.debug(EELFLoggerDelegate.debugLogger,
               "syncAppRoles: number of userRoles to delete: " + userRoles.size());
@@ -1669,5 +1678,202 @@ public class AdminRolesService {
     if (!epRole.getActiveYn()) {
       throw new Exception(epRole.getRoleName() + " role is unavailable");
     }
+  }
+
+  public boolean setAppsWithAdminRoleStateForUser(AppsListWithAdminRole newAppsListWithAdminRoles) {
+    boolean result = false;
+    // No changes if no new roles list or no userId.
+    if (!org.apache.cxf.common.util.StringUtils.isEmpty(newAppsListWithAdminRoles.getOrgUserId())
+        && newAppsListWithAdminRoles.getAppsRoles() != null) {
+      synchronized (syncRests) {
+        List<FnApp> apps = fnAppService.getAppsFullList();
+        HashMap<Long, FnApp> enabledApps = new HashMap<>();
+        for (FnApp app : apps) {
+          enabledApps.put(app.getId(), app);
+        }
+        List<AppNameIdIsAdmin> newAppsWhereUserIsAdmin = new ArrayList<>();
+        for (AppNameIdIsAdmin adminRole : newAppsListWithAdminRoles.getAppsRoles()) {
+          // user Admin role may be added only for enabled apps
+          if (adminRole.getIsAdmin() && enabledApps.containsKey(adminRole.getId())) {
+            newAppsWhereUserIsAdmin.add(adminRole);
+          }
+        }
+        FnUser user = null;
+        boolean createNewUser = false;
+        String orgUserId = newAppsListWithAdminRoles.getOrgUserId().trim();
+        List<FnUser> localUserList = fnUserService.getUserWithOrgUserId(orgUserId);
+        List<FnUserRole> oldAppsWhereUserIsAdmin = new ArrayList<>();
+        if (localUserList.size() > 0) {
+          FnUser tmpUser = localUserList.get(0);
+          oldAppsWhereUserIsAdmin = fnUserRoleService.retrieveByUserIdAndRoleId(tmpUser.getId(), ACCOUNT_ADMIN_ROLE_ID);
+          if (oldAppsWhereUserIsAdmin.size() > 0 || newAppsWhereUserIsAdmin.size() > 0) {
+            user = tmpUser;
+          }
+        } else if (newAppsWhereUserIsAdmin.size() > 0) {
+          // we create new user only if he has Admin Role for any App
+          createNewUser = true;
+        }
+        result = isResult(result, enabledApps, newAppsWhereUserIsAdmin, user, createNewUser, orgUserId,
+            oldAppsWhereUserIsAdmin);
+      }
+    }
+
+    return result;
+  }
+
+  @Transactional
+  public boolean isResult(boolean result, HashMap<Long, FnApp> enabledApps,
+      List<AppNameIdIsAdmin> newAppsWhereUserIsAdmin, FnUser user, boolean createNewUser, String orgUserId,
+      List<FnUserRole> oldAppsWhereUserIsAdmin) {
+    if (user != null || createNewUser) {
+      if (createNewUser) {
+        user = fnUserService.getUserWithOrgUserId(orgUserId).stream().findFirst().get();
+        if (user != null) {
+          user.setActiveYn(true);
+        }
+      }
+      for (FnUserRole oldUserApp : oldAppsWhereUserIsAdmin) {
+        // user Admin role may be deleted only for enabled
+        // apps
+        if (enabledApps.containsKey(oldUserApp.getFnAppId())) {
+          fnUserRoleService.saveOne(oldUserApp);
+        }
+      }
+      for (AppNameIdIsAdmin appNameIdIsAdmin : newAppsWhereUserIsAdmin) {
+        FnApp app = fnAppService.getById(appNameIdIsAdmin.getId());
+        FnRole role = fnRoleService.getById(ACCOUNT_ADMIN_ROLE_ID);
+        FnUserRole newUserApp = new FnUserRole();
+        newUserApp.setUserId(user);
+        newUserApp.setFnAppId(app);
+        newUserApp.setRoleId(role);
+        fnUserRoleService.saveOne(newUserApp);
+      }
+      if (EcompPortalUtils.checkIfRemoteCentralAccessAllowed()) {
+        addAdminRoleInExternalSystem(user, newAppsWhereUserIsAdmin);
+        result = true;
+      }
+    }
+    return result;
+  }
+
+  @Transactional()
+  public boolean addAdminRoleInExternalSystem(FnUser user, List<AppNameIdIsAdmin> newAppsWhereUserIsAdmin) {
+    boolean result = false;
+    try {
+      // Reset All admin role for centralized applications
+      List<FnApp> appList = fnAppService.getCentralizedApps();
+      HttpHeaders headers = EcompPortalUtils.base64encodeKeyForAAFBasicAuth();
+      for (FnApp app : appList) {
+        String name = "";
+        if (EPCommonSystemProperties
+            .containsProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_USER_DOMAIN)) {
+          name = user.getOrgUserId() + SystemProperties
+              .getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_USER_DOMAIN);
+        }
+        String extRole = app.getAuthNamespace() + "." + PortalConstants.ADMIN_ROLE.replaceAll(" ", "_");
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+        logger.debug(EELFLoggerDelegate.debugLogger, "Connecting to External Access system");
+        try {
+          ResponseEntity<String> getResponse = template
+              .exchange(SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_URL)
+                  + "roles/" + extRole, HttpMethod.GET, entity, String.class);
+
+          if (getResponse.getBody().equals("{}")) {
+            String addDesc = "{\"name\":\"" + extRole + "\"}";
+            HttpEntity<String> roleEntity = new HttpEntity<>(addDesc, headers);
+            template.exchange(
+                SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_URL)
+                    + "role",
+                HttpMethod.POST, roleEntity, String.class);
+          } else {
+            try {
+              HttpEntity<String> deleteUserRole = new HttpEntity<>(headers);
+              template.exchange(
+                  SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_URL)
+                      + "userRole/" + name + "/" + extRole,
+                  HttpMethod.DELETE, deleteUserRole, String.class);
+            } catch (Exception e) {
+              logger.error(EELFLoggerDelegate.errorLogger,
+                  " Role not found for this user may be it gets deleted before", e);
+            }
+          }
+        } catch (Exception e) {
+          if (e.getMessage().equalsIgnoreCase("404 Not Found")) {
+            logger.debug(EELFLoggerDelegate.debugLogger, "Application Not found for app {}",
+                app.getAuthNamespace(), e.getMessage());
+          } else {
+            logger.error(EELFLoggerDelegate.errorLogger, "Application Not found for app {}",
+                app.getAuthNamespace(), e);
+          }
+        }
+      }
+      for (AppNameIdIsAdmin appNameIdIsAdmin : newAppsWhereUserIsAdmin) {
+        FnApp app = fnAppService.getById(appNameIdIsAdmin.getId());
+        try {
+          if (app.getAuthCentral()) {
+            String extRole = app.getAuthNamespace() + "." + PortalConstants.ADMIN_ROLE.replaceAll(" ", "_");
+            HttpEntity<String> entity = new HttpEntity<>(headers);
+            String name = "";
+            if (EPCommonSystemProperties
+                .containsProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_USER_DOMAIN)) {
+              name = user.getOrgUserId() + SystemProperties
+                  .getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_USER_DOMAIN);
+            }
+            logger.debug(EELFLoggerDelegate.debugLogger, "Connecting to External Access system");
+            ResponseEntity<String> getUserRolesResponse = template.exchange(
+                SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_URL)
+                    + "userRoles/user/" + name,
+                HttpMethod.GET, entity, String.class);
+            logger.debug(EELFLoggerDelegate.debugLogger, "Connected to External Access system");
+            if (!getUserRolesResponse.getBody().equals("{}")) {
+              JSONObject jsonObj = new JSONObject(getUserRolesResponse.getBody());
+              JSONArray extRoles = jsonObj.getJSONArray("userRole");
+              final Map<String, JSONObject> extUserRoles = new HashMap<>();
+              for (int i = 0; i < extRoles.length(); i++) {
+                String userRole = extRoles.getJSONObject(i).getString("role");
+                if (userRole.startsWith(app.getAuthNamespace() + ".")
+                    && !userRole.equals(app.getAuthNamespace() + ".admin")
+                    && !userRole.equals(app.getAuthNamespace() + ".owner")) {
+
+                  extUserRoles.put(userRole, extRoles.getJSONObject(i));
+                }
+              }
+              if (!extUserRoles.containsKey(extRole)) {
+                // Assign with new apps user admin
+                try {
+                  ExternalAccessUser extUser = new ExternalAccessUser(name, extRole);
+                  // Assign user role for an application in external access system
+                  ObjectMapper addUserRoleMapper = new ObjectMapper();
+                  String userRole = addUserRoleMapper.writeValueAsString(extUser);
+                  HttpEntity<String> addUserRole = new HttpEntity<>(userRole, headers);
+                  template.exchange(
+                      SystemProperties.getProperty(
+                          EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_URL) + "userRole",
+                      HttpMethod.POST, addUserRole, String.class);
+                } catch (Exception e) {
+                  logger.error(EELFLoggerDelegate.errorLogger, "Failed to add user admin role", e);
+                }
+
+              }
+            }
+          }
+          result = true;
+        } catch (Exception e) {
+          if (e.getMessage().equalsIgnoreCase("404 Not Found")) {
+            logger.debug(EELFLoggerDelegate.errorLogger,
+                "Application name space not found in External system for app {} due to bad rquest name space ",
+                app.getAuthNamespace(), e.getMessage());
+          } else {
+            logger.error(EELFLoggerDelegate.errorLogger, "Failed to assign admin role for application {}",
+                app.getAuthNamespace(), e);
+            result = false;
+          }
+        }
+      }
+    } catch (Exception e) {
+      result = false;
+      logger.error(EELFLoggerDelegate.errorLogger, "Failed to assign admin roles operation", e);
+    }
+    return result;
   }
 }

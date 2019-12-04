@@ -51,6 +51,7 @@ import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -86,15 +87,16 @@ CREATE TABLE `cr_table_join` (
 public class CrTableJoin implements Serializable {
        //TODO Unique constrains {srcTableName, destTableName}?
        @Id
-       @GeneratedValue(strategy = GenerationType.AUTO)
+
+  @GeneratedValue(strategy = GenerationType.AUTO)
        @Column(name = "id", nullable = false, columnDefinition = "int(11) auto_increment")
        private Long id;
-       @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+       @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
        @JoinColumn(name = "src_table_name", nullable = false)
        @Valid
        @NotNull
        private CrTableSource srcTableName;
-       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
        @JoinColumn(name = "dest_table_name", nullable = false)
        @Valid
        @NotNull

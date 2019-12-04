@@ -52,6 +52,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -68,6 +69,7 @@ CREATE TABLE `fn_lu_tab_set` (
 @Table(name = "fn_lu_tab_set")
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Getter
 @Setter
 @Entity
@@ -84,8 +86,8 @@ public class FnLuTabSet implements Serializable {
        private String tabSetName;
        @OneToMany(
                targetEntity = FnTab.class,
-               mappedBy = "fnLuTabSet",
-               cascade = CascadeType.ALL,
+               mappedBy = "tabSetCd",
+               cascade = CascadeType.MERGE,
                fetch = FetchType.LAZY
        )
        private Set<FnTab> fnTabs;

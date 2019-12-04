@@ -15,4 +15,7 @@ public interface FnAppDao extends JpaRepository<FnApp, Long> {
   @Query
   List<FnApp> getByUebKey(final @Param("uebKey") String uebKey);
 
+  @Query
+  List<FnApp> getCentralizedApps();
+
 }

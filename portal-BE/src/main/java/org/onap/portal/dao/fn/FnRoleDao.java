@@ -76,4 +76,7 @@ public interface FnRoleDao extends JpaRepository<FnRole, Long> {
 
   @Query
   List<FnRole> getGlobalRolesOfPortal();
+
+  @Query
+  FnRole getSysAdminRoleId();
 }

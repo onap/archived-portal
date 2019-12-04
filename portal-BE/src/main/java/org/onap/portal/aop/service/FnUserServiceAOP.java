@@ -47,7 +47,6 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.onap.portal.domain.db.fn.FnUser;
 import org.onap.portal.domain.mapper.FnUserMapper;
-import org.onap.portal.service.fn.FnUserService;
 import org.onap.portal.validation.DataValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

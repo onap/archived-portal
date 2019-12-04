@@ -56,6 +56,7 @@ import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -113,6 +114,7 @@ CREATE TABLE `fn_qz_triggers` (
 })
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Getter
 @Setter
 @Entity
@@ -124,7 +126,6 @@ public class FnQzTriggers implements Serializable {
                @JoinColumn(name = "JOB_NAME", referencedColumnName = "JOB_NAME"),
                @JoinColumn(name = "JOB_GROUP", referencedColumnName = "JOB_GROUP")
        })
-       @NotNull
        private FnQzJobDetails fnQzJobDetails;
        @Id
        @Valid

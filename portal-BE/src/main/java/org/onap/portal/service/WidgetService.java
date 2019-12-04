@@ -48,7 +48,6 @@ import org.onap.portal.dao.fn.FnWidgetDao;
 import org.onap.portal.domain.db.fn.FnUser;
 import org.onap.portal.domain.db.fn.FnUserRole;
 import org.onap.portal.domain.db.fn.FnWidget;
-import org.onap.portal.domain.dto.ecomp.EPUserApp;
 import org.onap.portal.domain.dto.transport.FieldsValidator;
 import org.onap.portal.domain.dto.transport.OnboardingWidget;
 import org.onap.portal.service.fn.FnUserRoleService;
@@ -68,7 +67,7 @@ public class WidgetService {
        private final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(WidgetService.class);
        private final Long ACCOUNT_ADMIN_ROLE_ID = 999L;
 
-       private static String baseSqlToken =
+       private static final String baseSqlToken =
                " new org.onap.portal.domain.dto.transport.OnboardingWidget("
                        + "widget.WIDGET_ID,widget.WDG_NAME,widget.APP_ID,"
                        + "app.APP_NAME,widget.WDG_WIDTH,widget.WDG_HEIGHT,"
@@ -232,7 +231,7 @@ public class WidgetService {
               synchronized (syncRests) {
                      FnWidget widget = fnWidgetDao.getOne(onboardingWidgetId);
                      if (widget != null && widget.getAppId() != null) { // widget exists
-                            if (!this.isUserAdminOfAppForWidget(adminRolesService.isSuperAdmin(user.getOrgUserId()), user.getUserId(),
+                            if (!this.isUserAdminOfAppForWidget(adminRolesService.isSuperAdmin(user.getOrgUserId()), user.getId(),
                                     widget.getAppId())) {
                                    fieldsValidator.setHttpStatusCode((long) HttpServletResponse.SC_FORBIDDEN);
                             } else {

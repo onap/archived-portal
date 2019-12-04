@@ -62,10 +62,10 @@ class WidgetMSControllerTest {
        @Autowired
        WidgetMSController widgetMSController;
 
-       MockitoTestSuite mockitoTestSuite = new MockitoTestSuite();
+       final MockitoTestSuite mockitoTestSuite = new MockitoTestSuite();
 
-       HttpServletRequest request = mockitoTestSuite.getMockedRequest();
-       HttpServletResponse response = mockitoTestSuite.getMockedResponse();
+       final HttpServletRequest request = mockitoTestSuite.getMockedRequest();
+       final HttpServletResponse response = mockitoTestSuite.getMockedResponse();
 
        @Test
        void getServiceLocation() {

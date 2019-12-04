@@ -52,10 +52,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 @Transactional
 public interface FnUserDao extends JpaRepository<FnUser, Long> {
-       Optional<FnUser> findByLoginId(String username);
+
+       @Query
+       Optional<FnUser> findByLoginId(final @Param("loginId") String username);
 
        @Override
-       FnUser getOne(Long integer);
+       FnUser getOne(Long ID);
 
        @Query
        Optional<List<FnUser>> getUserWithOrgUserId(final @Param("orgId") String orgId);

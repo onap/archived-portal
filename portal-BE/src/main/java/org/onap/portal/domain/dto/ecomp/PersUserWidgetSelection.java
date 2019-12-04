@@ -44,7 +44,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.onap.portal.domain.dto.DomainVo;
+import org.onap.portal.domain.db.DomainVo;
 
 @Getter
 @Setter
@@ -59,7 +59,7 @@ public class PersUserWidgetSelection extends DomainVo {
 	private String statusCode;
 
 	public PersUserWidgetSelection(final Long id, final Long userId, final Long widgetId, final String statusCode) {
-		super.id = id;
+		super.setId(id);
 		this.userId = userId;
 		this.widgetId = widgetId;
 		this.statusCode = statusCode;

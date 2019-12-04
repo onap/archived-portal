@@ -53,6 +53,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.Valid;
 import javax.validation.constraints.Digits;
@@ -83,7 +84,7 @@ CREATE TABLE `ep_pers_user_widget_placement` (
 @NamedQueries({
         @NamedQuery(
                 name = "EpPersUserWidgetPlacement.retrieveByUserId",
-                query = "from EpPersUserWidgetPlacement where USER_ID =:userId"
+                query = "from EpPersUserWidgetPlacement where userId =:userId"
         )
 })
 
@@ -98,16 +99,17 @@ CREATE TABLE `ep_pers_user_widget_placement` (
 @Entity
 public class EpPersUserWidgetPlacement implements Serializable {
        @Id
-       @GeneratedValue(strategy = GenerationType.AUTO)
+
+  @GeneratedValue(strategy = GenerationType.AUTO)
        @Column(name = "id", length = 11, nullable = false, columnDefinition = "int(11) AUTO_INCREMENT")
        @Digits(integer = 11, fraction = 0)
        private Long id;
-       @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
-       @JoinColumn(name = "user_id", nullable = false)
+       @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.MERGE)
+       @JoinColumn(name = "user_id", nullable = false, columnDefinition = "bigint")
        @NotNull
        @Valid
        private FnUser userId;
-       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
        @JoinColumn(name = "widget_id", nullable = false)
        @NotNull
        @Valid

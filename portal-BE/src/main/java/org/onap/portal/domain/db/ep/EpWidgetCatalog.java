@@ -57,7 +57,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -87,7 +86,7 @@ CREATE TABLE `ep_widget_catalog` (
 @Builder
 public class EpWidgetCatalog implements Serializable {
        @Id
-       @GeneratedValue(strategy = GenerationType.IDENTITY)
+       @GeneratedValue(strategy = GenerationType.AUTO)
        @Column(name = "widget_id", nullable = false)
        private Long widgetId;
        @Column(name = "wdg_name", length = 100, columnDefinition = "varchar(100) default '?'", nullable = false)
@@ -107,10 +106,10 @@ public class EpWidgetCatalog implements Serializable {
        @NotNull
        @SafeHtml
        private String wdgFileLoc;
-       @Column(name = "all_user_flag", length = 1, columnDefinition = "boolean default '0'", nullable = false)
+       @Column(name = "all_user_flag", length = 1, columnDefinition = "boolean default false", nullable = false)
        @NotNull
        private Boolean allUserFlag;
-       @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+       @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
        @JoinTable(
                name = "ep_widget_microservice",
                joinColumns = {@JoinColumn(name = "widget_id", referencedColumnName = "widget_id")},
@@ -124,35 +123,35 @@ public class EpWidgetCatalog implements Serializable {
        @OneToMany(
                targetEntity = EpWidgetCatalogRole.class,
                mappedBy = "widgetId",
-               cascade = CascadeType.ALL,
+               cascade = CascadeType.MERGE,
                fetch = FetchType.LAZY
        )
        private Set<EpWidgetCatalogRole> widgetCatalogRoles;
        @OneToMany(
                targetEntity = EpPersUserWidgetSel.class,
                mappedBy = "widgetId",
-               cascade = CascadeType.ALL,
+               cascade = CascadeType.MERGE,
                fetch = FetchType.LAZY
        )
        private Set<EpPersUserWidgetSel> epPersUserWidgetSels;
        @OneToMany(
                targetEntity = EpPersUserWidgetSel.class,
                mappedBy = "widgetId",
-               cascade = CascadeType.ALL,
+               cascade = CascadeType.MERGE,
                fetch = FetchType.LAZY
        )
        private Set<EpPersUserWidgetSel> persUserWidgetSels;
        @OneToMany(
                targetEntity = EpPersUserWidgetPlacement.class,
                mappedBy = "widgetId",
-               cascade = CascadeType.ALL,
+               cascade = CascadeType.MERGE,
                fetch = FetchType.LAZY
        )
        private Set<EpPersUserWidgetPlacement> epPersUserWidgetPlacements;
        @OneToMany(
                targetEntity = EpWidgetCatalogParameter.class,
                mappedBy = "widgetId",
-               cascade = CascadeType.ALL,
+               cascade = CascadeType.MERGE,
                fetch = FetchType.LAZY
        )
        private Set<EpWidgetCatalogParameter> epWidgetCatalogParameters;

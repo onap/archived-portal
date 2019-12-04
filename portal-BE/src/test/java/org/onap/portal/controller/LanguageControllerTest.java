@@ -64,7 +64,7 @@ import org.springframework.transaction.annotation.Transactional;
 @TestPropertySource(locations="classpath:test.properties")
 @Transactional
 class LanguageControllerTest {
-       private UsernamePasswordAuthenticationToken principal = new UsernamePasswordAuthenticationToken("demo", "demo123");
+       private final UsernamePasswordAuthenticationToken principal = new UsernamePasswordAuthenticationToken("demo", "demo123");
 
        @Autowired
        private LanguageController languageController;

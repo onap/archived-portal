@@ -201,35 +201,35 @@ public class CrReport implements Serializable {
        @OneToMany(
                targetEntity = CrReportSchedule.class,
                mappedBy = "repId",
-               cascade = CascadeType.ALL,
+               cascade = CascadeType.MERGE,
                fetch = FetchType.LAZY
        )
        private Set<CrReportSchedule> crReportSchedules;
        @OneToMany(
                targetEntity = CrReportAccess.class,
                mappedBy = "repId",
-               cascade = CascadeType.ALL,
+               cascade = CascadeType.MERGE,
                fetch = FetchType.LAZY
        )
        private Set<CrReportAccess> crReportAccesses;
        @OneToMany(
                targetEntity = CrReportLog.class,
                mappedBy = "repId",
-               cascade = CascadeType.ALL,
+               cascade = CascadeType.MERGE,
                fetch = FetchType.LAZY
        )
        private Set<CrReportLog> crReportLogs;
        @OneToMany(
                targetEntity = CrReportEmailSentLog.class,
                mappedBy = "repId",
-               cascade = CascadeType.ALL,
+               cascade = CascadeType.MERGE,
                fetch = FetchType.LAZY
        )
        private Set<CrReportEmailSentLog> crReportEmailSentLogs;
        @OneToMany(
                targetEntity = CrReportFileHistory.class,
                mappedBy = "repId",
-               cascade = CascadeType.ALL,
+               cascade = CascadeType.MERGE,
                fetch = FetchType.LAZY
        )
        private Set<CrReportFileHistory> crReportFileHistories;

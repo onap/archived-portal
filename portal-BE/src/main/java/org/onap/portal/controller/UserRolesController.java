@@ -55,7 +55,9 @@ import org.onap.portal.domain.dto.ecomp.EcompAuditLog;
 import org.onap.portal.domain.dto.ecomp.ExternalSystemAccess;
 import org.onap.portal.domain.dto.ecomp.PortalRestResponse;
 import org.onap.portal.domain.dto.ecomp.PortalRestStatusEnum;
+import org.onap.portal.domain.dto.transport.AppNameIdIsAdmin;
 import org.onap.portal.domain.dto.transport.AppWithRolesForUser;
+import org.onap.portal.domain.dto.transport.AppsListWithAdminRole;
 import org.onap.portal.domain.dto.transport.ExternalRequestFieldsValidator;
 import org.onap.portal.domain.dto.transport.FieldsValidator;
 import org.onap.portal.domain.dto.transport.RoleInAppForUser;
@@ -88,18 +90,13 @@ import org.springframework.web.bind.annotation.RestController;
 @Configuration
 public class UserRolesController {
 
-  private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(UserRolesController.class);
+  private final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(UserRolesController.class);
 
   private final FnUserService fnUserService;
   private final FnUserRoleService fnUserRoleService;
   private final AdminRolesService adminRolesService;
   private final ApplicationsRestClientService applicationsRestClientService;
   private final AuditServiceImpl auditService = new AuditServiceImpl();
-
-/*
-       private final UserRolesService userRolesService;
-       private final SearchService searchService;*/
-
 
   private static final String FAILURE = "failure";
 
@@ -115,152 +112,149 @@ public class UserRolesController {
   }
 
 
-       /*
-              @RequestMapping(value = {"/portalApi/queryUsers"}, method = RequestMethod.GET, produces = "application/json")
-              @PreAuthorize("hasRole('System_Administrator') and hasRole('Account_Administrator')")
-              public String getPhoneBookSearchResult(Principal principal, @RequestParam("search") String searchString,
-                      HttpServletResponse response) {
-                     FnUser user = fnUserService.loadUserByUsername(principal.getName());
+  /*
+         @RequestMapping(value = {"/portalApi/queryUsers"}, method = RequestMethod.GET, produces = "application/json")
+         @PreAuthorize("hasRole('System_Administrator') and hasRole('Account_Administrator')")
+         public String getPhoneBookSearchResult(Principal principal, @RequestParam("search") String searchString,
+                 HttpServletResponse response) {
+                FnUser user = fnUserService.loadUserByUsername(principal.getName());
 
-                     String searchResult = null;
-                     if (!adminRolesService.isSuperAdmin(user) && !adminRolesService.isAccountAdmin(user)
-                             && !adminRolesService.isRoleAdmin(user)) {
-                            EcompPortalUtils.setBadPermissions(user, response, "getPhoneBookSearchResult");
-                     } else {
-                            searchString = searchString.trim();
-                            if (searchString.length() > 2) {
-                                   searchResult = searchService.searchUsersInPhoneBook(searchString);
-                            } else {
-                                   logger.info(EELFLoggerDelegate.errorLogger,
-                                           "getPhoneBookSearchResult - too short search string: " + searchString);
-                            }
-                     }
-                     EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/queryUsers", "result =", searchResult);
+                String searchResult = null;
+                if (!adminRolesService.isSuperAdmin(user) && !adminRolesService.isAccountAdmin(user)
+                        && !adminRolesService.isRoleAdmin(user)) {
+                       EcompPortalUtils.setBadPermissions(user, response, "getPhoneBookSearchResult");
+                } else {
+                       searchString = searchString.trim();
+                       if (searchString.length() > 2) {
+                              searchResult = searchService.searchUsersInPhoneBook(searchString);
+                       } else {
+                              logger.info(EELFLoggerDelegate.errorLogger,
+                                      "getPhoneBookSearchResult - too short search string: " + searchString);
+                       }
+                }
+                EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/queryUsers", "result =", searchResult);
 
-                     return searchResult;
-              }
+                return searchResult;
+         }
 
 
-              @RequestMapping(value = {"/portalApi/adminAppsRoles"}, method = {
-                      RequestMethod.GET}, produces = "application/json")
-              public AppsListWithAdminRole getAppsWithAdminRoleStateForUser(Principal principal,
-                      @RequestParam("user") String orgUserId, HttpServletResponse response) {
+         @RequestMapping(value = {"/portalApi/adminAppsRoles"}, method = {
+                 RequestMethod.GET}, produces = "application/json")
+         public AppsListWithAdminRole getAppsWithAdminRoleStateForUser(Principal principal,
+                 @RequestParam("user") String orgUserId, HttpServletResponse response) {
 
-                     FnUser user = fnUserService.loadUserByUsername(principal.getName());
+                FnUser user = fnUserService.loadUserByUsername(principal.getName());
 
-                     AppsListWithAdminRole result = null;
-                     if (!adminRolesService.isSuperAdmin(user)) {
-                            EcompPortalUtils.setBadPermissions(user, response, "getAppsWithAdminRoleStateForUser");
-                     } else {
-                            if (EcompPortalUtils.legitimateUserId(orgUserId)) {
-                                   result = adminRolesService.getAppsWithAdminRoleStateForUser(orgUserId);
-                            } else {
-                                   logger.info(EELFLoggerDelegate.errorLogger,
-                                           "getAppsWithAdminRoleStateForUser - parms error, no Organization User ID");
-                                   response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                            }
-                     }
+                AppsListWithAdminRole result = null;
+                if (!adminRolesService.isSuperAdmin(user)) {
+                       EcompPortalUtils.setBadPermissions(user, response, "getAppsWithAdminRoleStateForUser");
+                } else {
+                       if (EcompPortalUtils.legitimateUserId(orgUserId)) {
+                              result = adminRolesService.getAppsWithAdminRoleStateForUser(orgUserId);
+                       } else {
+                              logger.info(EELFLoggerDelegate.errorLogger,
+                                      "getAppsWithAdminRoleStateForUser - parms error, no Organization User ID");
+                              response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                       }
+                }
 
-                     StringBuilder adminAppRoles = new StringBuilder();
-                     if (result != null) {
-                            if (!result.appsRoles.isEmpty()) {
-                                   adminAppRoles.append("User '" + result.orgUserId + "' has admin role to the apps = {");
-                                   for (AppNameIdIsAdmin adminAppRole : result.appsRoles) {
-                                          if (adminAppRole.isAdmin) {
-                                                 adminAppRoles.append(adminAppRole.appName + ", ");
-                                          }
-                                   }
-                                   adminAppRoles.append("}.");
-                            } else {
-                                   adminAppRoles.append("User '" + result.orgUserId + "' has no Apps with Admin Role.");
-                            }
-                     } else {
-                            logger.error(EELFLoggerDelegate.errorLogger,
-                                    "putAppWithUserRoleStateForUser: getAppsWithAdminRoleStateForUser result is null");
-                     }
+                StringBuilder adminAppRoles = new StringBuilder();
+                if (result != null) {
+                       if (!result.appsRoles.isEmpty()) {
+                              adminAppRoles.append("User '" + result.orgUserId + "' has admin role to the apps = {");
+                              for (AppNameIdIsAdmin adminAppRole : result.appsRoles) {
+                                     if (adminAppRole.isAdmin) {
+                                            adminAppRoles.append(adminAppRole.appName + ", ");
+                                     }
+                              }
+                              adminAppRoles.append("}.");
+                       } else {
+                              adminAppRoles.append("User '" + result.orgUserId + "' has no Apps with Admin Role.");
+                       }
+                } else {
+                       logger.error(EELFLoggerDelegate.errorLogger,
+                               "putAppWithUserRoleStateForUser: getAppsWithAdminRoleStateForUser result is null");
+                }
 
-                     logger.info(EELFLoggerDelegate.errorLogger, adminAppRoles.toString());
+                logger.info(EELFLoggerDelegate.errorLogger, adminAppRoles.toString());
 
-                     EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/adminAppsRoles", "get result =", result);
+                EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/adminAppsRoles", "get result =", result);
 
-                     return result;
-              }
-
-              @RequestMapping(value = {"/portalApi/adminAppsRoles"}, method = {
-                      RequestMethod.PUT}, produces = "application/json")
-              public FieldsValidator putAppsWithAdminRoleStateForUser(Principal principal,
-                      @RequestBody AppsListWithAdminRole newAppsListWithAdminRoles, HttpServletResponse response) {
-
-                     // newAppsListWithAdminRoles.appsRoles
-                     FieldsValidator fieldsValidator = new FieldsValidator();
-                     StringBuilder newAppRoles = new StringBuilder();
-                     if (newAppsListWithAdminRoles != null) {
-                            if (!newAppsListWithAdminRoles.appsRoles.isEmpty()) {
-                                   newAppRoles
-                                           .append("User '" + newAppsListWithAdminRoles.orgUserId
-                                                   + "' has admin role to the apps = { ");
-                                   for (AppNameIdIsAdmin adminAppRole : newAppsListWithAdminRoles.appsRoles) {
-                                          if (adminAppRole.isAdmin) {
-                                                 newAppRoles.append(adminAppRole.appName + " ,");
-                                          }
-                                   }
-                                   newAppRoles.deleteCharAt(newAppRoles.length() - 1);
-                                   newAppRoles.append("}.");
-                            } else {
-                                   newAppRoles.append("User '" + newAppsListWithAdminRoles.orgUserId
-                                           + "' has no Apps with Admin Role.");
-                            }
-                     } else {
-                            logger.error(EELFLoggerDelegate.errorLogger,
-                                    "putAppWithUserRoleStateForUser: putAppsWithAdminRoleStateForUser result is null");
-                            fieldsValidator.setHttpStatusCode((long) HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                     }
-
-                     logger.info(EELFLoggerDelegate.errorLogger, newAppRoles.toString());
-
-                     FnUser user = fnUserService.loadUserByUsername(principal.getName());
-
-                     boolean changesApplied = false;
-
-                     if (!adminRolesService.isSuperAdmin(user)) {
-                            EcompPortalUtils.setBadPermissions(user, response, "putAppsWithAdminRoleStateForUser");
-                     } else {
-                            changesApplied = adminRolesService.setAppsWithAdminRoleStateForUser(newAppsListWithAdminRoles);
-                            AuditLog auditLog = new AuditLog();
-                            auditLog.setUserId(user.getId());
-                            auditLog.setActivityCode(EcompAuditLog.CD_ACTIVITY_UPDATE_ACCOUNT_ADMIN);
-                            if (newAppsListWithAdminRoles != null) {
-                                   auditLog.setAffectedRecordId(newAppsListWithAdminRoles.orgUserId);
-                            }
-                            auditLog.setComments(
-                                    EcompPortalUtils
-                                            .truncateString(newAppRoles.toString(), PortalConstants.AUDIT_LOG_COMMENT_SIZE));
-                            auditService.logActivity(auditLog, null);
-
-                            MDC.put(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP,
-                                    EPEELFLoggerAdvice.getCurrentDateTimeUTC());
-                            MDC.put(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP,
-                                    EPEELFLoggerAdvice.getCurrentDateTimeUTC());
-                            EcompPortalUtils.calculateDateTimeDifferenceForLog(
-                                    MDC.get(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP),
-                                    MDC.get(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP));
-                            if (newAppsListWithAdminRoles != null) {
-                                   logger.info(EELFLoggerDelegate.auditLogger,
-                                           EPLogUtil.formatAuditLogMessage(
-                                                   "UserRolesController.putAppsWithAdminRoleStateForUser",
-                                                   EcompAuditLog.CD_ACTIVITY_UPDATE_ACCOUNT_ADMIN, user.getOrgUserId(),
-                                                   newAppsListWithAdminRoles.orgUserId, newAppRoles.toString()));
-                            }
-                            MDC.remove(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP);
-                            MDC.remove(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP);
-                            MDC.remove(SystemProperties.MDC_TIMER);
-                     }
-                     EcompPortalUtils
-                             .logAndSerializeObject(logger, "/portalApi/adminAppsRoles", "put result =", changesApplied);
-
-                     return fieldsValidator;
-              }
+                return result;
+         }
 */
+  @RequestMapping(value = {"/portalApi/adminAppsRoles"}, method = {
+      RequestMethod.PUT}, produces = "application/json")
+  public FieldsValidator putAppsWithAdminRoleStateForUser(Principal principal,
+      @RequestBody AppsListWithAdminRole newAppsListWithAdminRoles, HttpServletResponse response) {
+    // newAppsListWithAdminRoles.appsRoles
+    FieldsValidator fieldsValidator = new FieldsValidator();
+    StringBuilder newAppRoles = new StringBuilder();
+    if (newAppsListWithAdminRoles != null) {
+      if (!newAppsListWithAdminRoles.getAppsRoles().isEmpty()) {
+        newAppRoles.append("User '").append(newAppsListWithAdminRoles.getOrgUserId())
+            .append("' has admin role to the apps = { ");
+        for (AppNameIdIsAdmin adminAppRole : newAppsListWithAdminRoles.getAppsRoles()) {
+          if (adminAppRole.getIsAdmin()) {
+            newAppRoles.append(adminAppRole.getAppName()).append(" ,");
+          }
+        }
+        newAppRoles.deleteCharAt(newAppRoles.length() - 1);
+        newAppRoles.append("}.");
+      } else {
+        newAppRoles.append("User '").append(newAppsListWithAdminRoles.getOrgUserId())
+            .append("' has no Apps with Admin Role.");
+      }
+    } else {
+      logger.error(EELFLoggerDelegate.errorLogger,
+          "putAppWithUserRoleStateForUser: putAppsWithAdminRoleStateForUser result is null");
+      fieldsValidator.setHttpStatusCode((long) HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+    }
+
+    logger.info(EELFLoggerDelegate.errorLogger, newAppRoles.toString());
+
+    FnUser user = fnUserService.loadUserByUsername(principal.getName());
+
+    boolean changesApplied = false;
+
+    if (!adminRolesService.isSuperAdmin(user.getLoginId())) {
+      EcompPortalUtils.setBadPermissions(user, response, "putAppsWithAdminRoleStateForUser");
+    } else {
+      changesApplied = adminRolesService.setAppsWithAdminRoleStateForUser(newAppsListWithAdminRoles);
+      AuditLog auditLog = new AuditLog();
+      auditLog.setUserId(user.getId());
+      auditLog.setActivityCode(EcompAuditLog.CD_ACTIVITY_UPDATE_ACCOUNT_ADMIN);
+      if (newAppsListWithAdminRoles != null) {
+        auditLog.setAffectedRecordId(newAppsListWithAdminRoles.getOrgUserId());
+      }
+      auditLog.setComments(
+          EcompPortalUtils
+              .truncateString(newAppRoles.toString(), PortalConstants.AUDIT_LOG_COMMENT_SIZE));
+      auditService.logActivity(auditLog, null);
+
+      MDC.put(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP,
+          EPEELFLoggerAdvice.getCurrentDateTimeUTC());
+      MDC.put(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP,
+          EPEELFLoggerAdvice.getCurrentDateTimeUTC());
+      EcompPortalUtils.calculateDateTimeDifferenceForLog(
+          MDC.get(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP),
+          MDC.get(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP));
+      if (newAppsListWithAdminRoles != null) {
+        logger.info(EELFLoggerDelegate.auditLogger,
+            EPLogUtil.formatAuditLogMessage(
+                "UserRolesController.putAppsWithAdminRoleStateForUser",
+                EcompAuditLog.CD_ACTIVITY_UPDATE_ACCOUNT_ADMIN, user.getOrgUserId(),
+                newAppsListWithAdminRoles.getOrgUserId(), newAppRoles.toString()));
+      }
+      MDC.remove(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP);
+      MDC.remove(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP);
+      MDC.remove(SystemProperties.MDC_TIMER);
+    }
+    EcompPortalUtils
+        .logAndSerializeObject(logger, "/portalApi/adminAppsRoles", "put result =", changesApplied);
+
+    return fieldsValidator;
+  }
 
   @RequestMapping(value = {"/portalApi/userAppRoles"}, method = {
       RequestMethod.GET}, produces = "application/json")
@@ -272,15 +266,15 @@ public class UserRolesController {
     FnUser user = fnUserService.loadUserByUsername(principal.getName());
     List<RoleInAppForUser> result = null;
     String feErrorString = "";
-    if (!adminRolesService.isAccountAdmin(user) && !adminRolesService.isRoleAdmin(user.getUserId())) {
+    if (!adminRolesService.isAccountAdmin(user) && !adminRolesService.isRoleAdmin(user.getId())) {
       logger.debug(EELFLoggerDelegate.debugLogger,
           "getAppRolesForUser: Accountadminpermissioncheck {}, RoleAdmincheck {}",
-          adminRolesService.isAccountAdmin(user), adminRolesService.isRoleAdmin(user.getUserId()));
+          adminRolesService.isAccountAdmin(user), adminRolesService.isRoleAdmin(user.getId()));
       EcompPortalUtils.setBadPermissions(user, response, "getAppRolesForUser");
       feErrorString = EcompPortalUtils.getFEErrorString(true, response.getStatus());
     } else {
       if (isSystemUser || EcompPortalUtils.legitimateUserId(orgUserId)) {
-        result = adminRolesService.getAppRolesForUser(appid, orgUserId, extRequestValue, user.getUserId());
+        result = adminRolesService.getAppRolesForUser(appid, orgUserId, extRequestValue, user.getId());
         logger.debug(EELFLoggerDelegate.debugLogger, "getAppRolesForUser: result {}, appId {}",
             result, appid);
         int responseCode = EcompPortalUtils.getExternalAppResponseCode();
@@ -361,7 +355,7 @@ public class UserRolesController {
     // boolean changesApplied = false;
     ExternalRequestFieldsValidator changesApplied = null;
 
-    if (!adminRolesService.isAccountAdmin(user) && !adminRolesService.isRoleAdmin(user.getUserId())) {
+    if (!adminRolesService.isAccountAdmin(user) && !adminRolesService.isRoleAdmin(user.getId())) {
       EcompPortalUtils.setBadPermissions(user, response, "putAppWithUserRoleStateForUser");
     } else if (newAppRolesForUser == null) {
       logger.error(EELFLoggerDelegate.errorLogger,
@@ -540,7 +534,7 @@ public class UserRolesController {
   }
 
 
-  private Comparator<EPUserAppCatalogRoles> getUserAppCatalogRolesComparator =
+  private final Comparator<EPUserAppCatalogRoles> getUserAppCatalogRolesComparator =
       Comparator.comparing(EPUserAppCatalogRoles::getRoleName);
 
   @RequestMapping(value = "/portalApi/externalRequestAccessSystem", method = RequestMethod.GET,
@@ -567,7 +561,7 @@ public class UserRolesController {
 
     boolean isSuperAdmin = false;
     try {
-      isSuperAdmin = adminRolesService.isSuperAdmin(user.getOrgUserId());
+      isSuperAdmin = adminRolesService.isSuperAdmin(user.getLoginId());
     } catch (Exception e) {
       logger.error(EELFLoggerDelegate.errorLogger, "checkIfUserIsSuperAdmin failed: " + e.getMessage());
     }

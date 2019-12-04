@@ -47,12 +47,15 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.Valid;
 import javax.validation.constraints.Digits;
@@ -108,6 +111,7 @@ CREATE TABLE `cr_report_file_history` (
 public class CrReportFileHistory implements Serializable {
        @Id
        @Column(name = "hist_id", nullable = false, length = 11)
+       @GeneratedValue(strategy = GenerationType.AUTO)
        @Digits(integer = 11, fraction = 0)
        private Long histId;
        @Column(name = "sched_user_id", nullable = false)
@@ -122,7 +126,7 @@ public class CrReportFileHistory implements Serializable {
        @Digits(integer = 11, fraction = 0)
        @NotNull
        private Long userId;
-       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
        @JoinColumn(name = "rep_id")
        @Valid
        private CrReport repId;
@@ -133,7 +137,7 @@ public class CrReportFileHistory implements Serializable {
        @Size(max = 50)
        @SafeHtml
        private String recurrence;
-       @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+       @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
        @JoinColumn(name = "file_type_id")
        @Valid
        private CrLuFileType fileTypeId;
@@ -170,11 +174,11 @@ public class CrReportFileHistory implements Serializable {
        @Digits(integer = 38, fraction = 0)
        private Long deletedBy;
 
-       @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+       @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
        @JoinTable(
                name = "cr_hist_user_map",
                joinColumns = {@JoinColumn(name = "hist_id", referencedColumnName = "hist_id")},
-               inverseJoinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "user_id")}
+               inverseJoinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id", columnDefinition = "bigint not null")}
        )
        private Set<FnUser> fnUserList;
 }

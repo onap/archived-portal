@@ -54,6 +54,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.Valid;
 import javax.validation.constraints.Digits;
@@ -99,16 +100,17 @@ CREATE TABLE `ep_user_roles_request_det` (
 public class EpUserRolesRequestDet implements Serializable {
 
        @Id
-       @GeneratedValue(strategy = GenerationType.AUTO)
+
+  @GeneratedValue(strategy = GenerationType.AUTO)
        @Column(name = "id", length = 11, nullable = false, columnDefinition = "int(11) AUTO_INCREMENT")
        @Digits(integer = 11, fraction = 0)
        private Long id;
-       @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+       @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
        @JoinColumn(name = "req_id", columnDefinition = "int(11) default null")
        @Valid
        private EpUserRolesRequest reqId;
-       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-       @JoinColumn(name = "requested_role_id", nullable = false)
+       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+       @JoinColumn(name = "requested_role_id", nullable = false, columnDefinition = "bigint")
        @NotNull
        @Valid
        private FnRole requestedRoleId;

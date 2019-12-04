@@ -48,6 +48,7 @@ import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
+import org.onap.portal.dao.fn.FnLanguageDao;
 import org.onap.portal.domain.db.fn.FnLanguage;
 import org.onap.portal.domain.db.fn.FnLuTimezone;
 import org.onap.portal.domain.db.fn.FnUser;
@@ -70,12 +71,12 @@ class FnUserServiceTest {
        private FnLuTimezoneService fnLuTimezoneService;
        @Autowired
        private FnLanguageService fnLanguageService;
+       @Autowired
+       private FnLanguageDao fnLanguageDao;
 
        @Test
        void saveUser(){
               //Given
-              //FnLuTimezone fnLuTimezone = fnLuTimezoneService.getById(10L).get();
-              FnLanguage language = fnLanguageService.findById(1L).get();
 
               FnUser expected = FnUser.builder().build();
               expected.setFirstName("Demo");
@@ -93,17 +94,16 @@ class FnUserServiceTest {
               expected.setStateCd("NJ");
               expected.setIsSystemUser(true);
               expected.setCountryCd("US");
-              expected.setLanguageId(language);
+              expected.setLanguageId(fnLanguageService.findById(1L).orElse(new FnLanguage()));
               expected.setGuest(false);
-
-              //fnLuTimezone.getFnUsers().add(expected);
-              language.getFnUsers().add(expected);
+              FnLanguage language = fnLanguageDao.getByLanguageAlias("EN");
+              expected.setLanguageId(language);
 
               //When
               fnUserService.saveFnUser(expected);
-              FnUser actual = fnUserService.getUser(expected.getUserId()).get();
+              FnUser actual = fnUserService.getUser(expected.getId()).get();
               //Then
-              assertEquals(expected.getUserId(), actual.getUserId());
+              assertEquals(expected.getId(), actual.getId());
               assertEquals(expected.getLoginPwd(), actual.getLoginPwd());
               //Clean up
               fnUserService.deleteUser(expected);
@@ -111,22 +111,16 @@ class FnUserServiceTest {
 
        @Test
        void getUser() {
-              FnUser actual = fnUserService.getUser(1L).get();
-
+              FnUser actual = fnUserService.loadUserByUsername("demo");
 
               FnUser expected = FnUser.builder().build();
-              expected.setUserId(1L);
               expected.setFirstName("Demo");
               expected.setLastName("User");
               expected.setEmail("demo@openecomp.org");
               expected.setOrgUserId("demo");
               expected.setLoginId("demo");
               expected.setLoginPwd("demo123");
-              expected.setLastLoginDate(LocalDateTime.parse("2019-08-08T12:18:17"));
               expected.setActiveYn(true);
-              expected.setCreatedDate(LocalDateTime.parse("2016-10-14T21:00"));
-              expected.setModifiedId(actual);
-              expected.setModifiedDate(LocalDateTime.parse("2019-08-08T12:18:17"));
               expected.setIsInternalYn(false);
               expected.setStateCd("NJ");
               expected.setCountryCd("US");
@@ -134,9 +128,6 @@ class FnUserServiceTest {
               expected.setLanguageId(fnLanguageService.findById(1L).orElse(new FnLanguage()));
 
 
-              assertEquals(expected.getUserId(), actual.getUserId());
-              assertEquals(expected.getOrgId(), actual.getOrgId());
-              assertEquals(expected.getManagerId(), actual.getManagerId());
               assertEquals(expected.getFirstName(), actual.getFirstName());
               assertEquals(expected.getMiddleName(), actual.getMiddleName());
               assertEquals(expected.getLastName(), actual.getLastName());
@@ -151,11 +142,7 @@ class FnUserServiceTest {
               assertEquals(expected.getOrg_code(), actual.getOrg_code());
               assertEquals(expected.getLoginId(), actual.getLoginId());
               assertEquals(expected.getLoginPwd(), actual.getLoginPwd());
-              assertEquals(expected.getLastLoginDate(), actual.getLastLoginDate());
               assertEquals(expected.getActiveYn(), actual.getActiveYn());
-              assertEquals(expected.getCreatedId(), actual.getCreatedId());
-              assertEquals(expected.getCreatedDate(), actual.getCreatedDate());
-              assertEquals(expected.getModifiedDate(), actual.getModifiedDate());
               assertEquals(expected.getIsInternalYn(), actual.getIsInternalYn());
               assertEquals(expected.getAddressLine1(), actual.getAddressLine1());
               assertEquals(expected.getAddressLine2(), actual.getAddressLine2());
@@ -168,14 +155,11 @@ class FnUserServiceTest {
               assertEquals(expected.getCompany(), actual.getCompany());
               assertEquals(expected.getDepartmentName(), actual.getDepartmentName());
               assertEquals(expected.getJobTitle(), actual.getJobTitle());
-              assertEquals(expected.getTimezone().getTimezoneId(), actual.getTimezone().getTimezoneId());
               assertEquals(expected.getDepartment(), actual.getDepartment());
               assertEquals(expected.getBusinessUnit(), actual.getBusinessUnit());
-              assertEquals(expected.getBusinessUnitName(), actual.getBusinessUnitName());
               assertEquals(expected.getCost_center(), actual.getCost_center());
               assertEquals(expected.getFinLocCode(), actual.getFinLocCode());
               assertEquals(expected.getSiloStatus(), actual.getSiloStatus());
-              assertEquals(expected.getLanguageId(), actual.getLanguageId());
        }
 
        @Test

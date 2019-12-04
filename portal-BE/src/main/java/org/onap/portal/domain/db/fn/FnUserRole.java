@@ -58,6 +58,7 @@ import javax.persistence.NamedNativeQuery;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.SqlResultSetMapping;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
@@ -89,19 +90,19 @@ CREATE TABLE `fn_user_role` (
 @NamedNativeQueries({
     @NamedNativeQuery(
         name = "FnUserRole.retrieveUserRoleOnUserIdAndRoleIdAndAppId",
-        query = "FROM FnUserRole where user_id= :userId"
+        query = "FROM FnUserRole where userId= :userId"
             + " and role_id= :roleId"
             + " and app_id= :appId"),
     @NamedNativeQuery(
         name = "FnUserRole.retrieveCachedAppRolesForUser",
-        query = "FROM FnUserRole where user_id= :userId"
-            + " and user_id= :userId"
+        query = "FROM FnUserRole where userId= :userId"
+            + " and userId= :userId"
             + " and app_id= :appId"),
     @NamedNativeQuery(
         name = "FnUserRole.isSuperAdmin",
         query = "SELECT"
-            + "  user.USER_ID as userId,"
-            + "  user.org_user_id as orgUserId,"
+            + "  userId.id as userId,"
+            + "  userId.org_user_id as orgUserId,"
             + "  userrole.ROLE_ID as roleId,"
             + "  userrole.APP_ID as appId"
             + " FROM"
@@ -134,24 +135,21 @@ CREATE TABLE `fn_user_role` (
 @NamedQueries({
     @NamedQuery(
         name = "FnUserRole.getAdminUserRoles",
-        query = "FROM FnUserRole fn "
-            + " WHERE  fn.userId.userId = :userId "
-            + " AND fn.roleId.roleId = :roleId "
-            + " AND fn.appId.appId = :appId"),
-    @NamedQuery(
-        name = "FnUserRole.getUserRolesForRoleIdAndAppId",
-        query = "FROM"
-            + "  FnUserRole userrole"
-            + " WHERE"
-            + "  userrole.roleId.roleId = :roleId"
-            + "  AND userrole.appId.appId = :appId"),
+        query = "FROM FnUserRole "
+            + " WHERE  userId.id = :userId "
+            + " AND roleId.id = :roleId "
+            + " AND fnAppId.id = :appId"),
     @NamedQuery(
         name = "FnUserRole.retrieveByAppIdAndUserId",
-        query = "from FnUserRole where appId.appId =:appId and userId.userId =:userId"
+        query = "from FnUserRole where fnAppId.id =:appId and userId.id =:userId"
     ),
     @NamedQuery(
         name = "FnUserRole.retrieveByAppIdAndRoleId",
-        query = "from FnUserRole where appId.appId =:appId and roleId.roleId =:roleId"
+        query = "from FnUserRole where fnAppId.id =:appId and roleId.id =:roleId"
+    ),
+    @NamedQuery(
+        name = "FnUserRole.retrieveByUserIdAndRoleId",
+        query = "from FnUserRole where userId.id =:userId and roleId.id =:roleId"
     )
 })
 
@@ -160,9 +158,9 @@ CREATE TABLE `fn_user_role` (
     indexes = {
         @Index(name = "fn_user_role_role_id", columnList = "role_id"),
         @Index(name = "fn_user_role_user_id", columnList = "user_id"),
-        @Index(name = "fk_fn_user__ref_178_fn_app_idx", columnList = "app_id")},
+        @Index(name = "fk_fn_user__ref_178_fn_app_idx", columnList = "fn_App_Id")},
     uniqueConstraints = {
-        @UniqueConstraint(name = "fn_user_role_id", columnNames = {"role_id", "user_id", "app_id"})
+        @UniqueConstraint(name = "fn_user_role_id", columnNames = {"role_id", "user_id", "fn_App_Id"})
     })
 @NoArgsConstructor
 @AllArgsConstructor
@@ -171,24 +169,24 @@ CREATE TABLE `fn_user_role` (
 @Setter
 @Entity
 public class FnUserRole implements Serializable {
-
   @Id
+  @SequenceGenerator(name = "portal_generator", sequenceName = "portal_generator", initialValue = 1000)
   @GeneratedValue(strategy = GenerationType.AUTO)
   @Column(name = "id", columnDefinition = "int(11) auto_increment")
   private Long id;
-  @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-  @JoinColumn(name = "user_id")
+  @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+  @JoinColumn(name = "user_id", columnDefinition = "bigint")
   @Valid
   private FnUser userId;
-  @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-  @JoinColumn(name = "role_id")
+  @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+  @JoinColumn(name = "role_id", columnDefinition = "bigint")
   @Valid
   private FnRole roleId;
   @Column(name = "priority", length = 4, columnDefinition = "decimal(4,0) DEFAULT NULL")
   @Digits(integer = 4, fraction = 0)
   private Long priority;
-  @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-  @JoinColumn(name = "app_Id")
+  @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
+  @JoinColumn(name = "fn_App_Id", columnDefinition = "bigint")
   @Valid
-  private FnApp appId;
+  private FnApp fnAppId;
 }

@@ -41,15 +41,12 @@
 package org.onap.portal.domain.db.fn;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.Embeddable;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -59,6 +56,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -71,7 +69,7 @@ import org.onap.portal.domain.db.ep.EpMicroservice;
 import org.onap.portal.domain.db.ep.EpUserRolesRequest;
 import org.onap.portal.domain.db.ep.EpWebAnalyticsSource;
 import org.onap.portal.domain.db.ep.EpWidgetCatalogRole;
-import org.onap.portal.domain.dto.DomainVo;
+import org.onap.portal.domain.db.DomainVo;
 
 /*
 CREATE TABLE `fn_app` (
@@ -107,7 +105,10 @@ CREATE TABLE `fn_app` (
         query = "from FnApp where authCentral = 'Y' and open = 'N' and authNamespace is not null"),
     @NamedQuery(
         name = "FnApp.getByUebKey",
-        query = "from FnApp where uebKey = :uebKey"
+        query = "from FnApp where uebKey = :uebKey"),
+    @NamedQuery(
+        name = "FnApp.getCentralizedApps",
+        query = "from FnApp where authCentral = 'Y' and open = 'N' and authNamespace is not null"
     )
 })
 
@@ -115,22 +116,16 @@ CREATE TABLE `fn_app` (
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-@Embeddable
 @Getter
 @Setter
 @Entity
 public class FnApp extends DomainVo implements Serializable {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
-  @Column(name = "app_Id", length = 11, nullable = false)
-  @Digits(integer = 11, fraction = 0)
-  private Long appId;
   @Column(name = "app_name", length = 100, nullable = false, columnDefinition = "varchar(100) not null default '?'")
   @Size(max = 100)
   @SafeHtml
   @NotNull
-  private String appName;
+  private String appName = "?";
   @Column(name = "app_image_url", length = 256)
   @Size(max = 256)
   @SafeHtml
@@ -161,12 +156,11 @@ public class FnApp extends DomainVo implements Serializable {
   @Size(max = 50)
   @SafeHtml
   @NotNull
-  private String ml_app_name;
+  private String mlAppName = "?";
   @Column(name = "ml_app_admin_id", length = 7, nullable = false, columnDefinition = "varchar(7) not null default '?'")
   @Size(max = 7)
   @SafeHtml
-  @NotNull
-  private String mlAppAdminId;
+  private String mlAppAdminId = "?";
   @Column(name = "mots_id", length = 11)
   @Digits(integer = 11, fraction = 0)
   private Long motsId;
@@ -174,17 +168,14 @@ public class FnApp extends DomainVo implements Serializable {
   @Size(max = 256)
   @SafeHtml
   @NotNull
-  private String appPassword;
-  @Column(name = "_open", length = 1, columnDefinition = "char(1) default 'N'")
-  private Boolean open;
-  @Column(name = "_enabled", length = 1, columnDefinition = "char(1) default 'N'")
-  private Boolean enabled;
-  @Column(name = "active_yn", length = 1, columnDefinition = "char(1) default 'Y'")
-  @Pattern(regexp = "[YNyn]")
-  @Size(max = 1)
+  private String appPassword = "?";
+  @Column(name = "open")
+  private Boolean open = false;
+  @Column(name = "enabled")
+  private Boolean enabled = false;
+  @Column(name = "active_yn")
   @NotNull
-  @SafeHtml
-  private String activeYn;
+  private Boolean activeYn = true;
   @Column(name = "_thumbnail", columnDefinition = "mediumblob null default null")
   private byte[] thumbnail;
   @Column(name = "app_username", length = 50)
@@ -205,8 +196,8 @@ public class FnApp extends DomainVo implements Serializable {
   private String uebTopicName;
   @Column(name = "app_type", length = 11, columnDefinition = "int(11) not null default 1")
   @Digits(integer = 11, fraction = 0)
-  private Long appType;
-  @Column(name = "auth_central", length = 1, columnDefinition = "char(1) not null default 'N'", nullable = false)
+  private Long appType = 1L;
+  @Column(name = "auth_central", length = 1, nullable = false)
   private Boolean authCentral;
   @Column(name = "auth_namespace", length = 100)
   @Size(max = 100)
@@ -215,68 +206,130 @@ public class FnApp extends DomainVo implements Serializable {
   @OneToMany(
       targetEntity = FnMenuFunctionalRoles.class,
       mappedBy = "appId",
-      cascade = CascadeType.ALL,
+      cascade = CascadeType.MERGE,
       fetch = FetchType.LAZY
   )
   private Set<FnMenuFunctionalRoles> fnMenuFunctionalRoles;
   @OneToMany(
       targetEntity = EpUserRolesRequest.class,
       mappedBy = "appId",
-      cascade = CascadeType.ALL,
+      cascade = CascadeType.MERGE,
       fetch = FetchType.LAZY
   )
   private Set<EpUserRolesRequest> epUserRolesRequests;
   @OneToMany(
       targetEntity = EpAppFunction.class,
       mappedBy = "appId",
-      cascade = CascadeType.ALL,
+      cascade = CascadeType.MERGE,
       fetch = FetchType.LAZY
   )
   private Set<EpAppFunction> epAppFunctions;
   @OneToMany(
       targetEntity = EpAppRoleFunction.class,
       mappedBy = "appId",
-      cascade = CascadeType.ALL,
+      cascade = CascadeType.MERGE,
       fetch = FetchType.LAZY
   )
   private Set<EpAppRoleFunction> epAppRoleFunctions;
   @OneToMany(
       targetEntity = FnUserRole.class,
-      mappedBy = "appId",
-      cascade = CascadeType.ALL,
+      mappedBy = "fnAppId",
+      cascade = CascadeType.MERGE,
       fetch = FetchType.LAZY
   )
   private Set<FnUserRole> fnUserRoles;
   @OneToMany(
       targetEntity = EpWebAnalyticsSource.class,
       mappedBy = "appId",
-      cascade = CascadeType.ALL,
+      cascade = CascadeType.MERGE,
       fetch = FetchType.LAZY
   )
   private Set<EpWebAnalyticsSource> epWebAnalyticsSources;
   @OneToMany(
       targetEntity = EpWidgetCatalogRole.class,
       mappedBy = "appId",
-      cascade = CascadeType.ALL,
+      cascade = CascadeType.MERGE,
       fetch = FetchType.LAZY
   )
   private Set<EpWidgetCatalogRole> epWidgetCatalogRoles;
   @OneToMany(
       targetEntity = EpMicroservice.class,
       mappedBy = "appId",
-      cascade = CascadeType.ALL,
+      cascade = CascadeType.MERGE,
       fetch = FetchType.LAZY
   )
   private Set<EpMicroservice> epMicroservices;
   @OneToMany(
       targetEntity = FnPersUserAppSel.class,
       mappedBy = "appId",
-      cascade = CascadeType.ALL,
+      cascade = CascadeType.MERGE,
       fetch = FetchType.LAZY
   )
   private Set<FnPersUserAppSel> fnPersUserAppSels;
 
   public Boolean isRestrictedApp() {
     return (this.appType == 2);
+  }
+
+  @Builder
+  public FnApp(@Digits(integer = 11, fraction = 0) Long id, LocalDateTime created,
+      LocalDateTime modified, Long rowNum, Serializable auditUserId,
+      DomainVo createdId, DomainVo modifiedId, Set<DomainVo> fnUsersCreatedId,
+      Set<DomainVo> fnUsersModifiedId,
+      @Size(max = 100) @SafeHtml @NotNull String appName,
+      @Size(max = 256) @SafeHtml String appImageUrl,
+      @Size(max = 256) @SafeHtml String appDescription,
+      @Size(max = 4096) @SafeHtml String appNotes,
+      @Size(max = 256) @SafeHtml @URL String appUrl,
+      @Size(max = 256) @SafeHtml String appAlternateUrl,
+      @Size(max = 2000) @SafeHtml String appRestEndpoint,
+      @Size(max = 50) @SafeHtml @NotNull String mlAppName,
+      @Size(max = 7) @SafeHtml @NotNull String mlAppAdminId,
+      @Digits(integer = 11, fraction = 0) Long motsId,
+      @Size(max = 256) @SafeHtml @NotNull String appPassword, Boolean open, Boolean enabled, Boolean activeYn, byte[] thumbnail,
+      @Size(max = 50) @SafeHtml String appUsername,
+      @Size(max = 256) @SafeHtml String uebKey,
+      @Size(max = 256) @SafeHtml String uebSecret,
+      @Size(max = 256) @SafeHtml String uebTopicName,
+      @Digits(integer = 11, fraction = 0) Long appType, Boolean authCentral,
+      @Size(max = 100) @SafeHtml String authNamespace,
+      Set<FnMenuFunctionalRoles> fnMenuFunctionalRoles,
+      Set<EpUserRolesRequest> epUserRolesRequests,
+      Set<EpAppFunction> epAppFunctions, Set<EpAppRoleFunction> epAppRoleFunctions,
+      Set<FnUserRole> fnUserRoles, Set<EpWebAnalyticsSource> epWebAnalyticsSources,
+      Set<EpWidgetCatalogRole> epWidgetCatalogRoles,
+      Set<EpMicroservice> epMicroservices, Set<FnPersUserAppSel> fnPersUserAppSels) {
+    super(id, created, modified, rowNum, auditUserId, createdId, modifiedId, fnUsersCreatedId, fnUsersModifiedId);
+    this.appName = appName;
+    this.appImageUrl = appImageUrl;
+    this.appDescription = appDescription;
+    this.appNotes = appNotes;
+    this.appUrl = appUrl;
+    this.appAlternateUrl = appAlternateUrl;
+    this.appRestEndpoint = appRestEndpoint;
+    this.mlAppName = mlAppName;
+    this.mlAppAdminId = mlAppAdminId;
+    this.motsId = motsId;
+    this.appPassword = appPassword;
+    this.open = open;
+    this.enabled = enabled;
+    this.activeYn = activeYn;
+    this.thumbnail = thumbnail;
+    this.appUsername = appUsername;
+    this.uebKey = uebKey;
+    this.uebSecret = uebSecret;
+    this.uebTopicName = uebTopicName;
+    this.appType = appType;
+    this.authCentral = authCentral;
+    this.authNamespace = authNamespace;
+    this.fnMenuFunctionalRoles = fnMenuFunctionalRoles;
+    this.epUserRolesRequests = epUserRolesRequests;
+    this.epAppFunctions = epAppFunctions;
+    this.epAppRoleFunctions = epAppRoleFunctions;
+    this.fnUserRoles = fnUserRoles;
+    this.epWebAnalyticsSources = epWebAnalyticsSources;
+    this.epWidgetCatalogRoles = epWidgetCatalogRoles;
+    this.epMicroservices = epMicroservices;
+    this.fnPersUserAppSels = fnPersUserAppSels;
   }
 }

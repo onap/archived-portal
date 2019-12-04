@@ -46,6 +46,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.Digits;
@@ -85,7 +86,8 @@ CREATE TABLE `fn_workflow` (
 @Entity
 public class FnWorkflow implements Serializable {
        @Id
-       @GeneratedValue(strategy = GenerationType.AUTO)
+
+  @GeneratedValue(strategy = GenerationType.AUTO)
        @Column(name = "id", nullable = false, length = 9, columnDefinition = "mediumint(9) AUTO_INCREMENT")
        @Digits(integer = 9, fraction = 0)
        private Integer id;

@@ -44,7 +44,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+import java.util.Objects;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
@@ -57,7 +57,6 @@ import org.onap.portal.domain.db.fn.FnRole;
 import org.onap.portal.domain.db.fn.FnRoleFunction;
 import org.onap.portal.domain.dto.transport.CentralV2Role;
 import org.onap.portal.domain.dto.transport.GlobalRoleWithApplicationRoleFunction;
-import org.onap.portal.domain.dto.transport.Role;
 import org.onap.portal.exception.RoleFunctionException;
 import org.onap.portal.logging.logic.EPLogUtil;
 import org.onap.portal.service.ep.EpAppFunctionService;
@@ -122,8 +121,8 @@ public class ExternalAccessRolesService {
       + "  and c.appId.appId = :appId"
       + "  and e.appId.appId = c.appId.appId";
 
-  private static EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(ExternalAccessRolesService.class);
-  private RestTemplate template = new RestTemplate();
+  private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(ExternalAccessRolesService.class);
+  private final RestTemplate template = new RestTemplate();
 
   private final FnRoleService fnRoleService;
   private final FnAppService fnAppService;
@@ -224,14 +223,14 @@ public class ExternalAccessRolesService {
       CentralV2Role cenRole;
       if (role.getAppRoleId() == null) {
         cenRole = CentralV2Role.builder().id(role.getId()).created(role.getCreated())
-            .modified(role.getModified()).createdId(role.getCreatedId().getUserId())
-            .modifiedId(role.getModifiedId().getUserId()).rowNum(role.getRowNum()).name(role.getRoleName())
+            .modified(role.getModified())
+.rowNum(role.getRowNum()).name(role.getRoleName())
             .active(role.getActiveYn()).priority(role.getPriority()).roleFunctions(roleFunctionSet)
             .childRoles(childRoles).parentRoles(parentRoles).build();
       } else {
         cenRole = CentralV2Role.builder().id(role.getAppRoleId())
-            .created(role.getCreated()).modified(role.getModified()).createdId(role.getCreatedId().getUserId())
-            .modifiedId(role.getModifiedId().getUserId()).rowNum(role.getRowNum()).name(role.getRoleName())
+            .created(role.getCreated()).modified(role.getModified())
+.rowNum(role.getRowNum()).name(role.getRoleName())
             .active(role.getActiveYn()).priority(role.getPriority()).roleFunctions(roleFunctionSet)
             .childRoles(childRoles).parentRoles(parentRoles).build();
       }
@@ -251,7 +250,7 @@ public class ExternalAccessRolesService {
       List<FnApp> app = fnAppService.getByUebKey(uebkey);
       List<FnRole> appRolesList = fnRoleService.getAppRoles(app.get(0).getId());
       roleList = createCentralRoleObject(app, appRolesList, roleList);
-      if (app.get(0).getId() != PortalConstants.PORTAL_APP_ID) {
+      if (!Objects.equals(app.get(0).getId(), PortalConstants.PORTAL_APP_ID)) {
         List<CentralV2Role> globalRoleList = getGlobalRolesOfApplication(app.get(0).getId());
         List<FnRole> globalRolesList = fnRoleService.getGlobalRolesOfPortal();
         List<CentralV2Role> portalsGlobalRolesFinlaList = new ArrayList<>();
@@ -285,8 +284,7 @@ public class ExternalAccessRolesService {
 
   private CentralV2Role convertRoleToCentralV2Role(FnRole role) {
     return CentralV2Role.builder().id(role.getId()).created(role.getCreated())
-        .modified(role.getModified()).createdId(role.getCreatedId().getUserId())
-        .modifiedId(role.getModifiedId().getUserId())
+        .modified(role.getModified())
         .rowNum(role.getRowNum()).name(role.getRoleName()).active(role.getActiveYn())
         .priority(role.getPriority()).roleFunctions(new TreeSet<>()).childRoles(new TreeSet<>())
         .parentRoles(new TreeSet<>()).build();
@@ -357,15 +355,15 @@ public class ExternalAccessRolesService {
       type = EcompPortalUtils.getFunctionType(role.getFunctionCd());
       action = EcompPortalUtils.getFunctionAction(role.getFunctionCd());
       cenRoleFun = FnRoleFunction.builder().build();
-      FnRole fnRole = FnRole.builder().build();
+      FnRole fnRole = new FnRole();
       FnFunction fnFunction = FnFunction.builder().functionCd(instance).name(role.getFunctionName()).type(type).action(action).build();
-      cenRoleFun.setRoleId(fnRole);
+      cenRoleFun.setRole(fnRole);
       cenRoleFun.setFunctionCd(fnFunction);
     } else {
       type = getFunctionCodeType(role.getFunctionCd());
       action = getFunctionCodeAction(role.getFunctionCd());
       FnFunction fnFunction = FnFunction.builder().functionCd(role.getFunctionCd()).name(role.getFunctionName()).type(type).action(action).build();
-      cenRoleFun.setRoleId(new FnRole());
+      cenRoleFun.setRole(new FnRole());
       cenRoleFun.setFunctionCd(fnFunction);
     }
     return cenRoleFun;

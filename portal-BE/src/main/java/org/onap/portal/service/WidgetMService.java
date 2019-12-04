@@ -47,7 +47,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class WidgetMService {
 
-       private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(WidgetMService.class);
+       private final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(WidgetMService.class);
 
        public String getServiceLocation(String service, String fallbackPortOnLocalHost) {
               logger.debug(EELFLoggerDelegate.debugLogger, "Requested Service: " + service);

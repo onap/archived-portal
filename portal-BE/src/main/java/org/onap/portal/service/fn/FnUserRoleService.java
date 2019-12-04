@@ -120,25 +120,25 @@ public class FnUserRoleService {
   private static final String USER_APP_CATALOG_ROLES =
       "select\n"
           + "  A.reqId as reqId,\n"
-          + "  B.requestedRoleId.roleId as requestedRoleId,\n"
+          + "  B.requestedRoleId.id as requestedRoleId,\n"
           + "  A.requestStatus as requestStatus,\n"
-          + "  A.appId.appId as appId,\n"
+          + "  A.appId.id as appId,\n"
           + "  (\n"
           + "    select\n"
           + "      roleName\n"
           + "    from\n"
           + "      FnRole\n"
           + "    where\n"
-          + "      roleId = B.requestedRoleId.roleId\n"
+          + "      id = B.requestedRoleId.id\n"
           + "  ) as roleName\n"
           + "from\n"
           + "  EpUserRolesRequest A\n"
           + "  left join EpUserRolesRequestDet B on A.reqId = B.reqId.reqId\n"
           + "where\n"
-          + "  A.userId.userId = :userid\n"
+          + "  A.userId.id = :userid\n"
           + "  and A.appId IN (\n"
           + "    select\n"
-          + "      appId\n"
+          + "      id\n"
           + "    from\n"
           + "      FnApp\n"
           + "    where\n"
@@ -146,13 +146,12 @@ public class FnUserRoleService {
           + "  )\n"
           + "  and A.requestStatus = 'P'\n";
 
-  private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(FnUserRoleService.class);
+  private final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(FnUserRoleService.class);
 
   private final FnUserRoleDao fnUserRoleDao;
   private final FnAppService fnAppService;
   private final FnRoleService fnRoleService;
   private final FnUserService fnUserService;
-  private final EpAppFunctionService epAppFunctionService;
   private final EpUserRolesRequestService epUserRolesRequestService;
   private final EpUserRolesRequestDetService epUserRolesRequestDetService;
   private final EntityManager entityManager;
@@ -164,7 +163,6 @@ public class FnUserRoleService {
       FnAppService fnAppService,
       FnRoleService fnRoleService,
       FnUserService fnUserService,
-      EpAppFunctionService epAppFunctionService,
       EpUserRolesRequestService epUserRolesRequestService,
       EpUserRolesRequestDetService epUserRolesRequestDetService,
       EntityManager entityManager,
@@ -173,29 +171,28 @@ public class FnUserRoleService {
     this.fnAppService = fnAppService;
     this.fnRoleService = fnRoleService;
     this.fnUserService = fnUserService;
-    this.epAppFunctionService = epAppFunctionService;
     this.epUserRolesRequestService = epUserRolesRequestService;
     this.epUserRolesRequestDetService = epUserRolesRequestDetService;
     this.entityManager = entityManager;
     this.applicationsRestClientService = applicationsRestClientService;
   }
 
-  public List<FnUserRole> retrieveByAppIdAndRoleId(final Long appId, final Long roleId) {
-    return Optional.of(fnUserRoleDao.retrieveByAppIdAndRoleId(appId, roleId)).orElse(new ArrayList<>());
-  }
-
   public List<FnUserRole> getAdminUserRoles(final Long userId, final Long roleId, final Long appId) {
     return fnUserRoleDao.getAdminUserRoles(userId, roleId, appId).orElse(new ArrayList<>());
   }
 
-  public boolean isSuperAdmin(final String orgUserId, final Long roleId, final Long appId) {
+  public boolean isSuperAdmin(final String loginId, final Long roleId, final Long appId) {
     List<FnUserRole> roles = getUserRolesForRoleIdAndAppId(roleId, appId).stream()
-        .filter(role -> role.getUserId().getOrgUserId().equals(orgUserId)).collect(Collectors.toList());
+        .filter(role -> role.getUserId().getOrgUserId().equals(loginId)).collect(Collectors.toList());
     return !roles.isEmpty();
   }
 
-  private List<FnUserRole> getUserRolesForRoleIdAndAppId(final Long roleId, final Long appId) {
-    return Optional.of(fnUserRoleDao.getUserRolesForRoleIdAndAppId(roleId, appId)).orElse(new ArrayList<>());
+  public List<FnUserRole> getUserRolesForRoleIdAndAppId(final Long roleId, final Long appId) {
+    return Optional.of(fnUserRoleDao.retrieveByAppIdAndRoleId(appId, roleId)).orElse(new ArrayList<>());
+  }
+
+  public List<FnUserRole> retrieveByUserIdAndRoleId(final Long userId, final Long roleId){
+    return Optional.of(fnUserRoleDao.retrieveByUserIdAndRoleId(userId, roleId)).orElse(new ArrayList<>());
   }
 
   public FnUserRole saveOne(final FnUserRole fnUserRole) {
@@ -216,7 +213,7 @@ public class FnUserRoleService {
 
   public List<EPUserAppCatalogRoles> getUserAppCatalogRoles(FnUser userid, String appName) {
     List<Tuple> tuples = entityManager.createQuery(USER_APP_CATALOG_ROLES, Tuple.class)
-        .setParameter("userid", userid.getUserId())
+        .setParameter("userid", userid.getId())
         .setParameter("appName", appName)
         .getResultList();
     return Optional.of(tuples.stream().map(this::tupleToEPUserAppCatalogRoles).collect(Collectors.toList()))
@@ -501,7 +498,7 @@ public class FnUserRoleService {
         if (ecompRole.getId().equals(PortalConstants.ACCOUNT_ADMIN_ROLE_ID) && !extRequestValue) {
           continue;
         }
-        RoleInAppForUser roleForUser = new RoleInAppForUser(ecompRole.getId(), ecompRole.getName());
+        RoleInAppForUser roleForUser = new RoleInAppForUser(ecompRole.getId(), ecompRole.getRoleName());
         roleForUser.setIsApplied(userAppRolesMap.contains(ecompRole.getId()));
         rolesInAppForUser.add(roleForUser);
         logger.debug(EELFLoggerDelegate.debugLogger, "In constructRolesInAppForUserGet() - rolesInAppForUser = {}",

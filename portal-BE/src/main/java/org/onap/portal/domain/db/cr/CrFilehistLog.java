@@ -43,7 +43,10 @@ package org.onap.portal.domain.db.cr;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.Size;
@@ -73,6 +76,8 @@ CREATE TABLE `cr_filehist_log` (
 @Entity
 public class CrFilehistLog {
        @Id
+
+  @GeneratedValue(strategy = GenerationType.AUTO)
        @Column(name = "schedule_id", length = 11, nullable = false)
        @Digits(integer = 11, fraction = 0)
        private Long scheduledId;

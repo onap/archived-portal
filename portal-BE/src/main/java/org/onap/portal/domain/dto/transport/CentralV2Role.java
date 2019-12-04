@@ -50,7 +50,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.onap.portal.domain.db.ep.EpAppFunction;
 import org.onap.portal.domain.db.fn.FnRoleFunction;
 
 @Getter

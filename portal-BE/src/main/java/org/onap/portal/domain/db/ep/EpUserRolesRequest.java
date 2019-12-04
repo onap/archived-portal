@@ -55,6 +55,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.Valid;
 import javax.validation.constraints.Digits;
@@ -68,7 +69,6 @@ import lombok.Setter;
 import org.hibernate.validator.constraints.SafeHtml;
 import org.onap.portal.domain.db.fn.FnApp;
 import org.onap.portal.domain.db.fn.FnUser;
-import org.onap.portal.domain.dto.ecomp.EPUserAppRolesRequestDetail;
 
 /*
 CREATE TABLE `ep_user_roles_request` (
@@ -89,7 +89,7 @@ CREATE TABLE `ep_user_roles_request` (
 @NamedQueries({
     @NamedQuery(
         name = "EpUserRolesRequest.userAppRolesRequestList",
-        query = "FROM EpUserRolesRequest where userId.userId =:userId and appId.appId =:appId and requestStatus = 'P'"
+        query = "FROM EpUserRolesRequest where userId.id =:userId and appId.id =:appId and requestStatus = 'P'"
     )
 })
 
@@ -101,17 +101,18 @@ CREATE TABLE `ep_user_roles_request` (
 @Entity
 public class EpUserRolesRequest implements Serializable {
        @Id
-       @GeneratedValue(strategy = GenerationType.AUTO)
+
+  @GeneratedValue(strategy = GenerationType.AUTO)
        @Column(name = "req_id", length = 11, nullable = false, columnDefinition = "int(11) AUTO_INCREMENT")
        @Digits(integer = 11, fraction = 0)
        private Long reqId;
-       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-       @JoinColumn(name = "user_id", nullable = false)
+       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+       @JoinColumn(name = "user_id", nullable = false, columnDefinition = "bigint")
        @NotNull
        @Valid
        private FnUser userId;
-       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-       @JoinColumn(name = "app_id", nullable = false)
+       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+       @JoinColumn(name = "app_id", nullable = false, columnDefinition = "bigint")
        @NotNull
        @Valid
        private FnApp appId;
@@ -129,7 +130,7 @@ public class EpUserRolesRequest implements Serializable {
        @OneToMany(
                targetEntity = EpUserRolesRequestDet.class,
                mappedBy = "reqId",
-               cascade = CascadeType.ALL,
+               cascade = CascadeType.MERGE,
                fetch = FetchType.LAZY
        )
        private Set<EpUserRolesRequestDet> epUserRolesRequestDets;

@@ -134,7 +134,7 @@ public class LanguageController {
               PortalRestResponse<String> response = new PortalRestResponse<>();
               try {
                      response.setMessage("SUCCESS");
-                     response.setResponse(languageService.save(principal, fnLanguage).toString());
+                     response.setResponse(languageService.save(fnLanguage).toString());
                      response.setStatus(PortalRestStatusEnum.OK);
               } catch (Exception e) {
                      LOGGER.error("Exception in saveLanguage", e);

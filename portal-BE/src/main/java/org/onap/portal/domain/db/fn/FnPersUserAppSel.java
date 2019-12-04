@@ -45,23 +45,20 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.Valid;
-import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.validator.constraints.SafeHtml;
-import org.onap.portal.domain.dto.DomainVo;
+import org.onap.portal.domain.db.DomainVo;
 
 /*
 CREATE TABLE `fn_pers_user_app_sel` (
@@ -83,22 +80,19 @@ CREATE TABLE `fn_pers_user_app_sel` (
 })
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Getter
 @Setter
 @Entity
 public class FnPersUserAppSel extends DomainVo implements Serializable {
-       @Id
-       @GeneratedValue(strategy = GenerationType.AUTO)
-       @Column(name = "id", length = 11, nullable = false, columnDefinition = "int(11) AUTO_INCREMENT")
-       @Digits(integer = 11, fraction = 0)
-       private Long id;
-       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-       @JoinColumn(name = "user_id", nullable = false)
+
+       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+       @JoinColumn(name = "user_id", nullable = false, columnDefinition = "bigint")
        @NotNull
        @Valid
        private FnUser userId;
-       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-       @JoinColumn(name = "app_id", nullable = false)
+       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+       @JoinColumn(name = "app_id", nullable = false, columnDefinition = "bigint")
        @Valid
        private FnApp appId;
        @Column(name = "status_cd", length = 1, nullable = false)
@@ -108,9 +102,9 @@ public class FnPersUserAppSel extends DomainVo implements Serializable {
        private String statusCd;
 
        public FnPersUserAppSel(final Long id, final Long userId, final Long appId, final String statusCode) {
-              super.id = id;
-              this.userId.setUserId(userId);
-              this.appId.setAppId(appId);
+              super.setId(id);
+              this.userId.setId(userId);
+              this.appId.setId(appId);
               this.statusCd = statusCode;
        }
 }

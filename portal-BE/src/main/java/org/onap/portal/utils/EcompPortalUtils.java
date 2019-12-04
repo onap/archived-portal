@@ -71,7 +71,7 @@ import org.springframework.http.MediaType;
 
 public class EcompPortalUtils {
 
-	private static EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(EcompPortalUtils.class);
+	private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(EcompPortalUtils.class);
 
 	private static final String FUNCTION_PIPE = "|";
 

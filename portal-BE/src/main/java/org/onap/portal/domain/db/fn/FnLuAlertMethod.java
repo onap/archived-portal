@@ -52,6 +52,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -68,6 +69,7 @@ CREATE TABLE `fn_lu_alert_method` (
 @Table(name = "fn_lu_alert_method")
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Getter
 @Setter
 @Entity
@@ -86,7 +88,7 @@ public class FnLuAlertMethod implements Serializable {
        @OneToMany(
                targetEntity = FnUser.class,
                mappedBy = "alertMethodCd",
-               cascade = CascadeType.ALL,
+               cascade = CascadeType.MERGE,
                fetch = FetchType.LAZY
        )
        private Set<FnUser> fnUsers;

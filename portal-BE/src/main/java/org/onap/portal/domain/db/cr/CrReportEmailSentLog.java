@@ -103,7 +103,7 @@ public class CrReportEmailSentLog implements Serializable {
        @SafeHtml
        @NotNull
        private String genKey;
-       @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+       @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
        @JoinColumn(name = "rep_id", nullable = false)
        @NotNull
        @Valid

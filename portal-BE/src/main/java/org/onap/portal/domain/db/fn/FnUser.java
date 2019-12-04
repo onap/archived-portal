@@ -53,9 +53,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
@@ -77,16 +74,13 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.validator.constraints.SafeHtml;
+import org.onap.portal.domain.db.DomainVo;
 import org.onap.portal.domain.db.cr.CrReportFileHistory;
 import org.onap.portal.domain.db.ep.EpPersUserWidgetPlacement;
 import org.onap.portal.domain.db.ep.EpPersUserWidgetSel;
 import org.onap.portal.domain.db.ep.EpUserNotification;
 import org.onap.portal.domain.db.ep.EpUserRolesRequest;
 import org.onap.portal.domain.db.ep.EpWidgetCatalogParameter;
-import org.onap.portal.domain.dto.DomainVo;
-import org.onap.portalsdk.core.domain.App;
-import org.onap.portalsdk.core.domain.Role;
-import org.onap.portalsdk.core.domain.UserApp;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -161,6 +155,9 @@ CREATE TABLE `fn_user` (
         name = "FnUser.getUserWithOrgUserId",
         query = "FROM FnUser WHERE orgUserId = :orgId"),
     @NamedQuery(
+        name = "FnUser.findByLoginId",
+        query = "FROM FnUser WHERE loginId = :loginId"),
+    @NamedQuery(
         name = "FnUser.getActiveUsers",
         query = "FROM FnUser WHERE activeYn = 'Y'"),
     @NamedQuery(
@@ -168,11 +165,12 @@ CREATE TABLE `fn_user` (
         query = "FROM FnUser WHERE orgUserId IN :orgIds"
     )
 })
+
 @Table(name = "fn_user", indexes = {
     @Index(name = "fn_user_address_id", columnList = "address_id"),
     @Index(name = "fn_user_alert_method_cd", columnList = "alert_method_cd"),
     @Index(name = "fn_user_org_id", columnList = "org_id"),
-    @Index(name = "fk_fn_user_ref_197_fn_user", columnList = "manager_id"),
+//    @Index(name = "fk_fn_user_ref_197_fn_user", columnList = "manager_id"),
     @Index(name = "fk_fn_user_ref_198_fn_user", columnList = "created_id"),
     @Index(name = "fk_fn_user_ref_199_fn_user", columnList = "modified_id"),
     @Index(name = "fk_timezone", columnList = "timezone")
@@ -186,7 +184,6 @@ CREATE TABLE `fn_user` (
 @Getter
 @Setter
 @Entity
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @DynamicUpdate
@@ -194,16 +191,12 @@ public class FnUser extends DomainVo implements UserDetails, Serializable {
 
   private static EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(FnUser.class);
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "user_id", nullable = false)
-  private Long userId;
-  @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+/*  @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
+  @JoinColumn(name = "manager_id")
+  private FnUser managerId;*/
+  @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
   @JoinColumn(name = "org_id")
   private FnOrg orgId;
-  @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-  @JoinColumn(name = "manager_id")
-  private FnUser managerId;
   @Column(name = "first_name", length = 50)
   @Size(max = 50)
   @SafeHtml
@@ -236,7 +229,7 @@ public class FnUser extends DomainVo implements UserDetails, Serializable {
   @Column(name = "address_id")
   @Digits(integer = 11, fraction = 0)
   private Long addressId;
-  @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
   @JoinColumn(name = "alert_method_cd")
   private FnLuAlertMethod alertMethodCd;
   @Column(name = "hrid", length = 20)
@@ -264,22 +257,16 @@ public class FnUser extends DomainVo implements UserDetails, Serializable {
   protected LocalDateTime lastLoginDate;
   @Column(name = "active_yn", nullable = false)
   private Boolean activeYn;
-  @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-  @JoinColumn(name = "created_id")
-  private FnUser createdId;
   @Column(name = "created_date", columnDefinition = "datetime DEFAULT current_timestamp()", nullable = false)
   @PastOrPresent
   protected LocalDateTime createdDate;
-  @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-  @JoinColumn(name = "modified_id")
-  private FnUser modifiedId;
   @Column(name = "modified_date", nullable = false, columnDefinition = "datetime default now()")
   @PastOrPresent
   protected LocalDateTime modifiedDate;
-  @Column(name = "is_internal_yn", nullable = false, columnDefinition = "bit DEFAULT 0")
-  private Boolean isInternalYn;
-  @Column(name = "is_system_user", nullable = false, columnDefinition = "bit DEFAULT 0")
-  private Boolean isSystemUser;
+  @Column(name = "is_internal_yn", nullable = false, columnDefinition = "boolean DEFAULT false")
+  private Boolean isInternalYn = false;
+  @Column(name = "is_system_user", nullable = false, columnDefinition = "boolean DEFAULT false")
+  private Boolean isSystemUser = false;
   @Column(name = "address_line_1", length = 100)
   @Size(max = 100)
   @SafeHtml
@@ -324,7 +311,7 @@ public class FnUser extends DomainVo implements UserDetails, Serializable {
   @Size(max = 100)
   @SafeHtml
   private String jobTitle;
-  @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
   @JoinColumn(name = "timezone")
   private FnLuTimezone timezone;
   @Column(name = "department", length = 25)
@@ -351,96 +338,82 @@ public class FnUser extends DomainVo implements UserDetails, Serializable {
   @Size(max = 10)
   @SafeHtml
   private String siloStatus;
-  @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-  @JoinColumn(name = "language_id", nullable = false, columnDefinition = "bigint DEFAULT 1")
+  @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+  @JoinColumn(name = "language_id", nullable = false)
   @NotNull(message = "languageId must not be null")
   private FnLanguage languageId;
-  @Column(name = "is_guest", nullable = false, columnDefinition = "bit DEFAULT 0")
+  @Column(name = "is_guest", nullable = false, columnDefinition = "boolean DEFAULT false")
   @NotNull(message = "guest must not be null")
-  private Boolean guest;
-  @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "fnUserList")
+  private Boolean guest = false;
+  @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.LAZY, mappedBy = "fnUserList")
   private Set<CrReportFileHistory> crReportFileHistorie;
-  @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+  @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER, mappedBy = "fnUsers")
   private Set<FnRole> fnRoles;
-  @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+  @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
   private Set<FnMenuFunctional> fnRoleList;
   @OneToMany(
       targetEntity = FnAuditLog.class,
       mappedBy = "userId",
-      cascade = CascadeType.ALL,
+      cascade = CascadeType.MERGE,
       fetch = FetchType.LAZY
   )
   private Set<FnAuditLog> fnAuditLogs;
   @OneToMany(
-      targetEntity = FnUser.class,
-      mappedBy = "createdId",
-      cascade = CascadeType.ALL,
-      fetch = FetchType.LAZY
-  )
-  private Set<FnUser> fnUsersCreatedId;
-  @OneToMany(
-      targetEntity = FnUser.class,
-      mappedBy = "managerId",
-      cascade = CascadeType.ALL,
-      fetch = FetchType.LAZY
-  )
-  private Set<FnUser> fnUsersManagerId;
-  @OneToMany(
-      targetEntity = FnUser.class,
-      mappedBy = "modifiedId",
-      cascade = CascadeType.ALL,
-      fetch = FetchType.LAZY
-  )
-  private Set<FnUser> fnUsersModifiedId;
-  @OneToMany(
       targetEntity = EpUserRolesRequest.class,
       mappedBy = "userId",
-      cascade = CascadeType.ALL,
+      cascade = CascadeType.MERGE,
       fetch = FetchType.LAZY
   )
   private Set<EpUserRolesRequest> epUserRolesRequests;
   @OneToMany(
       targetEntity = FnPersUserAppSel.class,
       mappedBy = "userId",
-      cascade = CascadeType.ALL,
+      cascade = CascadeType.MERGE,
       fetch = FetchType.LAZY
   )
   private Set<FnPersUserAppSel> persUserAppSels;
   @OneToMany(
       targetEntity = EpWidgetCatalogParameter.class,
       mappedBy = "userId",
-      cascade = CascadeType.ALL,
+      cascade = CascadeType.MERGE,
       fetch = FetchType.LAZY
   )
   private Set<EpWidgetCatalogParameter> epWidgetCatalogParameters;
   @OneToMany(
       targetEntity = EpPersUserWidgetPlacement.class,
       mappedBy = "userId",
-      cascade = CascadeType.ALL,
+      cascade = CascadeType.MERGE,
       fetch = FetchType.LAZY
   )
   private Set<EpPersUserWidgetPlacement> epPersUserWidgetPlacements;
   @OneToMany(
       targetEntity = EpPersUserWidgetSel.class,
       mappedBy = "userId",
-      cascade = CascadeType.ALL,
+      cascade = CascadeType.MERGE,
       fetch = FetchType.LAZY
   )
   private Set<EpPersUserWidgetSel> epPersUserWidgetSels;
   @OneToMany(
       targetEntity = FnUserRole.class,
       mappedBy = "userId",
-      cascade = CascadeType.ALL,
+      cascade = CascadeType.MERGE,
       fetch = FetchType.LAZY
   )
   private Set<FnUserRole> userApps;
   @OneToMany(
       targetEntity = EpUserNotification.class,
       mappedBy = "userId",
-      cascade = CascadeType.ALL,
+      cascade = CascadeType.MERGE,
       fetch = FetchType.LAZY
   )
   private Set<EpUserNotification> epUserNotifications;
+/*  @OneToMany(
+      targetEntity = FnUser.class,
+      mappedBy = "managerId",
+      cascade = CascadeType.MERGE,
+      fetch = FetchType.LAZY
+  )
+  private Set<FnUser> fnUsersManagerId;*/
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -499,7 +472,7 @@ public class FnUser extends DomainVo implements UserDetails, Serializable {
     // getting default app
     while (userAppRolesIterator.hasNext()) {
       FnUserRole tempUserApp = userAppRolesIterator.next();
-      if (tempUserApp.getAppId().getId().equals(app.getId())) {
+      if (tempUserApp.getFnAppId().getId().equals(app.getId())) {
 
         logger.debug(EELFLoggerDelegate.debugLogger,
             "In EPUser.getAppEPRoles() - for user {}, found application {}", this.getFullName(),
@@ -538,7 +511,7 @@ public class FnUser extends DomainVo implements UserDetails, Serializable {
       for (FnRole role : roles) {
         FnUserRole userApp = new FnUserRole();
         userApp.setUserId(this);
-        userApp.setAppId(app);
+        userApp.setFnAppId(app);
         userApp.setRoleId(role);
         newUserApps.add(userApp);
       }
@@ -547,6 +520,108 @@ public class FnUser extends DomainVo implements UserDetails, Serializable {
     } else {
       this.userApps.clear();
     }
+  }
 
+  @Builder
+
+  public FnUser(@Digits(integer = 11, fraction = 0) Long id, LocalDateTime created, LocalDateTime modified,
+      Long rowNum, Serializable auditUserId, DomainVo createdId, DomainVo modifiedId,
+      Set<DomainVo> fnUsersCreatedId, Set<DomainVo> fnUsersModifiedId, FnOrg orgId,
+      @Size(max = 50) @SafeHtml String firstName,
+      @Size(max = 50) @SafeHtml String middleName,
+      @Size(max = 50) @SafeHtml String lastName,
+      @Size(max = 25) @SafeHtml String phone,
+      @Size(max = 25) @SafeHtml String fax,
+      @Size(max = 25) @SafeHtml String cellular,
+      @Size(max = 50) @Email @SafeHtml String email,
+      @Digits(integer = 11, fraction = 0) Long addressId, FnLuAlertMethod alertMethodCd,
+      @Size(max = 20) @SafeHtml String hrid,
+      @Size(max = 20) @SafeHtml String orgUserId,
+      @Size(max = 30) @SafeHtml String org_code,
+      @Size(max = 25) @SafeHtml String loginId,
+      @Size(max = 100) @SafeHtml String loginPwd,
+      @PastOrPresent LocalDateTime lastLoginDate, Boolean activeYn,
+      @PastOrPresent LocalDateTime createdDate,
+      @PastOrPresent LocalDateTime modifiedDate, Boolean isInternalYn, Boolean isSystemUser,
+      @Size(max = 100) @SafeHtml String addressLine1,
+      @Size(max = 100) @SafeHtml String addressLine2,
+      @Size(max = 50) @SafeHtml String city,
+      @Size(max = 3) @SafeHtml String stateCd,
+      @Size(max = 11) @SafeHtml String zipCode,
+      @Size(max = 3) @SafeHtml String countryCd,
+      @Size(max = 8) @SafeHtml String locationClli,
+      @Size(max = 20) @SafeHtml String orgManagerUserId,
+      @Size(max = 100) @SafeHtml String company,
+      @Size(max = 200) @SafeHtml String departmentName,
+      @Size(max = 100) @SafeHtml String jobTitle, FnLuTimezone timezone,
+      @Size(max = 25) @SafeHtml String department,
+      @Size(max = 25) @SafeHtml String businessUnit,
+      @Size(max = 100) @SafeHtml String businessUnitName,
+      @Size(max = 25) @SafeHtml String cost_center,
+      @Size(max = 10) @SafeHtml String finLocCode,
+      @Size(max = 10) @SafeHtml String siloStatus,
+      @NotNull(message = "languageId must not be null") FnLanguage languageId,
+      @NotNull(message = "guest must not be null") Boolean guest,
+      Set<CrReportFileHistory> crReportFileHistorie, Set<FnRole> fnRoles,
+      Set<FnMenuFunctional> fnRoleList, Set<FnAuditLog> fnAuditLogs,
+      Set<EpUserRolesRequest> epUserRolesRequests,
+      Set<FnPersUserAppSel> persUserAppSels,
+      Set<EpWidgetCatalogParameter> epWidgetCatalogParameters,
+      Set<EpPersUserWidgetPlacement> epPersUserWidgetPlacements,
+      Set<EpPersUserWidgetSel> epPersUserWidgetSels, Set<FnUserRole> userApps,
+      Set<EpUserNotification> epUserNotifications) {
+    super(id, created, modified, rowNum, auditUserId, createdId, modifiedId, fnUsersCreatedId, fnUsersModifiedId);
+    this.orgId = orgId;
+    this.firstName = firstName;
+    this.middleName = middleName;
+    this.lastName = lastName;
+    this.phone = phone;
+    this.fax = fax;
+    this.cellular = cellular;
+    this.email = email;
+    this.addressId = addressId;
+    this.alertMethodCd = alertMethodCd;
+    this.hrid = hrid;
+    this.orgUserId = orgUserId;
+    this.org_code = org_code;
+    this.loginId = loginId;
+    this.loginPwd = loginPwd;
+    this.lastLoginDate = lastLoginDate;
+    this.activeYn = activeYn;
+    this.createdDate = createdDate;
+    this.modifiedDate = modifiedDate;
+    this.isInternalYn = isInternalYn;
+    this.isSystemUser = isSystemUser;
+    this.addressLine1 = addressLine1;
+    this.addressLine2 = addressLine2;
+    this.city = city;
+    this.stateCd = stateCd;
+    this.zipCode = zipCode;
+    this.countryCd = countryCd;
+    this.locationClli = locationClli;
+    this.orgManagerUserId = orgManagerUserId;
+    this.company = company;
+    this.departmentName = departmentName;
+    this.jobTitle = jobTitle;
+    this.timezone = timezone;
+    this.department = department;
+    this.businessUnit = businessUnit;
+    this.businessUnitName = businessUnitName;
+    this.cost_center = cost_center;
+    this.finLocCode = finLocCode;
+    this.siloStatus = siloStatus;
+    this.languageId = languageId;
+    this.guest = guest;
+    this.crReportFileHistorie = crReportFileHistorie;
+    this.fnRoles = fnRoles;
+    this.fnRoleList = fnRoleList;
+    this.fnAuditLogs = fnAuditLogs;
+    this.epUserRolesRequests = epUserRolesRequests;
+    this.persUserAppSels = persUserAppSels;
+    this.epWidgetCatalogParameters = epWidgetCatalogParameters;
+    this.epPersUserWidgetPlacements = epPersUserWidgetPlacements;
+    this.epPersUserWidgetSels = epPersUserWidgetSels;
+    this.userApps = userApps;
+    this.epUserNotifications = epUserNotifications;
   }
 }

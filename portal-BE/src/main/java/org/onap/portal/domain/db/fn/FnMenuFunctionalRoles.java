@@ -53,11 +53,13 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.Valid;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -81,7 +83,7 @@ CREATE TABLE `fn_menu_functional_roles` (
 @NamedQueries({
     @NamedQuery(
         name = "FnMenuFunctionalRoles.retrieveByRoleId",
-        query = "from FnMenuFunctionalRoles where roleId.roleId =:roleId"),
+        query = "from FnMenuFunctionalRoles where roleId.id =:roleId"),
     @NamedQuery(
         name = "FnMenuFunctionalRoles.retrieveByMenuId",
         query = "from FnMenuFunctionalRoles where menuId.menuId =:menuId"
@@ -96,27 +98,29 @@ CREATE TABLE `fn_menu_functional_roles` (
 })
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Getter
 @Setter
 @Entity
 public class FnMenuFunctionalRoles implements Serializable {
        @Id
-       @GeneratedValue(strategy = GenerationType.AUTO)
+
+  @GeneratedValue(strategy = GenerationType.AUTO)
        @Column(name = "id", nullable = false, length = 11, columnDefinition = "int(11) AUTO_INCREMENT")
        @Digits(integer = 11, fraction = 0)
        private Long id;
-       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
        @JoinColumn(name = "menu_id", nullable = false)
        @Valid
        @NotNull
        private FnMenuFunctional menuId;
-       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-       @JoinColumn(name = "role_id", nullable = false)
+       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+       @JoinColumn(name = "role_id", nullable = false, columnDefinition = "bigint")
        @Valid
        @NotNull
        private FnRole roleId;
-       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-       @JoinColumn(name = "app_Id", nullable = false)
+       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+       @JoinColumn(name = "app_Id", nullable = false, columnDefinition = "bigint")
        @Valid
        @NotNull
        private FnApp appId;

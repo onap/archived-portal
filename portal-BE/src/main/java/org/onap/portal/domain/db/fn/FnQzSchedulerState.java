@@ -51,6 +51,7 @@ import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -71,7 +72,7 @@ CREATE TABLE `fn_qz_scheduler_state` (
 @Table(name = "fn_qz_scheduler_state")
 @NoArgsConstructor
 @AllArgsConstructor
-
+@Builder
 @Getter
 @Setter
 @Entity

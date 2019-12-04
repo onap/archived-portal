@@ -59,7 +59,7 @@ public class AppsCacheService {
 
   private final FnAppService appsService;
 
-  private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(AppsCacheService.class);
+  private final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(AppsCacheService.class);
 
   @Autowired
   public AppsCacheService(FnAppService appsService) {
@@ -148,7 +148,7 @@ public class AppsCacheService {
     List<FnApp> appsFinalList = appList.stream()
         .filter(app -> app.getEnabled() && !app.getOpen()).collect(Collectors.toList());
 
-    List<OnboardingApp> onboardingAppsList = new ArrayList<OnboardingApp>();
+    List<OnboardingApp> onboardingAppsList = new ArrayList<>();
     for (FnApp app : appsFinalList) {
       OnboardingApp onboardingApp = new OnboardingApp();
       appsService.createOnboardingFromApp(app, onboardingApp);

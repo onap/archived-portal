@@ -51,6 +51,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.FutureOrPresent;
@@ -91,7 +92,8 @@ CREATE TABLE `ep_notification` (
 @Entity
 public class EpNotification implements Serializable {
        @Id
-       @GeneratedValue(strategy = GenerationType.AUTO)
+
+  @GeneratedValue(strategy = GenerationType.AUTO)
        @Column(name = "notification_ID", length = 11, nullable = false)
        @Digits(integer = 11, fraction = 0)
        private Long notificationID;
@@ -145,14 +147,14 @@ public class EpNotification implements Serializable {
        @OneToMany(
                targetEntity = EpRoleNotification.class,
                mappedBy = "notificationID",
-               cascade = CascadeType.ALL,
+               cascade = CascadeType.MERGE,
                fetch = FetchType.LAZY
        )
        private Set<EpRoleNotification> epRoleNotifications;
        @OneToMany(
                targetEntity = EpUserNotification.class,
                mappedBy = "notificationId",
-               cascade = CascadeType.ALL,
+               cascade = CascadeType.MERGE,
                fetch = FetchType.LAZY
        )
        private Set<EpUserNotification> epUserNotifications;

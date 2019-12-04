@@ -50,6 +50,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
@@ -77,7 +78,8 @@ CREATE TABLE `ep_endpoints` (
 @Entity
 public class EpEndpoints implements Serializable {
        @Id
-       @GeneratedValue(strategy = GenerationType.AUTO)
+
+  @GeneratedValue(strategy = GenerationType.AUTO)
        @Column(name = "id", length = 11, nullable = false, columnDefinition = "int(11) AUTO_INCREMENT")
        @Digits(integer = 11, fraction = 0)
        private Long id;
@@ -92,7 +94,7 @@ public class EpEndpoints implements Serializable {
        @OneToMany(
                targetEntity = EpEndpointsBasicAuthAccount.class,
                mappedBy = "epId",
-               cascade = CascadeType.ALL,
+               cascade = CascadeType.MERGE,
                fetch = FetchType.LAZY
        )
        private Set<EpEndpointsBasicAuthAccount> epEndpointsBasicAuthAccounts;

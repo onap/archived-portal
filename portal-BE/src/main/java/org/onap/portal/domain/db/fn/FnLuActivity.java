@@ -52,6 +52,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -68,6 +69,7 @@ CREATE TABLE `fn_lu_activity` (
 @Table(name = "fn_lu_activity")
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Getter
 @Setter
 @Entity
@@ -86,7 +88,7 @@ public class FnLuActivity implements Serializable {
        @OneToMany(
                targetEntity = FnAuditLog.class,
                mappedBy = "activityCd",
-               cascade = CascadeType.ALL,
+               cascade = CascadeType.MERGE,
                fetch = FetchType.LAZY
        )
        private Set<FnAuditLog> fnAuditLogs;

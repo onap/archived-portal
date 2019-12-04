@@ -21,6 +21,7 @@ services:
       - MYSQL_USER=${spring_datasource_username}
       - MYSQL_PASSWORD=${spring_datasource_password}
       - MYSQL_RANDOM_ROOT_PASSWORD=yes
+      - MYSQL_INITDB_SKIP_TZINFO=1
     healthcheck:
       test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
     networks:

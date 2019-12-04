@@ -51,6 +51,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
@@ -81,7 +82,8 @@ CREATE TABLE `fn_org` (
 @Entity
 public class FnOrg implements Serializable {
        @Id
-       @GeneratedValue(strategy = GenerationType.AUTO)
+
+  @GeneratedValue(strategy = GenerationType.AUTO)
        @Column(name = "org_id", nullable = false, length = 11)
        @Digits(integer = 11, fraction = 0)
        private Long orgId;
@@ -98,7 +100,7 @@ public class FnOrg implements Serializable {
        @OneToMany(
                targetEntity = FnUser.class,
                mappedBy = "orgId",
-               cascade = CascadeType.ALL,
+               cascade = CascadeType.MERGE,
                fetch = FetchType.LAZY
        )
        private Set<FnUser> fnUsers;

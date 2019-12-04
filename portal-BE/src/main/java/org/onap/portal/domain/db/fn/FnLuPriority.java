@@ -46,12 +46,14 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -70,6 +72,7 @@ CREATE TABLE `fn_lu_priority` (
 @Table(name = "fn_lu_priority")
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Getter
 @Setter
 @Entity
@@ -84,12 +87,9 @@ public class FnLuPriority implements Serializable {
        @NotNull
        @SafeHtml
        private String priority;
-       @Column(name = "active_yn", length = 1, columnDefinition = "character varying(1) default 'y'", nullable = false)
-       @Pattern(regexp = "[YNyn]")
-       @Size(max = 1)
+       @Column(name = "active_yn", length = 1, columnDefinition = "boolean default true", nullable = false)
        @NotNull
-       @SafeHtml
-       private String activeYn;
+       private Boolean activeYn;
        @Column(name = "sort_order", nullable = false, length = 5)
        @Digits(integer = 5, fraction = 0)
        private Long sortOrder;

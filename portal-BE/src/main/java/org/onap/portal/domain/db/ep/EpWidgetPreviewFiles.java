@@ -46,6 +46,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.constraints.Digits;
 import lombok.AllArgsConstructor;
@@ -72,6 +73,7 @@ CREATE TABLE `ep_widget_preview_files` (
 @Entity
 public class EpWidgetPreviewFiles implements Serializable {
        @Id
+       @SequenceGenerator(name="portal_generator", sequenceName = "portal_generator", initialValue = 1000)
        @GeneratedValue(strategy = GenerationType.AUTO)
        @Column(name = "preview_id", length = 11, nullable = false, columnDefinition = "int(11) AUTO_INCREMENT")
        @Digits(integer = 11, fraction = 0)

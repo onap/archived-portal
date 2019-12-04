@@ -98,11 +98,11 @@ CREATE TABLE `ep_microservice_parameter` (
 public class EpMicroserviceParameter implements Serializable {
 
        @Id
-       @GeneratedValue(strategy = GenerationType.IDENTITY)
+       @GeneratedValue(strategy = GenerationType.AUTO)
        @Column(name = "id", length = 11, nullable = false)
        @Digits(integer = 11, fraction = 0)
        private Long id;
-       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
        @JoinColumn(name = "service_id")
        private EpMicroservice serviceId;
        @Column(name = "para_key", length = 50)
@@ -116,7 +116,7 @@ public class EpMicroserviceParameter implements Serializable {
        @OneToMany(
                targetEntity = EpWidgetCatalogParameter.class,
                mappedBy = "paramId",
-               cascade = CascadeType.ALL,
+               cascade = CascadeType.MERGE,
                fetch = FetchType.LAZY
        )
        private Set<EpWidgetCatalogParameter> epWidgetCatalogParameter;

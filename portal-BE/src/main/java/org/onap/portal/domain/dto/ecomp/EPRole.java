@@ -50,7 +50,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.validator.constraints.SafeHtml;
 import org.onap.portalsdk.core.domain.RoleFunction;
-import org.onap.portal.domain.dto.DomainVo;
+import org.onap.portal.domain.db.DomainVo;
 
 @Getter
 @Setter
@@ -152,7 +152,7 @@ public class EPRole extends DomainVo {
 
        @Override
        public String toString() {
-              return "[Id = " + id + ", name = " + name + "]";
+              return "[Id = " + super.getId() + ", name = " + name + "]";
        }
 
 }

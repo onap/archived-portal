@@ -53,12 +53,14 @@ import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.Valid;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -88,23 +90,23 @@ CREATE TABLE `ep_pers_user_app_sort` (
 })
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Getter
 @Setter
 @Entity
 public class EpPersUserAppSort implements Serializable {
        @Id
-       @GeneratedValue(strategy = GenerationType.AUTO)
+
+  @GeneratedValue(strategy = GenerationType.AUTO)
        @Column(name = "id", length = 11, nullable = false, columnDefinition = "int(11) AUTO_INCREMENT")
        @Digits(integer = 11, fraction = 0)
        private Long id;
-       @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-       @JoinColumn(name = "user_id", unique = true, nullable = false)
+       @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+       @JoinColumn(name = "user_id", unique = true, nullable = false, columnDefinition = "bigint")
        @NotNull
        @Valid
        private FnUser userID;
-       @Column(name = "sort_pref", length = 1, nullable = false)
-       @Size(max = 1)
+       @Column(name = "sort_pref", nullable = false)
        @NotNull
-       @SafeHtml
-       private String sortPref;
+       private Integer sortPref;
 }

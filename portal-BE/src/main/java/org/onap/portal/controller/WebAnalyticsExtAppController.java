@@ -133,7 +133,7 @@ public class WebAnalyticsExtAppController {
 		}
 		if (app != null) {
 			String restEndPoint = app.getAppRestEndpoint();
-			if(restEndPoint.indexOf("/api")!=-1) {
+			if(restEndPoint.contains("/api")) {
 				version = restEndPoint.substring(restEndPoint.indexOf("api"));
 			}
 		}

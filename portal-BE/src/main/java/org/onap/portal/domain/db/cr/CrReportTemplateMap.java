@@ -43,7 +43,10 @@ package org.onap.portal.domain.db.cr;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -72,6 +75,8 @@ public class CrReportTemplateMap implements Serializable {
        @Id
        @Column(name = "report_id", nullable = false)
        @NotNull
+
+  @GeneratedValue(strategy = GenerationType.AUTO)
        private Long reportId;
        @Column(name = "template_file", length = 200)
        @Pattern(regexp = "[YNyn]")

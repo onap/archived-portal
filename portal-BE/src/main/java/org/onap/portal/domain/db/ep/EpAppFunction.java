@@ -41,13 +41,12 @@
 package org.onap.portal.domain.db.ep;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
 import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -56,17 +55,17 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.Valid;
+import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.validator.constraints.SafeHtml;
-import org.onap.portal.domain.db.ep.EpAppFunction.EpAppFunctionId;
+import org.onap.portal.domain.db.DomainVo;
 import org.onap.portal.domain.db.fn.FnApp;
-import org.onap.portal.domain.dto.DomainVo;
 
 /*
 CREATE TABLE `ep_app_function` (
@@ -86,29 +85,28 @@ CREATE TABLE `ep_app_function` (
             + "  EpAppRoleFunction rf,\n"
             + "  EpAppFunction f\n"
             + " where\n"
-            + "  rf.fnRole.roleId = :roleId\n"
-            + "  and rf.appId.appId = :appId\n"
-            + "  and rf.appId.appId = f.appId.appId\n"
+            + "  rf.fnRole.id = :roleId\n"
+            + "  and rf.appId.id = :appId\n"
+            + "  and rf.appId.id = f.appId.id\n"
             + "  and rf.epAppFunction.functionCd = f.functionCd"
     )
 })
 
-@Table(name = "ep_app_function", indexes = {@Index(name = "fk_ep_app_function_app_id", columnList = "app_id")})
+@Table(name = "ep_app_function", indexes = {
+    @Index(name = "fk_ep_app_function_app_id", columnList = "app_id"),
+    @Index(name = "fk_ep_app_id_function_cd", columnList = "app_id, function_cd", unique = true)})
 
 @Getter
 @Setter
 @Entity
-@IdClass(EpAppFunctionId.class)
 @NoArgsConstructor
 @AllArgsConstructor
 public class EpAppFunction extends DomainVo implements Serializable {
 
-  @Id
-  @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-  @JoinColumn(name = "app_id")
+  @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
+  @JoinColumn(name = "app_id", columnDefinition = "bigint")
   @Valid
   private FnApp appId;
-  @Id
   @Column(name = "function_cd", length = 250, nullable = false)
   @Size(max = 250)
   @NotNull
@@ -130,14 +128,14 @@ public class EpAppFunction extends DomainVo implements Serializable {
   @OneToMany(
       targetEntity = EpAppRoleFunction.class,
       mappedBy = "epAppFunction",
-      cascade = CascadeType.ALL,
+      cascade = CascadeType.MERGE,
       fetch = FetchType.LAZY
   )
   private Set<EpAppRoleFunction> epAppRoleFunctions;
 
   public EpAppFunction(Long id, String code, String name, FnApp appId, String type, String action, String editUrl) {
     super();
-    this.id = id;
+    super.setId(id);
     this.functionCd = code;
     this.functionName = name;
     this.appId = appId;
@@ -146,19 +144,24 @@ public class EpAppFunction extends DomainVo implements Serializable {
     this.editUrl = editUrl;
   }
 
-  @Getter
-  @Setter
-  @EqualsAndHashCode
-  @NoArgsConstructor
-  @AllArgsConstructor
-  public static class EpAppFunctionId implements Serializable {
-
-    @Valid
-    private FnApp appId;
-    @Size(max = 250)
-    @NotNull
-    @SafeHtml
-    private String functionCd;
+  @Builder
+  public EpAppFunction(@Digits(integer = 11, fraction = 0) Long id,
+      LocalDateTime created, LocalDateTime modified, Long rowNum, Serializable auditUserId,
+      DomainVo createdId, DomainVo modifiedId, Set<DomainVo> fnUsersCreatedId,
+      Set<DomainVo> fnUsersModifiedId, @Valid FnApp appId,
+      @Size(max = 250) @NotNull @SafeHtml String functionCd,
+      @Size(max = 250) @NotNull @SafeHtml String functionName, Long roleId, String type,
+      @SafeHtml String action, @SafeHtml String editUrl,
+      Set<EpAppRoleFunction> epAppRoleFunctions) {
+    super(id, created, modified, rowNum, auditUserId, createdId, modifiedId, fnUsersCreatedId, fnUsersModifiedId);
+    this.appId = appId;
+    this.functionCd = functionCd;
+    this.functionName = functionName;
+    this.roleId = roleId;
+    this.type = type;
+    this.action = action;
+    this.editUrl = editUrl;
+    this.epAppRoleFunctions = epAppRoleFunctions;
   }
 }
 

@@ -54,6 +54,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -85,7 +86,7 @@ CREATE TABLE `fn_qz_job_details` (
 })
 @NoArgsConstructor
 @AllArgsConstructor
-
+@Builder
 @Getter
 @Setter
 @Entity
@@ -115,33 +116,25 @@ public class FnQzJobDetails implements Serializable{
        @SafeHtml
        @NotNull
        private String jobClassName;
-       @Column(name = "IS_DURABLE", length = 1, nullable = false)
-       @Size(max = 1)
-       @SafeHtml
+       @Column(name = "IS_DURABLE", nullable = false)
        @NotNull
-       private String isDurable;
-       @Column(name = "IS_NONCONCURRENT", length = 1, nullable = false)
-       @Size(max = 1)
-       @SafeHtml
+       private Boolean isDurable;
+       @Column(name = "IS_NONCONCURRENT", nullable = false)
        @NotNull
-       private String isNonconcurrent;
-       @Column(name = "IS_UPDATE_DATA", length = 1, nullable = false)
-       @Size(max = 1)
-       @SafeHtml
+       private Boolean isNonconcurrent;
+       @Column(name = "IS_UPDATE_DATA", nullable = false)
        @NotNull
-       private String isUpdateData;
-       @Column(name = "REQUESTS_RECOVERY", length = 1, nullable = false)
-       @Size(max = 1)
-       @SafeHtml
+       private Boolean isUpdateData;
+       @Column(name = "REQUESTS_RECOVERY", nullable = false)
        @NotNull
-       private String requestsRecovery;
+       private Boolean requestsRecovery;
        @Column(name = "JOB_DATA", columnDefinition = "blob DEFAULT NULL")
        private byte[] jobData;
 
        @OneToMany(
                targetEntity = FnQzTriggers.class,
                mappedBy = "fnQzJobDetails",
-               cascade = CascadeType.ALL,
+               cascade = CascadeType.MERGE,
                fetch = FetchType.LAZY
        )
        private Set<FnQzTriggers> selectedTabCd;

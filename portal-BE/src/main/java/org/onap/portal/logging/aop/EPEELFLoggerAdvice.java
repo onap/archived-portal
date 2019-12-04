@@ -66,7 +66,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 @org.springframework.context.annotation.Configuration
 public class EPEELFLoggerAdvice {
 
-	private EELFLoggerDelegate adviceLogger = EELFLoggerDelegate.getLogger(EPEELFLoggerAdvice.class);
+	private final EELFLoggerDelegate adviceLogger = EELFLoggerDelegate.getLogger(EPEELFLoggerAdvice.class);
 
 	private	final AppsCacheService appCacheService;
 	private final FnUserService fnUserService;

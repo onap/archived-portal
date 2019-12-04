@@ -61,11 +61,11 @@ public interface FnUserRoleDao extends JpaRepository<FnUserRole, Long> {
        List<UserRole> isSuperAdmin(final @Param("orgUserId") String orgUserId, final @Param("roleId") Long roleId, final @Param("appId") Long appId);
 
        @Query
-       List<FnUserRole> getUserRolesForRoleIdAndAppId(final @Param("roleId") Long roleId, final @Param("appId") Long appId);
-
-       @Query
        List<FnUserRole> retrieveByAppIdAndUserId(final @Param("appId") Long appId, final @Param("userId") String userId);
 
        @Query
        List<FnUserRole> retrieveByAppIdAndRoleId(final @Param("appId") Long appId, final @Param("roleId") Long roleId);
+
+       @Query
+       List<FnUserRole> retrieveByUserIdAndRoleId(final @Param("userId") Long userId, final @Param("roleId") Long roleId);
 }

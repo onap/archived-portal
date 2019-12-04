@@ -45,7 +45,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.onap.portal.domain.dto.DomainVo;
+import org.onap.portal.domain.db.DomainVo;
 
 @Getter
 @Setter
@@ -55,7 +55,6 @@ public class BasicAuthCredentials extends DomainVo {
 	
 	private static final long serialVersionUID = 1L;
 
-	private Long id;
 	private String applicationName;
 	private String username;
 	private String password;
@@ -64,7 +63,7 @@ public class BasicAuthCredentials extends DomainVo {
 
 	@Override
 	public String toString() {
-		return "BasicAuthCredentials [id=" + id + ", applicationName=" + applicationName + ", username=" + username
+		return "BasicAuthCredentials [id=" + super.getId() + ", applicationName=" + applicationName + ", username=" + username
 				+ ", password=" + password + ", isActive=" + isActive + "]";
 	}
 

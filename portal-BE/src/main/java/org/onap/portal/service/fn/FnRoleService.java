@@ -43,12 +43,9 @@ package org.onap.portal.service.fn;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import javax.persistence.EntityExistsException;
-import javax.print.attribute.standard.Fidelity;
 import org.onap.portal.dao.fn.FnRoleDao;
 import org.onap.portal.domain.db.fn.FnRole;
-import org.onap.portal.service.ExternalAccessRolesService;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -58,7 +55,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class FnRoleService {
 
-  private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(FnRoleService.class);
+  private final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(FnRoleService.class);
 
 
   private final FnRoleDao fnRoleDao;
@@ -138,6 +135,11 @@ public class FnRoleService {
       logger.error(EELFLoggerDelegate.errorLogger, "getGlobalRolesOfPortal failed", e);
     }
     return globalRoles;
+  }
+
+  public Long getSysAdminRoleId(){
+    FnRole role = fnRoleDao.getSysAdminRoleId();
+    return role.getId();
   }
 
   public void delete(FnRole role) {

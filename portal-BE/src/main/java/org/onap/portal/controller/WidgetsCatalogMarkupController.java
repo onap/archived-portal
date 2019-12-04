@@ -64,7 +64,7 @@ import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 public class WidgetsCatalogMarkupController {
 
        private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(WidgetsCatalogMarkupController.class);
-       private RestTemplate template = new RestTemplate();
+       private final RestTemplate template = new RestTemplate();
        private final String whatService = "widgets-service";
 
        @Autowired
@@ -77,9 +77,7 @@ public class WidgetsCatalogMarkupController {
 
        static {
               // for localhost testing only
-              javax.net.ssl.HttpsURLConnection.setDefaultHostnameVerifier((hostname, sslSession) -> {
-                     return hostname.equals("localhost");
-              });
+              javax.net.ssl.HttpsURLConnection.setDefaultHostnameVerifier((hostname, sslSession) -> hostname.equals("localhost"));
        }
 
        @GetMapping(value = "/portalApi/microservices/markup/{widgetId}")

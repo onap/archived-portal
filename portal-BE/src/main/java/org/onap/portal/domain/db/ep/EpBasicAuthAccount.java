@@ -56,6 +56,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -75,40 +76,38 @@ CREATE TABLE `ep_basic_auth_account` (
 @Table(name = "ep_basic_auth_account")
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Getter
 @Setter
 @Entity
 public class EpBasicAuthAccount implements Serializable {
-       @Id
-       @GeneratedValue(strategy = GenerationType.AUTO)
-       @Column(name = "id", length = 11, nullable = false, columnDefinition = "int(11) AUTO_INCREMENT")
-       @Digits(integer = 11, fraction = 0)
-       private Long id;
-       @Column(name = "ext_app_name", length = 50, nullable = false)
-       @Size(max = 50)
-       @SafeHtml
-       @NotNull
-       private String extAppName;
-       @Column(name = "username", length = 50, nullable = false)
-       @Size(max = 50)
-       @SafeHtml
-       @NotNull
-       private String username;
-       @Column(name = "password", length = 50)
-       @Size(max = 50)
-       @SafeHtml
-       private String password;
-       @Column(name = "active_yn", length = 1, nullable = false, columnDefinition = "char(1) NOT NULL default 'Y'")
-       @Pattern(regexp = "[YNyn]")
-       @Size(max = 1)
-       @NotNull
-       @SafeHtml
-       private String activeYn;
-       @OneToMany(
-               targetEntity = EpEndpointsBasicAuthAccount.class,
-               mappedBy = "accountId",
-               cascade = CascadeType.ALL,
-               fetch = FetchType.LAZY
-       )
-       private Set<EpEndpointsBasicAuthAccount> epEndpointsBasicAuthAccounts;
+
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  @Column(name = "id", length = 11, nullable = false, columnDefinition = "int(11) AUTO_INCREMENT")
+  @Digits(integer = 11, fraction = 0)
+  private Long id;
+  @Column(name = "ext_app_name", length = 50, nullable = false)
+  @Size(max = 50)
+  @SafeHtml
+  @NotNull
+  private String extAppName;
+  @Column(name = "username", length = 50, nullable = false)
+  @Size(max = 50)
+  @SafeHtml
+  @NotNull
+  private String username;
+  @Column(name = "password", length = 50)
+  @Size(max = 50)
+  @SafeHtml
+  private String password;
+  @Column(name = "active_yn", nullable = false, columnDefinition = "boolean default true")
+  private Boolean activeYn;
+  @OneToMany(
+      targetEntity = EpEndpointsBasicAuthAccount.class,
+      mappedBy = "accountId",
+      cascade = CascadeType.MERGE,
+      fetch = FetchType.LAZY
+  )
+  private Set<EpEndpointsBasicAuthAccount> epEndpointsBasicAuthAccounts;
 }

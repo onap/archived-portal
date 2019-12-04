@@ -43,6 +43,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import javax.validation.constraints.Digits;
@@ -69,7 +70,8 @@ public class SharedContext extends DomainVo {
 	private static final long serialVersionUID = 7287469622586677888L;
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@SequenceGenerator(name="portal_generator", sequenceName = "portal_generator", initialValue = 1000)
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "portal_generator")
 	@Digits(integer = 11, fraction = 0)
 	private Long id;
 

@@ -41,7 +41,6 @@
 package org.onap.portal.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -49,21 +48,21 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.onap.portal.dao.fn.FnLanguageDao;
 import org.onap.portal.domain.db.ep.EpMicroserviceParameter;
 import org.onap.portal.domain.db.ep.EpWidgetCatalog;
 import org.onap.portal.domain.db.ep.EpWidgetCatalogParameter;
 import org.onap.portal.domain.db.fn.FnLanguage;
 import org.onap.portal.domain.db.fn.FnUser;
 import org.onap.portal.domain.dto.ecomp.WidgetCatalog;
-import org.onap.portal.framework.MockitoTestSuite;
 import org.onap.portal.service.ep.EpMicroserviceParameterService;
 import org.onap.portal.service.ep.EpWidgetCatalogParameterService;
 import org.onap.portal.service.ep.EpWidgetCatalogService;
 import org.onap.portal.service.fn.FnLanguageService;
+import org.onap.portal.service.fn.FnUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -75,10 +74,12 @@ import org.springframework.test.context.junit4.SpringRunner;
 @Transactional
 @TestPropertySource(locations = "classpath:test.properties")
 public class WidgetsCatalogControllerTest {
-       private UsernamePasswordAuthenticationToken principal = new UsernamePasswordAuthenticationToken("demo",
+       private final UsernamePasswordAuthenticationToken principal = new UsernamePasswordAuthenticationToken("demo",
                "demo123");
        @Autowired
        private WidgetsCatalogController widgetsCatalogController;
+       @Autowired
+       private FnUserService fnUserService;
        @Autowired
        private FnLanguageService fnLanguageService;
        @Autowired
@@ -87,6 +88,8 @@ public class WidgetsCatalogControllerTest {
        private EpMicroserviceParameterService epMicroserviceParameterService;
        @Autowired
        private EpWidgetCatalogService epWidgetCatalogService;
+       @Autowired
+       private FnLanguageDao fnLanguageDao;
 
        @Test
        public void getUserWidgetCatalog() {
@@ -142,10 +145,11 @@ public class WidgetsCatalogControllerTest {
               EpMicroserviceParameter parameter = new EpMicroserviceParameter();
               epMicroserviceParameterService.save(parameter);
               FnLanguage language = FnLanguage.builder().languageAlias("TS").languageName("TEST").build();
-              fnLanguageService.save(principal, language);
+              fnLanguageService.save(language);
               FnUser user = buildFnUser();
               language.setFnUsers(new HashSet<>(Collections.singleton(user)));
               user.setLanguageId(language);
+              fnUserService.saveFnUser(user);
               EpWidgetCatalogParameter data =  EpWidgetCatalogParameter.builder()
                       .widgetId(widget).userId(user).paramId(parameter).userValue("TestData").build();
               //When
@@ -167,11 +171,10 @@ public class WidgetsCatalogControllerTest {
               epWidgetCatalogService.save(widget);
               EpMicroserviceParameter parameter = new EpMicroserviceParameter();
               epMicroserviceParameterService.save(parameter);
-              FnLanguage language = FnLanguage.builder().languageAlias("TS").languageName("TEST").build();
-              fnLanguageService.save(principal, language);
               FnUser user = buildFnUser();
-              language.setFnUsers(new HashSet<>(Collections.singleton(user)));
+              FnLanguage language = fnLanguageDao.getByLanguageAlias("EN");
               user.setLanguageId(language);
+              fnUserService.saveFnUser(user);
               EpWidgetCatalogParameter data =  EpWidgetCatalogParameter.builder()
                       .widgetId(widget).userId(user).paramId(parameter).userValue("TestData").build();
               //When
@@ -200,7 +203,7 @@ public class WidgetsCatalogControllerTest {
               EpMicroserviceParameter parameter = new EpMicroserviceParameter();
               epMicroserviceParameterService.save(parameter);
               FnLanguage language = FnLanguage.builder().languageAlias("TS").languageName("TEST").build();
-              fnLanguageService.save(principal, language);
+              fnLanguageService.save(language);
               FnUser user = buildFnUser();
               language.setFnUsers(new HashSet<>(Collections.singleton(user)));
               user.setLanguageId(language);
@@ -228,10 +231,12 @@ public class WidgetsCatalogControllerTest {
               EpMicroserviceParameter parameter = new EpMicroserviceParameter();
               epMicroserviceParameterService.save(parameter);
               FnLanguage language = FnLanguage.builder().languageAlias("TS").languageName("TEST").build();
-              fnLanguageService.save(principal, language);
+              fnLanguageService.save(language);
               FnUser user = buildFnUser();
               language.setFnUsers(new HashSet<>(Collections.singleton(user)));
               user.setLanguageId(language);
+              fnUserService.saveFnUser(user);
+
               EpWidgetCatalogParameter old =  EpWidgetCatalogParameter.builder()
                       .widgetId(widget).userId(user).paramId(parameter).userValue("TestData").build();
 

@@ -46,7 +46,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.validator.constraints.SafeHtml;
-import org.onap.portal.domain.dto.DomainVo;
+import org.onap.portal.domain.db.DomainVo;
 
 @Getter
 @Setter
@@ -55,13 +55,18 @@ import org.onap.portal.domain.dto.DomainVo;
 @AllArgsConstructor
 public class MicroserviceParameter extends DomainVo {
 
-	private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-	private Long id;
-	private long serviceId;
-	@SafeHtml
-	private String para_key;
-	@SafeHtml
-	private String para_value;
+  private long serviceId;
+  @SafeHtml
+  private String para_key;
+  @SafeHtml
+  private String para_value;
 
+  public MicroserviceParameter(Long id, long serviceId, String para_key, String para_value) {
+    super(id);
+    this.serviceId = serviceId;
+    this.para_key = para_key;
+    this.para_value = para_value;
+  }
 }

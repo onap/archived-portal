@@ -45,9 +45,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -55,7 +52,6 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.validation.Valid;
-import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -65,7 +61,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.validator.constraints.SafeHtml;
 import org.onap.portal.domain.db.fn.FnUser;
-import org.onap.portal.domain.dto.DomainVo;
+import org.onap.portal.domain.db.DomainVo;
 
 /*
 CREATE TABLE `ep_widget_catalog_parameter` (
@@ -94,7 +90,7 @@ CREATE TABLE `ep_widget_catalog_parameter` (
                 query = "DELETE FROM EpWidgetCatalogParameter WHERE paramId.id = :PARAMID"),
         @NamedQuery(
                 name = "EpWidgetCatalogParameter.getUserParamById",
-                query = "FROM EpWidgetCatalogParameter WHERE paramId.id = :PARAMID and userId.userId = :USERID and widgetId.widgetId = :WIDGETID"
+                query = "FROM EpWidgetCatalogParameter WHERE paramId.id = :PARAMID and userId.id = :USERID and widgetId.widgetId = :WIDGETID"
         )
 })
 
@@ -111,23 +107,17 @@ CREATE TABLE `ep_widget_catalog_parameter` (
 @NoArgsConstructor
 @AllArgsConstructor
 public class EpWidgetCatalogParameter extends DomainVo implements Serializable {
-
-       @Id
-       @GeneratedValue(strategy = GenerationType.AUTO)
-       @Column(name = "id", length = 11, nullable = false, columnDefinition = "int(11) AUTO_INCREMENT")
-       @Digits(integer = 11, fraction = 0)
-       private Long id;
-       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
        @JoinColumn(name = "widget_id", nullable = false)
        @NotNull
        @Valid
        private EpWidgetCatalog widgetId;
-       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-       @JoinColumn(name = "user_id", nullable = false)
+       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+       @JoinColumn(name = "user_id", nullable = false, columnDefinition = "bigint")
        @NotNull
        @Valid
        private FnUser userId;
-       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
        @JoinColumn(name = "param_id", nullable = false)
        @NotNull
        @Valid

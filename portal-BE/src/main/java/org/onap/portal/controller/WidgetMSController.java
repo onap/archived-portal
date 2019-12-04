@@ -55,7 +55,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/portalApi/consul")
 public class WidgetMSController {
-	private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(WidgetMSController.class);
+	private final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(WidgetMSController.class);
 
 	private final WidgetMService widgetMService;
 

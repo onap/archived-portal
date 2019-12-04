@@ -75,9 +75,9 @@ public class ApplicationsRestClientService {
   private static final String APP_USERNAME_HEADER = "username";
   private static final String BASIC_AUTHENTICATION_HEADER = "Authorization";
 
-  private static EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(ApplicationsRestClientService.class);
+  private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(ApplicationsRestClientService.class);
 
-  private Gson gson = null;
+  private final Gson gson = null;
 
   private final ObjectMapper mapper = new ObjectMapper();
 

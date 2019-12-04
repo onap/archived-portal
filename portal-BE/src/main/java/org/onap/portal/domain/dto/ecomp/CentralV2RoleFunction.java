@@ -48,7 +48,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.validator.constraints.SafeHtml;
-import org.onap.portal.domain.dto.DomainVo;
+import org.onap.portal.domain.db.DomainVo;
 
 @Getter
 @Setter
@@ -76,7 +76,7 @@ public class CentralV2RoleFunction extends DomainVo implements Serializable, Com
        public CentralV2RoleFunction(Long id, String code, String name, Long appId, String type, String action,
                String editUrl) {
               super();
-              this.id = id;
+              super.setId(id);
               this.code = code;
               this.name = name;
               this.appId = appId;
@@ -87,7 +87,7 @@ public class CentralV2RoleFunction extends DomainVo implements Serializable, Com
 
        public CentralV2RoleFunction(Long id, String code, String name, Long appId, String editUrl) {
               super();
-              this.id = id;
+              super.setId(id);
               this.code = code;
               this.name = name;
               this.appId = appId;

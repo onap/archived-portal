@@ -92,12 +92,12 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 @EPAuditLog
 public class WidgetsCatalogController {
 
-       private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(WidgetsCatalogController.class);
+       private final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(WidgetsCatalogController.class);
 
        private static final String MS_WIDGET_LOCAL_PORT = "microservices.widget.local.port";
        private static final String UNAUTHORIZED_OR_FORBIDDEN_FOR_A_DISABLED_USER = "Unauthorized or  Forbidden for a disabled user";
-       private RestTemplate template = new RestTemplate();
-       private String whatService = "widgets-service";
+       private final RestTemplate template = new RestTemplate();
+       private final String whatService = "widgets-service";
 
        private final EpWidgetCatalogParameterService epWidgetCatalogParameterService;
        private final EpMicroserviceParameterService epMicroserviceParameterService;
@@ -326,7 +326,7 @@ public class WidgetsCatalogController {
                             userResult.setDefaultValue(param.getPara_value());
                             userResult.setParamKey(param.getPara_key());
                             EpWidgetCatalogParameter userValue = epWidgetCatalogParameterService
-                                    .getUserParamById(widgetId, user.getUserId(),
+                                    .getUserParamById(widgetId, user.getId(),
                                             param.getId());
                             if (userValue == null) {
                                    userResult.setUserValue(param.getPara_value());
@@ -410,7 +410,7 @@ public class WidgetsCatalogController {
               try {
                      EpWidgetCatalogParameter oldParam = epWidgetCatalogParameterService
                              .getUserParamById(widgetParameters.getWidgetId().getWidgetId(),
-                                     widgetParameters.getUserId().getUserId(), widgetParameters.getParamId().getId());
+                                     widgetParameters.getUserId().getId(), widgetParameters.getParamId().getId());
                      if (oldParam != null) {
                             oldParam.setParamId(widgetParameters.getParamId());
                             oldParam.setUserId(widgetParameters.getUserId());

@@ -54,6 +54,7 @@ import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.Valid;
 import javax.validation.constraints.Digits;
@@ -61,6 +62,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -99,6 +101,7 @@ CREATE TABLE `fn_menu` (
 })
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Getter
 @Setter
 @Entity
@@ -112,7 +115,7 @@ public class FnMenu implements Serializable {
        @Size(max = 100)
        @SafeHtml
        private String label;
-       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
        @JoinColumn(name = "parent_Id", columnDefinition = "int(11) DEFAULT NULL")
        @Valid
        private FnMenu parentId;
@@ -127,12 +130,9 @@ public class FnMenu implements Serializable {
        @Size(max = 30)
        @SafeHtml
        private String functionCd;
-       @Column(name = "active_yn", length = 1, columnDefinition = "character varying(1) default 'y'", nullable = false)
-       @Pattern(regexp = "[YNyn]")
-       @Size(max = 1)
+       @Column(name = "active_yn", length = 1, columnDefinition = "boolean default true", nullable = false)
        @NotNull
-       @SafeHtml
-       private String activeYn;
+       private Boolean activeYn = true;
        @Column(name = "servlet", length = 50, columnDefinition = "varchar(50) DEFAULT NULL")
        @Size(max = 50)
        @SafeHtml
@@ -151,16 +151,13 @@ public class FnMenu implements Serializable {
        @Size(max = 25)
        @SafeHtml
        private String target;
-       @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+       @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
        @JoinColumn(name = "menu_set_cd", columnDefinition = "character varying(10) default 'app'", foreignKey = @ForeignKey(name = "fk_fn_menu_menu_set_cd"))
        @Valid
        private FnLuMenuSet menuSetCd;
-       @Column(name = "separator_yn", length = 1, columnDefinition = "character varying(1) default 'n'")
-       @Pattern(regexp = "[YNyn]")
-       @Size(max = 1)
+       @Column(name = "separator_yn", length = 1, columnDefinition = "boolean default false")
        @NotNull
-       @SafeHtml
-       private String separatorYn;
+       private Boolean separatorYn = false;
        @Column(name = "image_src", length = 100, columnDefinition = "varchar(100) DEFAULT NULL")
        @Size(max = 100)
        @SafeHtml
@@ -168,7 +165,7 @@ public class FnMenu implements Serializable {
        @OneToMany(
                targetEntity = FnMenu.class,
                mappedBy = "parentId",
-               cascade = CascadeType.ALL,
+               cascade = CascadeType.MERGE,
                fetch = FetchType.LAZY
        )
        private Set<FnMenu> fnMenus;

@@ -87,7 +87,7 @@ CREATE TABLE `cr_report_access` (
 @IdClass(CrReportAccessId.class)
 public class CrReportAccess implements Serializable{
        @Id
-       @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+       @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
        @JoinColumn(name = "rep_id")
        @Valid
        private CrReport repId;

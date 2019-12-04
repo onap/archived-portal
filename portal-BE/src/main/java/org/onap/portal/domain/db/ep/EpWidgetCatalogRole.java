@@ -89,17 +89,17 @@ public class EpWidgetCatalogRole implements Serializable {
        @Column(name = "id", length = 11, nullable = false)
        @Digits(integer = 11, fraction = 0)
        private Long id;
-       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
        @JoinColumn(name = "widget_id", nullable = false)
        @NotNull
        @Valid
        private EpWidgetCatalog widgetId;
-       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
        @JoinColumn(name = "app_id", columnDefinition = "bigint default '1'")
        @Valid
        private FnApp appId;
-       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-       @JoinColumn(name = "role_id", nullable = false)
+       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+       @JoinColumn(name = "role_id", nullable = false, columnDefinition = "bigint")
        @NotNull
        @Valid
        private FnRole roleId;

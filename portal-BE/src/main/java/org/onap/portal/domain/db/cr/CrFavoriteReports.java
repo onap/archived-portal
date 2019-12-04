@@ -43,8 +43,11 @@ package org.onap.portal.domain.db.cr;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.Positive;
@@ -77,6 +80,8 @@ CREATE TABLE `cr_favorite_reports` (
 public class CrFavoriteReports implements Serializable{
        @Id
        @Column(name = "user_id", length = 11, nullable = false)
+
+  @GeneratedValue(strategy = GenerationType.AUTO)
        @Digits(integer = 11, fraction = 0)
        @Positive
        private Long userId;

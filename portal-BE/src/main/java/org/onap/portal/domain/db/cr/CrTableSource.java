@@ -113,21 +113,21 @@ public class CrTableSource implements Serializable {
        @OneToMany(
                targetEntity = CrTableJoin.class,
                mappedBy = "srcTableName",
-               cascade = CascadeType.ALL,
+               cascade = CascadeType.MERGE,
                fetch = FetchType.LAZY
        )
        private Set<CrTableJoin> crTableJoins;
        @OneToMany(
                targetEntity = CrTableJoin.class,
                mappedBy = "destTableName",
-               cascade = CascadeType.ALL,
+               cascade = CascadeType.MERGE,
                fetch = FetchType.LAZY
        )
        private Set<CrTableJoin> crTableJoins1;
        @OneToMany(
                targetEntity = CrTableRole.class,
                mappedBy = "tableName",
-               cascade = CascadeType.ALL,
+               cascade = CascadeType.MERGE,
                fetch = FetchType.LAZY
        )
        private Set<CrTableRole> crTableRoles;

@@ -47,7 +47,6 @@ import javax.persistence.Entity;
 import javax.persistence.EntityResult;
 import javax.persistence.FetchType;
 import javax.persistence.FieldResult;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.MapsId;
 import javax.persistence.NamedNativeQueries;
@@ -59,13 +58,14 @@ import javax.validation.Valid;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.validator.constraints.SafeHtml;
 import org.hibernate.validator.constraints.URL;
-import org.onap.portal.domain.dto.DomainVo;
+import org.onap.portal.domain.db.DomainVo;
 
 /*
 CREATE TABLE `fn_app_contact_us` (
@@ -137,17 +137,14 @@ CREATE TABLE `fn_app_contact_us` (
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
+@Builder
 @Getter
 @Setter
 @Entity
 public class FnAppContactUs extends DomainVo implements Serializable {
-       @Id
-       @Column(name = "app_id")
-       private Long appId;
 
-       @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-       @JoinColumn(name = "app_id")
-       @MapsId
+       @OneToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
+       @JoinColumn(name = "app_id", columnDefinition = "bigint")
        @Valid
        private FnApp fnApp;
        @Column(name = "contact_name", length = 128, columnDefinition = "varchar(128) default null")
