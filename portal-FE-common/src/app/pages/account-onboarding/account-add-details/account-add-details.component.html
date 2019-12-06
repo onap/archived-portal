@@ -1,0 +1,132 @@
+<!--
+  ============LICENSE_START==========================================
+  ONAP Portal
+  ===================================================================
+  Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+  ===================================================================
+ 
+  Unless otherwise specified, all software contained herein is licensed
+  under the Apache License, Version 2.0 (the "License");
+  you may not use this software except in compliance with the License.
+  You may obtain a copy of the License at
+ 
+              http://www.apache.org/licenses/LICENSE-2.0
+ 
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+ 
+  Unless otherwise specified, all documentation contained herein is licensed
+  under the Creative Commons License, Attribution 4.0 Intl. (the "License");
+  you may not use this documentation except in compliance with the License.
+  You may obtain a copy of the License at
+ 
+              https://creativecommons.org/licenses/by/4.0/
+ 
+  Unless required by applicable law or agreed to in writing, documentation
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+ 
+  ============LICENSE_END============================================
+ 
+  
+  -->
+  
+  <div class="container">
+    <!--Modal Headers-->
+    <div class="modal-header">
+      <h4 class="modal-title">Account Details</h4>
+      <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('Cross')">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+  
+    <!--Modal Body goes here-->
+    <div class="modal-body">
+      <!-- Add Account Popup code goes here-->
+      <div class="account-properties-main">
+        <form id="account-details-form" name="accountDetailsForm" novalidate  autocomplete="off" method="post">  
+          <div class="item required">         
+            <div class="item-label">Account Name</div>
+            <input id="account-onboarding-details-input-name" class="table-search-field"
+                type="text" ng-change="accountAddDetails.updateAccountName()" name="accountname"
+                [(ngModel)]="accountOnboarding.applicationName"
+                ng-pattern="/^[\w -]*$/" maxlength="100" required />
+          </div>
+
+          <div class="item required">  
+            <div class="item-label">Username</div>
+            <input id="account-onboarding-details-input-username" class="table-search-field"
+                type="text"
+                ng-change="accountAddDetails.updateUsername()" name="username"
+                [(ngModel)]="accountOnboarding.username"/>
+          </div>      
+
+          <div class="item">
+            <div class="item-label">Password</div>
+            <input id="account-onboarding-details-input-password" class="table-search-field"
+                type="password" name="password" [(ngModel)]="accountOnboarding.password" 
+                maxlength="100" autocomplete="off"/>
+          </div>
+
+          <div class="item">
+            <div class="item-label">Retype Password</div>
+            <input id="account-onboarding-details-input-repassword" class="table-search-field"
+                type="password" name="repassword"
+                [(ngModel)]="accountOnboarding.repassword" maxlength="100"/>
+          </div>
+
+          <div class="add-endpoint-item">
+            <div class="item-label add-label-left">Add Endpoint</div>
+            <div class="add-label-right" id="accountAddDetails-button-accordion"
+              (click)="addEndpoint()"><i class="icon ion-ios-add-circle-outline"></i>
+            </div>
+          </div>
+          
+          <div class="item">
+              <div class="item-label" *ngIf="accountOnboarding.endpointList && accountOnboarding.endpointList.length > 0">
+                Account endpoint
+              </div>
+    
+              <div id="account-details-user-paramters"  *ngFor="let endpoint of accountOnboarding.endpointList">
+                <div class="endpoint-item-left">
+                  <input id="account-details-input-endpoint-name"
+                    type="text" name="endpointName"
+                    maxlength="200" ng-model="endpoint.name" 
+                    ng-change="accountAddDetails.updateAccountEndpoint(endpoint)"/>
+                </div>
+    
+                <div class="icon-circle-action-remove endpoint-item-middle"
+                  (click)="removeEndpointItem(endpoint)"><span><i class="icon ion-ios-remove-circle-outline"></i></span>
+                </div>
+                  
+                <div class="error-container endpoint-item-right"
+                    *ngIf="endpoint.valid == false">
+                    <small id="accounts-details-input-invalid-endpoint"
+                      class="err-message">Invalid end point format
+                    </small>
+                </div>     
+              </div>
+
+              <div class="account-property">
+                <div class="property-label checkbox-label">
+                  <mat-checkbox name="isActive" type="checkbox" [(ngModel)]="accountOnboarding.isActive"
+                      id="accounts-checkbox-app-is-enabled" [checked]="accountOnboarding.isActive">
+                      Active
+                  </mat-checkbox> 
+                </div>	
+            </div>
+          </div>
+        </form>
+        </div>
+    </div>
+    <!--Modal Footer goes Here-->
+    <div class="modal-footer">
+      <button type="button" class="btn btn-primary" (click)="saveChanges()">Save</button> &nbsp;
+      <button type="button" class="btn btn-primary" (click)="activeModal.close('Close')">Cancel</button>
+    </div>
+  </div>

@@ -1,0 +1,78 @@
+<!--
+  ============LICENSE_START==========================================
+  ONAP Portal
+  ===================================================================
+  Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+  ===================================================================
+ 
+  Unless otherwise specified, all software contained herein is licensed
+  under the Apache License, Version 2.0 (the "License");
+  you may not use this software except in compliance with the License.
+  You may obtain a copy of the License at
+ 
+              http://www.apache.org/licenses/LICENSE-2.0
+ 
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+ 
+  Unless otherwise specified, all documentation contained herein is licensed
+  under the Creative Commons License, Attribution 4.0 Intl. (the "License");
+  you may not use this documentation except in compliance with the License.
+  You may obtain a copy of the License at
+ 
+              https://creativecommons.org/licenses/by/4.0/
+ 
+  Unless required by applicable law or agreed to in writing, documentation
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+ 
+  ============LICENSE_END============================================
+ 
+  
+  -->
+
+<div class="container">
+  <div class="ecomp-main-view-title">
+      <h1 class="heading-page">App Account Management</h1>
+  </div>
+  <button type="button" style="float: right;" class="btn btn-primary" (click)="openAddNewAccountModal('')">
+      <i class="icon ion-md-person-add"></i>Add Account
+  </button>
+  <div>
+    <table mat-table [dataSource]="dataSource" matSort>
+        <!-- Account Name Column -->
+        <ng-container matColumnDef="accountName">
+          <th id="col1" mat-header-cell *matHeaderCellDef> Account Name  </th>
+          <td (click)="openAddNewAccountModal(element)" id="rowheader_t1_{{i}}-accountName" 
+            mat-cell *matCellDef="let element; let i = index;"> {{element.applicationName}}
+          </td>
+        </ng-container>
+    
+        <!-- 	Username  Column -->
+        <ng-container matColumnDef="userName">
+          <th id="col2" mat-header-cell *matHeaderCellDef> Username </th>
+          <td (click)="openAddNewAccountModal(element)" id="rowheader_t1_{{i}}-userName" 
+            mat-cell *matCellDef="let element; let i=index;"> {{element.username}} </td>
+        </ng-container>
+
+        <!-- Delete Column -->
+        <ng-container matColumnDef="delete">
+          <th id="col4" mat-header-cell *matHeaderCellDef> Delete </th>
+          <td id="rowheader_t1_{{i}}" mat-cell *matCellDef="let element; let i=index;">
+            <span class="icon-trash" id="{{i}}-button-portal-admin-remove" (click)="deleteAccount(element)">
+              <i class="icon ion-md-trash"></i>
+            </span>
+          </td>
+        </ng-container>
+    
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+    <mat-paginator [pageSizeOptions]="[10, 20]" showFirstLastButtons></mat-paginator>
+  </div>
+</div>
