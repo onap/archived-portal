@@ -1,0 +1,214 @@
+<!--
+  ============LICENSE_START==========================================
+  ONAP Portal
+  ===================================================================
+  Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+  ===================================================================
+ 
+  Unless otherwise specified, all software contained herein is licensed
+  under the Apache License, Version 2.0 (the "License");
+  you may not use this software except in compliance with the License.
+  You may obtain a copy of the License at
+ 
+              http://www.apache.org/licenses/LICENSE-2.0
+ 
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+ 
+  Unless otherwise specified, all documentation contained herein is licensed
+  under the Creative Commons License, Attribution 4.0 Intl. (the "License");
+  you may not use this documentation except in compliance with the License.
+  You may obtain a copy of the License at
+ 
+              https://creativecommons.org/licenses/by/4.0/
+ 
+  Unless required by applicable law or agreed to in writing, documentation
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+ 
+  ============LICENSE_END============================================
+ 
+  
+  -->
+  
+<div class="container">
+  <form name="form" (ngSubmit)="f.form.valid && saveChanges()" #f="ngForm" novalidate autocomplete="off">
+
+    <!--Modal Headers-->
+    <div class="modal-header">
+      <h4 class="modal-title">Microservice Onboarding</h4>
+      <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('Cross')">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+  
+    <!--Modal Body goes here-->
+    <div class="modal-body">
+      <div id="microservices" class="microservice-add-details-model">
+        <div class="microservice-properties-main">
+            <div class="item required">
+              <div class="item-label">Microservice Name</div>
+              <input id="microservice-details-input-name" class="table-search-field"
+                type="text" name="name" #name="ngModel" ng-pattern="/^[\w -]*$/" maxlength="100"
+                [(ngModel)]="ms.name"
+                ng-change="microserviceAddDetails.updateServiceName()"
+                [ngClass]="{'is-invalid': f.submitted && name.invalid}" required />
+
+                <div class="error-container" *ngIf="f.submitted && name.invalid">
+                    <div class="error-container">
+                      <small id="microservices-details-input-name-required" class="err-message">
+                        Microservice Name is required
+                      </small>
+                    </div>
+                </div>    
+            </div>
+
+            
+            <div class="item required">
+                <div class="item-label">Microservice Description</div>
+                  <textarea b2b-reset b2b-reset-textarea id="widgets-details-input-desc"
+                    name="desc" [(ngModel)]="ms.desc" #desc="ngModel" class="microservice-desc"
+                    ng-change="microserviceAddDetails.updateDesc()"
+                    [ngClass]="{'is-invalid': f.submitted && desc.invalid}" required>
+                  </textarea>
+
+                  <div class="error-container" *ngIf="f.submitted && desc.invalid">
+                      <div class="error-container">
+                        <small id="microservices-details-input-desc-required" class="err-message">
+                          Microservice Description is required
+                        </small>
+                      </div>
+                  </div>    
+            </div>
+
+            <div class="item required">
+                <div class="service-select">					
+                  <mat-form-field>
+                    <mat-label>Applications Name</mat-label>
+                    <mat-select name="microservice-details-application-select"
+                       [(ngModel)]="ms.appId" #appId="ngModel" [(value)]="selected"
+                       [ngClass]="{'is-invalid': f.submitted && appId.invalid}" required>
+                      <mat-option *ngFor="let d of applicationList" [value]="d.value" >{{d.title}}</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+
+                <div class="error-container" *ngIf="f.submitted && appId.invalid">
+                    <div class="error-container">
+                      <small id="microservices-details-input-appid-required" class="err-message">
+                          Please select microservice Application
+                      </small>
+                    </div>
+                </div>       
+            </div>
+
+            <div class="item required">
+              <div class="item-label">Microservice Endpoint URL</div>
+              <input id="microservice-details-input-endpoint-url"
+                [(ngModel)]="ms.url" #url="ngModel" ng-change="microserviceAddDetails.updateURL()" type="text"
+                name="url" maxlength="200" [ngClass]="{'is-invalid': f.submitted && url.invalid}" required />
+
+                <div class="error-container" *ngIf="f.submitted && url.invalid">
+                    <div class="error-container">
+                      <small id="microservices-details-input-url-required" class="err-message">
+                        Microservice Endpoint URL is required
+                      </small>
+                    </div>
+                </div>    
+            </div>
+
+            <div class="item">
+              <div class="service-select">					
+                  <mat-form-field>
+                    <mat-label>Security Type</mat-label>
+                    <mat-select name="microservice-details-input-security-type" [(ngModel)]="ms.securityType" [(value)]="selected">
+                      <mat-option *ngFor="let d of availableSecurityTypes" [value]="d.name" >{{d.name}}</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+              </div>			
+            </div>
+
+            <div class="item" *ngIf="ms.securityType == 'Basic Authentication'">
+              <div class="item-label">Username</div>
+              <input id="microservice-details-input-username" class="table-search-field"
+                type="text" name="username" maxlength="100"
+                [(ngModel)]="ms.username" />
+            </div>
+
+            <div class="item" *ngIf="ms.securityType == 'Basic Authentication'">
+              <div class="item-label">Password</div>
+              <input id="microservice-details-input-password" class="table-search-field"
+                type="password" name="password" maxlength="100"
+                [(ngModel)]="ms.password" />
+            </div>
+
+            <div class="item" *ngIf="isEditMode">
+                <div class="left-test-item">
+                  <div class="item-label">Test Microservice</div>
+                </div>
+                <div class="right-test-item">
+                  <div id="microservice-details-test-button" class="test-button"
+                    (click)="testServiceURL()">Test</div>
+                </div>
+            </div>
+                    
+            <div class="item" *ngIf="isEditMode">
+                <div class="item-label">JSON output</div>
+                <textarea id="microservice-details-input-json" class="json-field"
+                  name="json"></textarea>
+            </div>
+
+            <div class="add-para-item">
+                <div class="item-label add-label-left">Add User Parameter</div>
+                <div class="icon-primary-accordion-plus" (click)="addParameter()">
+                    <i class="icon ion-ios-add-circle-outline"></i>
+                </div>
+            </div>
+
+            <div class="item">
+              <div class="param-label-item-left"
+                *ngIf="ms.parameterList.length > 0">
+                Parameter Key
+              </div>
+              <div class="para-label-item-right"
+                *ngIf="ms.parameterList.length > 0">
+                Parameter Default Value
+              </div>
+
+              <div id="microservice-details-user-paramters" *ngFor="let parameter of ms.parameterList; let i=index">
+                <div class="param-item-left">
+                        <input id="microservice-details-input-user-parameter-key"
+                          class="table-search-field" type="text" name="param-key" maxlength="200"
+                          [(ngModel)]="parameter.para_key" />
+                        <input id="microservice-details-input-user-parameter-value"
+                          class="table-search-fields" type="text" name="param-value"
+                          maxlength="200" [(ngModel)]="parameter.para_value" />
+                </div>
+
+                <div (click)="removeParamItem(parameter)">
+                    <i class="icon ion-ios-remove-circle-outline"></i>
+                </div>
+              </div>
+
+              <div class="microservice-property">	
+                  <mat-checkbox  name="active" type="checkbox" [(ngModel)]="ms.active"
+                    id="microservices-checkbox-app-is-enabled" [checked]="ms.active">
+                    Active
+                  </mat-checkbox>
+              </div>
+            </div>
+          </div>
+      </div> 
+    </div>
+    <!--Modal Footer goes Here-->
+    <div class="modal-footer">
+      <button type="submit" class="btn btn-primary">Save</button> &nbsp;
+      <button type="button" class="btn btn-primary" (click)="activeModal.close('Close')">Cancel</button>
+    </div>
+  </form>
+</div>
