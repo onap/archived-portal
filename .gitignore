@@ -15,3 +15,4 @@ kubernetes/.settings
 kubernetes/.classpath/*
 kubernetes/.settings/*
 ecomp-portal-FE-att/client/bower*
+/.metadata/
