@@ -141,54 +141,21 @@
                   <scope>compile</scope>
             </dependency>
             <dependency>
-                  <groupId>io.swagger</groupId>
-                  <artifactId>swagger-annotations</artifactId>
-                  <version>2.0.0-rc2</version>
-                  <scope>compile</scope>
-            </dependency>
-            <dependency>
-                  <groupId>io.swagger</groupId>
-                  <artifactId>swagger-annotations</artifactId>
-                  <version>2.0.0-rc2</version>
-                  <scope>compile</scope>
-            </dependency>
-            <dependency>
-                  <groupId>io.swagger</groupId>
-                  <artifactId>swagger-annotations</artifactId>
-                  <version>1.5.20</version>
-            </dependency>
-            <dependency>
-                  <groupId>io.swagger</groupId>
-                  <artifactId>swagger-annotations</artifactId>
-                  <version>2.0.0-rc2</version>
-                  <scope>compile</scope>
-            </dependency>
-            <dependency>
-                  <groupId>io.swagger</groupId>
-                  <artifactId>swagger-annotations</artifactId>
-                  <version>1.5.20</version>
-            </dependency>
-            <dependency>
-                  <groupId>io.swagger</groupId>
-                  <artifactId>swagger-annotations</artifactId>
-                  <version>2.0.0-rc2</version>
-                  <scope>compile</scope>
-            </dependency>
-            <dependency>
-                  <groupId>io.swagger</groupId>
-                  <artifactId>swagger-annotations</artifactId>
-                  <version>2.0.0-rc2</version>
-                  <scope>compile</scope>
-            </dependency>
-            <dependency>
-                  <groupId>io.swagger</groupId>
-                  <artifactId>swagger-annotations</artifactId>
-                  <version>1.5.20</version>
-            </dependency>
-            <dependency>
                   <groupId>org.apache.cxf</groupId>
                   <artifactId>cxf-rt-rs-client</artifactId>
                   <version>3.3.4</version>
+                  <scope>compile</scope>
+            </dependency>
+          <dependency>
+              <groupId>org.hibernate.validator</groupId>
+              <artifactId>hibernate-validator</artifactId>
+              <version>6.0.18.Final</version>
+              <scope>compile</scope>
+          </dependency>
+            <dependency>
+                  <groupId>io.swagger</groupId>
+                  <artifactId>swagger-annotations</artifactId>
+                  <version>1.5.13</version>
                   <scope>compile</scope>
             </dependency>
       </dependencies>
