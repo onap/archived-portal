@@ -47,7 +47,7 @@ import org.onap.portal.domain.db.fn.FnUser;
 import org.onap.portal.domain.dto.PortalRestResponse;
 import org.onap.portal.domain.dto.PortalRestStatusEnum;
 import org.onap.portal.domain.dto.transport.ProfileDetail;
-import org.onap.portal.service.fn.FnUserService;
+import org.onap.portal.service.user.FnUserService;
 import org.onap.portalsdk.core.onboarding.exception.CipherUtilException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

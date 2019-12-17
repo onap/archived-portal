@@ -57,7 +57,6 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
-import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.Tuple;
@@ -96,15 +95,15 @@ import org.onap.portal.exception.DeleteDomainObjectFailedException;
 import org.onap.portal.exception.SyncUserRolesException;
 import org.onap.portal.logging.format.EPAppMessagesEnum;
 import org.onap.portal.logging.logic.EPLogUtil;
-import org.onap.portal.service.ep.EpAppFunctionService;
-import org.onap.portal.service.ep.EpUserRolesRequestDetService;
-import org.onap.portal.service.ep.EpUserRolesRequestService;
-import org.onap.portal.service.fn.FnAppService;
-import org.onap.portal.service.fn.FnMenuFunctionalRolesService;
-import org.onap.portal.service.fn.FnMenuFunctionalService;
-import org.onap.portal.service.fn.FnRoleService;
-import org.onap.portal.service.fn.FnUserRoleService;
-import org.onap.portal.service.fn.FnUserService;
+import org.onap.portal.service.appFunction.EpAppFunctionService;
+import org.onap.portal.service.userRolesRequestDet.EpUserRolesRequestDetService;
+import org.onap.portal.service.userRolesRequest.EpUserRolesRequestService;
+import org.onap.portal.service.app.FnAppService;
+import org.onap.portal.service.menuFunctionalRoles.FnMenuFunctionalRolesService;
+import org.onap.portal.service.menuFunctional.FnMenuFunctionalService;
+import org.onap.portal.service.role.FnRoleService;
+import org.onap.portal.service.userRole.FnUserRoleService;
+import org.onap.portal.service.user.FnUserService;
 import org.onap.portal.utils.EPCommonSystemProperties;
 import org.onap.portal.utils.EPUserUtils;
 import org.onap.portal.utils.EcompPortalUtils;
@@ -223,7 +222,7 @@ public class AdminRolesService {
     return false;
   }
 
-  boolean isUser(FnUser user) {
+  public boolean isUser(FnUser user) {
     try {
       FnUser currentUser = fnUserService.getUser(user.getId()).orElseThrow(Exception::new);
       if (currentUser != null && currentUser.getId() != null) {

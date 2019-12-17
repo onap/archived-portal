@@ -60,7 +60,7 @@ public class FnLanguageServiceAOP {
        @Autowired
        private DataValidator dataValidator;
 
-       @Before("execution(* org.onap.portal.service.fn.FnLanguageService.save(..)) && args(fnLanguage)")
+       @Before("execution(* org.onap.portal.service.language.FnLanguageService.save(..)) && args(fnLanguage)")
        public void save(final FnLanguage fnLanguage) {
               if (fnLanguage == null) {
                      LOGGER.info("User " +  " try to save NULL fnLanguage");
@@ -75,7 +75,7 @@ public class FnLanguageServiceAOP {
               }
        }
 
-       @Before("execution(* org.onap.portal.service.fn.FnLanguageService.getLanguageList(..)) && args(principal)")
+       @Before("execution(* org.onap.portal.service.language.FnLanguageService.getLanguageList(..)) && args(principal)")
        public void getLanguageList(final Principal principal) {
               LOGGER.info("User " + principal.getName() + " try requested for all language list");
        }

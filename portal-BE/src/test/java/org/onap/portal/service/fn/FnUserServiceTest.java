@@ -48,10 +48,12 @@ import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
-import org.onap.portal.dao.fn.FnLanguageDao;
+import org.onap.portal.service.language.FnLanguageService;
 import org.onap.portal.domain.db.fn.FnLanguage;
 import org.onap.portal.domain.db.fn.FnLuTimezone;
 import org.onap.portal.domain.db.fn.FnUser;
+import org.onap.portal.service.luTimezone.FnLuTimezoneService;
+import org.onap.portal.service.user.FnUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -71,8 +73,6 @@ class FnUserServiceTest {
        private FnLuTimezoneService fnLuTimezoneService;
        @Autowired
        private FnLanguageService fnLanguageService;
-       @Autowired
-       private FnLanguageDao fnLanguageDao;
 
        @Test
        void saveUser(){
@@ -96,7 +96,7 @@ class FnUserServiceTest {
               expected.setCountryCd("US");
               expected.setLanguageId(fnLanguageService.findById(1L).orElse(new FnLanguage()));
               expected.setGuest(false);
-              FnLanguage language = fnLanguageDao.getByLanguageAlias("EN");
+              FnLanguage language = fnLanguageService.getByLanguageAlias("EN");
               expected.setLanguageId(language);
 
               //When

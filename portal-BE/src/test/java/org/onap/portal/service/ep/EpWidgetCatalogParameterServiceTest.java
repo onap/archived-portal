@@ -43,19 +43,20 @@ package org.onap.portal.service.ep;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.HashSet;
+
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.onap.portal.controller.WidgetsCatalogController;
-import org.onap.portal.dao.fn.FnLanguageDao;
 import org.onap.portal.domain.db.ep.EpMicroserviceParameter;
 import org.onap.portal.domain.db.ep.EpWidgetCatalog;
 import org.onap.portal.domain.db.ep.EpWidgetCatalogParameter;
 import org.onap.portal.domain.db.fn.FnLanguage;
 import org.onap.portal.domain.db.fn.FnUser;
-import org.onap.portal.service.fn.FnLanguageService;
-import org.onap.portal.service.fn.FnUserService;
+import org.onap.portal.service.language.FnLanguageService;
+import org.onap.portal.service.microserviceParameter.EpMicroserviceParameterService;
+import org.onap.portal.service.user.FnUserService;
+import org.onap.portal.service.widgetCatalog.EpWidgetCatalogService;
+import org.onap.portal.service.widgetCatalogParameter.EpWidgetCatalogParameterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -77,7 +78,7 @@ class EpWidgetCatalogParameterServiceTest {
        private final FnUserService fnUserService;
        private final EpMicroserviceParameterService epMicroserviceParameterService;
        private final EpWidgetCatalogService epWidgetCatalogService;
-       private final FnLanguageDao fnLanguageDao;
+       private final FnLanguageService fnLanguageService;
 
        @Autowired
        public EpWidgetCatalogParameterServiceTest(
@@ -85,13 +86,13 @@ class EpWidgetCatalogParameterServiceTest {
            WidgetsCatalogController widgetsCatalogController,
            FnUserService fnUserService,
            EpMicroserviceParameterService epMicroserviceParameterService,
-           EpWidgetCatalogService epWidgetCatalogService, FnLanguageDao fnLanguageDao) {
+           EpWidgetCatalogService epWidgetCatalogService, FnLanguageService fnLanguageService) {
               this.epWidgetCatalogParameterService = epWidgetCatalogParameterService;
               this.widgetsCatalogController = widgetsCatalogController;
               this.fnUserService = fnUserService;
               this.epMicroserviceParameterService = epMicroserviceParameterService;
               this.epWidgetCatalogService = epWidgetCatalogService;
-              this.fnLanguageDao = fnLanguageDao;
+              this.fnLanguageService = fnLanguageService;
        }
 
        @Test
@@ -154,7 +155,7 @@ class EpWidgetCatalogParameterServiceTest {
        }
 
        private FnUser buildFnUser() {
-              FnLanguage language = fnLanguageDao.getByLanguageAlias("EN");
+              FnLanguage language = fnLanguageService.getByLanguageAlias("EN");
               return FnUser.builder()
                       .lastLoginDate(LocalDateTime.now())
                       .activeYn(true)

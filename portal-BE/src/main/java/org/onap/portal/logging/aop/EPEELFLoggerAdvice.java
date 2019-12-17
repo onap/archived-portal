@@ -50,7 +50,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.onap.portal.domain.db.fn.FnApp;
 import org.onap.portal.domain.db.fn.FnUser;
 import org.onap.portal.service.AppsCacheService;
-import org.onap.portal.service.fn.FnUserService;
+import org.onap.portal.service.user.FnUserService;
 import org.onap.portal.utils.EPCommonSystemProperties;
 import org.onap.portal.utils.EcompPortalUtils;
 import org.onap.portalsdk.core.exception.SessionExpiredException;

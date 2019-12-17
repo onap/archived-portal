@@ -49,6 +49,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.onap.portal.domain.db.fn.FnUser;
 import org.onap.portal.domain.dto.ecomp.EPUserAppCatalogRoles;
+import org.onap.portal.service.user.FnUserService;
+import org.onap.portal.service.userRole.FnUserRoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;

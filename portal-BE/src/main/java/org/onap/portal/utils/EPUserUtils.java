@@ -63,7 +63,7 @@ import org.onap.portal.domain.db.fn.FnUser;
 import org.onap.portal.domain.db.fn.FnUserRole;
 import org.onap.portal.domain.dto.transport.Role;
 import org.onap.portal.exception.RoleFunctionException;
-import org.onap.portal.service.fn.old.EPRoleFunctionService;
+import org.onap.portal.service.EPRoleFunctionService;
 import org.onap.portalsdk.core.domain.RoleFunction;
 import org.onap.portalsdk.core.exception.SessionExpiredException;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;

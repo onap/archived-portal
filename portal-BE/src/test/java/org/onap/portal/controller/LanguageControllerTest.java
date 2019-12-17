@@ -45,13 +45,13 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
-import org.onap.portal.dao.fn.FnLanguageDao;
 import org.onap.portal.domain.db.fn.FnLanguage;
 import org.onap.portal.domain.db.fn.FnUser;
 import org.onap.portal.domain.dto.PortalRestResponse;
 import org.onap.portal.domain.dto.PortalRestStatusEnum;
 import org.onap.portal.domain.dto.fn.FnLanguageDto;
-import org.onap.portal.service.fn.FnUserService;
+import org.onap.portal.service.language.FnLanguageService;
+import org.onap.portal.service.user.FnUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -69,7 +69,7 @@ class LanguageControllerTest {
        @Autowired
        private LanguageController languageController;
        @Autowired
-       private FnLanguageDao fnLanguageDao;
+       private FnLanguageService fnLanguageService;
        @Autowired
        private FnUserService fnUserService;
 
@@ -89,7 +89,7 @@ class LanguageControllerTest {
               assertEquals(expected.getMessage(), actual.getMessage());
               assertEquals(expected.getStatus(), actual.getStatus());
               //Clean up
-              fnLanguageDao.delete(fnLanguage);
+              fnLanguageService.delete(fnLanguage);
        }
 
        @Test
@@ -109,7 +109,7 @@ class LanguageControllerTest {
               assertEquals(expected.getMessage(), actual.getMessage());
               assertEquals(expected.getStatus(), actual.getStatus());
               //Clean up
-              fnLanguageDao.delete(fnLanguage);
+              fnLanguageService.delete(fnLanguage);
        }
 
        @Test
@@ -138,7 +138,7 @@ class LanguageControllerTest {
 
 
               //Clean up
-              fnLanguageDao.delete(fnLanguage);
+              fnLanguageService.delete(fnLanguage);
        }
 
        @Test
@@ -162,7 +162,7 @@ class LanguageControllerTest {
 
 
               //Clean up
-              fnLanguageDao.delete(fnLanguage);
+              fnLanguageService.delete(fnLanguage);
        }
 
 

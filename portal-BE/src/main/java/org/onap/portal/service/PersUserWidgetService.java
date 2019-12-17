@@ -43,13 +43,13 @@ package org.onap.portal.service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.onap.portal.dao.ep.EpPersUserWidgetSelDao;
-import org.onap.portal.dao.fn.EpWidgetCatalogDao;
 import org.onap.portal.domain.db.ep.EpPersUserWidgetSel;
 import org.onap.portal.domain.db.ep.EpWidgetCatalog;
 import org.onap.portal.domain.db.fn.FnUser;
 import org.onap.portal.domain.dto.ecomp.PersUserWidgetSelection;
 import org.onap.portal.domain.dto.transport.WidgetCatalogPersonalization;
+import org.onap.portal.service.persUserWidgetSel.EpPersUserWidgetSelService;
+import org.onap.portal.service.widgetCatalog.EpWidgetCatalogService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,14 +61,14 @@ import org.springframework.transaction.annotation.Transactional;
 public class PersUserWidgetService {
 
        private static final Logger LOGGER = LoggerFactory.getLogger(PersUserWidgetService.class);
-       private final EpPersUserWidgetSelDao epPersUserWidgetSelDao;
-       private final EpWidgetCatalogDao epWidgetCatalogDao;
+       private final EpPersUserWidgetSelService epPersUserWidgetSelService;
+       private final EpWidgetCatalogService epWidgetCatalogService;
 
        @Autowired
-       public PersUserWidgetService(final EpPersUserWidgetSelDao epPersUserWidgetSelDao,
-               final EpWidgetCatalogDao epWidgetCatalogDao) {
-              this.epPersUserWidgetSelDao = epPersUserWidgetSelDao;
-              this.epWidgetCatalogDao = epWidgetCatalogDao;
+       public PersUserWidgetService(final EpPersUserWidgetSelService epPersUserWidgetSelService,
+               final EpWidgetCatalogService epWidgetCatalogService) {
+              this.epPersUserWidgetSelService = epPersUserWidgetSelService;
+              this.epWidgetCatalogService = epWidgetCatalogService;
        }
 
        public void setPersUserAppValue(FnUser user, WidgetCatalogPersonalization personalization) {
@@ -83,19 +83,19 @@ public class PersUserWidgetService {
               }
 
               if (persRow.getId() != null) {
-                     epPersUserWidgetSelDao.deleteById(persRow.getId());
+                     epPersUserWidgetSelService.deleteById(persRow.getId());
               }
 
               persRow.setStatusCode(personalization.getSelect() ? "S" : "H"); // Show / Hide
               EpPersUserWidgetSel epPersUserWidgetSel = new EpPersUserWidgetSel();
               epPersUserWidgetSel.setUserId(user);
               epPersUserWidgetSel.setWidgetId(
-                      epWidgetCatalogDao.findById(personalization.getWidgetId()).orElse(new EpWidgetCatalog()));
-              epPersUserWidgetSelDao.saveAndFlush(epPersUserWidgetSel);
+                      epWidgetCatalogService.findById(personalization.getWidgetId()).orElse(new EpWidgetCatalog()));
+              epPersUserWidgetSelService.saveAndFlush(epPersUserWidgetSel);
        }
 
        private List<PersUserWidgetSelection> getUserWidgetSelction(FnUser user, Long widgetId) {
-              return epPersUserWidgetSelDao
+              return epPersUserWidgetSelService
                       .getEpPersUserWidgetSelForUserIdAndWidgetId(user.getId(), widgetId)
                       .orElse(new ArrayList<>())
                       .stream()
