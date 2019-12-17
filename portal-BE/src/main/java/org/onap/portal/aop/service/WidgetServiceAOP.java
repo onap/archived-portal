@@ -23,7 +23,7 @@ public class WidgetServiceAOP {
               this.dataValidator = dataValidator;
        }
 
-       @Before("execution(* org.onap.portal.service.WidgetService.setOnboardingWidget(..)) && args(userId, onboardingWidget)")
+       @Before("execution(* org.onap.portal.service.widget.WidgetService.setOnboardingWidget(..)) && args(userId, onboardingWidget)")
        public void setOnboardingWidget(final Long userId, OnboardingWidget onboardingWidget) {
               if (!dataValidator.isValid(onboardingWidget)) {
                      throw new IllegalArgumentException(dataValidator.getConstraintViolationsString(onboardingWidget));

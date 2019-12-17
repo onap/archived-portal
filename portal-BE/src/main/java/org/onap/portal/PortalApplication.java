@@ -48,7 +48,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication
 @EntityScan("org.onap.portal.domain")
-@EnableJpaRepositories("org.onap.portal.dao")
+@EnableJpaRepositories("org.onap.portal.service")
 public class PortalApplication {
 
        public static void main(String[] args) {

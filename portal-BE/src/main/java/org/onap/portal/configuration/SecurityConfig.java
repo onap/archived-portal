@@ -40,7 +40,7 @@
 
 package org.onap.portal.configuration;
 
-import org.onap.portal.service.fn.FnUserService;
+import org.onap.portal.service.user.FnUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;

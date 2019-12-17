@@ -53,8 +53,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.onap.portal.dao.fn.FnLanguageDao;
-import org.onap.portal.dao.fn.FnUserDao;
 import org.onap.portal.domain.db.fn.FnLanguage;
 import org.onap.portal.domain.db.fn.FnUser;
 import org.onap.portal.domain.db.fn.FnWidget;
@@ -62,8 +60,9 @@ import org.onap.portal.domain.dto.transport.FieldsValidator;
 import org.onap.portal.domain.dto.transport.OnboardingWidget;
 import org.onap.portal.domain.dto.transport.WidgetCatalogPersonalization;
 import org.onap.portal.framework.MockitoTestSuite;
-import org.onap.portal.service.WidgetService;
-import org.onap.portal.service.fn.FnLanguageService;
+import org.onap.portal.service.user.FnUserService;
+import org.onap.portal.service.widget.WidgetService;
+import org.onap.portal.service.language.FnLanguageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -89,14 +88,11 @@ public class WidgetsControllerTest {
        @Autowired
        private WidgetsController widgetsController;
        @Autowired
-       private FnUserDao fnUserDao;
-       @Autowired
-       private FnLanguageDao fnLanguageDao;
-       @Autowired
        private WidgetService widgetService;
        @Autowired
        private  FnLanguageService fnLanguageService;
-
+       @Autowired
+       FnUserService fnUserService;
        private FnLanguage language;
        private FnUser questUser;
        private FnUser notQuestUser;
@@ -120,14 +116,14 @@ public class WidgetsControllerTest {
        public void getOnboardingWidgetsQuestUserTest() {
               UsernamePasswordAuthenticationToken questPrincipal = new UsernamePasswordAuthenticationToken("questUser",
                       "demo123");
-              fnUserDao.save(questUser);
+              fnUserService.save(questUser);
               List<OnboardingWidget> onboardingWidgets = widgetsController
                       .getOnboardingWidgets(questPrincipal, request, response);
               assertNull(onboardingWidgets);
 
               //Clean up
-              fnUserDao.delete(questUser);
-              fnLanguageDao.delete(language);
+              fnUserService.delete(questUser);
+              fnLanguageService.delete(language);
        }
 
        @Test
@@ -135,7 +131,7 @@ public class WidgetsControllerTest {
               UsernamePasswordAuthenticationToken notQuestprincipal = new UsernamePasswordAuthenticationToken(
                       "notQuestUser",
                       "demo123");
-              fnUserDao.save(notQuestUser);
+              fnUserService.save(notQuestUser);
               List<OnboardingWidget> expected = new ArrayList<>();
               when(request.getHeader("X-Widgets-Type")).thenReturn("managed");
 
@@ -143,7 +139,7 @@ public class WidgetsControllerTest {
                       .getOnboardingWidgets(notQuestprincipal, request, response);
 
               assertEquals(expected, actual);
-              fnUserDao.delete(notQuestUser);
+              fnUserService.delete(notQuestUser);
        }
 
        @Test
@@ -151,19 +147,19 @@ public class WidgetsControllerTest {
               UsernamePasswordAuthenticationToken notQuestprincipal = new UsernamePasswordAuthenticationToken(
                       "notQuestUser",
                       "demo123");
-              fnUserDao.save(notQuestUser);
+              fnUserService.save(notQuestUser);
               when(request.getHeader("X-Widgets-Type")).thenReturn("test");
               List<OnboardingWidget> actual = widgetsController
                       .getOnboardingWidgets(notQuestprincipal, request, response);
 
               assertNull(actual);
-              fnUserDao.delete(notQuestUser);
+              fnUserService.delete(notQuestUser);
        }
 
        @Test
        public void putOnboardingWidgetSameWidget() {
               //Given
-              fnUserDao.save(notQuestUser);
+              fnUserService.save(notQuestUser);
               when(request.getHeader("X-Widgets-Type")).thenReturn("managed");
 
               OnboardingWidget onboardingWidget = OnboardingWidget.builder()
@@ -199,7 +195,7 @@ public class WidgetsControllerTest {
        @Test
        public void putOnboardingWidgetAOP() {
               //Given
-              fnUserDao.save(notQuestUser);
+              fnUserService.save(notQuestUser);
               when(request.getHeader("X-Widgets-Type")).thenReturn("managed");
 
               OnboardingWidget onboardingWidget = OnboardingWidget.builder()
@@ -236,7 +232,7 @@ public class WidgetsControllerTest {
        @Test
        public void putOnboardingWidgetAOPXSSTest() {
               //Given
-              fnUserDao.save(notQuestUser);
+              fnUserService.save(notQuestUser);
               when(request.getHeader("X-Widgets-Type")).thenReturn("managed");
 
               OnboardingWidget onboardingWidget = OnboardingWidget.builder()
@@ -264,7 +260,7 @@ public class WidgetsControllerTest {
        @Test
        public void postOnboardingWidgetXSS() {
               //Given
-              fnUserDao.save(notQuestUser);
+              fnUserService.save(notQuestUser);
               when(request.getHeader("X-Widgets-Type")).thenReturn("managed");
 
               OnboardingWidget onboardingWidget = OnboardingWidget.builder()
@@ -290,7 +286,7 @@ public class WidgetsControllerTest {
        @Test
        public void postOnboardingWidget() {
               //Given
-              fnUserDao.save(notQuestUser);
+              fnUserService.save(notQuestUser);
               when(request.getHeader("X-Widgets-Type")).thenReturn("managed");
 
               OnboardingWidget onboardingWidget = OnboardingWidget.builder()
@@ -315,7 +311,7 @@ public class WidgetsControllerTest {
        @Test
        public void deleteOnboardingWidgetSCFORBIDDEN() {
               //Given
-              fnUserDao.save(notQuestUser);
+              fnUserService.save(notQuestUser);
               when(request.getHeader("X-Widgets-Type")).thenReturn("managed");
 
               OnboardingWidget onboardingWidget = OnboardingWidget.builder()

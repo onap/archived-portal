@@ -48,7 +48,7 @@ import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import org.onap.portal.domain.db.fn.FnApp;
 import org.onap.portal.domain.dto.transport.OnboardingApp;
-import org.onap.portal.service.fn.FnAppService;
+import org.onap.portal.service.app.FnAppService;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

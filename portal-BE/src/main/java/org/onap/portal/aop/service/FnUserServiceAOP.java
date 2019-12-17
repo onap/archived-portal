@@ -68,7 +68,7 @@ public class FnUserServiceAOP {
               this.fnUserMapper = fnUserMapper;
        }
 
-       @Before("execution(* org.onap.portal.service.fn.FnUserService.saveFnUser(..)) && args(principal, fnUser)")
+       @Before("execution(* org.onap.portal.service.user.FnUserService.saveFnUser(..)) && args(principal, fnUser)")
        public void save(final Principal principal, final FnUser fnUser) {
               FnUser user;
               if (fnUser == null) {

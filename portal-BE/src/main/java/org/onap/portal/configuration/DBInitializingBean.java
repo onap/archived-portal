@@ -40,196 +40,142 @@
 
 package org.onap.portal.configuration;
 
+import org.onap.portal.domain.db.ep.*;
+import org.onap.portal.domain.db.fn.*;
+import org.onap.portal.service.app.FnAppService;
+import org.onap.portal.service.appContactUs.FnAppContactUsService;
+import org.onap.portal.service.appFunction.EpAppFunctionService;
+import org.onap.portal.service.appRoleFunction.EpAppRoleFunctionService;
+import org.onap.portal.service.auditLog.FnAuditLogService;
+import org.onap.portal.service.basicAuthAccount.EpBasicAuthAccountService;
+import org.onap.portal.service.commonWidgetData.FnCommonWidgetDataService;
+import org.onap.portal.service.displayText.FnDisplayTextService;
+import org.onap.portal.service.function.FnFunctionService;
+import org.onap.portal.service.language.FnLanguageService;
+import org.onap.portal.service.luActivity.FnLuActivityService;
+import org.onap.portal.service.luAlertMethod.FnLuAlertMethodService;
+import org.onap.portal.service.luMenuSet.FnLuMenuSetService;
+import org.onap.portal.service.luPriority.FnLuPriorityService;
+import org.onap.portal.service.luTabSet.FnLuTabSetService;
+import org.onap.portal.service.luTimezone.FnLuTimezoneService;
+import org.onap.portal.service.menu.FnMenuService;
+import org.onap.portal.service.menuFunctional.FnMenuFunctionalService;
+import org.onap.portal.service.menuFunctionalAncestors.FnMenuFunctionalAncestorsService;
+import org.onap.portal.service.menuFunctionalRoles.FnMenuFunctionalRolesService;
+import org.onap.portal.service.microservice.EpMicroserviceService;
+import org.onap.portal.service.microserviceParameter.EpMicroserviceParameterService;
+import org.onap.portal.service.persUserAppSel.FnPersUserAppSelService;
+import org.onap.portal.service.persUserAppSort.EpPersUserAppSortService;
+import org.onap.portal.service.qzCronTriggers.FnQzCronTriggersService;
+import org.onap.portal.service.qzJobDetails.FnQzJobDetailsService;
+import org.onap.portal.service.qzLocks.FnQzLocksService;
+import org.onap.portal.service.qzSchedulerState.FnQzSchedulerStateService;
+import org.onap.portal.service.qzTriggers.FnQzTriggersService;
+import org.onap.portal.service.restrictedUrl.FnRestrictedUrlService;
+import org.onap.portal.service.role.FnRoleService;
+import org.onap.portal.service.roleComposite.FnRoleCompositeService;
+import org.onap.portal.service.roleFunction.FnRoleFunctionService;
+import org.onap.portal.service.sharedContext.FnSharedContextService;
+import org.onap.portal.service.tab.FnTabService;
+import org.onap.portal.service.tabSelected.FnTabSelectedService;
+import org.onap.portal.service.user.FnUserService;
+import org.onap.portal.service.userRole.FnUserRoleService;
+import org.onap.portal.service.widgetCatalog.EpWidgetCatalogService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
+
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import org.onap.portal.dao.ep.EpAppFunctionDao;
-import org.onap.portal.dao.ep.EpAppRoleFunctionDao;
-import org.onap.portal.dao.ep.EpBasicAuthAccountDao;
-import org.onap.portal.dao.ep.EpMicroserviceDao;
-import org.onap.portal.dao.ep.EpMicroserviceParameterDao;
-import org.onap.portal.dao.ep.EpPersUserAppSortDao;
-import org.onap.portal.dao.fn.EpWidgetCatalogDao;
-import org.onap.portal.dao.fn.FnAppContactUsDao;
-import org.onap.portal.dao.fn.FnAppDao;
-import org.onap.portal.dao.fn.FnAuditLogDao;
-import org.onap.portal.dao.fn.FnCommonWidgetDataDao;
-import org.onap.portal.dao.fn.FnDisplayTextDao;
-import org.onap.portal.dao.fn.FnFunctionDao;
-import org.onap.portal.dao.fn.FnLanguageDao;
-import org.onap.portal.dao.fn.FnLuActivityDao;
-import org.onap.portal.dao.fn.FnLuAlertMethodDao;
-import org.onap.portal.dao.fn.FnLuMenuSetDao;
-import org.onap.portal.dao.fn.FnLuPriorityDao;
-import org.onap.portal.dao.fn.FnLuTabSetDao;
-import org.onap.portal.dao.fn.FnLuTimezoneDao;
-import org.onap.portal.dao.fn.FnMenuDao;
-import org.onap.portal.dao.fn.FnMenuFunctionalAncestorsDao;
-import org.onap.portal.dao.fn.FnMenuFunctionalDao;
-import org.onap.portal.dao.fn.FnMenuFunctionalRolesDao;
-import org.onap.portal.dao.fn.FnPersUserAppSelDao;
-import org.onap.portal.dao.fn.FnQzCronTriggersDao;
-import org.onap.portal.dao.fn.FnQzJobDetailsDao;
-import org.onap.portal.dao.fn.FnQzLocksDao;
-import org.onap.portal.dao.fn.FnQzSchedulerStateDao;
-import org.onap.portal.dao.fn.FnQzTriggersDao;
-import org.onap.portal.dao.fn.FnRestrictedUrlDao;
-import org.onap.portal.dao.fn.FnRoleCompositeDao;
-import org.onap.portal.dao.fn.FnRoleDao;
-import org.onap.portal.dao.fn.FnRoleFunctionDao;
-import org.onap.portal.dao.fn.FnSharedContextDao;
-import org.onap.portal.dao.fn.FnTabDao;
-import org.onap.portal.dao.fn.FnTabSelectedDao;
-import org.onap.portal.dao.fn.FnUserDao;
-import org.onap.portal.dao.fn.FnUserRoleDao;
-import org.onap.portal.domain.db.ep.EpAppFunction;
-import org.onap.portal.domain.db.ep.EpAppRoleFunction;
-import org.onap.portal.domain.db.ep.EpBasicAuthAccount;
-import org.onap.portal.domain.db.ep.EpMicroservice;
-import org.onap.portal.domain.db.ep.EpMicroserviceParameter;
-import org.onap.portal.domain.db.ep.EpPersUserAppSort;
-import org.onap.portal.domain.db.ep.EpWidgetCatalog;
-import org.onap.portal.domain.db.fn.FnApp;
-import org.onap.portal.domain.db.fn.FnAppContactUs;
-import org.onap.portal.domain.db.fn.FnAuditLog;
-import org.onap.portal.domain.db.fn.FnCommonWidgetData;
-import org.onap.portal.domain.db.fn.FnDisplayText;
-import org.onap.portal.domain.db.fn.FnFunction;
-import org.onap.portal.domain.db.fn.FnLanguage;
-import org.onap.portal.domain.db.fn.FnLuActivity;
-import org.onap.portal.domain.db.fn.FnLuAlertMethod;
-import org.onap.portal.domain.db.fn.FnLuMenuSet;
-import org.onap.portal.domain.db.fn.FnLuPriority;
-import org.onap.portal.domain.db.fn.FnLuTabSet;
-import org.onap.portal.domain.db.fn.FnLuTimezone;
-import org.onap.portal.domain.db.fn.FnMenu;
-import org.onap.portal.domain.db.fn.FnMenuFunctional;
-import org.onap.portal.domain.db.fn.FnMenuFunctionalAncestors;
-import org.onap.portal.domain.db.fn.FnMenuFunctionalRoles;
-import org.onap.portal.domain.db.fn.FnPersUserAppSel;
-import org.onap.portal.domain.db.fn.FnQzCronTriggers;
-import org.onap.portal.domain.db.fn.FnQzJobDetails;
-import org.onap.portal.domain.db.fn.FnQzLocks;
-import org.onap.portal.domain.db.fn.FnQzSchedulerState;
-import org.onap.portal.domain.db.fn.FnQzTriggers;
-import org.onap.portal.domain.db.fn.FnRestrictedUrl;
-import org.onap.portal.domain.db.fn.FnRole;
-import org.onap.portal.domain.db.fn.FnRoleComposite;
-import org.onap.portal.domain.db.fn.FnRoleFunction;
-import org.onap.portal.domain.db.fn.FnSharedContext;
-import org.onap.portal.domain.db.fn.FnTab;
-import org.onap.portal.domain.db.fn.FnTabSelected;
-import org.onap.portal.domain.db.fn.FnUser;
-import org.onap.portal.domain.db.fn.FnUserRole;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 @Component
 public class DBInitializingBean implements org.springframework.beans.factory.InitializingBean {
 
-  private final FnAppDao fnAppDao;
-  private final EpAppFunctionDao epAppFunctionDao;
-  private final FnRoleDao fnRoleDao;
-  private final EpAppRoleFunctionDao epAppRoleFunctionDao;
-  private final EpBasicAuthAccountDao epBasicAuthAccountDao;
-  private final EpMicroserviceDao epMicroserviceDao;
-  private final EpMicroserviceParameterDao epMicroserviceParameterDao;
-  private final EpWidgetCatalogDao epWidgetCatalogDao;
-  private final FnAppContactUsDao fnAppContactUsDao;
-  private final FnCommonWidgetDataDao fnCommonWidgetDataDao;
-  private final FnLanguageDao fnLanguageDao;
-  private final FnDisplayTextDao fnDisplayTextDao;
-  private final FnFunctionDao fnFunctionDao;
-  private final FnLuActivityDao fnLuActivityDao;
-  private final FnLuAlertMethodDao fnLuAlertMethodDao;
-  private final FnLuMenuSetDao fnLuMenuSetDao;
-  private final FnLuPriorityDao fnLuPriorityDao;
-  private final FnLuTimezoneDao fnLuTimezoneDao;
-  private final FnMenuDao fnMenuDao;
-  private final FnMenuFunctionalDao fnMenuFunctionalDao;
-  private final FnMenuFunctionalAncestorsDao fnMenuFunctionalAncestorsDao;
-  private final FnMenuFunctionalRolesDao fnMenuFunctionalRolesDao;
-  private final FnQzJobDetailsDao fnQzJobDetailsDao;
-  private final FnQzLocksDao fnQzLocksDao;
-  private final FnQzSchedulerStateDao fnQzSchedulerStateDao;
-  private final FnQzTriggersDao fnQzTriggersDao;
-  private final FnQzCronTriggersDao fnQzCronTriggersDao;
-  private final FnRestrictedUrlDao fnRestrictedUrlDao;
-  private final FnRoleCompositeDao fnRoleCompositeDao;
-  private final FnRoleFunctionDao fnRoleFunctionDao;
-  private final FnSharedContextDao fnSharedContextDao;
-  private final FnLuTabSetDao fnLuTabSetDao;
-  private final FnTabDao fnTabDao;
-  private final FnTabSelectedDao fnTabSelectedDao;
-  private final FnUserDao fnUserDao;
-  private final EpPersUserAppSortDao epPersUserAppSortDao;
-  private final FnPersUserAppSelDao fnPersUserAppSelDao;
-  private final FnAuditLogDao fnAuditLogDao;
-  private final FnUserRoleDao fnUserRoleDao;
+  private final FnAppService fnAppService;
+  private final EpAppFunctionService epAppFunctionService;
+  private final FnRoleService fnRoleService;
+  private final EpAppRoleFunctionService epAppRoleFunctionService;
+  private final EpBasicAuthAccountService epBasicAuthAccountService;
+  private final EpMicroserviceService epMicroserviceService;
+  private final EpMicroserviceParameterService epMicroserviceParameterService;
+  private final EpWidgetCatalogService epWidgetCatalogService;
+  private final FnAppContactUsService fnAppContactUsService;
+  private final FnCommonWidgetDataService fnCommonWidgetDataService;
+  private final FnLanguageService fnLanguageService;
+  private final FnDisplayTextService fnDisplayTextService;
+  private final FnFunctionService fnFunctionService;
+  private final FnLuActivityService fnLuActivityService;
+  private final FnLuAlertMethodService fnLuAlertMethodService;
+  private final FnLuMenuSetService fnLuMenuSetService;
+  private final FnLuPriorityService fnLuPriorityService;
+  private final FnLuTimezoneService fnLuTimezoneService;
+  private final FnMenuService fnMenuService;
+  private final FnMenuFunctionalService fnMenuFunctionalService;
+  private final FnMenuFunctionalAncestorsService fnMenuFunctionalAncestorsService;
+  private final FnMenuFunctionalRolesService fnMenuFunctionalRolesService;
+  private final FnQzJobDetailsService fnQzJobDetailsService;
+  private final FnQzLocksService fnQzLocksService;
+  private final FnQzSchedulerStateService fnQzSchedulerStateService;
+  private final FnQzTriggersService fnQzTriggersService;
+  private final FnQzCronTriggersService fnQzCronTriggersService;
+  private final FnRestrictedUrlService fnRestrictedUrlService;
+  private final FnRoleCompositeService fnRoleCompositeService;
+  private final FnRoleFunctionService fnRoleFunctionService;
+  private final FnSharedContextService fnSharedContextService;
+  private final FnLuTabSetService fnLuTabSetService;
+  private final FnTabService fnTabService;
+  private final FnTabSelectedService fnTabSelectedService;
+  private final FnUserService fnUserService;
+  private final EpPersUserAppSortService epPersUserAppSortService;
+  private final FnPersUserAppSelService fnPersUserAppSelService;
+  private final FnAuditLogService fnAuditLogService;
+  private final FnUserRoleService fnUserRoleService;
 
   @Autowired
-  public DBInitializingBean(FnAppDao fnAppDao, EpAppFunctionDao epAppFunctionDao,
-      FnRoleDao fnRoleDao, EpAppRoleFunctionDao epAppRoleFunctionDao,
-      EpBasicAuthAccountDao epBasicAuthAccountDao, EpMicroserviceDao epMicroserviceDao,
-      EpMicroserviceParameterDao epMicroserviceParameterDao,
-      EpWidgetCatalogDao epWidgetCatalogDao, FnAppContactUsDao fnAppContactUsDao,
-      FnCommonWidgetDataDao fnCommonWidgetDataDao, FnLanguageDao fnLanguageDao,
-      FnDisplayTextDao fnDisplayTextDao, FnFunctionDao fnFunctionDao,
-      FnLuActivityDao fnLuActivityDao, FnLuAlertMethodDao fnLuAlertMethodDao,
-      FnLuMenuSetDao fnLuMenuSetDao, FnLuPriorityDao fnLuPriorityDao,
-      FnLuTimezoneDao fnLuTimezoneDao, FnMenuDao fnMenuDao,
-      FnMenuFunctionalDao fnMenuFunctionalDao,
-      FnMenuFunctionalAncestorsDao fnMenuFunctionalAncestorsDao,
-      FnMenuFunctionalRolesDao fnMenuFunctionalRolesDao, FnQzJobDetailsDao fnQzJobDetailsDao,
-      FnQzLocksDao fnQzLocksDao, FnQzSchedulerStateDao fnQzSchedulerStateDao,
-      FnQzTriggersDao fnQzTriggersDao, FnQzCronTriggersDao fnQzCronTriggersDao,
-      FnRestrictedUrlDao fnRestrictedUrlDao, FnRoleCompositeDao fnRoleCompositeDao,
-      FnRoleFunctionDao fnRoleFunctionDao, FnSharedContextDao fnSharedContextDao,
-      FnLuTabSetDao fnLuTabSetDao, FnTabDao fnTabDao, FnTabSelectedDao fnTabSelectedDao,
-      FnUserDao fnUserDao, EpPersUserAppSortDao epPersUserAppSortDao,
-      FnPersUserAppSelDao fnPersUserAppSelDao, FnAuditLogDao fnAuditLogDao,
-      FnUserRoleDao fnUserRoleDao) {
-    this.fnAppDao = fnAppDao;
-    this.epAppFunctionDao = epAppFunctionDao;
-    this.fnRoleDao = fnRoleDao;
-    this.epAppRoleFunctionDao = epAppRoleFunctionDao;
-    this.epBasicAuthAccountDao = epBasicAuthAccountDao;
-    this.epMicroserviceDao = epMicroserviceDao;
-    this.epMicroserviceParameterDao = epMicroserviceParameterDao;
-    this.epWidgetCatalogDao = epWidgetCatalogDao;
-    this.fnAppContactUsDao = fnAppContactUsDao;
-    this.fnCommonWidgetDataDao = fnCommonWidgetDataDao;
-    this.fnLanguageDao = fnLanguageDao;
-    this.fnDisplayTextDao = fnDisplayTextDao;
-    this.fnFunctionDao = fnFunctionDao;
-    this.fnLuActivityDao = fnLuActivityDao;
-    this.fnLuAlertMethodDao = fnLuAlertMethodDao;
-    this.fnLuMenuSetDao = fnLuMenuSetDao;
-    this.fnLuPriorityDao = fnLuPriorityDao;
-    this.fnLuTimezoneDao = fnLuTimezoneDao;
-    this.fnMenuDao = fnMenuDao;
-    this.fnMenuFunctionalDao = fnMenuFunctionalDao;
-    this.fnMenuFunctionalAncestorsDao = fnMenuFunctionalAncestorsDao;
-    this.fnMenuFunctionalRolesDao = fnMenuFunctionalRolesDao;
-    this.fnQzJobDetailsDao = fnQzJobDetailsDao;
-    this.fnQzLocksDao = fnQzLocksDao;
-    this.fnQzSchedulerStateDao = fnQzSchedulerStateDao;
-    this.fnQzTriggersDao = fnQzTriggersDao;
-    this.fnQzCronTriggersDao = fnQzCronTriggersDao;
-    this.fnRestrictedUrlDao = fnRestrictedUrlDao;
-    this.fnRoleCompositeDao = fnRoleCompositeDao;
-    this.fnRoleFunctionDao = fnRoleFunctionDao;
-    this.fnSharedContextDao = fnSharedContextDao;
-    this.fnLuTabSetDao = fnLuTabSetDao;
-    this.fnTabDao = fnTabDao;
-    this.fnTabSelectedDao = fnTabSelectedDao;
-    this.fnUserDao = fnUserDao;
-    this.epPersUserAppSortDao = epPersUserAppSortDao;
-    this.fnPersUserAppSelDao = fnPersUserAppSelDao;
-    this.fnAuditLogDao = fnAuditLogDao;
-    this.fnUserRoleDao = fnUserRoleDao;
+  public DBInitializingBean(FnAppService fnAppService, EpAppFunctionService epAppFunctionService, FnRoleService fnRoleService, EpAppRoleFunctionService epAppRoleFunctionService, EpBasicAuthAccountService epBasicAuthAccountService, EpMicroserviceService epMicroserviceService, EpMicroserviceParameterService epMicroserviceParameterService, EpWidgetCatalogService epWidgetCatalogService, FnAppContactUsService fnAppContactUsService, FnCommonWidgetDataService fnCommonWidgetDataService, FnLanguageService fnLanguageService, FnDisplayTextService fnDisplayTextService, FnFunctionService fnFunctionService, FnLuActivityService fnLuActivityService, FnLuAlertMethodService fnLuAlertMethodService, FnLuMenuSetService fnLuMenuSetService, FnLuPriorityService fnLuPriorityService, FnLuTimezoneService fnLuTimezoneService, FnMenuService fnMenuService, FnMenuFunctionalService fnMenuFunctionalService, FnMenuFunctionalAncestorsService fnMenuFunctionalAncestorsService, FnMenuFunctionalRolesService fnMenuFunctionalRolesService, FnQzJobDetailsService fnQzJobDetailsService, FnQzLocksService fnQzLocksService, FnQzSchedulerStateService fnQzSchedulerStateService, FnQzTriggersService fnQzTriggersService, FnQzCronTriggersService fnQzCronTriggersService, FnRestrictedUrlService fnRestrictedUrlService, FnRoleCompositeService fnRoleCompositeService, FnRoleFunctionService fnRoleFunctionService, FnSharedContextService fnSharedContextService, FnLuTabSetService fnLuTabSetService, FnTabService fnTabService, FnTabSelectedService fnTabSelectedService, FnUserService fnUserService, EpPersUserAppSortService epPersUserAppSortService, FnPersUserAppSelService fnPersUserAppSelService, FnAuditLogService fnAuditLogService, FnUserRoleService fnUserRoleService) {
+    this.fnAppService = fnAppService;
+    this.epAppFunctionService = epAppFunctionService;
+    this.fnRoleService = fnRoleService;
+    this.epAppRoleFunctionService = epAppRoleFunctionService;
+    this.epBasicAuthAccountService = epBasicAuthAccountService;
+    this.epMicroserviceService = epMicroserviceService;
+    this.epMicroserviceParameterService = epMicroserviceParameterService;
+    this.epWidgetCatalogService = epWidgetCatalogService;
+    this.fnAppContactUsService = fnAppContactUsService;
+    this.fnCommonWidgetDataService = fnCommonWidgetDataService;
+    this.fnLanguageService = fnLanguageService;
+    this.fnDisplayTextService = fnDisplayTextService;
+    this.fnFunctionService = fnFunctionService;
+    this.fnLuActivityService = fnLuActivityService;
+    this.fnLuAlertMethodService = fnLuAlertMethodService;
+    this.fnLuMenuSetService = fnLuMenuSetService;
+    this.fnLuPriorityService = fnLuPriorityService;
+    this.fnLuTimezoneService = fnLuTimezoneService;
+    this.fnMenuService = fnMenuService;
+    this.fnMenuFunctionalService = fnMenuFunctionalService;
+    this.fnMenuFunctionalAncestorsService = fnMenuFunctionalAncestorsService;
+    this.fnMenuFunctionalRolesService = fnMenuFunctionalRolesService;
+    this.fnQzJobDetailsService = fnQzJobDetailsService;
+    this.fnQzLocksService = fnQzLocksService;
+    this.fnQzSchedulerStateService = fnQzSchedulerStateService;
+    this.fnQzTriggersService = fnQzTriggersService;
+    this.fnQzCronTriggersService = fnQzCronTriggersService;
+    this.fnRestrictedUrlService = fnRestrictedUrlService;
+    this.fnRoleCompositeService = fnRoleCompositeService;
+    this.fnRoleFunctionService = fnRoleFunctionService;
+    this.fnSharedContextService = fnSharedContextService;
+    this.fnLuTabSetService = fnLuTabSetService;
+    this.fnTabService = fnTabService;
+    this.fnTabSelectedService = fnTabSelectedService;
+    this.fnUserService = fnUserService;
+    this.epPersUserAppSortService = epPersUserAppSortService;
+    this.fnPersUserAppSelService = fnPersUserAppSelService;
+    this.fnAuditLogService = fnAuditLogService;
+    this.fnUserRoleService = fnUserRoleService;
   }
 
   @Override
@@ -472,7 +418,7 @@ public class DBInitializingBean implements org.springframework.beans.factory.Ini
         .authNamespace(null)
         .build();
     List<FnApp> fnApps = new ArrayList<>(Arrays.asList(app, app2, app3, app4, app5, app6, app7, app8, app9, app10));
-    fnAppDao.saveAll(fnApps);
+    fnAppService.saveAll(fnApps);
 
     // EP_APP_FUNCTION TABLE
 
@@ -535,7 +481,7 @@ public class DBInitializingBean implements org.springframework.beans.factory.Ini
             function10, function11, function12, function13, function14, function15, function16, function17, function18,
             function19, function20, function21, function22, function23, function24, function25, function26,
             function27));
-    epAppFunctionDao.saveAll(epAppFunctions);
+    epAppFunctionService.saveAll(epAppFunctions);
 
     // FN_ROLE TABLE
 
@@ -565,7 +511,7 @@ public class DBInitializingBean implements org.springframework.beans.factory.Ini
     List<FnRole> fnRoles = new ArrayList<>(Arrays
         .asList(fnRole1, fnRole16, fnRole900, fnRole950, fnRole999, fnRole1000, fnRole1001, fnRole1002, fnRole1003, fnRole1004, fnRole1005,
             fnRole1006, fnRole1007, fnRole1008, fnRole1009, fnRole1010, fnRole1011, fnRole1012, fnRole2115));
-    fnRoleDao.saveAll(fnRoles);
+    fnRoleService.saveAll(fnRoles);
 
     // EP_APP_ROLE_FUNCTION TABLE
 
@@ -634,10 +580,10 @@ public class DBInitializingBean implements org.springframework.beans.factory.Ini
             epAppRoleFunction21, epAppRoleFunction22, epAppRoleFunction23, epAppRoleFunction24, epAppRoleFunction25,
             epAppRoleFunction26, epAppRoleFunction27, epAppRoleFunction28));
 
-    epAppRoleFunctionDao.saveAll(epAppRoleFunctions);
+    epAppRoleFunctionService.saveAll(epAppRoleFunctions);
 
     EpBasicAuthAccount epBasicAuthAccount = EpBasicAuthAccount.builder().extAppName("JIRA").username("jira").password("6APqvG4AU2rfLgCvMdySwQ==").activeYn(true).build();
-    epBasicAuthAccountDao.save(epBasicAuthAccount);
+    epBasicAuthAccountService.save(epBasicAuthAccount);
 
     // EP_MICROSERVICE TABLE
 
@@ -648,7 +594,7 @@ public class DBInitializingBean implements org.springframework.beans.factory.Ini
 
     List<EpMicroservice> epMicroservices = new ArrayList<>(Arrays.asList(epMicroservice1, epMicroservice2, epMicroservice3, epMicroservice4));
 
-    epMicroserviceDao.saveAll(epMicroservices);
+    epMicroserviceService.saveAll(epMicroservices);
 
     // ep_microservice_parameter table
 
@@ -659,7 +605,7 @@ public class DBInitializingBean implements org.springframework.beans.factory.Ini
 
     List<EpMicroserviceParameter> epMicroserviceParameters = new ArrayList<>(Arrays.asList(parameter1, parameter2, parameter3, parameter4));
 
-    epMicroserviceParameterDao.saveAll(epMicroserviceParameters);
+    epMicroserviceParameterService.saveAll(epMicroserviceParameters);
 
     // ep_widget_catalog table
     //TODO should we connect serviceId to EpMicroservice?
@@ -671,7 +617,7 @@ public class DBInitializingBean implements org.springframework.beans.factory.Ini
 
     List<EpWidgetCatalog> epWidgetCatalogs = new ArrayList<>(Arrays.asList(epWidgetCatalog1, epWidgetCatalog2, epWidgetCatalog3, epWidgetCatalog4));
 
-    epWidgetCatalogDao.saveAll(epWidgetCatalogs);
+    epWidgetCatalogService.saveAll(epWidgetCatalogs);
 
     // ep_widget_catalog_files table
     //TODO
@@ -691,7 +637,7 @@ public class DBInitializingBean implements org.springframework.beans.factory.Ini
 
     List<FnAppContactUs> fnAppContactUses = new ArrayList<>(Arrays.asList(fnAppContactUs1, fnAppContactUs2, fnAppContactUs3, fnAppContactUs4, fnAppContactUs5, fnAppContactUs6, fnAppContactUs7, fnAppContactUs8));
 
-    fnAppContactUsDao.saveAll(fnAppContactUses);
+    fnAppContactUsService.saveAll(fnAppContactUses);
 
     // fn_common_widget_data table
 
@@ -708,15 +654,15 @@ public class DBInitializingBean implements org.springframework.beans.factory.Ini
 
     List<FnCommonWidgetData> fnCommonWidgetDataList = new ArrayList<>(Arrays.asList(fnCommonWidgetData1, fnCommonWidgetData2, fnCommonWidgetData3, fnCommonWidgetData4, fnCommonWidgetData5, fnCommonWidgetData6, fnCommonWidgetData7, fnCommonWidgetData8, fnCommonWidgetData9, fnCommonWidgetData10));
 
-    fnCommonWidgetDataDao.saveAll(fnCommonWidgetDataList);
+    fnCommonWidgetDataService.saveAll(fnCommonWidgetDataList);
 
     // fn_language table
     //TODO fix china text
     FnLanguage language1 = new FnLanguage("English", "EN");
     FnLanguage language2 = new FnLanguage("ç®€ä½“ä¸\u00ADæ–‡", "CN");
 
-    fnLanguageDao.save(language1);
-    fnLanguageDao.save(language2);
+    fnLanguageService.save(language1);
+    fnLanguageService.save(language2);
 
     // fn_display_text table
     // TODO should we change languageId from long type to FnLanguage?
@@ -754,7 +700,7 @@ public class DBInitializingBean implements org.springframework.beans.factory.Ini
         fnDisplayText18, fnDisplayText19, fnDisplayText20, fnDisplayText21, fnDisplayText22, fnDisplayText23, fnDisplayText24,
         fnDisplayText25, fnDisplayText26));
 
-    fnDisplayTextDao.saveAll(fnDisplayTexts);
+    fnDisplayTextService.saveAll(fnDisplayTexts);
 
     // fn_function table
 
@@ -792,7 +738,7 @@ public class DBInitializingBean implements org.springframework.beans.factory.Ini
         menuJobDesigner, menuLogout, menuMap, menuNotes, menuProcess, menuProfile, menuProfileCreate, menuProfileImport,
         menuReports, menuSample, menuTab, menuTask, menuTaskSearch, menuWebAnalytics, saveNotification, viewReports));
 
-    fnFunctionDao.saveAll(fnFunctions);
+    fnFunctionService.saveAll(fnFunctions);
 
     // fn_lu_activity table
 
@@ -830,7 +776,7 @@ public class DBInitializingBean implements org.springframework.beans.factory.Ini
         activity16, activity17, activity18, activity19, activity20, activity21, activity22, activity23, activity24, activity25,
         tabAccess, activity27, activity28));
 
-    fnLuActivityDao.saveAll(luActivities);
+    fnLuActivityService.saveAll(luActivities);
 
     //fn_lu_alert_method table
 
@@ -842,19 +788,19 @@ public class DBInitializingBean implements org.springframework.beans.factory.Ini
 
     List<FnLuAlertMethod> alertMethods = new ArrayList<>(Arrays.asList(alertMethod1, alertMethod2, alertMethod3, alertMethod4, alertMethod5));
 
-    fnLuAlertMethodDao.saveAll(alertMethods);
+    fnLuAlertMethodService.saveAll(alertMethods);
 
     // fn_lu_menu_set table
 
     FnLuMenuSet menuSet = FnLuMenuSet.builder().menuSetCd("APP").menuSetName("Application Menu").build();
 
-    fnLuMenuSetDao.save(menuSet);
+    fnLuMenuSetService.save(menuSet);
 
     // fn_lu_tab_set table
 
     FnLuTabSet fnLuTabSet = FnLuTabSet.builder().tabSetCd("APP").tabSetName("Application Tabs").build();
 
-    fnLuTabSetDao.save(fnLuTabSet);
+    fnLuTabSetService.save(fnLuTabSet);
 
     // fn_lu_priority table
 
@@ -866,7 +812,7 @@ public class DBInitializingBean implements org.springframework.beans.factory.Ini
 
     List<FnLuPriority> priorities = new ArrayList<>(Arrays.asList(low, normal, high, urgent, fatal));
 
-    fnLuPriorityDao.saveAll(priorities);
+    fnLuPriorityService.saveAll(priorities);
 
     // fn_lu_timezone table
 
@@ -880,7 +826,7 @@ public class DBInitializingBean implements org.springframework.beans.factory.Ini
 
     List<FnLuTimezone> timezones = new ArrayList<>(Arrays.asList(USEastern, USCentral, USMountain, USArizona, USPacific, USAlaska, USHawaii));
 
-    fnLuTimezoneDao.saveAll(timezones);
+    fnLuTimezoneService.saveAll(timezones);
 
     // fn_menu table
 
@@ -901,7 +847,7 @@ public class DBInitializingBean implements org.springframework.beans.factory.Ini
 
     List<FnMenu> fnMenus = new ArrayList<>(Arrays.asList(menu1, menu2, menu3, menu4, menu5, menu6, menu7, menu8, menu9, menu10, menu11, menu12, menu13, menu14));
 
-    fnMenuDao.saveAll(fnMenus);
+    fnMenuService.saveAll(fnMenus);
 
     // fn_menu_functional table
 
@@ -953,7 +899,7 @@ public class DBInitializingBean implements org.springframework.beans.factory.Ini
         menuFunctional313, menuFunctional316, menuFunctional148, menuFunctional317, menuFunctional318, menuFunctional319));
 
 
-    fnMenuFunctionalDao.saveAll(menuFunctionals);
+    fnMenuFunctionalService.saveAll(menuFunctionals);
 
     // fn_menu_functional_ancestors table
 
@@ -1086,7 +1032,7 @@ public class DBInitializingBean implements org.springframework.beans.factory.Ini
         ancestors150, ancestors151, ancestors152, ancestors158, ancestors159, ancestors160, ancestors161, ancestors162,
         ancestors163, ancestors164, ancestors165, ancestors166, ancestors167, ancestors168, ancestors169));
 
-    fnMenuFunctionalAncestorsDao.saveAll(ancestors);
+    fnMenuFunctionalAncestorsService.saveAll(ancestors);
 
     // fn_menu_functional_roles table
 
@@ -1128,7 +1074,7 @@ public class DBInitializingBean implements org.springframework.beans.factory.Ini
         functionalRoles22, functionalRoles23, functionalRoles24, functionalRoles25, functionalRoles26, functionalRoles27,
         functionalRoles39, functionalRoles40, functionalRoles42, functionalRoles43));
 
-    fnMenuFunctionalRolesDao.saveAll(functionalRoles);
+    fnMenuFunctionalRolesService.saveAll(functionalRoles);
 
     // fn_qz_job_details table
 
@@ -1142,7 +1088,7 @@ public class DBInitializingBean implements org.springframework.beans.factory.Ini
 
     List<FnQzJobDetails> jobDetails = new ArrayList<>(Arrays.asList(fnQzJobDetails1, fnQzJobDetails2));
 
-    fnQzJobDetailsDao.saveAll(jobDetails);
+    fnQzJobDetailsService.saveAll(jobDetails);
 
     // fn_qz_locks table
 
@@ -1151,7 +1097,7 @@ public class DBInitializingBean implements org.springframework.beans.factory.Ini
 
     List<FnQzLocks> locks = new ArrayList<>(Arrays.asList(fnQzLocks1, fnQzLocks2));
 
-    fnQzLocksDao.saveAll(locks);
+    fnQzLocksService.saveAll(locks);
 
     // fn_qz_scheduler_state table
 
@@ -1159,7 +1105,7 @@ public class DBInitializingBean implements org.springframework.beans.factory.Ini
         .instanceName("portal-portal-app-76c9f7bfb5-s8rhd1565254283688").lastCheckinTime(BigInteger.valueOf(1565691615399L))
         .checkinInterval(BigInteger.valueOf(20000L)).build();
 
-    fnQzSchedulerStateDao.save(schedulerState);
+    fnQzSchedulerStateService.save(schedulerState);
 
     // fn_qz_triggers table
     //TODO
@@ -1168,7 +1114,7 @@ public class DBInitializingBean implements org.springframework.beans.factory.Ini
 
     List<FnQzTriggers> fnQzTriggers = new ArrayList<>(Arrays.asList(trigger1, trigger2));
 
-    // fnQzTriggersDao.saveAll(fnQzTriggers);
+    // fnQzTriggersService.saveAll(fnQzTriggers);
 
     // fn_qz_cron_triggers table
     //TODO
@@ -1178,7 +1124,7 @@ public class DBInitializingBean implements org.springframework.beans.factory.Ini
 
     List<FnQzCronTriggers> cronTriggers = new ArrayList<>(Arrays.asList(cronTrigger1, cronTrigger2));
 
-    //fnQzCronTriggersDao.saveAll(cronTriggers);
+    //fnQzCronTriggersService.saveAll(cronTriggers);
 
     // fn_restricted_url table
     //TODO
@@ -1231,13 +1177,13 @@ public class DBInitializingBean implements org.springframework.beans.factory.Ini
         url26, url27, url28, url29, url30, url31, url32, url33, url34, url35, url36, url37, url38, url39, url40, url41,
         url42, url43));
 
-    //fnRestrictedUrlDao.saveAll(urls);
+    //fnRestrictedUrlService.saveAll(urls);
 
     // fn_role_composite table
     //TODO
     FnRoleComposite roleComposite = FnRoleComposite.builder().parentRoles(fnRole1).childRoles(fnRole16).build();
 
-    //fnRoleCompositeDao.save(roleComposite);
+    //fnRoleCompositeService.save(roleComposite);
 
     // fn_role_function table
 
@@ -1283,7 +1229,7 @@ public class DBInitializingBean implements org.springframework.beans.factory.Ini
         roleFunction23, roleFunction24, roleFunction25, roleFunction26, roleFunction27, roleFunction28, roleFunction29,
         roleFunction30, roleFunction31, roleFunction32, roleFunction33, roleFunction34));
 
-    fnRoleFunctionDao.saveAll(roleFunctions);
+    fnRoleFunctionService.saveAll(roleFunctions);
 
 
     // fn_shared_context table
@@ -1304,7 +1250,7 @@ public class DBInitializingBean implements org.springframework.beans.factory.Ini
     List<FnSharedContext> sharedContexts = new ArrayList<>(Arrays.asList(sharedContext1, sharedContext2, sharedContext3,
         sharedContext4, sharedContext5, sharedContext6, sharedContext7, sharedContext8, sharedContext9, sharedContext10, sharedContext11, sharedContext12));
 
-    fnSharedContextDao.saveAll(sharedContexts);
+    fnSharedContextService.saveAll(sharedContexts);
 
     // fn_tab table
 
@@ -1319,7 +1265,7 @@ public class DBInitializingBean implements org.springframework.beans.factory.Ini
 
     List<FnTab> fnTabs = new ArrayList<>(Arrays.asList(TAB1, TAB2, TAB2_SUB1, TAB2_SUB1_S1, TAB2_SUB2, TAB2_SUB3, TAB3, TAB4));
 
-    fnTabDao.saveAll(fnTabs);
+    fnTabService.saveAll(fnTabs);
 
     // fn_tab_selected table
 
@@ -1337,7 +1283,7 @@ public class DBInitializingBean implements org.springframework.beans.factory.Ini
     List<FnTabSelected> tabSelecteds = new ArrayList<>(Arrays.asList(tabSelected1, tabSelected2, tabSelected3, tabSelected4,
         tabSelected5, tabSelected6, tabSelected7, tabSelected8, tabSelected9, tabSelected10));
 
-//    fnTabSelectedDao.saveAll(tabSelecteds);
+//    fnTabSelectedService.saveAll(tabSelecteds);
 
     // fn_user table
 
@@ -1356,13 +1302,13 @@ public class DBInitializingBean implements org.springframework.beans.factory.Ini
 
     List<FnUser> fnUsers = new ArrayList<>(Arrays.asList(fnUser1, fnUser2, fnUser3, fnUser4, fnUser5, fnUser6, fnUser7, fnUser8, fnUser9, fnUser10, fnUser11, fnUser12));
 
-    fnUserDao.saveAll(fnUsers);
+    fnUserService.saveAll(fnUsers);
 
     // ep_pers_user_app_sort table
 
     EpPersUserAppSort appSort = EpPersUserAppSort.builder().userID(fnUser1).sortPref(0).build();
 
-    epPersUserAppSortDao.save(appSort);
+    epPersUserAppSortService.save(appSort);
 
     // fn_pers_user_app_sel table
 
@@ -1373,7 +1319,7 @@ public class DBInitializingBean implements org.springframework.beans.factory.Ini
 
     List<FnPersUserAppSel> appSels = new ArrayList<>(Arrays.asList(appSel1, appSel2, appSel3, appSel4));
 
-    fnPersUserAppSelDao.saveAll(appSels);
+    fnPersUserAppSelService.saveAll(appSels);
 
     // fn_audit_log table
 
@@ -1387,7 +1333,7 @@ public class DBInitializingBean implements org.springframework.beans.factory.Ini
 
     List<FnAuditLog> auditLogs = new ArrayList<>(Arrays.asList(fnAuditLog1, fnAuditLog2, fnAuditLog3, fnAuditLog4, fnAuditLog5, fnAuditLog6, fnAuditLog7));
 
-    fnAuditLogDao.saveAll(auditLogs);
+    fnAuditLogService.saveAll(auditLogs);
 
     // fn_user_role table
 
@@ -1437,7 +1383,7 @@ public class DBInitializingBean implements org.springframework.beans.factory.Ini
         userRole25, userRole26, userRole27, userRole28, userRole29, userRole30, userRole31, userRole32, userRole33, userRole34,
         userRole35, userRole36, userRole37, userRole38, userRole39));
 
-    fnUserRoleDao.saveAll(userRoles);
+    fnUserRoleService.saveAll(userRoles);
 
 
   }

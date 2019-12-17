@@ -51,18 +51,17 @@ import java.util.List;
 import javax.transaction.Transactional;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.onap.portal.dao.fn.FnLanguageDao;
 import org.onap.portal.domain.db.ep.EpMicroserviceParameter;
 import org.onap.portal.domain.db.ep.EpWidgetCatalog;
 import org.onap.portal.domain.db.ep.EpWidgetCatalogParameter;
 import org.onap.portal.domain.db.fn.FnLanguage;
 import org.onap.portal.domain.db.fn.FnUser;
 import org.onap.portal.domain.dto.ecomp.WidgetCatalog;
-import org.onap.portal.service.ep.EpMicroserviceParameterService;
-import org.onap.portal.service.ep.EpWidgetCatalogParameterService;
-import org.onap.portal.service.ep.EpWidgetCatalogService;
-import org.onap.portal.service.fn.FnLanguageService;
-import org.onap.portal.service.fn.FnUserService;
+import org.onap.portal.service.microserviceParameter.EpMicroserviceParameterService;
+import org.onap.portal.service.widgetCatalogParameter.EpWidgetCatalogParameterService;
+import org.onap.portal.service.widgetCatalog.EpWidgetCatalogService;
+import org.onap.portal.service.language.FnLanguageService;
+import org.onap.portal.service.user.FnUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -88,8 +87,6 @@ public class WidgetsCatalogControllerTest {
        private EpMicroserviceParameterService epMicroserviceParameterService;
        @Autowired
        private EpWidgetCatalogService epWidgetCatalogService;
-       @Autowired
-       private FnLanguageDao fnLanguageDao;
 
        @Test
        public void getUserWidgetCatalog() {
@@ -172,7 +169,7 @@ public class WidgetsCatalogControllerTest {
               EpMicroserviceParameter parameter = new EpMicroserviceParameter();
               epMicroserviceParameterService.save(parameter);
               FnUser user = buildFnUser();
-              FnLanguage language = fnLanguageDao.getByLanguageAlias("EN");
+              FnLanguage language = fnLanguageService.getByLanguageAlias("EN");
               user.setLanguageId(language);
               fnUserService.saveFnUser(user);
               EpWidgetCatalogParameter data =  EpWidgetCatalogParameter.builder()
