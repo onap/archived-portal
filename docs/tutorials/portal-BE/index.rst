@@ -11,4 +11,5 @@ Building ONAP Portal BE Applications
 	:caption: Contents:
 
 	setting-up
+	request-flow
 
