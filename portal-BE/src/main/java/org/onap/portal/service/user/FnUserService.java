@@ -43,18 +43,15 @@ package org.onap.portal.service.user;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
 import org.onap.portal.domain.db.fn.FnUser;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@EnableAspectJAutoProxy
 @Transactional
 public class FnUserService implements UserDetailsService {
 

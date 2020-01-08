@@ -194,23 +194,21 @@ public class AdminRolesService {
     return isSuperAdmin;
   }
 
-  public boolean isAccountAdmin(FnUser user) {
+  public boolean isAccountAdmin(final long userId, final String orgUserId, final Set<FnUserRole> userApps) {
     try {
-      logger.debug(EELFLoggerDelegate.debugLogger, ADMIN_ACCOUNT, user.getId());
-      List<Integer> userAdminApps = getAdminAppsForTheUser(user.getId());
+      logger.debug(EELFLoggerDelegate.debugLogger, ADMIN_ACCOUNT, userId);
+      List<Integer> userAdminApps = getAdminAppsForTheUser(userId);
       logger.debug(EELFLoggerDelegate.debugLogger,
           "Is account admin for userAdminApps() - for user {}, found userAdminAppsSize {}",
-          user.getOrgUserId(), userAdminApps.size());
+          orgUserId, userAdminApps.size());
 
-      if (user.getId() != null) {
-        for (FnUserRole userApp : user.getUserApps()) {
-          if (userApp.getRoleId().getId().equals(ACCOUNT_ADMIN_ROLE_ID) || (
-              userAdminApps.size() > 1)) {
-            logger.debug(EELFLoggerDelegate.debugLogger,
-                "Is account admin for userAdminApps() - for user {}, found Id {}",
-                user.getOrgUserId(), userApp.getRoleId().getId());
-            return true;
-          }
+      for (FnUserRole userApp : userApps) {
+        if (userApp.getRoleId().getId().equals(ACCOUNT_ADMIN_ROLE_ID) || (
+            userAdminApps.size() > 1)) {
+          logger.debug(EELFLoggerDelegate.debugLogger,
+              "Is account admin for userAdminApps() - for user {}, found Id {}",
+              orgUserId, userApp.getRoleId().getId());
+          return true;
         }
       }
     } catch (Exception e) {
@@ -222,9 +220,9 @@ public class AdminRolesService {
     return false;
   }
 
-  public boolean isUser(FnUser user) {
+  public boolean isUser(final long userId) {
     try {
-      FnUser currentUser = fnUserService.getUser(user.getId()).orElseThrow(Exception::new);
+      FnUser currentUser = fnUserService.getUser(userId).orElseThrow(Exception::new);
       if (currentUser != null && currentUser.getId() != null) {
         for (FnUserRole userApp : currentUser.getUserApps()) {
           if (!userApp.getFnAppId().getId().equals(ECOMP_APP_ID)) {

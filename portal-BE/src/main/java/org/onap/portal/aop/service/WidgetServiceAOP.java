@@ -2,6 +2,7 @@ package org.onap.portal.aop.service;
 
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
+import org.onap.portal.domain.db.fn.FnWidget;
 import org.onap.portal.domain.dto.transport.OnboardingWidget;
 import org.onap.portal.validation.DataValidator;
 import org.slf4j.Logger;
@@ -27,6 +28,13 @@ public class WidgetServiceAOP {
        public void setOnboardingWidget(final Long userId, OnboardingWidget onboardingWidget) {
               if (!dataValidator.isValid(onboardingWidget)) {
                      throw new IllegalArgumentException(dataValidator.getConstraintViolationsString(onboardingWidget));
+              }
+       }
+
+       @Before("execution(* org.onap.portal.service.widget.WidgetService.saveOne(..)) && args(widget)")
+       public void saveOne(final FnWidget widget) {
+              if (!dataValidator.isValid(widget)) {
+                     throw new IllegalArgumentException(dataValidator.getConstraintViolationsString(widget));
               }
        }
 }

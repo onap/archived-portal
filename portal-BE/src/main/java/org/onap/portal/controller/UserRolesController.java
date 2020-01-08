@@ -266,10 +266,10 @@ public class UserRolesController {
     FnUser user = fnUserService.loadUserByUsername(principal.getName());
     List<RoleInAppForUser> result = null;
     String feErrorString = "";
-    if (!adminRolesService.isAccountAdmin(user) && !adminRolesService.isRoleAdmin(user.getId())) {
+    if (!adminRolesService.isAccountAdmin(user.getId(), user.getOrgUserId(), user.getUserApps()) && !adminRolesService.isRoleAdmin(user.getId())) {
       logger.debug(EELFLoggerDelegate.debugLogger,
           "getAppRolesForUser: Accountadminpermissioncheck {}, RoleAdmincheck {}",
-          adminRolesService.isAccountAdmin(user), adminRolesService.isRoleAdmin(user.getId()));
+          adminRolesService.isAccountAdmin(user.getId(), user.getOrgUserId(), user.getUserApps()), adminRolesService.isRoleAdmin(user.getId()));
       EcompPortalUtils.setBadPermissions(user, response, "getAppRolesForUser");
       feErrorString = EcompPortalUtils.getFEErrorString(true, response.getStatus());
     } else {
@@ -355,7 +355,7 @@ public class UserRolesController {
     // boolean changesApplied = false;
     ExternalRequestFieldsValidator changesApplied = null;
 
-    if (!adminRolesService.isAccountAdmin(user) && !adminRolesService.isRoleAdmin(user.getId())) {
+    if (!adminRolesService.isAccountAdmin(user.getId(), user.getOrgUserId(), user.getUserApps()) && !adminRolesService.isRoleAdmin(user.getId())) {
       EcompPortalUtils.setBadPermissions(user, response, "putAppWithUserRoleStateForUser");
     } else if (newAppRolesForUser == null) {
       logger.error(EELFLoggerDelegate.errorLogger,

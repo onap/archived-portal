@@ -69,7 +69,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 @EPAuditLog
 @RestController
-@EnableAspectJAutoProxy
 public class WidgetsController {
 
        private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(WidgetsController.class);
@@ -96,7 +95,7 @@ public class WidgetsController {
               } else {
                      String getType = request.getHeader("X-Widgets-Type");
                      if (!getType.isEmpty() && ("managed".equals(getType) || "all".equals(getType))) {
-                            onboardingWidgets = widgetService.getOnboardingWidgets(user, "managed".equals(getType));
+                            onboardingWidgets = widgetService.getOnboardingWidgets(user.getOrgUserId(), user.getId(), "managed".equals(getType));
                      } else {
                             logger.debug(EELFLoggerDelegate.debugLogger,
                                     "WidgetsController.getOnboardingApps - request must contain header 'X-Widgets-Type' with 'all' or 'managed'");
@@ -167,7 +166,7 @@ public class WidgetsController {
               FnUser user = fnUserService.loadUserByUsername(principal.getName());
               FieldsValidator fieldsValidator;
 
-              fieldsValidator = widgetService.deleteOnboardingWidget(user, widgetId);
+              fieldsValidator = widgetService.deleteOnboardingWidget(user.getOrgUserId(), user.getId(), widgetId);
               response.setStatus(fieldsValidator.getHttpStatusCode().intValue());
 
               EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/widgets/" + widgetId, "DELETE result =",
