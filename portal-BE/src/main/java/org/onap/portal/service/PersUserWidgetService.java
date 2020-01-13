@@ -45,65 +45,69 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.onap.portal.domain.db.ep.EpPersUserWidgetSel;
 import org.onap.portal.domain.db.ep.EpWidgetCatalog;
-import org.onap.portal.domain.db.fn.FnUser;
 import org.onap.portal.domain.dto.ecomp.PersUserWidgetSelection;
 import org.onap.portal.domain.dto.transport.WidgetCatalogPersonalization;
 import org.onap.portal.service.persUserWidgetSel.EpPersUserWidgetSelService;
+import org.onap.portal.service.user.FnUserService;
 import org.onap.portal.service.widgetCatalog.EpWidgetCatalogService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
+@EnableAspectJAutoProxy
 public class PersUserWidgetService {
 
        private static final Logger LOGGER = LoggerFactory.getLogger(PersUserWidgetService.class);
        private final EpPersUserWidgetSelService epPersUserWidgetSelService;
        private final EpWidgetCatalogService epWidgetCatalogService;
+       private final FnUserService fnUserService;
 
        @Autowired
        public PersUserWidgetService(final EpPersUserWidgetSelService epPersUserWidgetSelService,
-               final EpWidgetCatalogService epWidgetCatalogService) {
+           final EpWidgetCatalogService epWidgetCatalogService,
+           FnUserService fnUserService) {
               this.epPersUserWidgetSelService = epPersUserWidgetSelService;
               this.epWidgetCatalogService = epWidgetCatalogService;
+              this.fnUserService = fnUserService;
        }
 
-       public void setPersUserAppValue(FnUser user, WidgetCatalogPersonalization personalization) {
-              List<PersUserWidgetSelection> persList = getUserWidgetSelction(user, personalization.getWidgetId());
+       public void setPersUserAppValue(final long userId, final WidgetCatalogPersonalization personalization) {
+              List<PersUserWidgetSelection> persList = getUserWidgetSelction(userId, personalization.getWidgetId());
               LOGGER.info("Error: " + persList.size());
               // Key constraint limits to 1 row
               PersUserWidgetSelection persRow;
               if (persList.size() == 1) {
                      persRow = persList.get(0);
               } else {
-                     persRow = new PersUserWidgetSelection(null, user.getId(), personalization.getWidgetId(), null);
+                     persRow = new PersUserWidgetSelection(null, userId, personalization.getWidgetId(), null);
               }
-
               if (persRow.getId() != null) {
                      epPersUserWidgetSelService.deleteById(persRow.getId());
               }
-
               persRow.setStatusCode(personalization.getSelect() ? "S" : "H"); // Show / Hide
               EpPersUserWidgetSel epPersUserWidgetSel = new EpPersUserWidgetSel();
-              epPersUserWidgetSel.setUserId(user);
-              epPersUserWidgetSel.setWidgetId(
-                      epWidgetCatalogService.findById(personalization.getWidgetId()).orElse(new EpWidgetCatalog()));
+              epPersUserWidgetSel.setUserId(fnUserService.getUser(userId).get());
+              EpWidgetCatalog catalog = epWidgetCatalogService.findById(personalization.getWidgetId()).orElse(new EpWidgetCatalog());
+              epWidgetCatalogService.save(catalog);
+              epPersUserWidgetSel.setWidgetId(catalog);
               epPersUserWidgetSelService.saveAndFlush(epPersUserWidgetSel);
        }
 
-       private List<PersUserWidgetSelection> getUserWidgetSelction(FnUser user, Long widgetId) {
+       private List<PersUserWidgetSelection> getUserWidgetSelction(final long userId, final long widgetId) {
               return epPersUserWidgetSelService
-                      .getEpPersUserWidgetSelForUserIdAndWidgetId(user.getId(), widgetId)
+                      .getEpPersUserWidgetSelForUserIdAndWidgetId(userId, widgetId)
                       .orElse(new ArrayList<>())
                       .stream()
                       .map(this::epPersUserWidgetSelToPersUserWidgetSelection)
                       .collect(Collectors.toList());
        }
 
-       private PersUserWidgetSelection epPersUserWidgetSelToPersUserWidgetSelection(EpPersUserWidgetSel widgetSel) {
+       private PersUserWidgetSelection epPersUserWidgetSelToPersUserWidgetSelection(final EpPersUserWidgetSel widgetSel) {
               return new PersUserWidgetSelection(widgetSel.getId(), widgetSel.getUserId().getId(),
                       widgetSel.getWidgetId().getWidgetId(), widgetSel.getStatusCd());
        }

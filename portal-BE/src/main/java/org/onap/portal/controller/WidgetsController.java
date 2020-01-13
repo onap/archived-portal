@@ -51,12 +51,11 @@ import org.onap.portal.domain.dto.transport.OnboardingWidget;
 import org.onap.portal.domain.dto.transport.WidgetCatalogPersonalization;
 import org.onap.portal.logging.aop.EPAuditLog;
 import org.onap.portal.service.PersUserWidgetService;
-import org.onap.portal.service.widget.WidgetService;
 import org.onap.portal.service.user.FnUserService;
+import org.onap.portal.service.widget.WidgetService;
 import org.onap.portal.utils.EcompPortalUtils;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -113,7 +112,7 @@ public class WidgetsController {
        public FieldsValidator putOnboardingWidget(Principal principal, @PathVariable("widgetId") Long widgetId,
                @RequestBody OnboardingWidget onboardingWidget, HttpServletResponse response) {
               FnUser user = fnUserService.loadUserByUsername(principal.getName());
-              FieldsValidator fieldsValidator = null;
+              FieldsValidator fieldsValidator;
 
               assert onboardingWidget != null;
               onboardingWidget.setId(widgetId);
@@ -183,7 +182,7 @@ public class WidgetsController {
               try {
                      assert persRequest != null;
                      persUserWidgetService
-                             .setPersUserAppValue(user, persRequest);
+                             .setPersUserAppValue(user.getId(), persRequest);
               } catch (IllegalArgumentException iae) {
                      logger.error(EELFLoggerDelegate.errorLogger, "Failed in putAppCatalogSelection", iae);
                      response.sendError(HttpServletResponse.SC_NOT_ACCEPTABLE, iae.getMessage());

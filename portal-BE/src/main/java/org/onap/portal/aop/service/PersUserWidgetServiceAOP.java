@@ -63,9 +63,10 @@ public class PersUserWidgetServiceAOP {
               this.dataValidator = dataValidator;
        }
 
-       @Before("execution(* org.onap.portal.service.PersUserWidgetService.setPersUserAppValue(..)) && args(user, personalization)")
-       public void setOnboardingWidget(FnUser user, WidgetCatalogPersonalization personalization) {
+       @Before("execution(* org.onap.portal.service.PersUserWidgetService.setPersUserAppValue(..)) && args(userId, personalization)")
+       public void setPersUserAppValue(final long userId, final WidgetCatalogPersonalization personalization) {
               if (!dataValidator.isValid(personalization)) {
+                     LOGGER.error("IllegalArgumentException for user " + userId);
                      throw new IllegalArgumentException(dataValidator.getConstraintViolationsString(personalization));
               }
        }

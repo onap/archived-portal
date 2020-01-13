@@ -67,8 +67,8 @@ import org.springframework.transaction.annotation.Transactional;
 @EnableAspectJAutoProxy
 public class WidgetService {
 
-       private final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(WidgetService.class);
-       private final Long ACCOUNT_ADMIN_ROLE_ID = 999L;
+       private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(WidgetService.class);
+       private static final Long ACCOUNT_ADMIN_ROLE_ID = 999L;
 
        private static final String baseSqlToken =
            " new org.onap.portal.domain.dto.transport.OnboardingWidget("
@@ -76,15 +76,28 @@ public class WidgetService {
                + "app.APP_NAME,widget.WDG_WIDTH,widget.WDG_HEIGHT,"
                + "widget.WDG_URL, widget.WIDGET_ID,widget.WDG_NAME,widget.APP_ID,app.APP_NAME,widget.WDG_WIDTH,widget.WDG_HEIGHT,widget.WDG_URL) from FN_WIDGET widget join FN_APP app ON widget.APP_ID = app.APP_ID";
 
+       private static final String sqlWidgetsForAllApps = "SELECT" + baseSqlToken;
+
+       private static final String sqlWidgetsForAllAppsWhereUserIsAdmin =
+              "SELECT" + baseSqlToken
+                  + " join FN_USER_ROLE ON FN_USER_ROLE.APP_ID = app.APP_ID where FN_USER_ROLE.USER_ID = :USERID AND FN_USER_ROLE.ROLE_ID = "
+                  + ACCOUNT_ADMIN_ROLE_ID;
+
+       private static final String sqlWidgetsForAllAppsWhereUserHasAnyRole =
+              "SELECT DISTINCT" + baseSqlToken
+                  + " join FN_USER_ROLE ON FN_USER_ROLE.APP_ID = app.APP_ID where FN_USER_ROLE.USER_ID = "
+                  + ":USERID";
+
        private static final String urlField = "url";
-       private static final Long DUBLICATED_FIELD_VALUE_ECOMP_ERROR = new Long(
-           EPCommonSystemProperties.DUBLICATED_FIELD_VALUE_ECOMP_ERROR);
+       private static final Long DUBLICATED_FIELD_VALUE_ECOMP_ERROR = Long
+           .valueOf(EPCommonSystemProperties.DUBLICATED_FIELD_VALUE_ECOMP_ERROR);
        private static final String nameField = "name";
        private final AdminRolesService adminRolesService;
        private final EntityManager entityManager;
        private final FnWidgetDao fnWidgetDao;
        private final FnUserService fnUserService;
        private final FnUserRoleService fnUserRoleService;
+
        private static final Object syncRests = new Object();
 
        @Autowired
@@ -106,16 +119,16 @@ public class WidgetService {
        public List<OnboardingWidget> getOnboardingWidgets(final String orgUserId, final long userId,  final boolean managed) {
               FnUser user = fnUserService.getUser(userId).get();
               if (adminRolesService.isSuperAdmin(orgUserId)){
-                     return entityManager.createQuery(sqlWidgetsForAllApps(), OnboardingWidget.class).getResultList();
+                     return entityManager.createQuery(sqlWidgetsForAllApps, OnboardingWidget.class).getResultList();
               } else if (managed) {
                      if (adminRolesService.isAccountAdmin(user.getId(), user.getOrgUserId(), user.getUserApps())) {
                             return entityManager
-                                .createQuery(sqlWidgetsForAllAppsWhereUserIsAdmin(), OnboardingWidget.class)
+                                .createQuery(sqlWidgetsForAllAppsWhereUserIsAdmin, OnboardingWidget.class)
                                 .setParameter("USERID", userId).getResultList();
                      }
               } else if (adminRolesService.isAccountAdmin(user.getId(), user.getOrgUserId(), user.getUserApps()) || adminRolesService.isUser(userId)) {
                      return entityManager
-                         .createQuery(sqlWidgetsForAllAppsWhereUserHasAnyRole(), OnboardingWidget.class)
+                         .createQuery(sqlWidgetsForAllAppsWhereUserHasAnyRole, OnboardingWidget.class)
                          .setParameter("USERID", userId).getResultList();
               }
               return new ArrayList<>();
@@ -144,27 +157,11 @@ public class WidgetService {
               return fieldsValidator;
        }
 
-       public Optional<FnWidget> getOne(Long id) {
+       public Optional<FnWidget> getOne(final long id) {
               return Optional.of(fnWidgetDao.getOne(id));
        }
 
-       private String sqlWidgetsForAllApps() {
-              return "SELECT" + baseSqlToken;
-       }
-
-       private String sqlWidgetsForAllAppsWhereUserIsAdmin() {
-              return "SELECT" + baseSqlToken
-                  + " join FN_USER_ROLE ON FN_USER_ROLE.APP_ID = app.APP_ID where FN_USER_ROLE.USER_ID = :USERID AND FN_USER_ROLE.ROLE_ID = "
-                  + ACCOUNT_ADMIN_ROLE_ID;
-       }
-
-       private String sqlWidgetsForAllAppsWhereUserHasAnyRole() {
-              return "SELECT DISTINCT" + baseSqlToken
-                  + " join FN_USER_ROLE ON FN_USER_ROLE.APP_ID = app.APP_ID where FN_USER_ROLE.USER_ID = "
-                  + ":USERID";
-       }
-
-       private FieldsValidator updateOrSaveWidget(boolean superAdmin, Long userId, OnboardingWidget onboardingWidget) {
+       private FieldsValidator updateOrSaveWidget(final boolean superAdmin, final long userId, final OnboardingWidget onboardingWidget) {
               FieldsValidator fieldsValidator = new FieldsValidator();
               if (!this.isUserAdminOfAppForWidget(superAdmin, userId, onboardingWidget.getAppId())) {
                      fieldsValidator.setHttpStatusCode((long) HttpServletResponse.SC_FORBIDDEN);

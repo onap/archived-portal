@@ -97,13 +97,13 @@ public class EpPersUserWidgetSel extends DomainVo implements Serializable {
        private FnUser userId;
        @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
        @JoinColumn(name = "widget_id", nullable = false)
-       @NotNull
+       @NotNull(message = "widgetId may not be null")
        @Valid
        private EpWidgetCatalog widgetId;
        @Column(name = "status_cd", length = 1, nullable = false)
        @Size(max = 1)
-       @NotNull
-       @SafeHtml
+       @NotNull(message = "status may not be null")
+       @SafeHtml(message = "status must be safeHtml")
        private String statusCd;
 
 }
