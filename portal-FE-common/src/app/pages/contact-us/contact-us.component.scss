@@ -1,0 +1,74 @@
+
+/*-
+ * ============LICENSE_START==========================================
+ * ONAP Portal
+ * ===================================================================
+ * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ * ===================================================================
+ *
+ * Unless otherwise specified, all software contained herein is licensed
+ * under the Apache License, Version 2.0 (the "License");
+ * you may not use this software except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *             http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Unless otherwise specified, all documentation contained herein is licensed
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
+ * you may not use this documentation except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *             https://creativecommons.org/licenses/by/4.0/
+ *
+ * Unless required by applicable law or agreed to in writing, documentation
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * ============LICENSE_END============================================
+ *
+ * 
+ */
+.w-ecomp-contactUs-home .contactUs-txt {
+    font-weight: 400;
+    color: #666;
+    font-size: 15px;
+    font-family: Omnes-ECOMP-W02-Medium,Arial;
+    margin: 10px;
+}
+
+.w-ecomp-contactUs-home .contactUs-home-container .contactUs-general-div {
+    margin: auto!important;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    margin-top: 0;
+    margin-right: 0;
+    margin-left: 0;
+    margin-bottom: 0;
+    width: 1170px;
+}
+
+.w-ecomp-contactUs-home .w-ecomp-main-view-title {
+    font-family: Omnes-ECOMP-W02,Arial;
+    font-size: 20px;
+}
+
+button#edit-button-contact-us {
+    float: right;
+}
+
+.container th{
+    padding-bottom: 15px;
+    font-weight: bold;
+}
+
+.w-ecomp-contactUs-home .contactUs-collapsible-panel {
+    margin: auto;
+}

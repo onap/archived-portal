@@ -1,0 +1,156 @@
+<!--
+  ============LICENSE_START==========================================
+  ONAP Portal
+  ===================================================================
+  Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+  ===================================================================
+ 
+  Unless otherwise specified, all software contained herein is licensed
+  under the Apache License, Version 2.0 (the "License");
+  you may not use this software except in compliance with the License.
+  You may obtain a copy of the License at
+ 
+              http://www.apache.org/licenses/LICENSE-2.0
+ 
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+ 
+  Unless otherwise specified, all documentation contained herein is licensed
+  under the Creative Commons License, Attribution 4.0 Intl. (the "License");
+  you may not use this documentation except in compliance with the License.
+  You may obtain a copy of the License at
+ 
+              https://creativecommons.org/licenses/by/4.0/
+ 
+  Unless required by applicable law or agreed to in writing, documentation
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+ 
+  ============LICENSE_END============================================
+ 
+  
+  -->
+<div class="container">
+  <!--Modal Headers-->
+  <div class="modal-header">
+    <h4 class="modal-title">Manage Contact Us</h4>
+    <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('Cross')">
+        <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <!--Modal Body goes here-->
+  <div class="modal-body">
+    <div class="c-ecomp-portal-abs-table contactus-manage-table">
+      <table b2b-table id="table-main" table-data="contactUsList"	current-page="ignoredCurrentPage">
+        <thead b2b-table-row type="header">
+          <tr>
+            <th id="th-users-0" b2b-table-header key="ecomp_function" default-sort="a">App Name</th>
+            <th id="th-users-1" b2b-table-header key="app_name" sortable="true">Contact	Name</th>
+            <th id="th-users-2" b2b-table-header key="app_name" sortable="true">Contact	Email</th>
+            <th id="th-users-3" b2b-table-header key="role_name" sortable="true">Contact URL</th>
+            <th id="th-users-4" b2b-table-header key="role_name" sortable="true">Description</th>
+            <th id="th-users-5" b2b-table-header key="role_name" sortable="true">Edit</th>
+            <th id="th-users-6" b2b-table-header key="role_name" sortable="true">Delete</th>
+          </tr>
+        </thead>
+        <!-- Use track-by="UNIQUE KEY HERE" or leave out if no unique keys in data -->
+        <tbody b2b-table-row type="body" class="table-body" track-by="$index" *ngFor="let rowData of contactUsList; index as i">
+          <tr id="tr-rowData" ng-click="">
+            <td b2b-table-body>
+              <div id="users-page-td-appName" [innerHtml]="rowData.appName"></div>
+            </td>
+            <td b2b-table-body>
+              <div id="users-page-td-name" [hidden]="showEdit" [innerHtml]="rowData.contactName"></div> 
+              <input	class="input-inline-edit-text" type="text"	*ngIf="showEdit"	[(ngModel)]="rowData.contactName" />
+            </td>
+            <td b2b-table-body>
+              <div id="users-page-td-email" [hidden]="showEdit"	[innerHtml]="rowData.contactEmail"></div> 
+              <input	class="input-inline-edit-text" type="text"	*ngIf="showEdit"	[(ngModel)]="rowData.contactEmail" />
+            </td>
+            <td b2b-table-body>
+              <div id="users-page-td-url" [hidden]="showEdit"	[innerHtml]="rowData.url"></div> 
+              <input		class="input-inline-edit-text" type="text"	*ngIf="showEdit" [(ngModel)]="rowData.url" />
+            </td>
+            <td b2b-table-body>
+              <div id="users-page-td-descr" [hidden]="showEdit"		[innerHtml]=" rowData.description"></div> 
+              <input	class="input-inline-edit-text" type="text"	*ngIf="showEdit"	[(ngModel)]="rowData.description" />
+            </td>
+            <td b2b-table-body>
+              <div class="edit-contact-us" [hidden]="showEdit">
+                  <span class="icon-edit" (click)="showEdit=true">
+                      <i class="icon ion-md-create"></i>
+                  </span>
+              </div> 
+              <span *ngIf="showEdit" (click)="editContactUs(rowData)"> 
+                  <i class="icon ion-md-save"></i>
+              </span>
+            </td>
+            <td b2b-table-body>
+              <div class="delete-contact-us">
+                <span class="icon-trash" (click)="delContactUs(rowData)">
+                    <i class="icon ion-md-trash"></i>
+                </span>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  
+    <div class="divider-line"></div>
+  
+    <div class="contactus-addWidgetHeader">
+      <div id="addWidgetHeader" class="contact-us-margin">
+        <p class="edit-contactus-title">Add Application Contact Information</p>
+      </div>
+      <div id="addWidget" class="contact-us-margin">
+        <div>
+          <form name="contactForm" novalidate autocomplete="off">
+            <div id="add-contact-us-field-appname" class="add-contact-us-field">
+              <mat-form-field class="contact-us-applications-select">
+                  <mat-label> <span id="required" class="mots-property-label-spn"	visible="false"> *</span>Application Name </mat-label>
+                  <mat-select name="contact-us-applications-select" id="application" 
+                    name="applicationName" [(ngModel)]="selectedApp" [(value)]="selected">
+                    <mat-option *ngFor="let d of contactUsAllAppList" [value]="d" >{{d.title}}</mat-option>
+                  </mat-select>
+              </mat-form-field>
+              <div id="mots-property-label-required"	*ngIf="selectedApp==null || selectedApp==''">
+                <small class="mandatory-categories">App Name is Required</small>
+              </div>
+            </div>
+            <br>
+            <div class="addApplicationContactInfo">
+              <div id="add-contact-us-field-contactname"	class="add-contact-us-field">
+                <div id="property-label-name" class="property-label">Contact Name</div>
+                <input id="property-input-name" name="name" class="input-text-area" type="text"	[(ngModel)]="newContactUs.contactName" />
+              </div>
+              <div id="add-contact-us-field-email" class="add-contact-us-field">
+                <div id="property-label-email" class="property-label">Contact Email</div>
+                <input id="property-input-email" name="email" class="input-text-area" type="text" [(ngModel)]="newContactUs.contactEmail" />
+              </div>
+              <div id="add-contact-us-field-url" class="add-contact-us-field">
+                <div id="property-label-url" class="property-label">Contact	URL</div>
+                <input id="property-input-url" name="url" class="input-text-area" type="text" [(ngModel)]="newContactUs.url" />
+              </div>
+            </div>
+            <div id="add-contact-us-field-desc" class="add-contact-us-field-des">
+              <div id="property-label-desc" class="property-label">Description</div>
+              <textarea id="property-input-desc" name="description"	class="property-label-desc-txtarea" [(ngModel)]="newContactUs.description"></textarea>
+            </div>
+          </form>
+        </div>		
+      </div>
+    </div>
+  </div>
+  <!--Modal Footer goes Here-->
+  <div class="modal-footer">
+      <button type="button" class="btn btn-primary" (click)="activeModal.close('Close')">Close</button> &nbsp;
+      <button type="button" class="btn btn-primary" (click)="addNewContactUs()">Add New</button>
+  </div>
+</div>

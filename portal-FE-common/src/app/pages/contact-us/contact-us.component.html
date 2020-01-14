@@ -1,0 +1,163 @@
+<!--
+  ============LICENSE_START==========================================
+  ONAP Portal
+  ===================================================================
+  Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+  ===================================================================
+ 
+  Unless otherwise specified, all software contained herein is licensed
+  under the Apache License, Version 2.0 (the "License");
+  you may not use this software except in compliance with the License.
+  You may obtain a copy of the License at
+ 
+              http://www.apache.org/licenses/LICENSE-2.0
+ 
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+ 
+  Unless otherwise specified, all documentation contained herein is licensed
+  under the Creative Commons License, Attribution 4.0 Intl. (the "License");
+  you may not use this documentation except in compliance with the License.
+  You may obtain a copy of the License at
+ 
+              https://creativecommons.org/licenses/by/4.0/
+ 
+  Unless required by applicable law or agreed to in writing, documentation
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+ 
+  ============LICENSE_END============================================
+   
+-->
+<div class="container">
+    <div id="contact-us-title" class="w-ecomp-main-view-title">
+        <h1 class="heading-page">Contact Us</h1>
+    </div>
+    <button type="button" style="float: right;" class="btn btn-primary" (click)="editContactUsModal()">
+      <i class="icon ion-md-person-add"></i>Edit Contact Us
+    </button>
+    <div class="w-ecomp-contactUs-home">
+       <div class="contactUs-home-container" id="page-content">
+          <div class="admins-page-main">
+              <div class="contactUs-general-div">
+                <span class="contactUs-txt">
+                  To report an issue with ECOMP Portal, open a ticket at the 
+                  <a href="{{ush_TicketInfoUrl}}" target="_blank">User Self Help system</a>.
+                </span><br />
+              </div>
+            
+              <div class="contactUs-general-div">
+                <span class="contactUs-txt">
+                  To give feedback to the ECOMP Portal team, send email to 
+                  <a href="mailto:{{portalInfo_Address}}" target="_top">{{portalInfo_Address}}</a>. 
+                </span><br />
+              </div>
+            
+              <div class="contactUs-general-div">
+                <span class="contactUs-txt">
+                  To learn more about ECOMP Portal, visit the 
+                  <a href="{{feedback_Url}}" target="_blank">ECOMP Portal wiki</a> (may need to request access).
+                </span><br />
+              </div>
+
+              <!-- Function Categories -->		
+              <div id="appFunctionInfo" class="w-ecomp-main-view-title"> Application Functions
+                <br />
+                <div b2b-table table-data="contact.functionalTableData" class="b2b-table-div">
+                    <table mat-table [dataSource]="dataSource" matSort>
+                       <!-- Category -->
+                      <ng-container matColumnDef="category">
+                          <th id="col1" mat-header-cell *matHeaderCellDef> Category  </th>
+                          <td id="rowheader_t1_{{i}}-category" 
+                            mat-cell *matCellDef="let element; let i = index;"> {{element.category}}
+                          </td>
+                        </ng-container>
+                    
+                        <!-- Application Name Column -->
+                        <ng-container matColumnDef="eCOMPFunctions">
+                          <th id="col2" mat-header-cell *matHeaderCellDef> ECOMP Functions </th>
+                          <td id="rowheader_t1_{{i}}-eCOMPFunctions" 
+                            mat-cell *matCellDef="let element; let i=index;"> {{element.functions}} </td>
+                        </ng-container>
+
+                         <!-- Application Name Column -->
+                        <ng-container matColumnDef="eCOMPApplications">
+                          <th id="col2" mat-header-cell *matHeaderCellDef> ECOMP Applications </th>
+                          <td id="rowheader_t1_{{i}}-eCOMPApplications" 
+                            mat-cell *matCellDef="let element; let i=index;"> 
+                            <a href="javascript:void(0)" (click)="showApplicationInfo(element.app_Id)">
+                              {{element.app_Name}} 
+                            </a>
+                          </td>
+                        </ng-container>
+                         
+                        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                    </table>                    
+                </div>
+            </div><br />
+                
+            <!-- Display applicationInfo panels -->
+            <div id="allAppInfo">
+                <div class="w-ecomp-main-view-title"> All Applications</div>	<br />	
+                <div class="contactUs-general-div">
+                  <div class="contact-us-table">
+                  <div class="c-ecomp-portal-abs-table default contactUs-table-ht">
+                    <div *ngFor="let rowData of appTable; index as i" class="contactUs-collapsible-panel">
+                        <div id="{{rowData.app_Id}}" class="contactUs-table-ht" class="contactUs-panel-header" (click)="showApplicationInfo(rowData.app_Id)">
+                            <span id="appId{{i}}" class="contactUs-table-spn">{{rowData.app_name}}</span>
+                            <span class="contactUs-table-title-sp">&nbsp;&nbsp;
+                               <span id="arrowup{{rowData.app_Id}}" [hidden]="showUp" title="Collapse app contact section" class="icon-controls-upPRIMARY">
+                                <i class="fa fa-2x fa-angle-up" aria-hidden="true"></i>
+                               </span>&nbsp;&nbsp;
+                               
+                               <span id="arrowdown{{rowData.app_Id}}" [hidden]="showDown" title="Expand app contact section" class="icon-controls-down">
+                                <i class="fa fa-2x fa-angle-down" aria-hidden="true"></i>
+                               </span>
+                            </span>
+                        </div>
+                        <div id="collapse{{rowData.app_Id}}" [hidden]="true" class="contactUs-collapsible-panel">
+                            <div class="contactUs-txt" [hidden]="rowData.contact_name || rowData.contact_email || rowData.url_Info || rowData.desc"> 
+                                <span class="contactUs-collapsible-panel-spn"> 
+                                  No application information is available. Please use the links above to contact the ECOMP Portal team. 
+                                </span>
+                            </div>
+                            <div class="contactUs-txt" *ngIf="rowData.contact_name || rowData.contact_email || rowData.url_Info || rowData.desc"> 
+                                <table class="contactUs-main-table">
+                                <tr>
+                                  <td class="contactUs-panel-labels contactUs-main-panel-labels">Contact:</td>
+                                  <td class="contactUs-panel-labels contactUs-main-panel-value">{{rowData.contact_name}}</td>
+                                </tr>
+                                <tr>
+                                  <td class="contactUs-panel-labels">Email:</td>
+                                  <td class="contactUs-panel-labels"><a href="mailto:{{rowData.contact_email}}" target="_top">{{rowData.contact_email}}</a></td>
+                                </tr>
+                                <tr>
+                                  <td class="contactUs-panel-labels">Info URL:</td>
+                                  <td class="contactUs-panel-labels"><a href="{{rowData.url_Info}}" target="_blank">{{rowData.url_Info}}</a></td>
+                                </tr>
+                                <tr>
+                                  <td class="contactUs-panel-labels">Description:</td>
+                                  <td class="contactUs-panel-labels">{{rowData.desc}}</td>
+                                </tr>
+                                <tr>
+                                  <td class="contactUs-panel-labels">Get access:</td>
+                                  <td class="contactUs-panel-labels"><a href="javascript:void(0)" (click)="goGetAccess(rowData.app_name);">Click for application and role information</a></td>
+                                </tr>
+                                </table>
+                              </div>				
+                        </div>
+                    </div>
+                  </div>
+                  </div>
+                </div>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
