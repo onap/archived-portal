@@ -1,0 +1,76 @@
+.usb-item {
+  background: #fff;
+  position: fixed;
+}
+
+.usb-item h3 {
+  color: #ef6f00;
+  font-size: 14px;
+  padding: 20px;
+  margin: 0;
+  text-align: center;
+  font-weight: 300;
+  background: #f8f9fa;
+}
+
+.usb-item a {
+  display: block;
+  color: #fff;
+  font-size: 1.1em;
+  font-weight: 300;
+  transition: all 0.2s ease-in-out;
+  -ms-transition: all 0.2s ease-in-out; /* IE 9 */
+  -webkit-transition: all 0.2s ease-in-out; /* Safari 3-8 */
+}
+
+.usb-item a:active {
+  background: #afdefa;
+  color: #47a3da;
+}
+
+.usb-item-right {
+  transition: all 0.5s ease-in-out;
+  -ms-transition: all 0.5s ease-in-out; /* IE 9 */
+  -webkit-transition: all 0.5s ease-in-out; /* Safari 3-8 */
+}
+
+.usb-item a:hover {
+  -ms-transform: scale(1.5); /* IE 9 */
+  -webkit-transform: scale(1.5); /* Safari 3-8 */
+  transform: scale(1.5);
+}
+
+.usb-item-vertical {
+  margin-top: 105px;
+  text-align: center;
+  width: 75px;
+  height: 79%;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 4px 5px rgba(0, 0, 0, 0.2);
+}
+
+.usb-item-vertical a {
+  padding: 0.5em;
+}
+
+button {
+  transition: all 0.5s ease-in-out;
+  -ms-transition: all 0.5s ease-in-out; /* IE 9 */
+  -webkit-transition: all 0.5s ease-in-out; /* Safari 3-8 */
+  z-index: 9999;
+  top: 450px;
+  -ms-transform: rotate(-90deg); /* IE 9 */
+  -webkit-transform: rotate(-90deg); /* Safari 3-8 */
+  transform: rotate(-90deg);
+  position: fixed;
+}
+
+.activeUserIcon {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  height: 55px;
+  width: 55px;
+  border-radius: 50%;
+}
