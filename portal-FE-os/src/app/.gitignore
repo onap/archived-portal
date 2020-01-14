@@ -1,0 +1,8 @@
+/ng-material-module.ts
+!layout/
+/modals/
+/shared/
+!shared/interceptors/
+/pages/
+!pages/application-onboarding
+!pages/users

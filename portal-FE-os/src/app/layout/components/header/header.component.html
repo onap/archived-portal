@@ -1,0 +1,129 @@
+<!--
+  ============LICENSE_START==========================================
+  ONAP Portal
+  ===================================================================
+  Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+  ===================================================================
+ 
+  Unless otherwise specified, all software contained herein is licensed
+  under the Apache License, Version 2.0 (the "License");
+  you may not use this software except in compliance with the License.
+  You may obtain a copy of the License at
+ 
+              http://www.apache.org/licenses/LICENSE-2.0
+ 
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+ 
+  Unless otherwise specified, all documentation contained herein is licensed
+  under the Creative Commons License, Attribution 4.0 Intl. (the "License");
+  you may not use this documentation except in compliance with the License.
+  You may obtain a copy of the License at
+ 
+              https://creativecommons.org/licenses/by/4.0/
+ 
+  Unless required by applicable law or agreed to in writing, documentation
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+ 
+  ============LICENSE_END============================================
+ 
+  
+  -->
+
+<div style="bottom: tabBottom; display: flex; height: 100%; overflow: hidden">
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="header-menu-display">
+            <app-header-menu></app-header-menu>
+        </div>
+        <button class="navbar-toggler" type="button" (click)="toggleSidebar()">
+            <i class="icon ion-md-menu" style="color:white;"></i>
+        </button>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav ml-auto">
+                <app-global-search></app-global-search>
+                <li class="nav-item dropdown" ngbDropdown>
+                    <a href="javascript:void(0)" class="nav-link" ngbDropdownToggle>
+                        <i class="icon ion-md-bulb"></i> <b class="caret"></b><span class="sr-only"></span>
+                    </a>
+                    <div class="custom-dropdown-item" ngbDropdownMenu>
+
+                <li class="dropdown-divider"></li>
+        </div>
+        </li>
+        <li class="nav-item dropdown" ngbDropdown>
+            <a href="javascript:void(0)" class="nav-link" ngbDropdownToggle>
+                <i class="icon ion-md-flag"></i> <b class="caret"></b><span class="sr-only"></span>
+            </a>
+            <div class="dropdown-menu-right" ngbDropdownMenu>
+                <a style="margin-left: 8%;" id="application-role" [routerLink]="['/recentNotifications']"
+                    href="javascript:void(0);">
+                    {{ 'View All Recent Notifications' }} </a>
+        <li class="dropdown-divider"></li>
+</div>
+</li>
+<li class="nav-item dropdown" ngbDropdown>
+    <a href="javascript:void(0)" class="nav-link" ngbDropdownToggle>
+        <i class="icon ion-md-person"></i> {{firstName}} <b class="caret"></b>
+    </a>
+    <div class="dropdown-menu-right" ngbDropdownMenu>
+<li class="dropdown-item" style="font-weight: lighter">
+    {{firstName}}, {{lastName}}
+</li>
+<li class="dropdown-item">
+    <span class="dropdown-item-name"> {{ 'Email'}}: </span>
+    <div>
+        <span class="dropdown-item-value">
+            {{loginSnippetEmail}}
+        </span>
+    </div>
+</li>
+<li class="dropdown-item">
+    <span class="dropdown-item-name"> {{ 'User Id' }}: </span>
+    <div>
+        <span class="dropdown-item-value">
+            {{loginSnippetUserid}}
+        </span>
+    </div>
+</li>
+<li class="dropdown-item">
+    <span class="dropdown-item-name"> {{ 'Last login' }}: </span>
+    <div>
+        <span class="dropdown-item-value">
+            {{lastLogin | date:'medium'}}
+        </span>
+    </div>
+</li>
+<li class="custom-display-item">
+    <a (click)="getUserApplicationRoles()" href="javascript:void(0);"><span><i class="icon ion-md-add-circle-outline"
+                [ngClass]="{true: 'icon ion-md-add-circle-outline', false: 'icon ion-md-remove-circle-outline'}[ !displayUserAppRoles]"></i>
+            {{ 'Applications and Roles' }} </span></a>
+    <span class="ecomp-spinner" *ngIf="isLoading"></span>
+</li> <br>
+<div class="custom-display-item approles" [hidden]="!displayUserAppRoles">
+    <div *ngFor="let ua of userapproles ; index as i">
+        <div class="reg-userApp-value">
+            <span class="dropdown-item-name">{{ua.App}}:</span>
+        </div>
+        <div *ngFor="let role of ua.Roles ; index as i" class="reg-userAppRoles-value">
+            <span *ngIf="role.indexOf('global_')!=-1" id="required" style="color: Red;" visible="false">
+                *</span> <span class="dropdown-item-value">{{role}}</span>
+        </div>
+        <br>
+    </div>
+</div>
+<hr>
+<div id="reg-logout-div" >
+<button type="button" class="btn btn-primary"  (click)="allAppsLogout()">
+    <i class="icon ion-md-log-out"></i> {{ 'Log Out' }} </button></div>
+</div>
+</li>
+</ul>
+</div>
+</nav>
+</div>
