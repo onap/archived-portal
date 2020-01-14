@@ -1,0 +1,211 @@
+/*-
+ * ============LICENSE_START==========================================
+ * ONAP Portal
+ * ===================================================================
+ * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ * ===================================================================
+ *
+ * Unless otherwise specified, all software contained herein is licensed
+ * under the Apache License, Version 2.0 (the "License");
+ * you may not use this software except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *             http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Unless otherwise specified, all documentation contained herein is licensed
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
+ * you may not use this documentation except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *             https://creativecommons.org/licenses/by/4.0/
+ *
+ * Unless required by applicable law or agreed to in writing, documentation
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * ============LICENSE_END============================================
+ *
+ * 
+ */
+
+::ng-deep .modal-dialog { 
+    max-width: 600px;
+    width: 600px;
+    overflow-x: auto;
+    overflow-y: auto;
+}
+
+::ng-deep .modal-body {
+   padding: -1rem;
+}
+
+::ng-deep .mat-form-field-infix {
+    width: 400px;
+}
+
+.microservice-add-details-model .microservice-properties-main {
+    padding-left: 20px;
+    padding-right: 20px;
+    margin-bottom: 50px;
+    height: 430px;
+    width: 100%;
+    overflow-x: auto;
+}
+
+.microservice-add-details-model .microservice-properties-main .item {
+    position: relative;
+    margin-bottom: 15px;
+    width: 400px;
+}
+
+.microservice-add-details-model .microservice-properties-main .item .error-container {
+    position: absolute;
+    width: 280px;
+    display: block;
+    height: 12px;
+    line-height: 12px;
+}
+
+.microservice-add-details-model .microservice-properties-main .item .error-container .err-message {
+    color: #cf2a2a;
+    font-size: 10px;
+}
+
+.microservice-add-details-model .microservice-properties-main .item .item-label {
+    color: #5a5a5a;
+    font-family: Omnes-ECOMP-W02,Arial;
+    font-size: 14px;
+}
+
+.microservice-add-details-model .microservice-properties-main .item .left-test-item {
+    display: inline-block;
+    width: 85%;
+    background: #fff;
+}
+
+.microservice-add-details-model .microservice-properties-main .item .right-test-item {
+    position: relative;
+    display: inline-block;
+    width: 15%;
+    float: right;
+}
+
+.microservice-add-details-model .microservice-properties-main .item .test-button {
+    color: #fff;
+    font-family: Omnes-ECOMP-W02-Medium,Arial;
+    font-size: 14px;
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 6px;
+    box-shadow: 0 1px 0.99px 0.01px rgba(2,60,89,.004);
+    height: 29px;
+    line-height: 29px;
+    cursor: pointer;
+    text-align: center;
+    background: #067ab4;
+}
+
+.microservice-add-details-model .microservice-properties-main .item {
+    position: relative;
+    margin-bottom: 15px;
+    width: 400px;
+}
+
+.microservice-add-details-model .microservice-properties-main .add-para-item {
+    position: relative;
+    display: inline-flex;
+}
+
+.microservice-add-details-model .microservice-properties-main .add-para-item .add-label-left {
+    line-height: 25px;
+    height: 30px;
+    vertical-align: middle;
+    display: inline-block;
+    margin-right: 10px;
+    background: #fff;
+    color: #5a5a5a;
+    font-family: Omnes-ECOMP-W02,Arial;
+    font-size: 14px;
+}
+
+.microservice-add-details-model .microservice-properties-main .microservice-property {
+    margin-top: 10px;
+    position: relative;
+}
+
+.icon-primary-accordion-minus, .icon-primary-expanded, .icon-primary-accordion-plus, .icon-primary-collapsed {
+    font-size: 20px !important;
+}
+
+#microservice-details-input-name{
+    width: 16em;
+}
+
+#widgets-details-input-desc{
+    width: 25em;
+}
+
+.microservice-desc {
+    overflow: auto;
+    resize: vertical;
+    width: 29em;
+}
+
+.json-field {
+    overflow: auto;
+    resize: vertical;
+    width: 25em;
+}
+
+#microservice-details-input-app{
+    width: 25em;
+    height: 32px;
+}
+
+#microservice-details-input-endpoint-url{
+    width: 25em;
+}
+
+#microservice-details-input-security-type{
+    width: 25em;
+    height: 32px;
+}
+
+.microservice-add-details-model .microservice-properties-main .item .para-label-item-right {
+    margin-left: 201px!important;
+    position: absolute!important;
+    margin-top: -19px!important;
+    width: 50%!important;
+}
+
+.microservice-add-details-model .microservice-properties-main .item .para-item-right {
+    margin-top: -27px;
+    position: absolute;
+    margin-left: 500px;
+}
+
+.table-search-field {
+    width: 48% !important;
+    margin-bottom: 5px;
+}
+
+#microservice-details-user-paramters{
+    display: inline-flex;
+}
+
+.required:before {
+    color: #cf2a2a;
+    margin-right: 2px;
+    content: "* ";
+    position: absolute;
+    top: 28px;
+    left: -10px;
+}
