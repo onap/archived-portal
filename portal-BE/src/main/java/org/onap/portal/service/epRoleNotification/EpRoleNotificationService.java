@@ -38,46 +38,28 @@
  *
  */
 
-package org.onap.portal.service.menuFunctionalRoles;
+package org.onap.portal.service.epRoleNotification;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-
-import org.onap.portal.domain.db.fn.FnMenuFunctionalRoles;
+import javax.transaction.Transactional;
+import org.onap.portal.domain.db.ep.EpRoleNotification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class FnMenuFunctionalRolesService {
-  private final FnMenuFunctionalRolesDao fnMenuFunctionalRolesDao;
+@Transactional
+public class EpRoleNotificationService {
 
-  @Autowired
-  public FnMenuFunctionalRolesService(FnMenuFunctionalRolesDao fnMenuFunctionalRolesDao) {
-    this.fnMenuFunctionalRolesDao = fnMenuFunctionalRolesDao;
-  }
+    private final EpRoleNotificationDao epRoleNotificationDao;
 
-  public void deleteById(final Long id){
-    fnMenuFunctionalRolesDao.deleteById(id);
-  }
+    @Autowired
+    public EpRoleNotificationService(
+        EpRoleNotificationDao epRoleNotificationDao) {
+        this.epRoleNotificationDao = epRoleNotificationDao;
+    }
 
-  public void delete(final FnMenuFunctionalRoles id){
-    fnMenuFunctionalRolesDao.delete(id);
-  }
-
-  public List<FnMenuFunctionalRoles> retrieveByroleId(final Long roleId){
-    return Optional.of(fnMenuFunctionalRolesDao.retrieveByRoleId(roleId)).orElse(new ArrayList<>());
-  }
-
-  public List<FnMenuFunctionalRoles> retrieveByMenuId(final Long menuId){
-    return Optional.of(fnMenuFunctionalRolesDao.retrieveByMenuId(menuId)).orElse(new ArrayList<>());
-  }
-
-  public List<FnMenuFunctionalRoles> saveAll(List<FnMenuFunctionalRoles> functionalRoles) {
-    return fnMenuFunctionalRolesDao.saveAll(functionalRoles);
-  }
-
-  public List<FnMenuFunctionalRoles> findAll(){
-    return fnMenuFunctionalRolesDao.findAll();
-  }
+    public List<EpRoleNotification> getNotificationRoles(final Long notificationId) {
+        return epRoleNotificationDao.getNotificationRoles(notificationId).orElse(new ArrayList<>());
+    }
 }

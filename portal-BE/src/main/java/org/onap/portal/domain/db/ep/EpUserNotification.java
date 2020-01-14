@@ -92,11 +92,10 @@ CREATE TABLE `ep_user_notification` (
 @Entity
 public class EpUserNotification implements Serializable {
        @Id
-
-  @GeneratedValue(strategy = GenerationType.AUTO)
+       @GeneratedValue(strategy = GenerationType.AUTO)
        @Column(name = "ID", length = 11, nullable = false, columnDefinition = "int(11) AUTO_INCREMENT")
        @Digits(integer = 11, fraction = 0)
-       private Integer id;
+       private Long id;
        @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
        @JoinColumn(name = "User_ID", columnDefinition = "bigint")
        @Valid
@@ -105,11 +104,8 @@ public class EpUserNotification implements Serializable {
        @JoinColumn(name = "notification_ID")
        @Valid
        private EpNotification notificationId;
-       @Column(name = "is_viewed", length = 1, columnDefinition = "char(1) default 'N'")
-       @Pattern(regexp = "[YNyn]")
-       @Size(max = 1)
-       @SafeHtml
-       private String isViewed;
+       @Column(name = "is_viewed", length = 1)
+       private Boolean isViewed = false;
        @Column(name = "updated_time", nullable = false, columnDefinition = "datetime default now()")
        @NotNull
        private LocalDateTime updatedTime;

@@ -38,46 +38,36 @@
  *
  */
 
-package org.onap.portal.service.menuFunctionalRoles;
+package org.onap.portal.aop.service.ep;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import org.onap.portal.domain.db.fn.FnMenuFunctionalRoles;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
+import org.onap.portal.domain.db.ep.EpPersUserWidgetSel;
+import org.onap.portal.validation.DataValidator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
-@Service
-public class FnMenuFunctionalRolesService {
-  private final FnMenuFunctionalRolesDao fnMenuFunctionalRolesDao;
+@Aspect
+@Component
+public class EpPersUserWidgetSelServiceAOP {
 
-  @Autowired
-  public FnMenuFunctionalRolesService(FnMenuFunctionalRolesDao fnMenuFunctionalRolesDao) {
-    this.fnMenuFunctionalRolesDao = fnMenuFunctionalRolesDao;
-  }
+    private static final Logger LOGGER = LoggerFactory.getLogger(EpPersUserWidgetSelServiceAOP.class);
 
-  public void deleteById(final Long id){
-    fnMenuFunctionalRolesDao.deleteById(id);
-  }
+    private final DataValidator dataValidator;
 
-  public void delete(final FnMenuFunctionalRoles id){
-    fnMenuFunctionalRolesDao.delete(id);
-  }
+    @Autowired
+    public EpPersUserWidgetSelServiceAOP(DataValidator dataValidator) {
+        this.dataValidator = dataValidator;
+    }
 
-  public List<FnMenuFunctionalRoles> retrieveByroleId(final Long roleId){
-    return Optional.of(fnMenuFunctionalRolesDao.retrieveByRoleId(roleId)).orElse(new ArrayList<>());
-  }
+    @Before("execution(* org.onap.portal.service.persUserWidgetSel.EpPersUserWidgetSelService.saveAndFlush(..)) && args(epPersUserWidgetSel)")
+    public void setPersUserAppValue(final EpPersUserWidgetSel epPersUserWidgetSel) {
+        if (!dataValidator.isValid(epPersUserWidgetSel)) {
+            LOGGER.error("IllegalArgumentException");
+            throw new IllegalArgumentException(dataValidator.getConstraintViolationsString(epPersUserWidgetSel));
+        }
+    }
 
-  public List<FnMenuFunctionalRoles> retrieveByMenuId(final Long menuId){
-    return Optional.of(fnMenuFunctionalRolesDao.retrieveByMenuId(menuId)).orElse(new ArrayList<>());
-  }
-
-  public List<FnMenuFunctionalRoles> saveAll(List<FnMenuFunctionalRoles> functionalRoles) {
-    return fnMenuFunctionalRolesDao.saveAll(functionalRoles);
-  }
-
-  public List<FnMenuFunctionalRoles> findAll(){
-    return fnMenuFunctionalRolesDao.findAll();
-  }
 }

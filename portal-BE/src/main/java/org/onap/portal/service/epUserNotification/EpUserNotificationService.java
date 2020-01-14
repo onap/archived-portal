@@ -38,46 +38,49 @@
  *
  */
 
-package org.onap.portal.service.menuFunctionalRoles;
+package org.onap.portal.service.epUserNotification;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import org.onap.portal.domain.db.fn.FnMenuFunctionalRoles;
+import java.time.LocalDateTime;
+import javax.persistence.EntityExistsException;
+import javax.transaction.Transactional;
+import org.onap.portal.domain.db.ep.EpNotification;
+import org.onap.portal.domain.db.ep.EpUserNotification;
+import org.onap.portal.domain.db.fn.FnUser;
+import org.onap.portal.service.epNotification.EpNotificationService;
+import org.onap.portal.service.user.FnUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class FnMenuFunctionalRolesService {
-  private final FnMenuFunctionalRolesDao fnMenuFunctionalRolesDao;
+@Transactional
+public class EpUserNotificationService {
 
-  @Autowired
-  public FnMenuFunctionalRolesService(FnMenuFunctionalRolesDao fnMenuFunctionalRolesDao) {
-    this.fnMenuFunctionalRolesDao = fnMenuFunctionalRolesDao;
-  }
+    private final EpUserNotificationDao epUserNotificationDao;
+    private final EpNotificationService epNotificationService;
+    private final FnUserService fnUserService;
 
-  public void deleteById(final Long id){
-    fnMenuFunctionalRolesDao.deleteById(id);
-  }
+    @Autowired
+    public EpUserNotificationService(
+        final EpUserNotificationDao epUserNotificationDao,
+        final EpNotificationService epNotificationService,
+        final FnUserService fnUserService) {
+        this.epUserNotificationDao = epUserNotificationDao;
+        this.epNotificationService = epNotificationService;
+        this.fnUserService = fnUserService;
+    }
 
-  public void delete(final FnMenuFunctionalRoles id){
-    fnMenuFunctionalRolesDao.delete(id);
-  }
+    public void setNotificationRead(Long notificationId, long userId) {
 
-  public List<FnMenuFunctionalRoles> retrieveByroleId(final Long roleId){
-    return Optional.of(fnMenuFunctionalRolesDao.retrieveByRoleId(roleId)).orElse(new ArrayList<>());
-  }
+        EpNotification notification = epNotificationService.getOne(notificationId).orElse(new EpNotification());
+        FnUser user = fnUserService.getUser(userId).orElseThrow(EntityExistsException::new);
 
-  public List<FnMenuFunctionalRoles> retrieveByMenuId(final Long menuId){
-    return Optional.of(fnMenuFunctionalRolesDao.retrieveByMenuId(menuId)).orElse(new ArrayList<>());
-  }
+        EpUserNotification userNotification = new EpUserNotification();
+        userNotification.setNotificationId(notification);
+        userNotification.setUpdatedTime(LocalDateTime.now());
+        userNotification.setIsViewed(true);
+        userNotification.setUserId(user);
 
-  public List<FnMenuFunctionalRoles> saveAll(List<FnMenuFunctionalRoles> functionalRoles) {
-    return fnMenuFunctionalRolesDao.saveAll(functionalRoles);
-  }
+        epUserNotificationDao.saveAndFlush(userNotification);
+    }
 
-  public List<FnMenuFunctionalRoles> findAll(){
-    return fnMenuFunctionalRolesDao.findAll();
-  }
 }

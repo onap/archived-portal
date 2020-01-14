@@ -38,46 +38,47 @@
  *
  */
 
-package org.onap.portal.service.menuFunctionalRoles;
+package org.onap.portal.aop.service.fn;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import org.onap.portal.domain.db.fn.FnMenuFunctionalRoles;
+import java.security.Principal;
+import java.util.stream.Collectors;
+import javax.validation.ConstraintViolation;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
+import org.onap.portal.domain.db.fn.FnLanguage;
+import org.onap.portal.validation.DataValidator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
-@Service
-public class FnMenuFunctionalRolesService {
-  private final FnMenuFunctionalRolesDao fnMenuFunctionalRolesDao;
+@Aspect
+@Component
+public class FnLanguageServiceAOP {
+       private static final Logger LOGGER = LoggerFactory.getLogger(FnLanguageServiceAOP.class);
 
-  @Autowired
-  public FnMenuFunctionalRolesService(FnMenuFunctionalRolesDao fnMenuFunctionalRolesDao) {
-    this.fnMenuFunctionalRolesDao = fnMenuFunctionalRolesDao;
-  }
+       @Autowired
+       private DataValidator dataValidator;
 
-  public void deleteById(final Long id){
-    fnMenuFunctionalRolesDao.deleteById(id);
-  }
+       @Before("execution(* org.onap.portal.service.language.FnLanguageService.save(..)) && args(fnLanguage)")
+       public void save(final FnLanguage fnLanguage) {
+              if (fnLanguage == null) {
+                     LOGGER.info("User " +  " try to save NULL fnLanguage");
+                     throw new NullPointerException("FnLanguage cannot be null or empty");
+              }
+              if (!dataValidator.isValid(fnLanguage)) {
+                     String violations = dataValidator.getConstraintViolations(fnLanguage).stream()
+                             .map(ConstraintViolation::getMessage)
+                             .collect(Collectors.joining(", "));
+                     LOGGER.info("User " + " try to save not valid fnLanguage: " + violations);
+                     throw new IllegalArgumentException("FnLanguage is not valid, " + violations);
+              }
+       }
 
-  public void delete(final FnMenuFunctionalRoles id){
-    fnMenuFunctionalRolesDao.delete(id);
-  }
+       @Before("execution(* org.onap.portal.service.language.FnLanguageService.getLanguageList(..)) && args(principal)")
+       public void getLanguageList(final Principal principal) {
+              LOGGER.info("User " + principal.getName() + " try requested for all language list");
+       }
 
-  public List<FnMenuFunctionalRoles> retrieveByroleId(final Long roleId){
-    return Optional.of(fnMenuFunctionalRolesDao.retrieveByRoleId(roleId)).orElse(new ArrayList<>());
-  }
 
-  public List<FnMenuFunctionalRoles> retrieveByMenuId(final Long menuId){
-    return Optional.of(fnMenuFunctionalRolesDao.retrieveByMenuId(menuId)).orElse(new ArrayList<>());
-  }
-
-  public List<FnMenuFunctionalRoles> saveAll(List<FnMenuFunctionalRoles> functionalRoles) {
-    return fnMenuFunctionalRolesDao.saveAll(functionalRoles);
-  }
-
-  public List<FnMenuFunctionalRoles> findAll(){
-    return fnMenuFunctionalRolesDao.findAll();
-  }
 }

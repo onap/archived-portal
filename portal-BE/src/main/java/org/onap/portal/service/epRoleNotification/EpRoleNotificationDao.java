@@ -38,46 +38,21 @@
  *
  */
 
-package org.onap.portal.service.menuFunctionalRoles;
+package org.onap.portal.service.epRoleNotification;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import javax.transaction.Transactional;
+import org.onap.portal.domain.db.ep.EpRoleNotification;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
-import org.onap.portal.domain.db.fn.FnMenuFunctionalRoles;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+@Repository
+@Transactional
+interface EpRoleNotificationDao extends JpaRepository<EpRoleNotification, Long> {
 
-@Service
-public class FnMenuFunctionalRolesService {
-  private final FnMenuFunctionalRolesDao fnMenuFunctionalRolesDao;
-
-  @Autowired
-  public FnMenuFunctionalRolesService(FnMenuFunctionalRolesDao fnMenuFunctionalRolesDao) {
-    this.fnMenuFunctionalRolesDao = fnMenuFunctionalRolesDao;
-  }
-
-  public void deleteById(final Long id){
-    fnMenuFunctionalRolesDao.deleteById(id);
-  }
-
-  public void delete(final FnMenuFunctionalRoles id){
-    fnMenuFunctionalRolesDao.delete(id);
-  }
-
-  public List<FnMenuFunctionalRoles> retrieveByroleId(final Long roleId){
-    return Optional.of(fnMenuFunctionalRolesDao.retrieveByRoleId(roleId)).orElse(new ArrayList<>());
-  }
-
-  public List<FnMenuFunctionalRoles> retrieveByMenuId(final Long menuId){
-    return Optional.of(fnMenuFunctionalRolesDao.retrieveByMenuId(menuId)).orElse(new ArrayList<>());
-  }
-
-  public List<FnMenuFunctionalRoles> saveAll(List<FnMenuFunctionalRoles> functionalRoles) {
-    return fnMenuFunctionalRolesDao.saveAll(functionalRoles);
-  }
-
-  public List<FnMenuFunctionalRoles> findAll(){
-    return fnMenuFunctionalRolesDao.findAll();
-  }
+    @Query
+    Optional<List<EpRoleNotification>> getNotificationRoles(@Param("notificationId") long notificationId);
 }
