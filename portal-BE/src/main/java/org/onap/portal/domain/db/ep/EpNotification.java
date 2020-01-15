@@ -178,21 +178,12 @@ public class EpNotification implements Serializable {
        @Column(name = "notification_ID", length = 11, nullable = false)
        @Digits(integer = 11, fraction = 0)
        private Long notificationId;
-       @Column(name = "is_for_online_users", length = 1, columnDefinition = "char(1) default 'N'")
-       @Pattern(regexp = "[YNyn]")
-       @Size(max = 1)
-       @SafeHtml
-       private String isForOnlineUsers;
-       @Column(name = "is_for_all_roles", length = 1, columnDefinition = "char(1) default 'N'")
-       @Pattern(regexp = "[YNyn]")
-       @Size(max = 1)
-       @SafeHtml
-       private String isForAllRoles;
-       @Column(name = "active_yn", length = 1, columnDefinition = "char(1) default 'Y'")
-       @Pattern(regexp = "[YNyn]")
-       @Size(max = 1)
-       @SafeHtml
-       private String activeYn;
+       @Column(name = "is_for_online_users")
+       private Boolean isForOnlineUsers = false;
+       @Column(name = "is_for_all_roles")
+       private Boolean isForAllRoles = false;
+       @Column(name = "active_yn")
+       private Boolean activeYn = true;
        @Column(name = "msg_header", length = 100)
        @Size(max = 100)
        @SafeHtml
