@@ -42,17 +42,17 @@ package org.onap.portal.domain.db.fn;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
+import javax.persistence.NamedNativeQueries;
+import javax.persistence.NamedNativeQuery;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.PastOrPresent;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -60,6 +60,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.validator.constraints.SafeHtml;
+import org.onap.portal.domain.db.DomainVo;
 
 /*
 CREATE TABLE `fn_shared_context` (
@@ -73,25 +74,32 @@ CREATE TABLE `fn_shared_context` (
         )
 */
 
+@NamedQueries({
+    @NamedQuery(
+        name = "FnSharedContext.getByContextId",
+        query = "FROM FnSharedContext WHERE contextId = :contextId"),
+    @NamedQuery(
+        name = "FnSharedContext.getByContextIdAndCkey",
+        query = "FROM FnSharedContext WHERE contextId = :contextId and ckey = :ckey")
+})
+
+@NamedNativeQueries({
+    @NamedNativeQuery(
+        name = "FnSharedContext.deleteByCreated",
+        query = "delete FnSharedContext where created < :created"
+    )
+})
+
 @Table(name = "fn_shared_context", uniqueConstraints ={
         @UniqueConstraint(columnNames = {"context_Id", "ckey"})
 })
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 @Getter
 @Setter
 @Entity
-public class FnSharedContext implements Serializable {
-       @Id
-       @GeneratedValue(strategy = GenerationType.AUTO)
-       @Column(name = "id", nullable = false, length = 11, columnDefinition = "int(11) AUTO_INCREMENT")
-       @Digits(integer = 11, fraction = 0)
-       private Long id;
-       @Column(name = "create_time", nullable = false, columnDefinition = "timestamp DEFAULT current_timestamp() ON UPDATE current_timestamp()")
-       @PastOrPresent
-       @NotNull
-       private LocalDateTime createTime;
+public class FnSharedContext extends DomainVo implements Serializable {
+
        @Column(name = "context_id", length = 64, nullable = false)
        @Size(max = 64)
        @SafeHtml
@@ -107,4 +115,19 @@ public class FnSharedContext implements Serializable {
        @SafeHtml
        @NotNull
        private String cvalue;
+
+       @Builder
+       public FnSharedContext(@Digits(integer = 11, fraction = 0) Long id,
+           LocalDateTime created, LocalDateTime modified, Long rowNum, Serializable auditUserId,
+           DomainVo createdId, DomainVo modifiedId, Set<DomainVo> fnUsersCreatedId,
+           Set<DomainVo> fnUsersModifiedId,
+           @Size(max = 64) @NotNull String contextId,
+           @Size(max = 128) @NotNull String ckey,
+           @Size(max = 1024) @NotNull String cvalue) {
+              super(id, created, modified, rowNum, auditUserId, createdId, modifiedId, fnUsersCreatedId,
+                  fnUsersModifiedId);
+              this.contextId = contextId;
+              this.ckey = ckey;
+              this.cvalue = cvalue;
+       }
 }

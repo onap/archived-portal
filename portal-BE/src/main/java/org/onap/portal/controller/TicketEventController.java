@@ -64,6 +64,7 @@ import org.onap.portal.service.epNotification.EpNotificationService;
 import org.onap.portal.service.user.FnUserService;
 import org.onap.portal.utils.EPCommonSystemProperties;
 import org.onap.portal.utils.PortalConstants;
+import org.onap.portal.validation.DataValidator;
 import org.onap.portal.validation.SecureString;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.onap.portalsdk.core.util.SystemProperties;
@@ -86,14 +87,16 @@ public class TicketEventController {
 
     private static final String EVENT_DATE = "eventDate";
     private final ObjectMapper objectMapper = new ObjectMapper();
-    private static final ValidatorFactory VALIDATOR_FACTORY = Validation.buildDefaultValidatorFactory();
 
+    private final DataValidator dataValidator;
     private final FnUserService fnUserService;
     private final EpNotificationService epNotificationService;
 
     @Autowired
-    public TicketEventController(final FnUserService fnUserService,
+    public TicketEventController(final DataValidator dataValidator,
+        final FnUserService fnUserService,
         final EpNotificationService epNotificationService) {
+        this.dataValidator = dataValidator;
         this.fnUserService = fnUserService;
         this.epNotificationService = epNotificationService;
     }
@@ -108,16 +111,10 @@ public class TicketEventController {
         logger.debug(EELFLoggerDelegate.debugLogger, "Ticket Event notification" + ticketEventJson);
         PortalRestResponse<String> portalResponse = new PortalRestResponse<>();
 
-        if (ticketEventJson != null) {
-            SecureString secureString = new SecureString(ticketEventJson);
-            Validator validator = VALIDATOR_FACTORY.getValidator();
-
-            Set<ConstraintViolation<SecureString>> constraintViolations = validator.validate(secureString);
-            if (!constraintViolations.isEmpty()) {
-                portalResponse.setStatus(PortalRestStatusEnum.ERROR);
-                portalResponse.setMessage("Data is not valid");
-                return portalResponse;
-            }
+        if(!dataValidator.isValid(ticketEventJson)){
+            portalResponse.setStatus(PortalRestStatusEnum.ERROR);
+            portalResponse.setMessage("Data is not valid");
+            return portalResponse;
         }
 
         try {

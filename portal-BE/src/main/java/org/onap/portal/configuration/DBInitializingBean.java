@@ -82,8 +82,6 @@ import org.onap.portal.service.user.FnUserService;
 import org.onap.portal.service.userRole.FnUserRoleService;
 import org.onap.portal.service.widgetCatalog.EpWidgetCatalogService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
 import java.math.BigInteger;
@@ -1234,18 +1232,18 @@ public class DBInitializingBean implements org.springframework.beans.factory.Ini
 
     // fn_shared_context table
 
-    FnSharedContext sharedContext1 = FnSharedContext.builder().createTime(LocalDateTime.now()).contextId("b999771d~2d60~4638~a670~d47d17219157").ckey("USER_FIRST_NAME").cvalue("Jimmy").build();
-    FnSharedContext sharedContext2 = FnSharedContext.builder().createTime(LocalDateTime.now()).contextId("b999771d~2d60~4638~a670~d47d17219157").ckey("USER_LAST_NAME").cvalue("Hendrix").build();
-    FnSharedContext sharedContext3 = FnSharedContext.builder().createTime(LocalDateTime.now()).contextId("b999771d~2d60~4638~a670~d47d17219157").ckey("USER_EMAIL").cvalue("admin@onap.org").build();
-    FnSharedContext sharedContext4 = FnSharedContext.builder().createTime(LocalDateTime.now()).contextId("b999771d~2d60~4638~a670~d47d17219157").ckey("USER_ORG_USERID").cvalue("jh0003").build();
-    FnSharedContext sharedContext5 = FnSharedContext.builder().createTime(LocalDateTime.now()).contextId("29cc8f94~5a7d~41f8~b359~432bb903a718").ckey("USER_FIRST_NAME").cvalue("Demo").build();
-    FnSharedContext sharedContext6 = FnSharedContext.builder().createTime(LocalDateTime.now()).contextId("29cc8f94~5a7d~41f8~b359~432bb903a718").ckey("USER_LAST_NAME").cvalue("User").build();
-    FnSharedContext sharedContext7 = FnSharedContext.builder().createTime(LocalDateTime.now()).contextId("29cc8f94~5a7d~41f8~b359~432bb903a718").ckey("USER_EMAIL").cvalue("demo@openecomp.org").build();
-    FnSharedContext sharedContext8 = FnSharedContext.builder().createTime(LocalDateTime.now()).contextId("29cc8f94~5a7d~41f8~b359~432bb903a718").ckey("USER_ORG_USERID").cvalue("demo").build();
-    FnSharedContext sharedContext9 = FnSharedContext.builder().createTime(LocalDateTime.now()).contextId("7e3ced0a~52a3~492a~be53~2885d2df5a43").ckey("USER_FIRST_NAME").cvalue("Demo").build();
-    FnSharedContext sharedContext10 = FnSharedContext.builder().createTime(LocalDateTime.now()).contextId("7e3ced0a~52a3~492a~be53~2885d2df5a43").ckey("USER_LAST_NAME").cvalue("User").build();
-    FnSharedContext sharedContext11 = FnSharedContext.builder().createTime(LocalDateTime.now()).contextId("7e3ced0a~52a3~492a~be53~2885d2df5a43").ckey("USER_EMAIL").cvalue("demo@openecomp.org").build();
-    FnSharedContext sharedContext12 = FnSharedContext.builder().createTime(LocalDateTime.now()).contextId("7e3ced0a~52a3~492a~be53~2885d2df5a43").ckey("USER_ORG_USERID").cvalue("demo").build();
+    FnSharedContext sharedContext1 = FnSharedContext.builder().created(LocalDateTime.now()).contextId("b999771d~2d60~4638~a670~d47d17219157").ckey("USER_FIRST_NAME").cvalue("Jimmy").build();
+    FnSharedContext sharedContext2 = FnSharedContext.builder().created(LocalDateTime.now()).contextId("b999771d~2d60~4638~a670~d47d17219157").ckey("USER_LAST_NAME").cvalue("Hendrix").build();
+    FnSharedContext sharedContext3 = FnSharedContext.builder().created(LocalDateTime.now()).contextId("b999771d~2d60~4638~a670~d47d17219157").ckey("USER_EMAIL").cvalue("admin@onap.org").build();
+    FnSharedContext sharedContext4 = FnSharedContext.builder().created(LocalDateTime.now()).contextId("b999771d~2d60~4638~a670~d47d17219157").ckey("USER_ORG_USERID").cvalue("jh0003").build();
+    FnSharedContext sharedContext5 = FnSharedContext.builder().created(LocalDateTime.now()).contextId("29cc8f94~5a7d~41f8~b359~432bb903a718").ckey("USER_FIRST_NAME").cvalue("Demo").build();
+    FnSharedContext sharedContext6 = FnSharedContext.builder().created(LocalDateTime.now()).contextId("29cc8f94~5a7d~41f8~b359~432bb903a718").ckey("USER_LAST_NAME").cvalue("User").build();
+    FnSharedContext sharedContext7 = FnSharedContext.builder().created(LocalDateTime.now()).contextId("29cc8f94~5a7d~41f8~b359~432bb903a718").ckey("USER_EMAIL").cvalue("demo@openecomp.org").build();
+    FnSharedContext sharedContext8 = FnSharedContext.builder().created(LocalDateTime.now()).contextId("29cc8f94~5a7d~41f8~b359~432bb903a718").ckey("USER_ORG_USERID").cvalue("demo").build();
+    FnSharedContext sharedContext9 = FnSharedContext.builder().created(LocalDateTime.now()).contextId("7e3ced0a~52a3~492a~be53~2885d2df5a43").ckey("USER_FIRST_NAME").cvalue("Demo").build();
+    FnSharedContext sharedContext10 = FnSharedContext.builder().created(LocalDateTime.now()).contextId("7e3ced0a~52a3~492a~be53~2885d2df5a43").ckey("USER_LAST_NAME").cvalue("User").build();
+    FnSharedContext sharedContext11 = FnSharedContext.builder().created(LocalDateTime.now()).contextId("7e3ced0a~52a3~492a~be53~2885d2df5a43").ckey("USER_EMAIL").cvalue("demo@openecomp.org").build();
+    FnSharedContext sharedContext12 = FnSharedContext.builder().created(LocalDateTime.now()).contextId("7e3ced0a~52a3~492a~be53~2885d2df5a43").ckey("USER_ORG_USERID").cvalue("demo").build();
 
     List<FnSharedContext> sharedContexts = new ArrayList<>(Arrays.asList(sharedContext1, sharedContext2, sharedContext3,
         sharedContext4, sharedContext5, sharedContext6, sharedContext7, sharedContext8, sharedContext9, sharedContext10, sharedContext11, sharedContext12));
