@@ -41,21 +41,20 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-public class InvalidRoleExceptionTest {
+public class InvalidApplicationExceptionTest {
 	
-	 @Test
-	    public void TestException2() {
-	        String s1 = "Value1";
-	        String s2 = "value2";
-	        try {
-	            if (!s1.equalsIgnoreCase(s2)) {
-	                throw new InvalidRoleException("Exception occured..");
-	            }
-	        } catch (InvalidRoleException mde) {
-	            assertEquals(mde.getMessage(),"Exception occured..");
-	        }
+	@Test
+    public void TestException2() {
+        String s1 = "Value1";
+        String s2 = "value2";
+        try {
+            if (!s1.equalsIgnoreCase(s2)) {
+                throw new InvalidApplicationException("Exception occured..");
+            }
+        } catch (InvalidApplicationException mde) {
+            assertEquals(mde.getMessage(),"Exception occured..");
+        }
 
-	    }
-	
+    }
 
 }
