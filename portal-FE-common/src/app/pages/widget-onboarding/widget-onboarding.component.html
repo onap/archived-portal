@@ -1,0 +1,100 @@
+<!--
+  ============LICENSE_START==========================================
+  ONAP Portal
+  ===================================================================
+  Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+  ===================================================================
+ 
+  Unless otherwise specified, all software contained herein is licensed
+  under the Apache License, Version 2.0 (the "License");
+  you may not use this software except in compliance with the License.
+  You may obtain a copy of the License at
+ 
+              http://www.apache.org/licenses/LICENSE-2.0
+ 
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+ 
+  Unless otherwise specified, all documentation contained herein is licensed
+  under the Creative Commons License, Attribution 4.0 Intl. (the "License");
+  you may not use this documentation except in compliance with the License.
+  You may obtain a copy of the License at
+ 
+              https://creativecommons.org/licenses/by/4.0/
+ 
+  Unless required by applicable law or agreed to in writing, documentation
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+ 
+  ============LICENSE_END============================================
+   
+  -->
+
+<div class="container">
+    <div class="ecomp-main-view-title">
+      <h1>Widget Onboarding</h1>
+    </div>
+
+    <div class="c-ecomp-abs-select default">
+      <div class="table-dropdown">
+        <mat-form-field class="widget-application-select">
+            <mat-label> Select Application </mat-label>
+            <mat-select name="widget-application-select" [(ngModel)]="filterByApp" #appId="ngModel" (ngModelChange)="applyAppFilter($event)">
+              <mat-option *ngFor="let rowData of applicationList" [value]="rowData">{{rowData.title}}</mat-option>
+            </mat-select>
+        </mat-form-field>
+           
+        <mat-form-field>
+          <input matInput type="text" (keyup)="applyFilter($event.target.value)" placeholder="Search in entire table">
+        </mat-form-field>
+       
+        <button type="button" class="btn btn-primary" (click)="openAddWigetModal('')">
+          <i class="icon ion-md-person-add"></i>Add Widget
+        </button>
+      </div>
+    </div>
+  
+    <table mat-table [dataSource]="dataSource" matSort>
+      <!-- Wiget Name Column -->
+      <ng-container matColumnDef="widgetName">
+        <th id="col1" mat-header-cell *matHeaderCellDef> Widget Name  </th>
+        <td (click)="openAddWigetModal(element)" id="rowheader_t1_{{i}}-widgetName" 
+          mat-cell *matCellDef="let element; let i = index;"> {{element.name}}
+        </td>
+      </ng-container>
+  
+      <!-- Application Name Column -->
+      <ng-container matColumnDef="application">
+        <th id="col2" mat-header-cell *matHeaderCellDef> Application </th>
+        <td (click)="openAddWigetModal(element)" id="rowheader_t1_{{i}}-application" 
+          mat-cell *matCellDef="let element; let i=index;"> {{element.appContent}} </td>
+      </ng-container>
+  
+      <!-- Download URL -->
+      <ng-container matColumnDef="download">
+        <th id="col3" mat-header-cell *matHeaderCellDef> Download </th>
+        <td id="rowheader_t1_{{$index}}-download" mat-cell *matCellDef="let element; let i=index;">
+            <i class="icon ion-md-download" (click)="downloadWidget(element)"></i>
+        </td>
+      </ng-container>
+  
+      <!-- Delete Column -->
+      <ng-container matColumnDef="delete">
+        <th id="col4" mat-header-cell *matHeaderCellDef> Delete </th>
+        <td id="rowheader_t1_{{i}}" mat-cell *matCellDef="let element; let i=index;">
+          <span class="icon-trash" id="{{i}}-button-portal-admin-remove" (click)="removeWidget(element)">
+            <i class="icon ion-md-trash"></i>
+          </span>
+        </td>
+      </ng-container>
+  
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+    <mat-paginator [pageSizeOptions]="[10, 20]" showFirstLastButtons></mat-paginator>
+</div>

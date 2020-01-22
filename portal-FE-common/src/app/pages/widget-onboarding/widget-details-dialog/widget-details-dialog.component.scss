@@ -1,0 +1,82 @@
+/*-
+ * ============LICENSE_START==========================================
+ * ONAP Portal
+ * ===================================================================
+ * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ * ===================================================================
+ *
+ * Unless otherwise specified, all software contained herein is licensed
+ * under the Apache License, Version 2.0 (the "License");
+ * you may not use this software except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *             http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Unless otherwise specified, all documentation contained herein is licensed
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
+ * you may not use this documentation except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *             https://creativecommons.org/licenses/by/4.0/
+ *
+ * Unless required by applicable law or agreed to in writing, documentation
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * ============LICENSE_END============================================
+ *
+ * 
+ */
+
+::ng-deep .modal-dialog { 
+    max-width: 700px;
+    width: 619px;
+    overflow-x: auto;
+    overflow-y: auto;
+}
+
+::ng-deep .widget-applications-select {
+   width: 34em;
+}
+
+::ng-deep .widget-roles-select {
+    width: 34em;
+ }
+
+::ng-deep .widget-service-select {
+    width: 34em;
+ }
+
+.widget-name-field{
+    width: 22em;
+    margin-top: 5px;
+}
+
+.widgets-details-input-desc {
+    overflow: auto;
+    resize: vertical;
+    width: 34em;
+    margin-top: 5px;
+}
+
+.widget-upload{
+    margin-top: 16px;
+}
+
+#applicationName{
+    width: 100%;
+    margin-top: 5px;
+}
+
+#serviceEndPoint{
+    width: 100%;
+    margin-top: 5px;
+}

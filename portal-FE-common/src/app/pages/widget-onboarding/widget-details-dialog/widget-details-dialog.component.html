@@ -1,0 +1,120 @@
+<!--
+  ============LICENSE_START==========================================
+  ONAP Portal
+  ===================================================================
+  Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+  ===================================================================
+ 
+  Unless otherwise specified, all software contained herein is licensed
+  under the Apache License, Version 2.0 (the "License");
+  you may not use this software except in compliance with the License.
+  You may obtain a copy of the License at
+ 
+              http://www.apache.org/licenses/LICENSE-2.0
+ 
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+ 
+  Unless otherwise specified, all documentation contained herein is licensed
+  under the Creative Commons License, Attribution 4.0 Intl. (the "License");
+  you may not use this documentation except in compliance with the License.
+  You may obtain a copy of the License at
+ 
+              https://creativecommons.org/licenses/by/4.0/
+ 
+  Unless required by applicable law or agreed to in writing, documentation
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+ 
+  ============LICENSE_END============================================
+ 
+  
+  -->
+
+<div class="container">
+  <!--Modal Headers-->
+  <div class="modal-header">
+    <h4 class="modal-title">Widget Details</h4>
+    <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('Cross')">
+        <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <!--Modal Body goes here-->
+  <form id="widgets-details-form" name="widgetForm" [formGroup] = "uploadForm" (ngSubmit)="saveChanges()"
+          enctype="multipart/form-data" novalidate autocomplete="off">
+  <div class="modal-body">
+      <div class="widget-model-body">
+          <div class="item-label">Widget Name</div>
+          <input id="widgets-details-input-name" class="widget-name-field"
+              type="text" formControlName="widgetName" [(ngModel)]="widget.name"
+              ng-pattern="/^[\w -]*$/" maxlength="100"
+              ng-disabled="widgetOnboardingDetails.isEditMode" required />
+
+          <div class="item-label" style="padding-top: 20px">Widget Description</div>
+          
+          <textarea b2b-reset b2b-reset-textarea class="widgets-details-input-desc"
+            formControlName="description" [(ngModel)]="widget.desc" type="text" maxlength="200">
+          </textarea>
+            
+          <div class="table-dropdown">
+            <mat-form-field class="widget-service-select">
+                <mat-label> Service Endpoint </mat-label>
+                <mat-select name="widget-service-select" id="serviceEndPoint" 
+                  formControlName="serviceEndPoint" [(ngModel)]="widget.serviceURL" [disabled]="isEditMode">
+                  <mat-option *ngFor="let rowData of availableMicroServices" [value]="rowData.id" >{{rowData.option}}</mat-option>
+                </mat-select>
+            </mat-form-field>
+          </div>
+
+          <div class="property-label checkbox-label" style="padding-top: 20px">
+            <mat-checkbox  formControlName="allowAllUser" type="checkbox" [(ngModel)]="widget.allUser"
+                id="allow-all-user">
+                Allow all user access
+            </mat-checkbox>
+          </div> 
+
+          <div [hidden]="widget.allUser">
+            <div class="table-dropdown">
+              <mat-form-field class="widget-applications-select">
+                  <mat-label> Application Name </mat-label>
+                  <mat-select multiple name="widget-application-select" id="application" 
+                    formControlName="applicationName" [(ngModel)]="widget.appName">
+                    <mat-option *ngFor="let rowData of availableApps" [value]="rowData.id" >{{rowData.name}}</mat-option>
+                  </mat-select>
+              </mat-form-field>
+            </div>
+          </div>
+
+          <div [hidden]="widget.allUser">
+            <div class="table-dropdown">
+              <mat-form-field class="widget-roles-select">
+                  <mat-label> User Role Name </mat-label>
+                  <mat-select multiple name="widget-role-select" id="roles" 
+                    formControlName="applicationRole" [(ngModel)]="widget.widgetRoles">
+                    <mat-option *ngFor="let appRole of availableApps.roles" [value]="appRole.id" >{{appRole.name}}</mat-option>
+                  </mat-select>
+              </mat-form-field>
+            </div>
+          </div>
+
+          <div class="item-label widget-upload">Upload Widget</div>
+          <div>
+            <input id="widget-onboarding-details-upload-file" 
+              name="profile" type="file" 
+              class="widget-onboarding-details-upload-file ht"
+              (change)="onFileSelect($event)"/>
+          </div>
+        </div>
+      </div> 
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary"[disabled]="(isFileNotSelected && !isEditMode)">Save</button>
+        <button type="button" class="btn btn-primary" (click)="activeModal.close('Close')">Cancel</button>
+    </div>
+  </form> 
+</div>
