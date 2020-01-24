@@ -70,8 +70,7 @@ public class SharedContext extends DomainVo {
 	private static final long serialVersionUID = 7287469622586677888L;
 
 	@Id
-	@SequenceGenerator(name="portal_generator", sequenceName = "portal_generator", initialValue = 1000)
-  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "portal_generator")
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Digits(integer = 11, fraction = 0)
 	private Long id;
 
