@@ -1,9 +1,8 @@
-
 /*-
  * ============LICENSE_START==========================================
  * ONAP Portal
  * ===================================================================
- * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
@@ -36,39 +35,24 @@
  *
  * 
  */
-.w-onap-contactUs-home .contactUs-txt {
-    font-weight: 400;
-    color: #666;
-    font-size: 15px;
-    font-family: Omnes-ECOMP-W02-Medium,Arial;
-    margin: 10px;
-}
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs/Observable';
+import { Subject } from 'rxjs/Subject';
 
-.w-onap-contactUs-home .contactUs-home-container .contactUs-general-div {
-    margin: auto!important;
-    padding-top: 15px;
-    padding-bottom: 15px;
-    margin-top: 0;
-    margin-right: 0;
-    margin-left: 0;
-    margin-bottom: 0;
-    width: 1170px;
-}
+@Injectable({
+  providedIn: 'root'
+})
+export class AddTabFunctionService {
 
-.w-onap-contactUs-home .w-onap-main-view-title {
-    font-family: Omnes-ECOMP-W02,Arial;
-    font-size: 20px;
-}
+  constructor() { }
 
-button#edit-button-contact-us {
-    float: right;
-}
+  private _listners = new Subject<any>();
 
-.container th{
-    padding-bottom: 15px;
-    font-weight: bold;
-}
+  listen(): Observable<any> {
+    return this._listners.asObservable();
+  }
 
-.w-onap-contactUs-home .contactUs-collapsible-panel {
-    margin: auto;
+  filter(filterBy: any) {
+    this._listners.next(filterBy);
+  }
 }

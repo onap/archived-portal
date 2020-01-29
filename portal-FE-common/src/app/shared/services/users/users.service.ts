@@ -1,9 +1,8 @@
-
 /*-
  * ============LICENSE_START==========================================
  * ONAP Portal
  * ===================================================================
- * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
@@ -36,39 +35,51 @@
  *
  * 
  */
-.w-onap-contactUs-home .contactUs-txt {
-    font-weight: 400;
-    color: #666;
-    font-size: 15px;
-    font-family: Omnes-ECOMP-W02-Medium,Arial;
-    margin: 10px;
-}
+import { Injectable } from '@angular/core';
+import { environment } from '../../../../environments/environment'
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Observable, from } from 'rxjs';
 
-.w-onap-contactUs-home .contactUs-home-container .contactUs-general-div {
-    margin: auto!important;
-    padding-top: 15px;
-    padding-bottom: 15px;
-    margin-top: 0;
-    margin-right: 0;
-    margin-left: 0;
-    margin-bottom: 0;
-    width: 1170px;
-}
+@Injectable({
+  providedIn: 'root'
+})
+export class UsersService {
+  api = environment.api;
 
-.w-onap-contactUs-home .w-onap-main-view-title {
-    font-family: Omnes-ECOMP-W02,Arial;
-    font-size: 20px;
-}
+  constructor(private http: HttpClient) { }
+  
+  searchUsers(queryString: string) {
+    let httpParams = new HttpParams()
+      .set('search', queryString);
+    return this.http.get(this.api.queryUsers, { params: httpParams, responseType: 'json' });
+  }
 
-button#edit-button-contact-us {
-    float: right;
-}
+  getAccountUsers(appId: any) {
+    return this.http.get(this.api.accountUsers.replace(':appId', appId));
+  }
 
-.container th{
-    padding-bottom: 15px;
-    font-weight: bold;
-}
+  getUserAppRoles(appid: any, orgUserId: string, extRequestValue: any, isSystemUser: any) {
+    return this.http.get(this.api.userAppRoles, { params: { 'user': orgUserId, 'app': appid, 'externalRequest': extRequestValue, 'isSystemUser': isSystemUser } });
+  }
 
-.w-onap-contactUs-home .contactUs-collapsible-panel {
-    margin: auto;
+  updateUserAppRoles(newUserAppRoles) {
+    return this.http.put(this.api.userAppRoles, newUserAppRoles);
+  }
+
+  //Not used in dev.json
+  getLoggedInUser() { }
+
+  //Not used in dev.jon 
+  modifyLoggedInUser() { }
+
+  getUserProfile(): Observable<any> {
+    return this.http.get(environment.api.userProfile);
+  }
+  
+  addNewUser(newUserData){
+    console.log("User service : ", newUserData);
+    return this.http.post(this.api.saveNewUser, newUserData).subscribe((response)=>{
+    });
+  }
+
 }

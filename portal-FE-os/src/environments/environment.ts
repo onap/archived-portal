@@ -107,7 +107,7 @@ export const environment = {
     "getAllWebAnalytics": "http://www.portal.onap.org:9080/portal-be-os/portalApi/getAllWebAnalytics",
     "modifyWebAnalyticsReport": "http://www.portal.onap.org:9080/portal-be-os/portalApi/modifyWebAnalyticsReport",
     "appsFullList": "http://www.portal.onap.org:9080/portal-be-os/portalApi/appsFullList",
-    "ecompTitle": "http://www.portal.onap.org:9080/portal-be-os/portalApi/ecompTitle",
+    "portalTitle": "http://www.portal.onap.org:9080/portal-be-os/portalApi/ecompTitle",
     "centralizedApps": "http://www.portal.onap.org:9080/portal-be-os/portalApi/centralizedApps",
     "getSchedulerId": "http://www.portal.onap.org:9080/portal-be-os/portalApi/post_create_new_vnf_change",
     "getTimeslotsForScheduler": "http://www.portal.onap.org:9080/portal-be-os/portalApi/get_time_slots",
@@ -118,7 +118,9 @@ export const environment = {
     "checkIfUserIsSuperAdmin": "http://www.portal.onap.org:9080/portal-be-os/portalApi/checkIfUserIsSuperAdmin",
     "getCurrentLang": "http://www.portal.onap.org:9080/portal-be-os/auxapi/languageSetting/user/:loginId",
     "getLanguages": "http://www.portal.onap.org:9080/portal-be-os/auxapi/language",
-    "updateLang": "http://www.portal.onap.org:9080/portal-be-os/auxapi/languageSetting/user/:loginId"
+    "updateLang": "http://www.portal.onap.org:9080/portal-be-os/auxapi/languageSetting/user/:loginId",
+	"linkQ": "",
+	"linkPic": ""
 
   },
   "cookieDomain": "att.com"

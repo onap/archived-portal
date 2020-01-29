@@ -62,7 +62,7 @@ export class ContactUsComponent implements OnInit {
 
   result: any;
   isEditMode: boolean = false;
-  displayedColumns: string[] = ['category', 'eCOMPFunctions','eCOMPApplications'];
+  displayedColumns: string[] = ['category', 'onapFunctions','onapApplications'];
   dataSource = new MatTableDataSource(this.functionalTableData);
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatPaginator) paginator: MatPaginator;

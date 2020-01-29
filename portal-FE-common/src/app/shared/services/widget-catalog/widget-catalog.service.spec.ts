@@ -1,9 +1,8 @@
-
 /*-
  * ============LICENSE_START==========================================
  * ONAP Portal
  * ===================================================================
- * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
@@ -36,39 +35,15 @@
  *
  * 
  */
-.w-onap-contactUs-home .contactUs-txt {
-    font-weight: 400;
-    color: #666;
-    font-size: 15px;
-    font-family: Omnes-ECOMP-W02-Medium,Arial;
-    margin: 10px;
-}
+import { TestBed } from '@angular/core/testing';
 
-.w-onap-contactUs-home .contactUs-home-container .contactUs-general-div {
-    margin: auto!important;
-    padding-top: 15px;
-    padding-bottom: 15px;
-    margin-top: 0;
-    margin-right: 0;
-    margin-left: 0;
-    margin-bottom: 0;
-    width: 1170px;
-}
+import { WidgetCatalogService } from './widget-catalog.service';
 
-.w-onap-contactUs-home .w-onap-main-view-title {
-    font-family: Omnes-ECOMP-W02,Arial;
-    font-size: 20px;
-}
+describe('WidgetCatalogService', () => {
+  beforeEach(() => TestBed.configureTestingModule({}));
 
-button#edit-button-contact-us {
-    float: right;
-}
-
-.container th{
-    padding-bottom: 15px;
-    font-weight: bold;
-}
-
-.w-onap-contactUs-home .contactUs-collapsible-panel {
-    margin: auto;
-}
+  it('should be created', () => {
+    const service: WidgetCatalogService = TestBed.get(WidgetCatalogService);
+    expect(service).toBeTruthy();
+  });
+});

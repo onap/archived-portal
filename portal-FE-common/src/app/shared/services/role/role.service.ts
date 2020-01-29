@@ -35,61 +35,65 @@
  *
  * 
  */
+import { Injectable } from '@angular/core';
+import { environment } from 'src/environments/environment';
+import { HttpClient } from '@angular/common/http';
 
-.functional-menu-main {
-    background-color: #fff;
-    position: fixed;
-    top: 105px;
-    left: 0;
-    right: 0;
-    bottom: 75px;
-    padding-top: 10px;
-    overflow-y: scroll;
-    padding-left: 0;
-}
+@Injectable({
+  providedIn: 'root'
+})
+export class RoleService {
 
-.functional-menu-main .functional-menu-container {
-    position: relative;
-    padding-right: 0;
-    padding-left: 0;
-    padding-bottom: 32px;
-    background-color: #fff;
-}
+  api = environment.api;
 
-.w-onap-main-view-title {
-    color: #191919;
-    font-family: Omnes-ECOMP-W02-Medium,Arial;
-    font-size: 24px;
-    width: 1170px;
-    padding-bottom: 15px;
-    margin: auto;
-}
+  constructor(private http: HttpClient) { }
 
-.functional-menu-main .functional-menu-container .tree {
-    margin: auto;
-    width: 1170px;
-    font-size: 16px;
-}
+  getRoles(appId: string) {
+    return this.http.get(this.api.getRoles.replace(':appId', appId));
+  }
 
-.functional-admin-button-container {
-    padding-top: 10px;
-    width: 1170px;
-    margin: auto;
-}
+  saveRoleFunction(appId: string) {
+    return this.http.post(this.api.saveRoleFunction.replace(':appId', appId), {});
+  }
 
-.btn-small {
-    padding: 10px 19px 9px 18px;
-    font-size: 1.5rem;
-    border-radius: 8px;
-}
+  getRoleFunctionList(appId) {
+    return this.http.get(this.api.getRoleFunctions.replace(':appId', appId));
+  }
 
-.btn-alt {
-    border-color: #087ac2 transparent #0568ae;
-    background-color: #0568ae;
-    background: linear-gradient(to bottom, #087ac2 0%, #0568ae 100%);
-    color: #ffffff;
-}
+  getFnMenuItems() {
+    return this.http.get('admin_fn_menu');
+  }
 
-.functional-menu-main .regenerate-functionalmenu-btn-txt {
-    color: #000;
+  getCacheRegions() {
+    return this.http.get('get_regions');
+  }
+
+  getUsageList() {
+    return this.http.get('get_usage_list');
+  }
+
+  getBroadcastList() {
+    return this.http.get('get_broadcast_list');
+  }
+
+  getBroadcast(messageLocationId, messageLocation, messageId) {
+    return this.http.get('get_broadcast?message_location_id=' + messageLocationId + '&message_location=' + messageLocation + ((messageId != null) ? '&message_id=' + messageId : ''));
+  }
+
+  getCollaborateList() {
+    return this.http.get('get_collaborate_list');
+  }
+
+  getRole(appId, roleId) {
+    return this.http.get(this.api.getRole + '/' + appId + '/' + roleId);
+  }
+
+  saveRole(appId) {
+    return this.http.post(this.api.saveRole.replace(':appId', appId), {});
+  }
+
+  getCentralizedApps(userId) {
+    return this.http.get(this.api.centralizedApps + '?userId=' + userId);
+  }
+
 }

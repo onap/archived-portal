@@ -35,38 +35,38 @@
    
 -->
 <div class="container">
-    <div id="contact-us-title" class="w-ecomp-main-view-title">
+    <div id="contact-us-title" class="w-onap-main-view-title">
         <h1 class="heading-page">Contact Us</h1>
     </div>
     <button type="button" style="float: right;" class="btn btn-primary" (click)="editContactUsModal()">
       <i class="icon ion-md-person-add"></i>Edit Contact Us
     </button>
-    <div class="w-ecomp-contactUs-home">
+    <div class="w-onap-contactUs-home">
        <div class="contactUs-home-container" id="page-content">
           <div class="admins-page-main">
               <div class="contactUs-general-div">
                 <span class="contactUs-txt">
-                  To report an issue with ECOMP Portal, open a ticket at the 
+                  To report an issue with ONAP Portal, open a ticket at the 
                   <a href="{{ush_TicketInfoUrl}}" target="_blank">User Self Help system</a>.
                 </span><br />
               </div>
             
               <div class="contactUs-general-div">
                 <span class="contactUs-txt">
-                  To give feedback to the ECOMP Portal team, send email to 
+                  To give feedback to the ONAP Portal team, send email to 
                   <a href="mailto:{{portalInfo_Address}}" target="_top">{{portalInfo_Address}}</a>. 
                 </span><br />
               </div>
             
               <div class="contactUs-general-div">
                 <span class="contactUs-txt">
-                  To learn more about ECOMP Portal, visit the 
-                  <a href="{{feedback_Url}}" target="_blank">ECOMP Portal wiki</a> (may need to request access).
+                  To learn more about ONAP Portal, visit the 
+                  <a href="{{feedback_Url}}" target="_blank">ONAP Portal wiki</a> (may need to request access).
                 </span><br />
               </div>
 
               <!-- Function Categories -->		
-              <div id="appFunctionInfo" class="w-ecomp-main-view-title"> Application Functions
+              <div id="appFunctionInfo" class="w-onap-main-view-title"> Application Functions
                 <br />
                 <div b2b-table table-data="contact.functionalTableData" class="b2b-table-div">
                     <table mat-table [dataSource]="dataSource" matSort>
@@ -79,16 +79,16 @@
                         </ng-container>
                     
                         <!-- Application Name Column -->
-                        <ng-container matColumnDef="eCOMPFunctions">
-                          <th id="col2" mat-header-cell *matHeaderCellDef> ECOMP Functions </th>
-                          <td id="rowheader_t1_{{i}}-eCOMPFunctions" 
+                        <ng-container matColumnDef="onapFunctions">
+                          <th id="col2" mat-header-cell *matHeaderCellDef> ONAP Functions </th>
+                          <td id="rowheader_t1_{{i}}-onapFunctions" 
                             mat-cell *matCellDef="let element; let i=index;"> {{element.functions}} </td>
                         </ng-container>
 
                          <!-- Application Name Column -->
-                        <ng-container matColumnDef="eCOMPApplications">
-                          <th id="col2" mat-header-cell *matHeaderCellDef> ECOMP Applications </th>
-                          <td id="rowheader_t1_{{i}}-eCOMPApplications" 
+                        <ng-container matColumnDef="onapApplications">
+                          <th id="col2" mat-header-cell *matHeaderCellDef> ONAP Applications </th>
+                          <td id="rowheader_t1_{{i}}-onapApplications" 
                             mat-cell *matCellDef="let element; let i=index;"> 
                             <a href="javascript:void(0)" (click)="showApplicationInfo(element.app_Id)">
                               {{element.app_Name}} 
@@ -104,10 +104,10 @@
                 
             <!-- Display applicationInfo panels -->
             <div id="allAppInfo">
-                <div class="w-ecomp-main-view-title"> All Applications</div>	<br />	
+                <div class="w-onap-main-view-title"> All Applications</div>	<br />	
                 <div class="contactUs-general-div">
                   <div class="contact-us-table">
-                  <div class="c-ecomp-portal-abs-table default contactUs-table-ht">
+                  <div class="c-onap-portal-abs-table default contactUs-table-ht">
                     <div *ngFor="let rowData of appTable; index as i" class="contactUs-collapsible-panel">
                         <div id="{{rowData.app_Id}}" class="contactUs-table-ht" class="contactUs-panel-header" (click)="showApplicationInfo(rowData.app_Id)">
                             <span id="appId{{i}}" class="contactUs-table-spn">{{rowData.app_name}}</span>
@@ -124,7 +124,7 @@
                         <div id="collapse{{rowData.app_Id}}" [hidden]="true" class="contactUs-collapsible-panel">
                             <div class="contactUs-txt" [hidden]="rowData.contact_name || rowData.contact_email || rowData.url_Info || rowData.desc"> 
                                 <span class="contactUs-collapsible-panel-spn"> 
-                                  No application information is available. Please use the links above to contact the ECOMP Portal team. 
+                                  No application information is available. Please use the links above to contact the ONAP Portal team. 
                                 </span>
                             </div>
                             <div class="contactUs-txt" *ngIf="rowData.contact_name || rowData.contact_email || rowData.url_Info || rowData.desc"> 

@@ -1,9 +1,8 @@
-
 /*-
  * ============LICENSE_START==========================================
  * ONAP Portal
  * ===================================================================
- * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
@@ -36,39 +35,56 @@
  *
  * 
  */
-.w-onap-contactUs-home .contactUs-txt {
-    font-weight: 400;
-    color: #666;
-    font-size: 15px;
-    font-family: Omnes-ECOMP-W02-Medium,Arial;
-    margin: 10px;
-}
+import { Injectable } from '@angular/core';
+import { environment } from 'src/environments/environment';
+import { HttpClient } from '@angular/common/http';
 
-.w-onap-contactUs-home .contactUs-home-container .contactUs-general-div {
-    margin: auto!important;
-    padding-top: 15px;
-    padding-bottom: 15px;
-    margin-top: 0;
-    margin-right: 0;
-    margin-left: 0;
-    margin-bottom: 0;
-    width: 1170px;
-}
+@Injectable({
+  providedIn: 'root'
+})
+export class MenusService {
 
-.w-onap-contactUs-home .w-onap-main-view-title {
-    font-family: Omnes-ECOMP-W02,Arial;
-    font-size: 20px;
-}
+  apiUrl = environment.api;
+  constructor(private http: HttpClient) { }
 
-button#edit-button-contact-us {
-    float: right;
-}
+  getFunctionalMenuForUser() {
+    return this.http.get(this.apiUrl.functionalMenuForAuthUser);
+  }
 
-.container th{
-    padding-bottom: 15px;
-    font-weight: bold;
-}
+  getPortalTitle() {
+    return this.http.get(this.apiUrl.portalTitle);
+  }
 
-.w-onap-contactUs-home .contactUs-collapsible-panel {
-    margin: auto;
+  getFavoriteItems() {
+    return this.http.get(this.apiUrl.getFavoriteItems + '?date=' + new Date().getTime());
+  }
+
+  setFavoriteItem(menuId) {
+    return this.http.post(this.apiUrl.setFavoriteItem, menuId);
+
+  }
+
+  removeFavoriteItem(menuId) {
+    return this.http.delete(this.apiUrl.removeFavoriteItem.replace(':menuId', menuId));
+  }
+
+  logout(appStr) {
+    // this.$log.info('SessionService::logout from App');
+    // this.$log.info('SessionService appStr: ', appStr);
+
+    var eaccessPattern = '\https?\:\/\/[^/]+/[^/]+/[^/]+';
+    var standardPattern = '\https?\:\/\/[^/]+/[^/]+';
+
+    if (appStr.includes('e-access')) {
+      standardPattern = eaccessPattern;
+    }
+
+    var contextUrl = appStr.match(new RegExp(standardPattern));
+    var logoutUrl = contextUrl + '/logout.htm';
+    // this.$sce.trustAsResourceUrl(logoutUrl);
+    console.log('logoutUrl ' + logoutUrl);
+    jQuery('#reg-logout-div').append("<iframe style='display:none' src='" + logoutUrl + "' />");
+
+  }
+
 }

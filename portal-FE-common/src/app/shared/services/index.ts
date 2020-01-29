@@ -1,9 +1,8 @@
-
-/*-
+/*
  * ============LICENSE_START==========================================
- * ONAP Portal
+ * ONAP Portal SDK
  * ===================================================================
- * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ * Copyright © 2019 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
@@ -36,39 +35,23 @@
  *
  * 
  */
-.w-onap-contactUs-home .contactUs-txt {
-    font-weight: 400;
-    color: #666;
-    font-size: 15px;
-    font-family: Omnes-ECOMP-W02-Medium,Arial;
-    margin: 10px;
-}
-
-.w-onap-contactUs-home .contactUs-home-container .contactUs-general-div {
-    margin: auto!important;
-    padding-top: 15px;
-    padding-bottom: 15px;
-    margin-top: 0;
-    margin-right: 0;
-    margin-left: 0;
-    margin-bottom: 0;
-    width: 1170px;
-}
-
-.w-onap-contactUs-home .w-onap-main-view-title {
-    font-family: Omnes-ECOMP-W02,Arial;
-    font-size: 20px;
-}
-
-button#edit-button-contact-us {
-    float: right;
-}
-
-.container th{
-    padding-bottom: 15px;
-    font-weight: bold;
-}
-
-.w-onap-contactUs-home .contactUs-collapsible-panel {
-    margin: auto;
-}
+export * from './sidebar/sidebar.service';
+export * from './portal-admins/portal-admin.service';
+export * from './admins/admins.service';
+export * from './users/users.service';
+export * from './role/role.service';
+export * from './applications/applications.service';
+export * from './functional-menu/functional-menu.service'
+export * from './microservice/microservice.service';
+export * from './widget-onboarding/widget-onboarding.service';
+export * from './basic-auth-account/basic-auth-account.service';
+export * from './contact-us/contact-us.service';
+export * from './webAnalytics/web-analytics.service';
+export * from './user-profile/user-profile.service';
+export * from './notification/notification.service';
+export * from './menus/menus.service';
+export * from './manifest/manifest.service';
+export * from './get-access/get-access.service';
+export * from './userbar/userbar.service';
+export * from './scheduler/scheduler.service';
+export * from './utils/utils.service';
