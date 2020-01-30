@@ -1,0 +1,116 @@
+<!--
+  ============LICENSE_START==========================================
+  ONAP Portal
+  ===================================================================
+  Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+  ===================================================================
+
+  Unless otherwise specified, all software contained herein is licensed
+  under the Apache License, Version 2.0 (the "License");
+  you may not use this software except in compliance with the License.
+  You may obtain a copy of the License at
+
+              http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+
+  Unless otherwise specified, all documentation contained herein is licensed
+  under the Creative Commons License, Attribution 4.0 Intl. (the "License");
+  you may not use this documentation except in compliance with the License.
+  You may obtain a copy of the License at
+
+              https://creativecommons.org/licenses/by/4.0/
+
+  Unless required by applicable law or agreed to in writing, documentation
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+
+  ============LICENSE_END============================================
+
+-->
+
+<div class="container">
+  <!--Modal Headers-->
+ <div class="modal-header">
+   <h4 class="modal-title">Scheduler Change</h4>
+   <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('Cross')">
+     <span aria-hidden="true">&times;</span>
+   </button>
+ </div>
+  <!--Modal Body goes here-->
+ <div class="modal-body">
+   <div class="application-details-modal">
+     <div class="app-properties-main" scroll-top="appDetails.scrollApi">
+     <form name="appForm" novalidate autocomplete="off">
+       <div id="app-left-container" class="left-container">
+         <div class="property-label checkbox-label">
+            <mat-radio-group aria-label="Select an option" [(ngModel)]="schedulerForm.checkboxSelection" name="range">
+              <mat-radio-button *ngFor="let opt of ranges" [value]="opt.value">{{opt.labelValue }} &nbsp;
+              </mat-radio-button>
+            </mat-radio-group>
+         </div>
+
+         <div class="property required">
+            <mat-form-field>
+                <input id="startDate" name="startDate" matInput [matDatepicker]="startDatepicker" [(ngModel)]="schedulerForm.fromDate" placeholder="Choose start date">
+                <mat-datepicker-toggle matSuffix [for]="startDatepicker"></mat-datepicker-toggle>
+                <mat-datepicker #startDatepicker></mat-datepicker>
+              </mat-form-field>
+              &nbsp;
+              <mat-form-field>
+                  <input id="endDate" name="endDate" matInput [matDatepicker]="endDatepicker" [(ngModel)]="schedulerForm.toDate" placeholder="Choose end date">
+                  <mat-datepicker-toggle name="endDatePickToggle" matSuffix [for]="endDatepicker"></mat-datepicker-toggle>
+                  <mat-datepicker #endDatepicker></mat-datepicker>
+              </mat-form-field>
+
+         </div>
+         <mat-form-field>
+          <div id="duration-Type-label" class="property-label">
+              Please Select Option For Duration and FallBack</div>
+          <!--<mat-label> select </mat-label>-->
+          <mat-select name="dType" [(ngModel)]="schedulerForm.durationType">
+            <mat-option *ngFor="let dType of timeUnit" [value]="dType">
+              {{dType.text}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+         <div class="property">
+             <div id="duration-label" class="property-label">Duration</div>
+             <input id="duration" name="duration" [(ngModel)]="schedulerForm.duration" maxlength="256" />
+
+             <div id="duration-label" class="property-label">Fallback Duration</div>
+             <input id="fallBackDuration" name="fallBackDuration" [(ngModel)]="schedulerForm.fallbackDuration" maxlength="256" />
+
+             <div id="duration-label" class="property-label">Concurrency Limit</div>
+             <input id="concurrencyLimit" name="concurrencyLimit" [(ngModel)]="schedulerForm.concurrencyLimit" maxlength="256" />
+
+         </div>
+
+         <mat-form-field>
+          <mat-label> Select policy </mat-label>
+          <mat-select name="policy" [(ngModel)]="schedulerForm.policyName" style="width:500px;">
+
+            <mat-option *ngFor="let policy of policys" [value]="policy.policyName" style="width:500px;">
+              {{policy.policyName}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+       </div>
+
+     </form>
+     </div>
+   </div>
+  </div>
+  <div class="modal-footer">
+   <button type="button" class="btn btn-primary" (click)="sendSchedulerReq()">Schedule</button> &nbsp;
+ <!--  <button type="button" class="btn btn-primary" (click)="submit()">Schedule</button> &nbsp;-->
+   <button type="button" class="btn btn-primary" (click)="activeModal.close('Close')">Cancel</button>
+ </div>
+</div>

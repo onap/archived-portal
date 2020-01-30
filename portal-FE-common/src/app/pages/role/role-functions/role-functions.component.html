@@ -1,0 +1,113 @@
+<!--
+  ============LICENSE_START==========================================
+  ONAP Portal
+  ===================================================================
+  Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+  ===================================================================
+ 
+  Unless otherwise specified, all software contained herein is licensed
+  under the Apache License, Version 2.0 (the "License");
+  you may not use this software except in compliance with the License.
+  You may obtain a copy of the License at
+ 
+              http://www.apache.org/licenses/LICENSE-2.0
+ 
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+ 
+  Unless otherwise specified, all documentation contained herein is licensed
+  under the Creative Commons License, Attribution 4.0 Intl. (the "License");
+  you may not use this documentation except in compliance with the License.
+  You may obtain a copy of the License at
+ 
+              https://creativecommons.org/licenses/by/4.0/
+ 
+  Unless required by applicable law or agreed to in writing, documentation
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+ 
+  ============LICENSE_END============================================
+ 
+  
+  -->
+
+<div class="container">
+  <div class="onap-main-view-title">
+    <h1 class="heading-page">Role Functions</h1>
+  </div>
+  <mat-form-field>
+    <mat-label> Select Application </mat-label>
+    <mat-select [disabled]='centralizedApps.length === 0' [(ngModel)]="selectedCentralizedApp">
+      <mat-option *ngFor="let app of centralizedApps" [value]="app.appId"
+        (click)="getRoleFunctions(selectedCentralizedApp)">
+        {{app.appName}}</mat-option>
+    </mat-select>
+  </mat-form-field>
+  &nbsp;
+  <button type="button" class="btn btn-primary" [disabled]='centralizedApps.length === 0'
+    (click)="syncRolesFromExternalAuthSystem()"><i class="icon ion-md-sync"></i>
+    Sync Role Functions </button>
+  <button type="button" class="btn btn-primary" [disabled]='centralizedApps.length === 0'
+    (click)="addRoleFunctionModalPopup()"><i class="icon ion-md-add-circle-outline"></i>
+    Create </button>
+  <span class="onap-spinner" *ngIf="showSpinner"></span>
+  <table mat-table [dataSource]="roleFunctionsDataSource" matSort>
+    <!-- Type Column -->
+    <ng-container matColumnDef="type">
+      <th id="col1" mat-header-cell *matHeaderCellDef mat-sort-header> Type </th>
+      <td id="rowheader_t1_{{i}}-type" mat-cell *matCellDef="let element; let i = index;"> {{element.type}}
+      </td>
+    </ng-container>
+
+    <!-- Instance Column -->
+    <ng-container matColumnDef="instance">
+      <th id="col2" mat-header-cell *matHeaderCellDef mat-sort-header> Instance </th>
+      <td id="rowheader_t1_{{i}}-instance" mat-cell *matCellDef="let element; let i=index;"> {{element.code}}
+      </td>
+    </ng-container>
+
+    <!-- Action Column -->
+    <ng-container matColumnDef="action">
+      <th id="col3" mat-header-cell *matHeaderCellDef mat-sort-header> Action </th>
+      <td id="rowheader_t1_{{i}}-action" mat-cell *matCellDef="let element; let i=index;"> {{element.action}}
+      </td>
+    </ng-container>
+
+    <!-- Name Column -->
+    <ng-container matColumnDef="name">
+      <th id="col3" mat-header-cell *matHeaderCellDef mat-sort-header> Name </th>
+      <td id="rowheader_t1_{{i}}-name" mat-cell *matCellDef="let element; let i=index;"> {{element.name}}
+      </td>
+    </ng-container>
+
+    <!-- Edit Column -->
+    <ng-container matColumnDef="edit">
+      <th id="col3" mat-header-cell *matHeaderCellDef mat-sort-header> Edit </th>
+      <td id="rowheader_t1_{{i}}-userId" mat-cell *matCellDef="let element; let i=index;">
+        <span class="icon-trash" id="{{i}}-button-edit" (click)="editRoleFunctionModalPopup(element)">
+          <i class="icon ion-md-create"></i>
+        </span>
+      </td>
+    </ng-container>
+
+    <!-- Delete Column -->
+    <ng-container matColumnDef="delete">
+      <th id="col4" mat-header-cell *matHeaderCellDef> Delete </th>
+      <td id="rowheader_t1_{{i}}-delete" mat-cell *matCellDef="let element; let i=index;">
+        <span class="icon-trash" id="{{i}}-button-portal-admin-remove" (click)="removeRoleFunction(element)">
+          <i class="icon ion-md-trash"></i>
+        </span>
+      </td>
+    </ng-container>
+
+    <tr [hidden]="availableRoleFunctions.length === 0" mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+  <mat-paginator [hidden]="availableRoleFunctions.length === 0" [pageSizeOptions]="[10, 20]" showFirstLastButtons>
+  </mat-paginator>
+</div>

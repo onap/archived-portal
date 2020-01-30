@@ -1,0 +1,116 @@
+/*-
+ * ============LICENSE_START==========================================
+ * ONAP Portal
+ * ===================================================================
+ * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ * ===================================================================
+ *
+ * Unless otherwise specified, all software contained herein is licensed
+ * under the Apache License, Version 2.0 (the "License");
+ * you may not use this software except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *             http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Unless otherwise specified, all documentation contained herein is licensed
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
+ * you may not use this documentation except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *             https://creativecommons.org/licenses/by/4.0/
+ *
+ * Unless required by applicable law or agreed to in writing, documentation
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * ============LICENSE_END============================================
+ *
+ * 
+ */
+
+.container .modal-body .user-notification-details-contents {
+    padding-left: 0;
+    padding-top: 16px;
+    padding-bottom: 16px;
+    height: 630px;
+    //overflow-y: auto;
+    margin-left: 10px;
+    padding-right: 100px;
+    margin-bottom: 5px;
+    color: #5a5a5a;
+    font-family: Omnes-ECOMP-W02,Arial;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.container .modal-body .user-notification-details-contents .left-container {
+    display: inline-block;
+    width: 48%;
+}
+
+.container .modal-body .user-notification-details-contents .right-container {
+    display: inline-block;
+    width: 39%;
+    float: right;
+}
+.mat-radio-button ~ .mat-radio-button {
+    margin-left: 16px;
+}
+
+.add-widget-field {
+    width: 250px;
+    display: inline-table;
+    margin: 10px;
+}
+
+.container .modal-body .user-notification-details-contents .right-container .add-notification-input-title-ht{
+    width: 284px;
+    height: 76px;
+}
+
+::ng-deep .modal-dialog { 
+    max-width: 800px;
+    width: 800px;
+}
+
+
+::ng-deep .mat-form-field {
+    width: 279px;
+}
+
+.tree-div {
+    height: 308px;
+    width: 320px;
+    overflow: auto;
+}
+
+.disable-category-selection{
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.disable-div{
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.required::before {
+    color: #cf2a2a;
+    margin-right: 2px;
+    content: "* ";
+    position: absolute;
+    top: 141px;
+    left: 27px;
+}
+
+.notifcation-label-required{
+    color: #cf2a2a;
+}

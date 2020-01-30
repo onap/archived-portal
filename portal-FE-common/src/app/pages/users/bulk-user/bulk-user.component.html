@@ -1,0 +1,130 @@
+<!--
+  ============LICENSE_START==========================================
+  ONAP Portal
+  ===================================================================
+  Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+  ===================================================================
+ 
+  Unless otherwise specified, all software contained herein is licensed
+  under the Apache License, Version 2.0 (the "License");
+  you may not use this software except in compliance with the License.
+  You may obtain a copy of the License at
+ 
+              http://www.apache.org/licenses/LICENSE-2.0
+ 
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+ 
+  Unless otherwise specified, all documentation contained herein is licensed
+  under the Creative Commons License, Attribution 4.0 Intl. (the "License");
+  you may not use this documentation except in compliance with the License.
+  You may obtain a copy of the License at
+ 
+              https://creativecommons.org/licenses/by/4.0/
+ 
+  Unless required by applicable law or agreed to in writing, documentation
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+ 
+  ============LICENSE_END============================================
+ 
+  
+  -->
+
+<div class="container">
+  <div class="modal-header">
+    <h4 class="modal-title">{{title}}</h4>
+    <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('Cross')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div *ngIf="dialogState===1">
+      <mat-form-field>
+        <mat-label> Select Application </mat-label>
+        <mat-select [disabled]='adminsAppsData.length === 0'>
+          <mat-option [value]="select-application" (click)="changeSelectApp('select-application')">Select Application
+          </mat-option>
+          <mat-option *ngFor="let app of adminsAppsData" (click)="changeSelectApp(app)" [value]="app.value">
+            {{app.title}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <span class="onap-spinner" *ngIf="adminsAppsData.length === 0"></span>
+    </div>
+    <div *ngIf="dialogState===2">
+      <div class="upload-instructions">Select Upload File:</div>
+      <!-- input type=file is difficult to style.
+					 Instead use a label styled as a button. -->
+      <label class="file-label">
+        <input type="file" (change)="onFileSelect($event.target)" accept="text/plain,.csv" />
+      </label>{{selectedFile}}
+      <div class="upload-instructions">File must be .csv or .txt and have one entry per line with this format:
+        <pre>orgUserId, role name</pre>
+      </div>
+    </div>
+    <div class="bulk-upload" *ngIf="dialogState===3">
+      <!-- progress indicator -->
+      <div class="upload-instructions" [hidden]="!isProcessing">
+        {{progressMsg}}
+        <br>
+        <br>
+        <span class="onap-spinner"></span>
+      </div>
+
+      <!-- progress indicator -->
+      <div class="upload-instructions" [hidden]="!isProcessedRecords">
+        {{conformMsg}}
+      </div>
+      <div [hidden]="isProcessing || isProcessedRecords">
+        <div class="upload-instructions">
+          Click OK to upload the valid requests.
+          Invalid requests will be ignored.</div>
+
+        <table mat-table [dataSource]="uploadFileDataSource">
+          <!-- Search Result Column-->
+          <ng-container matColumnDef="line">
+            <th id="rowheader-result" mat-header-cell *matHeaderCellDef> Line
+            <td id="table-data-{{i}}" mat-cell *matCellDef="let element; let i = index;">{{element.line}}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="orgUserId">
+            <th id="rowheader-result" mat-header-cell *matHeaderCellDef> OrgUserID
+            <td id="rowheader_t1_{{i}}-roles" mat-cell *matCellDef="let element; let i=index;">
+              {{element.orgUserId}}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="appRole">
+            <th id="rowheader-result" mat-header-cell *matHeaderCellDef> App Role
+            <td id="table-data-{{i}}" mat-cell *matCellDef="let element; let i = index;">
+              {{element.role}}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="status">
+            <th id="rowheader-result" mat-header-cell *matHeaderCellDef> Status
+            <td id="table-data-{{i}}" mat-cell *matCellDef="let element; let i = index;">
+              {{element.status}}
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+          <tr mat-row id="table-row-{{i}}" *matRowDef="let row; columns: displayedColumns; let i = index;"></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-primary" *ngIf="dialogState === 2" (click)="navigateBack()">Back</button>
+    &nbsp;
+    <button type="submit" id="dialog1Button" class="btn btn-primary" [disabled]="selectApp" *ngIf="dialogState === 1"
+      (click)="uploadFileDialog()">Next</button>
+    <button type="button" class="btn btn-primary" *ngIf="dialogState !== 3"
+      (click)="activeModal.close('Close')">Close</button>
+    <button type="submit" class="btn btn-primary" *ngIf="dialogState === 3" (click)="updateDB()">Ok</button> &nbsp;
+    <button type="button" class="btn btn-primary" *ngIf="dialogState === 3" (click)="navigateDialog2()">Cancel</button>
+  </div>
+</div>

@@ -69,6 +69,7 @@
           ngbDropdownItem>{{app.appName}}</button>
       </div>
     </div>
+    <span class="onap-spinner" *ngIf="isLoading"></span>
     <!-- User admins list -->
     <div class="container adminApps" *ngIf="adminAppsRoles.length > 0">
       <table mat-table [dataSource]="adminsAppsSource">

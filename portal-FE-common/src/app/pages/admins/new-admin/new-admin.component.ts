@@ -119,6 +119,7 @@ export class NewAdminComponent implements OnInit {
 
   navigateBack() {
     this.dialogState = 1;
+    this.changedSelectedUser = null;
   }
 
   removeAdminApp(app: any) {
@@ -204,6 +205,7 @@ export class NewAdminComponent implements OnInit {
   }
 
   updateAdminAppsRoles() {
+    this.isLoading = true;
     const modalRef = this.ngModal.open(InformationModalComponent);
     modalRef.componentInstance.title = "Admin Update";
     modalRef.componentInstance.message = 'Are you sure you want to make these admin changes?';
@@ -212,7 +214,9 @@ export class NewAdminComponent implements OnInit {
         this.adminsService.updateAdminAppsRoles({ orgUserId: this.changedSelectedUser.orgUserId, appsRoles: this.adminAppsRoles }).subscribe(_data => {
           this.passBackNewAdminPopup.emit(_data);
           this.remindToAddUserIfNecessary();
+          this.isLoading = false;
         }, (_err: HttpErrorResponse) => {
+          this.isLoading = false;
           this.passBackNewAdminPopup.emit(_err);
           const modalErrorRef = this.ngModal.open(ConfirmationModalComponent);
           modalErrorRef.componentInstance.title = "Error";
@@ -221,6 +225,7 @@ export class NewAdminComponent implements OnInit {
           }
         });
       }
+      this.isLoading = false;
     }, (reason) => {
       return;
     });

@@ -1,0 +1,137 @@
+<!--
+  ============LICENSE_START==========================================
+  ONAP Portal
+  ===================================================================
+  Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+  ===================================================================
+ 
+  Unless otherwise specified, all software contained herein is licensed
+  under the Apache License, Version 2.0 (the "License");
+  you may not use this software except in compliance with the License.
+  You may obtain a copy of the License at
+ 
+              http://www.apache.org/licenses/LICENSE-2.0
+ 
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+ 
+  Unless otherwise specified, all documentation contained herein is licensed
+  under the Creative Commons License, Attribution 4.0 Intl. (the "License");
+  you may not use this documentation except in compliance with the License.
+  You may obtain a copy of the License at
+ 
+              https://creativecommons.org/licenses/by/4.0/
+ 
+  Unless required by applicable law or agreed to in writing, documentation
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+ 
+  ============LICENSE_END============================================
+ 
+  
+  -->
+
+  <div class="container">
+      <!-- Heading -->
+      <div class="onap-main-view-title">
+        <h1 class="heading-page">User Notifications</h1>
+      </div>
+      &nbsp;
+    
+      <!--Filter Search Box -->
+      <mat-form-field>
+        <input matInput type="text" (keyup)="applyFilter($event.target.value)" placeholder="Search in entire table">
+      </mat-form-field> 
+
+      <!--Add Notifications-->
+      <button type="button" class="btn btn-primary" (click)="openAddNewNotificationModal('')">
+        <i class="icon ion-md-person-add"></i> Add Notification
+      </button>
+    
+      <!-- Recent Notification History table -->
+      <table mat-table [dataSource]="notificationsDataSource" matSort>
+        <!-- Message Source Column -->
+        <ng-container matColumnDef="messageSource">
+          <th id="col1" mat-header-cell *matHeaderCellDef> Message Source </th>
+          <td (click)="openAddNewNotificationModal(element)" 
+            id="rowheader_t1_{{i}}-messageSource" mat-cell *matCellDef="let element; let i = index;"> {{element.msgSource}}
+          </td>
+        </ng-container>
+    
+        <!-- Message Column -->
+        <ng-container matColumnDef="message">
+          <th id="col2" mat-header-cell *matHeaderCellDef> Message  </th>
+          <td (click)="openAddNewNotificationModal(element)"
+            id="rowheader_t1_{{i}}-message" mat-cell *matCellDef="let element; let i=index;"> {{element.msgDescription}}
+          </td>
+        </ng-container>
+    
+        <!-- Start Date (Local Time) Column -->
+        <ng-container matColumnDef="startDateLocalTime">
+          <th id="col3" mat-header-cell *matHeaderCellDef> Start Date (Local Time)  </th>
+          <td (click)="openAddNewNotificationModal(element)"
+            id="rowheader_t1_{{i}}-startDateLocalTime" mat-cell *matCellDef="let element; let i=index;"> {{element.startTime | date:'dd/MM/yyyy'}}
+          </td>
+        </ng-container>
+    
+        <!-- End Date (Local Time) Column -->
+        <ng-container matColumnDef="endDateLocalTime">
+          <th id="col4" mat-header-cell *matHeaderCellDef> End Date (Local Time)  </th>
+          <td (click)="openAddNewNotificationModal(element)" 
+            id="rowheader_t1_{{i}}-endDateLocalTime" mat-cell *matCellDef="let element; let i=index;">{{element.endTime | date:'dd/MM/yyyy'}}
+          </td>
+        </ng-container>
+    
+         <!-- Priority Column -->
+         <ng-container matColumnDef="priority">
+          <th id="col4" mat-header-cell *matHeaderCellDef> Priority </th>
+          <td (click)="openAddNewNotificationModal(element)" 
+            id="rowheader_t1_{{i}}-priority" mat-cell *matCellDef="let element; let i=index;"> {{element.priority}}
+          </td>
+        </ng-container>
+    
+         <!-- Created By Column -->
+         <ng-container matColumnDef="createdBy">
+          <th id="col4" mat-header-cell *matHeaderCellDef> Created By </th>
+          <td (click)="openAddNewNotificationModal(element)" 
+            id="rowheader_t1_{{i}}-createdBy" mat-cell *matCellDef="let element; let i=index;"> {{element.loginId}}
+          </td>
+        </ng-container>
+    
+         <!-- Created Time Column -->
+         <ng-container matColumnDef="createdTime">
+          <th id="col4" mat-header-cell *matHeaderCellDef> Created Time </th>
+          <td (click)="openAddNewNotificationModal(element)" 
+            id="rowheader_t1_{{i}}-createdTime" mat-cell *matCellDef="let element; let i=index;"> {{element.createdDate}}
+          </td>
+        </ng-container>
+
+        <!-- All Users (Roles)? Column -->
+        <ng-container matColumnDef="allUsersRoles">
+            <th id="col4" mat-header-cell *matHeaderCellDef> All Users (Roles)? </th>
+            <td (click)="openAddNewNotificationModal(element)" 
+              id="rowheader_t1_{{i}}-allUsersRoles" mat-cell *matCellDef="let element; let i=index;"> {{element.isForAllRoles}}
+            </td>
+        </ng-container>
+
+        <!-- view/Delete Column -->
+        <ng-container matColumnDef="viewOrDelete">
+          <th id="col4" mat-header-cell *matHeaderCellDef> Delete </th>
+          <td id="rowheader_t1_{{i}}" mat-cell *matCellDef="let element; let i=index;">
+            <span class="icon-trash" id="{{i}}-button-portal-admin-remove" (click)="removeUserNotification(element)">
+              <i class="icon ion-md-trash"></i>
+            </span>
+          </td>
+        </ng-container>
+    
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+      <mat-paginator [pageSizeOptions]="[10, 20]" showFirstLastButtons></mat-paginator>
+    
+    </div>    

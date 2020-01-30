@@ -1,0 +1,323 @@
+<!--
+  ============LICENSE_START==========================================
+  ONAP Portal
+  ===================================================================
+  Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+  ===================================================================
+ 
+  Unless otherwise specified, all software contained herein is licensed
+  under the Apache License, Version 2.0 (the "License");
+  you may not use this software except in compliance with the License.
+  You may obtain a copy of the License at
+ 
+              http://www.apache.org/licenses/LICENSE-2.0
+ 
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+ 
+  Unless otherwise specified, all documentation contained herein is licensed
+  under the Creative Commons License, Attribution 4.0 Intl. (the "License");
+  you may not use this documentation except in compliance with the License.
+  You may obtain a copy of the License at
+ 
+              https://creativecommons.org/licenses/by/4.0/
+ 
+  Unless required by applicable law or agreed to in writing, documentation
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+ 
+  ============LICENSE_END============================================
+ 
+  
+  -->
+
+<div class="container">
+  <div class="modal-header">
+    <h4 class="modal-title">{{title}}</h4>
+    <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('Cross')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div *ngIf="dialogState === 1">
+      <mat-form-field>
+        <mat-label> Select Upload Type: </mat-label>
+        <mat-select [(ngModel)]="selectedUploadDropdown">
+          <mat-option *ngFor="let uploadOpt of ngRepeatBulkUploadOptions" [value]="uploadOpt">
+            {{uploadOpt.title}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div *ngIf="dialogState === 2">
+      <div class="upload-instructions">Select Upload File:</div>
+      <!-- input type=file is difficult to style.
+             Instead use a label styled as a button. -->
+      <label class="file-label">
+        <input type="file" (change)="onFileSelect($event.target)" accept="text/plain,.csv" />
+      </label>{{selectedFile}}
+      <div *ngIf="selectedUploadDropdown.value === 'functions'" class="upload-instructions">File must be .csv or .txt
+        and one entry per line with this format:
+        <pre>Function Type, Function Instance, Function Action, Function Name</pre>
+      </div>
+      <div *ngIf="selectedUploadDropdown.value === 'roles'" class="upload-instructions">File must be .csv or .txt and
+        one entry per line with this format:
+        <pre>Role Name, Priority (Optional)</pre>
+      </div>
+      <div *ngIf="selectedUploadDropdown.value === 'roleFunctions'" class="upload-instructions">File must be .csv or
+        .txt and one entry per line with this format:
+        <pre>Role Name, Function Type, Function Instance, Function Action, Function Name</pre>
+      </div>
+      <div *ngIf="selectedUploadDropdown.value === 'globalRoleFunctions'" class="upload-instructions">File must be .csv
+        or .txt and one entry per line with this format:
+        <pre>Global Role Name, Function Type, Function Instance, Function Action, Function Name</pre>
+      </div>
+    </div>
+    <div class="bulk-upload" *ngIf="dialogState === 3">
+
+      <div *ngIf="selectedUploadDropdown.value === 'roles' && !isProcessing">Click OK to upload the valid
+        roles. Invalid or existing roles will be ignored.
+        <p style="font-size: 80%;">
+          <span id="required" style="color: Red;" visible="false">*</span>Name can only contain alphanumeric
+          characters, dots(.), forward slashes(/), and underscores(_)
+        </p>
+      </div>
+
+      <div *ngIf="selectedUploadDropdown.value === 'functions' && !isProcessing">Click OK to upload the valid
+        functions. Invalid or existing functions will be ignored.
+        <p style="font-size: 80%;">
+          <span id="required" style="color: Red; font-size: 180%;" visible="false">*</span>Type can only contain
+          alphanumeric
+          characters, dots(.) and underscores(_)
+        </p>
+        <p style="font-size: 80%;">
+          <span id="required" style="color: Red; font-size: 180%;" visible="false">*</span>Action can only contain
+          alphanumeric
+          characters, hyphens(-), dots(.) and underscores(_) and single
+          asterisk character(*)
+        </p>
+        <p style="font-size: 80%;">
+          <span id="required" style="color: Red; font-size: 180%;" visible="false">*</span>Instance/Code can only
+          contain alphanumeric
+          characters, hyphens(-), dots(.), colons(:), forwardSlash(/) ,
+          asterisk(*) and underscores(_)
+        </p>
+        <p style="font-size: 80%;">
+          <span id="required" style="color: Red; font-size: 180%;" visible="false">*</span>Name can only contain
+          alphanumeric
+          characters, spaces, hyphens(-), dots(.) and underscores(_)
+        </p>
+      </div>
+
+      <div *ngIf="selectedUploadDropdown.value === 'roleFunctions' && !isProcessing">Click OK to upload the valid
+        role functions. Invalid or existing functions will be ignored.
+      </div>
+      <div *ngIf="selectedUploadDropdown.value === 'globalRoleFunctions' && !isProcessing">Click OK to upload the valid
+        global role functions. Invalid or existing functions will be ignored.
+      </div>
+      <!-- progress indicator -->
+      <div class="upload-instructions" [hidden]="!isProcessing">
+        {{progressMsg}}
+        <br>
+        <br>
+        <span class="onap-spinner"></span>
+      </div>
+
+      <!-- progress indicator -->
+      <div class="upload-instructions" [hidden]="!isProcessedRecords">
+        {{conformMsg}}
+      </div>
+      <div [hidden]="isProcessing || isProcessedRecords">
+        
+        <table [hidden]="selectedUploadDropdown.value !== 'functions'" mat-table
+          [dataSource]="uploadFunctionsDataSource">
+
+          <ng-container matColumnDef="line">
+            <th id="rowheader-result" mat-header-cell *matHeaderCellDef> Line
+            <td id="table-data-{{i}}" mat-cell *matCellDef="let element; let i = index;">{{element.line}}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="type">
+            <th id="rowheader-result" mat-header-cell *matHeaderCellDef> Type
+            <td id="rowheader_t1_{{i}}-roles" mat-cell *matCellDef="let element; let i=index;">
+              {{element.type}}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="instance">
+            <th id="rowheader-result" mat-header-cell *matHeaderCellDef> Instance/Code
+            <td id="table-data-{{i}}" mat-cell *matCellDef="let element; let i = index;">
+              {{element.instance  }}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="action">
+            <th id="rowheader-result" mat-header-cell *matHeaderCellDef> Action
+            <td id="table-data-{{i}}" mat-cell *matCellDef="let element; let i = index;">
+              {{element.action}}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="name">
+            <th id="rowheader-result" mat-header-cell *matHeaderCellDef> Name
+            <td id="table-data-{{i}}" mat-cell *matCellDef="let element; let i = index;">
+              {{element.name}}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="status">
+            <th id="rowheader-result" mat-header-cell *matHeaderCellDef> Status
+            <td id="table-data-{{i}}" mat-cell *matCellDef="let element; let i = index;">
+              {{element.status}}
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedFunctionColumns; sticky: true"></tr>
+          <tr mat-row id="table-row-{{i}}" *matRowDef="let row; columns: displayedFunctionColumns; let i = index;"></tr>
+        </table>
+
+        <table [hidden]="selectedUploadDropdown.value !== 'roles'" mat-table [dataSource]="uploadRolesDataSource">
+
+          <ng-container matColumnDef="line">
+            <th id="rowheader-result" mat-header-cell *matHeaderCellDef> Line
+            <td id="table-data-{{i}}" mat-cell *matCellDef="let element; let i = index;">{{element.line}}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="name">
+            <th id="rowheader-result" mat-header-cell *matHeaderCellDef> Name
+            <td id="rowheader_t1_{{i}}-roles" mat-cell *matCellDef="let element; let i=index;">
+              {{element.name}}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="priority">
+            <th id="rowheader-result" mat-header-cell *matHeaderCellDef> Priority
+            <td id="table-data-{{i}}" mat-cell *matCellDef="let element; let i = index;">
+              {{element.priority}}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="status">
+            <th id="rowheader-result" mat-header-cell *matHeaderCellDef> Status
+            <td id="table-data-{{i}}" mat-cell *matCellDef="let element; let i = index;">
+              {{element.status}}
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedRoleColumns; sticky: true"></tr>
+          <tr mat-row id="table-row-{{i}}" *matRowDef="let row; columns: displayedRoleColumns; let i = index;"></tr>
+        </table>
+
+
+        <table [hidden]="selectedUploadDropdown.value !== 'roleFunctions'" mat-table
+          [dataSource]="uploadRoleFunctionsDataSource">
+
+          <ng-container matColumnDef="line">
+            <th id="rowheader-result" mat-header-cell *matHeaderCellDef> Line
+            <td id="table-data-{{i}}" mat-cell *matCellDef="let element; let i = index;">{{element.line}}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="role">
+            <th id="rowheader-result" mat-header-cell *matHeaderCellDef> Role Name
+            <td id="rowheader_t1_{{i}}-roles" mat-cell *matCellDef="let element; let i=index;">
+              {{element.role}}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="type">
+            <th id="rowheader-result" mat-header-cell *matHeaderCellDef>Function Type
+            <td id="table-data-{{i}}" mat-cell *matCellDef="let element; let i = index;">
+              {{element.type}}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="instance">
+            <th id="rowheader-result" mat-header-cell *matHeaderCellDef>Function Instance
+            <td id="table-data-{{i}}" mat-cell *matCellDef="let element; let i = index;">
+              {{element.instance}}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="action">
+            <th id="rowheader-result" mat-header-cell *matHeaderCellDef>Function Action
+            <td id="table-data-{{i}}" mat-cell *matCellDef="let element; let i = index;">
+              {{element.action}}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="name">
+            <th id="rowheader-result" mat-header-cell *matHeaderCellDef>Function Name
+            <td id="table-data-{{i}}" mat-cell *matCellDef="let element; let i = index;">
+              {{element.name}}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="status">
+            <th id="rowheader-result" mat-header-cell *matHeaderCellDef> Status
+            <td id="table-data-{{i}}" mat-cell *matCellDef="let element; let i = index;">
+              {{element.status}}
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedRoleFunctionColumns; sticky: true"></tr>
+          <tr mat-row id="table-row-{{i}}" *matRowDef="let row; columns: displayedRoleFunctionColumns; let i = index;">
+          </tr>
+        </table>
+
+        <table [hidden]="selectedUploadDropdown.value !== 'globalRoleFunctions'" mat-table
+          [dataSource]="uploadGlobalRoleFunctionsDataSource">
+
+          <ng-container matColumnDef="line">
+            <th id="rowheader-result" mat-header-cell *matHeaderCellDef> Line
+            <td id="table-data-{{i}}" mat-cell *matCellDef="let element; let i = index;">{{element.line}}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="role">
+            <th id="rowheader-result" mat-header-cell *matHeaderCellDef> Global Role Name
+            <td id="rowheader_t1_{{i}}-roles" mat-cell *matCellDef="let element; let i=index;">
+              {{element.role}}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="type">
+            <th id="rowheader-result" mat-header-cell *matHeaderCellDef>Function Type
+            <td id="table-data-{{i}}" mat-cell *matCellDef="let element; let i = index;">
+              {{element.type}}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="instance">
+            <th id="rowheader-result" mat-header-cell *matHeaderCellDef>Function Instance
+            <td id="table-data-{{i}}" mat-cell *matCellDef="let element; let i = index;">
+              {{element.instance}}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="action">
+            <th id="rowheader-result" mat-header-cell *matHeaderCellDef>Function Action
+            <td id="table-data-{{i}}" mat-cell *matCellDef="let element; let i = index;">
+              {{element.action}}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="name">
+            <th id="rowheader-result" mat-header-cell *matHeaderCellDef>Function Name
+            <td id="table-data-{{i}}" mat-cell *matCellDef="let element; let i = index;">
+              {{element.name}}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="status">
+            <th id="rowheader-result" mat-header-cell *matHeaderCellDef> Status
+            <td id="table-data-{{i}}" mat-cell *matCellDef="let element; let i = index;">
+              {{element.status}}
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedGlobalRoleFunctionColumns; sticky: true"></tr>
+          <tr mat-row id="table-row-{{i}}"
+            *matRowDef="let row; columns: displayedGlobalRoleFunctionColumns; let i = index;"></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="submit" class="btn btn-primary" [hidden]="dialogState !== 1"
+      (click)="navigateUploadScreen()">Next</button> &nbsp;
+    <button type="submit" class="btn btn-primary" [hidden]="dialogState !== 2"
+      (click)="navigateSelectTypeUpload()">Back</button>
+    <button type="submit" class="btn btn-primary" [hidden]="dialogState !== 3" (click)="updateInDB()">Ok</button>
+    <button type="submit" class="btn btn-primary" [hidden]="dialogState !== 3"
+      (click)="navigateUploadScreen()">Cancel</button>
+    <button type="button" class="btn btn-primary" [hidden]="dialogState !== 1"
+      (click)="activeModal.close('Close')">Cancel</button>
+  </div>
+</div>

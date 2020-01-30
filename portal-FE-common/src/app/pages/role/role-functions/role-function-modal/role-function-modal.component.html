@@ -1,0 +1,100 @@
+<!--
+  ============LICENSE_START==========================================
+  ONAP Portal
+  ===================================================================
+  Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+  ===================================================================
+ 
+  Unless otherwise specified, all software contained herein is licensed
+  under the Apache License, Version 2.0 (the "License");
+  you may not use this software except in compliance with the License.
+  You may obtain a copy of the License at
+ 
+              http://www.apache.org/licenses/LICENSE-2.0
+ 
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+ 
+  Unless otherwise specified, all documentation contained herein is licensed
+  under the Creative Commons License, Attribution 4.0 Intl. (the "License");
+  you may not use this documentation except in compliance with the License.
+  You may obtain a copy of the License at
+ 
+              https://creativecommons.org/licenses/by/4.0/
+ 
+  Unless required by applicable law or agreed to in writing, documentation
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+ 
+  ============LICENSE_END============================================
+ 
+  
+  -->
+
+<div class="container">
+  <div class="modal-header">
+    <h4 class="modal-title">{{title}}</h4>
+    <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('Cross')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+      <span class="onap-spinner" *ngIf="showSpinner"></span>
+    <form>
+      <fieldset class="form-group">
+        <div class="row">
+          <legend class="col-form-label col-sm-2 pt-0">Type</legend>
+          <div class="col-sm-10">
+            <div class="form-check">
+              <mat-radio-group aria-labelledby="type-radio-group-label" class="type-radio-group"
+                [(ngModel)]="selectedType" name="selectedType">
+                <mat-radio-button class="type-radio-button" [disabled]="editDisable" *ngFor="let type of typeOptions" [value]="type">
+                  {{type}} &nbsp;
+                </mat-radio-button>
+              </mat-radio-group>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+      <div *ngIf="selectedType === 'other'" class="form-group row">
+        <label for="inputOtherType" class="col-sm-2 col-form-label"></label>
+        <div class="col-sm-10">
+          <input type="text" class="form-control" [disabled]="editDisable" [(ngModel)]="otherTypeValue" name="type2" id="inputOtherType"
+            placeholder="Type">
+        </div>
+      </div>
+      <div class="form-group row">
+        <label for="inputInstance" class="col-sm-2 col-form-label">Instance</label>
+        <div class="col-sm-10">
+          <input type="text" class="form-control" [disabled]="editDisable" [(ngModel)]="roleFunction.code" name="code" id="inputInstance"
+            placeholder="Instance">
+        </div>
+      </div>
+      <div class="form-group row">
+        <label for="inputAction" class="col-sm-2 col-form-label">Action</label>
+        <div class="col-sm-10">
+          <input type="text" class="form-control" [disabled]="editDisable" [(ngModel)]="roleFunction.action" name="action" id="inputAction"
+            placeholder="Action">
+        </div>
+      </div>
+      <div class="form-group row">
+        <label for="inputName" class="col-sm-2 col-form-label">Name</label>
+        <div class="col-sm-10">
+          <input type="text" class="form-control" [(ngModel)]="roleFunction.name" name="name" id="inputName"
+            placeholder="Name">
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button type="submit" class="btn btn-primary"
+      [disabled]="(selectedType === 'other' && otherTypeValue.length === 0 ) || (roleFunction.code.length === 0 || roleFunction.action.length === 0 || roleFunction.name.length === 0)"
+      (click)="saveRoleFunction()">Save</button> &nbsp;
+    <button type="button" class="btn btn-primary" (click)="activeModal.close('Close')">Cancel</button>
+  </div>
+</div>
