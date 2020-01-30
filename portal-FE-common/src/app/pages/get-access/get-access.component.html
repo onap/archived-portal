@@ -1,0 +1,98 @@
+<!--
+  ============LICENSE_START==========================================
+  ONAP Portal
+  ===================================================================
+  Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+  ===================================================================
+ 
+  Unless otherwise specified, all software contained herein is licensed
+  under the Apache License, Version 2.0 (the "License");
+  you may not use this software except in compliance with the License.
+  You may obtain a copy of the License at
+ 
+              http://www.apache.org/licenses/LICENSE-2.0
+ 
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+ 
+  Unless otherwise specified, all documentation contained herein is licensed
+  under the Creative Commons License, Attribution 4.0 Intl. (the "License");
+  you may not use this documentation except in compliance with the License.
+  You may obtain a copy of the License at
+ 
+              https://creativecommons.org/licenses/by/4.0/
+ 
+  Unless required by applicable law or agreed to in writing, documentation
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+ 
+  ============LICENSE_END============================================
+ 
+  
+  -->
+  <div class="container">
+    <div class="ecomp-main-view-title">
+      <h1 class="heading-page">Get Access</h1>
+      <br>
+      <span> Visit <a id="url-access" [href]="getAccessUrl" target="_new">{{getAccessName}}</a>
+        {{getAccessInfo}}
+      </span>
+    </div>
+    <mat-form-field>
+      <input matInput type="text" (keyup)="applyFilter($event.target.value)" placeholder="Search in entire table">
+    </mat-form-field>
+    <span class="ecomp-spinner" *ngIf="showSpinner"></span>
+    <table mat-table [dataSource]="getAccessDataSource">
+      <!-- Function Column -->
+      <ng-container matColumnDef="function">
+        <th id="col1" mat-header-cell *matHeaderCellDef> Function </th>
+        <td id="rowheader_t1_{{i}}-function" mat-cell *matCellDef="let element; let i = index;">
+          <div id="access-page-function" *ngIf="element.ecomp_function !== 'Onap Function Not Available'">
+            {{element.ecomp_function}}</div>
+          <div id="access-page-function" *ngIf="element.ecomp_function === 'Onap Function Not Available'">
+            {{element.ecomp_function}}</div>
+        </td>
+      </ng-container>
+  
+      <!-- Application Name Column -->
+      <ng-container matColumnDef="applicationName">
+        <th id="col2" mat-header-cell *matHeaderCellDef> Application Name</th>
+        <td id="rowheader_t1_{{i}}-applicationName" mat-cell *matCellDef="let element; let i=index;"> {{element.app_name}}
+        </td>
+      </ng-container>
+  
+      <!-- Role Name Column -->
+      <ng-container matColumnDef="roleName">
+        <th id="col3" mat-header-cell *matHeaderCellDef> Role Name </th>
+        <td id="rowheader_t1_{{i}}-roleName" mat-cell *matCellDef="let element; let i=index;"> {{element.role_name}}
+        </td>
+      </ng-container>
+  
+      <!-- Current Role Column -->
+      <ng-container matColumnDef="currentRole">
+        <th id="col4" mat-header-cell *matHeaderCellDef> Current Role </th>
+        <td id="rowheader_t1_{{i}}-currentRole" mat-cell *matCellDef="let element; let i=index;">
+          <div id="access-page-currentRole" *ngIf="element.current_role === 'Y'">
+            <i class="icon ion-md-checkmark"></i>
+          </div>
+        </td>
+      </ng-container>
+  
+      <!-- Request Status Column -->
+      <ng-container matColumnDef="requestStatus">
+        <th id="col4" mat-header-cell *matHeaderCellDef> Request Status </th>
+        <td id="rowheader_t1_{{i}}-requestStatus" mat-cell *matCellDef="let element; let i=index;">
+          <div id="access-page-RequestAccess" *ngIf="element.request_type !== null">{{element.request_type}}</div>
+        </td>
+      </ng-container>
+  
+      <tr [hidden]="appTable.length === 0" mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="openExistingAdminModal(row)"></tr>
+    </table>
+    <mat-paginator [hidden]="appTable.length === 0" [pageSizeOptions]="[10, 20]" showFirstLastButtons></mat-paginator>
+  </div>
