@@ -43,15 +43,12 @@ package org.onap.portal.service.language;
 import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
-
 import org.onap.portal.domain.db.fn.FnLanguage;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@EnableAspectJAutoProxy
 @Transactional
 public class FnLanguageService {
        private final FnLanguageDao fnLanguageDao;

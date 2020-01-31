@@ -523,7 +523,6 @@ public class FnUser extends DomainVo implements UserDetails, Serializable {
   }
 
   @Builder
-
   public FnUser(@Digits(integer = 11, fraction = 0) Long id, LocalDateTime created, LocalDateTime modified,
       Long rowNum, Serializable auditUserId, DomainVo createdId, DomainVo modifiedId,
       Set<DomainVo> fnUsersCreatedId, Set<DomainVo> fnUsersModifiedId, FnOrg orgId,

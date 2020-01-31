@@ -48,10 +48,8 @@ import org.onap.portal.logging.aop.EPAuditLog;
 import org.onap.portalsdk.core.onboarding.crossapi.PortalAPIResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 @Configuration
-@EnableAspectJAutoProxy
 @EPAuditLog
 @ApiVersion
 public class WebAnalyticsExtAppVersionController {

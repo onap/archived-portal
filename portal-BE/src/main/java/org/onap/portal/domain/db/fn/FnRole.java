@@ -162,7 +162,7 @@ public class FnRole extends Role {
   private Set<FnRoleFunction> roleFunctions;
   @OneToMany(
       targetEntity = EpRoleNotification.class,
-      mappedBy = "notificationID",
+      mappedBy = "notificationId",
       cascade = CascadeType.MERGE,
       fetch = FetchType.LAZY
   )

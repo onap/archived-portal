@@ -51,6 +51,8 @@ import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.Valid;
@@ -76,6 +78,16 @@ CREATE TABLE `ep_role_notification` (
         )
 */
 
+@NamedQueries({
+    @NamedQuery(
+        name = "EpRoleNotification.getNotificationRoles",
+        query = "from\n"
+            + "  EpRoleNotification r\n"
+            + " where\n"
+            + "  r.notificationId.notificationId = :notificationID\n"
+    )
+})
+
 @Table(name = "ep_role_notification", indexes = {
         @Index(name = "ep_notif_recv_user_id_idx", columnList = "recv_user_id"),
         @Index(name = "fk_ep_role_notif_fn_notif", columnList = "notification_ID"),
@@ -88,19 +100,18 @@ CREATE TABLE `ep_role_notification` (
 @Entity
 public class EpRoleNotification implements Serializable {
        @Id
-
-  @GeneratedValue(strategy = GenerationType.AUTO)
+       @GeneratedValue(strategy = GenerationType.AUTO)
        @Column(name = "ID", length = 11, nullable = false, columnDefinition = "int(11) AUTO_INCREMENT")
        @Digits(integer = 11, fraction = 0)
        private Long id;
        @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
        @JoinColumn(name = "notification_ID")
        @Valid
-       private EpNotification notificationID;
+       private EpNotification notificationId;
        @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
        @JoinColumn(name = "role_ID", columnDefinition = "bigint")
        @Valid
-       private FnRole roleID;
+       private FnRole roleId;
        @Column(name = "recv_user_id", length = 11, columnDefinition = "int(11) DEFAULT NULL")
        @Digits(integer = 11, fraction = 0)
        private Long recvUserId;

@@ -68,7 +68,6 @@ import org.onap.portalsdk.core.util.SystemProperties;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -87,7 +86,6 @@ import org.springframework.web.client.AsyncRestTemplate;
 @RestController
 @RequestMapping(PortalConstants.REST_AUX_API)
 @Configuration
-@EnableAspectJAutoProxy
 @EPAuditLog
 @NoArgsConstructor
 public class WebAnalyticsExtAppController {
@@ -114,7 +112,7 @@ public class WebAnalyticsExtAppController {
 	/**
 	 * Answers requests from partner applications for a file that is expected to
 	 * contain javascript to support web analytics.
-	 * 
+	 *
 	 * @param request
 	 *            HttpServletRequest
 	 * @return String
@@ -158,7 +156,7 @@ public class WebAnalyticsExtAppController {
 
 	/**
 	 * Accepts data from partner applications with web analytics data.
-	 * 
+	 *
 	 * @param request
 	 *            HttpServletRequest
 	 * @param analyticsMap
@@ -209,14 +207,14 @@ public class WebAnalyticsExtAppController {
 	}
 
 	private String getAppName(HttpServletRequest request, String appName) {
-		
+
 		FnApp appRecord = getApp(request);
 		if (appRecord != null) {
 			appName = appRecord.getAppName();
 		}
 		return appName;
 	}
-	
+
 	private FnApp getApp(HttpServletRequest request) {
 		String appKeyValue = request.getHeader(APP_KEY);
 		FnApp appRecord = null;
@@ -252,5 +250,5 @@ public class WebAnalyticsExtAppController {
 				HttpMethod.POST, entity, String.class);
 		out.addCallback(successCallback, failureCallback);
 	}
-	
+
 }

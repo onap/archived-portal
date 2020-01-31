@@ -51,12 +51,11 @@ import org.onap.portal.domain.dto.transport.OnboardingWidget;
 import org.onap.portal.domain.dto.transport.WidgetCatalogPersonalization;
 import org.onap.portal.logging.aop.EPAuditLog;
 import org.onap.portal.service.PersUserWidgetService;
-import org.onap.portal.service.widget.WidgetService;
 import org.onap.portal.service.user.FnUserService;
+import org.onap.portal.service.widget.WidgetService;
 import org.onap.portal.utils.EcompPortalUtils;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -69,7 +68,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 @EPAuditLog
 @RestController
-@EnableAspectJAutoProxy
 public class WidgetsController {
 
        private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(WidgetsController.class);
@@ -96,7 +94,7 @@ public class WidgetsController {
               } else {
                      String getType = request.getHeader("X-Widgets-Type");
                      if (!getType.isEmpty() && ("managed".equals(getType) || "all".equals(getType))) {
-                            onboardingWidgets = widgetService.getOnboardingWidgets(user, "managed".equals(getType));
+                            onboardingWidgets = widgetService.getOnboardingWidgets(user.getOrgUserId(), user.getId(), "managed".equals(getType));
                      } else {
                             logger.debug(EELFLoggerDelegate.debugLogger,
                                     "WidgetsController.getOnboardingApps - request must contain header 'X-Widgets-Type' with 'all' or 'managed'");
@@ -114,7 +112,7 @@ public class WidgetsController {
        public FieldsValidator putOnboardingWidget(Principal principal, @PathVariable("widgetId") Long widgetId,
                @RequestBody OnboardingWidget onboardingWidget, HttpServletResponse response) {
               FnUser user = fnUserService.loadUserByUsername(principal.getName());
-              FieldsValidator fieldsValidator = null;
+              FieldsValidator fieldsValidator;
 
               assert onboardingWidget != null;
               onboardingWidget.setId(widgetId);
@@ -167,7 +165,7 @@ public class WidgetsController {
               FnUser user = fnUserService.loadUserByUsername(principal.getName());
               FieldsValidator fieldsValidator;
 
-              fieldsValidator = widgetService.deleteOnboardingWidget(user, widgetId);
+              fieldsValidator = widgetService.deleteOnboardingWidget(user.getOrgUserId(), user.getId(), widgetId);
               response.setStatus(fieldsValidator.getHttpStatusCode().intValue());
 
               EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/widgets/" + widgetId, "DELETE result =",
@@ -184,7 +182,7 @@ public class WidgetsController {
               try {
                      assert persRequest != null;
                      persUserWidgetService
-                             .setPersUserAppValue(user, persRequest);
+                             .setPersUserAppValue(user.getId(), persRequest);
               } catch (IllegalArgumentException iae) {
                      logger.error(EELFLoggerDelegate.errorLogger, "Failed in putAppCatalogSelection", iae);
                      response.sendError(HttpServletResponse.SC_NOT_ACCEPTABLE, iae.getMessage());

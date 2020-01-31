@@ -93,7 +93,7 @@ public class EpWidgetCatalog implements Serializable {
        @Size(max = 100)
        @NotNull
        @SafeHtml
-       private String wdgName;
+       private String wdgName = "?";
        @Column(name = "service_id", length = 11)
        @Digits(integer = 11, fraction = 0)
        private Long serviceId;
@@ -105,10 +105,10 @@ public class EpWidgetCatalog implements Serializable {
        @Size(max = 256)
        @NotNull
        @SafeHtml
-       private String wdgFileLoc;
+       private String wdgFileLoc = "?";
        @Column(name = "all_user_flag", length = 1, columnDefinition = "boolean default false", nullable = false)
        @NotNull
-       private Boolean allUserFlag;
+       private Boolean allUserFlag = false;
        @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
        @JoinTable(
                name = "ep_widget_microservice",

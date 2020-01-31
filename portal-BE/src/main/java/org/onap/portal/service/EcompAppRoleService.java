@@ -38,47 +38,36 @@
  *
  */
 
-package org.onap.portal.aop.service;
+package org.onap.portal.service;
 
-import java.security.Principal;
-import java.util.stream.Collectors;
-import javax.validation.ConstraintViolation;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
-import org.onap.portal.domain.db.fn.FnLanguage;
-import org.onap.portal.validation.DataValidator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.List;
+import javax.persistence.EntityManager;
+import javax.transaction.Transactional;
+import org.onap.portal.domain.dto.ecomp.EcompAppRole;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-@Aspect
-@Component
-public class FnLanguageServiceAOP {
-       private static final Logger LOGGER = LoggerFactory.getLogger(FnLanguageServiceAOP.class);
+@Service
+@Transactional
+public class EcompAppRoleService {
 
-       @Autowired
-       private DataValidator dataValidator;
+    private final String notificationAppRoles =
+    "select  a.app_id, a.app_name, b.role_id, b.role_name from\n"
+        + "(select * from fn_app where app_id = 1) a,\n"
+        + "(select * from fn_role where app_id is null and active_yn = 'Y' and role_id <> 1) b\n"
+        + "union\n"
+        + "select fn_role.app_id,fn_app.app_name, fn_role.role_id ,fn_role.role_name\n"
+        + "from fn_app, fn_role\n"
+        + "where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_yn='Y' order by app_name";
 
-       @Before("execution(* org.onap.portal.service.language.FnLanguageService.save(..)) && args(fnLanguage)")
-       public void save(final FnLanguage fnLanguage) {
-              if (fnLanguage == null) {
-                     LOGGER.info("User " +  " try to save NULL fnLanguage");
-                     throw new NullPointerException("FnLanguage cannot be null or empty");
-              }
-              if (!dataValidator.isValid(fnLanguage)) {
-                     String violations = dataValidator.getConstraintViolations(fnLanguage).stream()
-                             .map(ConstraintViolation::getMessage)
-                             .collect(Collectors.joining(", "));
-                     LOGGER.info("User " + " try to save not valid fnLanguage: " + violations);
-                     throw new IllegalArgumentException("FnLanguage is not valid, " + violations);
-              }
-       }
+    private final EntityManager entityManager;
 
-       @Before("execution(* org.onap.portal.service.language.FnLanguageService.getLanguageList(..)) && args(principal)")
-       public void getLanguageList(final Principal principal) {
-              LOGGER.info("User " + principal.getName() + " try requested for all language list");
-       }
+    @Autowired
+    public EcompAppRoleService(EntityManager entityManager) {
+        this.entityManager = entityManager;
+    }
 
-
+    public List<EcompAppRole> getAppRoleList() {
+        return entityManager.createQuery(notificationAppRoles, EcompAppRole.class).getResultList();
+    }
 }

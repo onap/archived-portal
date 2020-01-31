@@ -50,7 +50,6 @@ import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.onap.portalsdk.core.util.SystemProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -60,7 +59,6 @@ import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
 @EPAuditLog
 @RestController
-@EnableAspectJAutoProxy
 public class WidgetsCatalogMarkupController {
 
        private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(WidgetsCatalogMarkupController.class);

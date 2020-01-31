@@ -43,32 +43,25 @@ package org.onap.portal.service.user;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
 import org.onap.portal.domain.db.fn.FnUser;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@EnableAspectJAutoProxy
 @Transactional
 public class FnUserService implements UserDetailsService {
 
-       private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(FnUserService.class);
+       private final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(FnUserService.class);
 
        private final FnUserDao fnUserDao;
 
        @Autowired
        public FnUserService(FnUserDao fnUserDao) {
               this.fnUserDao = fnUserDao;
-       }
-
-       public FnUser saveFnUser(final FnUser fnUser) {
-              return fnUserDao.save(fnUser);
        }
 
        @Override
@@ -79,6 +72,10 @@ public class FnUserService implements UserDetailsService {
               } else {
                      throw new UsernameNotFoundException("User not found for username: " + username);
               }
+       }
+
+       public FnUser saveFnUser(final FnUser fnUser) {
+              return fnUserDao.save(fnUser);
        }
 
        public Optional<FnUser> getUser(final Long id) {
@@ -92,7 +89,6 @@ public class FnUserService implements UserDetailsService {
        public List<FnUser> getUsersByOrgIds(final List<String> orgIds) {
               return fnUserDao.getUsersByOrgIds(orgIds).orElse(new ArrayList<>());
        }
-
 
        public List<FnUser> getActiveUsers() {
               return fnUserDao.getActiveUsers().orElse(new ArrayList<>());
@@ -110,15 +106,15 @@ public class FnUserService implements UserDetailsService {
               return fnUserDao.findAll();
        }
 
-       public List<FnUser> saveAll(List<FnUser> fnUsers) {
+       public List<FnUser> saveAll(final List<FnUser> fnUsers) {
               return fnUserDao.saveAll(fnUsers);
        }
 
-       public FnUser save(FnUser user) {
+       public FnUser save(final FnUser user) {
               return fnUserDao.save(user);
        }
 
-       public void delete(FnUser user) {
+       public void delete(final FnUser user) {
               fnUserDao.delete(user);
        }
 }

@@ -38,7 +38,7 @@
  *
  */
 
-package org.onap.portal.aop.service;
+package org.onap.portal.aop.service.fn;
 
 import java.security.Principal;
 import java.util.stream.Collectors;

@@ -76,4 +76,8 @@ public class FnMenuFunctionalRolesService {
   public List<FnMenuFunctionalRoles> saveAll(List<FnMenuFunctionalRoles> functionalRoles) {
     return fnMenuFunctionalRolesDao.saveAll(functionalRoles);
   }
+
+  public List<FnMenuFunctionalRoles> findAll(){
+    return fnMenuFunctionalRolesDao.findAll();
+  }
 }

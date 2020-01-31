@@ -88,7 +88,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 @RestController
-@EnableAspectJAutoProxy
 @EPAuditLog
 public class WidgetsCatalogController {
 

@@ -42,6 +42,7 @@ package org.onap.portal.service.widget;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletResponse;
 
@@ -51,6 +52,7 @@ import org.onap.portal.domain.db.fn.FnWidget;
 import org.onap.portal.domain.dto.transport.FieldsValidator;
 import org.onap.portal.domain.dto.transport.OnboardingWidget;
 import org.onap.portal.service.AdminRolesService;
+import org.onap.portal.service.user.FnUserService;
 import org.onap.portal.service.userRole.FnUserRoleService;
 import org.onap.portal.utils.EPCommonSystemProperties;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
@@ -61,71 +63,52 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@EnableAspectJAutoProxy
 @Transactional
+@EnableAspectJAutoProxy
 public class WidgetService {
 
-       private final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(WidgetService.class);
-       private final Long ACCOUNT_ADMIN_ROLE_ID = 999L;
+       private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(WidgetService.class);
+       private static final Long ACCOUNT_ADMIN_ROLE_ID = 999L;
 
        private static final String baseSqlToken =
-               " new org.onap.portal.domain.dto.transport.OnboardingWidget("
-                       + "widget.WIDGET_ID,widget.WDG_NAME,widget.APP_ID,"
-                       + "app.APP_NAME,widget.WDG_WIDTH,widget.WDG_HEIGHT,"
-                       + "widget.WDG_URL, widget.WIDGET_ID,widget.WDG_NAME,widget.APP_ID,app.APP_NAME,widget.WDG_WIDTH,widget.WDG_HEIGHT,widget.WDG_URL) from FN_WIDGET widget join FN_APP app ON widget.APP_ID = app.APP_ID";
+           " new org.onap.portal.domain.dto.transport.OnboardingWidget("
+               + "widget.WIDGET_ID,widget.WDG_NAME,widget.APP_ID,"
+               + "app.APP_NAME,widget.WDG_WIDTH,widget.WDG_HEIGHT,"
+               + "widget.WDG_URL, widget.WIDGET_ID,widget.WDG_NAME,widget.APP_ID,app.APP_NAME,widget.WDG_WIDTH,widget.WDG_HEIGHT,widget.WDG_URL) from FN_WIDGET widget join FN_APP app ON widget.APP_ID = app.APP_ID";
+
+       private static final String sqlWidgetsForAllApps = "SELECT" + baseSqlToken;
+
+       private static final String sqlWidgetsForAllAppsWhereUserIsAdmin =
+              "SELECT" + baseSqlToken
+                  + " join FN_USER_ROLE ON FN_USER_ROLE.APP_ID = app.APP_ID where FN_USER_ROLE.USER_ID = :USERID AND FN_USER_ROLE.ROLE_ID = "
+                  + ACCOUNT_ADMIN_ROLE_ID;
+
+       private static final String sqlWidgetsForAllAppsWhereUserHasAnyRole =
+              "SELECT DISTINCT" + baseSqlToken
+                  + " join FN_USER_ROLE ON FN_USER_ROLE.APP_ID = app.APP_ID where FN_USER_ROLE.USER_ID = "
+                  + ":USERID";
 
        private static final String urlField = "url";
-       private static final Long DUBLICATED_FIELD_VALUE_ECOMP_ERROR = new Long(
-               EPCommonSystemProperties.DUBLICATED_FIELD_VALUE_ECOMP_ERROR);
+       private static final Long DUBLICATED_FIELD_VALUE_ECOMP_ERROR = Long
+           .valueOf(EPCommonSystemProperties.DUBLICATED_FIELD_VALUE_ECOMP_ERROR);
        private static final String nameField = "name";
-
        private final AdminRolesService adminRolesService;
        private final EntityManager entityManager;
        private final FnWidgetDao fnWidgetDao;
+       private final FnUserService fnUserService;
        private final FnUserRoleService fnUserRoleService;
-
-       @Autowired
-       public WidgetService(final AdminRolesService adminRolesService, final EntityManager entityManager,
-               final FnWidgetDao fnWidgetDao, FnUserRoleService fnUserRoleService) {
-              this.adminRolesService = adminRolesService;
-              this.entityManager = entityManager;
-              this.fnWidgetDao = fnWidgetDao;
-              this.fnUserRoleService = fnUserRoleService;
-       }
 
        private static final Object syncRests = new Object();
 
-       public List<OnboardingWidget> getOnboardingWidgets(FnUser user, boolean managed) {
-              if (adminRolesService.isSuperAdmin(user.getOrgUserId())) {
-                     return entityManager.createQuery(sqlWidgetsForAllApps(), OnboardingWidget.class).getResultList();
-              } else if (managed) {
-                     if (adminRolesService.isAccountAdmin(user)) {
-                            return entityManager
-                                    .createQuery(sqlWidgetsForAllAppsWhereUserIsAdmin(), OnboardingWidget.class)
-                                    .setParameter("USERID", user.getId()).getResultList();
-                     }
-              } else if (adminRolesService.isAccountAdmin(user) || adminRolesService.isUser(user)) {
-                     return entityManager
-                             .createQuery(sqlWidgetsForAllAppsWhereUserHasAnyRole(), OnboardingWidget.class)
-                             .setParameter("USERID", user.getId()).getResultList();
-              }
-              return new ArrayList<>();
-       }
-
-       private String sqlWidgetsForAllApps() {
-              return "SELECT" + baseSqlToken;
-       }
-
-       private String sqlWidgetsForAllAppsWhereUserIsAdmin() {
-              return "SELECT" + baseSqlToken
-                      + " join FN_USER_ROLE ON FN_USER_ROLE.APP_ID = app.APP_ID where FN_USER_ROLE.USER_ID = :USERID AND FN_USER_ROLE.ROLE_ID = "
-                      + ACCOUNT_ADMIN_ROLE_ID;
-       }
-
-       private String sqlWidgetsForAllAppsWhereUserHasAnyRole() {
-              return "SELECT DISTINCT" + baseSqlToken
-                      + " join FN_USER_ROLE ON FN_USER_ROLE.APP_ID = app.APP_ID where FN_USER_ROLE.USER_ID = "
-                      + ":USERID";
+       @Autowired
+       public WidgetService(final AdminRolesService adminRolesService, final EntityManager entityManager,
+           final FnWidgetDao fnWidgetDao, FnUserService fnUserService,
+           FnUserRoleService fnUserRoleService) {
+              this.adminRolesService = adminRolesService;
+              this.entityManager = entityManager;
+              this.fnWidgetDao = fnWidgetDao;
+              this.fnUserService = fnUserService;
+              this.fnUserRoleService = fnUserRoleService;
        }
 
        @PreAuthorize("hasRole('System_Administrator')")
@@ -133,7 +116,52 @@ public class WidgetService {
               return this.updateOrSaveWidget(true, userId, onboardingWidget);
        }
 
-       private FieldsValidator updateOrSaveWidget(boolean superAdmin, Long userId, OnboardingWidget onboardingWidget) {
+       public List<OnboardingWidget> getOnboardingWidgets(final String orgUserId, final long userId,  final boolean managed) {
+              FnUser user = fnUserService.getUser(userId).get();
+              if (adminRolesService.isSuperAdmin(orgUserId)){
+                     return entityManager.createQuery(sqlWidgetsForAllApps, OnboardingWidget.class).getResultList();
+              } else if (managed) {
+                     if (adminRolesService.isAccountAdmin(user.getId(), user.getOrgUserId(), user.getUserApps())) {
+                            return entityManager
+                                .createQuery(sqlWidgetsForAllAppsWhereUserIsAdmin, OnboardingWidget.class)
+                                .setParameter("USERID", userId).getResultList();
+                     }
+              } else if (adminRolesService.isAccountAdmin(user.getId(), user.getOrgUserId(), user.getUserApps()) || adminRolesService.isUser(userId)) {
+                     return entityManager
+                         .createQuery(sqlWidgetsForAllAppsWhereUserHasAnyRole, OnboardingWidget.class)
+                         .setParameter("USERID", userId).getResultList();
+              }
+              return new ArrayList<>();
+       }
+
+       public FnWidget saveOne(final FnWidget widget) {
+              return fnWidgetDao.saveAndFlush(widget);
+       }
+
+       @PreAuthorize("hasRole('System_Administrator')")
+       public FieldsValidator deleteOnboardingWidget(final String orgUserId, final long userId, final long onboardingWidgetId) {
+              FieldsValidator fieldsValidator = new FieldsValidator();
+              synchronized (syncRests) {
+                     Optional<FnWidget> widget = this.getOne(onboardingWidgetId);
+                     if (widget.isPresent() && widget.get().getAppId() != null) { // widget exists
+                            if (!this.isUserAdminOfAppForWidget(adminRolesService.isSuperAdmin(orgUserId), userId,
+                                widget.get().getAppId())) {
+                                   fieldsValidator.setHttpStatusCode((long) HttpServletResponse.SC_FORBIDDEN);
+                            } else {
+                                   fnWidgetDao.deleteById(onboardingWidgetId);
+                                   fieldsValidator.setHttpStatusCode(
+                                       (long) HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                            }
+                     }
+              }
+              return fieldsValidator;
+       }
+
+       public Optional<FnWidget> getOne(final long id) {
+              return Optional.of(fnWidgetDao.getOne(id));
+       }
+
+       private FieldsValidator updateOrSaveWidget(final boolean superAdmin, final long userId, final OnboardingWidget onboardingWidget) {
               FieldsValidator fieldsValidator = new FieldsValidator();
               if (!this.isUserAdminOfAppForWidget(superAdmin, userId, onboardingWidget.getAppId())) {
                      fieldsValidator.setHttpStatusCode((long) HttpServletResponse.SC_FORBIDDEN);
@@ -143,8 +171,8 @@ public class WidgetService {
                      if (onboardingWidget.getId() == null) {
                             this.validateOnboardingWidget(onboardingWidget, fieldsValidator);
                      } else {
-                            FnWidget widget = fnWidgetDao.getOne(onboardingWidget.getId());
-                            if (widget == null || widget.getAppId() == null) {
+                            Optional<FnWidget> widget = this.getOne(onboardingWidget.getId());
+                            if (!widget.isPresent() || widget.get().getAppId() == null) {
                                    fieldsValidator.setHttpStatusCode((long) HttpServletResponse.SC_NOT_FOUND);
                                    return fieldsValidator;
                             }
@@ -157,19 +185,15 @@ public class WidgetService {
               return fieldsValidator;
        }
 
-       private boolean isUserAdminOfAppForWidget(boolean superAdmin, Long userId, Long appId) {
+       private boolean isUserAdminOfAppForWidget(final boolean superAdmin, final Long userId, final Long appId) {
               if (!superAdmin) {
-                     List<FnUserRole> userRoles = getAdminUserRoles(userId, appId);
+                     List<FnUserRole> userRoles = fnUserRoleService.getAdminUserRoles(userId, ACCOUNT_ADMIN_ROLE_ID, appId);
                      return (userRoles.size() > 0);
               }
               return true;
        }
 
-       private List<FnUserRole> getAdminUserRoles(Long userId, Long appId) {
-              return fnUserRoleService.getAdminUserRoles(userId, ACCOUNT_ADMIN_ROLE_ID, appId);
-       }
-
-       private void applyOnboardingWidget(OnboardingWidget onboardingWidget, FieldsValidator fieldsValidator) {
+       private void applyOnboardingWidget(final OnboardingWidget onboardingWidget, final FieldsValidator fieldsValidator) {
               boolean result;
               FnWidget widget;
               if (onboardingWidget.getId() == null) {
@@ -188,34 +212,35 @@ public class WidgetService {
               }
        }
 
-       private void validateOnboardingWidget(OnboardingWidget onboardingWidget, FieldsValidator fieldsValidator) {
+       private void validateOnboardingWidget(final OnboardingWidget onboardingWidget,
+           final FieldsValidator fieldsValidator) {
               List<FnWidget> widgets = getWidgets(onboardingWidget);
-              boolean dublicatedUrl = false;
-              boolean dublicatedName = false;
+              boolean duplicatedUrl = false;
+              boolean duplicatedName = false;
               for (FnWidget widget : widgets) {
                      if (onboardingWidget.getId() != null && onboardingWidget.getId().equals(widget.getWidgetId())) {
                             // widget should not be compared with itself
                             continue;
                      }
-                     if (!dublicatedUrl && widget.getUrl().equals(onboardingWidget.getUrl())) {
-                            dublicatedUrl = true;
-                            if (dublicatedName) {
+                     if (!duplicatedUrl && widget.getUrl().equals(onboardingWidget.getUrl())) {
+                            duplicatedUrl = true;
+                            if (duplicatedName) {
                                    break;
                             }
                      }
-                     if (!dublicatedName && widget.getName().equalsIgnoreCase(onboardingWidget.getName()) && widget
-                             .getAppId().equals(onboardingWidget.getAppId())) {
-                            dublicatedName = true;
-                            if (dublicatedUrl) {
+                     if (!duplicatedName && widget.getName().equalsIgnoreCase(onboardingWidget.getName()) && widget
+                         .getAppId().equals(onboardingWidget.getAppId())) {
+                            duplicatedName = true;
+                            if (duplicatedUrl) {
                                    break;
                             }
                      }
               }
-              if (dublicatedUrl || dublicatedName) {
-                     if (dublicatedUrl) {
+              if (duplicatedUrl || duplicatedName) {
+                     if (duplicatedUrl) {
                             fieldsValidator.addProblematicFieldName(urlField);
                      }
-                     if (dublicatedName) {
+                     if (duplicatedName) {
                             fieldsValidator.addProblematicFieldName(nameField);
                      }
                      fieldsValidator.setHttpStatusCode((long) HttpServletResponse.SC_CONFLICT);
@@ -224,28 +249,8 @@ public class WidgetService {
        }
 
        private List<FnWidget> getWidgets(final OnboardingWidget onboardingWidget) {
-              return fnWidgetDao.getForUrlNameAndAppId(onboardingWidget.getUrl(), onboardingWidget.getName(), onboardingWidget.getAppId()).orElse(new ArrayList<>());
-       }
-
-       public FieldsValidator deleteOnboardingWidget(FnUser user, Long onboardingWidgetId) {
-              FieldsValidator fieldsValidator = new FieldsValidator();
-              synchronized (syncRests) {
-                     FnWidget widget = fnWidgetDao.getOne(onboardingWidgetId);
-                     if (widget != null && widget.getAppId() != null) { // widget exists
-                            if (!this.isUserAdminOfAppForWidget(adminRolesService.isSuperAdmin(user.getOrgUserId()), user.getId(),
-                                    widget.getAppId())) {
-                                   fieldsValidator.setHttpStatusCode((long) HttpServletResponse.SC_FORBIDDEN);
-                            } else {
-                                   fnWidgetDao.deleteById(onboardingWidgetId);
-                                   fieldsValidator.setHttpStatusCode(
-                                           (long) HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                            }
-                     }
-              }
-              return fieldsValidator;
-       }
-
-       public FnWidget saveOne(final FnWidget widget){
-              return fnWidgetDao.saveAndFlush(widget);
+              return fnWidgetDao
+                  .getForUrlNameAndAppId(onboardingWidget.getUrl(), onboardingWidget.getName(), onboardingWidget.getAppId())
+                  .orElse(new ArrayList<>());
        }
 }

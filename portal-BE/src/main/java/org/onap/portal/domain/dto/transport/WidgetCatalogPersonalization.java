@@ -45,16 +45,18 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class WidgetCatalogPersonalization {
 
-       @NotNull
+       @NotNull(message = "widgetId may not be null")
        private Long widgetId;
-       @NotNull
+       @NotNull(message = "select may not be null")
        private Boolean select;
 
 }

@@ -158,6 +158,24 @@
                   <version>1.5.13</version>
                   <scope>compile</scope>
             </dependency>
+        <dependency>
+          <groupId>org.glassfish.jersey.core</groupId>
+          <artifactId>jersey-client</artifactId>
+          <version>2.29.1</version>
+          <scope>compile</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.eclipse.jetty</groupId>
+          <artifactId>jetty-util</artifactId>
+          <version>9.4.18.v20190429</version>
+          <scope>compile</scope>
+        </dependency>
+        <dependency>
+          <groupId>com.fasterxml.jackson.jaxrs</groupId>
+          <artifactId>jackson-jaxrs-json-provider</artifactId>
+          <version>2.10.0</version>
+          <scope>compile</scope>
+        </dependency>
       </dependencies>
       <properties>
             <docker.image.prefix>portal</docker.image.prefix>
