@@ -39,7 +39,6 @@ import { Injectable } from '@angular/core';
 import { IWidgetCatalog } from '../../model/widget-catalog.model';
 import { Observable, from } from 'rxjs';
 import { GridsterConfig, GridsterItem, CompactType, DisplayGrid, GridType } from 'angular-gridster2';
-import { CoreService } from '../core/core.service';
 import { environment } from 'src/environments/environment';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 

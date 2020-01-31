@@ -37,8 +37,6 @@
  */
 import { Injectable } from '@angular/core';
 import { GridsterConfig, GridsterItem, DisplayGrid, GridType } from 'angular-gridster2';
-import { UUID } from 'angular2-uuid';
-import { CoreService } from '../core/core.service';
 import { Observable } from 'rxjs';
 import { IApplicationCatalog } from '../../model/application-catalog.model';
 import { environment } from 'src/environments/environment';

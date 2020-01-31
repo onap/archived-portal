@@ -1,0 +1,144 @@
+<!--
+  ============LICENSE_START==========================================
+  ONAP Portal
+  ===================================================================
+  Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+  ===================================================================
+ 
+  Unless otherwise specified, all software contained herein is licensed
+  under the Apache License, Version 2.0 (the "License");
+  you may not use this software except in compliance with the License.
+  You may obtain a copy of the License at
+ 
+              http://www.apache.org/licenses/LICENSE-2.0
+ 
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+ 
+  Unless otherwise specified, all documentation contained herein is licensed
+  under the Creative Commons License, Attribution 4.0 Intl. (the "License");
+  you may not use this documentation except in compliance with the License.
+  You may obtain a copy of the License at
+ 
+              https://creativecommons.org/licenses/by/4.0/
+ 
+  Unless required by applicable law or agreed to in writing, documentation
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+ 
+  ============LICENSE_END============================================
+   
+  -->
+  
+<div class="container">
+    <div class="w-ecomp-main-container">
+        <div class="applications-page-main" id="page-content">
+            <div id="microservice-onboarding-title" class="w-ecomp-main-view-title">
+                <h1 class="heading-page"> Application Onboarding</h1>
+            </div>   
+            
+            <mat-form-field>
+                <input matInput type="text" (keyup)="applyFilter($event.target.value)" placeholder="Search in entire table">
+            </mat-form-field>
+
+            <button type="button" style="float: right;" class="btn btn-primary" (click)="openAddApplicationModal('')">
+            <i class="icon ion-md-person-add"></i>&nbsp;Add App
+            </button>
+          
+            <div class="apps-table">
+                <!-- Applications Table goes here-->
+                <table mat-table [dataSource]="dataSource" matSort>
+                    <!-- Thumbnail Column -->
+                    <ng-container matColumnDef="thumbnail">
+                        <th id="col1" mat-header-cell *matHeaderCellDef> Thumbnail  </th>
+                        <td (click)="openAddApplicationModal(element)" id="rowheader_t1_{{i}}-thumbnail" 
+                            mat-cell *matCellDef="let element; let i = index;">
+                            <div><img class="small-thumbnail" src={{element.imageLink}}></div>
+                        </td>
+                    </ng-container>  
+                    
+                    <!-- Application Name Column -->
+                    <ng-container matColumnDef="applicationName">
+                        <th id="col2" mat-header-cell *matHeaderCellDef> Application Name </th>
+                        <td (click)="openAddApplicationModal(element)" id="rowheader_t1_{{i}}-applicationName" 
+                            mat-cell *matCellDef="let element; let i=index;"> {{element.name}} </td>
+                    </ng-container>
+
+                    <!-- Active Column -->
+                    <ng-container matColumnDef="active">
+                        <th id="col2" mat-header-cell *matHeaderCellDef> Active </th>
+                        <td (click)="openAddApplicationModal(element)" id="rowheader_t1_{{i}}-active" 
+                            mat-cell *matCellDef="let element; let i=index;"> {{(element.isEnabled) ? 'yes' : 'no'}} </td>
+                    </ng-container>
+
+                    <!-- Integration Type Column -->
+                    <ng-container matColumnDef="integrationType">
+                        <th id="col2" mat-header-cell *matHeaderCellDef> Integration Type </th>
+                        <td (click)="openAddApplicationModal(element)" id="rowheader_t1_{{i}}-integrationType" 
+                            mat-cell *matCellDef="let element; let i=index;"> {{(element.restrictedApp) ? 'link' : 'standard'}} </td>
+                    </ng-container>
+
+                    <!-- Guest Access Column-->
+                    <ng-container matColumnDef="guestAccess">
+                        <th id="col2" mat-header-cell *matHeaderCellDef> Guest Access </th>
+                        <td (click)="openAddApplicationModal(element)" id="rowheader_t1_{{i}}-guestAccess" 
+                            mat-cell *matCellDef="let element; let i=index;">{{(element.isOpen) ? 'yes' : 'no'}} </td>
+                    </ng-container>
+
+                    <!-- url  column -->
+                    <ng-container matColumnDef="url">
+                        <th id="col2" mat-header-cell *matHeaderCellDef> Url </th>
+                        <td (click)="openAddApplicationModal(element)" id="rowheader_t1_{{i}}-url" 
+                            mat-cell *matCellDef="let element; let i=index;">{{element.url}} </td>
+                    </ng-container>
+
+                        <!-- rest url  column -->
+                        <ng-container matColumnDef="restURL">
+                        <th id="col2" mat-header-cell *matHeaderCellDef> REST Url </th>
+                        <td (click)="openAddApplicationModal(element)" id="rowheader_t1_{{i}}-restURL" 
+                            mat-cell *matCellDef="let element; let i=index;">{{element.restUrl}} </td>
+                    </ng-container>
+
+                    <!-- communicationKey column -->
+                    <ng-container matColumnDef="communicationKey">
+                        <th id="col2" mat-header-cell *matHeaderCellDef> Communication Key </th>
+                        <td (click)="openAddApplicationModal(element)" id="rowheader_t1_{{i}}-communicationKey" 
+                            mat-cell *matCellDef="let element; let i=index;">{{element.uebKey}} </td>
+                    </ng-container>
+
+                    <!-- applicationNamespace column -->
+                    <ng-container matColumnDef="applicationNamespace">
+                        <th id="col2" mat-header-cell *matHeaderCellDef> Application Namespace </th>
+                        <td (click)="openAddApplicationModal(element)" id="rowheader_t1_{{i}}-applicationNamespace" 
+                            mat-cell *matCellDef="let element; let i=index;">{{element.nameSpace}} </td>
+                    </ng-container>
+
+                    <!-- centralAuthAccess column -->
+                    <ng-container matColumnDef="centralAuthAccess">
+                        <th id="col2" mat-header-cell *matHeaderCellDef> Central Auth Access </th>
+                        <td (click)="openAddApplicationModal(element)" id="rowheader_t1_{{i}}-centralAuthAccess" 
+                            mat-cell *matCellDef="let element; let i=index;">{{(element.isCentralAuth) ? 'yes' : 'no'}} </td>
+                    </ng-container>
+
+                    <!-- Delete Column -->
+                    <ng-container matColumnDef="delete">
+                        <th id="col4" mat-header-cell *matHeaderCellDef> Delete </th>
+                        <td id="rowheader_t1_{{i}}" mat-cell *matCellDef="let element; let i=index;">
+                        <span class="icon-trash" id="{{i}}-button-portal-admin-remove" (click)="deleteApplication(element)">
+                            <i class="icon ion-md-trash"></i>
+                        </span>
+                        </td>
+                    </ng-container>
+                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                </table>
+                <mat-paginator [pageSizeOptions]="[10, 20]" showFirstLastButtons></mat-paginator>
+              </div>
+          </div>
+      </div>
+  </div>

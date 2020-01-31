@@ -102,7 +102,7 @@ export const environment = {
     "getAllWebAnalytics": "portalApi/getAllWebAnalytics",
     "modifyWebAnalyticsReport": "portalApi/modifyWebAnalyticsReport",
     "appsFullList": "portalApi/appsFullList",
-    "ecompTitle": "portalApi/ecompTitle",
+    "portalTitle": "portalApi/ecompTitle",
     "getRecommendations": "portalApi/getRecommendations",
     "centralizedApps": "portalApi/centralizedApps",
     "getSchedulerId": "portalApi/post_create_new_vnf_change",
@@ -114,7 +114,16 @@ export const environment = {
     "checkIfUserIsSuperAdmin": "portalApi/checkIfUserIsSuperAdmin",
     "getCurrentLang": "auxapi/languageSetting/user/:loginId",
     "getLanguages": "auxapi/language",
-    "updateLang": "auxapi/languageSetting/user/:loginId"
+    "updateLang": "auxapi/languageSetting/user/:loginId",
+    "linkQ": "",
+    "linkPic": "",
+    "brandName": "ONAP Portal",
+    "brandLogoImagePath": "",
+    "footerLink": "",
+    "footerLinkText": "",
+    "footerMessage": "",
+    "footerLogoImagePath": "",
+    "footerLogoText": ""
 },
 "cookieDomain": "att.com"
 };

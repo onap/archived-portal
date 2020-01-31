@@ -35,12 +35,12 @@
             ],
             "scripts": [
               "node_modules/jquery/dist/jquery.min.js",
-              "./node_modules/hammerjs/hammer.min.js",
- "node_modules/jqtree/tree.jquery.js",
+              "node_modules/hammerjs/hammer.min.js",
+              "node_modules/jqtree/tree.jquery.js",
               "node_modules/systemjs/dist/s.js",
               "node_modules/systemjs/dist/extras/named-register.js",
               "node_modules/systemjs/dist/extras/amd.js",
-			  "src/app/shared/utils/utils.js"
+              "src/app/shared/utils/utils.js"
             ]
           },
           "configurations": {

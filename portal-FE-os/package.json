@@ -3,7 +3,7 @@
   "version": "7.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve --host www.portal.openecomp.org --port 8989 --open",
+    "start": "ng serve --host www.portal.onap.org --port 8989 --open",
     "build": "ng build --prod --aot=false --build-optimizer=false",
     "test": "ng test",
     "lint": "ng lint",
@@ -26,7 +26,6 @@
     "@types/jquery": "^3.3.31",
     "@types/underscore": "^1.9.3",
     "@types/uuid": "^3.4.5",
-    "abs-components-bc": "file:abs-components-bc-1.0.7.tgz",
     "angular-gridster2": "^8.0.0",
     "angular2-uuid": "^1.1.1",
     "classlist.js": "^1.1.20150312",
