@@ -1,0 +1,117 @@
+<!--
+  ============LICENSE_START==========================================
+  ONAP Portal
+  ===================================================================
+  Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+  ===================================================================
+ 
+  Unless otherwise specified, all software contained herein is licensed
+  under the Apache License, Version 2.0 (the "License");
+  you may not use this software except in compliance with the License.
+  You may obtain a copy of the License at
+ 
+              http://www.apache.org/licenses/LICENSE-2.0
+ 
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+ 
+  Unless otherwise specified, all documentation contained herein is licensed
+  under the Creative Commons License, Attribution 4.0 Intl. (the "License");
+  you may not use this documentation except in compliance with the License.
+  You may obtain a copy of the License at
+ 
+              https://creativecommons.org/licenses/by/4.0/
+ 
+  Unless required by applicable law or agreed to in writing, documentation
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+ 
+  ============LICENSE_END============================================
+ 
+  
+  -->
+<div class="container">
+    <!--Modal Headers-->
+    <div class="modal-header">
+      <h4 class="modal-title">Web Analytics Report Details</h4>
+      <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('Cross')">
+          <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+  
+    <!--Modal Body goes here-->
+		<div class="modal-body">
+				<div class="app-properties-main">
+            <div [hidden]="isEditMode" style="width: 75%;">
+              <!--<div id='ecomp-small-spinner' class="ecomp-small-spinner"  *ngIf="isAllApplications"></div>-->
+              <div *ngIf="isAllApplications">
+                <span runat="server" ID="required" style="color: Red;"
+                  visible="false">*</span>
+                <mat-form-field class="web-analytics-applications-select">
+                    <mat-label> Application Name </mat-label>
+                    <mat-select name="web-analytics-application-select" id="application" 
+                      name="applicationName" [(ngModel)]="userTableAppReport.appName" [(value)]="selected">
+                      <mat-option *ngFor="let d of allApplications" [value]="d" >{{d.appName}}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+              </div>
+              <div id="web-analytics-message-required"
+                *ngIf="!userTableAppReport.appName && userTableAppReport.appName === ''">
+                <small class="mandatory-categories"
+                  style="color: Red; font-size: 11px;">Application Name is Required</small>
+              </div>
+            </div>
+
+            <div class="property-label" *ngIf="isEditMode">
+              <div class="property-label">
+                <span runat="server" ID="required" style="color: Red;" visible="false"> *</span>Application Name :
+              </div>
+              <input id="input-Application-name" type="text" ddh-reset
+                [(ngModel)]="userTableAppReport.appName" style="width: 75%;"
+                name="appId" [disabled]="isEditMode" />
+              <div id="web-analytics-message-required"
+                ng-show="(userTableAppReport.appName && (userTableAppReport.appName.length == 0 ||! userTableAppReport.appName))">
+                <small class="mandatory-categories" style="color: Red; font-size: 11px;">Application ID is  Required</small>
+              </div>
+            </div>
+           
+            <div class="property-label">
+              <div class="property-label">
+                <span runat="server" ID="required" style="color: Red;" visible="false"> *</span>Report Name :
+              </div>
+              <input id="input-report-name" type="text" ddh-reset  [(ngModel)]="userTableAppReport.reportName" style="width: 75%;" />
+              <div id="web-analytics-message-required"
+                [hidden]="(userTableAppReport.reportName && (userTableAppReport.reportName|| userTableAppReport.reportName.length == 0))">
+                <small class="mandatory-categories"
+                  style="color: Red; font-size: 11px;">Report Name is  Required</small>
+              </div>
+            </div>
+           
+            <div class="property-label">
+              <div class="property-label">
+                <span runat="server" ID="required" style="color: Red;"  visible="false"> *</span>Report URL :
+              </div>
+              <input id="input-report-url" type="text" ddh-reset  [(ngModel)]="userTableAppReport.reportSrc" style="width: 75%;" />
+              <div id="web-analytics-message-required"
+                [hidden]="(userTableAppReport.reportSrc && (userTableAppReport.reportSrc || userTableAppReport.reportSrc.length == 0))">
+                <small class="mandatory-categories" style="color: Red; font-size: 11px;">Report URL is Required</small>
+              </div>
+            </div>
+        </div>
+      </div>
+      
+      <!--Modal Footer goes Here-->
+			<div class="modal-footer">
+          <button type="submit" class="btn btn-primary" 
+              [disabled]="(userTableAppReport.appName && userTableAppReport.appName === '')||(userTableAppReport.reportName && (!userTableAppReport.reportName
+              ||userTableAppReport.reportName.length == 0))||(userTableAppReport.reportSrc && (userTableAppReport.reportSrc.length == 0 
+              || !userTableAppReport.reportSrc))"(click)="saveChanges()">Save</button> &nbsp;
+
+          <button type="button" class="btn btn-primary" (click)="activeModal.close('Close')">Cancel</button>
+			</div>
+</div>
