@@ -45,7 +45,6 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HeaderInterceptor } from './shared/interceptors/header-interceptor';
 import { CookieService } from 'ngx-cookie-service';
-import { FooterComponent } from './footer/footer.component';
 
 
 @NgModule({
@@ -56,7 +55,7 @@ import { FooterComponent } from './footer/footer.component';
         HttpClientModule,
         AppRoutingModule
     ],
-    declarations: [AppComponent, FooterComponent],
+    declarations: [AppComponent],
     providers: [CookieService,{
         provide: HTTP_INTERCEPTORS,
         useClass: HeaderInterceptor,

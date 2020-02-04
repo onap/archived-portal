@@ -38,7 +38,7 @@
  
 import { Component, OnInit } from '@angular/core';
 import { ManifestService } from 'src/app/shared/services';
-
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-footer',
@@ -48,11 +48,32 @@ import { ManifestService } from 'src/app/shared/services';
 export class FooterComponent implements OnInit {
 
   buildVersion: string;
+  api = environment.api;
+  brandName: string;
+  footerLink: string;
+  footerLinkText: string;
+  footerMessage: string;
+  footerLogoImagePath: string;
+  footerLogoText: string;
+
   constructor(private manifest: ManifestService) { }
 
   ngOnInit() {
     this.buildVersion =  '';
     this.manifestDetails();
+
+    this.brandName = "ONAP Portal";
+    if(this.api.brandName != ''){
+        this.brandName = this.api.brandName;
+    }
+    this.footerLink = this.api.footerLink;
+    this.footerLinkText = this.api.footerLinkText;
+    this.footerMessage= this.api.footerMessage;
+    this.footerLogoImagePath = "assets/images/global.logo"
+    if(this.api.footerLogoImagePath !=''){
+      this.footerLogoImagePath= this.api.footerLogoImagePath;
+    }
+    this.footerLogoText= this.api.footerLogoText;
   }
 
   manifestDetails() {

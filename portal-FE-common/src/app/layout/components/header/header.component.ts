@@ -39,6 +39,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { UserProfileService, MenusService } from 'src/app/shared/services';
 import { CookieService } from 'ngx-cookie-service';
+import { environment } from 'src/environments/environment';
 
 @Component({
     selector: 'app-header',
@@ -55,6 +56,9 @@ export class HeaderComponent implements OnInit {
     userapproles: any[];
     displayUserAppRoles: any;
     isLoading: boolean;
+    api = environment.api;
+    brandName: string;
+    brandLogoImagePath: string;
 
     constructor(public router: Router, private userProfileService: UserProfileService, private menusService: MenusService, private cookieService: CookieService) {
 
@@ -72,6 +76,16 @@ export class HeaderComponent implements OnInit {
     ngOnInit() {
         this.pushRightClass = 'push-right';
         this.getUserInformation();
+        
+        this.brandName = "ONAP Portal";
+        if(this.api.brandName != ''){
+            this.brandName = this.api.brandName;
+         }
+
+        this.brandLogoImagePath = "assets/images/global.logo";
+        if(this.api.brandLogoImagePath != ''){
+           this.brandLogoImagePath = this.api.brandLogoImagePath;
+        }
     }
 
     getUserInformation() {

@@ -38,7 +38,7 @@
 
 <div style="bottom: tabBottom; display: flex; height: 100%; overflow: hidden">
     <nav class="navbar navbar-expand-lg fixed-top">
-        <a class="navbar-brand" href=""> <img src="assets/images/global.logo" style="width:14%"/> &nbsp; ONAP Portal</a>
+        <a class="navbar-brand" href=""> <img src="{{brandLogoImagePath}}" style="width:14%"/> &nbsp; {{brandName}}</a>
         <div class="header-menu-display">
             <app-header-menu></app-header-menu>
         </div>
@@ -104,7 +104,7 @@
     <a (click)="getUserApplicationRoles()" href="javascript:void(0);"><span><i class="icon ion-md-add-circle-outline"
                 [ngClass]="{true: 'icon ion-md-add-circle-outline', false: 'icon ion-md-remove-circle-outline'}[ !displayUserAppRoles]"></i>
             {{ 'Applications and Roles' }} </span></a>
-    <span class="onap-spinner" *ngIf="isLoading"></span>
+    <span class="ecomp-spinner" *ngIf="isLoading"></span>
 </li> <br>
 <div class="custom-display-item approles" [hidden]="!displayUserAppRoles">
     <div *ngFor="let ua of userapproles ; index as i">
