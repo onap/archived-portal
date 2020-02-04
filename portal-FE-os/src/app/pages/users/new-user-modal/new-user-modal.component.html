@@ -1,0 +1,125 @@
+<!--
+  ============LICENSE_START==========================================
+  ONAP Portal
+  ===================================================================
+  Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+  ===================================================================
+
+  Unless otherwise specified, all software contained herein is licensed
+  under the Apache License, Version 2.0 (the "License");
+  you may not use this software except in compliance with the License.
+  You may obtain a copy of the License at
+
+              http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+
+  Unless otherwise specified, all documentation contained herein is licensed
+  under the Creative Commons License, Attribution 4.0 Intl. (the "License");
+  you may not use this documentation except in compliance with the License.
+  You may obtain a copy of the License at
+
+              https://creativecommons.org/licenses/by/4.0/
+
+  Unless required by applicable law or agreed to in writing, documentation
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+
+  ============LICENSE_END============================================
+
+
+  -->
+<div class="container" *ngIf="dialogState===1">
+  <div class="modal-header">
+    <h4 class="modal-title">{{title}}</h4>
+    <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('Cross')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body" *ngIf="!addUserFlag">
+    <app-search-users [searchTitle]="searchTitleText" [isSystemUser]="isSystemUserCheck" [placeHolder]="placeholderText"
+      (passBackSelectedUser)='changeSelectedUser($event)' (userNotFoundFlag)='addNewUser($event)'></app-search-users>
+  </div>
+  <div *ngIf="addUserFlag">
+    <app-user-details-form></app-user-details-form>
+  </div>
+  <div class="modal-footer" *ngIf="!addUserFlag">
+    <button type="submit" class="btn btn-primary" [disabled]='!changedSelectedUser && !isSystemUserCheck'
+      (click)="getUserAppsRoles()">Next</button> &nbsp;
+    <button type="button" class="btn btn-primary" (click)="activeModal.close('Close')">Close</button>
+  </div>
+</div>
+<div class="container" *ngIf="dialogState===2">
+  <div class="modal-header">
+    <h4 class="modal-title">{{userTitle}}</h4>
+    <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('Cross')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body adminApps">
+    <!-- User App Roles List -->
+    <span class="ecomp-spinner" *ngIf="adminApps.length === 0"></span>
+    <div class="container adminApps" *ngIf="adminApps.length > 0">
+      Access and roles:
+      <table mat-table [dataSource]="userAdminAppsSource">
+        <!-- Search Result Column-->
+        <ng-container matColumnDef="applications">
+          <th id="rowheader-result" mat-header-cell *matHeaderCellDef> Application
+          <td id="table-data-{{i}}" mat-cell *matCellDef="let element; let i = index;">{{element.name}}
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="roles">
+          <th id="rowheader-result" mat-header-cell *matHeaderCellDef> Roles
+          <td id="rowheader_t1_{{i}}-roles" mat-cell *matCellDef="let element; let i=index;">
+            <mat-form-field
+              [hidden]="element.isError || element.showSpinner || element.noChanges || element.isUpdating || element.isDoneUpdating || element.isErrorUpdating">
+              <mat-select (selectionChange)="roleSelectChange(element)"
+                [(ngModel)]="modelSelectedRoles" multiple>
+                <mat-option *ngFor="let appRole of element.appRoles; let j = index;" [value]="appRole">
+                  {{appRole.roleName}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+            <span id="app-item-no-contact" class="app-item-right-error"
+              [hidden]="!element.isError">{{element.errorMessage}}</span>
+            <span id="app-item-contacting" class="app-item-right-contacting" [hidden]="!element.showSpinner">Contacting
+              application... <span class="ecomp-small-spinner" *ngIf="showSpinner"></span></span>
+            <span id="app-item-no-changes" class="app-item-right-contacting" [hidden]="!element.noChanges">No
+              changes</span>
+            <span id="app-item-no-updating" class="app-item-right-contacting" [hidden]="!element.isUpdating">Updating
+              application... <span class="ecomp-small-spinner" *ngIf="showSpinner"></span></span>
+            <span id="app-item-done-updating" class="app-item-right-contacting"
+              [hidden]="!element.isDoneUpdating">Finished updating application</span>
+            <span id="app-item-cannot-update" class="app-item-right-error" [hidden]="!element.isErrorUpdating">Could not
+              update application... </span>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="delete">
+          <th id="rowheader-result" mat-header-cell *matHeaderCellDef> Delete
+          <td id="table-data-{{i}}" mat-cell *matCellDef="let element; let i = index;">
+            <span class="icon-trash" id="app-item-delete-{{i}}" [hidden]="element.showSpinner || element.isError"
+              (click)="deleteApp(element)">
+              <i class="icon ion-md-trash"></i>
+            </span>
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+        <tr [hidden]="row.isDeleted" mat-row id="table-row-{{i}}"
+          *matRowDef="let row; columns: displayedColumns; let i = index;"></tr>
+      </table>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button [hidden]="disableBack" type="submit" class="btn btn-primary" [disabled]='!changedSelectedUser'
+      (click)="navigateBack()">Back</button> &nbsp;
+    <button type="submit" class="btn btn-primary" [disabled]='!anyChanges' (click)="updateUserAppsRoles()">Save</button>
+    &nbsp;
+    <button type="button" class="btn btn-primary" (click)="activeModal.close('Close')">Close</button>
+  </div>
+</div>

@@ -1,0 +1,118 @@
+<div class="modal-body">
+  <form [formGroup]="addNewUserForm">
+    <div class="modal-body">
+      <div class="new-users-details-modal">
+        <div class="new-users-main">
+  
+          <!-- First Name -->
+          <div class="new-users-container">
+            <div class="form-group">
+              <div>*First Name</div>
+              <input class="form-control" formControlName="firstName" type="text"
+                [ngClass]="{ 'is-invalid': submitted && formValue.firstName.errors }" />
+              <div *ngIf="submitted && formValue.firstName.errors" class="invalid-feedback">
+                <div *ngIf="formValue.firstName.errors.required">
+                  First Name is required
+                </div>
+              </div>
+            </div>
+          </div>
+  
+          <!-- Middle Name -->
+          <div class="new-users-container">
+            <div class="form-group">
+              <div>Middle Name</div>
+              <input class="form-control" formControlName="middleInitial" type="text" />
+            </div>
+          </div>
+  
+          <!-- Last Name -->
+          <div class="new-users-container">
+            <div class="form-group">
+              <div>*Last Name</div>
+              <input class="form-control" formControlName="lastName" type="text"
+                [ngClass]="{ 'is-invalid': submitted && formValue.lastName.errors }" />
+              <div *ngIf="submitted && formValue.lastName.errors" class="invalid-feedback">
+                <div *ngIf="formValue.lastName.errors.required">
+                  Last Name is required
+                </div>
+              </div>
+            </div>
+          </div>
+  
+          <!-- Email Address ID -->
+          <div class="new-users-container">
+            <div class="form-group">
+              <div>*Email Address ID</div>
+              <input class="form-control" formControlName="email" type="text"
+                [ngClass]="{ 'is-invalid': submitted && formValue.email.errors }" />
+              <div *ngIf="submitted && formValue.email.errors" class="invalid-feedback">
+                <div *ngIf="formValue.email.errors.required">
+                  Email Address is required
+                </div>
+                <div *ngIf="formValue.email.errors.email">
+                  Email Address is invalid
+                </div>
+              </div>
+            </div>
+          </div>
+  
+          <!-- Login ID -->
+          <div class="new-users-container">
+            <div class="form-group">
+              <div>*Login ID</div>
+              <input class="form-control" formControlName="loginId" type="text"
+                [ngClass]="{ 'is-invalid': submitted && formValue.loginId.errors }" />
+              <div *ngIf="submitted && formValue.loginId.errors" class="invalid-feedback">
+                <div *ngIf="formValue.loginId.errors.required">
+                  Login ID is required
+                </div>
+              </div>
+            </div>
+          </div>
+  
+          <!-- Login Password -->
+          <div class="new-users-container">
+            <div class="form-group">
+              <div>*Login Password</div>
+              <input class="form-control" formControlName="loginPwd" type="password"
+                [ngClass]="{ 'is-invalid': submitted && formValue.loginPwd.errors }" />
+              <div *ngIf="submitted && formValue.loginPwd.errors" class="invalid-feedback">
+                <div *ngIf="formValue.loginPwd.errors.required">
+                  Password is required
+                </div>
+                <div *ngIf="formValue.loginPwd.errors.minlength">
+                  Password must be at least 8 characters
+                </div>
+              </div>
+            </div>
+          </div>
+  
+          <!-- Confirm Login Password -->
+          <div class="new-users-container">
+            <div class="form-group">
+              <div>*Confirm Password</div>
+              <input class="form-control" formControlName="confirmPassword" type="password"
+                [ngClass]="{ 'is-invalid': submitted && formValue.confirmPassword.errors }"
+                appEqualValidator="password" />
+              <div *ngIf="submitted && formValue.confirmPassword.errors" class="invalid-feedback">
+                <div *ngIf="formValue.confirmPassword.errors.required">
+                  Confirm Login password
+                </div>
+                <div *ngIf="formValue.confirmPassword.errors.mustMatch">
+                  Password Must Match
+                </div>
+              </div>
+            </div>
+          </div>
+  
+  
+        </div>
+      </div>
+    </div>
+  </form>  
+</div>
+<div class="modal-footer">
+  <button type="submit" class="btn btn-primary" (click)="addUser()" [disabled]="addNewUserForm.invalid">Next</button> &nbsp;
+    <button type="button" class="btn btn-primary" aria-label="Close" (click)="activeModal.dismiss('Cross')">Close</button>
+</div>

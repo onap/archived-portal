@@ -119,9 +119,15 @@ export const environment = {
     "getCurrentLang": "http://www.portal.onap.org:9080/portal-be-os/auxapi/languageSetting/user/:loginId",
     "getLanguages": "http://www.portal.onap.org:9080/portal-be-os/auxapi/language",
     "updateLang": "http://www.portal.onap.org:9080/portal-be-os/auxapi/languageSetting/user/:loginId",
-	"linkQ": "",
-	"linkPic": ""
-
+    "linkQ": "",
+    "linkPic": "",
+    "brandName": "ONAP Portal",
+    "brandLogoImagePath": "",
+    "footerLink": "",
+    "footerLinkText": "",
+    "footerMessage": "",
+    "footerLogoImagePath": "",
+    "footerLogoText": ""
   },
   "cookieDomain": "att.com"
 };
