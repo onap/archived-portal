@@ -1,0 +1,109 @@
+<!--
+  ============LICENSE_START==========================================
+  ONAP Portal
+  ===================================================================
+  Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+  ===================================================================
+ 
+  Unless otherwise specified, all software contained herein is licensed
+  under the Apache License, Version 2.0 (the "License");
+  you may not use this software except in compliance with the License.
+  You may obtain a copy of the License at
+ 
+              http://www.apache.org/licenses/LICENSE-2.0
+ 
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+ 
+  Unless otherwise specified, all documentation contained herein is licensed
+  under the Creative Commons License, Attribution 4.0 Intl. (the "License");
+  you may not use this documentation except in compliance with the License.
+  You may obtain a copy of the License at
+ 
+              https://creativecommons.org/licenses/by/4.0/
+ 
+  Unless required by applicable law or agreed to in writing, documentation
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+ 
+  ============LICENSE_END============================================
+ 
+  
+  -->
+<div class="search-div" (clickOutside)="clickOutSide($event)">
+  <div class="notification-div">
+    <div class="form-field form-field__small">
+      <div class="search-input">
+        <input id="mainSearchText" style="border-radius:0.25rem;" type="text" (keypress)="searchDialogToggle($event)"
+          placeholder="What are you looking for?" class="form-field form-field__small" />
+      </div>
+      <span class="icon-search-span"> <i class="icon-search">&nbsp;</i>
+      </span>
+
+    </div>
+  </div>  
+</div>
+<div *ngIf="searchResDialog" class="search-res-dialog">
+  <div id="reg-header-snippet">
+
+    <div tabindex="0"  id="reg-searchPop-id">
+      <div id="contentVertical" att-scrollbar="y">
+        <ul class="searchUl">
+          <li><a class="icon-tiles"></a> <a id="search-app-title" (click)="goToUrl(item)"
+              class="searchLiHeader">Applications:</a>
+          </li>
+          <li *ngFor="let item of items?.application"><a
+              id="search-app-item-{{item.name.split(' ').join('-')}}-{{$index}}" (click)="goToUrl(item)"
+              class="searchLiItems">{{item.name}}</a>
+          </li>
+        </ul>
+
+        <ul class="searchUl">
+          <li><a class="icon-tiles-small"></a> <a id="seach-functional-menu-title" (click)="goToUrl(item)"
+              class="searchLiHeader">Functional Menus:</a></li>
+          <li *ngFor="let item of items?.menu"><a
+              id="search-functional-menu-item-{{item.name.split(' ').join('-')}}-{{$index}}" (click)="goToUrl(item)"
+              class="searchLiItems">{{item.name}}</a>
+          </li>
+        </ul>
+
+
+        <ul class="searchUl">
+          <li><a class="full-linear-icon-person search-li"></a> <a id="search-user-title" (click)="goToUrl(item)"
+              class="searchLiHeader">Users:</a></li>
+          <li *ngFor="let item of items?.user"><a id="search-user-item-{{item.name.split(' ').join('-')}}-{{$index}}"
+              href="qto://talk/{{item.target}}" class="searchLiItems">{{item.name}}</a>
+
+          </li>
+        </ul>
+
+        <ul class="searchUl">
+          <li><a class="full-linear-icon-person search-li"></a> <a id="search-widgets-title" (click)="goToUrl(item)"
+              class="searchLiHeader">Widgets:</a></li>
+          <li *ngFor="let item of items?.widget"><a
+              id="search-widgets-item-{{item.name.split(' ').join('-')}}-{{$index}}" href="widgetCatalog"
+              class="searchLiHeader">{{item.name}}</a></li>
+        </ul>
+
+        <ul class="searchUl">
+          <li><a class="full-linear-icon-internet search-li"></a> <a id="search-intranet"
+              (click)="goToUrl(item, 'intra')" class="searchLiHeader" style="cursor: pointer;">Click to search
+              Intranet <span class="icon-arrow-right"></span>
+            </a></li>
+        </ul>
+
+        <ul class="searchUl">
+          <li><a class="full-linear-icon-internet search-li"></a> <a id="search-extranet"
+              (click)="goToUrl(item, 'extra')" class="searchLiHeader" style="cursor: pointer;">Click to search
+              Extranet <span class="icon-arrow-right"></span></a></li>
+        </ul>
+
+      </div>
+    </div>
+  </div>
+</div>
