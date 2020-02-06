@@ -125,7 +125,10 @@ export const environment = {
     "footerLogoImagePath": "",
     "footerLogoText": "",
     "intraSearcLink": "",
-    "extraSpecSearcLink": "https://wiki.onap.org/dosearchsite.action?cql=siteSearch+~+searchStringPlaceHolder&queryString=searchStringPlaceHolder"
+    "extraSearcLink": "https://wiki.onap.org/dosearchsite.action?cql=siteSearch+~+searchStringPlaceHolder&queryString=searchStringPlaceHolder",
+    "getAccessUrl": "",
+    "getAccessName":"",
+    "getAccessInfo":""
 },
 "cookieDomain": "att.com"
 };
