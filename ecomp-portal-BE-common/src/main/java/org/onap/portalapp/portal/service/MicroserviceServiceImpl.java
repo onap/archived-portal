@@ -136,7 +136,6 @@ public class MicroserviceServiceImpl implements MicroserviceService {
 			dataAccessService.executeNamedQuery("deleteMicroservice", params, null);
 
 		} catch (Exception e) {
-			e.printStackTrace();
 			logger.error(EELFLoggerDelegate.errorLogger, "deleteMicroservice failed", e);
 			throw e;
 		}
