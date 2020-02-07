@@ -35,96 +35,89 @@
  
   
   -->
+<div id="container" style="width: 100%;" (clickOutside)="clickOutSide($event)">
+  <!-- First Level menu -->
+  <div id="megaMenu-{{item.text.split(' ').join('-')}}"
+    *ngFor="let item of megaMenuDataObject;let megaMenuIndex = index" (mousedown)="loadFirstLevel(megaMenuIndex)"
+    role="presentation" class="header-menu-item-div"><a href="javascript:void(0);" id="parentmenu-tabs" role="menuitem"
+      class="header-menu-item-link">{{item.text}}<b class="caret"></b><span class="sr-only"></span></a>
 
-<div style="bottom: tabBottom; display: flex; height: 100%; overflow: hidden">
-    <nav class="navbar navbar-expand-lg fixed-top">
-        <a class="navbar-brand" href=""> <img src="assets/images/global.logo" style="width:14%"/> &nbsp; ONAP Portal</a>
-        <div class="header-menu-display">
-            <app-header-menu></app-header-menu>
-        </div>
-        <button class="navbar-toggler" type="button" (click)="toggleSidebar()">
-            <i class="icon ion-md-menu" style="color:white;"></i>
-        </button>
-        <div class="collapse navbar-collapse">
-            <ul class="navbar-nav ml-auto">
-                <app-global-search></app-global-search>
-                <li class="nav-item dropdown" ngbDropdown>
-                    <a href="javascript:void(0)" class="nav-link" ngbDropdownToggle>
-                        <i class="icon ion-md-bulb"></i> <b class="caret"></b><span class="sr-only"></span>
-                    </a>
-                    <div class="custom-dropdown-item" ngbDropdownMenu>
+    <div class="header-secondlevel-menu" *ngIf="item.active_yn=='Y' && hideMenus[megaMenuIndex]">
+      <ul class="header-secondary" role="menu">
+        <!-- Second Level menu -->
+        <li class="header-menu-item-li" id="subItem-{{i.text.split(' ').join('-')}}"
+          *ngFor="let i of item.children;let secondLevelIndex = index"
+          (mousemove)="hideThirdLevelMenu(megaMenuIndex,secondLevelIndex)" role="presentation">
+          <!-- Favorites -->
 
-                <li class="dropdown-divider"></li>
-        </div>
+          <div *ngIf="i.text=='Favorites'">
+            <a href="javascript:void(0);" class="menu__item" role="menuitem">{{i.text}}</a>
+            <i id="favorite-star" data-size="large" class="icon-star favorites-icon-active"></i>
+            <div class="header-columns-div" *ngIf="hideSecondLevelMenus[megaMenuIndex][secondLevelIndex]">
+              <div class="header-tertiary-wrapper" id="header-favorites">
+                <ul class="header-tertiary" role="menu">
+                  <li role="presentation">
+                    <div *ngFor="let subItem of (favoritesMenuItems ? favoritesMenuItems : [])"
+                      id="favoritesMenuItems-{{subItem.text.split(' ').join('-')}}">
+                      <div class="fav-links">
+                        <i id="favorite-selector-favorites-list" class="icon-star favorites-icon-active"
+                          (click)="removeAsFavoriteItem($event, subItem.menuId)"
+                          (mousedown)="removeAsFavoriteItem($event, subItem.menuId)">
+                        </i> <a id="favorites-list" (click)="goToUrl(subItem)">{{subItem.text}}</a>
+                      </div>
+                    </div>
+
+                    <div id="favorites-empty" class="favorites-window-empty" *ngIf="emptyFavorites">
+                      <p id="p-no-favs-icon" class="no-fav-icon">
+                        <span class="icon-star"></span>
+                      </p>
+                      <p id="p-no-favs" class="largeText">{{'No
+                              Favorites'}}</p>
+                      <p id="p-no-favs-desc" class="normal">{{'Add your
+                              favorite items for quick access'}}.</p>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div> <!-- Support or Help -->
+          <div *ngIf="item.text=='Support' || item.text=='Help'" id="second-level-menus-help">
+            <a id="second-level-menus-{{i.text.split(' ').join('-')}}-help" href="javascript:void(0);"
+              (click)="goToUrl(i);auditLog(i,'Support')" class="menu__item" role="menuitem">{{i.text}}</a>
+          </div> <!-- Others -->
+          <div *ngIf="i.text!='Favorites' && (item.text!='Support' && item.text!='Help')">
+            <a href="javascript:void(0);" class="menu__item" role="menuitem">{{i.text}}</a>
+            <div class="header-thirdlevel-menu" *ngIf="hideSecondLevelMenus[megaMenuIndex][secondLevelIndex]">
+              <ul class="third-level-menu" role="menu" id="third-level-menus">
+                <!-- Third Level menu -->
+
+                <li *ngFor="let link of i.children" role="presentation"><i id="level3-star-inactive-{{link.menuId}}"
+                    class="icon-star favorites-icon-inactive" data-size="large"
+                    (mousedown)="setAsFavoriteItem($event, link.menuId)"
+                    *ngIf="link.url.length > 1 && isUrlFavorite(link.menuId)==false">
+                  </i> <i id="level3-star-active-{{link.menuId}}"
+                    *ngIf="link.url.length > 1 && isUrlFavorite(link.menuId)" class="icon-star favorites-icon-active"
+                    data-size="large" (mousedown)="removeAsFavoriteItem($event, link.menuId)">
+                  </i> <a class="third-level-title"
+                    (mousedown)="goToUrl(link);auditLog(link,'application')">{{link.text}}</a>
+                  <!-- Fourth Level menu -->
+                  <div *ngFor="let title of link.children">
+                    <i id="level4-star-inactive-{{title.menuId}}" class="icon-star favorites-icon-inactive"
+                      (mousedown)="setAsFavoriteItem($event, title.menuId)"
+                      *ngIf="title.url.length > 1 && isUrlFavorite(title.menuId)==false">
+                    </i> <i id="level4-star-active-{{title.menuId}}" class="icon-star favorites-icon-active"
+                      (mousedown)="removeAsFavoriteItem($event, title.menuId)"
+                      *ngIf="title.url.length > 1 && isUrlFavorite(title.menuId)">
+                    </i> <a href="javascript:void(0);" class="header-tertiaryitem"
+                      [ngClass]="{'disabled': title.disabled}" role="menuitem"
+                      (mousedown)="goToUrl(title);auditLog(title,'functional')">{{title.text}}</a>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
         </li>
-        <li class="nav-item dropdown" ngbDropdown>
-            <a href="javascript:void(0)" class="nav-link" ngbDropdownToggle>
-                <i class="icon ion-md-flag"></i> <b class="caret"></b><span class="sr-only"></span>
-            </a>
-            <div class="dropdown-menu-right" ngbDropdownMenu>
-                <a style="margin-left: 8%;" id="application-role" [routerLink]="['/recentNotifications']"
-                    href="javascript:void(0);">
-                    {{ 'View All Recent Notifications' }} </a>
-        <li class="dropdown-divider"></li>
-</div>
-</li>
-<li class="nav-item dropdown" ngbDropdown>
-    <a href="javascript:void(0)" class="nav-link" ngbDropdownToggle>
-        <i class="icon ion-md-person"></i> {{firstName}} <b class="caret"></b>
-    </a>
-    <div class="dropdown-menu-right" ngbDropdownMenu>
-<li class="dropdown-item" style="font-weight: lighter">
-    {{firstName}}, {{lastName}}
-</li>
-<li class="dropdown-item">
-    <span class="dropdown-item-name"> {{ 'Email'}}: </span>
-    <div>
-        <span class="dropdown-item-value">
-            {{loginSnippetEmail}}
-        </span>
+      </ul>
     </div>
-</li>
-<li class="dropdown-item">
-    <span class="dropdown-item-name"> {{ 'User Id' }}: </span>
-    <div>
-        <span class="dropdown-item-value">
-            {{loginSnippetUserid}}
-        </span>
-    </div>
-</li>
-<li class="dropdown-item">
-    <span class="dropdown-item-name"> {{ 'Last login' }}: </span>
-    <div>
-        <span class="dropdown-item-value">
-            {{lastLogin | date:'medium'}}
-        </span>
-    </div>
-</li>
-<li class="custom-display-item">
-    <a (click)="getUserApplicationRoles()" href="javascript:void(0);"><span><i class="icon ion-md-add-circle-outline"
-                [ngClass]="{true: 'icon ion-md-add-circle-outline', false: 'icon ion-md-remove-circle-outline'}[ !displayUserAppRoles]"></i>
-            {{ 'Applications and Roles' }} </span></a>
-    <span class="onap-spinner" *ngIf="isLoading"></span>
-</li> <br>
-<div class="custom-display-item approles" [hidden]="!displayUserAppRoles">
-    <div *ngFor="let ua of userapproles ; index as i">
-        <div class="reg-userApp-value">
-            <span class="dropdown-item-name">{{ua.App}}:</span>
-        </div>
-        <div *ngFor="let role of ua.Roles ; index as i" class="reg-userAppRoles-value">
-            <span *ngIf="role.indexOf('global_')!=-1" id="required" style="color: Red;" visible="false">
-                *</span> <span class="dropdown-item-value">{{role}}</span>
-        </div>
-        <br>
-    </div>
-</div>
-<hr>
-<div id="reg-logout-div" >
-<button type="button" class="btn btn-primary"  (click)="allAppsLogout()">
-    <i class="icon ion-md-log-out"></i> {{ 'Log Out' }} </button></div>
-</div>
-</li>
-</ul>
-</div>
-</nav>
+  </div>
 </div>

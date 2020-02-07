@@ -55,6 +55,7 @@ import org.onap.portalapp.portal.domain.CentralizedApp;
 import org.onap.portalapp.portal.domain.DisplayText;
 import org.onap.portalapp.portal.domain.EPUser;
 import org.onap.portalapp.portal.logging.aop.EPMetricsLog;
+import org.onap.portalapp.portal.utils.EPCommonSystemProperties;
 import org.onap.portalsdk.core.domain.MenuData;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.onap.portalsdk.core.service.DataAccessService;
@@ -73,17 +74,15 @@ public class EPLeftMenuServiceImpl implements EPLeftMenuService {
 
 	private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(EPLeftMenuServiceImpl.class);
 
-	
 	@Autowired
 	private ExternalAccessRolesService externalAccessRolesService;
 	@Autowired
 	private DataAccessService dataAccessService;
-	
+
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.onap.portalapp.portal.service.EPLeftMenuService#getLeftMenuItems
+	 * @see org.onap.portalapp.portal.service.EPLeftMenuService#getLeftMenuItems
 	 * (java.util.Set)
 	 */
 	@Override
@@ -91,8 +90,8 @@ public class EPLeftMenuServiceImpl implements EPLeftMenuService {
 		final Map<String, JSONObject> defaultNavMap = new LinkedHashMap<String, JSONObject>();
 		resetNavMap(defaultNavMap);
 		loadDefaultNavMap(defaultNavMap);
-		loadNavMapByUserAdminRole(defaultNavMap,user);
-		loadNavMapByRole(defaultNavMap, fullMenuSet , user);
+		loadNavMapByUserAdminRole(defaultNavMap, user);
+		loadNavMapByRole(defaultNavMap, fullMenuSet, user);
 		return convertToSideBarModel(defaultNavMap);
 	}
 
@@ -110,7 +109,7 @@ public class EPLeftMenuServiceImpl implements EPLeftMenuService {
 	 * @param defaultNavMap
 	 * @param fullMenuSet
 	 */
-	private void loadNavMapByRole(Map<String, JSONObject> defaultNavMap, Set<MenuData> fullMenuSet , EPUser user) {
+	private void loadNavMapByRole(Map<String, JSONObject> defaultNavMap, Set<MenuData> fullMenuSet, EPUser user) {
 
 		class SortOrderComparator implements Comparator<MenuData> {
 			@Override
@@ -119,10 +118,10 @@ public class EPLeftMenuServiceImpl implements EPLeftMenuService {
 			}
 		}
 
-		//mulitilanguage impl
+		// mulitilanguage impl
 		String loginId = user.getLoginId();
 		HashMap loginParams = new HashMap();
-		loginParams.put("login_id",loginId);
+		loginParams.put("login_id", loginId);
 		List<EPUser> epUsers = dataAccessService.executeNamedQuery("getEPUserByLoginId", loginParams, new HashMap());
 		Integer languageId = 1;
 		for (EPUser epUser : epUsers) {
@@ -130,13 +129,13 @@ public class EPLeftMenuServiceImpl implements EPLeftMenuService {
 		}
 		Iterator<MenuData> iterator = fullMenuSet.iterator();
 		HashMap params = new HashMap();
-		params.put("language_id",languageId);
-		List<DisplayText> displayTexts = dataAccessService.executeNamedQuery("displayText",params,new HashMap());
+		params.put("language_id", languageId);
+		List<DisplayText> displayTexts = dataAccessService.executeNamedQuery("displayText", params, new HashMap());
 		while (iterator.hasNext()) {
 			MenuData menuData = iterator.next();
-			for (int index = 0;index<displayTexts.size();index++) {
+			for (int index = 0; index < displayTexts.size(); index++) {
 				DisplayText displayText = displayTexts.get(index);
-				if (menuData.getId()==displayText.getTextId()) {
+				if (menuData.getId() == displayText.getTextId()) {
 					menuData.setLabel(displayText.getLabel());
 					break;
 				}
@@ -147,7 +146,7 @@ public class EPLeftMenuServiceImpl implements EPLeftMenuService {
 		for (MenuData mn : fullMenuSet) {
 			sortMenuSet.add(mn);
 		}
-		
+
 		// Remove Roles from left menu if user doesnt have admin access on
 		// centralized application
 		List<CentralizedApp> applicationsList = null;
@@ -188,40 +187,60 @@ public class EPLeftMenuServiceImpl implements EPLeftMenuService {
 	 * @param defaultNavMap
 	 */
 	private void loadDefaultNavMap(Map<String, JSONObject> defaultNavMap) {
-
+		String leftMenuRootValue = getLeftMenuPrefixValue();
 		JSONObject navItemsDetails1 = new JSONObject();
 		navItemsDetails1.put("name", "Home");
-		navItemsDetails1.put("state", "root.applicationsHome");
-		navItemsDetails1.put("imageSrc", "icon-building-home");
-		defaultNavMap.put("root.applicationsHome", navItemsDetails1);
+		navItemsDetails1.put("state",
+				(isLeftMenuHasRoot(leftMenuRootValue))
+						? leftMenuRootValue+".applicationsHome"
+						: "applicationsHome");
+		navItemsDetails1.put("imageSrc", isLeftMenuHasRoot(leftMenuRootValue) ? "icon-building-home" : "home");
+		defaultNavMap.put("applicationsHome", navItemsDetails1);
 
 		JSONObject navItemsDetails2 = new JSONObject();
 		navItemsDetails2.put("name", "Application Catalog");
-		navItemsDetails2.put("state", "root.appCatalog");
-		navItemsDetails2.put("imageSrc", "icon-apps-marketplace");
-		defaultNavMap.put("root.appCatalog", navItemsDetails2);
+		navItemsDetails2.put("state",
+				(isLeftMenuHasRoot(leftMenuRootValue))
+						? leftMenuRootValue+".appCatalog"
+						: "appCatalog");
+		navItemsDetails2.put("imageSrc", isLeftMenuHasRoot(leftMenuRootValue) ? "icon-apps-marketplace" : "apps");
+		defaultNavMap.put("appCatalog", navItemsDetails2);
 
 		JSONObject navItemsDetails3 = new JSONObject();
 		navItemsDetails3.put("name", "Widget Catalog");
-		navItemsDetails3.put("state", "root.widgetCatalog");
-		navItemsDetails3.put("imageSrc", "icon-apps-marketplace");
-		defaultNavMap.put("root.widgetCatalog", navItemsDetails3);
+		navItemsDetails3.put("state",
+				isLeftMenuHasRoot(leftMenuRootValue)
+						? leftMenuRootValue+".widgetCatalog"
+						: "widgetCatalog");
+		navItemsDetails3.put("imageSrc", isLeftMenuHasRoot(leftMenuRootValue) ? "icon-apps-marketplace" : "apps");
+		defaultNavMap.put("widgetCatalog", navItemsDetails3);
 
 	}
-	
+
+	private boolean isLeftMenuHasRoot(String leftMenuRootValue) {
+		return (leftMenuRootValue != "" || leftMenuRootValue.isEmpty()) && leftMenuRootValue.equals("root");
+	}
+
 	@SuppressWarnings("unchecked")
 	private void loadNavMapByUserAdminRole(Map<String, JSONObject> defaultNavMap, EPUser user) {
-	List<String> applicationsList = new ArrayList<>();
-	final Map<String, Long> appParams = new HashMap<>();
-	appParams.put("userId", user.getId());
-	applicationsList = dataAccessService.executeNamedQuery("getAprroverRoleFunctionsOfUser", appParams, null);
-	if (applicationsList.size() > 0) {
-	JSONObject navItemsDetails = new JSONObject();
-	navItemsDetails.put("name", "Users");
-	navItemsDetails.put("state", "root.users");
-	navItemsDetails.put("imageSrc", "icon-user");
-	defaultNavMap.put("root.users", navItemsDetails);
+		String leftMenuRootValue = getLeftMenuPrefixValue();
+		List<String> applicationsList = new ArrayList<>();
+		final Map<String, Long> appParams = new HashMap<>();
+		appParams.put("userId", user.getId());
+		applicationsList = dataAccessService.executeNamedQuery("getAprroverRoleFunctionsOfUser", appParams, null);
+		if (applicationsList.size() > 0) {
+			JSONObject navItemsDetails = new JSONObject();
+			navItemsDetails.put("name", "Users");
+			navItemsDetails.put("state",
+					((leftMenuRootValue != "" || !leftMenuRootValue.isEmpty()) && leftMenuRootValue.equals("root")) ? leftMenuRootValue+".users"
+							: "users");
+			navItemsDetails.put("imageSrc", isLeftMenuHasRoot(leftMenuRootValue) ? "person" : "icon-user");
+			defaultNavMap.put("users", navItemsDetails);
+		}
 	}
+
+	private String getLeftMenuPrefixValue() {
+		return EPCommonSystemProperties.getProperty(EPCommonSystemProperties.PORTAL_LEFT_MENU);
 	}
 
 }

@@ -100,5 +100,6 @@ public class EPCommonSystemProperties extends SystemProperties {
 	public static final String AUTHORIZATION 						= "Authorization";
 	public static final String USERNAME 						    = "username";
 	public static final String PASSWORD 						    = "password";
+	public static final String PORTAL_LEFT_MENU						= "portal_left_menu";
 	
 }
