@@ -53,9 +53,8 @@ import lombok.ToString;
 @ToString
 public class AppWithRolesForUser {
 	private String orgUserId;
-	private boolean isSystemUser;
+	private Boolean isSystemUser;
 	private Long appId;
 	private String appName;
 	private List<RoleInAppForUser> appRoles;
-
 }

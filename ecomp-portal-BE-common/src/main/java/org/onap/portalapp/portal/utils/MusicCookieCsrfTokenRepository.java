@@ -50,6 +50,20 @@ import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.csrf.DefaultCsrfToken;
 import org.springframework.util.StringUtils;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import org.onap.portalsdk.core.onboarding.exception.CipherUtilException;
+import org.onap.portalsdk.core.onboarding.util.CipherUtil;
+
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.HashMap;
+import java.util.Map;
+import org.onap.portalapp.portal.utils.EPCommonSystemProperties;
+
 
 public final class MusicCookieCsrfTokenRepository implements CsrfTokenRepository {
 	static final String CSRF_COOKIE_NAME = "XSRF-TOKEN";
@@ -111,12 +125,22 @@ public final class MusicCookieCsrfTokenRepository implements CsrfTokenRepository
 		return new MusicCookieCsrfTokenRepository(result);
 	}
 	
-	private String getSessionIdFromCookie (HttpServletRequest request){
+	private String getSessionIdFromCookie (HttpServletRequest request) throws JsonParseException, JsonMappingException, UnsupportedEncodingException, IOException, CipherUtilException{
 		Cookie cookies[] = request.getCookies();
 		if (cookies != null) {
 			for (Cookie cookie : cookies) {
 				if (EP_SERVICE.equals(cookie.getName())) {
-					return cookie.getValue();
+					ObjectMapper mapper = new ObjectMapper();
+					Map<String,String> epServiceCookieValueMap = mapper.readValue(URLDecoder.decode(cookie.getValue(), "UTF-8"),HashMap.class);
+					String sessionId = null;
+					if(epServiceCookieValueMap!=null) {
+						String multifactorauthfrontendurl = EPCommonSystemProperties.getProperty(EPCommonSystemProperties.MULTI_FACTOR_AUTH_FRONTEND_URL);
+						String encryptedJSessionId = epServiceCookieValueMap.get(multifactorauthfrontendurl);
+						if(encryptedJSessionId != null) {
+							sessionId = CipherUtil.decryptPKC(encryptedJSessionId);
+						}
+					}
+					return sessionId;
 				}
 			}
 		}

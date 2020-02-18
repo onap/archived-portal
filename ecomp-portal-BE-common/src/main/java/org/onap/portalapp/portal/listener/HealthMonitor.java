@@ -143,18 +143,18 @@ public class HealthMonitor {
 			}
 			if(org.onap.portalapp.music.util.MusicUtil.isMusicEnable()){
 
-				zookeeperStatusOk = checkZookeeperStatus();
-
-				if (!zookeeperStatusOk) {
-					if ((numIntervalsZookeeperNotHealthy % numIntervalsBetweenAlerts) == 0) {
-						logger.debug(EELFLoggerDelegate.debugLogger,
-								"monitorEPHealth: cluster nodes down, logging to error log to trigger alert.");
-						EPLogUtil.logEcompError(logger, EPAppMessagesEnum.MusicHealthCheckZookeeperError);
-						numIntervalsZookeeperNotHealthy++;
-					} else {
-						numIntervalsZookeeperNotHealthy = 0;
-					}
-				}
+				/*
+				 * zookeeperStatusOk = checkZookeeperStatus();
+				 * 
+				 * if (!zookeeperStatusOk) { if ((numIntervalsZookeeperNotHealthy %
+				 * numIntervalsBetweenAlerts) == 0) {
+				 * logger.debug(EELFLoggerDelegate.debugLogger,
+				 * "monitorEPHealth: cluster nodes down, logging to error log to trigger alert."
+				 * ); EPLogUtil.logEcompError(logger,
+				 * EPAppMessagesEnum.MusicHealthCheckZookeeperError);
+				 * numIntervalsZookeeperNotHealthy++; } else { numIntervalsZookeeperNotHealthy =
+				 * 0; } }
+				 */
 
 				cassandraStatusOk = checkCassandraStatus();
 				if (!cassandraStatusOk) {
@@ -257,6 +257,7 @@ public class HealthMonitor {
 					String state = zkNodeStatistics.substring(zkNodeStatistics.indexOf("Mode:"),
 						zkNodeStatistics.indexOf("Node"));
 					logger.info(EELFLoggerDelegate.applicationLogger,
+
 						"Getting Status for zookeeper :" + zookeeperNode.trim() + ":------:" + state);
 					if (state.contains("leader") || state.contains("follower")) {
 						return true;

@@ -2893,7 +2893,7 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 									roleFunction = dataAccessService.executeNamedQuery("getAppFunctionOnCodeAndAppId",
 											appFuncsParams, null);
 								}
-								if (!roleFunction.isEmpty()) {
+								if (!roleFunction.isEmpty() && roleId != null) {
 									EPAppRoleFunction apRoleFunction = new EPAppRoleFunction();
 									apRoleFunction.setAppId(app.getId());
 									apRoleFunction.setRoleId(roleId);

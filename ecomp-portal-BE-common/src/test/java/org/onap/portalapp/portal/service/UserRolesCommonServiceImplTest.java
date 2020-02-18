@@ -95,6 +95,7 @@ import org.onap.portalsdk.core.util.SystemProperties;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -142,6 +143,9 @@ public class UserRolesCommonServiceImplTest {
 
 	@Mock
 	Transaction transaction;
+	
+	@Mock
+	AdminRolesService adminRolesService;
 
 	@InjectMocks
 	UserRolesCommonServiceImpl userRolesCommonServiceImpl = new UserRolesCommonServiceImpl();
@@ -356,11 +360,11 @@ public class UserRolesCommonServiceImplTest {
 		Mockito.when(epAppCommonServiceImpl.getApp(mockApp.getId())).thenReturn(mockApp);
 		List<RoleInAppForUser> mockRoleInAppForUserList = new ArrayList<>();
 		RoleInAppForUser mockRoleInAppForUser = new RoleInAppForUser();
-		mockRoleInAppForUser.setIsApplied(false);
+	    mockRoleInAppForUser.setIsApplied(true);
 		mockRoleInAppForUser.setRoleId(333l);
 		mockRoleInAppForUser.setRoleName("test1");
 		RoleInAppForUser mockRoleInAppForUser2 = new RoleInAppForUser();
-		mockRoleInAppForUser2.setIsApplied(false);
+	    mockRoleInAppForUser2.setIsApplied(true);
 		mockRoleInAppForUser2.setRoleId(777l);
 		mockRoleInAppForUser2.setRoleName("test2");
 		RoleInAppForUser mockRoleInAppForUser3 = new RoleInAppForUser();
@@ -666,7 +670,7 @@ public class UserRolesCommonServiceImplTest {
 		Mockito.when(session.createSQLQuery("update fn_role set app_id = null where app_id = 1 "))
 				.thenReturn(epsetAppWithUserRoleUpdateEPRoleQuery);
 		ExternalRequestFieldsValidator actual = userRolesCommonServiceImpl.setAppWithUserRoleStateForUser(user, mockWithRolesForUser);
-		assertFalse(actual.isResult());
+		assertTrue(actual.isResult());
 	}
 
 	private List<EcompUserAppRoles> getCurrentUserRoles(EPUser user, EPApp mockApp) {
@@ -1245,7 +1249,10 @@ public class UserRolesCommonServiceImplTest {
 		mockUserApplicationRoles2.setRoles(mockRemoteRoleList2);
 		mockUserApplicationRolesList.add(mockUserApplicationRoles);
 		mockUserApplicationRolesList.add(mockUserApplicationRoles2);
-		Mockito.when((List<EPUser>) dataAccessService.executeNamedQuery("getActiveUsers", null, null))
+		Map<String, Object> params = new HashMap<>();
+		params.put("id", 1l);
+		params.put("active", true);
+		Mockito.when((List<EPUser>) dataAccessService.executeNamedQuery("getActiveUsersForApp", params, null))
 				.thenReturn(mockEpUserList);
 		assertEquals(userRolesCommonServiceImpl.getUsersFromAppEndpoint(1l).size(),
 				mockUserApplicationRolesList.size());

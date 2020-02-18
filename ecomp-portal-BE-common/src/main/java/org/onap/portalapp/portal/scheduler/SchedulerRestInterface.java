@@ -37,31 +37,33 @@
  */
 package org.onap.portalapp.portal.scheduler;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonDeserializer;
 import java.util.Collections;
 import java.util.Date;
+
 import javax.security.auth.login.CredentialException;
-import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.Response;
-import lombok.NoArgsConstructor;
+
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
+import org.apache.cxf.jaxrs.client.WebClient;
+import org.apache.cxf.jaxrs.impl.ResponseImpl;
 import org.eclipse.jetty.util.security.Password;
 import org.json.simple.JSONObject;
 import org.onap.portalapp.portal.logging.format.EPAppMessagesEnum;
 import org.onap.portalapp.portal.logging.logic.EPLogUtil;
-import org.onap.portalapp.portal.scheduler.client.HttpBasicClient;
-import org.onap.portalapp.portal.scheduler.client.HttpsBasicClient;
 import org.onap.portalapp.portal.scheduler.restobjects.RestObject;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializer;
+
+import lombok.NoArgsConstructor;
 
 @SuppressWarnings("MalformedFormatString")
 @Service
@@ -73,10 +75,10 @@ public class SchedulerRestInterface implements SchedulerRestInterfaceIfc {
 													+ " MethodName: %APPLICATION_JSON, Url: %APPLICATION_JSON";
 
 	private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(SchedulerRestInterface.class);
-	private static Client client = null;
+	private static WebClient client = null;
 	private static Gson gson = null;
 
-	private MultivaluedHashMap<String, Object> commonHeaders;
+	private MultivaluedHashMap<String, String> commonHeaders;
 
 	private static void init() {
 		logger.debug(EELFLoggerDelegate.debugLogger, "initializing");
@@ -89,7 +91,7 @@ public class SchedulerRestInterface implements SchedulerRestInterfaceIfc {
 		gson = builder.create();
 	}
 
-	public void initRestClient() {
+	public void initRestClient(String URI) {
 		logger.debug(EELFLoggerDelegate.debugLogger, "Starting to initialize rest client");
 
 		init();
@@ -130,19 +132,28 @@ public class SchedulerRestInterface implements SchedulerRestInterfaceIfc {
 		commonHeaders = new MultivaluedHashMap<>();
 		commonHeaders.put("Authorization", Collections.singletonList(("Basic " + authStringEnc)));
 
-		try {
-			if (!username.isEmpty()) {
-
-				client = HttpBasicClient.getClient();
-			} else {
-
-				client = HttpsBasicClient.getClient();
-			}
-		} catch (Exception e) {
-			logger.debug(EELFLoggerDelegate.debugLogger, "Unable to initialize rest client",e.getMessage());
-
-		}
+		//		try {
+		//			if (!username.isEmpty()) {
+		//
+		//				client = HttpBasicClient.getClient();
+		//			} else {
+		//
+		//				client = HttpsBasicClient.getClient();
+		//			}
+		//		} catch (Exception e) {
+		//			logger.debug(EELFLoggerDelegate.debugLogger, "Unable to initialize rest client",e.getMessage());
+		//
+		//		}
+		
+		client = WebClient.create(URI);
+		client.type(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON);
+		//client.path("");
+		client.headers(commonHeaders);
+				
 		logger.debug(EELFLoggerDelegate.debugLogger, "Client Initialized");
+		
+		
+		
 
 	}
 
@@ -155,10 +166,13 @@ public class SchedulerRestInterface implements SchedulerRestInterfaceIfc {
 
 		logger.debug(EELFLoggerDelegate.debugLogger, "URL FOR GET : ", url);
 		try {
-			initRestClient();
+			initRestClient(url);
+			
+			
+			//final Response cres = client.target(url).request().accept(APPLICATION_JSON).headers(commonHeaders).get();
+			final ResponseImpl cres = (ResponseImpl)client.get();
 
-			final Response cres = client.target(url).request().accept(APPLICATION_JSON).headers(commonHeaders).get();
-
+			logger.debug(EELFLoggerDelegate.debugLogger, "The implemenation class of Response : ", cres.getClass().getName());
 			int status = cres.getStatus();
 			restObject.setStatusCode(status);
 
@@ -211,11 +225,10 @@ public class SchedulerRestInterface implements SchedulerRestInterfaceIfc {
 
 		try {
 
-			initRestClient();
+			initRestClient(url);
 
 			// Change the content length
-			final Response cres = client.target(url).request().accept(APPLICATION_JSON).headers(commonHeaders)
-					.post(Entity.entity(requestDetails, MediaType.APPLICATION_JSON));
+			final ResponseImpl cres = (ResponseImpl)client.post(requestDetails.toJSONString());
 
 			if (cres != null && cres.getEntity() != null) {
 
@@ -268,38 +281,5 @@ public class SchedulerRestInterface implements SchedulerRestInterfaceIfc {
 		throw new UnsupportedOperationException();
 	}
 
-	@SuppressWarnings("unchecked")
-	public <T> void Delete(T t, JSONObject requestDetails, String sourceID, String path, RestObject<T> restObject) {
-
-		String methodName = "Delete";
-		String url = "";
-		Response cres;
-
-		try {
-			initRestClient();
-
-			url = SchedulerProperties.getProperty(SchedulerProperties.SCHEDULER_SERVER_URL_VAL) + path;
-
-			cres = client.target(url).request().accept(APPLICATION_JSON).headers(commonHeaders)
-					// .entity(r)
-					.build("DELETE", Entity.entity(requestDetails, MediaType.APPLICATION_JSON)).invoke();
-
-			int status = cres.getStatus();
-			restObject.setStatusCode(status);
-			if (cres.getEntity() != null) {
-				t = (T) cres.readEntity(t.getClass());
-				restObject.set(t);
-			}
-
-		} catch (HttpClientErrorException e) {
-			logger.error(EELFLoggerDelegate.errorLogger, " HttpClientErrorException:Exception For the Delete",
-					methodName, url, e);
-			EPLogUtil.schedulerAccessAlarm(logger, e.getStatusCode().value());
-		} catch (Exception e) {
-			logger.error(EELFLoggerDelegate.errorLogger, "Exception For the Delete", methodName, url, e);
-			EPLogUtil.schedulerAccessAlarm(logger, HttpStatus.INTERNAL_SERVER_ERROR.value());
-			throw e;
-		}
-	}
 
 }

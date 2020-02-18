@@ -73,7 +73,7 @@ public class FunctionalMenuItem implements Serializable {
 	public Integer column;
 
 	@Column(name = "TEXT")
-	@Max(value = 100)
+	//@Max(value = 100)
 	@SafeHtml
 	@NotNull
 	public String text;
@@ -83,13 +83,13 @@ public class FunctionalMenuItem implements Serializable {
 	public Integer parentMenuId;
 
 	@Column(name = "URL")
-	@Max(value = 128)
+	//@Max(value = 128)
 	@SafeHtml
 	@NotNull
 	public String url;
 
 	@Column(name="ACTIVE_YN")
-	@Max(value = 1)
+	//@Max(value = 1)
 	@SafeHtml
 	@NotNull
 	public String active_yn;
@@ -134,4 +134,5 @@ public class FunctionalMenuItem implements Serializable {
 	public void setRestrictedApp(Boolean restrictedApp) {
 		this.restrictedApp = restrictedApp;
 	}
+	
 }

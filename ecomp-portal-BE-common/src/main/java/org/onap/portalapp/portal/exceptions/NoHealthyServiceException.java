@@ -37,9 +37,9 @@
  */
 package org.onap.portalapp.portal.exceptions;
 
-import com.ecwid.consul.ConsulException;
 
-public class NoHealthyServiceException extends ConsulException{
+
+public class NoHealthyServiceException extends Exception{
 
 	private static final long serialVersionUID = -7089437673127729813L;
 	

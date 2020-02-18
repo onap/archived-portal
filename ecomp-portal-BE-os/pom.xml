@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.onap.portal</groupId>
 		<artifactId>onap-portal-parent</artifactId>
-		<version>2.6.0</version>
+		<version>3.2.0</version>
 	</parent>
 
 	<artifactId>portal-be-os</artifactId>
@@ -447,7 +447,7 @@
 		<dependency>
 			<groupId>org.quartz-scheduler</groupId>
 			<artifactId>quartz</artifactId>
-			<version>2.2.1</version>
+			<version>2.3.2</version>
 			<exclusions>
 				<!-- SDK brings a new version of c3p0 -->
 				<exclusion>
@@ -497,12 +497,30 @@
 			<version>${epsdk.version}</version>
 			<type>jar</type>
 				 <exclusions>
-				<exclusion>
+					<exclusion>
              		<groupId>commons-beanutils</groupId>
              		<artifactId>commons-beanutils-core</artifactId>
-            	 </exclusion>
-              </exclusions>
+					</exclusion>
+					<exclusion>
+             		<groupId>org.owasp.esapi</groupId>
+             		<artifactId>esapi</artifactId>
+					</exclusion>
+					<exclusion>
+             		<groupId>com.mchange</groupId>
+					<artifactId>c3p0</artifactId>
+					</exclusion>
+				</exclusions>
 			
+		</dependency>
+		<dependency>
+			<groupId>org.owasp.esapi</groupId>
+			<artifactId>esapi</artifactId>
+			<version>2.2.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.mchange</groupId>
+			<artifactId>c3p0</artifactId>
+			<version>0.9.5.4</version>
 		</dependency>
 		<!-- EcompPortal common overlay -->
 		<dependency>

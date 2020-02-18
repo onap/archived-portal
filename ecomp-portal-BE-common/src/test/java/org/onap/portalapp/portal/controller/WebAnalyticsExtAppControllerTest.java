@@ -77,7 +77,12 @@ public class WebAnalyticsExtAppControllerTest {
 	
 	
 	@InjectMocks
-	WebAnalyticsExtAppController webAnalyticsExtAppController = new WebAnalyticsExtAppController();
+	WebAnalyticsExtAppController webAnalyticsExtAppController = new WebAnalyticsExtAppController() {
+		
+		protected void storeAuxAnalytics(Analytics analyticsMap, String appName) {
+			storeAnalyticsCalled = true;
+		}
+	};
 
 	@Mock
 	AdminRolesService adminRolesService = new AdminRolesServiceImpl();
@@ -89,6 +94,8 @@ public class WebAnalyticsExtAppControllerTest {
 	AuditService auditService = new AuditServiceImpl();
 	@Mock
 	Analytics analytics;
+	
+	Boolean storeAnalyticsCalled = false;
 	
 
 //	@Mock 
@@ -167,8 +174,34 @@ public class WebAnalyticsExtAppControllerTest {
 	public void testGetAnalyticsScript() {
 		PowerMockito.mockStatic(SystemProperties.class);
 		Mockito.when(SystemProperties.getProperty("frontend_url")).thenReturn("http://www.ecomp.com/test");
-		 webAnalyticsExtAppController.getAnalyticsScript(mockedRequest);
+		webAnalyticsExtAppController.getAnalyticsScript(mockedRequest);
 		
+	}
+	
+	@Test
+	public void storeAnalyticsAuxScriptIfAnalyticsCallTest() throws Exception
+	{
+		Analytics analytics= null;
+		PowerMockito.mockStatic(SystemProperties.class);
+		Mockito.when(mockedRequest.getHeader("uebkey")).thenReturn(null);
+		Mockito.when(SystemProperties.containsProperty(WebAnalyticsExtAppController.FEED_ML)).thenReturn(true);
+		Mockito.when(SystemProperties.getProperty(WebAnalyticsExtAppController.FEED_ML)).thenReturn("true");
+		webAnalyticsExtAppController.storeAnalyticsScript(mockedRequest, analytics);
+		assertTrue(storeAnalyticsCalled);
+	
+	}
+	
+	@Test
+	public void storeAnalyticsAuxScriptIfAnalyticsNoCallTest() throws Exception
+	{
+		Analytics analytics= null;
+		PowerMockito.mockStatic(SystemProperties.class);
+		Mockito.when(mockedRequest.getHeader("uebkey")).thenReturn(null);
+		Mockito.when(SystemProperties.containsProperty(WebAnalyticsExtAppController.FEED_ML)).thenReturn(false);
+		Mockito.when(SystemProperties.getProperty(WebAnalyticsExtAppController.FEED_ML)).thenReturn("true");
+		webAnalyticsExtAppController.storeAnalyticsScript(mockedRequest, analytics);
+		assertTrue(!storeAnalyticsCalled);
+	
 	}
 		
 }

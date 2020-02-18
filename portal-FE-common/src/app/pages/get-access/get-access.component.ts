@@ -47,16 +47,15 @@ import { environment } from '../../../environments/environment';
   styleUrls: ['./get-access.component.scss']
 })
 export class GetAccessComponent implements OnInit {
-  api = environment.api;
   isLoadingTable: boolean;
   appTable: any[];
   displayedColumns: string[] = ['function', 'applicationName', 'roleName', 'currentRole', 'requestStatus'];
   getAccessDataSource = new MatTableDataSource(this.appTable);
   @ViewChild(MatPaginator) paginator: MatPaginator;
   showSpinner: boolean;
-  getAccessUrl = this.api.getAccessUrl;
-  getAccessName = this.api.getAccessName;
-  getAccessInfo = this.api.getAccessInfo;
+  getAccessUrl = environment.getAccessUrl;
+  getAccessName = environment.getAccessName;
+  getAccessInfo = environment.getAccessInfo;
 
   constructor(private getAccessService: GetAccessService) { }
 

@@ -571,6 +571,12 @@
 			from Language where languageId = :language_id
 		]]>
 	</query>
+	
+	<query name="getActiveUsersForApp">
+		<![CDATA[
+			select distinct(u) from EPUser as u inner join fetch u.EPUserApps as apps inner join fetch apps.app as app inner join fetch apps.role as role where app.id = :id and u.active = :active and role.id is not null
+		]]>
+	</query>
 
 	<!-- show the current user plus related users -->
 	<sql-query name="relatedUsers">

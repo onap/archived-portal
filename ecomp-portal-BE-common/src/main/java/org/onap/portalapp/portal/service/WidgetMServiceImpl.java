@@ -39,6 +39,7 @@ package org.onap.portalapp.portal.service;
 
 import org.onap.portalapp.portal.utils.EcompPortalUtils;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
+import org.onap.portalsdk.core.util.SystemProperties;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -50,6 +51,14 @@ public class WidgetMServiceImpl implements WidgetMService {
 	public String getServiceLocation(String service, String fallbackPortOnLocalHost) {	
 		logger.debug(logger.debugLogger, "Requested Service: "+ service);
 		String localFallbackServiceLocation = EcompPortalUtils.localOrDockerHost() + ":" + fallbackPortOnLocalHost;	
+		logger.debug(logger.debugLogger, "returned service location: "+ localFallbackServiceLocation);
+		return localFallbackServiceLocation;	
+	}
+	
+	@Override
+	public String getMLServiceLocation() {	
+		logger.debug(logger.debugLogger, "Requested Service: ML");
+		String localFallbackServiceLocation = EcompPortalUtils.mlLocalOrDockerHost() + ":" + SystemProperties.getProperty("microservices.ml.port");	
 		logger.debug(logger.debugLogger, "returned service location: "+ localFallbackServiceLocation);
 		return localFallbackServiceLocation;	
 	}

@@ -89,19 +89,18 @@ import org.springframework.web.client.AsyncRestTemplate;
 @EPAuditLog
 @NoArgsConstructor
 public class WebAnalyticsExtAppController extends EPRestrictedRESTfulBaseController {
+	public static final String FEED_ML = "feed.ml";
 	private WidgetMService widgetMService;
 	private	AppsCacheService appCacheService;
 
 	private static final String MACHINE_LEARNING_SERVICE_CTX = "/ml_api";
 	private static final String REGISTER_ACTION = MACHINE_LEARNING_SERVICE_CTX + "/" + "registerAction";
-	private static final String CONSUL_ML_SERVICE_ID = "machine-learning";
 	private static final String APP_KEY = "uebkey";
 	private static final String ERROR_MSG = " Error retrieving Application to capture app name for analytics; Proceeding with empty app name";
 	private final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(WebAnalyticsExtAppController.class);
 	private final AsyncRestTemplate restTemplate = new AsyncRestTemplate();
 	private final SuccessCallback<ResponseEntity<String>> successCallback = arg -> logger.info(EELFLoggerDelegate.debugLogger, arg.getBody());
 	private final FailureCallback failureCallback = arg -> logger.error(EELFLoggerDelegate.errorLogger, "storeAuxAnalytics failed", arg);
-
 
 	@Autowired
 	public WebAnalyticsExtAppController(AppsCacheService appCacheService, WidgetMService consulHealthService) {
@@ -170,19 +169,23 @@ public class WebAnalyticsExtAppController extends EPRestrictedRESTfulBaseControl
 		try {
 			MDC.put(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP, EPEELFLoggerAdvice.getCurrentDateTimeUTC());
 			String appName = "";
-            try {
-                appName = getAppName(request, appName);
-            } catch (Exception e) {
-                logger.error(EELFLoggerDelegate.errorLogger,
+			try {
+				appName = getAppName(request, appName);
+			} catch (Exception e) {
+				logger.error(EELFLoggerDelegate.errorLogger,
                         ERROR_MSG, e);
-            }
+			}
 
-            try {
-                storeAuxAnalytics(analyticsMap, appName);
-            } catch (Exception e) {
-                logger.error(EELFLoggerDelegate.errorLogger,
+			try {
+				if(SystemProperties.containsProperty(FEED_ML) && 
+						SystemProperties.getProperty(FEED_ML).equals("true")) {
+					storeAuxAnalytics(analyticsMap, appName);
+				}
+				
+			} catch (Exception e) {
+				logger.error(EELFLoggerDelegate.errorLogger,
                         ERROR_MSG, e);
-            }
+			}
 
 			MDC.put(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP, EPEELFLoggerAdvice.getCurrentDateTimeUTC());
 
@@ -218,7 +221,7 @@ public class WebAnalyticsExtAppController extends EPRestrictedRESTfulBaseControl
 	private EPApp getApp(HttpServletRequest request) {
 		String appKeyValue = request.getHeader(APP_KEY);
 		EPApp appRecord = null;
-		if (appKeyValue == null || "".equals(appKeyValue)) {
+		if (appKeyValue == null || appKeyValue.equals("")) {
 			logger.error(EELFLoggerDelegate.errorLogger, " App Key unavailable; Proceeding with null app name");
 		} else {
 			 appRecord = appCacheService.getAppFromUeb(appKeyValue);
@@ -226,15 +229,16 @@ public class WebAnalyticsExtAppController extends EPRestrictedRESTfulBaseControl
 		return appRecord;
 	}
 
-	private void storeAuxAnalytics(Analytics analyticsMap, String appName) {
+	protected void storeAuxAnalytics(Analytics analyticsMap, String appName) {
 		logger.info(EELFLoggerDelegate.debugLogger,
 				" Registering an action for recommendation: AppName/Function/UserId " + appName + "/"
 						+ analyticsMap.getFunction() + "/" + analyticsMap.getUserid());
 
+		
 		Map<String, String> requestMapping = new HashMap<>();
 		requestMapping.put("id", analyticsMap.getUserid());
 		requestMapping.put("action", appName + "|" + analyticsMap.getFunction());
-
+		
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
 
@@ -243,9 +247,8 @@ public class WebAnalyticsExtAppController extends EPRestrictedRESTfulBaseControl
 
 		// send it!
 		ListenableFuture<ResponseEntity<String>> out = restTemplate.exchange(
-				EcompPortalUtils.widgetMsProtocol() + "://"
-						+ widgetMService.getServiceLocation(CONSUL_ML_SERVICE_ID,
-								SystemProperties.getProperty("microservices.m-learn.local.port"))
+				EcompPortalUtils.widgetMLProtocol() + "://"
+						+ widgetMService.getMLServiceLocation()
 						+ REGISTER_ACTION,
 				HttpMethod.POST, entity, String.class);
 		out.addCallback(successCallback, failureCallback);

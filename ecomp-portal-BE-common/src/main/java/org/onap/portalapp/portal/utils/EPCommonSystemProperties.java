@@ -90,6 +90,9 @@ public class EPCommonSystemProperties extends SystemProperties {
 	public static final String WIDGET_MS_PROTOCOL 					= "microservices.widget.protocol";
 	public static final String WIDGET_MS_HOSTNAME 					= "microservices.widget.hostname";
 	
+	public static final String WIDGET_ML_PROTOCOL 					= "microservices.ml.protocol";
+	public static final String WIDGET_ML_HOSTNAME 					= "microservices.ml.hostname";
+	public static final String WIDGET_ML_PORT					    = "microservices.ml.port";
 	public static final String REMOTE_CENTRALIZED_SYSTEM_ACCESS		= "remote_centralized_system_access";
 	
 	public static final String APP_DISPLAY_PASSWORD 				= "*******";
@@ -101,5 +104,8 @@ public class EPCommonSystemProperties extends SystemProperties {
 	public static final String USERNAME 						    = "username";
 	public static final String PASSWORD 						    = "password";
 	public static final String PORTAL_LEFT_MENU						= "portal_left_menu";
+	
+	public static final String EPSERVICE_COOKIE_SECURE 				= "epsservice.cookie.secure";
+	public static final String MULTI_FACTOR_AUTH_FRONTEND_URL 		= "frontend_url";
 	
 }

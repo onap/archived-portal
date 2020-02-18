@@ -48,17 +48,21 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.onap.music.main.CipherUtil;
 import org.onap.portalapp.portal.domain.EcompAuditLog;
 import org.onap.portalapp.portal.framework.MockitoTestSuite;
 import org.onap.portalapp.portal.utils.EPCommonSystemProperties;
 import org.onap.portalapp.portal.utils.EcompPortalUtils;
 import org.onap.portalapp.util.SessionCookieUtil;
+import org.onap.portalsdk.core.onboarding.exception.CipherUtilException;
+import org.onap.portalsdk.core.onboarding.util.PortalApiProperties;
 import org.onap.portalsdk.core.util.SystemProperties;
+import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({EcompPortalUtils.class, EPCommonSystemProperties.class, EcompAuditLog.class, SystemProperties.class})
+@PrepareForTest({EcompPortalUtils.class, EPCommonSystemProperties.class, EcompAuditLog.class, SystemProperties.class, CipherUtil.class, PortalApiProperties.class})
 public class SessionCookieUtilTest {
 	
 	
@@ -72,8 +76,10 @@ public class SessionCookieUtilTest {
 	@Mock
 	Cookie cookie;
 	@Before
-	public void setup() {
+	public void setup() throws CipherUtilException {
 		MockitoAnnotations.initMocks(this);
+		PowerMockito.mockStatic(CipherUtil.class);
+		Mockito.when(CipherUtil.encryptPKC(Mockito.anyString())).thenReturn("Test");
 	}
 	
 	@Test

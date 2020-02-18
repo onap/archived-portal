@@ -8,7 +8,7 @@ COPY my.cnf /etc/mysql/my.cnf
 
 # Scripts are executed in alphabetical order
 
-# Portal DDL and DML at v2.1
+# Portal DDL and DML at v2.6
 COPY ${DB_SCRIPT_DIR}/PortalDDLMySql_2_6_Common.sql /docker-entrypoint-initdb.d/
 COPY ${DB_SCRIPT_DIR}/PortalDDLMySql_2_6_OS.sql     /docker-entrypoint-initdb.d/
 COPY ${DB_SCRIPT_DIR}/PortalDMLMySql_2_6_Common.sql /docker-entrypoint-initdb.d/
@@ -16,7 +16,7 @@ COPY ${DB_SCRIPT_DIR}/PortalDMLMySql_2_6_OS.sql     /docker-entrypoint-initdb.d/
 # Do not copy the onboarding script here; it's mounted as a volume
 
 # SDK App DDL and DML
-COPY ${DB_SCRIPT_DIR}/EcompSdkDDLMySql_2_6_Common.sql       /docker-entrypoint-initdb.d/
-COPY ${DB_SCRIPT_DIR}/EcompSdkDDLMySql_2_6_OS.sql           /docker-entrypoint-initdb.d/
-COPY ${DB_SCRIPT_DIR}/EcompSdkDMLMySql_2_6_Common.sql       /docker-entrypoint-initdb.d/
-COPY ${DB_SCRIPT_DIR}/EcompSdkDMLMySql_2_6_OS.sql           /docker-entrypoint-initdb.d/
+COPY ${DB_SCRIPT_DIR}/EcompSdkDDLMySql_2_5_Common.sql       /docker-entrypoint-initdb.d/
+COPY ${DB_SCRIPT_DIR}/EcompSdkDDLMySql_2_5_OS.sql           /docker-entrypoint-initdb.d/
+COPY ${DB_SCRIPT_DIR}/EcompSdkDMLMySql_2_5_Common.sql       /docker-entrypoint-initdb.d/
+COPY ${DB_SCRIPT_DIR}/EcompSdkDMLMySql_2_5_OS.sql           /docker-entrypoint-initdb.d/

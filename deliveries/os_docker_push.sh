@@ -6,6 +6,9 @@ set -x
 
 # Establish environment variables
 source $(dirname $0)/.env
+if [ $1 ]; then
+  source $(dirname $0)/$1
+fi
 
 if [ -z "$PORTAL_VERSION" ]; then
     echo "PORTAL_VERSION not set"
@@ -20,4 +23,4 @@ TIMESTAMP=$(date +%C%y%m%dT%H%M%S)
 export VERSION="${PORTAL_VERSION}-STAGING-${TIMESTAMP}"
 export LATEST="${PORTAL_VERSION}-STAGING-latest"
 
-exec ./os_docker_base.sh
+./os_docker_base.sh $1

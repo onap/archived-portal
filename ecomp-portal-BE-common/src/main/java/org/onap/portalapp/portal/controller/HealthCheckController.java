@@ -192,16 +192,17 @@ public class HealthCheckController extends EPUnRestrictedBaseController {
 				}
 				statusCollection.add(CassandraStatusInfo);
 
-				HealthStatusInfo zookeeperStatusInfo = new HealthStatusInfo("Music-zookeeper");
-				//zookeeperStatusInfo.hostName = EcompPortalUtils.getMyHostName();
-				zookeeperStatusInfo.ipAddress = MusicUtil.getMyZkHost();
-				if (!HealthMonitor.isZookeeperStatusOk()) {
-					overallStatus = false;
-					zookeeperStatusInfo.healthCheckStatus = statusDown;
-					zookeeperStatusInfo.description = "Check the logs for more details";
-					EPLogUtil.logEcompError(logger, EPAppMessagesEnum.MusicHealthCheckZookeeperError);
-				}
-				statusCollection.add(zookeeperStatusInfo);
+				/*
+				 * HealthStatusInfo zookeeperStatusInfo = new
+				 * HealthStatusInfo("Music-zookeeper"); --zookeeperStatusInfo.hostName =
+				 * EcompPortalUtils.getMyHostName(); zookeeperStatusInfo.ipAddress =
+				 * MusicUtil.getMyZkHost(); if (!HealthMonitor.isZookeeperStatusOk()) {
+				 * overallStatus = false; zookeeperStatusInfo.healthCheckStatus = statusDown;
+				 * zookeeperStatusInfo.description = "Check the logs for more details";
+				 * EPLogUtil.logEcompError(logger,
+				 * EPAppMessagesEnum.MusicHealthCheckZookeeperError); }
+				 * statusCollection.add(zookeeperStatusInfo);
+				 */
 			}
 
 			String json = "";

@@ -1084,7 +1084,7 @@ public class UserRolesCommonServiceImpl  {
 					
 				applyChangesToUserAppRolesForMyLoginsRequest(user, appId);
 
-				boolean systemUser = newAppRolesForUser.isSystemUser();
+				Boolean systemUser = (newAppRolesForUser.getIsSystemUser() != null ? newAppRolesForUser.getIsSystemUser() : false);
 
 				if ((app.getCentralAuth() || app.getId().equals(PortalConstants.PORTAL_APP_ID)) && systemUser) {
 
@@ -2303,10 +2303,15 @@ public class UserRolesCommonServiceImpl  {
 		EPApp app = appsService.getApp(appId);
 		//If local or centralized application
 		if (appId == PortalConstants.PORTAL_APP_ID || app.getCentralAuth()) {
+			Map<String, Object> params = new HashMap<>();
+			params.put("id", app.getId());
+			params.put("active", true);
 			@SuppressWarnings("unchecked")
-			List<EPUser> userList = (List<EPUser>) dataAccessService.executeNamedQuery("getActiveUsers", null, null);
+			//List<EPUser> userList = (List<EPUser>) dataAccessService.executeNamedQuery("getActiveUsers", null, null);
+			//List<Object[]> userList = (List<Object[]>) dataAccessService.executeNamedQuery("getActiveUsersForApp", params, null);
+			List<EPUser> userList = (List<EPUser>) dataAccessService.executeNamedQuery("getActiveUsersForApp", params, null);
 			for (EPUser user : userList) {
-				UserApplicationRoles userWithAppRoles = convertToUserApplicationRoles(appId, user, app);
+				UserApplicationRoles userWithAppRoles = convertToUserApplicationRoles(user, app.getId());
 				if (userWithAppRoles.getRoles() != null && userWithAppRoles.getRoles().size() > 0)
 					userApplicationRoles.add(userWithAppRoles);
 			}
@@ -2332,6 +2337,29 @@ public class UserRolesCommonServiceImpl  {
 		}
 		
 		return userApplicationRoles;
+	}
+	
+	/**
+	 * 
+	 * @param user
+	 * @param app_id
+	 * @return
+	 */
+	private UserApplicationRoles convertToUserApplicationRoles(EPUser user, Long appId) {
+		UserApplicationRoles userWithRemoteAppRoles = new UserApplicationRoles();
+		userWithRemoteAppRoles.setAppId(appId);
+		userWithRemoteAppRoles.setOrgUserId(user.getOrgUserId());
+		userWithRemoteAppRoles.setFirstName(user.getFirstName());
+		userWithRemoteAppRoles.setLastName(user.getLastName());
+		List<RemoteRole> roleList = new ArrayList<RemoteRole>();
+		for(EPUserApp userApp :user.getEPUserApps()) {
+			RemoteRole remoteRole = new RemoteRole();
+			remoteRole.setName(userApp.getRole().getName());
+			remoteRole.setId(userApp.getRole().getId());
+			roleList.add(remoteRole);
+		}
+		userWithRemoteAppRoles.setRoles(roleList);
+		return userWithRemoteAppRoles;
 	}
 	
 	/**

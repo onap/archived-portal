@@ -6,13 +6,14 @@
 	<parent>
 		<groupId>org.onap.oparent</groupId>
 		<artifactId>oparent</artifactId>
-		<version>1.2.0</version>
+		<version>2.0.0</version>
 		<relativePath />
 	</parent>
 
 	<groupId>org.onap.portal</groupId>
 	<artifactId>onap-portal-parent</artifactId>
-	<version>2.6.0</version>
+	<version>3.2.0</version>
+
 	<packaging>pom</packaging>
 	<name>portal</name>
 
@@ -20,7 +21,7 @@
 		<!-- This parent POM names only ONAP projects -->
 		<module>ecomp-portal-BE-common</module>
 		<module>ecomp-portal-BE-os</module>
-		<module>ecomp-portal-FE-os</module>
+		<module>portal-FE-os</module>
 		<module>ecomp-portal-widget-ms</module>
 		<module>portal-BE</module>
 	</modules>
@@ -242,6 +243,61 @@
 				<artifactId>sonar-maven-plugin</artifactId>
 				<version>3.0.2</version>
 			</plugin>
+			
+			<plugin>
+			<artifactId>maven-checkstyle-plugin</artifactId>
+			<version>2.17</version>
+			<dependencies>
+			  <dependency>
+				<groupId>org.onap.oparent</groupId>
+				<artifactId>checkstyle</artifactId>
+				<version>2.0.0</version>
+			  </dependency>
+			</dependencies>
+			<executions>
+			  <execution>
+				<id>onap-license</id>
+				<goals>
+				  <goal>check</goal>
+				</goals>
+				<phase>process-sources</phase>
+				<configuration>
+				  <configLocation>onap-checkstyle/check-license.xml</configLocation>
+				  <includeResources>false</includeResources>
+				  <includeTestSourceDirectory>true</includeTestSourceDirectory>
+				  <includeTestResources>false</includeTestResources>
+				  <sourceDirectory>${project.build.sourceDirectory}</sourceDirectory>
+				  <excludes>
+				  </excludes>
+				  <consoleOutput>true</consoleOutput>
+				  <failsOnViolation>false</failsOnViolation>
+				</configuration>
+			  </execution>
+			  <execution>
+				<id>onap-java-style</id>
+				<goals>
+				  <goal>check</goal>
+				</goals>
+				<phase>none</phase>
+				<configuration>
+				  <!-- Use Google Java Style Guide:
+					   https://github.com/checkstyle/checkstyle/blob/master/src/main/resources/google_checks.xml
+					   with minor changes -->
+				  <configLocation>onap-checkstyle/onap-java-style.xml</configLocation>
+				  <!-- <sourceDirectory> is needed so that checkstyle ignores the generated sources directory -->
+				  <sourceDirectory>${project.build.sourceDirectory}</sourceDirectory>
+				  <includeResources>true</includeResources>
+				  <includeTestSourceDirectory>true</includeTestSourceDirectory>
+				  <includeTestResources>true</includeTestResources>
+				  <excludes>
+				  </excludes>
+				  <consoleOutput>true</consoleOutput>
+				  <failsOnViolation>false</failsOnViolation>
+				</configuration>
+			  </execution>
+			</executions>
+		  </plugin>
+		  
 		</plugins>
 	</build>
 

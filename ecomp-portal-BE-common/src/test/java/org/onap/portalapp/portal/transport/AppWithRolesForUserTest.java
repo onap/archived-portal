@@ -60,12 +60,12 @@ public class AppWithRolesForUserTest {
 	@Test
 	public void roleInAppForUserTest(){
 		AppWithRolesForUser appWithRolesForUser = mockAppWithRolesForUser();
-		appWithRolesForUser.setSystemUser(false);
+		appWithRolesForUser.setIsSystemUser(false);
 		assertEquals(appWithRolesForUser.getOrgUserId(), "test");
 		assertEquals(appWithRolesForUser.getAppId(), new Long(1));
 		assertEquals(appWithRolesForUser.getAppName(), "test");
 		assertEquals(appWithRolesForUser.getAppRoles(), null);
-		assertEquals(appWithRolesForUser.isSystemUser(), false);
+		assertEquals(appWithRolesForUser.getIsSystemUser(), false);
 		assertEquals(appWithRolesForUser.toString(), "AppWithRolesForUser(orgUserId=test, isSystemUser=false, appId=1, appName=test, appRoles=null)");
 	}
 }
