@@ -243,7 +243,7 @@ public class FnUser extends DomainVo implements UserDetails, Serializable {
   @Column(name = "org_code", length = 30)
   @Size(max = 30)
   @SafeHtml
-  private String org_code;
+  private String orgCode;
   @Column(name = "login_id", length = 25)
   @Size(max = 25)
   @SafeHtml
@@ -296,9 +296,7 @@ public class FnUser extends DomainVo implements UserDetails, Serializable {
   @SafeHtml
   private String locationClli;
   @Column(name = "org_manager_userid", length = 20)
-  @Size(max = 20)
-  @SafeHtml
-  private String orgManagerUserId;
+  private Long orgManagerUserId;
   @Column(name = "company", length = 100)
   @Size(max = 100)
   @SafeHtml
@@ -329,7 +327,7 @@ public class FnUser extends DomainVo implements UserDetails, Serializable {
   @Column(name = "cost_center", length = 25)
   @Size(max = 25)
   @SafeHtml
-  private String cost_center;
+  private String costCenter;
   @Column(name = "fin_loc_code", length = 10)
   @Size(max = 10)
   @SafeHtml
@@ -549,7 +547,7 @@ public class FnUser extends DomainVo implements UserDetails, Serializable {
       @Size(max = 11) @SafeHtml String zipCode,
       @Size(max = 3) @SafeHtml String countryCd,
       @Size(max = 8) @SafeHtml String locationClli,
-      @Size(max = 20) @SafeHtml String orgManagerUserId,
+      Long orgManagerUserId,
       @Size(max = 100) @SafeHtml String company,
       @Size(max = 200) @SafeHtml String departmentName,
       @Size(max = 100) @SafeHtml String jobTitle, FnLuTimezone timezone,
@@ -582,7 +580,7 @@ public class FnUser extends DomainVo implements UserDetails, Serializable {
     this.alertMethodCd = alertMethodCd;
     this.hrid = hrid;
     this.orgUserId = orgUserId;
-    this.org_code = org_code;
+    this.orgCode = org_code;
     this.loginId = loginId;
     this.loginPwd = loginPwd;
     this.lastLoginDate = lastLoginDate;
@@ -606,7 +604,7 @@ public class FnUser extends DomainVo implements UserDetails, Serializable {
     this.department = department;
     this.businessUnit = businessUnit;
     this.businessUnitName = businessUnitName;
-    this.cost_center = cost_center;
+    this.costCenter = cost_center;
     this.finLocCode = finLocCode;
     this.siloStatus = siloStatus;
     this.languageId = languageId;

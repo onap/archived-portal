@@ -139,7 +139,7 @@ class FnUserServiceTest {
               assertEquals(expected.getAlertMethodCd(), actual.getAlertMethodCd());
               assertEquals(expected.getHrid(), actual.getHrid());
               assertEquals(expected.getOrgUserId(), actual.getOrgUserId());
-              assertEquals(expected.getOrg_code(), actual.getOrg_code());
+              assertEquals(expected.getOrgCode(), actual.getOrgCode());
               assertEquals(expected.getLoginId(), actual.getLoginId());
               //   assertEquals(expected.getLoginPwd(), actual.getLoginPwd());
               assertEquals(expected.getActiveYn(), actual.getActiveYn());
@@ -157,7 +157,7 @@ class FnUserServiceTest {
               assertEquals(expected.getJobTitle(), actual.getJobTitle());
               assertEquals(expected.getDepartment(), actual.getDepartment());
               assertEquals(expected.getBusinessUnit(), actual.getBusinessUnit());
-              assertEquals(expected.getCost_center(), actual.getCost_center());
+              assertEquals(expected.getCostCenter(), actual.getCostCenter());
               assertEquals(expected.getFinLocCode(), actual.getFinLocCode());
               assertEquals(expected.getSiloStatus(), actual.getSiloStatus());
        }

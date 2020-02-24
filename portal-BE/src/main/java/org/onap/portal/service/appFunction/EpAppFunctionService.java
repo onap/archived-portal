@@ -45,8 +45,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
+import javax.persistence.EntityManager;
 import org.onap.portal.domain.db.ep.EpAppFunction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -55,21 +55,21 @@ import org.springframework.stereotype.Service;
 public class EpAppFunctionService {
 
   private final EpAppFunctionDao epAppFunctionDao;
+  private final EntityManager entityManager;
 
   @Autowired
-  public EpAppFunctionService(EpAppFunctionDao epAppFunctionDao) {
+  public EpAppFunctionService(final EpAppFunctionDao epAppFunctionDao,final EntityManager entityManager) {
     this.epAppFunctionDao = epAppFunctionDao;
+    this.entityManager = entityManager;
   }
 
   public List<EpAppFunction> getAppRoleFunctionList(final Long roleId, final Long appId) {
-
     return Optional.of(epAppFunctionDao.getAppRoleFunctionList(roleId, appId))
-        .orElse(new ArrayList<>())
-        .stream()
-        .filter(distinctByKey(EpAppFunction::getAppId))
-        .filter(distinctByKey(EpAppFunction::getFunctionCd))
-        .filter(distinctByKey(EpAppFunction::getFunctionName))
-        .collect(Collectors.toList());
+        .orElse(new ArrayList<>());
+  }
+
+  public Optional<EpAppFunction> getForId(Long id){
+    return epAppFunctionDao.findById(id);
   }
 
   private <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
@@ -77,7 +77,34 @@ public class EpAppFunctionService {
     return t -> seen.add(keyExtractor.apply(t));
   }
 
+  public EpAppFunction save(final EpAppFunction epAppFunction){
+    return epAppFunctionDao.save(epAppFunction);
+  }
+
   public List<EpAppFunction> saveAll(List<EpAppFunction> epAppFunctions) {
     return epAppFunctionDao.saveAll(epAppFunctions);
+  }
+
+  public List<EpAppFunction> getAllRoleFunctions(final Long appId){
+    return epAppFunctionDao.getAllRoleFunctions(appId).orElse(new ArrayList<>());
+  }
+
+  public List<EpAppFunction> getAppFunctionOnCodeAndAppId(final long appId, final String functionCd) {
+      return epAppFunctionDao.getAppFunctionOnCodeAndAppId(appId, functionCd);
+  }
+
+  public List<EpAppFunction> getRoleFunction(final String functionCd, final long appId) {
+    return epAppFunctionDao.getRoleFunction(functionCd, appId);
+  }
+
+  public void deleteOne(EpAppFunction function){
+    epAppFunctionDao.delete(function);
+  }
+
+  public void deleteByAppIdAndFunctionCd(Long appId, String functionCd) {
+    entityManager.createQuery("DELETE FROM ep_app_function WHERE app_id = :appId and function_cd = :functionCd")
+        .setParameter("appId", appId)
+        .setParameter("functionCd", functionCd)
+        .executeUpdate();
   }
 }

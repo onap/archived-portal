@@ -75,8 +75,8 @@ CREATE TABLE `fn_role_function` (
 
 @Table(name = "fn_role_function", indexes = {
     @Index(name = "fn_role_function_function_cd", columnList = "function_cd"),
-    @Index(name = "fn_role_function_role_id", columnList = "role"),
-    @Index(name = "fn_role_function_roleId_functionCd", columnList = "role, function_cd", unique = true)})
+    @Index(name = "fn_role_function_role_id", columnList = "role_id"),
+    @Index(name = "fn_role_function_roleId_functionCd", columnList = "role_id, function_cd", unique = true)})
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -86,7 +86,7 @@ CREATE TABLE `fn_role_function` (
 public class FnRoleFunction extends DomainVo implements Serializable {
 
   @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
-  @JoinColumn(name = "role", nullable = false, columnDefinition = "bigint")
+  @JoinColumn(name = "role_id", nullable = false, columnDefinition = "bigint")
   @Valid
   @NotNull
   private FnRole role;

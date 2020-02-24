@@ -46,6 +46,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.onap.portal.domain.db.DomainVo;
+import org.onap.portal.domain.db.fn.FnApp;
+import org.onap.portal.domain.db.fn.FnRole;
 
 @Getter
 @Setter
@@ -57,13 +59,13 @@ public class EPUserApp extends DomainVo implements java.io.Serializable, Compara
 	
 	private Long userId;
 	@Valid
-	private EPApp app;
+	private FnApp app;
 	@Valid
-	private EPRole role;
+	private FnRole role;
 
 	private Integer priority;
 
-	public EPUserApp(final Long userId, final EPApp app, final EPRole role) {
+	public EPUserApp(final Long userId, final FnApp app, final FnRole role) {
 		this.userId = userId;
 		this.app = app;
 		this.role = role;

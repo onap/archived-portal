@@ -126,6 +126,10 @@ public class FnRoleService {
     return Optional.of(fnRoleDao.retrieveActiveRolesOfApplication(appId)).orElse(new ArrayList<>());
   }
 
+  public List<FnRole> retrieveAppRolesByRoleNameAndWhereAppIdIsNull(final String roleName){
+    return fnRoleDao.retrieveAppRolesByRoleNameAndWhereAppIdIsNull(roleName).orElse(new ArrayList<>());
+  }
+
   public List<FnRole> getGlobalRolesOfPortal() {
     List<FnRole> globalRoles = new ArrayList<>();
     try {
@@ -151,5 +155,14 @@ public class FnRoleService {
 
   public List<FnRole> saveAll(List<FnRole> fnRoles) {
     return fnRoleDao.saveAll(fnRoles);
+  }
+
+  public List<FnRole> userAppGlobalRoles(final Long userId, final Long appId) {
+      return fnRoleDao.userAppGlobalRoles(userId, appId).orElse(new ArrayList<>());
+  }
+
+
+  public List<FnRole> retrieveActiveRolesWhereAppIdIsNull() {
+      return fnRoleDao.retrieveActiveRolesWhereAppIdIsNull().orElse(new ArrayList<>());
   }
 }

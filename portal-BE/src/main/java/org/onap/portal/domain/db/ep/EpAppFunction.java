@@ -50,6 +50,7 @@ import javax.persistence.FetchType;
 import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedNativeQuery;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -81,7 +82,7 @@ CREATE TABLE `ep_app_function` (
 @NamedQueries({
     @NamedQuery(
         name = "EpAppFunction.getAppRoleFunctionList",
-        query = "from\n"
+        query = "SELECT DISTINCT f from\n"
             + "  EpAppRoleFunction rf,\n"
             + "  EpAppFunction f\n"
             + " where\n"
@@ -89,6 +90,18 @@ CREATE TABLE `ep_app_function` (
             + "  and rf.appId.id = :appId\n"
             + "  and rf.appId.id = f.appId.id\n"
             + "  and rf.epAppFunction.functionCd = f.functionCd"
+    ),
+    @NamedQuery(
+        name = "EpAppFunction.getAllRoleFunctions",
+        query = "from EpAppFunction where appId.id =:appId"
+    ),
+    @NamedQuery(
+        name = "EpAppFunction.getAppFunctionOnCodeAndAppId",
+        query = "from EpAppFunction where appId.id =:appId and functionCd =:functionCd "
+    ),
+    @NamedQuery(
+        name = "EpAppFunction.getRoleFunction",
+        query = "from EpAppFunction where functionCd like CONCAT('%', :functionCode,'%') and appId.id =:appId"
     )
 })
 
@@ -145,13 +158,12 @@ public class EpAppFunction extends DomainVo implements Serializable {
   }
 
   @Builder
-  public EpAppFunction(@Digits(integer = 11, fraction = 0) Long id,
-      LocalDateTime created, LocalDateTime modified, Long rowNum, Serializable auditUserId,
-      DomainVo createdId, DomainVo modifiedId, Set<DomainVo> fnUsersCreatedId,
+  public EpAppFunction(@Digits(integer = 11, fraction = 0) Long id, LocalDateTime created,
+      LocalDateTime modified, Long rowNum, Serializable auditUserId, DomainVo createdId,
+      DomainVo modifiedId, Set<DomainVo> fnUsersCreatedId,
       Set<DomainVo> fnUsersModifiedId, @Valid FnApp appId,
-      @Size(max = 250) @NotNull @SafeHtml String functionCd,
-      @Size(max = 250) @NotNull @SafeHtml String functionName, Long roleId, String type,
-      @SafeHtml String action, @SafeHtml String editUrl,
+      @Size(max = 250) @NotNull String functionCd,
+      @Size(max = 250) @NotNull String functionName, Long roleId, String type, String action, String editUrl,
       Set<EpAppRoleFunction> epAppRoleFunctions) {
     super(id, created, modified, rowNum, auditUserId, createdId, modifiedId, fnUsersCreatedId, fnUsersModifiedId);
     this.appId = appId;

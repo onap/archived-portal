@@ -84,7 +84,7 @@ public class FnUserDto {
        private String zipCode;
        private String countryCd;
        private String locationClli;
-       private String orgManagerUserId;
+       private Long orgManagerUserId;
        private String company;
        private String departmentName;
        private String jobTitle;

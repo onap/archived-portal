@@ -1,10 +1,8 @@
-/*
+/*-
  * ============LICENSE_START==========================================
  * ONAP Portal
  * ===================================================================
- * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
- * ===================================================================
- * Modifications Copyright (c) 2019 Samsung
+ * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
@@ -35,24 +33,15 @@
  *
  * ============LICENSE_END============================================
  *
- *
+ * 
  */
+package org.onap.portal.exception;
 
-package org.onap.portal.domain.dto.ecomp;
+public class ExternalAuthSystemException extends Exception {
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+	private static final long serialVersionUID = -4576754924998287267L;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-public class PortalRestResponse<T> {
-	
-	private PortalRestStatusEnum status;
-	private String message;
-	private T response;
-
+	public ExternalAuthSystemException(String msg) {
+		   super(msg);
+	   } 
 }

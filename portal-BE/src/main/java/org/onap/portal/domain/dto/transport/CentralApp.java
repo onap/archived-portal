@@ -41,8 +41,10 @@
 package org.onap.portal.domain.dto.transport;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Date;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -50,6 +52,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
+@Builder
 @EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
@@ -57,8 +60,8 @@ public class CentralApp implements Serializable{
 
 	private static final long serialVersionUID = -3325965646585871632L;
 	private Long id;
-	private Date created;
-	private Date modified;
+	private LocalDateTime created;
+	private LocalDateTime modified;
 	private Long createdId;
 	private Long modifiedId;
 	private Long rowNum;
