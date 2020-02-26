@@ -50,8 +50,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.onap.portalapp.controller.EPRestrictedRESTfulBaseController;
+import org.onap.portalapp.music.conf.MusicSession;
+import org.onap.portalapp.music.util.MusicUtil;
 import org.onap.portalapp.portal.domain.EPApp;
 import org.onap.portalapp.portal.domain.EPRole;
+import org.onap.portalapp.portal.domain.EPServiceCookie;
 import org.onap.portalapp.portal.domain.EPUser;
 import org.onap.portalapp.portal.logging.aop.EPAuditLog;
 import org.onap.portalapp.portal.service.AdminRolesService;
@@ -70,6 +73,8 @@ import org.onap.portalapp.validation.DataValidator;
 import org.onap.portalapp.validation.SecureString;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.onap.portalsdk.core.onboarding.crossapi.PortalAPIResponse;
+import org.onap.portalsdk.core.onboarding.util.CipherUtil;
+import org.onap.portalsdk.core.util.SystemProperties;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -239,5 +244,31 @@ public class ExternalAppsRestfulController extends EPRestrictedRESTfulBaseContro
 	protected void handleBadRequests(Exception e, HttpServletResponse response) throws IOException {
 		logger.warn(EELFLoggerDelegate.errorLogger, "Handling bad request", e);
 		response.sendError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
+	}
+	
+	@EPAuditLog
+	@RequestMapping(value = { "/validateCookie" }, method = RequestMethod.POST)
+	public boolean validateCookie(@RequestBody EPServiceCookie epServiceCookie, HttpServletRequest request) throws Exception {
+		Map<String,String> epServiceCookieValueMap = epServiceCookie.getValue();
+		if(epServiceCookieValueMap!=null) {
+			String multifactorauthfrontendurl = SystemProperties.getProperty("frontend_url");
+			String encryptedJSessionId = epServiceCookieValueMap.get(multifactorauthfrontendurl);
+			if(encryptedJSessionId != null) {
+				String jSessionId = CipherUtil.decryptPKC(encryptedJSessionId);
+				if(jSessionId != null) {
+					if(jSessionId.equals(request.getSession().getId())) {
+						if(MusicUtil.isMusicEnable()) { 
+							MusicSession musicSession = new MusicSession();
+							String sessionId = musicSession.getAttribute(encryptedJSessionId);
+							logger.info(EELFLoggerDelegate.errorLogger, "Music sessionid : "+sessionId);
+							return (sessionId != null); 
+						} else {
+							return true;
+						}
+					}
+				}
+			}
+		}
+		return false;
 	}
 }

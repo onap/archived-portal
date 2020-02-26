@@ -37,54 +37,28 @@
  */
 package org.onap.portalapp.portal.service;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.*;
-
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.onap.portalapp.portal.utils.EcompPortalUtils;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import com.orbitz.consul.Consul;
-import com.orbitz.consul.HealthClient;
-import com.orbitz.consul.model.ConsulResponse;
-import com.orbitz.consul.model.health.ServiceHealth;
-import com.orbitz.consul.Consul.Builder;
-import com.orbitz.consul.model.health.Node;
-import com.orbitz.consul.model.health.Service;
+
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ Consul.class ,EcompPortalUtils.class})
+@PrepareForTest({ EcompPortalUtils.class})
 public class WidgetMServiceImplTest {
 	
 	private static final String TEST="test";
 	@InjectMocks
 	WidgetMServiceImpl widgetMServiceImpl;
 	
-	@Mock
-	Builder builder;
-	@Mock
-	Consul consul ;
-	@Mock
-	HealthClient healthClient;
-	@Mock
-	ServiceHealth serviceHealth;
-	@Mock
-	ConsulResponse<List<ServiceHealth>> response;
-	@Mock
-	Node node;
-	@Mock
-	Service service;
+
 	
 	@Before
 	public void setup() {

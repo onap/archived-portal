@@ -42,10 +42,11 @@ package org.onap.portalapp.portal.scheduler.client;
 
 
 import javax.servlet.ServletContext;
+import javax.ws.rs.RuntimeType;
 import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
 
-import org.glassfish.jersey.client.ClientConfig;
+import org.apache.cxf.jaxrs.client.spec.ClientBuilderImpl;
+import org.apache.cxf.jaxrs.impl.ConfigurationImpl;
 import org.glassfish.jersey.client.ClientProperties;
 import org.onap.portalapp.portal.scheduler.util.CustomJacksonJaxBJsonProvider;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
@@ -71,10 +72,14 @@ public class HttpBasicClient{
 	 */
 	public static Client getClient() throws Exception {
 		
-		ClientConfig config = new ClientConfig();
-		config.property(ClientProperties.SUPPRESS_HTTP_COMPLIANCE_VALIDATION, true);
+		//ClientConfig config = new ClientConfig();
+
+		ConfigurationImpl config = new ConfigurationImpl(RuntimeType.CLIENT);
+		config.setProperty(ClientProperties.SUPPRESS_HTTP_COMPLIANCE_VALIDATION, true);
+		ClientBuilderImpl impl = new ClientBuilderImpl();
 		
-		return ClientBuilder.newClient(config)
+		Class.forName(org.apache.cxf.jaxrs.impl.ResponseImpl.class.getName());
+		return impl.withConfig(config).build()
 				.register(CustomJacksonJaxBJsonProvider.class);
 	}	
 }  

@@ -2,7 +2,7 @@
  * ============LICENSE_START==========================================
  * ONAP Portal
  * ===================================================================
- * Copyright Â© 2018 AT&T Intellectual Property. All rights reserved.
+ * Copyright © 2018 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
@@ -87,6 +87,7 @@ public class MusicSessionRepositoryHandlerTest {
 	@Test
 	public void getTest() throws Exception {
 		Mockito.when(MusicCore.get(Matchers.any(PreparedQueryObject.class))).thenReturn(resultSet);
+		Mockito.when(musicService.modEventualGet(Matchers.any(PreparedQueryObject.class))).thenReturn(resultSet);
 		Mockito.when(musicService.getMetaAttribute("test_id")).thenReturn(ms);
 		Session session = musicSessionRepositoryHandler.get("test_id");
 		assertNotNull(session);
@@ -96,7 +97,8 @@ public class MusicSessionRepositoryHandlerTest {
 	@Test
 	public void getFailWithIdTest() throws Exception {
 		Mockito.when(MusicCore.get(Matchers.any(PreparedQueryObject.class))).thenReturn(resultSet);
-		Mockito.when((musicService).getMetaAttribute("test_id")).thenThrow(new NullPointerException());
+		Mockito.when(musicService.modEventualGet(Matchers.any(PreparedQueryObject.class))).thenReturn(resultSet);
+		Mockito.when(musicService.getMetaAttribute("test_id")).thenThrow(new NullPointerException());
 		Session session = musicSessionRepositoryHandler.get("test_id");
 		assertNull(session);
 	}

@@ -38,9 +38,11 @@
 package org.onap.portalapp.portal.controller;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,8 +57,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.mockito.runners.MockitoJUnitRunner;
-import org.onap.portalapp.portal.controller.FunctionalMenuController;
 import org.onap.portalapp.portal.core.MockEPUser;
 import org.onap.portalapp.portal.domain.EPUser;
 import org.onap.portalapp.portal.ecomp.model.PortalRestResponse;
@@ -72,12 +72,14 @@ import org.onap.portalapp.portal.transport.BusinessCardApplicationRolesList;
 import org.onap.portalapp.portal.transport.FavoritesFunctionalMenuItem;
 import org.onap.portalapp.portal.transport.FavoritesFunctionalMenuItemJson;
 import org.onap.portalapp.portal.transport.FieldsValidator;
+import org.onap.portalapp.portal.transport.FieldsValidator.FieldName;
 import org.onap.portalapp.portal.transport.FunctionalMenuItem;
 import org.onap.portalapp.portal.transport.FunctionalMenuItemWithRoles;
-import org.onap.portalapp.portal.transport.FieldsValidator.FieldName;
 import org.onap.portalapp.util.EPUserUtils;
+import org.onap.portalsdk.core.domain.User;
 import org.onap.portalsdk.core.service.DataAccessService;
 import org.onap.portalsdk.core.util.SystemProperties;
+import org.onap.portalsdk.core.web.support.UserUtils;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -166,12 +168,34 @@ public class FunctionalMenuControllerTest extends MockitoTestSuite {
 		appRolesActual = mockBusinessCardApplicationRolesList();
 
 		Mockito.when(functionalMenuService.getUserAppRolesList(userid)).thenReturn(userAppRoleList);
-
-		appRoles = functionalMenuController.getAppList(mockedRequest, userid);
+		User user = new User();
+		user.setOrgUserId(userid);
+		Mockito.when(UserUtils.getUserSession(mockedRequest)).thenReturn(user);
+		
+		appRoles = functionalMenuController.getAppList(mockedRequest, mockedResponse, userid);
 
 		assertEquals(appRolesActual.size(), appRoles.size());
 		assertEquals(appRolesActual.get(0).getAppName(), appRoles.get(0).getAppName());
 		assertEquals(appRolesActual.get(0).getRoleNames(), appRoles.get(0).getRoleNames());
+
+	}
+	
+	@Test
+	public void getAppListTestForOtherUser() throws IOException {
+
+		userAppRoleList = mockBusinessCardApplicationRole();
+		appRolesActual = mockBusinessCardApplicationRolesList();
+
+		Mockito.when(functionalMenuService.getUserAppRolesList(userid)).thenReturn(userAppRoleList);
+		User user = new User();
+		user.setOrgUserId(userid + "other");
+		Mockito.when(UserUtils.getUserSession(mockedRequest)).thenReturn(user);
+		Mockito.when(mockedResponse.getWriter()).thenReturn(new PrintWriter(System.out));
+
+		appRoles = functionalMenuController.getAppList(mockedRequest, mockedResponse, userid);
+		assertNull(appRoles);
+		assertEquals(0, mockedResponse.getStatus());
+
 
 	}
 
@@ -209,7 +233,10 @@ public class FunctionalMenuControllerTest extends MockitoTestSuite {
 		businessCardApplicationRolesList.setRoleNames(roleNames1);
 		appRolesActual.add(businessCardApplicationRolesList);
 		Mockito.when(functionalMenuService.getUserAppRolesList(userid)).thenReturn(userAppRoleList);
-		appRoles = functionalMenuController.getAppList(mockedRequest, userid);
+		User user = new User();
+		user.setOrgUserId(userid);
+		Mockito.when(UserUtils.getUserSession(mockedRequest)).thenReturn(user);
+		appRoles = functionalMenuController.getAppList(mockedRequest, mockedResponse, userid);
 		assertEquals(appRolesActual.size(), appRoles.size());
 		assertEquals(appRolesActual.get(0).getAppName(), appRoles.get(0).getAppName());
 		assertEquals(appRolesActual.get(0).getRoleNames(), appRoles.get(0).getRoleNames());

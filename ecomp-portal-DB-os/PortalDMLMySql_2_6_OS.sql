@@ -101,6 +101,7 @@ insert into ep_app_function (app_id, function_cd, function_name) values
 (1,	'url|url_role.htm|*','role page'),
 (1,	'url|url_welcome.htm|*','welcome page'),
 (1, 'menu|menu_acc_admin|*','Admin Account Menu'),
+(1, 'menu|menu_app_onboarding|*','Application Onboarding'),
 (1,'url|addWebAnalyticsReport|*','Add Web Analytics Report'), 
 (1,'url|appsFullList|*','Apps Full List'),
 (1,'url|centralizedApps|*','Centralized Apps'),
@@ -148,6 +149,8 @@ insert into ep_app_role_function (id, app_id, role_id, function_cd, role_app_id)
 (25,1,999,'url|get_role_functions%2f%2a|*', null),
 (26,1,999,'url|notification_code|*', null),
 (27,1,999,'url|role_function_list%2fsaveRoleFunction%2f%2a|*', null),
-(28,1,999,'url|syncRoles|*', null);
+(28,1,999,'url|syncRoles|*', null),
+(29, 1, 1, 'menu|menu_app_onboarding|*', null)
+;
 
-commit;    
+commit;

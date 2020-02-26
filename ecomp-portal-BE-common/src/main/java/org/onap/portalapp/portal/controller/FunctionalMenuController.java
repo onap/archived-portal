@@ -49,6 +49,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.core.Response;
 
 import org.json.JSONObject;
 import org.onap.portalapp.controller.EPRestrictedBaseController;
@@ -74,6 +75,7 @@ import org.onap.portalapp.util.EPUserUtils;
 import org.onap.portalapp.validation.DataValidator;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.onap.portalsdk.core.util.SystemProperties;
+import org.onap.portalsdk.core.web.support.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
@@ -641,10 +643,18 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 	 */
 	@RequestMapping(value = {
 			"/portalApi/userApplicationRoles" }, method = RequestMethod.GET, produces = "application/json")
-	public List<BusinessCardApplicationRolesList> getAppList(HttpServletRequest request,
+	public List<BusinessCardApplicationRolesList> getAppList(HttpServletRequest request, HttpServletResponse response,
 			@RequestParam("userId") String userId) throws IOException {
 
 		List<BusinessCardApplicationRolesList> AppRoles = null;
+		
+		if(!UserUtils.getUserSession(request).getOrgUserId().equalsIgnoreCase(userId)) {
+			logger.error(EELFLoggerDelegate.errorLogger, "Not authorized to view roles of others ");
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			response.getWriter().flush();
+			return null;
+		}
+			
 		try {
 			List<BusinessCardApplicationRole> userAppRoleList = functionalMenuService.getUserAppRolesList(userId);
 

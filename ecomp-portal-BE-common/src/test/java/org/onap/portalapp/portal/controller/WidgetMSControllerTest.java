@@ -51,16 +51,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.onap.portalapp.portal.controller.WidgetMSController;
 import org.onap.portalapp.portal.domain.BEProperty;
 import org.onap.portalapp.portal.ecomp.model.PortalRestResponse;
 import org.onap.portalapp.portal.ecomp.model.PortalRestStatusEnum;
+import org.onap.portalapp.portal.exceptions.NoHealthyServiceException;
 import org.onap.portalapp.portal.framework.MockitoTestSuite;
 import org.onap.portalapp.portal.service.WidgetMService;
 import org.onap.portalapp.portal.service.WidgetMServiceImpl;
-
-import com.orbitz.consul.ConsulException;
-import com.orbitz.consul.model.health.ServiceHealth;
 
 import io.searchbox.client.config.exception.NoServerConfiguredException;
 
@@ -86,7 +83,7 @@ public class WidgetMSControllerTest {
 	HttpServletRequest mockedRequest = mockitoTestSuite.getMockedRequest();
 	HttpServletResponse mockedResponse = mockitoTestSuite.getMockedResponse();
 	NullPointerException nullPointerException = new NullPointerException();
-	ConsulException consulException = new ConsulException(nullPointerException);
+	NoHealthyServiceException exception = new NoHealthyServiceException("");
 
 	@Test
 	public void getServiceLocationTest() {
@@ -101,29 +98,29 @@ public class WidgetMSControllerTest {
 
 
 	@Test
-	public void getServiceLocationExceptionConsulExceptionTest() {
+	public void getServiceLocationExceptionConsulExceptionTest() throws Exception {
 		PortalRestResponse<BEProperty> ecpectedPortalRestResponse = new PortalRestResponse<BEProperty>();
 		ecpectedPortalRestResponse.setMessage("Error!");
 		ecpectedPortalRestResponse.setStatus(PortalRestStatusEnum.ERROR);
 		PortalRestResponse<String> actualPortalRestRespone = new PortalRestResponse<String>();
-		Mockito.when(consulHealthService.getServiceLocation(service, null)).thenThrow(consulException);
+		Mockito.when(consulHealthService.getServiceLocation(service, null)).thenThrow(exception);
 		actualPortalRestRespone = consulClientController.getServiceLocation(mockedRequest, mockedResponse, service);
 		assertTrue(actualPortalRestRespone.getMessage().equals(ecpectedPortalRestResponse.getMessage()));
 		assertTrue(actualPortalRestRespone.getStatus().equals(ecpectedPortalRestResponse.getStatus()));
 	}
 
-	public PortalRestResponse<List<ServiceHealth>> successResponse() {
-		PortalRestResponse<List<ServiceHealth>> ecpectedPortalRestResponse = new PortalRestResponse<List<ServiceHealth>>();
-		List<ServiceHealth> healths = new ArrayList<ServiceHealth>();
+	public PortalRestResponse<List<?>> successResponse() {
+		PortalRestResponse<List<?>> ecpectedPortalRestResponse = new PortalRestResponse<List<?>>();
+		List<?> healths = new ArrayList<>();
 		ecpectedPortalRestResponse.setMessage("Success!");
 		ecpectedPortalRestResponse.setResponse(healths);
 		ecpectedPortalRestResponse.setStatus(PortalRestStatusEnum.OK);
 		return ecpectedPortalRestResponse;
 	}
 
-	public PortalRestResponse<List<ServiceHealth>> errorResponse() {
-		PortalRestResponse<List<ServiceHealth>> ecpectedPortalRestResponse = new PortalRestResponse<List<ServiceHealth>>();
-		List<ServiceHealth> healths = new ArrayList<ServiceHealth>();
+	public PortalRestResponse<List<?>> errorResponse() {
+		PortalRestResponse<List<?>> ecpectedPortalRestResponse = new PortalRestResponse<List<?>>();
+		List<?> healths = new ArrayList<>();
 		ecpectedPortalRestResponse.setMessage("Error!");
 		ecpectedPortalRestResponse.setResponse(healths);
 		ecpectedPortalRestResponse.setStatus(PortalRestStatusEnum.ERROR);

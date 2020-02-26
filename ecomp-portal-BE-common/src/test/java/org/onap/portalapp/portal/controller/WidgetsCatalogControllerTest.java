@@ -54,7 +54,6 @@ import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.onap.portalapp.portal.controller.WidgetsCatalogController;
 import org.onap.portalapp.portal.core.MockEPUser;
 import org.onap.portalapp.portal.domain.EPUser;
 import org.onap.portalapp.portal.domain.MicroserviceParameter;
@@ -65,16 +64,15 @@ import org.onap.portalapp.portal.domain.WidgetServiceHeaders;
 import org.onap.portalapp.portal.ecomp.model.PortalRestResponse;
 import org.onap.portalapp.portal.ecomp.model.PortalRestStatusEnum;
 import org.onap.portalapp.portal.framework.MockitoTestSuite;
-import org.onap.portalapp.portal.service.WidgetMService;
-import org.onap.portalapp.portal.service.WidgetMServiceImpl;
 import org.onap.portalapp.portal.service.MicroserviceService;
 import org.onap.portalapp.portal.service.MicroserviceServiceImpl;
+import org.onap.portalapp.portal.service.WidgetMService;
+import org.onap.portalapp.portal.service.WidgetMServiceImpl;
 import org.onap.portalapp.portal.service.WidgetParameterService;
 import org.onap.portalapp.portal.service.WidgetParameterServiceImpl;
 import org.onap.portalapp.portal.utils.EPCommonSystemProperties;
 import org.onap.portalapp.portal.utils.EcompPortalUtils;
 import org.onap.portalapp.util.EPUserUtils;
-import org.onap.portalsdk.core.onboarding.exception.CipherUtilException;
 import org.onap.portalsdk.core.onboarding.util.CipherUtil;
 import org.onap.portalsdk.core.util.SystemProperties;
 import org.powermock.api.mockito.PowerMockito;
@@ -178,7 +176,7 @@ public class WidgetsCatalogControllerTest {
 	}
 
 	@Test
-	public void getWidgetCatalogTest() throws CipherUtilException {
+	public void getWidgetCatalogTest() throws Exception {
 		PowerMockito.mockStatic(EcompPortalUtils.class);
 		PowerMockito.mockStatic(SystemProperties.class);
 		PowerMockito.mockStatic(EPCommonSystemProperties.class);

@@ -50,13 +50,10 @@ import org.onap.portalsdk.core.onboarding.util.PortalApiConstants;
 import org.onap.portalsdk.core.util.SystemProperties;
 import org.onap.portalsdk.core.web.support.AppUtils;
 
-public class SessionCookieUtil {
+public class SessionCookieUtil extends CommonSessionCookieUtil{
 	
 	//private static final String JSESSIONID = "JSESSIONID";
-	private static final String EP_SERVICE = "EPService";
 	private static final String USER_ID = "UserId";
-	private static Integer cookieMaxAge = -1;
-	private static EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(SessionCookieUtil.class);
 	
 	public static void preSetUp(HttpServletRequest request,
 			HttpServletResponse response) {
@@ -107,42 +104,4 @@ public class SessionCookieUtil {
 		logger.info("************** session cookie util set up EP cookie completed");
 		return userId;
 	}
-	
-	public static String getJessionId(HttpServletRequest request){
-		
-		return request.getSession().getId();
-		/*
-		Cookie ep = WebUtils.getCookie(request, JSESSIONID);
-		if(ep==null){
-			return request.getSession().getId();
-		}
-		return ep.getValue();
-		*/
-	}
-	
-	protected static void initateSessionMgtHandler(HttpServletRequest request) {
-		String jSessionId = getJessionId(request);
-		storeMaxInactiveTime(request);
-		PortalTimeoutHandler.sessionCreated(jSessionId, jSessionId, AppUtils.getSession(request));
-	}
-	
-	protected static void storeMaxInactiveTime(HttpServletRequest request) {
-		HttpSession session = AppUtils.getSession(request);
-		if(session.getAttribute(PortalApiConstants.GLOBAL_SESSION_MAX_IDLE_TIME) == null)
-			session.setAttribute(PortalApiConstants.GLOBAL_SESSION_MAX_IDLE_TIME,session.getMaxInactiveInterval());
-	}
-	
-	public static void resetSessionMaxIdleTimeOut(HttpServletRequest request) {
-		try {
-			HttpSession session = AppUtils.getSession(request);
-			final Object maxIdleAttribute = session.getAttribute(PortalApiConstants.GLOBAL_SESSION_MAX_IDLE_TIME);
-			if(session != null && maxIdleAttribute != null) {
-				session.setMaxInactiveInterval(Integer.parseInt(maxIdleAttribute.toString()));
-			}
-		} catch (Exception e) {
-			logger.error(EELFLoggerDelegate.errorLogger, "resetSessionMaxIdleTimeOut failed", e);
-		}
-		
-	}
-
 }

@@ -3,6 +3,7 @@
 .classpath
 .project
 .settings/
+/.factorypath
 /debug-logs/
 /logs/
 /bin/

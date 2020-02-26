@@ -129,12 +129,12 @@ export const environment = {
     "footerLogoImagePath": "",
     "footerLogoText": "",
     "intraSearcLink": "",
-    "extraSearcLink": "https://wiki.onap.org/dosearchsite.action?cql=siteSearch+~+searchStringPlaceHolder&queryString=searchStringPlaceHolder",
-    "getAccessUrl": "",
-    "getAccessName":"",
-    "getAccessInfo":""
+    "extraSearcLink": "https://wiki.onap.org/dosearchsite.action?cql=siteSearch+~+searchStringPlaceHolder&queryString=searchStringPlaceHolder"
   },
-  "cookieDomain": "att.com"
+  "getAccessUrl": "",
+  "getAccessName": "",
+  "getAccessInfo": "",
+  "cookieDomain": "onap.org"
 };
 
 /*

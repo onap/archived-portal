@@ -376,6 +376,15 @@ public class EcompPortalUtils {
 	public static String widgetMsProtocol() {
 		return getPropertyOrDefault(EPCommonSystemProperties.WIDGET_MS_PROTOCOL, "https");
 	}
+	
+	/**
+	 * Answers the protocol to use.
+	 * 
+	 * @return Protocol name from property file; defaults to https.
+	 */
+	public static String widgetMLProtocol() {
+		return getPropertyOrDefault(EPCommonSystemProperties.WIDGET_ML_PROTOCOL, "https");
+	}
 
 	/**
 	 * Answers the host to use.
@@ -384,6 +393,15 @@ public class EcompPortalUtils {
 	 */
 	public static String localOrDockerHost() {
 		return getPropertyOrDefault(EPCommonSystemProperties.WIDGET_MS_HOSTNAME, "localhost");
+	}
+	
+	/**
+	 * Answers the host to use.
+	 * 
+	 * @return Host name from property file; defaults to localhost.
+	 */
+	public static String mlLocalOrDockerHost() {
+		return getPropertyOrDefault(EPCommonSystemProperties.WIDGET_ML_HOSTNAME, "localhost");
 	}
 
 	/**

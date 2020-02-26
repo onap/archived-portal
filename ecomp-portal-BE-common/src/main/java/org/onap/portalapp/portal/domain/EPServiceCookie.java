@@ -35,29 +35,20 @@
  *
  * 
  */
-package org.onap.portalapp.portal.service;
+package org.onap.portalapp.portal.domain;
 
-import org.onap.portalapp.portal.exceptions.NoHealthyServiceException;
+import java.util.Map;
 
-public interface WidgetMService {
-	/**
-	 * This method returns the location of Widget MS -
-	 * 
-	 * 
-	 * @param service
-	 * @param fallbackPortOnLocalhost
-	 *            value provided by the calling service
-	 * @return Service location
-	 */
-	public String getServiceLocation(String service, String fallbackPortOnLocalhost) throws NoHealthyServiceException;
 
-	
-	/**
-	 * This method returns the location of Machine learning -
-	 * 
-	 * 
-	 * @return Service location
-	 */
-	public String getMLServiceLocation();
+public class EPServiceCookie {
+	Map<String, String> value;
+
+	public Map<String, String> getValue() {
+		return value;
+	}
+
+	public void setValue(Map<String, String> value) {
+		this.value = value;
+	}
 
 }

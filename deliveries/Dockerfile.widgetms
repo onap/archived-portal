@@ -1,7 +1,8 @@
 # Large image
 # FROM openjdk:8-jdk
 # Tiny image; it includes java and nc
-FROM openjdk:8-alpine
+#FROM frolvlad/alpine-oraclejdk8:slim
+FROM openjdk:8-jdk-alpine
 
 # Arguments are supplied by build script;
 # the defaults below only support testing
@@ -12,6 +13,8 @@ RUN sh -c 'touch /app.jar'
 
 # Launch script
 COPY start-wms.sh /
+
+RUN addgroup -g 1000 -S portal && adduser -u 1000 -S portal -G portal && mkdir logs / && chown -R portal:portal /start-wms.sh /tmp /etc/ssl/certs/java /logs && chmod -R 755 /start-wms.sh /etc/ssl/certs/java /logs /tmp
 
 # Define default command
 CMD /start-wms.sh

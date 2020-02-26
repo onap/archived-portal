@@ -109,7 +109,6 @@ Insert into fn_lu_activity (ACTIVITY_CD,ACTIVITY) values ('eadr','External auth 
 Insert into fn_lu_activity (ACTIVITY_CD,ACTIVITY) values ('eauf','External auth update function');
 Insert into fn_lu_activity (ACTIVITY_CD,ACTIVITY) values ('eaurf','External auth update role and function');
 
-
 -- FN_LU_MENU_SET
 Insert into fn_lu_menu_set (MENU_SET_CD,MENU_SET_NAME) values ('APP','Application Menu');
 
@@ -139,8 +138,7 @@ Insert into fn_menu(MENU_ID,LABEL,PARENT_ID,SORT_ORDER,ACTION,FUNCTION_CD,ACTIVE
                                values(8,'Portal Admins',1,60,'root.portalAdmins','menu_admin','Y','APP','N','icon-controls-settingsconnectedactivity');
 
 Insert into fn_menu(MENU_ID,LABEL,PARENT_ID,SORT_ORDER,ACTION,FUNCTION_CD,ACTIVE_YN,MENU_SET_CD,SEPARATOR_YN,IMAGE_SRC)
-                               values(9,'Application Onboarding',1,70,'root.applications','menu_admin','Y','APP','N','icon-content-grid2');
-							   
+                               values(9,'Application Onboarding',1,70,'root.applications','menu_app_onboarding','Y','APP','N','icon-content-grid2');
 
 Insert into fn_menu(MENU_ID,LABEL,PARENT_ID,SORT_ORDER,ACTION,FUNCTION_CD,ACTIVE_YN,MENU_SET_CD,SEPARATOR_YN,IMAGE_SRC)
                                values(10,'Widget Onboarding',1,80,'root.widgetOnboarding','menu_admin','Y','APP','N','icon-content-grid2');
