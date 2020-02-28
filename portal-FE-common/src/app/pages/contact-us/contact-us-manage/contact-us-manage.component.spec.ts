@@ -39,6 +39,12 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ContactUsManageComponent } from './contact-us-manage.component';
+import { FormsModule } from '@angular/forms';
+import { NgMaterialModule } from 'src/app/ng-material-module';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { Component } from '@angular/core';
 
 describe('ContactUsManageComponent', () => {
   let component: ContactUsManageComponent;
@@ -46,7 +52,9 @@ describe('ContactUsManageComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ContactUsManageComponent ]
+      declarations: [ ContactUsManageComponent ],
+      imports: [FormsModule, NgMaterialModule,HttpClientTestingModule,BrowserAnimationsModule],
+      providers: [NgbActiveModal]
     })
     .compileComponents();
   }));
@@ -61,3 +69,5 @@ describe('ContactUsManageComponent', () => {
     expect(component).toBeTruthy();
   });
 });
+
+

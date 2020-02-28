@@ -38,6 +38,12 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ApplicationCatalogComponent } from './application-catalog.component';
+import { RouterLinkDirectiveStub } from 'src/testing/router-link-directive-stub';
+import { FormsModule } from '@angular/forms';
+import { NgMaterialModule } from 'src/app/ng-material-module';
+import { GridsterModule } from 'angular-gridster2';
+import { ElipsisPipe } from 'src/app/shared/pipes/elipsis/elipsis.pipe';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('ApplicationCatalogComponent', () => {
   let component: ApplicationCatalogComponent;
@@ -45,7 +51,8 @@ describe('ApplicationCatalogComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ApplicationCatalogComponent ]
+      declarations: [ ApplicationCatalogComponent,RouterLinkDirectiveStub,ElipsisPipe],
+      imports: [FormsModule,NgMaterialModule,GridsterModule,HttpClientTestingModule]
     })
     .compileComponents();
   }));

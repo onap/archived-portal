@@ -38,6 +38,10 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { NewPortalAdminComponent } from './new-portal-admin.component';
+import { Component, Input } from '@angular/core';
+import { NgMaterialModule } from 'src/app/ng-material-module';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('NewPortalAdminComponent', () => {
   let component: NewPortalAdminComponent;
@@ -45,7 +49,9 @@ describe('NewPortalAdminComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ NewPortalAdminComponent ]
+      declarations: [ NewPortalAdminComponent,AppSearchUsersStubComponent ],
+      providers:[NgbActiveModal],
+      imports:[HttpClientTestingModule]
     })
     .compileComponents();
   }));
@@ -60,3 +66,9 @@ describe('NewPortalAdminComponent', () => {
     expect(component).toBeTruthy();
   });
 });
+
+@Component({selector: 'app-search-users', template: ''})
+class AppSearchUsersStubComponent { 
+  @Input() searchTitle:any;
+  @Input() placeHolder:any;
+}

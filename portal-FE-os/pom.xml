@@ -10,6 +10,14 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<skipnode>false</skipnode>
 		<skipcopy>false</skipcopy>
+		<sonar.typescript.lcov.reportPaths>coverage/lcov.info</sonar.typescript.lcov.reportPaths>
+        <sonar.sources>src</sonar.sources>
+		<sonar.projectKey>portal-FE-os</sonar.projectKey>
+		<sonar.projectName>portal-FE-os</sonar.projectName> 
+		<sonar.exclusions>**/node_modules/**,**/*.spec.ts,**/*.module.ts,**/environment.prod.ts,**/*.js,**/main.ts,**/header-interceptor.ts,**/dynamic-widget.component.ts</sonar.exclusions>
+		<sonar.test.inclusions>**/*.spec.ts</sonar.test.inclusions>
+		<sonar.tests>src</sonar.tests>
+		<sonar.sourceEncoding>UTF-8</sonar.sourceEncoding>
 	</properties>
 
 	<build>
@@ -95,6 +103,19 @@
 
 						<configuration>
 							<arguments>install</arguments>
+						</configuration>
+					</execution>
+					
+					<execution>
+						<id>npm run test</id>
+						<goals>
+							<goal>npm</goal>
+						</goals>
+
+						<phase>generate-resources</phase>
+
+						<configuration>
+							<arguments>run-script test</arguments>
 						</configuration>
 					</execution>
 

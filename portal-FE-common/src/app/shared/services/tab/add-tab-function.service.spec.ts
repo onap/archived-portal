@@ -38,12 +38,20 @@
 import { TestBed } from '@angular/core/testing';
 
 import { AddTabFunctionService } from './add-tab-function.service';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('AddTabFunctionService', () => {
-  beforeEach(() => TestBed.configureTestingModule({}));
+  beforeEach(() => TestBed.configureTestingModule({imports:[HttpClientTestingModule]}));
 
   it('should be created', () => {
     const service: AddTabFunctionService = TestBed.get(AddTabFunctionService);
     expect(service).toBeTruthy();
+  });
+
+  it('filter should return stubbed value', () => {
+    const service: AddTabFunctionService = TestBed.get(AddTabFunctionService);
+    spyOn(service, 'filter').and.callThrough();
+    service.filter("TEST");
+    expect(service.filter).toHaveBeenCalledWith("TEST")  
   });
 });

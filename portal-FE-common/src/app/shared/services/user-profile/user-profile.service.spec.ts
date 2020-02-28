@@ -38,12 +38,30 @@
 import { TestBed } from '@angular/core/testing';
 
 import { UserProfileService } from './user-profile.service';
-
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { Observable } from 'rxjs';
+import 'rxjs/add/observable/of';
 describe('UserProfileService', () => {
-  beforeEach(() => TestBed.configureTestingModule({}));
+  // set the value to return when the `getValue` spy is called.
+  const stubValue = 'stub value';
+  const NODE_CONFIG: Array<any> = [];
+  beforeEach(() => 
+  {
+  TestBed.configureTestingModule({imports:[HttpClientTestingModule]})
+  
+  }
+
+    );
 
   it('should be created', () => {
     const service: UserProfileService = TestBed.get(UserProfileService);
     expect(service).toBeTruthy();
+  });
+
+  it('getUserAppRoles should return stubbed value', () => {
+    const service: UserProfileService = TestBed.get(UserProfileService);
+    spyOn(service, 'getUserAppRoles').and.callThrough();
+    service.getUserAppRoles("TEST");
+    expect(service.getUserAppRoles).toHaveBeenCalledWith("TEST")  
   });
 });

@@ -38,14 +38,22 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { BulkUserComponent } from './bulk-user.component';
+import { FormsModule } from '@angular/forms';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { NgMaterialModule } from 'src/app/ng-material-module';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 describe('BulkUserComponent', () => {
   let component: BulkUserComponent;
   let fixture: ComponentFixture<BulkUserComponent>;
+  const adminsAppsData:any =[{"titel":"TestDummyTitle"}];
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ BulkUserComponent ]
+      declarations: [ BulkUserComponent ],
+      imports:[FormsModule,HttpClientTestingModule,NgMaterialModule,BrowserAnimationsModule],
+      providers:[NgbActiveModal]
     })
     .compileComponents();
   }));
@@ -53,6 +61,7 @@ describe('BulkUserComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(BulkUserComponent);
     component = fixture.componentInstance;
+    component.adminsAppsData = adminsAppsData;
     fixture.detectChanges();
   });
 

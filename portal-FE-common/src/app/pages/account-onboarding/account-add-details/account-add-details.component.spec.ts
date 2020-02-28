@@ -38,14 +38,21 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { AccountAddDetailsComponent } from './account-add-details.component';
+import { NgMaterialModule } from 'src/app/ng-material-module';
+import { FormsModule } from '@angular/forms';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 describe('AccountAddDetailsComponent', () => {
   let component: AccountAddDetailsComponent;
   let fixture: ComponentFixture<AccountAddDetailsComponent>;
+  const accountOnboarding: any = {"applicationName":"Portal-name"}
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ AccountAddDetailsComponent ]
+      declarations: [ AccountAddDetailsComponent ],
+      imports:[FormsModule,NgMaterialModule,HttpClientTestingModule],
+      providers: [NgbActiveModal]
     })
     .compileComponents();
   }));
@@ -53,6 +60,7 @@ describe('AccountAddDetailsComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(AccountAddDetailsComponent);
     component = fixture.componentInstance;
+    component.accountOnboarding = accountOnboarding;
     fixture.detectChanges();
   });
 

@@ -36,12 +36,13 @@
  *
  */
 
-import { Component, OnInit, Input, Output, EventEmitter} from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, PLATFORM_ID, Inject, Injector} from '@angular/core';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { IApplications } from 'src/app/shared/model/applications-onboarding/applications';
 import { ApplicationsService } from 'src/app/shared/services';
 import { ConfirmationModalComponent } from 'src/app/modals/confirmation-modal/confirmation-modal.component';
 import { InformationModalComponent } from 'src/app/modals/information-modal/information-modal.component';
+import { isPlatformBrowser } from '@angular/common';
 
 @Component({
   selector: 'app-application-details-dialog',
@@ -59,9 +60,15 @@ export class ApplicationDetailsDialogComponent implements OnInit {
   isSaving: boolean = false;
   originalImage: any;
   ECOMP_URL_REGEX = "/^((?:https?\:\/\/|ftp?\:\/\/)?(w{3}.)?(?:[-a-z0-9]+\.)*[-a-z0-9]+.*)[^-_.]$/i";
+  private ngbModal:NgbModal;
 
-  constructor(public activeModal: NgbActiveModal, public ngbModal: NgbModal,
-    public applicationsService : ApplicationsService) { }
+  constructor(public activeModal: NgbActiveModal,
+    public applicationsService : ApplicationsService,@Inject(PLATFORM_ID)private platformId:Object,private injector:Injector) {
+      if(isPlatformBrowser(this.platformId))
+      {
+        this.ngbModal = this.injector.get(NgbModal);
+      }
+     }
 
   @Input() applicationObj: IApplications;
   @Output() passEntry: EventEmitter<any> = new EventEmitter();

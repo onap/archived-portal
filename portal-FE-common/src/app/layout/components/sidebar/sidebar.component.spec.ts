@@ -38,6 +38,9 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { SidebarComponent } from './sidebar.component';
+import { RouterLinkDirectiveStub } from 'src/testing/router-link-directive-stub';
+import { RouterTestingModule } from '@angular/router/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('SidebarComponent', () => {
   let component: SidebarComponent;
@@ -45,7 +48,8 @@ describe('SidebarComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ SidebarComponent ]
+      declarations: [ SidebarComponent, RouterLinkDirectiveStub ],
+      imports: [RouterTestingModule,HttpClientTestingModule]
     })
     .compileComponents();
   }));

@@ -38,6 +38,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { PagesComponent } from './pages.component';
+import { Component } from '@angular/core';
 
 describe('PagesComponent', () => {
   let component: PagesComponent;
@@ -45,7 +46,7 @@ describe('PagesComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ PagesComponent ]
+      declarations: [ PagesComponent,RouterOutletStubComponent ]
     })
     .compileComponents();
   }));
@@ -60,3 +61,6 @@ describe('PagesComponent', () => {
     expect(component).toBeTruthy();
   });
 });
+
+@Component({selector: 'router-outlet', template: ''})
+class RouterOutletStubComponent { }

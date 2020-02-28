@@ -38,6 +38,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { LayoutComponent } from './layout.component';
+import { Component } from '@angular/core';
 
 describe('LayoutComponent', () => {
   let component: LayoutComponent;
@@ -45,7 +46,7 @@ describe('LayoutComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ LayoutComponent ]
+      declarations: [ LayoutComponent,AppheaderStubComponent,AppTabBarStubComponent ]
     })
     .compileComponents();
   }));
@@ -60,3 +61,8 @@ describe('LayoutComponent', () => {
     expect(component).toBeTruthy();
   });
 });
+@Component({selector: 'app-header', template: ''})
+class AppheaderStubComponent {}
+
+@Component({selector: 'app-tabbar', template: ''})
+class AppTabBarStubComponent { }

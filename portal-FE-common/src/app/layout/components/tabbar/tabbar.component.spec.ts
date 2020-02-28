@@ -39,6 +39,10 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { TabbarComponent } from './tabbar.component';
+import { NgMaterialModule } from 'src/app/ng-material-module';
+import { Component } from '@angular/core';
+import { ElipsisPipe } from 'src/app/shared/pipes/elipsis/elipsis.pipe';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('TabbarComponent', () => {
   let component: TabbarComponent;
@@ -46,7 +50,8 @@ describe('TabbarComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ TabbarComponent ]
+      declarations: [ TabbarComponent, AppSideBarStubComponent, AppUserBarStubComponent,RouterOutletStubComponent,AppFooterBarStubComponent,ElipsisPipe],
+      imports: [NgMaterialModule,BrowserAnimationsModule]
     })
     .compileComponents();
   }));
@@ -61,3 +66,15 @@ describe('TabbarComponent', () => {
     expect(component).toBeTruthy();
   });
 });
+
+@Component({selector: 'app-sidebar', template: ''})
+class AppSideBarStubComponent {}
+
+@Component({selector: 'router-outlet', template: ''})
+class RouterOutletStubComponent { }
+
+@Component({selector: 'app-userbar', template: ''})
+class AppUserBarStubComponent {}
+
+@Component({selector: 'app-footer', template: ''})
+class AppFooterBarStubComponent {}

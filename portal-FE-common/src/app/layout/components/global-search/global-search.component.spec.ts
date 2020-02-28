@@ -38,6 +38,8 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { GlobalSearchComponent } from './global-search.component';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { RouterTestingModule } from '@angular/router/testing';
 
 describe('GlobalSearchComponent', () => {
   let component: GlobalSearchComponent;
@@ -45,7 +47,8 @@ describe('GlobalSearchComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ GlobalSearchComponent ]
+      declarations: [ GlobalSearchComponent ],
+      imports: [HttpClientTestingModule, RouterTestingModule]
     })
     .compileComponents();
   }));

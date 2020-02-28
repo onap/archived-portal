@@ -1,6 +1,8 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { DashboardComponent } from './dashboard.component';
+import { Component } from '@angular/core';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('DashboardComponent', () => {
   let component: DashboardComponent;
@@ -8,7 +10,8 @@ describe('DashboardComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ DashboardComponent ]
+      declarations: [ DashboardComponent, AppDashBoardApplicationCatalogComponent,AppDashBoardWidgetCatalogComponent ],
+      imports:[HttpClientTestingModule]
     })
     .compileComponents();
   }));
@@ -23,3 +26,9 @@ describe('DashboardComponent', () => {
     expect(component).toBeTruthy();
   });
 });
+
+@Component({selector: 'app-dashboard-application-catalog', template: ''})
+class AppDashBoardApplicationCatalogComponent {}
+
+@Component({selector: 'app-dashboard-widget-catalog', template: ''})
+class AppDashBoardWidgetCatalogComponent {}

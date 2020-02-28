@@ -38,6 +38,10 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { AddRoleComponent } from './add-role.component';
+import { FormsModule } from '@angular/forms';
+import { NgMaterialModule } from 'src/app/ng-material-module';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('AddRoleComponent', () => {
   let component: AddRoleComponent;
@@ -45,7 +49,9 @@ describe('AddRoleComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ AddRoleComponent ]
+      declarations: [ AddRoleComponent ],
+      imports:[FormsModule,NgMaterialModule,HttpClientTestingModule],
+      providers:[NgbActiveModal]
     })
     .compileComponents();
   }));

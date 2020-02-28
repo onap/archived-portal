@@ -38,6 +38,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { InformationModalComponent } from './information-modal.component';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 describe('InformationModalComponent', () => {
   let component: InformationModalComponent;
@@ -45,7 +46,8 @@ describe('InformationModalComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ InformationModalComponent ]
+      declarations: [ InformationModalComponent ],
+      providers: [NgbActiveModal]
     })
     .compileComponents();
   }));

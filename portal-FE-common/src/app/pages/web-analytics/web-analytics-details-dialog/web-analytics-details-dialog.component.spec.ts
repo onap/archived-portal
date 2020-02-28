@@ -39,14 +39,22 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { WebAnalyticsDetailsDialogComponent } from './web-analytics-details-dialog.component';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { FormsModule } from '@angular/forms';
+import { NgMaterialModule } from 'src/app/ng-material-module';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 describe('WebAnalyticsDetailsDialogComponent', () => {
   let component: WebAnalyticsDetailsDialogComponent;
   let fixture: ComponentFixture<WebAnalyticsDetailsDialogComponent>;
+  const userTableAppReport: any = {"appName":"WebNameTest"};
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ WebAnalyticsDetailsDialogComponent ]
+      declarations: [ WebAnalyticsDetailsDialogComponent ],
+      imports:[HttpClientTestingModule,FormsModule,NgMaterialModule,BrowserAnimationsModule],
+      providers:[NgbActiveModal]
     })
     .compileComponents();
   }));
@@ -54,6 +62,7 @@ describe('WebAnalyticsDetailsDialogComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(WebAnalyticsDetailsDialogComponent);
     component = fixture.componentInstance;
+    component.userTableAppReport = userTableAppReport;
     fixture.detectChanges();
   });
 

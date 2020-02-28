@@ -38,6 +38,10 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { RoleFunctionModalComponent } from './role-function-modal.component';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { FormsModule } from '@angular/forms';
+import { NgMaterialModule } from 'src/app/ng-material-module';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('RoleFunctionModalComponent', () => {
   let component: RoleFunctionModalComponent;
@@ -45,7 +49,9 @@ describe('RoleFunctionModalComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ RoleFunctionModalComponent ]
+      declarations: [ RoleFunctionModalComponent ],
+      imports:[FormsModule,NgMaterialModule,HttpClientTestingModule],
+      providers:[NgbActiveModal]
     })
     .compileComponents();
   }));

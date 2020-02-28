@@ -38,9 +38,10 @@
 import { TestBed } from '@angular/core/testing';
 
 import { SidebarService } from './sidebar.service';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('SidenavService', () => {
-  beforeEach(() => TestBed.configureTestingModule({}));
+  beforeEach(() => TestBed.configureTestingModule({imports:[HttpClientTestingModule]}));
 
   it('should be created', () => {
     const service: SidebarService = TestBed.get(SidebarService);

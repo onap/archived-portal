@@ -39,14 +39,23 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { WidgetDetailsDialogComponent } from './widget-details-dialog.component';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { NgMaterialModule } from 'src/app/ng-material-module';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { IWidget } from 'src/app/shared/model/widget-onboarding/widget';
 
 describe('WidgetDetailsDialogComponent', () => {
   let component: WidgetDetailsDialogComponent;
   let fixture: ComponentFixture<WidgetDetailsDialogComponent>;
+  const widget: IWidget = {"allUser":true,"name":"WidgetTestName"};
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ WidgetDetailsDialogComponent ]
+      declarations: [ WidgetDetailsDialogComponent ],
+      imports:[HttpClientTestingModule,FormsModule,ReactiveFormsModule,NgMaterialModule,BrowserAnimationsModule],
+      providers:[NgbActiveModal]
     })
     .compileComponents();
   }));
@@ -54,6 +63,7 @@ describe('WidgetDetailsDialogComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(WidgetDetailsDialogComponent);
     component = fixture.componentInstance;
+    component.widget=widget;
     fixture.detectChanges();
   });
 

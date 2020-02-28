@@ -38,6 +38,13 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { NewUserModalComponent } from './new-user-modal.component';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { NgMaterialModule } from 'src/app/ng-material-module';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { Component, Input } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { MatRadioChange } from '@angular/material';
 
 describe('NewUserModalComponent', () => {
   let component: NewUserModalComponent;
@@ -45,7 +52,9 @@ describe('NewUserModalComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ NewUserModalComponent ]
+      declarations: [ NewUserModalComponent,AppSearchUsersStubComponent,AppUserdetailsFormStubComponent ],
+      imports:[HttpClientTestingModule,FormsModule,NgMaterialModule,BrowserAnimationsModule],
+      providers:[NgbActiveModal]
     })
     .compileComponents();
   }));
@@ -59,4 +68,67 @@ describe('NewUserModalComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('addNewUser should return stubbed value', () => {
+    spyOn(component, 'addNewUser').and.callThrough();
+    component.addNewUser(true);
+    expect(component.addNewUser).toHaveBeenCalledWith(true);
+  });
+
+  it('changeSelectedUser should return stubbed value', () => {
+    spyOn(component, 'changeSelectedUser').and.callThrough();
+    let user = {};
+    component.changeSelectedUser(user);
+    expect(component.changeSelectedUser).toHaveBeenCalledWith(user);
+    user = {"firstName":"FirstTestName","lastName":"LastTestName","orgUserId":"TestOrgId"};
+    component.changeSelectedUser(user);
+    expect(component.changeSelectedUser).toHaveBeenCalledWith(user);
+
+  });
+
+  // it('searchUserRadioChange should return stubbed value', () => {
+  //   spyOn(component, 'searchUserRadioChange').and.callThrough();
+  //   MatRadio = {"value":""};
+  //   component.searchUserRadioChange(eventCheck);
+  //   expect(component.searchUserRadioChange).toHaveBeenCalledWith(event);
+  //   event = {"value":"System"};
+  //   component.searchUserRadioChange(event);
+  //   expect(component.searchUserRadioChange).toHaveBeenCalledWith(event);
+
+  // });
+
+  it('navigateBack should return stubbed value', () => {
+    spyOn(component, 'navigateBack').and.callThrough();
+    component.navigateBack();
+    expect(component.navigateBack).toHaveBeenCalledWith();
+  });
+
+  it('roleSelectChange should return stubbed value', () => {
+    spyOn(component, 'roleSelectChange').and.callThrough();
+    let element = {"id":2};
+    component.roleSelectChange(element);
+    expect(component.roleSelectChange).toHaveBeenCalledWith(element);
+  });
+
+  it('getUserAppsRoles should return stubbed value', () => {
+    spyOn(component, 'getUserAppsRoles').and.callThrough();
+    component.changedSelectedUser = 'Test';
+    component.getUserAppsRoles();
+    expect(component.getUserAppsRoles).toHaveBeenCalledWith();
+  });
+  
+
+  
 });
+
+@Component({selector: 'app-search-users', template: ''})
+class AppSearchUsersStubComponent { 
+  @Input() searchTitle:any;
+  @Input() isSystemUser:any;
+  @Input() placeHolder:any;
+}
+
+@Component({selector: 'app-user-details-form', template: ''})
+class AppUserdetailsFormStubComponent { 
+  
+}

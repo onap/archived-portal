@@ -39,6 +39,9 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { NotificationHistoryComponent } from './notification-history.component';
+import { NgMaterialModule } from 'src/app/ng-material-module';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('NotificationHistoryComponent', () => {
   let component: NotificationHistoryComponent;
@@ -46,7 +49,8 @@ describe('NotificationHistoryComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ NotificationHistoryComponent ]
+      declarations: [ NotificationHistoryComponent ],
+      imports:[NgMaterialModule,HttpClientTestingModule,BrowserAnimationsModule]
     })
     .compileComponents();
   }));

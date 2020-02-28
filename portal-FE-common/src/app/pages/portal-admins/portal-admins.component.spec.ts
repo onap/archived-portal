@@ -38,6 +38,9 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { PortalAdminsComponent } from './portal-admins.component';
+import { NgMaterialModule } from 'src/app/ng-material-module';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('PortalAdminsComponent', () => {
   let component: PortalAdminsComponent;
@@ -45,7 +48,8 @@ describe('PortalAdminsComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ PortalAdminsComponent ]
+      declarations: [ PortalAdminsComponent ],
+      imports:[NgMaterialModule,HttpClientTestingModule,BrowserAnimationsModule]
     })
     .compileComponents();
   }));

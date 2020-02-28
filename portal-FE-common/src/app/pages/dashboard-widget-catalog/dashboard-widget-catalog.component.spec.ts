@@ -38,14 +38,21 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { DashboardWidgetCatalogComponent } from './dashboard-widget-catalog.component';
+import { Component, Input } from '@angular/core';
+import { NgMaterialModule } from 'src/app/ng-material-module';
+import { GridsterModule } from 'angular-gridster2';
+import { ElipsisPipe } from 'src/app/shared/pipes/elipsis/elipsis.pipe';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('DashboardWidgetCatalogComponent', () => {
   let component: DashboardWidgetCatalogComponent;
   let fixture: ComponentFixture<DashboardWidgetCatalogComponent>;
 
+
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ DashboardWidgetCatalogComponent ]
+      declarations: [ DashboardWidgetCatalogComponent,AppDynamicWidgetStubComponent,ElipsisPipe ],
+      imports:[NgMaterialModule,GridsterModule,HttpClientTestingModule]
     })
     .compileComponents();
   }));
@@ -60,3 +67,8 @@ describe('DashboardWidgetCatalogComponent', () => {
     expect(component).toBeTruthy();
   });
 });
+
+@Component({selector: 'app-dynamic-widget', template: ''})
+class AppDynamicWidgetStubComponent {
+  @Input() widgetType:any;
+}

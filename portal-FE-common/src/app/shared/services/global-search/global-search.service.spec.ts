@@ -38,9 +38,10 @@
 import { TestBed } from '@angular/core/testing';
 
 import { GlobalSearchService } from './global-search.service';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('GlobalSearchService', () => {
-  beforeEach(() => TestBed.configureTestingModule({}));
+  beforeEach(() => TestBed.configureTestingModule({imports:[HttpClientTestingModule]}));
 
   it('should be created', () => {
     const service: GlobalSearchService = TestBed.get(GlobalSearchService);

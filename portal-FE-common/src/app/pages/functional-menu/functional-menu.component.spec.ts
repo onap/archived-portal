@@ -1,6 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { FunctionalMenuComponent } from './functional-menu.component';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('FunctionalMenuComponent', () => {
   let component: FunctionalMenuComponent;
@@ -8,7 +9,8 @@ describe('FunctionalMenuComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ FunctionalMenuComponent ]
+      declarations: [ FunctionalMenuComponent ],
+      imports:[HttpClientTestingModule]
     })
     .compileComponents();
   }));

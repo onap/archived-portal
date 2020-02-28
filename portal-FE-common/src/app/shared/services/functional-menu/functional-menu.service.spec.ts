@@ -38,9 +38,13 @@
 import { TestBed } from '@angular/core/testing';
 
 import { FunctionalMenuService } from './functional-menu.service';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+
 
 describe('FunctionalMenuService', () => {
-  beforeEach(() => TestBed.configureTestingModule({}));
+  beforeEach(() => TestBed.configureTestingModule({
+    imports:[HttpClientTestingModule]}
+    ));
 
   it('should be created', () => {
     const service: FunctionalMenuService = TestBed.get(FunctionalMenuService);

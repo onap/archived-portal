@@ -38,6 +38,12 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { DashboardApplicationCatalogComponent } from './dashboard-application-catalog.component';
+import { NgMaterialModule } from 'src/app/ng-material-module';
+import { FormsModule } from '@angular/forms';
+import { GridsterModule } from 'angular-gridster2';
+import { ElipsisPipe } from 'src/app/shared/pipes/elipsis/elipsis.pipe';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('DashboardApplicationCatalogComponent', () => {
   let component: DashboardApplicationCatalogComponent;
@@ -45,7 +51,8 @@ describe('DashboardApplicationCatalogComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ DashboardApplicationCatalogComponent ]
+      declarations: [ DashboardApplicationCatalogComponent,ElipsisPipe ],
+      imports: [NgMaterialModule,FormsModule,GridsterModule,HttpClientTestingModule,BrowserAnimationsModule]
     })
     .compileComponents();
   }));

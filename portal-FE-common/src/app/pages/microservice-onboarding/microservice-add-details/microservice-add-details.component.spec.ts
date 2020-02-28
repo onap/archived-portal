@@ -38,14 +38,23 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { MicroserviceAddDetailsComponent } from './microservice-add-details.component';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { NgMaterialModule } from 'src/app/ng-material-module';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { IMircroservies } from 'src/app/shared/model/microservice-onboarding/microservices';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('MicroserviceAddDetailsComponent', () => {
   let component: MicroserviceAddDetailsComponent;
   let fixture: ComponentFixture<MicroserviceAddDetailsComponent>;
+  const ms: IMircroservies = {"name":"MicorserviceName"};
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ MicroserviceAddDetailsComponent ]
+      declarations: [ MicroserviceAddDetailsComponent ],
+      imports: [ReactiveFormsModule,FormsModule,NgMaterialModule,HttpClientTestingModule,BrowserAnimationsModule],
+      providers:[NgbActiveModal]
     })
     .compileComponents();
   }));
@@ -53,6 +62,7 @@ describe('MicroserviceAddDetailsComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(MicroserviceAddDetailsComponent);
     component = fixture.componentInstance;
+    component.ms = ms;
     fixture.detectChanges();
   });
 

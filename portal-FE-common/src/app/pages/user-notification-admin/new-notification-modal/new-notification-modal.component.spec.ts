@@ -39,15 +39,28 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { NewNotificationModalComponent } from './new-notification-modal.component';
+import { FormsModule } from '@angular/forms';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { NgMaterialModule } from 'src/app/ng-material-module';
+import { NgbActiveModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { InformationModalComponent } from 'src/app/modals/information-modal/information-modal.component';
+import { ConfirmationModalComponent } from 'src/app/modals/confirmation-modal/confirmation-modal.component';
+import { BrowserDynamicTestingModule } from '@angular/platform-browser-dynamic/testing';
 
 describe('NewNotificationModalComponent', () => {
   let component: NewNotificationModalComponent;
+  let component1: NewNotificationModalComponent;
   let fixture: ComponentFixture<NewNotificationModalComponent>;
+  let fixture1: ComponentFixture<NewNotificationModalComponent>;
+  const selectedNotification ={"msgSource":"TestSource","priority":1,"startTime":"10/11/2020","endTime":"10/11/2021"}
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ NewNotificationModalComponent ]
-    })
+      declarations: [ NewNotificationModalComponent ,InformationModalComponent,ConfirmationModalComponent],
+      imports:[FormsModule,HttpClientTestingModule,NgMaterialModule,BrowserAnimationsModule,NgbModule.forRoot()],
+      providers:[NgbActiveModal]
+    }).overrideModule(BrowserDynamicTestingModule, { set: { entryComponents: [InformationModalComponent,ConfirmationModalComponent] } })
     .compileComponents();
   }));
 
@@ -55,9 +68,47 @@ describe('NewNotificationModalComponent', () => {
     fixture = TestBed.createComponent(NewNotificationModalComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
+
+
+    fixture1 = TestBed.createComponent(NewNotificationModalComponent);
+    component1 = fixture1.componentInstance;
+    component1.selectedNotification = selectedNotification;
+    fixture1.detectChanges();
+
+    
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('addUserNotification should return stubbed value', () => {
+    spyOn(component1, 'addUserNotification').and.callThrough();
+    component1.addUserNotification();
+    expect(component1.addUserNotification).toHaveBeenCalledWith();
+  });
+
+  it('settingTreeParam should return stubbed value', () => {
+    spyOn(component1, 'settingTreeParam').and.callThrough();
+    component1.settingTreeParam();
+    expect(component1.settingTreeParam).toHaveBeenCalledWith();
+  });
+
+  it('checkTreeSelect should return stubbed value', () => {
+    spyOn(component1, 'checkTreeSelect').and.callThrough();
+    component1.checkTreeSelect();
+    expect(component1.checkTreeSelect).toHaveBeenCalledWith();
+  });
+
+  it('openConfirmationModal should return stubbed value', () => {
+    spyOn(component1, 'openConfirmationModal').and.callThrough();
+    component1.openConfirmationModal('Title','Message');
+    expect(component1.openConfirmationModal).toHaveBeenCalledWith('Title','Message');
+  });
+
+  it('openInformationModal should return stubbed value', () => {
+    spyOn(component1, 'openInformationModal').and.callThrough();
+    component1.openInformationModal('Title','Message');
+    expect(component1.openInformationModal).toHaveBeenCalledWith('Title','Message');
   });
 });

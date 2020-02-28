@@ -1,6 +1,9 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { GetAccessComponent } from './get-access.component';
+import { NgMaterialModule } from 'src/app/ng-material-module';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('GetAccessComponent', () => {
   let component: GetAccessComponent;
@@ -8,7 +11,8 @@ describe('GetAccessComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ GetAccessComponent ]
+      declarations: [ GetAccessComponent ],
+      imports:[NgMaterialModule,HttpClientTestingModule,BrowserAnimationsModule]
     })
     .compileComponents();
   }));

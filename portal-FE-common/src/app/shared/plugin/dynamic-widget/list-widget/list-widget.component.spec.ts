@@ -39,6 +39,10 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ListWidgetComponent } from './list-widget.component';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { FormsModule } from '@angular/forms';
+import { NgMaterialModule } from 'src/app/ng-material-module';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('ListWidgetComponent', () => {
   let component: ListWidgetComponent;
@@ -46,7 +50,9 @@ describe('ListWidgetComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ListWidgetComponent ]
+      declarations: [ ListWidgetComponent ],
+      imports:[HttpClientTestingModule,FormsModule,NgMaterialModule,BrowserAnimationsModule]
+
     })
     .compileComponents();
   }));

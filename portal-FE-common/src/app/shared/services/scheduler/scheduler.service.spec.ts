@@ -38,9 +38,10 @@
 import { TestBed } from '@angular/core/testing';
 
 import { SchedulerService } from './scheduler.service';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('SchedulerService', () => {
-  beforeEach(() => TestBed.configureTestingModule({}));
+  beforeEach(() => TestBed.configureTestingModule({imports:[HttpClientTestingModule]}));
 
   it('should be created', () => {
     const service: SchedulerService = TestBed.get(SchedulerService);

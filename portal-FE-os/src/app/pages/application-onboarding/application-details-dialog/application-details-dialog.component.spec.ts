@@ -39,25 +39,94 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ApplicationDetailsDialogComponent } from './application-details-dialog.component';
+import { NgMaterialModule } from 'src/app/ng-material-module';
+import { FormsModule } from '@angular/forms';
+import { NgbActiveModal, NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { IApplications } from 'src/app/shared/model/applications-onboarding/applications';
+import { InformationModalComponent } from 'src/app/modals/information-modal/information-modal.component';
+import { BrowserDynamicTestingModule } from '@angular/platform-browser-dynamic/testing';
+import { NgbModalBackdrop } from '@ng-bootstrap/ng-bootstrap/modal/modal-backdrop';
+import { ConfirmationModalComponent } from 'src/app/modals/confirmation-modal/confirmation-modal.component';
+
 
 describe('ApplicationDetailsDialogComponent', () => {
   let component: ApplicationDetailsDialogComponent;
   let fixture: ComponentFixture<ApplicationDetailsDialogComponent>;
+  const applicationObj: IApplications = {"id":"testID"};
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ApplicationDetailsDialogComponent ]
-    })
+      declarations: [ ApplicationDetailsDialogComponent,InformationModalComponent,ConfirmationModalComponent],
+      imports: [NgMaterialModule,FormsModule,HttpClientTestingModule,NgbModule.forRoot()],
+      providers: [NgbActiveModal]  
+    }).overrideModule(BrowserDynamicTestingModule, { set: { entryComponents: [InformationModalComponent,ConfirmationModalComponent] } })
     .compileComponents();
   }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(ApplicationDetailsDialogComponent);
     component = fixture.componentInstance;
+    component.applicationObj = applicationObj;
     fixture.detectChanges();
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+  it('removeImage should return stubbed value', () => {
+    spyOn(component, 'removeImage').and.callThrough();
+    component.removeImage();
+    expect(component.removeImage).toHaveBeenCalledWith();
+  });
+  it('saveChanges should return stubbed value', () => {
+    component.applicationObj.isCentralAuth = true;
+    component.applicationObj.isEnabled = false;
+    spyOn(component, 'saveChanges').and.callThrough();
+    component.saveChanges();
+    expect(component.saveChanges).toHaveBeenCalledWith();
+    component.applicationObj.isEnabled = true;
+    component.applicationObj.url = 'www.test.com'
+    component.applicationObj.restrictedApp =true;
+    
+    //spyOn(component, 'saveChanges').and.callThrough();
+    component.saveChanges();
+    expect(component.saveChanges).toHaveBeenCalledWith();
+    component.applicationObj.isCentralAuth = false;
+    component.applicationObj.url = 'test'
+    component.applicationObj.restrictedApp =false;
+    component.applicationObj.isOpen = true;
+    component.isEditMode =true;
+    //spyOn(component, 'saveChanges').and.callThrough();
+    component.saveChanges();
+    expect(component.saveChanges).toHaveBeenCalledWith();
+  });
+  it('saveChanges Central Auth is disabled', () => {
+    component.applicationObj.isCentralAuth = false;
+    component.applicationObj.isEnabled = false;
+    spyOn(component, 'saveChanges').and.callThrough();
+    component.saveChanges();
+    expect(component.saveChanges).toHaveBeenCalledWith();
+    component.applicationObj.isEnabled = true;
+    component.applicationObj.restrictedApp = true;
+    component.saveChanges();
+    expect(component.saveChanges).toHaveBeenCalledWith();
+    
+  });
+
+  it('saveChanges URL validation changes', () => {
+    component.applicationObj.isCentralAuth = true;
+    component.applicationObj.isEnabled = true;
+    component.applicationObj.name ='test';
+    component.applicationObj.url = 'https://www.test.com'
+    component.applicationObj.username ='test'
+    component.applicationObj.nameSpace ='ONAP'
+    spyOn(component, 'saveChanges').and.callThrough();
+    component.saveChanges();
+    expect(component.saveChanges).toHaveBeenCalledWith();
+    component.applicationObj.restrictedApp = false;
+    component.isEditMode = true;
+    component.saveChanges();
+    expect(component.saveChanges).toHaveBeenCalledWith();
   });
 });

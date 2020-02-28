@@ -39,6 +39,10 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { UserNotificationAdminComponent } from './user-notification-admin.component';
+import { FormsModule } from '@angular/forms';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { NgMaterialModule } from 'src/app/ng-material-module';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('UserNotificationAdminComponent', () => {
   let component: UserNotificationAdminComponent;
@@ -46,7 +50,8 @@ describe('UserNotificationAdminComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ UserNotificationAdminComponent ]
+      declarations: [ UserNotificationAdminComponent ],
+      imports:[FormsModule,HttpClientTestingModule,NgMaterialModule,BrowserAnimationsModule]
     })
     .compileComponents();
   }));

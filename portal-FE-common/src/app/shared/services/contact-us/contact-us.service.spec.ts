@@ -39,12 +39,34 @@
 import { TestBed } from '@angular/core/testing';
 
 import { ContactUsService } from './contact-us.service';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('ContactUsService', () => {
-  beforeEach(() => TestBed.configureTestingModule({}));
+  beforeEach(() => TestBed.configureTestingModule({imports:[HttpClientTestingModule]}));
 
   it('should be created', () => {
     const service: ContactUsService = TestBed.get(ContactUsService);
     expect(service).toBeTruthy();
+  });
+
+  it('addContactUs should return stubbed value', () => {
+    const service: ContactUsService = TestBed.get(ContactUsService);
+    spyOn(service, 'addContactUs').and.callThrough();
+    service.addContactUs("TEST");
+    expect(service.addContactUs).toHaveBeenCalledWith("TEST")  
+  });
+
+  it('modifyContactUs should return stubbed value', () => {
+    const service: ContactUsService = TestBed.get(ContactUsService);
+    spyOn(service, 'modifyContactUs').and.callThrough();
+    service.modifyContactUs("TEST");
+    expect(service.modifyContactUs).toHaveBeenCalledWith("TEST")  
+  });
+
+  it('removeContactUs should return stubbed value', () => {
+    const service: ContactUsService = TestBed.get(ContactUsService);
+    spyOn(service, 'removeContactUs').and.callThrough();
+    service.removeContactUs("TEST");
+    expect(service.removeContactUs).toHaveBeenCalledWith("TEST")  
   });
 });

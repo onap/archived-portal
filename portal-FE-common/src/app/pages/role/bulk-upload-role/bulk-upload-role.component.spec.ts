@@ -38,6 +38,10 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { BulkUploadRoleComponent } from './bulk-upload-role.component';
+import { FormsModule } from '@angular/forms';
+import { NgMaterialModule } from 'src/app/ng-material-module';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 describe('BulkUploadRoleComponent', () => {
   let component: BulkUploadRoleComponent;
@@ -45,7 +49,9 @@ describe('BulkUploadRoleComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ BulkUploadRoleComponent ]
+      declarations: [ BulkUploadRoleComponent ],
+      imports:[FormsModule,NgMaterialModule,HttpClientTestingModule],
+      providers:[NgbActiveModal]
     })
     .compileComponents();
   }));
@@ -58,5 +64,44 @@ describe('BulkUploadRoleComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('changeUploadTypeInstruction should return stubbed value', () => {
+    spyOn(component, 'changeUploadTypeInstruction').and.callThrough();
+    component.changeUploadTypeInstruction("functions");
+    expect(component.changeUploadTypeInstruction).toHaveBeenCalledWith("functions");
+    component.changeUploadTypeInstruction("roles");
+    expect(component.changeUploadTypeInstruction).toHaveBeenCalledWith("roles");
+    component.changeUploadTypeInstruction("roleFunctions");
+    expect(component.changeUploadTypeInstruction).toHaveBeenCalledWith("roleFunctions"); 
+    component.changeUploadTypeInstruction("default");
+    expect(component.changeUploadTypeInstruction).toHaveBeenCalledWith("default") ;
+  });
+
+  it('navigateUploadScreen should return stubbed value', () => {
+    spyOn(component, 'navigateUploadScreen').and.callThrough();
+    component.selectedUploadDropdown.value='functions';
+    component.navigateUploadScreen();
+    expect(component.navigateUploadScreen).toHaveBeenCalledWith();
+    component.selectedUploadDropdown.value='roles';
+    component.navigateUploadScreen();
+    expect(component.navigateUploadScreen).toHaveBeenCalledWith();
+    component.selectedUploadDropdown.value='roleFunctions';
+    component.navigateUploadScreen();
+    expect(component.navigateUploadScreen).toHaveBeenCalledWith();
+    component.selectedUploadDropdown.value='default';
+    component.navigateUploadScreen();
+    expect(component.navigateUploadScreen).toHaveBeenCalledWith();
+  });
+  it('navigateSelectTypeUpload should return stubbed value', () => {
+    spyOn(component, 'navigateSelectTypeUpload').and.callThrough();
+    component.navigateSelectTypeUpload();
+    expect(component.navigateSelectTypeUpload).toHaveBeenCalledWith();
+  });
+  
+  it('getSortOrder should return stubbed value', () => {
+    spyOn(component, 'getSortOrder').and.callThrough();
+    component.getSortOrder(1,true);
+    expect(component.getSortOrder).toHaveBeenCalledWith(1,true);
   });
 });

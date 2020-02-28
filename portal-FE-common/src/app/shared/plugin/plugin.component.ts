@@ -44,6 +44,7 @@ import {
   ViewContainerRef
 } from '@angular/core';
 import { PluginLoaderService } from './plugin-loader/plugin-loader.service';
+import { ClientPluginLoaderService } from './plugin-loader/client-plugin-loader.service';
 
 @Component({
   selector: 'app-plugin',
@@ -55,7 +56,7 @@ export class PluginComponent implements OnInit {
 
   constructor(
     private injector: Injector,
-    private pluginLoader: PluginLoaderService
+    private pluginLoader: ClientPluginLoaderService
   ) {}
 
   ngOnInit() {

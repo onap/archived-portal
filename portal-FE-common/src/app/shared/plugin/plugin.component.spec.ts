@@ -39,14 +39,18 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { PluginComponent } from './plugin.component';
+import { ClientPluginLoaderService } from './plugin-loader/client-plugin-loader.service';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('PluginComponent', () => {
   let component: PluginComponent;
   let fixture: ComponentFixture<PluginComponent>;
-
+  let clientPluginLoaderService: ClientPluginLoaderService;
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ PluginComponent ]
+      declarations: [ PluginComponent ],
+      providers:[ClientPluginLoaderService],
+      imports: [HttpClientTestingModule]
     })
     .compileComponents();
   }));

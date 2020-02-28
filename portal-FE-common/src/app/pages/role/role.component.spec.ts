@@ -38,6 +38,17 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { RoleComponent } from './role.component';
+import { FormsModule } from '@angular/forms';
+import { NgMaterialModule } from 'src/app/ng-material-module';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { RouterLinkDirectiveStub } from 'src/testing/router-link-directive-stub';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ConfirmationModalComponent } from 'src/app/modals/confirmation-modal/confirmation-modal.component';
+import { InformationModalComponent } from 'src/app/modals/information-modal/information-modal.component';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { BrowserDynamicTestingModule } from '@angular/platform-browser-dynamic/testing';
+import { BulkUploadRoleComponent } from './bulk-upload-role/bulk-upload-role.component';
+import { AddRoleComponent } from './add-role/add-role.component';
 
 describe('RoleComponent', () => {
   let component: RoleComponent;
@@ -45,8 +56,9 @@ describe('RoleComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ RoleComponent ]
-    })
+      declarations: [ RoleComponent,RouterLinkDirectiveStub,InformationModalComponent,ConfirmationModalComponent,BulkUploadRoleComponent,AddRoleComponent ],
+      imports:[FormsModule,NgMaterialModule,HttpClientTestingModule,BrowserAnimationsModule,NgbModule.forRoot()],
+    }).overrideModule(BrowserDynamicTestingModule, { set: { entryComponents: [InformationModalComponent,ConfirmationModalComponent,BulkUploadRoleComponent,AddRoleComponent] } })
     .compileComponents();
   }));
 
@@ -59,4 +71,59 @@ describe('RoleComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('toggleRole should return stubbed value', () => {
+    spyOn(component, 'toggleRole').and.callThrough();
+    let element={"id":1,"active":true};
+    component.toggleRole(element);
+    expect(component.toggleRole).toHaveBeenCalledWith(element);
+  });
+
+  it('openBulkUploadRolesAndFunctionsModal should return stubbed value', () => {
+    spyOn(component, 'openBulkUploadRolesAndFunctionsModal').and.callThrough();
+    component.openBulkUploadRolesAndFunctionsModal();
+    expect(component.openBulkUploadRolesAndFunctionsModal).toHaveBeenCalledWith();
+  });
+  it('editRoleModalPopup should return stubbed value', () => {
+    spyOn(component, 'editRoleModalPopup').and.callThrough();
+    let element={"id":1,"active":true};
+    component.editRoleModalPopup(element);
+    expect(component.editRoleModalPopup).toHaveBeenCalledWith(element);
+  });
+
+  it('addRoleModalPopup should return stubbed value', () => {
+    spyOn(component, 'addRoleModalPopup').and.callThrough();
+    component.addRoleModalPopup();
+    expect(component.addRoleModalPopup).toHaveBeenCalledWith();
+  });
+
+  it('removeRole should return stubbed value', () => {
+    spyOn(component, 'removeRole').and.callThrough();
+    let element={"id":1,"active":true,"name":"Test_global_"};
+    component.selectedCentralizedApp = 2;
+    component.removeRole(element);
+    expect(component.removeRole).toHaveBeenCalledWith(element);
+  });
+  it('getCentralizedApps should return stubbed value', () => {
+    spyOn(component, 'getCentralizedApps').and.callThrough();
+    component.getCentralizedApps('admin');
+    expect(component.getCentralizedApps).toHaveBeenCalledWith('admin');
+  });
+  it('syncRolesFromExternalAuthSystem should return stubbed value', () => {
+    spyOn(component, 'syncRolesFromExternalAuthSystem').and.callThrough();
+    component.selectedCentralizedApp = 'Test';
+    component.syncRolesFromExternalAuthSystem();
+    expect(component.syncRolesFromExternalAuthSystem).toHaveBeenCalledWith();
+  });
+  it('getRolesForSelectedCentralizedApp should return stubbed value', () => {
+    spyOn(component, 'getRolesForSelectedCentralizedApp').and.callThrough();
+    component.getRolesForSelectedCentralizedApp('Test');
+    expect(component.getRolesForSelectedCentralizedApp).toHaveBeenCalledWith('Test');
+  });
+
+  
+
+  
+
+  
 });

@@ -39,6 +39,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { UserbarComponent } from './userbar.component';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('UserbarComponent', () => {
   let component: UserbarComponent;
@@ -46,7 +47,8 @@ describe('UserbarComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ UserbarComponent ]
+      declarations: [ UserbarComponent ],
+      imports: [HttpClientTestingModule]
     })
     .compileComponents();
   }));

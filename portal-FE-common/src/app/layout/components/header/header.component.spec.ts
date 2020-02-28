@@ -39,14 +39,22 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { HeaderComponent } from './header.component';
+import { Component } from '@angular/core';
+import { RouterLinkDirectiveStub } from 'src/testing/router-link-directive-stub';
+import { RouterTestingModule } from '@angular/router/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { CookieService } from 'ngx-cookie-service';
 
 describe('HeaderComponent', () => {
   let component: HeaderComponent;
   let fixture: ComponentFixture<HeaderComponent>;
+  let cookieService: CookieService;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ HeaderComponent ]
+      declarations: [ HeaderComponent,AppHeaderMenuStubComponent,AppGlobalSearchStubComponent,RouterLinkDirectiveStub ],
+      imports: [RouterTestingModule,HttpClientTestingModule],
+      providers: [CookieService]
     })
     .compileComponents();
   }));
@@ -54,6 +62,7 @@ describe('HeaderComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(HeaderComponent);
     component = fixture.componentInstance;
+    cookieService = TestBed.get(CookieService);
     fixture.detectChanges();
   });
 
@@ -61,3 +70,10 @@ describe('HeaderComponent', () => {
     expect(component).toBeTruthy();
   });
 });
+
+@Component({selector: 'app-header-menu', template: ''})
+class AppHeaderMenuStubComponent {}
+
+@Component({selector: 'app-global-search', template: ''})
+class AppGlobalSearchStubComponent {}
+

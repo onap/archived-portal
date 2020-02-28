@@ -39,6 +39,9 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ApplicationOnboardingComponent } from './application-onboarding.component';
+import { NgMaterialModule } from 'src/app/ng-material-module';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('ApplicationOnboardingComponent', () => {
   let component: ApplicationOnboardingComponent;
@@ -46,7 +49,8 @@ describe('ApplicationOnboardingComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ApplicationOnboardingComponent ]
+      declarations: [ ApplicationOnboardingComponent ],
+      imports: [NgMaterialModule,HttpClientTestingModule,BrowserAnimationsModule]
     })
     .compileComponents();
   }));

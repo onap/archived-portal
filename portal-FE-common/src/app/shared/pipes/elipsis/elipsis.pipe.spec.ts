@@ -38,8 +38,14 @@
 import { ElipsisPipe } from './elipsis.pipe';
 
 describe('ElipsisPipe', () => {
+  let pipe;
   it('create an instance', () => {
-    const pipe = new ElipsisPipe();
+     pipe = new ElipsisPipe();
     expect(pipe).toBeTruthy();
+  });
+  it('removeImage should return stubbed value', () => {
+    spyOn(pipe, 'transform').and.callThrough();
+    pipe.transform('PipeTest','2');
+    expect(pipe.transform).toHaveBeenCalledWith('PipeTest','2');
   });
 });

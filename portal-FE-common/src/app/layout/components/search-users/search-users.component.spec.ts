@@ -39,6 +39,9 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { SearchUsersComponent } from './search-users.component';
+import { NgMaterialModule } from 'src/app/ng-material-module';
+import { FormsModule } from '@angular/forms';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('SearchUsersComponent', () => {
   let component: SearchUsersComponent;
@@ -46,7 +49,8 @@ describe('SearchUsersComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ SearchUsersComponent ]
+      declarations: [ SearchUsersComponent ],
+      imports: [FormsModule,NgMaterialModule,HttpClientTestingModule]
     })
     .compileComponents();
   }));

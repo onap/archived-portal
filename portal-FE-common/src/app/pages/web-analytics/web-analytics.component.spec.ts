@@ -39,6 +39,10 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { WebAnalyticsComponent } from './web-analytics.component';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { FormsModule } from '@angular/forms';
+import { NgMaterialModule } from 'src/app/ng-material-module';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('WebAnalyticsComponent', () => {
   let component: WebAnalyticsComponent;
@@ -46,7 +50,9 @@ describe('WebAnalyticsComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ WebAnalyticsComponent ]
+      declarations: [ WebAnalyticsComponent ],
+      imports:[HttpClientTestingModule,FormsModule,NgMaterialModule,BrowserAnimationsModule],
+
     })
     .compileComponents();
   }));

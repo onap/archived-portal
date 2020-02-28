@@ -39,9 +39,10 @@
 import { TestBed } from '@angular/core/testing';
 
 import { WebAnalyticsService } from './web-analytics.service';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('WebAnalyticsService', () => {
-  beforeEach(() => TestBed.configureTestingModule({}));
+  beforeEach(() => TestBed.configureTestingModule({imports:[HttpClientTestingModule]}));
 
   it('should be created', () => {
     const service: WebAnalyticsService = TestBed.get(WebAnalyticsService);

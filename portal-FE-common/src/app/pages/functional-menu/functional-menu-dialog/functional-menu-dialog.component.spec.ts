@@ -39,14 +39,22 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { FunctionalMenuDialogComponent } from './functional-menu-dialog.component';
+import { FormsModule } from '@angular/forms';
+import { NgMaterialModule } from 'src/app/ng-material-module';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('FunctionalMenuDialogComponent', () => {
   let component: FunctionalMenuDialogComponent;
   let fixture: ComponentFixture<FunctionalMenuDialogComponent>;
+  const nodedata: any = {"parentMenuId":"parentMenuTestId","children":{},"name":"TestName","parent":{"name":"TestParentName"}};
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ FunctionalMenuDialogComponent ]
+      declarations: [ FunctionalMenuDialogComponent ],
+      imports:[FormsModule,NgMaterialModule,HttpClientTestingModule,BrowserAnimationsModule],
+      providers:[NgbActiveModal]
     })
     .compileComponents();
   }));
@@ -54,6 +62,7 @@ describe('FunctionalMenuDialogComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(FunctionalMenuDialogComponent);
     component = fixture.componentInstance;
+    component.nodedata = nodedata;
     fixture.detectChanges();
   });
 

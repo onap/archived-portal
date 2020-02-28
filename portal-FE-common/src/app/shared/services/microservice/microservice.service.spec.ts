@@ -38,9 +38,10 @@
 import { TestBed } from '@angular/core/testing';
 
 import { MicroserviceService } from './microservice.service';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('MicroserviceService', () => {
-  beforeEach(() => TestBed.configureTestingModule({}));
+  beforeEach(() => TestBed.configureTestingModule({imports:[HttpClientTestingModule]}));
 
   it('should be created', () => {
     const service: MicroserviceService = TestBed.get(MicroserviceService);

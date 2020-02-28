@@ -39,6 +39,9 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { MicroserviceOnboardingComponent } from './microservice-onboarding.component';
+import { NgMaterialModule } from 'src/app/ng-material-module';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('MicroserviceOnboardingComponent', () => {
   let component: MicroserviceOnboardingComponent;
@@ -46,7 +49,8 @@ describe('MicroserviceOnboardingComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ MicroserviceOnboardingComponent ]
+      declarations: [ MicroserviceOnboardingComponent ],
+      imports:[NgMaterialModule,HttpClientTestingModule,BrowserAnimationsModule]
     })
     .compileComponents();
   }));

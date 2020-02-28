@@ -38,6 +38,16 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { UsersComponent } from './users.component';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { FormsModule } from '@angular/forms';
+import { NgMaterialModule } from 'src/app/ng-material-module';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { NewUserModalComponent } from './new-user-modal/new-user-modal.component';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { BrowserDynamicTestingModule } from '@angular/platform-browser-dynamic/testing';
+import { BulkUserComponent } from './bulk-user/bulk-user.component';
+import { ConfirmationModalComponent } from 'src/app/modals/confirmation-modal/confirmation-modal.component';
+import { Component, Input } from '@angular/core';
 
 describe('UsersComponent', () => {
   let component: UsersComponent;
@@ -45,8 +55,9 @@ describe('UsersComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ UsersComponent ]
-    })
+      declarations: [ UsersComponent, NewUserModalComponent,BulkUserComponent,ConfirmationModalComponent,AppSearchUsersStubComponent,AppUsersdetailsFormStubComponent],
+      imports:[HttpClientTestingModule,FormsModule,NgMaterialModule,BrowserAnimationsModule,NgbModule.forRoot()]
+    }).overrideModule(BrowserDynamicTestingModule, { set: { entryComponents: [NewUserModalComponent,BulkUserComponent,ConfirmationModalComponent] } })
     .compileComponents();
   }));
 
@@ -59,4 +70,55 @@ describe('UsersComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('openAddNewUserModal should return stubbed value', () => {
+    spyOn(component, 'openAddNewUserModal').and.callThrough();
+    component.openAddNewUserModal();
+    expect(component.openAddNewUserModal).toHaveBeenCalledWith();
+  });
+  it('openExistingUserModal should return stubbed value', () => {
+    spyOn(component, 'openExistingUserModal').and.callThrough();
+    let user ={"firstName":"FirstTestName","lastName":"LastTestName","orgUserId":""};
+    component.openExistingUserModal(user);
+    expect(component.openExistingUserModal).toHaveBeenCalledWith(user);
+  });
+
+  it('openBulkUserUploadModal should return stubbed value', () => {
+    spyOn(component, 'openBulkUserUploadModal').and.callThrough();
+    component.openBulkUserUploadModal();
+    expect(component.openBulkUserUploadModal).toHaveBeenCalledWith();
+  });
+  it('applyDropdownFilter should return stubbed value', () => {
+    spyOn(component, 'applyDropdownFilter').and.callThrough();
+    let _appValue= {"value":"select-application"};
+    component.applyDropdownFilter(_appValue);
+    expect(component.applyDropdownFilter).toHaveBeenCalledWith(_appValue);
+    _appValue= {"value":"Test"};
+    component.applyDropdownFilter(_appValue);
+    expect(component.applyDropdownFilter).toHaveBeenCalledWith(_appValue);
+  });
+  it('applyFilter should return stubbed value', () => {
+    spyOn(component, 'applyFilter').and.callThrough();
+    component.applyFilter("Test");
+    expect(component.applyFilter).toHaveBeenCalledWith("Test");
+  });
+  it('getAdminApps should return stubbed value', () => {
+    spyOn(component, 'getAdminApps').and.callThrough();
+    component.getAdminApps();
+    expect(component.getAdminApps).toHaveBeenCalledWith();
+  });
 });
+
+@Component({selector: 'app-search-users', template: ''})
+class AppSearchUsersStubComponent {
+@Input() searchTitle:any;
+@Input() isSystemUser:boolean;
+@Input() placeHolder:any;
+
+
+}
+@Component({selector: 'app-user-details-form', template: ''})
+class AppUsersdetailsFormStubComponent {
+
+}
+

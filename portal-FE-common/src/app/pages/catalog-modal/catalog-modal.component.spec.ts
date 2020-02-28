@@ -38,6 +38,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { CatalogModalComponent } from './catalog-modal.component';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 describe('CatalogModalComponent', () => {
   let component: CatalogModalComponent;
@@ -45,7 +46,8 @@ describe('CatalogModalComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ CatalogModalComponent ]
+      declarations: [ CatalogModalComponent ],
+      providers: [NgbActiveModal]
     })
     .compileComponents();
   }));

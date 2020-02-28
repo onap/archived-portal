@@ -38,9 +38,10 @@
 import { TestBed } from '@angular/core/testing';
 
 import { ApplicationCatalogService } from './application-catalog.service';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('ApplicationCatalogService', () => {
-  beforeEach(() => TestBed.configureTestingModule({}));
+  beforeEach(() => TestBed.configureTestingModule({imports:[HttpClientTestingModule]}));
 
   it('should be created', () => {
     const service: ApplicationCatalogService = TestBed.get(ApplicationCatalogService);

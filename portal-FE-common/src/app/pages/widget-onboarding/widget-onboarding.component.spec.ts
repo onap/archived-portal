@@ -38,6 +38,10 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { WidgetOnboardingComponent } from './widget-onboarding.component';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { FormsModule } from '@angular/forms';
+import { NgMaterialModule } from 'src/app/ng-material-module';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('WidgetOnboardingComponent', () => {
   let component: WidgetOnboardingComponent;
@@ -45,7 +49,8 @@ describe('WidgetOnboardingComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ WidgetOnboardingComponent ]
+      declarations: [ WidgetOnboardingComponent ],
+      imports:[HttpClientTestingModule,FormsModule,NgMaterialModule,BrowserAnimationsModule],
     })
     .compileComponents();
   }));

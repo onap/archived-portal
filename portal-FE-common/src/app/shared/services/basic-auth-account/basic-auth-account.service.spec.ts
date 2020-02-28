@@ -39,9 +39,10 @@
 import { TestBed } from '@angular/core/testing';
 
 import { BasicAuthAccountService } from './basic-auth-account.service';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('BasicAuthAccountService', () => {
-  beforeEach(() => TestBed.configureTestingModule({}));
+  beforeEach(() => TestBed.configureTestingModule({imports:[HttpClientTestingModule]}));
 
   it('should be created', () => {
     const service: BasicAuthAccountService = TestBed.get(BasicAuthAccountService);
