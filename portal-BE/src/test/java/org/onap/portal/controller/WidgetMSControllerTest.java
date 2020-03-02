@@ -70,9 +70,9 @@ class WidgetMSControllerTest {
        @Test
        void getServiceLocation() {
               PortalRestResponse<String> expected = new PortalRestResponse<>();
-              expected.setMessage("Error!");
-              expected.setResponse("Couldn't get the service location");
-              expected.setStatus(PortalRestStatusEnum.ERROR);
+              expected.setMessage("Success!");
+              expected.setResponse("localhost:null");
+              expected.setStatus(PortalRestStatusEnum.OK);
               PortalRestResponse<String> actual = widgetMSController.getServiceLocation(request, response, "portal");
               assertEquals(expected.getMessage(), actual.getMessage());
               assertEquals(expected.getResponse(), actual.getResponse());

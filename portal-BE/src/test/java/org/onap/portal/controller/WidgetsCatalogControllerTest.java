@@ -254,7 +254,7 @@ public class WidgetsCatalogControllerTest {
 
        @Test
        public void getUploadFlag() {
-              String expected = "";
+              String expected = "true";
               String actual = widgetsCatalogController.getUploadFlag();
 
               assertEquals(expected, actual);

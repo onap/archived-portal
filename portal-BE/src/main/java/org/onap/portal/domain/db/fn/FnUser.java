@@ -162,7 +162,10 @@ CREATE TABLE `fn_user` (
         query = "FROM FnUser WHERE activeYn = 'Y'"),
     @NamedQuery(
         name = "FnUser.getUsersByOrgIds",
-        query = "FROM FnUser WHERE orgUserId IN :orgIds"
+        query = "FROM FnUser WHERE orgUserId IN :orgIds"),
+    @NamedQuery(
+        name = "FnUSer.findByFirstNameAndLastName",
+        query = "FROM FnUser WHERE firstName = :firstName AND  lastName = :lastName"
     )
 })
 

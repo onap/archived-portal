@@ -38,37 +38,24 @@
  *
  */
 
-package org.onap.portal.service.user;
+package org.onap.portal.utils;
 
-import java.util.List;
-import java.util.Optional;
-import org.onap.portal.domain.db.fn.FnUser;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 
-@Repository
-@Transactional
-interface FnUserDao extends JpaRepository<FnUser, Long> {
+@Configuration
+@PropertySources({
+    @PropertySource("classpath:/WEB-INF/conf/system.properties"),
+    @PropertySource("classpath:/WEB-INF/conf/sql.properties"),
+    @PropertySource("classpath:/WEB-INF/fusion/conf/fusion.properties"),
+   //@PropertySource(value = "file:${catalina.home}/conf/system.properties", ignoreResourceNotFound = true),
+   //@PropertySource(value = "file:${catalina.home}/conf/fusion.properties", ignoreResourceNotFound = true)
+})
 
-       @Query
-       Optional<FnUser> findByLoginId(final @Param("loginId") String username);
+public class EPSystemProperties extends EPCommonSystemProperties {
 
-       @Override
-       FnUser getOne(Long ID);
-
-       @Query
-       Optional<List<FnUser>> getUserWithOrgUserId(final @Param("orgId") String orgId);
-
-       @Query
-       Optional<List<FnUser>> getUsersByOrgIds(final @Param("orgIds") List<String> orgIds);
-
-       @Query
-       Optional<List<FnUser>> getActiveUsers();
-
-       @Query
-       Optional<List<FnUser>> findByFirstNameAndLastName(final @Param("firstName") String firstName, final @Param("lastName") String lastName);
+    public static final String CONTACT_US_URL = "contact_us_link";
+    public static final String ECOMP_CONTEXT_ROOT = "context_root";
 
 }

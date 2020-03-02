@@ -138,4 +138,8 @@ public class FnAppService {
   public List<FnApp> saveAll(List<FnApp> fnApps) {
     return fnAppDao.saveAll(fnApps);
   }
+
+  public List<FnApp> findAll() {
+    return Optional.of(fnAppDao.findAll()).orElse(new ArrayList<>());
+  }
 }
