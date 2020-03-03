@@ -61,49 +61,49 @@ import org.onap.portal.domain.db.fn.FnRoleFunction;
 @AllArgsConstructor
 public class CentralV2Role implements Serializable, Comparable {
 
-  private static final long serialVersionUID = -4332644961113063714L;
+    private static final long serialVersionUID = -4332644961113063714L;
 
-  private Long id;
-  private LocalDateTime created;
-  private LocalDateTime modified;
-  private Long createdId;
-  private Long modifiedId;
-  private Long rowNum;
-  private String name;
-  private boolean active;
-  private Integer priority;
-  @Builder.Default
-  private SortedSet<DomainVo> roleFunctions = new TreeSet<>();
-  @Builder.Default
-  private SortedSet<CentralV2Role> childRoles = new TreeSet<>();
-  @Builder.Default
-  private SortedSet<CentralV2Role> parentRoles = new TreeSet<>();
+    private Long id;
+    private LocalDateTime created;
+    private LocalDateTime modified;
+    private Long createdId;
+    private Long modifiedId;
+    private Long rowNum;
+    private String name;
+    private boolean active;
+    private Integer priority;
+    @Builder.Default
+    private SortedSet<DomainVo> roleFunctions = new TreeSet<>();
+    @Builder.Default
+    private SortedSet<CentralV2Role> childRoles = new TreeSet<>();
+    @Builder.Default
+    private SortedSet<CentralV2Role> parentRoles = new TreeSet<>();
 
-  public CentralV2Role(Long id, String name) {
-    this.id = id;
-    this.name = name;
-  }
+    public CentralV2Role(Long id, String name) {
+        this.id = id;
+        this.name = name;
+    }
 
-  public void addRoleFunction(FnRoleFunction roleFunction) {
-    this.roleFunctions.add(roleFunction);
-  }
+    public void addRoleFunction(DomainVo roleFunction) {
+        this.roleFunctions.add(roleFunction);
+    }
 
-  public void addChildRole(CentralV2Role role) {
-    this.childRoles.add(role);
-  }
+    public void addChildRole(CentralV2Role role) {
+        this.childRoles.add(role);
+    }
 
-  public void addParentRole(CentralV2Role role) {
-    this.parentRoles.add(role);
-  }
+    public void addParentRole(CentralV2Role role) {
+        this.parentRoles.add(role);
+    }
 
-  @Override
-  public int compareTo(Object obj) {
-    CentralV2Role other = (CentralV2Role) obj;
+    @Override
+    public int compareTo(Object obj) {
+        CentralV2Role other = (CentralV2Role) obj;
 
-    String c1 = getName();
-    String c2 = other.getName();
+        String c1 = getName();
+        String c2 = other.getName();
 
-    return (c1 == null || c2 == null) ? 1 : c1.compareTo(c2);
-  }
+        return (c1 == null || c2 == null) ? 1 : c1.compareTo(c2);
+    }
 
 }

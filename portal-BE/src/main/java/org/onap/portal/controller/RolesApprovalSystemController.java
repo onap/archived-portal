@@ -48,7 +48,6 @@ import org.onap.portal.domain.dto.model.ExternalSystemRoleApproval;
 import org.onap.portal.domain.dto.model.ExternalSystemUser;
 import org.onap.portal.domain.dto.transport.ExternalRequestFieldsValidator;
 import org.onap.portal.service.AdminRolesService;
-import org.onap.portal.service.ExternalAccessRolesService;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -66,8 +65,12 @@ public class RolesApprovalSystemController {
 
     private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(RolesApprovalSystemController.class);
 
+    private final AdminRolesService userRolesService;
+
     @Autowired
-    private AdminRolesService userRolesService;
+    public RolesApprovalSystemController(AdminRolesService userRolesService) {
+        this.userRolesService = userRolesService;
+    }
 
     @ApiOperation(value = "Creates an application user with the specified roles.", response = PortalRestResponse.class)
     @RequestMapping(value = {"/userProfile"}, method = RequestMethod.POST, produces = "application/json")

@@ -78,7 +78,6 @@ import org.onap.portal.domain.db.fn.FnRole;
 import org.onap.portal.domain.db.fn.FnRoleFunction;
 import org.onap.portal.domain.db.fn.FnUser;
 import org.onap.portal.domain.db.fn.FnUserRole;
-import org.onap.portal.domain.dto.ecomp.EPUserAppRolesRequest;
 import org.onap.portal.domain.dto.model.ExternalSystemRoleApproval;
 import org.onap.portal.domain.dto.model.ExternalSystemUser;
 import org.onap.portal.domain.dto.transport.AppNameIdIsAdmin;
@@ -286,7 +285,7 @@ public class AdminRolesService {
         return false;
     }
 
-    private boolean isAccountAdminOfApplication(Long userId, FnApp app) {
+    public boolean isAccountAdminOfApplication(Long userId, FnApp app) {
         boolean isApplicationAccountAdmin = false;
         try {
             logger.debug(EELFLoggerDelegate.debugLogger, ADMIN_ACCOUNT, userId);

@@ -48,6 +48,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -74,6 +75,7 @@ import org.onap.portal.domain.db.fn.FnUserRole;
 import org.onap.portal.domain.dto.ecomp.EPAppRoleFunction;
 import org.onap.portal.domain.dto.ecomp.EPUserAppRolesRequest;
 import org.onap.portal.domain.dto.ecomp.ExternalRoleDetails;
+import org.onap.portal.domain.dto.ecomp.UploadRoleFunctionExtSystem;
 import org.onap.portal.domain.dto.model.ExternalSystemUser;
 import org.onap.portal.domain.dto.transport.BulkUploadRoleFunction;
 import org.onap.portal.domain.dto.transport.BulkUploadUserRoles;
@@ -112,6 +114,7 @@ import org.onap.portal.utils.EPUserUtils;
 import org.onap.portal.utils.EcompPortalUtils;
 import org.onap.portal.utils.PortalConstants;
 import org.onap.portalsdk.core.domain.Role;
+import org.onap.portalsdk.core.domain.RoleFunction;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.onap.portalsdk.core.restful.domain.EcompRole;
 import org.onap.portalsdk.core.restful.domain.EcompRoleFunction;
@@ -209,7 +212,7 @@ public class ExternalAccessRolesService {
         this.bulkUploadUserRolesService = bulkUploadUserRolesService;
     }
 
-    String getFunctionCodeType(String roleFuncItem) {
+    public String getFunctionCodeType(String roleFuncItem) {
         String type = null;
         if ((roleFuncItem.contains(FUNCTION_PIPE) && roleFuncItem.contains("menu"))
             || (!roleFuncItem.contains(FUNCTION_PIPE) && roleFuncItem.contains("menu"))) {
@@ -311,7 +314,7 @@ public class ExternalAccessRolesService {
         return roleList;
     }
 
-    String getFunctionCodeAction(String roleFuncItem) {
+    public String getFunctionCodeAction(String roleFuncItem) {
         return (!roleFuncItem.contains(FUNCTION_PIPE)) ? "*" : EcompPortalUtils.getFunctionAction(roleFuncItem);
     }
 
@@ -2355,7 +2358,7 @@ public class ExternalAccessRolesService {
         return setUserRoles;
     }
 
-    private List<FnUser> getUser(String loginId) throws InvalidUserException {
+    public List<FnUser> getUser(String loginId) throws InvalidUserException {
         List<FnUser> userList = fnUserService.getUserWithOrgUserId(loginId);
         if (userList.isEmpty()) {
             throw new InvalidUserException("User not found");
@@ -3217,12 +3220,66 @@ public class ExternalAccessRolesService {
                 Role role = new Role();
                 role.setName(epRole.getRoleName());
                 boolean status = addRoleDescriptionInExtSystem(role.getName(), app.getAuthNamespace());
-                if (status)
+                if (status) {
                     roleDescUpdated++;
+                }
             }
         } catch (Exception e) {
             logger.error(EELFLoggerDelegate.errorLogger, "updateAppRoleDescription: Failed! ", e);
         }
         return roleDescUpdated;
+    }
+
+    public Role convertCentralRoleToRole(String result) {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        Role newRole = new Role();
+        try {
+            newRole = mapper.readValue(result, Role.class);
+        } catch (IOException e) {
+            logger.error(EELFLoggerDelegate.errorLogger, "Failed to convert the result to Role Object", e);
+        }
+        if (newRole.getRoleFunctions() != null) {
+            Set<RoleFunction> roleFunctionList = newRole.getRoleFunctions();
+            Set<RoleFunction> roleFunctionListNew = new HashSet<>();
+            for (Object nextValue : roleFunctionList) {
+                RoleFunction roleFun = mapper.convertValue(nextValue, RoleFunction.class);
+                roleFunctionListNew.add(roleFun);
+            }
+            newRole.setRoleFunctions(roleFunctionListNew);
+        }
+        return newRole;
+    }
+
+    public void bulkUploadRoleFunc(UploadRoleFunctionExtSystem data, FnApp app) throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+        HttpHeaders headers = EcompPortalUtils.base64encodeKeyForAAFBasicAuth();
+        try {
+            ExternalAccessRolePerms extRolePerms;
+            ExternalAccessPerms extPerms;
+            extPerms = new ExternalAccessPerms(app.getAuthNamespace() + "." + data.getType(),
+                EcompPortalUtils.encodeFunctionCode(data.getInstance()), data.getAction());
+            String appNameSpace = "";
+            if (data.isGlobalRolePartnerFunc()) {
+                //TODO HARDCODED ID
+                appNameSpace = fnAppService.getById(1L).getAuthNamespace();
+            } else {
+                appNameSpace = app.getAuthNamespace();
+            }
+            extRolePerms = new ExternalAccessRolePerms(extPerms, appNameSpace + "." + data.getRoleName()
+                .replaceAll(EcompPortalUtils.EXTERNAL_CENTRAL_AUTH_ROLE_HANDLE_SPECIAL_CHARACTERS, "_"));
+            String updateRolePerms = mapper.writeValueAsString(extRolePerms);
+            HttpEntity<String> entity = new HttpEntity<>(updateRolePerms, headers);
+            updateRoleFunctionInExternalSystem(updateRolePerms, entity);
+        } catch (HttpClientErrorException e) {
+            logger.error(EELFLoggerDelegate.errorLogger,
+                "HttpClientErrorException - Failed to add role function in external central auth system", e);
+            EPLogUtil.logExternalAuthAccessAlarm(logger, e.getStatusCode());
+            throw e;
+        } catch (Exception e) {
+            logger.error(EELFLoggerDelegate.errorLogger,
+                "addFunctionInExternalSystem: Failed to add role fucntion in external central auth system", e);
+            throw e;
+        }
     }
 }
