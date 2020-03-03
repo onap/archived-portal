@@ -72,7 +72,9 @@ import org.onap.portal.domain.db.fn.FnRoleFunction;
 import org.onap.portal.domain.db.fn.FnUser;
 import org.onap.portal.domain.db.fn.FnUserRole;
 import org.onap.portal.domain.dto.ecomp.EPAppRoleFunction;
+import org.onap.portal.domain.dto.ecomp.EPUserAppRolesRequest;
 import org.onap.portal.domain.dto.ecomp.ExternalRoleDetails;
+import org.onap.portal.domain.dto.model.ExternalSystemUser;
 import org.onap.portal.domain.dto.transport.BulkUploadRoleFunction;
 import org.onap.portal.domain.dto.transport.BulkUploadUserRoles;
 import org.onap.portal.domain.dto.transport.CentralApp;
@@ -3223,5 +3225,4 @@ public class ExternalAccessRolesService {
         }
         return roleDescUpdated;
     }
-
 }

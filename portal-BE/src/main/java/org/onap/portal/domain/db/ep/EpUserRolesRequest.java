@@ -100,42 +100,42 @@ CREATE TABLE `ep_user_roles_request` (
 @Setter
 @Entity
 public class EpUserRolesRequest implements Serializable {
-       @Id
 
-  @GeneratedValue(strategy = GenerationType.AUTO)
-       @Column(name = "req_id", length = 11, nullable = false, columnDefinition = "int(11) AUTO_INCREMENT")
-       @Digits(integer = 11, fraction = 0)
-       private Long reqId;
-       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
-       @JoinColumn(name = "user_id", nullable = false, columnDefinition = "bigint")
-       @NotNull
-       @Valid
-       private FnUser userId;
-       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
-       @JoinColumn(name = "app_id", nullable = false, columnDefinition = "bigint")
-       @NotNull
-       @Valid
-       private FnApp appId;
-       @Column(name = "created_date", nullable = false, columnDefinition = "datetime default now()")
-       @PastOrPresent
-       private LocalDateTime createdDate;
-       @Column(name = "updated_date", nullable = false, columnDefinition = "datetime default now()")
-       @PastOrPresent
-       private LocalDateTime updatedDate;
-       @Column(name = "request_status", nullable = false, length = 50)
-       @Size(max = 50)
-       @NotNull
-       @SafeHtml
-       private String requestStatus;
-       @OneToMany(
-               targetEntity = EpUserRolesRequestDet.class,
-               mappedBy = "reqId",
-               cascade = CascadeType.MERGE,
-               fetch = FetchType.LAZY
-       )
-       private Set<EpUserRolesRequestDet> epUserRolesRequestDets;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "req_id", length = 11, nullable = false, columnDefinition = "int(11) AUTO_INCREMENT")
+    @Digits(integer = 11, fraction = 0)
+    private Long reqId;
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @JoinColumn(name = "user_id", nullable = false, columnDefinition = "bigint")
+    @NotNull
+    @Valid
+    private FnUser userId;
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @JoinColumn(name = "app_id", nullable = false, columnDefinition = "bigint")
+    @NotNull
+    @Valid
+    private FnApp appId;
+    @Column(name = "created_date", nullable = false, columnDefinition = "datetime default now()")
+    @PastOrPresent
+    private LocalDateTime createdDate;
+    @Column(name = "updated_date", nullable = false, columnDefinition = "datetime default now()")
+    @PastOrPresent
+    private LocalDateTime updatedDate;
+    @Column(name = "request_status", nullable = false, length = 50)
+    @Size(max = 50)
+    @NotNull
+    @SafeHtml
+    private String requestStatus;
+    @OneToMany(
+        targetEntity = EpUserRolesRequestDet.class,
+        mappedBy = "reqId",
+        cascade = CascadeType.MERGE,
+        fetch = FetchType.LAZY
+    )
+    private Set<EpUserRolesRequestDet> epUserRolesRequestDets;
 
-       public void setEpRequestIdDetail(Set<EpUserRolesRequestDet> epMyLoginsDetail) {
-              this.epUserRolesRequestDets = epMyLoginsDetail;
-       }
+    public void setEpRequestIdDetail(Set<EpUserRolesRequestDet> epMyLoginsDetail) {
+        this.epUserRolesRequestDets = epMyLoginsDetail;
+    }
 }

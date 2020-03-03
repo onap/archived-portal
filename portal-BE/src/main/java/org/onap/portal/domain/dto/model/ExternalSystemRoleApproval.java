@@ -1,10 +1,8 @@
-/*
+/*-
  * ============LICENSE_START==========================================
  * ONAP Portal
  * ===================================================================
- * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
- * ===================================================================
- * Modifications Copyright (c) 2019 Samsung
+ * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
@@ -37,33 +35,22 @@
  *
  *
  */
+package org.onap.portal.domain.dto.model;
 
-package org.onap.portal.service.userRolesRequestDet;
+import java.io.Serializable;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.hibernate.validator.constraints.SafeHtml;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import org.onap.portal.domain.db.ep.EpUserRolesRequestDet;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class ExternalSystemRoleApproval implements Serializable {
 
-@Service
-@Transactional
-public class EpUserRolesRequestDetService {
+    @SafeHtml
+    private String roleName;
 
-    private final EpUserRolesRequestDetDao epUserRolesRequestDetDao;
-
-    @Autowired
-    public EpUserRolesRequestDetService(EpUserRolesRequestDetDao epUserRolesRequestDetDao) {
-        this.epUserRolesRequestDetDao = epUserRolesRequestDetDao;
-    }
-
-    public EpUserRolesRequestDet saveOne(EpUserRolesRequestDet epUserRolesRequestDet) {
-        return epUserRolesRequestDetDao.save(epUserRolesRequestDet);
-    }
-
-    public List<EpUserRolesRequestDet> appRolesRequestDetailList(final Long reqId) {
-        return Optional.of(epUserRolesRequestDetDao.appRolesRequestDetailList(reqId)).orElse(new ArrayList<>());
-    }
 }
