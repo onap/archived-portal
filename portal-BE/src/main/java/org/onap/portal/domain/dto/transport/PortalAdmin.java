@@ -41,6 +41,11 @@
 package org.onap.portal.domain.dto.transport;
 
 import java.io.Serializable;
+import javax.persistence.ColumnResult;
+import javax.persistence.ConstructorResult;
+import javax.persistence.NamedNativeQueries;
+import javax.persistence.NamedNativeQuery;
+import javax.persistence.SqlResultSetMapping;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -49,24 +54,63 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.validator.constraints.SafeHtml;
 
+
+@NamedNativeQuery(
+    name = "PortalAdmin.PortalAdminDTO",
+    query = "SELECT " +
+        "u.id AS userId, " +
+        "u.loginId AS loginId " +
+        "u.firstName AS firstName " +
+        "u.lastName AS lastName " +
+        "FROM " +
+        "FnUser u, " +
+        "FnUserRole ur " +
+        "WHERE u.activeYn = 'true' AND u.user_id = ur.user_id AND ur.role_id= :adminRoleId",
+    resultSetMapping = "PortalAdminDTO")
+@NamedNativeQuery(
+    name = "PortalAdmin.ActivePortalAdminDTO",
+    query = "SELECT " +
+        "u.id AS userId, " +
+        "u.loginId AS loginId " +
+        "u.firstName AS firstName " +
+        "u.lastName AS lastName " +
+        "FROM fn_user u, fn_user_role ur " +
+        "WHERE u.user_id = ur.user_id " +
+        "AND ur.user_id= :userId " +
+        "AND ur.role_id=:SYS_ADMIN_ROLE_ID",
+    resultSetMapping = "PortalAdminDTO")
+
+@SqlResultSetMapping(
+    name = "PortalAdminDTO",
+    classes = @ConstructorResult(
+        targetClass = PortalAdmin.class,
+        columns = {
+            @ColumnResult(name = "userId"),
+            @ColumnResult(name = "loginId"),
+            @ColumnResult(name = "firstName"),
+            @ColumnResult(name = "lastName")
+        }
+    )
+)
+
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class PortalAdmin implements Serializable {
 
-       private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-       @Digits(integer = 11, fraction = 0)
-       private Long userId;
-       @Size(max = 25)
-       @SafeHtml
-       private String loginId;
-       @Size(max = 50)
-       @SafeHtml
-       private String firstName;
-       @Size(max = 50)
-       @SafeHtml
-       private String lastName;
+    @Digits(integer = 11, fraction = 0)
+    private Long userId;
+    @Size(max = 25)
+    @SafeHtml
+    private String loginId;
+    @Size(max = 50)
+    @SafeHtml
+    private String firstName;
+    @Size(max = 50)
+    @SafeHtml
+    private String lastName;
 
 }
