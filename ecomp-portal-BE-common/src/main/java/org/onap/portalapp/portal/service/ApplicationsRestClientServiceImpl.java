@@ -133,7 +133,7 @@ public class ApplicationsRestClientServiceImpl implements ApplicationsRestClient
 		logger.debug(EELFLoggerDelegate.debugLogger, "http response status=" + status);
 		MDC.put(EPCommonSystemProperties.EXTERNAL_API_RESPONSE_CODE, Integer.toString(status));
 		if (!isHttpSuccess(status)) {
-			String errMsg = "Failed. Status=" + status + restPath +"; [" + ((ResponseImpl)response).getStatusInfo().getReasonPhrase().toString()
+			String errMsg = "Failed. Status=" + status + restPath +"; [" + ((ResponseImpl)response).getStatusInfo().getReasonPhrase()
 					+ "]";
 			URL url = null;
 			try {
@@ -255,7 +255,6 @@ public class ApplicationsRestClientServiceImpl implements ApplicationsRestClient
 		Response response = getResponse(appId, restPath);
 
 		if (response != null) {
-			//verifyResponse(response);
 			verifyResponse(response,restPath);
 			/* It is not recommendable to use the implementation class org.apache.cxf.jaxrs.impl.ResponseImpl in the code, 
 			but had to force this in-order to prevent conflict with the ResponseImpl class of Jersey Client which 
@@ -278,13 +277,11 @@ public class ApplicationsRestClientServiceImpl implements ApplicationsRestClient
 		Response response = getResponse(appId, restPath);
 
 		if (response != null) {
-			//verifyResponse(response);
 			verifyResponse(response,restPath);
 			/* It is not recommendable to use the implementation class org.apache.cxf.jaxrs.impl.ResponseImpl in the code, 
 			but had to force this in-order to prevent conflict with the ResponseImpl class of Jersey Client which 
 			doesn't work as expected. Created Portal-253 for tracking  */
-			String incomingJson = ((ResponseImpl)response).readEntity(String.class);
-			return incomingJson;
+			return ((ResponseImpl)response).readEntity(String.class);
 		}
 		
 		return "";
@@ -308,7 +305,6 @@ public class ApplicationsRestClientServiceImpl implements ApplicationsRestClient
 		Response response = getResponse(appId, restPath);
 
 		if (response != null) {
-			//verifyResponse(response);
 			verifyResponse(response,restPath);
 			String str = ((ResponseImpl)response).readEntity(String.class);
 			EcompPortalUtils.logAndSerializeObject(logger, restPath, "GET result =", str);
@@ -316,7 +312,6 @@ public class ApplicationsRestClientServiceImpl implements ApplicationsRestClient
 			try {
 				t = mapper.readValue(str, clazz);
 			} catch (Exception e) {
-				e.printStackTrace();
 				EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeInvalidJsonInput, e);
 			}
 		}
@@ -373,16 +368,12 @@ public class ApplicationsRestClientServiceImpl implements ApplicationsRestClient
 		}
 
 		if (response != null) {
-			//verifyResponse(response);
 			verifyResponse(response,restPath);
-			// String contentType = response.getHeaderString("Content-Type");
 			if (clazz != null) {
 				String str = ((ResponseImpl)response).readEntity(String.class);
 				EcompPortalUtils.logAndSerializeObject(logger, restPath, "POST result =", str);
 				try {
 					t = (T) gson.fromJson(str, clazz);
-
-					//t = gson.fromJson(str, clazz);
 				} catch (Exception e) {
 					EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeInvalidJsonInput, e);
 				}
@@ -430,7 +421,6 @@ public class ApplicationsRestClientServiceImpl implements ApplicationsRestClient
 		}
 
 		if (response != null) {
-			//verifyResponse(response);
 			verifyResponse(response,restPath);
 			String str = ((ResponseImpl)response).readEntity(String.class);
 			EcompPortalUtils.logAndSerializeObject(logger, restPath, "PUT result =", str);

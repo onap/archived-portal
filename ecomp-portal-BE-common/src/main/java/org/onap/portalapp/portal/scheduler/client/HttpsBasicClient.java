@@ -77,8 +77,7 @@ public class HttpsBasicClient{
 	public static Client getClient() throws Exception {
 		String methodName = "getClient";
 		ClientConfig config = new ClientConfig();
-		//config.getFeatures().put(JSONConfiguration.FEATURE_POJO_MAPPING, Boolean.TRUE);
-		//config.getClasses().add(org.onap.aai.util.CustomJacksonJaxBJsonProvider.class);
+
 	
 		SSLContext ctx = null;
 		
@@ -87,17 +86,17 @@ public class HttpsBasicClient{
 			SimpleDateFormat dateFormat = DateUtil.getDateFormat();
 			config.property(ClientProperties.SUPPRESS_HTTP_COMPLIANCE_VALIDATION, true);
 			
-			String truststore_path = SchedulerProperties.getProperty(SchedulerProperties.VID_TRUSTSTORE_FILENAME);
+			String truststorePath = SchedulerProperties.getProperty(SchedulerProperties.VID_TRUSTSTORE_FILENAME);
 			logger.debug(EELFLoggerDelegate.debugLogger, dateFormat.format(new Date()) + " " + methodName + " "
 				+ "truststore_path=" +
-				truststore_path);
-			String truststore_password = SchedulerProperties.getProperty(SchedulerProperties.VID_TRUSTSTORE_PASSWD_X);
+				truststorePath);
+			String truststorePassword = SchedulerProperties.getProperty(SchedulerProperties.VID_TRUSTSTORE_PASSWD_X);
 			
 			
-			String decrypted_truststore_password = Password.deobfuscate(truststore_password);
+			String decryptedTruststorePassword = Password.deobfuscate(truststorePassword);
 			//logger.debug(dateFormat.format(new Date()) + " " + methodName + " decrypted_truststore_password=" + decrypted_truststore_password);
 			
-			File tr = new File (truststore_path);
+			File tr = new File (truststorePath);
 			logger.debug(EELFLoggerDelegate.debugLogger, dateFormat.format(new Date()) + " " + methodName + " absolute "
 				+ "truststore path=" + tr.getAbsolutePath());
 			
@@ -105,8 +104,8 @@ public class HttpsBasicClient{
 			//String keystore_password = SystemProperties.getProperty(AAIProperties.AAI_KEYSTORE_PASSWD_X);
 			//String decrypted_keystore_password = EncryptedPropValue.decryptTriple(keystore_password);
 			
-		    System.setProperty("javax.net.ssl.trustStore", truststore_path);
-		    System.setProperty("javax.net.ssl.trustStorePassword", decrypted_truststore_password);
+		    System.setProperty("javax.net.ssl.trustStore", truststorePath);
+		    System.setProperty("javax.net.ssl.trustStorePassword", decryptedTruststorePassword);
 			HttpsURLConnection.setDefaultHostnameVerifier( new HostnameVerifier(){
 			    public boolean verify(String string,SSLSession ssls) {
 			        return true;
@@ -134,9 +133,7 @@ public class HttpsBasicClient{
 			ctx.init(kmf.getKeyManagers(), null, null);
 			*/
 			ctx.init(null, null, null);
-			//config.getProperties().put(HTTPSProperties.PROPERTY_HTTPS_PROPERTIES, 
-			//							new HTTPSProperties( , ctx));
-			
+
 			return ClientBuilder.newBuilder()
 				.sslContext(ctx)
 				.hostnameVerifier(new HostnameVerifier() {
@@ -148,17 +145,9 @@ public class HttpsBasicClient{
 				.build()
 				.register(CustomJacksonJaxBJsonProvider.class);
 			
-		} catch (Exception e) {
-			logger.debug(EELFLoggerDelegate.debugLogger, "Error setting up config: exiting");
-			//System.out.println("Error setting up config: exiting");
-			e.printStackTrace();
-			return null;
-		}
-			
-		//Client client = ClientBuilder.newClient(config);
-		// uncomment this line to get more logging for the request/response
-		// client.addFilter(new LoggingFilter(System.out));
-		
-		//return client;
-	}
-}  
+        } catch (Exception e) {
+            logger.debug(EELFLoggerDelegate.debugLogger, "Error setting up config: exiting", e);
+            return null;
+        }
+    }
+}
