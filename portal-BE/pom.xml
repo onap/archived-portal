@@ -152,6 +152,13 @@
               <version>6.0.18.Final</version>
               <scope>compile</scope>
           </dependency>
+            <!-- https://mvnrepository.com/artifact/com.zaxxer/HikariCP -->
+            <dependency>
+                  <groupId>com.zaxxer</groupId>
+                  <artifactId>HikariCP</artifactId>
+                  <version>3.4.5</version>
+            </dependency>
+
             <dependency>
                   <groupId>io.swagger</groupId>
                   <artifactId>swagger-annotations</artifactId>
@@ -182,12 +189,13 @@
           <version>2.6.0</version>
           <scope>compile</scope>
         </dependency>
+        <dependency>
+          <groupId>org.onap.portal.sdk</groupId>
+          <artifactId>epsdk-music</artifactId>
+          <version>2.6.0</version>
+          <scope>compile</scope>
+        </dependency>
       </dependencies>
-      <properties>
-            <docker.image.prefix>portal</docker.image.prefix>
-            <sonar.coverage.jacoco.xmlReportPaths>${project.reporting.outputDirectory}/jacoco-ut/jacoco.xml,${project.reporting.outputDirectory}/jacoco-it/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
-			<sonar.skip>true</sonar.skip>
-      </properties>
       <build>
             <plugins>
                   <plugin>
@@ -237,25 +245,6 @@
                                                 </artifactItem>
                                           </artifactItems>
                                     </configuration>
-                              </execution>
-                        </executions>
-                  </plugin>
-                  <plugin>
-                        <groupId>org.jacoco</groupId>
-                        <artifactId>jacoco-maven-plugin</artifactId>
-                        <version>0.7.7.201606060606</version>
-                        <executions>
-                              <execution>
-                                    <goals>
-                                          <goal>prepare-agent</goal>
-                                    </goals>
-                              </execution>
-                              <execution>
-                                    <id>report</id>
-                                    <phase>prepare-package</phase>
-                                    <goals>
-                                          <goal>report</goal>
-                                    </goals>
                               </execution>
                         </executions>
                   </plugin>
