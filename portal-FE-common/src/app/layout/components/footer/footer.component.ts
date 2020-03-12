@@ -69,7 +69,6 @@ export class FooterComponent implements OnInit {
     this.footerLink = this.api.footerLink;
     this.footerLinkText = this.api.footerLinkText;
     this.footerMessage= this.api.footerMessage;
-    this.footerLogoImagePath = "assets/images/global.logo"
     if(this.api.footerLogoImagePath !=''){
       this.footerLogoImagePath= this.api.footerLogoImagePath;
     }

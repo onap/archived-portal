@@ -45,7 +45,7 @@
 	value="<%=(SystemProperties.getProperty(SystemProperties.MOBILE_ENABLE)!= null && SystemProperties.getProperty(SystemProperties.MOBILE_ENABLE).trim().equals(\"true\"))%>" />
 
 <!DOCTYPE html>
-<html ng-app="abs">
+<html>
 	<head>
 		<link rel="shortcut icon" href="assets/images/1cc621d2.ecomp_logo.png">
 	    <title>
@@ -54,11 +54,8 @@
 		<meta charset="utf-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width, initial-scale=1"> 
-	<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+		<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 		<script src="static/js/jquery-1.10.2.js" type="text/javascript"></script>
-		<script src= "static/ebz/angular_js/angular.js"></script> 
-		<script src= "static/ebz/angular_js/angular-sanitize.js"></script>
-		<script src= "static/ebz/angular_js/gestures.js"></script>
 		<style>
 			.terms {
 				font-family: Verdana,Arial,Helvetica, sans-serif;
@@ -103,7 +100,7 @@
 	<% 
        String frontUrl = SystemProperties.getProperty(EPSystemProperties.FE_URL);
     %>
-	<div ng-controller="externalLoginController">
+	<div>
 		<div class="centered style="-webkit-transform: translateZ(0);background:white, z-index:0;">
 			<div align="center" id="errorInfo" style="display:none; float:left; font-family: Arial; font-size:12px; margin-left:5px">
 				<span style="color:red">Invalid username or password. Please try again.</span>
@@ -119,7 +116,7 @@
 								<label class="login-txt">Login ID:</label>
 							</td>
 							<td>
-								<input type="text" class="login-input-text" ng-model="loginId" maxlength="30" />
+								<input type="text" class="login-input-text" id="loginId" maxlength="30" />
 							</td>
 						</tr>
 						<tr>
@@ -127,13 +124,13 @@
 								<label class="login-txt">Password:</label>
 							</td>
 							<td>
-								<input type="password" class="login-input-text" ng-model="password" maxlength="30" 
+								<input type="password" class="login-input-text" id="password" maxlength="30" 
 									onkeydown="if (event.keyCode == 13) document.getElementById('loginBtn').click()"/>
 							</td>
 						</tr>
 					</table> 
 					<br />
-					<a class="login-btn" id="loginBtn" ng-click="loginExternal();">LOGIN</a>
+					<a class="login-btn" id="loginBtn">LOGIN</a>
 				</div>
 				<br>
 			</div>
@@ -141,55 +138,36 @@
 		<br/><br/><br/><br/><br/><br/><br/>
     </div>
     </body>
-<script>
-var app=angular.module("abs", []);
-app.controller("externalLoginController", function ($scope) { 
-	// Table Data
 	
-	$scope.viewPerPage = 200;
-	$scope.currentPage = 2;
-	$scope.totalPage;
-	$scope.searchCategory = "";
-	$scope.searchString = "";
-	$scope.loginId="";
-	$scope.password="";
-	$scope.loginError=true;
-	$scope.viewPerPage = 200;
-	$scope.currentPage = 2;
-	$scope.totalPage;
-	$scope.searchCategory = "";
-	$scope.searchString = "";
-	$scope.loginId="";
-	$scope.password="";
-	$scope.loginUrl = "";
-	
-	$scope.loginExternal = function() {
-		var postData={loginId:$scope.loginId,password:$scope.password};
-		$.ajax({
-	            url: "open_source/login?",
-                type : "POST",
-		  		 dataType: 'json',
-		  		 contentType: 'application/json',
-		  		 data: JSON.stringify(postData),                
-                success:function (response){
-                  if(response.success=="success"){
-                    //window.location.href = 'applicationsHome';
-                    window.location.href= "<%=frontUrl%>",
-                    sessionStorage.setItem('userId',$scope.loginId)
-                  }else{
-                	$("#errorInfo span").text(response);
-                	//$("#errorInfo").text = response;
-                	$("#errorInfo").show();
-                  }
-                },
-                error:function( jqXHR, status,error ){
-                	$("#errorInfo").show();
-                }
-                
-        });
-
-    };
-});
-</script>
-	
+	<script>
+		$( document ).ready(function() {
+			$(".login-btn").click(function(){
+				var loginIdVal = $("#loginId").val();
+				var passwordVal = $("#password").val();
+				var postData={loginId:loginIdVal,password:passwordVal};
+				$.ajax({
+					url: "open_source/login?",
+					type : "POST",
+					dataType: 'json',
+					contentType: 'application/json',
+					data: JSON.stringify(postData),                
+					success:function (response){
+					  if(response.success=="success"){
+						//window.location.href = 'applicationsHome';
+						window.location.href= "<%=frontUrl%>",
+						sessionStorage.setItem('userId',loginIdVal)
+					  }else{
+						$("#errorInfo span").text(response);
+						//$("#errorInfo").text = response;
+						$("#errorInfo").show();
+					  }
+					},
+					error:function( jqXHR, status,error ){
+						$("#errorInfo").show();
+					}
+						
+				});
+			});
+		});
+	</script>
 </html>
