@@ -42,17 +42,59 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { FormsModule } from '@angular/forms';
 import { NgMaterialModule } from 'src/app/ng-material-module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { WidgetOnboardingService } from 'src/app/shared/services/widget-onboarding/widget-onboarding.service';
+import { Observable } from 'rxjs';
+import { HttpClientModule } from '@angular/common/http';
 
 describe('WidgetOnboardingComponent', () => {
   let component: WidgetOnboardingComponent;
   let fixture: ComponentFixture<WidgetOnboardingComponent>;
+  let widgetList = [{"id" :"1",
+    "name":"ONAP-A",
+    "desc" :"desc",
+    "fileLocation" : "fileLocation",
+    "allowAllUser" : "allowAllUser",
+    "serviceId" : "serviceId",
+    "serviceURL" : "serviceURL",
+    "sortOrder" : "sortOrder",
+    "statusCode" : "statusCode",
+    "widgetRoles": "widgetRoles",
+    "appContent" : "appContent",
+    "appName" : "appName",
+    "file"  : "file",
+    "allUser": false,
+    "saving": "saving"},{"id" :"1",
+    "name":"ONAP-B",
+    "desc" :"desc",
+    "fileLocation" : "fileLocation",
+    "allowAllUser" : "allowAllUser",
+    "serviceId" : "serviceId",
+    "serviceURL" : "serviceURL",
+    "sortOrder" : "sortOrder",
+    "statusCode" : "statusCode",
+    "widgetRoles": "widgetRoles",
+    "appContent" : "appContent",
+    "appName" : "appName",
+    "file"  : "file",
+    "allUser": false,
+    "saving": "saving"}]
+
 
   beforeEach(async(() => {
+    let widgetOnboardingService: WidgetOnboardingService;
+    
+   // widgetOnboardingService = jasmine.createSpyObj('WidgetOnboardingService', ['getManagedWidgets']);
+    //widgetOnboardingService.getManagedWidgets.and.returnValue(Observable.of(widgetList));
     TestBed.configureTestingModule({
       declarations: [ WidgetOnboardingComponent ],
-      imports:[HttpClientTestingModule,FormsModule,NgMaterialModule,BrowserAnimationsModule],
+      imports:[HttpClientModule,FormsModule,NgMaterialModule,BrowserAnimationsModule],
+      providers:[WidgetOnboardingService]
     })
     .compileComponents();
+
+
+    widgetOnboardingService = TestBed.get(WidgetOnboardingService);
+    spyOn(widgetOnboardingService, 'getManagedWidgets').and.returnValue(Observable.of(widgetList));
   }));
 
   beforeEach(() => {
@@ -61,7 +103,14 @@ describe('WidgetOnboardingComponent', () => {
     fixture.detectChanges();
   });
 
+  
+
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+  it('getOnboardingWidgets should return stubbed value', () => {
+    spyOn(component, 'getOnboardingWidgets').and.callThrough();
+    component.getOnboardingWidgets();
+    expect(component.getOnboardingWidgets).toHaveBeenCalledWith();
   });
 });
