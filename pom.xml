@@ -41,6 +41,7 @@
 		<!-- <sonar.exclusions>**/scripts/**/*,**.js</sonar.exclusions>  -->
 		<sonar.test.exclusions>**/test/**/*,**/tests/**/*</sonar.test.exclusions>
 		<enforcer.skip>false</enforcer.skip>
+		<sonar.scm.exclusions.disabled>true</sonar.scm.exclusions.disabled>
 	</properties>
 
 	<!-- Specify the repositories here to avoid coordination of ~/.m2/settings.xml 

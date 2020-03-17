@@ -17,9 +17,8 @@
 		<sonar.exclusions>**/node_modules/**,**/*.spec.ts,**/*.module.ts,**/environment.prod.ts,**/*.js,**/main.ts,**/header-interceptor.ts,**/dynamic-widget.component.ts</sonar.exclusions>
 		<sonar.test.inclusions>**/*.spec.ts</sonar.test.inclusions>
 		<sonar.tests>src</sonar.tests>
-		<sonar.scm.exclusions.disabled>true</sonar.scm.exclusions.disabled>
 		<sonar.sourceEncoding>UTF-8</sonar.sourceEncoding>
-		<sonar.nodejs.executable>node</sonar.nodejs.executable>
+		<sonar.nodejs.executable>${project.basedir}\node\</sonar.nodejs.executable>
 	</properties>
 
 	<build>
