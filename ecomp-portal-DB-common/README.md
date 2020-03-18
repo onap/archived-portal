@@ -8,10 +8,10 @@ Directions:
 
 DDL
 
-PortalDDLMySql_2_1_Common.sql  - this is the DDL entries for use inside the company and in the ONAP community
+PortalDDLMySql_3_2_Common.sql  - this is the DDL entries for use inside the company and in the ONAP community
 
 DML
 
-PortalDMLMySql_2_1_Common.sql  - this is the DML entries for use inside the company and in the ONAP community
+PortalDMLMySql_3_2_Common.sql  - this is the DML entries for use inside the company and in the ONAP community
 
 ***************************************************************************************************************************************

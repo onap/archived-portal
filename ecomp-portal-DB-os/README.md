@@ -10,15 +10,15 @@ DDL
 
 For an Opensource instance run only 
 
-2_1: script PortalDDLMySql_2_1_Common.sql.
+3_2: script PortalDDLMySql_2_1_Common.sql.
 
-2_1: PortalDDLMySql_2_1_OS.sql is only a placeholder at this time.
+3_2: PortalDDLMySql_3_2_OS.sql is only a placeholder at this time.
 
 DML
 
 For an Opensource instance run  
 
-2_1: script PortalDMLMySql_2_1_Common.sql and script PortalDMLMySql_2_1_OS.sql.
+3_2: script PortalDMLMySql_3_2_Common.sql and script PortalDMLMySql_3_2_OS.sql.
 
-2_1: PortalDMLMySql_2_1_OS.sql - this is the specific DML entries that only Opensource needs
+3_2: PortalDMLMySql_3_2_OS.sql - this is the specific DML entries that only Opensource needs
 ***************************************************************************************************************************************
