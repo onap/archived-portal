@@ -176,6 +176,12 @@
           <version>2.10.0</version>
           <scope>compile</scope>
         </dependency>
+        <dependency>
+          <groupId>org.onap.portal.sdk</groupId>
+          <artifactId>epsdk-app-common</artifactId>
+          <version>2.6.0</version>
+          <scope>compile</scope>
+        </dependency>
       </dependencies>
       <properties>
             <docker.image.prefix>portal</docker.image.prefix>
