@@ -89,8 +89,8 @@ CREATE TABLE `ep_user_roles_request_det` (
 })
 
 @Table(name = "ep_user_roles_request_det", indexes = {
-        @Index(name = "fk_user_roles_req_fn_req_id", columnList = "req_id"),
-        @Index(name = "fk_user_roles_req_fn_role_id", columnList = "requested_role_id")
+    @Index(name = "fk_user_roles_req_fn_req_id", columnList = "req_id"),
+    @Index(name = "fk_user_roles_req_fn_role_id", columnList = "requested_role_id")
 })
 @NoArgsConstructor
 @AllArgsConstructor
@@ -99,25 +99,25 @@ CREATE TABLE `ep_user_roles_request_det` (
 @Entity
 public class EpUserRolesRequestDet implements Serializable {
 
-       @Id
-
-  @GeneratedValue(strategy = GenerationType.AUTO)
-       @Column(name = "id", length = 11, nullable = false, columnDefinition = "int(11) AUTO_INCREMENT")
-       @Digits(integer = 11, fraction = 0)
-       private Long id;
-       @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
-       @JoinColumn(name = "req_id", columnDefinition = "int(11) default null")
-       @Valid
-       private EpUserRolesRequest reqId;
-       @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
-       @JoinColumn(name = "requested_role_id", nullable = false, columnDefinition = "bigint")
-       @NotNull
-       @Valid
-       private FnRole requestedRoleId;
-       @Column(name = "request_type", length = 10, nullable = false)
-       @Size(max = 10)
-       @NotNull
-       @SafeHtml
-       private String requestType;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id", length = 11, nullable = false, columnDefinition = "int(11) AUTO_INCREMENT")
+    @Digits(integer = 11, fraction = 0)
+    private Long id;
+    //TODO One to many
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @JoinColumn(name = "req_id", columnDefinition = "int(11) default null")
+    @Valid
+    private EpUserRolesRequest reqId;
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @JoinColumn(name = "requested_role_id", nullable = false, columnDefinition = "bigint")
+    @NotNull
+    @Valid
+    private FnRole requestedRoleId;
+    @Column(name = "request_type", length = 10, nullable = false)
+    @Size(max = 10)
+    @NotNull
+    @SafeHtml
+    private String requestType;
 
 }

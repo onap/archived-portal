@@ -142,4 +142,13 @@ public class FnAppService {
   public List<FnApp> findAll() {
     return Optional.of(fnAppDao.findAll()).orElse(new ArrayList<>());
   }
+
+  public FnApp getAppDetail(final String appName) {
+    List<FnApp> fnApps = fnAppDao.retrieveWhereAppName(appName).orElse(new ArrayList<>());
+    if (!fnApps.isEmpty()) {
+      return fnApps.get(0);
+    } else {
+      throw new EntityExistsException("No FnApp where appName equals " + appName);
+    }
+  }
 }

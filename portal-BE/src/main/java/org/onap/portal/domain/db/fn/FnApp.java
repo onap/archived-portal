@@ -108,9 +108,14 @@ CREATE TABLE `fn_app` (
         query = "from FnApp where uebKey = :uebKey"),
     @NamedQuery(
         name = "FnApp.getCentralizedApps",
-        query = "from FnApp where authCentral = 'Y' and open = 'N' and authNamespace is not null"
+        query = "from FnApp where authCentral = 'Y' and open = 'N' and authNamespace is not null"),
+    @NamedQuery(
+        name = "FnApp.retrieveWhereAppName",
+        query = "FROM FnApp WHERE appName = :appName"
     )
 })
+
+//TODO appName as unique index?
 
 @Table(name = "fn_app")
 @NoArgsConstructor
