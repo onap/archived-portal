@@ -68,7 +68,7 @@ public class ONAPWelcomeController extends EPRestrictedBaseController{
 		return "/index";
     }
 	
-	@RequestMapping(value = {"/applicationsHome", "/dashboard", "/widgetsHome", "/kpidash*", "/admins", "/users", "/portalAdmins", "/applications", "/widgets", "/functionalMenu", "/contactUs", "/getAccess","/appCatalog", "/widgetOnboarding", "/accountOnboarding"}, method = RequestMethod.GET)
+	@RequestMapping(value = {"/app/*","/applicationsHome", "/dashboard", "/widgetsHome", "/kpidash*", "/admins", "/users", "/portalAdmins", "/applications", "/widgets", "/functionalMenu", "/contactUs", "/getAccess","/appCatalog", "/widgetOnboarding", "/accountOnboarding"}, method = RequestMethod.GET)
     public String getEcompSinglePage(HttpServletRequest request, HttpServletResponse response) {
 		return "forward:/index.html";
     }
