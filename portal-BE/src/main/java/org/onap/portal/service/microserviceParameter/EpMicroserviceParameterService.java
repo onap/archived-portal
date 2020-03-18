@@ -77,6 +77,10 @@ public class EpMicroserviceParameterService {
               return list;
        }
 
+       public List<EpMicroserviceParameter> getByServiceId(long serviceId) {
+              return epMicroserviceParameterDao.getParametersById(serviceId);
+       }
+
        private MicroserviceParameter epWidgetCatalogParameterToMicroserviceParameter(
                final EpMicroserviceParameter microservice) {
               return new MicroserviceParameter(microservice.getId(), microservice.getServiceId().getId(),
@@ -104,5 +108,9 @@ public class EpMicroserviceParameterService {
 
        public List<EpMicroserviceParameter> saveAll(List<EpMicroserviceParameter> epMicroserviceParameters) {
               return epMicroserviceParameterDao.saveAll(epMicroserviceParameters);
+       }
+
+       public void deleteOne(EpMicroserviceParameter microserviceParameter) {
+              epMicroserviceParameterDao.delete(microserviceParameter);
        }
 }
