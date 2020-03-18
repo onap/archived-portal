@@ -2217,4 +2217,8 @@ public class AdminRolesService {
             logger.error(EELFLoggerDelegate.errorLogger, "applyChangesToAppRolesRequest failed", e);
         }
     }
+
+    public List<FnRole> getRolesByApp(final Long appId) {
+        return fnRoleService.retrieveActiveRolesOfApplication(appId);
+    }
 }

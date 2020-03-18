@@ -474,6 +474,11 @@ public class FnUserRoleService {
     fnUserRoleDao.deleteById(id);
   }
 
+  public void deleteByUserIdAndRoleId(final Long userId, final String roleId){
+    final String query =  "DELETE FROM FnUserRole id = :userId AND roleId.id = :roleId";
+    entityManager.createQuery(query).setParameter("userId", userId).setParameter("roleId", roleId).executeUpdate();
+  }
+
   public List<RoleInAppForUser> constructRolesInAppForUserGet(List<Role> appRoles, FnRole[] userAppRoles,
       Boolean extRequestValue) {
     List<RoleInAppForUser> rolesInAppForUser = new ArrayList<>();
