@@ -186,7 +186,7 @@ public class FnUserRole implements Serializable {
   @Digits(integer = 4, fraction = 0)
   private Long priority;
   @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
-  @JoinColumn(name = "fn_App_Id", columnDefinition = "bigint")
+  @JoinColumn(name = "fn_app_id", columnDefinition = "bigint")
   @Valid
   private FnApp fnAppId;
 }

@@ -78,6 +78,7 @@ import org.onap.portal.domain.db.fn.FnRole;
 import org.onap.portal.domain.db.fn.FnRoleFunction;
 import org.onap.portal.domain.db.fn.FnUser;
 import org.onap.portal.domain.db.fn.FnUserRole;
+import org.onap.portal.domain.dto.ecomp.EPUserApp;
 import org.onap.portal.domain.dto.transport.AppNameIdIsAdmin;
 import org.onap.portal.domain.dto.transport.AppWithRolesForUser;
 import org.onap.portal.domain.dto.transport.AppsListWithAdminRole;
@@ -1932,4 +1933,47 @@ public class AdminRolesService {
 
         return finalRoleFunctionSet;
     }
+
+    public AppsListWithAdminRole getAppsWithAdminRoleStateForUser(String orgUserId) {
+            AppsListWithAdminRole appsListWithAdminRole = null;
+
+            try {
+                List<FnUser> userList = fnUserService.getUserWithOrgUserId(orgUserId);
+                HashMap<Long, Long> appsUserAdmin = new HashMap<>();
+                if (userList!= null && userList.size() > 0) {
+                    FnUser user = userList.get(0);
+                    List<FnUserRole> userAppList = new ArrayList<>();
+                    try {
+                        userAppList = fnUserRoleService.retrieveByUserIdAndRoleId(user.getId(), ACCOUNT_ADMIN_ROLE_ID);
+                    } catch (Exception e) {
+                        logger.error(EELFLoggerDelegate.errorLogger, "getAppsWithAdminRoleStateForUser 1 failed", e);
+                        EPLogUtil.logEcompError(EPAppMessagesEnum.BeDaoSystemError);
+                    }
+                    for (FnUserRole userApp : userAppList) {
+                        appsUserAdmin.put(userApp.getFnAppId().getId(), userApp.getUserId().getId());
+                    }
+                }
+
+                appsListWithAdminRole = new AppsListWithAdminRole();
+                appsListWithAdminRole.setOrgUserId(orgUserId);
+                List<FnApp> appsList = new ArrayList<>();
+                try {
+                    appsList = fnAppService.findAll();
+                } catch (Exception e) {
+                    logger.error(EELFLoggerDelegate.errorLogger, "getAppsWithAdminRoleStateForUser 2 failed", e);
+                    EPLogUtil.logEcompError(EPAppMessagesEnum.BeDaoSystemError);
+                }
+                for (FnApp app : appsList) {
+                    AppNameIdIsAdmin appNameIdIsAdmin = new AppNameIdIsAdmin();
+                    appNameIdIsAdmin.setId(app.getId());
+                    appNameIdIsAdmin.setAppName(app.getAppName());
+                    appNameIdIsAdmin.setIsAdmin(appsUserAdmin.containsKey(app.getId()));
+                    appNameIdIsAdmin.setRestrictedApp(app.isRestrictedApp());
+                    appsListWithAdminRole.getAppsRoles().add(appNameIdIsAdmin);
+                }
+            } catch (Exception e) {
+                logger.error(EELFLoggerDelegate.errorLogger, "getAppsWithAdminRoleStateForUser 3 failed", e);
+            }
+            return appsListWithAdminRole;
+        }
 }

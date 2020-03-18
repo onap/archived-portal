@@ -67,7 +67,7 @@ class UserControllerTest {
        private final UserController userController;
 
        @Autowired
-       UserControllerTest(final FnUserService userService, final UserController userController) {
+       UserControllerTest(FnUserService userService, UserController userController) {
               this.userService = userService;
               this.userController = userController;
        }
