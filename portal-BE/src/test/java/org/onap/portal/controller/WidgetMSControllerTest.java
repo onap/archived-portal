@@ -40,14 +40,14 @@
 
 package org.onap.portal.controller;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.Assert.assertEquals;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
-import org.onap.portal.domain.dto.ecomp.PortalRestResponse;
-import org.onap.portal.domain.dto.ecomp.PortalRestStatusEnum;
+import org.onap.portal.domain.dto.PortalRestResponse;
+import org.onap.portal.domain.dto.PortalRestStatusEnum;
 import org.onap.portal.framework.MockitoTestSuite;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

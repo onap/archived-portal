@@ -41,12 +41,58 @@
 package org.onap.portal.domain.dto.transport;
 
 import java.io.Serializable;
+import javax.persistence.ColumnResult;
+import javax.persistence.ConstructorResult;
+import javax.persistence.NamedNativeQuery;
+import javax.persistence.SqlResultSetMapping;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+
+@NamedNativeQuery(
+    name = "GlobalRoleWithApplicationRoleFunction.getGlobalRoleForRequestedApp",
+    query = "select distinct "
+          + "    d.role_id as roleId, "
+          + "    d.role_name as roleName, "
+          + "    d.active_yn as active, "
+          + "    d.priority as priority, "
+          + "    c.function_cd as functionCd, "
+          + "    e.function_name as functionName, "
+          + "    c.app_id as appId, "
+          + "    c.role_app_id as roleAppId"
+          + "from fn_user_role a, fn_app b, ep_app_role_function c, fn_role d, ep_app_function e"
+          + "    where b.app_id = c.app_id"
+          + "    and a.app_id = c.role_app_id"
+          + "    and b.enabled = 'Y' "
+          + "    and c.role_id = d.role_id"
+          + "    and d.active_yn='Y'"
+          + "    and e.function_cd = c.function_cd"
+          + "    and c.app_id=:requestedAppId "
+          + "    and c.role_id =:roleId "
+          + "    and e.app_id = c.app_id",
+    resultSetMapping = "GlobalRoleWithApplicationRoleFunction"
+)
+
+@SqlResultSetMapping(
+    name = "GlobalRoleWithApplicationRoleFunction",
+    classes = @ConstructorResult(
+        targetClass = GlobalRoleWithApplicationRoleFunction.class,
+        columns = {
+            @ColumnResult(name = "roleId"),
+            @ColumnResult(name = "roleName"),
+            @ColumnResult(name = "active"),
+            @ColumnResult(name = "priority"),
+            @ColumnResult(name = "functionCd"),
+            @ColumnResult(name = "functionName"),
+            @ColumnResult(name = "appId"),
+            @ColumnResult(name = "roleAppId")
+        }
+    )
+)
+
 
 @Getter
 @Setter

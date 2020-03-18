@@ -66,6 +66,7 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.onap.portal.domain.db.DomainVo;
 import org.onap.portal.domain.db.ep.EpAppFunction;
 import org.onap.portal.domain.db.ep.EpUserRolesRequest;
 import org.onap.portal.domain.db.ep.EpUserRolesRequestDet;
@@ -97,6 +98,7 @@ import org.onap.portal.exception.SyncUserRolesException;
 import org.onap.portal.logging.format.EPAppMessagesEnum;
 import org.onap.portal.logging.logic.EPLogUtil;
 import org.onap.portal.service.appFunction.EpAppFunctionService;
+import org.onap.portal.service.roleFunction.FnRoleFunctionService;
 import org.onap.portal.service.userRolesRequestDet.EpUserRolesRequestDetService;
 import org.onap.portal.service.userRolesRequest.EpUserRolesRequestService;
 import org.onap.portal.service.app.FnAppService;
@@ -142,6 +144,7 @@ public class AdminRolesService {
     private final FnUserService fnUserService;
     private final FnRoleService fnRoleService;
     private final FnAppService fnAppService;
+    private final FnRoleFunctionService fnRoleFunctionService;
     private final FnMenuFunctionalService fnMenuFunctionalService;
     private final FnUserRoleService fnUserRoleService;
     private final EpAppFunctionService epAppFunctionService;
@@ -157,7 +160,7 @@ public class AdminRolesService {
         final EntityManager entityManager,
         final FnUserService fnUserService, FnRoleService fnRoleService,
         FnAppService fnAppService,
-        FnMenuFunctionalService fnMenuFunctionalService,
+        FnRoleFunctionService fnRoleFunctionService, FnMenuFunctionalService fnMenuFunctionalService,
         final FnUserRoleService fnUserRoleService,
         EpAppFunctionService epAppFunctionService,
         EcompUserAppRolesService ecompUserAppRolesService,
@@ -171,6 +174,7 @@ public class AdminRolesService {
         this.fnUserService = fnUserService;
         this.fnRoleService = fnRoleService;
         this.fnAppService = fnAppService;
+        this.fnRoleFunctionService = fnRoleFunctionService;
         this.fnMenuFunctionalService = fnMenuFunctionalService;
         this.fnUserRoleService = fnUserRoleService;
         this.epAppFunctionService = epAppFunctionService;
@@ -540,10 +544,15 @@ public class AdminRolesService {
             Role role = new Role();
             FnRole appRole = getAppRoles.stream()
                 .filter(applicationRole -> epRole.getId().equals(applicationRole.getId())).findAny().orElse(null);
+            List<FnRoleFunction> fnRoleFunctions = new ArrayList<>();
+            for (DomainVo vo: epRole.getRoleFunctions()){
+                Optional<FnRoleFunction> roleFunction = fnRoleFunctionService.findById(vo.getId());
+                roleFunction.ifPresent(fnRoleFunctions::add);
+            }
             if (appRole != null) {
                 role.setId(appRole.getAppRoleId());
                 role.setRoleName(epRole.getName());
-                role.setFnRoleFunctions(epRole.getRoleFunctions());
+                role.setFnRoleFunctions(new HashSet<>(fnRoleFunctions));
             }
             roles.add(role);
         }

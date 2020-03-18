@@ -41,6 +41,7 @@
 package org.onap.portal.domain.dto.transport;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Set;
 import lombok.AllArgsConstructor;
@@ -59,8 +60,8 @@ public class CentralUser implements Serializable {
 	private static final long serialVersionUID = 7060454665330579923L;
 
 	private Long id;
-	private Date created;
-	private Date modified;
+	private LocalDateTime created;
+	private LocalDateTime modified;
 	private Long createdId;
 	private Long modifiedId;
 	private Long rowNum;
@@ -84,7 +85,7 @@ public class CentralUser implements Serializable {
 	private String state;
 	private String zipCode;
 	private String country;
-	private String orgManagerUserId;
+	private Long orgManagerUserId;
 	private String locationClli;
 	private String businessCountryCode;
 	private String businessCountryName;
@@ -102,7 +103,7 @@ public class CentralUser implements Serializable {
 	private String financialLocCode;
 	private String loginId;
 	private String loginPwd;
-	private Date lastLoginDate;
+	private LocalDateTime lastLoginDate;
 	private boolean active;
 	private boolean internal;
 	private Long selectedProfileId;

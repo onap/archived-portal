@@ -55,6 +55,8 @@ import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.NamedNativeQueries;
+import javax.persistence.NamedNativeQuery;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -114,6 +116,9 @@ CREATE TABLE `fn_role` (
         name = "FnRole.retrieveActiveRolesOfApplication",
         query = "from FnRole where activeYn = 'Y' and appId=:appId"),
     @NamedQuery(
+        name = "FnRole.retrieveActiveRolesWhereAppIdIsNull",
+        query = "from FnRole where activeYn = 'Y' and appId is null"),
+    @NamedQuery(
         name = "FnRole.getUserRoleOnUserIdAndAppId",
         query = " FROM"
             + "  FnRole fr,\n"
@@ -136,6 +141,13 @@ CREATE TABLE `fn_role` (
         query = "FROM FnRole WHERE roleName = 'System_Administrator' and activeYn = 'true' and priority = 1 and appId is null and appRoleId is null"
     )
 })
+
+@NamedNativeQuery(
+    name = "FnRole.userAppGlobalRoles",
+    query = "select fr.role_id , fr.role_name ,fr.active_yn, fr.priority, fr.app_id, fr.app_role_id \n"
+        + " from fn_user_role a, fn_role fr, fn_user fu \n"
+        + " where a.role_id in (select b.role_id from ep_app_role_function b where b.role_app_id = 1 and b.app_id =:appId) and a.user_id =fu.user_id and a.role_id = fr.role_id and fr.active_yn='Y' and fu.active_yn='Y' and fu.user_id =:userId\n"
+)
 
 @Table(name = "fn_role")
 @NoArgsConstructor

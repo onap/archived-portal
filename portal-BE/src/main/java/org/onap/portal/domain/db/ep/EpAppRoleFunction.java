@@ -53,6 +53,8 @@ import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinColumns;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.validation.Valid;
 import javax.validation.constraints.Digits;
@@ -82,6 +84,13 @@ CREATE TABLE `ep_app_role_function` (
         CONSTRAINT `fk_ep_app_role_function_role_id` FOREIGN KEY (`role_id`) REFERENCES `fn_role` (`role_id`)
         )
 */
+
+@NamedQueries({
+    @NamedQuery(
+        name = "EpAppRoleFunction.getAppRoleFunctionOnRoleIdAndAppId",
+        query = "from EpAppRoleFunction where appId.id = :appId and fnRole.id = :roleId"
+    )
+})
 
 @Table(name = "ep_app_role_function", indexes = {
     @Index(name = "fk_ep_app_role_function_ep_app_func_role_id", columnList = "app_id, role_id, function_cd", unique = true),

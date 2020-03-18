@@ -41,6 +41,7 @@
 package org.onap.portal.service.appFunction;
 
 import java.util.List;
+import java.util.Optional;
 import org.onap.portal.domain.db.ep.EpAppFunction;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -54,5 +55,14 @@ interface EpAppFunctionDao extends JpaRepository<EpAppFunction, Long> {
 
   @Query
   List<EpAppFunction> getAppRoleFunctionList(final @Param("roleId") Long roleId, final @Param("appId") Long appId);
+
+  @Query
+  Optional<List<EpAppFunction>> getAllRoleFunctions(final @Param("appId") Long appId);
+
+  @Query
+  List<EpAppFunction> getAppFunctionOnCodeAndAppId(final @Param("appId") long appId, @Param("functionCd") final String functionCd);
+
+  @Query
+  List<EpAppFunction> getRoleFunction(@Param("functionCd") final String functionCd, final @Param("appId") long appId);
 
 }

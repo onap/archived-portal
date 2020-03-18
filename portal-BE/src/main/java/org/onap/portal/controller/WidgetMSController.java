@@ -42,8 +42,8 @@ package org.onap.portal.controller;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.onap.portal.domain.dto.ecomp.PortalRestResponse;
-import org.onap.portal.domain.dto.ecomp.PortalRestStatusEnum;
+import org.onap.portal.domain.dto.PortalRestResponse;
+import org.onap.portal.domain.dto.PortalRestStatusEnum;
 import org.onap.portal.service.WidgetMService;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.springframework.beans.factory.annotation.Autowired;

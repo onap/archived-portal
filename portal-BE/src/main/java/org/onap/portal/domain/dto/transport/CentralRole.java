@@ -49,6 +49,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.onap.portal.domain.db.ep.EpAppFunction;
 
 @Getter
 @Setter
@@ -68,8 +69,34 @@ public class CentralRole implements Serializable {
 	private String name;
 	private boolean active;
 	private Integer priority;
-	private SortedSet<CentralRoleFunction> roleFunctions = new TreeSet<>();
+	private SortedSet<EpAppFunction> roleFunctions = new TreeSet<>();
 	private SortedSet<CentralRole> childRoles;
 	private SortedSet<CentralRole> parentRoles;
+
+	public CentralRole(Long id, String name, boolean active, Integer priority,
+		SortedSet<EpAppFunction> roleFunctions) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.active = active;
+		this.priority = priority;
+		this.roleFunctions = roleFunctions;
+	}
+
+	public CentralRole(CentralRoleBuilder centralRoleBuilder) {
+		super();
+		this.id = centralRoleBuilder.id;
+		this.created = centralRoleBuilder.created;
+		this.modified = centralRoleBuilder.modified;
+		this.createdId = centralRoleBuilder.createdId;
+		this.modifiedId = centralRoleBuilder.modifiedId;
+		this.rowNum = centralRoleBuilder.rowNum;
+		this.name = centralRoleBuilder.name;
+		this.active = centralRoleBuilder.active;
+		this.priority = centralRoleBuilder.priority;
+		this.roleFunctions = centralRoleBuilder.roleFunctions;
+		this.childRoles = centralRoleBuilder.childRoles;
+		this.parentRoles = centralRoleBuilder.parentRoles;
+	}
 
 }

@@ -41,6 +41,7 @@
 package org.onap.portal.domain.dto.transport;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Set;
 import lombok.AllArgsConstructor;
@@ -61,8 +62,8 @@ public class CentralV2User implements Serializable {
 	private static final long serialVersionUID = -2673289523184880563L;
 
 	private Long id;
-	private Date created;
-	private Date modified;
+	private LocalDateTime created;
+	private LocalDateTime modified;
 	private Long createdId;
 	private Long modifiedId;
 	private Long rowNum;
@@ -86,7 +87,7 @@ public class CentralV2User implements Serializable {
     private String state;
     private String zipCode;
     private String country;
-    private String orgManagerUserId;
+    private Long orgManagerUserId;
     private String locationClli;
     private String businessCountryCode;
     private String businessCountryName;
@@ -104,7 +105,7 @@ public class CentralV2User implements Serializable {
     private String financialLocCode;
     private String loginId;
     private String loginPwd;
-    private Date   lastLoginDate;
+    private LocalDateTime   lastLoginDate;
     private boolean active;
     private boolean internal;
     private Long    selectedProfileId;

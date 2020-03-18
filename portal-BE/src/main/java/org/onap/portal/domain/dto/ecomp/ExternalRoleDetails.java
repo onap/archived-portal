@@ -46,6 +46,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.onap.portal.domain.db.fn.FnRole;
 
 @Getter
 @Setter
@@ -63,7 +64,7 @@ public class ExternalRoleDetails implements Comparable {
 
     @Override
     public int compareTo(Object obj) {
-        EPRole other = (EPRole) obj;
-        return (this.getName() == null || other.getName() == null) ? 1 : getName().equals(other.getName()) ? 0 : 1;
+        FnRole other = (FnRole) obj;
+        return (this.getName() == null || other.getRoleName() == null) ? 1 : getName().equals(other.getRoleName()) ? 0 : 1;
     }
 }

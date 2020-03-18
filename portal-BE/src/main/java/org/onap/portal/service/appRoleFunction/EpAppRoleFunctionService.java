@@ -40,6 +40,7 @@
 
 package org.onap.portal.service.appRoleFunction;
 
+import javax.persistence.EntityManager;
 import org.onap.portal.domain.db.ep.EpAppRoleFunction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -50,13 +51,48 @@ import java.util.List;
 public class EpAppRoleFunctionService {
 
     private final EpAppRoleFunctionDao epAppRoleFunctionDao;
+    private final EntityManager entityManager;
+
 
     @Autowired
-    public EpAppRoleFunctionService(EpAppRoleFunctionDao epAppRoleFunctionDao) {
+    public EpAppRoleFunctionService(final EpAppRoleFunctionDao epAppRoleFunctionDao,
+        final EntityManager entityManager) {
         this.epAppRoleFunctionDao = epAppRoleFunctionDao;
+        this.entityManager = entityManager;
     }
 
     public List<EpAppRoleFunction> saveAll(List<EpAppRoleFunction> epAppRoleFunctions) {
         return epAppRoleFunctionDao.saveAll(epAppRoleFunctions);
+    }
+
+    public EpAppRoleFunction save(EpAppRoleFunction apRoleFunction) {
+        return epAppRoleFunctionDao.save(apRoleFunction);
+    }
+
+    public List<EpAppRoleFunction> getAppRoleFunctionOnRoleIdAndAppId(final long appId, final long roleId){
+        return getAppRoleFunctionOnRoleIdAndAppId(appId, roleId);
+    }
+
+    public void deleteByAppIdAndFunctionCd(final Long appId, final String functionCd) {
+        entityManager.createQuery("DELETE FROM ep_app_role_function WHERE app_id = :appId and function_cd = :functionCd")
+            .setParameter("appId", appId)
+            .setParameter("functionCd", functionCd)
+            .executeUpdate();
+    }
+
+    public void deleteByAppIdAndFunctionCdAndRoleId(final Long appId, final String functionCd, final Integer roleId) {
+        entityManager.createQuery("DELETE FROM ep_app_role_function WHERE app_id = :appId and function_cd = :functionCd and role_id = :roleId")
+            .setParameter("appId", appId)
+            .setParameter("functionCd", functionCd)
+            .setParameter("roleId", roleId)
+            .executeUpdate();
+    }
+
+    public void delete(EpAppRoleFunction approleFunction) {
+        epAppRoleFunctionDao.delete(approleFunction);
+    }
+
+    public void deleteInBatch(List<EpAppRoleFunction> appRoleFunctionList) {
+        epAppRoleFunctionDao.deleteInBatch(appRoleFunctionList);
     }
 }

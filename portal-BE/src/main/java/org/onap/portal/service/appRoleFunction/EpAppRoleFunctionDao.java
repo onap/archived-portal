@@ -40,13 +40,19 @@
 
 package org.onap.portal.service.appRoleFunction;
 
+import java.util.List;
 import org.onap.portal.domain.db.ep.EpAppRoleFunction;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 @Transactional
 interface EpAppRoleFunctionDao extends JpaRepository<EpAppRoleFunction, Integer> {
+
+    @Query
+    List<EpAppRoleFunction> getAppRoleFunctionOnRoleIdAndAppId(final @Param("appId") long appId, final @Param("roleId") long roleId);
 
 }

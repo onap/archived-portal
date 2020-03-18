@@ -50,6 +50,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.onap.portal.domain.db.DomainVo;
 import org.onap.portal.domain.db.fn.FnRoleFunction;
 
 @Getter
@@ -72,7 +73,7 @@ public class CentralV2Role implements Serializable, Comparable {
   private boolean active;
   private Integer priority;
   @Builder.Default
-  private SortedSet<FnRoleFunction> roleFunctions = new TreeSet<>();
+  private SortedSet<DomainVo> roleFunctions = new TreeSet<>();
   @Builder.Default
   private SortedSet<CentralV2Role> childRoles = new TreeSet<>();
   @Builder.Default

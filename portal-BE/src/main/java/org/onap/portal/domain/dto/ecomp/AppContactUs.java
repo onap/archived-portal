@@ -48,6 +48,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.validator.constraints.SafeHtml;
 import org.onap.portal.domain.db.DomainVo;
+import org.onap.portal.domain.db.fn.FnApp;
 
 @Getter
 @Setter
@@ -59,7 +60,7 @@ public class AppContactUs extends DomainVo {
 
 	@JsonBackReference
 	@Valid
-	private EPApp app;
+	private FnApp app;
 	@SafeHtml
 	private String description;
 	@SafeHtml
