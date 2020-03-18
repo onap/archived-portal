@@ -186,6 +186,7 @@
       <properties>
             <docker.image.prefix>portal</docker.image.prefix>
             <sonar.coverage.jacoco.xmlReportPaths>${project.reporting.outputDirectory}/jacoco-ut/jacoco.xml,${project.reporting.outputDirectory}/jacoco-it/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
+			<sonar.skip>true</sonar.skip>
       </properties>
       <build>
             <plugins>
