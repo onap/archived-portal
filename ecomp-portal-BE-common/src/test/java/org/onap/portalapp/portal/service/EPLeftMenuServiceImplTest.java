@@ -20,7 +20,6 @@
 package org.onap.portalapp.portal.service;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -29,6 +28,7 @@ import java.util.Set;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -37,16 +37,18 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.onap.portalapp.portal.domain.CentralizedApp;
 import org.onap.portalapp.portal.domain.EPUser;
+import org.onap.portalapp.portal.framework.MockitoTestSuite;
 import org.onap.portalsdk.core.domain.MenuData;
 import org.onap.portalsdk.core.service.DataAccessService;
 import org.onap.portalsdk.core.service.DataAccessServiceImpl;
 
-public class EPLeftMenuServiceImplTest {
+public class EPLeftMenuServiceImplTest extends MockitoTestSuite{
 
 	@Mock
 	DataAccessService dataAccessService = new DataAccessServiceImpl();
+	
 	@Mock
-	 ExternalAccessRolesService externalAccessRolesService;
+	ExternalAccessRolesService externalAccessRolesService;
 	
 	@Before
 	public void setup() {
@@ -54,7 +56,12 @@ public class EPLeftMenuServiceImplTest {
 	}
 	
 	@InjectMocks
-	EPLeftMenuServiceImpl epLeftMenuServiceImpl = new EPLeftMenuServiceImpl();
+	EPLeftMenuServiceImpl epLeftMenuServiceImpl = new EPLeftMenuServiceImpl() {
+		
+		String getLeftMenuValue() {
+			return null;
+		}
+	};
 	
 	@Test
 	public void getLeftMenuItemsTest() {
@@ -97,13 +104,15 @@ public class EPLeftMenuServiceImplTest {
 		
 		JSONObject sidebarModel = new JSONObject();
 		JSONArray navItems = new JSONArray();
-		Collection<JSONObject> jsonObjs = defaultNavMap.values();
+
 		navItems.put(navItemsDetails3);
 		sidebarModel.put("label", "ECOMP portal");
 		sidebarModel.put("navItems", navItems);
 		
-		epLeftMenuServiceImpl.getLeftMenuItems(epUser, fullMenuSet, roleFunctionSet);
 		
+		String menuStr = epLeftMenuServiceImpl.getLeftMenuItems(epUser, fullMenuSet, roleFunctionSet);
+		Assert.assertTrue(!menuStr.contains("root"));
+		Assert.assertEquals("{\"navItems\":[{\"name\":\"Home\",\"imageSrc\":\"home\",\"state\":\"applicationsHome\"},{\"name\":\"Application Catalog\",\"imageSrc\":\"apps\",\"state\":\"appCatalog\"},{\"name\":\"Widget Catalog\",\"imageSrc\":\"apps\",\"state\":\"widgetCatalog\"}],\"label\":\"Portal\"}", menuStr);
 		
 	}
 }

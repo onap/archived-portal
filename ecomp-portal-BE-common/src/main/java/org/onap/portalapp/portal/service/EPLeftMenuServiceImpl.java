@@ -78,6 +78,12 @@ public class EPLeftMenuServiceImpl implements EPLeftMenuService {
 	private ExternalAccessRolesService externalAccessRolesService;
 	@Autowired
 	private DataAccessService dataAccessService;
+	
+	public final String appHome = "applicationsHome";
+	public final String appCatalog = "appCatalog";
+	public final String widCatalog = "widgetCatalog";
+	public final String users = "users";
+	
 
 	/*
 	 * (non-Javadoc)
@@ -176,7 +182,7 @@ public class EPLeftMenuServiceImpl implements EPLeftMenuService {
 		for (JSONObject navItemsDetail : jsonObjs)
 			navItems.put(navItemsDetail);
 
-		sidebarModel.put("label", "ECOMP portal");
+		sidebarModel.put("label", "Portal");
 		sidebarModel.put("navItems", navItems);
 		return sidebarModel.toString();
 	}
@@ -188,38 +194,27 @@ public class EPLeftMenuServiceImpl implements EPLeftMenuService {
 	 */
 	private void loadDefaultNavMap(Map<String, JSONObject> defaultNavMap) {
 		String leftMenuRootValue = getLeftMenuPrefixValue();
+		
 		JSONObject navItemsDetails1 = new JSONObject();
 		navItemsDetails1.put("name", "Home");
-		navItemsDetails1.put("state",
-				(isLeftMenuHasRoot(leftMenuRootValue))
-						? leftMenuRootValue+".applicationsHome"
-						: "applicationsHome");
-		navItemsDetails1.put("imageSrc", isLeftMenuHasRoot(leftMenuRootValue) ? "icon-building-home" : "home");
-		defaultNavMap.put("applicationsHome", navItemsDetails1);
+		navItemsDetails1.put("state",leftMenuRootValue+appHome);
+		navItemsDetails1.put("imageSrc", "home");
+		defaultNavMap.put(appHome, navItemsDetails1);
 
 		JSONObject navItemsDetails2 = new JSONObject();
 		navItemsDetails2.put("name", "Application Catalog");
-		navItemsDetails2.put("state",
-				(isLeftMenuHasRoot(leftMenuRootValue))
-						? leftMenuRootValue+".appCatalog"
-						: "appCatalog");
-		navItemsDetails2.put("imageSrc", isLeftMenuHasRoot(leftMenuRootValue) ? "icon-apps-marketplace" : "apps");
-		defaultNavMap.put("appCatalog", navItemsDetails2);
+		navItemsDetails2.put("state",leftMenuRootValue+appCatalog);
+		navItemsDetails2.put("imageSrc", "apps");
+		defaultNavMap.put(appCatalog, navItemsDetails2);
 
 		JSONObject navItemsDetails3 = new JSONObject();
 		navItemsDetails3.put("name", "Widget Catalog");
-		navItemsDetails3.put("state",
-				isLeftMenuHasRoot(leftMenuRootValue)
-						? leftMenuRootValue+".widgetCatalog"
-						: "widgetCatalog");
-		navItemsDetails3.put("imageSrc", isLeftMenuHasRoot(leftMenuRootValue) ? "icon-apps-marketplace" : "apps");
-		defaultNavMap.put("widgetCatalog", navItemsDetails3);
+		navItemsDetails3.put("state",leftMenuRootValue+widCatalog);
+		navItemsDetails3.put("imageSrc", "apps");
+		defaultNavMap.put(widCatalog, navItemsDetails3);
 
 	}
 
-	private boolean isLeftMenuHasRoot(String leftMenuRootValue) {
-		return (leftMenuRootValue != "" || leftMenuRootValue.isEmpty()) && leftMenuRootValue.equals("root");
-	}
 
 	@SuppressWarnings("unchecked")
 	private void loadNavMapByUserAdminRole(Map<String, JSONObject> defaultNavMap, EPUser user) {
@@ -231,16 +226,26 @@ public class EPLeftMenuServiceImpl implements EPLeftMenuService {
 		if (applicationsList.size() > 0) {
 			JSONObject navItemsDetails = new JSONObject();
 			navItemsDetails.put("name", "Users");
-			navItemsDetails.put("state",
-					((leftMenuRootValue != "" || !leftMenuRootValue.isEmpty()) && leftMenuRootValue.equals("root")) ? leftMenuRootValue+".users"
-							: "users");
-			navItemsDetails.put("imageSrc", isLeftMenuHasRoot(leftMenuRootValue) ? "person" : "icon-user");
-			defaultNavMap.put("users", navItemsDetails);
+			navItemsDetails.put("state",leftMenuRootValue+users);
+			navItemsDetails.put("imageSrc", "person");
+			defaultNavMap.put(users, navItemsDetails);
 		}
 	}
 
-	private String getLeftMenuPrefixValue() {
-		return EPCommonSystemProperties.getProperty(EPCommonSystemProperties.PORTAL_LEFT_MENU);
+	protected String getLeftMenuPrefixValue() {
+		String leftMenuRootValue = getLeftMenuValue();
+		if (leftMenuRootValue != null) {
+			leftMenuRootValue += ".";
+		} else {
+			leftMenuRootValue = "";
+		}
+		
+		return leftMenuRootValue;
+	
+	}
+
+	String getLeftMenuValue() {
+		return EPCommonSystemProperties.containsProperty(EPCommonSystemProperties.PORTAL_LEFT_MENU) ? EPCommonSystemProperties.getProperty(EPCommonSystemProperties.PORTAL_LEFT_MENU):null;
 	}
 
 }
