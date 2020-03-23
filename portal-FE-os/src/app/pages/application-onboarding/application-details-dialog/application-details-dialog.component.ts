@@ -279,6 +279,8 @@ export class ApplicationDetailsDialogComponent implements OnInit {
 
     if (this.applicationObj.nameSpace=="") {
       this.newAppModel.nameSpace = null;
+    }else{
+      this.newAppModel.nameSpace = this.applicationObj.nameSpace;
     }
 
     if(this.isEditMode){
@@ -297,7 +299,7 @@ export class ApplicationDetailsDialogComponent implements OnInit {
           console.log(error);
           if(error.status == 409){
             this.openConfirmationModal('Error', 'There was a problem updating the application changes. ' +
-            'The Application Name and URL should  be unique.  Error: ' +
+            'The Application Name and Namespace should  be unique.  Error: ' +
             error.status);
             return;
           }else if(error.status == 500){
