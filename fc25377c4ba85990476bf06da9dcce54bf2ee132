@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2c085e21_13f5a88a",
+        "filename": "releases/3.2.0.yaml",
+        "patchSetId": 1
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 679
+      },
+      "writtenOn": "2020-03-25T13:15:16Z",
+      "side": 1,
+      "message": "for maven, we also need to include portal-sdk as we use SDK jars and not portal jars",
+      "revId": "fc25377c4ba85990476bf06da9dcce54bf2ee132",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
