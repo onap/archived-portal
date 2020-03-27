@@ -152,6 +152,11 @@ export class DashboardApplicationCatalogComponent implements OnInit {
 
   getAppCatalogService(userAppSortTypePref: string) {
     //console.log("getAppCatalogServices called");
+	if(!userAppSortTypePref)
+    {
+      userAppSortTypePref = "N";
+      //console.log("userAppSortTypePref"+userAppSortTypePref);
+    }
     this.applicationCatalogService.getAppsOrderBySortPref(userAppSortTypePref).subscribe(data => {
       //console.log("Response data" + data);
       this.appCatalogData = data;
