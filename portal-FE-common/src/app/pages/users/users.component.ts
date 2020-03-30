@@ -2,7 +2,7 @@
  * ============LICENSE_START==========================================
  * ONAP Portal
  * ===================================================================
- * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2020 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
@@ -93,7 +93,19 @@ export class UsersComponent implements OnInit {
 
   openExistingUserModal(userData: any) {
     const modalRef = this.ngbModal.open(NewUserModalComponent);
-    modalRef.componentInstance.userTitle = `${userData.firstName}, ${userData.lastName} ` + '(' + `${userData.orgUserId}` + ')';
+    let firstName = '';
+    let lastName = '';
+    let orgUserId = '';
+    if(userData && userData.firstName && userData.firstName!=null){
+      firstName = userData.firstName;
+    }
+    if(userData && userData.lastName && userData.lastName!=null){
+      lastName = ',' + userData.lastName;
+    }
+    if(userData && userData.orgUserId && userData.orgUserId!=null){
+      orgUserId = ' (' +userData.orgUserId + ')';
+    }
+    modalRef.componentInstance.userTitle = `${firstName} ${lastName} ${orgUserId}` ;
     modalRef.componentInstance.dialogState = 2;
     modalRef.componentInstance.userModalData = userData;
     modalRef.componentInstance.disableBack = true;

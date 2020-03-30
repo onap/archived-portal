@@ -122,7 +122,7 @@ export class NewUserModalComponent implements OnInit {
   searchUserRadioChange($event: MatRadioChange) {
     if ($event.value === 'System') {
       this.searchTitleText = 'Enter System UserID';
-      this.placeholderText = 'xxxxxx@org.com';
+      this.placeholderText = 'xxxxxx or xxxxxx@org.com';
       this.isSystemUserCheck = true;
     } else {
       this.searchTitleText = 'Enter First Name, Last Name or ATTUID';

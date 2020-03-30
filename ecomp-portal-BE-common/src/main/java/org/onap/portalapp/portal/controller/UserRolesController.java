@@ -2,7 +2,7 @@
  * ============LICENSE_START==========================================
  * ONAP Portal
  * ===================================================================
- * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2020 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
@@ -46,6 +46,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.cxf.transport.http.HTTPException;
 import org.onap.portalapp.controller.EPRestrictedBaseController;
+import org.onap.portalapp.portal.domain.EPApp;
 import org.onap.portalapp.portal.domain.EPRole;
 import org.onap.portalapp.portal.domain.EPUser;
 import org.onap.portalapp.portal.domain.EPUserAppCatalogRoles;
@@ -58,6 +59,7 @@ import org.onap.portalapp.portal.logging.aop.EPEELFLoggerAdvice;
 import org.onap.portalapp.portal.logging.logic.EPLogUtil;
 import org.onap.portalapp.portal.service.AdminRolesService;
 import org.onap.portalapp.portal.service.ApplicationsRestClientService;
+import org.onap.portalapp.portal.service.EPAppService;
 import org.onap.portalapp.portal.service.SearchService;
 import org.onap.portalapp.portal.service.UserRolesService;
 import org.onap.portalapp.portal.transport.AppNameIdIsAdmin;
@@ -75,6 +77,7 @@ import org.onap.portalsdk.core.domain.AuditLog;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.onap.portalsdk.core.restful.domain.EcompRole;
 import org.onap.portalsdk.core.service.AuditService;
+import org.onap.portalsdk.core.service.DataAccessService;
 import org.onap.portalsdk.core.util.SystemProperties;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -103,6 +106,8 @@ public class UserRolesController extends EPRestrictedBaseController {
     private ApplicationsRestClientService applicationsRestClientService;
     @Autowired
     private AuditService auditService;
+    @Autowired
+	private DataAccessService dataAccessService;
 
     private static final String FAILURE = "failure";
 
@@ -288,6 +293,18 @@ public class UserRolesController extends EPRestrictedBaseController {
             EcompPortalUtils.setBadPermissions(user, response, "getAppRolesForUser");
             feErrorString = EcompPortalUtils.getFEErrorString(true, response.getStatus());
         } else {
+        	try {
+        		if(orgUserId!=null) {
+	        		EPUser localUser  = getUserInfo(orgUserId,applicationsRestClientService);
+	        		if(localUser !=null) {
+	        			if(localUser.isSystemUser()) {
+	        				isSystemUser = true;
+	        			}
+	        		}
+        		}
+			} catch (Exception e) {
+				logger.error(EELFLoggerDelegate.errorLogger, "isSystemUser update failed", e);
+			}
             if ((!isSystemUser && EcompPortalUtils.legitimateUserId(orgUserId)) || isSystemUser) {
                 result = userRolesService.getAppRolesForUser(appid, orgUserId, extRequestValue, user);
                 logger.debug(EELFLoggerDelegate.debugLogger, "getAppRolesForUser: result {}, appId {}", result, appid);
@@ -572,4 +589,23 @@ public class UserRolesController extends EPRestrictedBaseController {
         }
         return isSuperAdmin;
     }
+    
+    /**
+	 * 
+	 * @param userId
+	 * @param app
+	 * @param applicationsRestClientService
+	 * @return EPUser
+	 * @throws HTTPException
+	 */
+	protected EPUser getUserInfo(String userId, ApplicationsRestClientService applicationsRestClientService)
+			throws HTTPException {
+		@SuppressWarnings("unchecked")
+		List<EPUser> userList = (List<EPUser>) dataAccessService
+				.executeQuery("from EPUser where orgUserId='" + userId + "'", null);
+		if (userList != null && !userList.isEmpty())
+			return userList.get(0);
+		else
+			return null;
+	}
 }
