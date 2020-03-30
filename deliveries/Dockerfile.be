@@ -39,7 +39,9 @@ RUN cd ${PORTALCONTEXT} && unzip -q *.war && rm *.war
 
 VOLUME ${TOMCATHOME}/logs
 
+# Switch to unprivileged user
 RUN addgroup -g 1000 -S portal && adduser -u 1000 -S portal -G portal && chown -R portal:portal . && chmod -R 777 /etc/ssl/certs/java /var/
+USER portal
 
 # Switch back to root
 WORKDIR /
