@@ -56,7 +56,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.security.crypto.bcrypt.BCrypt;
 @RestController
 @Controller
 public class UserController {
@@ -110,9 +110,13 @@ public class UserController {
                             user.setMiddleName(profileDetail.getMiddleName());
                             user.setLoginId(profileDetail.getLoginId());
                             if (!HIDDEN_DEFAULT_PASSWORD.equals(profileDetail.getLoginPassword())) {
-                                   user.setLoginPwd(CipherUtil
-                                           .encryptPKC(profileDetail.getLoginPassword(), "AGLDdG4D04BKm2IxIWEr8o==!"));
+                                  // user.setLoginPwd(CipherUtil
+                            
+		   		  //.encryptPKC(profileDetail.getLoginPassword(), "AGLDdG4D04BKm2IxIWEr8o==!"));
+				  String pwHash = BCrypt.hashpw(profileDetail.getLoginPassword(), BCrypt.gensalt());
+				  user.setLoginPwd(pwHash);
                             }
+
                             userService.saveFnUser(user);
                             // Update user info in the session
                             portalRestResponse = new PortalRestResponse<>(PortalRestStatusEnum.OK, "success", null);
