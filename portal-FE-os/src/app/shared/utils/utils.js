@@ -1,3 +1,23 @@
+function getXSRFToken() {	
+	var cookies = getCookies();
+	var XSRFToken = {
+			name:'',
+			value:''
+	};
+	//var contextRoot = getContextRoot();
+	var hasXSRFToken = false;
+	for(var name in cookies) {
+		if(name == "XSRF-TOKEN") {
+			XSRFToken.name = name;
+			XSRFToken.value = cookies[name];
+			hasXSRFToken = true;
+		}
+	}
+	
+	return (hasXSRFToken==false)?null:XSRFToken;
+}
+
+
 function getCookies() {
     var cookies = { };
     if (document.cookie && document.cookie != '') {

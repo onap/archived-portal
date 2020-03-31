@@ -46,16 +46,21 @@ import {
 import { Observable } from 'rxjs';
 import { v4 as uuid } from 'uuid';
 import { Injectable } from '@angular/core';
-declare const getWebJunctionXSRFToken: any;
+declare const getXSRFToken: any;
 
 @Injectable()
 export class HeaderInterceptor implements HttpInterceptor {
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
         // Clone the request to add the new header
         // HttpHeader object immutable - copy values
+        var XSRFToken = getXSRFToken();
         const headerSettings: { [name: string]: string | string[]; } = {};
         headerSettings['X-ECOMP-RequestID'] = uuid();
         const requestType = req.params.get('requestType');
+       
+       
+        if (XSRFToken && XSRFToken.name && XSRFToken.value)
+            headerSettings['X-XSRF-TOKEN'] = XSRFToken.value;
        
         if(requestType!=null && requestType==='fileUpload'){
           //headerSettings['Content-Type'] = 'multipart/form-data';
