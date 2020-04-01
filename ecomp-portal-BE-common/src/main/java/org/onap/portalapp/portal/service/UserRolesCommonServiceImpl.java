@@ -2,7 +2,7 @@
  * ============LICENSE_START==========================================
  * ONAP Portal
  * ===================================================================
- * Copyright (C) 2019 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2020 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
@@ -1192,7 +1192,7 @@ public class UserRolesCommonServiceImpl  {
 	 * @param roleInAppUser Contains list of active roles 
 	 */
 	@SuppressWarnings("unchecked")
-	private void updateUserRolesInExternalSystem(EPApp app, String orgUserId, List<RoleInAppForUser> roleInAppUser, boolean isPortalRequest,boolean isSystemUser,Set<EcompRole> deletedRolesByApprover,boolean isLoggedInUserRoleAdminofApp) throws Exception
+	private void updateUserRolesInExternalSystem(EPApp app, String orgUserId, List<RoleInAppForUser> roleInAppUser, boolean isPortalRequest,boolean nonHumanUserId,Set<EcompRole> deletedRolesByApprover,boolean isLoggedInUserRoleAdminofApp) throws Exception
 	{
 		try {
 			// check if user exists
@@ -1200,15 +1200,23 @@ public class UserRolesCommonServiceImpl  {
 			userParams.put("orgUserIdValue", orgUserId);
 			List<EPUser> userInfo = checkIfUserExists(userParams);
 			if (userInfo.isEmpty()) {
-				createLocalUserIfNecessary(orgUserId, isSystemUser);
+				createLocalUserIfNecessary(orgUserId, nonHumanUserId);
 			}
 			String name = "";
 			if (EPCommonSystemProperties
-					.containsProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_USER_DOMAIN) && !isSystemUser) {
-				name = orgUserId
-						+ SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_USER_DOMAIN);
+					.containsProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_USER_DOMAIN) && !nonHumanUserId) {
+				if(orgUserId.indexOf("@") ==-1) {
+					name = orgUserId + SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_USER_DOMAIN);
+				}else {
+					name = orgUserId;
+				}
 			} else {
 				name = orgUserId;
+				if(nonHumanUserId && orgUserId!=null) {
+            		if(orgUserId.indexOf("@") ==-1) {
+            			name = orgUserId + SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_USER_DOMAIN);
+            		}           		
+            	}
 			}
 			ObjectMapper mapper = new ObjectMapper();
 			HttpHeaders headers = EcompPortalUtils.base64encodeKeyForAAFBasicAuth();
