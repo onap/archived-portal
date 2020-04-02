@@ -121,10 +121,15 @@ export class DashboardApplicationCatalogComponent implements OnInit {
 
         }
 
-        this.selectedSortType = this.sortOptions[resJson.index];
-        //console.log(this.selectedSortType);
-        this.getAppCatalogService(data);
+        
       }
+	  else {
+		  resJson.index = 0;
+	  }
+	  this.selectedSortType = this.sortOptions[resJson.index];
+        //console.log(this.selectedSortType);
+      this.getAppCatalogService(data);
+		  
     }, error => {
       console.log('getUserAppsSortTypePreference Error Object' + error.message);
     });
@@ -152,6 +157,12 @@ export class DashboardApplicationCatalogComponent implements OnInit {
 
   getAppCatalogService(userAppSortTypePref: string) {
     //console.log("getAppCatalogServices called");
+	if(!userAppSortTypePref)
+    {
+      userAppSortTypePref = "N";
+	  this.selectedSortType = this.sortOptions[0];
+      //console.log("userAppSortTypePref"+userAppSortTypePref);
+    }
     this.applicationCatalogService.getAppsOrderBySortPref(userAppSortTypePref).subscribe(data => {
       //console.log("Response data" + data);
       this.appCatalogData = data;
