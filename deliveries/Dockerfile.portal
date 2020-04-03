@@ -41,6 +41,10 @@ COPY ${FE_DIR} ${PORTALCONTEXT}/public
 
 VOLUME ${TOMCATHOME}/logs
 
+# Switch to unprivileged user
+RUN addgroup -g 1000 -S portal && adduser -u 1000 -S portal -G portal
+USER portal
+
 # Switch back to root
 WORKDIR /
 
