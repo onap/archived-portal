@@ -14,7 +14,9 @@ RUN sh -c 'touch /app.jar'
 # Launch script
 COPY start-wms.sh /
 
+# Switch to unprivileged user
 RUN addgroup -g 1000 -S portal && adduser -u 1000 -S portal -G portal && mkdir logs / && chown -R portal:portal /start-wms.sh /tmp /etc/ssl/certs/java /logs && chmod -R 755 /start-wms.sh /etc/ssl/certs/java /logs /tmp
+USER portal
 
 # Define default command
 CMD /start-wms.sh
