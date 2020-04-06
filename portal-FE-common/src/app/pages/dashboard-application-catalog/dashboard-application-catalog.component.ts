@@ -119,16 +119,15 @@ export class DashboardApplicationCatalogComponent implements OnInit {
         } else {
           resJson.index = 3;
 
-        }
-
-        
-      }
-	  else {
-		  resJson.index = 0;
-	  }
+        } 
 	  this.selectedSortType = this.sortOptions[resJson.index];
         //console.log(this.selectedSortType);
-      this.getAppCatalogService(data);
+      this.getAppCatalogService(data);		
+      }
+	  else {
+		  this.sortTypeChanged('N');
+	  }
+	  
 		  
     }, error => {
       console.log('getUserAppsSortTypePreference Error Object' + error.message);
