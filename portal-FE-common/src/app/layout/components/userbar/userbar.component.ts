@@ -88,8 +88,9 @@ export class UserbarComponent implements OnInit {
         for (var i = 0; i < maxItems; i++) {
           var data = {
             userId: _res[i],
-            linkQ: this.api.linkQ,
-            linkPic: this.api.linkPic
+            linkQ: this.sanitizer.bypassSecurityTrustResourceUrl(this.api.linkQ + _res[i]),
+            linkPic: this.api.linkPic + _res[i],
+            linkPicURL:this.api.linkPic
           }
           this.userList.push(data);
         }

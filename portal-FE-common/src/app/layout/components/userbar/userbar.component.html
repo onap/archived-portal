@@ -45,7 +45,10 @@
 <nav [ngStyle]="{'right': isOpen ? '18px' : '-75px' }" class="usb-item usb-item-vertical usb-item-right" id="usb-item-s2">
   <h3>Online Users</h3>
   <div *ngFor="let user of userList" style="font-size: 10px;">
-    <a [href]="user.linkQ"><img class="activeUserIcon" [src]="user.linkPic" alt="User Link"></a>
+    <a [href]="user.linkQ" *ngIf="(user.linkPicURL !='')">
+      <img class="activeUserIcon" [src]="user.linkPic" alt="User Link">
+    </a>
+    <a [href]="user.linkQ"><i *ngIf="(user.linkPicURL == '')" class="activeUserIcon default-user-icon icon ion-md-person"></i></a>
     <div class="userId-txt">{{user.userId}}</div>
   </div>
 </nav>
