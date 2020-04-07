@@ -1,6 +1,7 @@
 .. This work is licensed under a Creative Commons Attribution 4.0 International License.
 .. http://creativecommons.org/licenses/by/4.0
 .. Copyright 2017-2019 AT&T Intellectual Property.  All rights reserved
+.. _release_notes:
 
 
 Portal Platform Release Notes
@@ -23,7 +24,7 @@ Maintenance release with bug fixes and security enhancements.
         * Fixed Sonar reported critical issues.
 
 **Known Issues**
-        * AAI UI’s new role "ui_view" is not registered in AAF, Portal cannot fetch it. So, the work around is
+        * AAI UI's new role "ui_view" is not registered in AAF, Portal cannot fetch it. So, the work around is
 
            1. upload new role from Bulk Upload in Portal Roles page (create a csv file which has one line like:   ui_view,10 )
            2. Sync Roles on same page
@@ -57,7 +58,7 @@ Quick Links:
 
 **Deprecation Notes**
         * 2.6.0 portal/sdk is the last version to support the old AngularJS UI versions.
-        * Expect upgrade on Angular frontend and SpringBoot backend in next releases: The components like Policy, VID, SDC, AAI, MSB, SO – if any of them use portal/sdk java libraries, then please anticipate MAJOR changes to portal/sdk with respect to technology stack upgrade which is pending for long time on Angular frontend and SpringBoot backend.
+        * Expect upgrade on Angular frontend and SpringBoot backend in next releases: The components like Policy, VID, SDC, AAI, MSB, SO - if any of them use portal/sdk java libraries, then please anticipate MAJOR changes to portal/sdk with respect to technology stack upgrade which is pending for long time on Angular frontend and SpringBoot backend.
         * The tech stack upgrade helps resolve many security vulnerabilities and also provides latest rich UI and microservices features that components can take advantage of, just by upgrading to latest portal/sdk.
 
 **Other**
@@ -66,7 +67,7 @@ Quick Links:
         * onap/portal-db:2.6.0
         * onap/portal-sdk:2.6.0
         * onap/portal-wms:2.6.0
-        * portal/sdk java artifacts - (Release branch: “release-2.6.0”)
+        * portal/sdk java artifacts - (Release branch: "release-2.6.0")
 
 
 Version: 2.5.0
@@ -138,7 +139,7 @@ Quick Links:
         * onap/portal-db:2.5.0
         * onap/portal-sdk:2.5.0
         * onap/portal-wms:2.5.0
-        * portal/sdk java artifacts - (Release branch: “release-2.5.0”)
+        * portal/sdk java artifacts - (Release branch: "release-2.5.0")
 
 Version: 2.3.2
 --------------
@@ -152,8 +153,8 @@ This is the official release notes for the Casablanca Maintenance Release 3.0.2.
 **Known Issues**
         * The issue is an application running on HTTPS will not open in Portal if the AAF root CA is missing.
           An error message will appear in a separate tab in Portal. It will say something like:
-          “The webpage at https://portal.api.simpledemo.onap.org:30200/vid/welcome.htm?cc=........ might
-          be temporarily down or it may have moved permanently to a new web address.”
+          "The webpage at https://portal.api.simpledemo.onap.org:30200/vid/welcome.htm?cc=........ might
+          be temporarily down or it may have moved permanently to a new web address."
           Here is the work-around, copy above VID (or other app) URL and replace welcome.htm to login.htm
           in a new browser window; after login come back to Portal home page and click VID, it will now work.
 
@@ -230,7 +231,7 @@ Quick Links:
         * onap/portal-db:2.3.1
         * onap/portal-sdk:2.3.1
         * onap/portal-wms:2.3.1
-        * portal/sdk java artifacts - (Release branch: “release-2.4.0”)
+        * portal/sdk java artifacts - (Release branch: "release-2.4.0")
 
 Version: 2.2.0
 --------------
