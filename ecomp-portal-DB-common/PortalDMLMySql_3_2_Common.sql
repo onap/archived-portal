@@ -72,6 +72,11 @@ Insert INTO fn_function (function_cd,function_name) values ('saveNotification', 
 INSERT INTO fn_function	(function_cd, function_name) VALUES ('menu_web_analytics', 'Web Analytics');
 -- end new 1707
 
+-- new 3_2
+insert into fn_function (function_cd, function_name) values ('menu_acc_admin', 'Account Admin Menu');
+insert into fn_function (function_cd, function_name) values ('menu_app_onboarding', 'App Onboarding menu');
+-- end new 3_2
+
 -- FN_LU_ACTIVITY
 Insert into fn_lu_activity (ACTIVITY_CD,ACTIVITY) values ('add_role','add_role');
 Insert into fn_lu_activity (ACTIVITY_CD,ACTIVITY) values ('remove_role','remove_role');
@@ -290,6 +295,11 @@ Insert INTO fn_role_function (ROLE_ID,FUNCTION_CD) values (950, 'saveNotificatio
 INSERT INTO fn_role_function (role_id, function_cd) VALUES ('1010', 'menu_web_analytics');
 INSERT INTO fn_role_function (role_id, function_cd) VALUES ('2115', 'menu_web_analytics');
 -- end new 1707
+
+-- new 3_2
+insert into fn_role_function (role_id, function_cd) values (16, 'menu_acc_admin');
+insert into fn_role_function (role_id, function_cd) values (16, 'menu_app_onboarding');
+-- end new 3_2
 
 -- FN_TAB
 Insert into fn_tab (TAB_CD,TAB_NAME,TAB_DESCR,ACTION,FUNCTION_CD,ACTIVE_YN,SORT_ORDER,PARENT_TAB_CD,TAB_SET_CD) values ('TAB2_SUB1_S1','Left Tab 1','Sub - Sub Tab 1 Information','tab2_sub1.htm','menu_tab','Y',10,'TAB2_SUB1','APP');
