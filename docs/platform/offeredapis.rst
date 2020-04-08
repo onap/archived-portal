@@ -9,6 +9,7 @@ Offered APIs
     :depth: 2  
   
 The following API calls are available for the PORTAL Platform subsystem:
+.. _offeredapis:
 
 Changed the V1 api's to V3 api's as a part of API versioning of ONAP components.
  
