@@ -39,7 +39,10 @@ RUN cd ${SDKCONTEXT} && unzip -q *.war && rm *.war
 VOLUME ${TOMCATHOME}/logs
 
 # Switch to unprivileged user
-RUN addgroup -g 1000 -S portal && adduser -u 1000 -S portal -G portal
+RUN addgroup -g 1000 -S portal && \
+    adduser -u 1000 -S portal -G portal && \
+    mkdir -p ${TOMCATHOME}/temp && \
+    chown portal:portal ${TOMCATHOME}/temp
 USER portal
 
 # Switch back to root
