@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "eaee34f3_3f43f249",
+        "filename": "releases/3.2.0-container-portal-docker.yaml",
+        "patchSetId": 2
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 481
+      },
+      "writtenOn": "2020-04-13T21:10:30Z",
+      "side": 1,
+      "message": "These versions should be the staging versions.. not release ones.. \nBasically, the job will pull the version in these lines and will re-tag using \"container_release_tag\" and release the images. \n\nThe job failed since these versions in line 7, 9,11, 13 are not staging or snapshots.",
+      "range": {
+        "startLine": 6,
+        "startChar": 0,
+        "endLine": 13,
+        "endChar": 20
+      },
+      "revId": "e3a9d35708ce82741f522d4f667de57f712bada1",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
