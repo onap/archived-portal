@@ -1,11 +1,78 @@
 .. This work is licensed under a Creative Commons Attribution 4.0 International License.
 .. http://creativecommons.org/licenses/by/4.0
-.. Copyright 2017-2019 AT&T Intellectual Property.  All rights reserved
+.. Copyright 2017-2020 AT&T Intellectual Property.  All rights reserved
 .. _release_notes:
 
 
 Portal Platform Release Notes
 =============================
+Version: 3.2.0
+--------------
+:Release Date: 2020-05-21
+
+.. toctree::
+    :maxdepth: 1
+
+This release contains an Angular upgrade, bug fixes and security enhancements.
+
+**New Features**
+
+        * Angular Upgrade from 1.X to 7.0 - Portal and SDK (Backward Compatible)
+        * OParent 2.0 Migration & Self Release Jobs
+        * UI/TypeScript Test Coverage - (Portal Coverage 60% and SDK Coverage 63%)
+        * Spring Boot Migration (Portal only/ Partially Completed)
+
+**Bug Fixes**
+
+        * License scan issues addressed
+        * Fixed Sonar reported critical issues.
+
+**Known Issues**
+
+**Security Notes**
+
+        * Closed HTTP Ports (Portal, SDK)
+        * Address Security Vulnerabilities from Nexus-IQ (Jars and Javascript libraries)
+        * Containers to run as Non-Root user: portal, portal-sdk, portal-widget
+
+*Fixed Security Issues*
+
+        * OJSI-97 - portal-app exposes plain text HTTP endpoint using port 8989 [`OJSI-97 <https://jira.onap.org/browse/OJSI-97>`_]
+        * OJSI-105 - portal-sdk exposes plain text HTTP endpoint using port 30212 [`OJSI-105 <https://jira.onap.org/browse/OJSI-105>`_]
+        * OJSI-106 - portal-app exposes plain text HTTP endpoint using port 30215 [`OJSI-106 <https://jira.onap.org/browse/OJSI-106>`_]
+
+*Known Security Issues*
+
+*Known Vulnerabilities in Used Modules*
+        * Portal was granted a waiver by SECCOM for OJSI-190. Portal stores users passwords encrypted instead of hashed. This was not fixed for Frankfurt.
+
+Quick Links:
+     - `PORTAL project page <https://wiki.onap.org/display/DW/Portal+Platform+Project>`_
+
+     - `Passing Badge information for PORTAL <https://bestpractices.coreinfrastructure.org/en/projects/1441>`_
+
+     - `Project Vulnerability Review Table for PORTAL <https://wiki.onap.org/pages/viewpage.action?pageId=68542388>`_
+
+**Upgrade Notes**
+        * These still apply:
+           1. For https Apps onboarded to portal, a certificate has to be downloaded in the browser when first trying to access the landing page of the App.
+           2. For onboarded Apps using http (since Portal is using https) the browser asks the user to click to Proceed to the unsafe URL.
+           3. For onboarded Apps using http the icon in the URL bar will appear red, click on it and allow unsafe scripts. Different browsers use different methods to accomplish this, Firefox has a security icon near the URL that you can click on "Unblock" and "Disable protection for now"
+           4. The first time some apps are selected in the Applications panel, an error stating the webpage might be temporarily down, copy the presented URL to a new browser; once that is done, the application will open in the Portal.
+
+**Deprecation Notes**
+        * 2.6.0 portal/sdk is the last version to support the old AngularJS UI versions.
+        * Expect upgrade on Angular frontend and SpringBoot backend in next releases: The components like Policy, VID, SDC, AAI, MSB, SO – if any of them use portal/sdk java libraries, then please anticipate MAJOR changes to portal/sdk with respect to technology stack upgrade which is pending for long time on Angular frontend and SpringBoot backend.
+        * The tech stack upgrade helps resolve many security vulnerabilities and also provides latest rich UI and microservices features that components can take advantage of, just by upgrading to latest portal/sdk.
+
+**Other**
+        * Below are the docker images released as part of Portal Platform project:
+        * onap/portal-app:3.2.0
+        * onap/portal-db:3.2.0
+        * onap/portal-sdk:3.0.0
+        * onap/portal-wms:3.2.0
+        * portal/sdk java artifacts - (Release branch: “release-3.0.0”)
+
 Version: 2.6.0
 --------------
 :Release Date: 2019-10-03
