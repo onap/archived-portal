@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "397a7c12_83266b26",
+        "filename": "docs/release-notes.rst",
+        "patchSetId": 1
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 679
+      },
+      "writtenOn": "2020-04-13T17:29:47Z",
+      "side": 1,
+      "message": "this is release-3.2.0",
+      "revId": "ab5cfd3f26d560b93e9618be780b41ee64b87cb9",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
