@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0851a1d6_d9ba32b7",
+        "filename": "releases/3.2.0-container-portal-docker.yaml",
+        "patchSetId": 3
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 481
+      },
+      "writtenOn": "2020-04-13T21:14:54Z",
+      "side": 1,
+      "message": "These versions should be not release ones.. \n\nI think you want \"3.2.0-STAGING-latest\"",
+      "range": {
+        "startLine": 6,
+        "startChar": 0,
+        "endLine": 13,
+        "endChar": 20
+      },
+      "revId": "4fdc61e1de125614f98d540e5afd0f022889106a",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
