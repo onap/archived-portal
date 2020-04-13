@@ -81,7 +81,8 @@ public class EcompPortalUtils {
 
 	// It is a regular expression used for while creating a External Central Auth
 	// Role
-	public static final String EXTERNAL_CENTRAL_AUTH_ROLE_HANDLE_SPECIAL_CHARACTERS = "([^A-Z^a-z^0-9^\\.^%^(^)^=^:])";
+	public static final String EXTERNAL_CENTRAL_AUTH_ROLE_HANDLE_SPECIAL_CHARACTERS = "([^A-Z^a-z^0-9^\\.^%^(^)^=^:^-])";
+	public static final String EXTERNAL_CENTRAL_AUTH_ROLE_HANDLE_SPECIAL_CHARACTERS_EXCLUDE_HYPHEN = "([^A-Z^a-z^0-9^\\.^%^(^)^=^:])";
 
 	public static final String slash = "/";
 
