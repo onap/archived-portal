@@ -200,7 +200,12 @@ public class UserRolesCommonServiceImpl  {
 					client = new EPUser();
 					client.setOrgUserId(userId);
 					client.setSystemUser(true);
-					client.setFirstName(userId.substring(0,userId.indexOf("@")));
+					if (userId.indexOf("@") != -1) {
+						client.setFirstName(userId.substring(0,userId.indexOf("@")));
+					}
+					else {
+						client.setFirstName(userId);
+					}
 				}
 				if (client == null) {
 					String msg = "createLocalUserIfNecessary: cannot create user " + userId
