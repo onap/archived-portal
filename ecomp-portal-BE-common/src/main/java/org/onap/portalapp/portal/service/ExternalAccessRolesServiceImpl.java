@@ -311,8 +311,8 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 					boolean isRoleNameChanged = false;
 					if (!desc.equals(updateExtRole.getName())) {
 						isRoleNameChanged = true;
+						addRole(updateExtRole, app.getUebKey()); //interchange 314 -315
 						deleteRoleInExtSystem(mapper, name);
-						addRole(updateExtRole, app.getUebKey());
 						// add partner functions to the global role in External
 						// Auth System
 						if (!list.isEmpty() && isGlobalRole) {
@@ -348,7 +348,7 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 								roleFunc.getCode(), roleFunc.getAction());
 						extAddRolePerms = new ExternalAccessRolePerms(extAddPerms,
 								app.getNameSpace() + "." + updateExtRole.getName().replaceAll(
-										EcompPortalUtils.EXTERNAL_CENTRAL_AUTH_ROLE_HANDLE_SPECIAL_CHARACTERS, "_"));
+								EcompPortalUtils.EXTERNAL_CENTRAL_AUTH_ROLE_HANDLE_SPECIAL_CHARACTERS, "_"));
 						response = addRoleFuncExtSysRestAPI(mapper, extAddRolePerms, headers);
 					}
 				}
@@ -1973,14 +1973,29 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 							.containsKey(extAuthrole.substring(app.getNameSpace().length() + 1))) {
 						EPRole localAddFuntionRole = currentRolesInDB
 								.get(extAuthrole.substring(app.getNameSpace().length() + 1));
+						
+						String key = extAuthrole.substring(app.getNameSpace().length() + 1);
+						Boolean isaddAppRoleFuncRequired = true;
+						if(localAddFuntionRole == null && key.contains("-")) {
+							key = key.replaceAll(EcompPortalUtils.EXTERNAL_CENTRAL_AUTH_ROLE_HANDLE_SPECIAL_CHARACTERS, "_");
+							localAddFuntionRole = currentRolesInDB.get(key);
+							if(localAddFuntionRole !=null) {
+								isaddAppRoleFuncRequired = false;
+							}
+						}
+						
+						logger.info("key >>>>>"+key);
+						logger.info("localAddFuntionRole >>>>>"+localAddFuntionRole);
 						if (localAddFuntionRole == null) {
 							checkAndAddRoleInDB(app, currentRolesInDB, roleFunctionList, extAuthrole);
 						} else {
-							EPAppRoleFunction addAppRoleFunc = new EPAppRoleFunction();
-							addAppRoleFunc.setAppId(app.getId());
-							addAppRoleFunc.setCode(roleFunctionList.get(0).getCode());
-							addAppRoleFunc.setRoleId(localAddFuntionRole.getId());
-							dataAccessService.saveDomainObject(addAppRoleFunc, null);
+							if(isaddAppRoleFuncRequired) {
+								EPAppRoleFunction addAppRoleFunc = new EPAppRoleFunction();
+								addAppRoleFunc.setAppId(app.getId());
+								addAppRoleFunc.setCode(roleFunctionList.get(0).getCode());
+								addAppRoleFunc.setRoleId(localAddFuntionRole.getId());
+								dataAccessService.saveDomainObject(addAppRoleFunc, null);
+							}
 						}
 					}
 					// This block is to save global role function if exists
@@ -2684,11 +2699,11 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 			applicationRolesList = getAppRoles(app.getId());
 			List<String> applicationRoleIdList = new ArrayList<>();
 			for (EPRole applicationRole : applicationRolesList) {
-				applicationRoleIdList.add(applicationRole.getName());
+				applicationRoleIdList.add(applicationRole.getName().trim());
 			}
 			List<EPRole> roleListToBeAddInEcompDB = new ArrayList<>();
 			for (EPRole aafRole : finalRoleList) {
-				if (!applicationRoleIdList.contains(aafRole.getName())) {
+				if (!applicationRoleIdList.contains(aafRole.getName().trim())) {
 					roleListToBeAddInEcompDB.add(aafRole);
 				}
 			}
@@ -2822,7 +2837,12 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 			String name = extRole.getJSONObject(i).getString(ROLE_NAME);
 			String actualRoleName = name.substring(app.getNameSpace().length() + 1);
 			if (extRole.getJSONObject(i).has(EXTERNAL_AUTH_ROLE_DESCRIPTION)) {
-				actualRoleName = extRole.getJSONObject(i).getString(EXTERNAL_AUTH_ROLE_DESCRIPTION);
+				String description = extRole.getJSONObject(i).getString(EXTERNAL_AUTH_ROLE_DESCRIPTION);
+								
+				if(actualRoleName.replaceAll(EcompPortalUtils.EXTERNAL_CENTRAL_AUTH_ROLE_HANDLE_SPECIAL_CHARACTERS_EXCLUDE_HYPHEN,"_")
+					.equalsIgnoreCase(description.replaceAll(EcompPortalUtils.EXTERNAL_CENTRAL_AUTH_ROLE_HANDLE_SPECIAL_CHARACTERS_EXCLUDE_HYPHEN,"_"))){
+					actualRoleName = description;
+				}
 			}
 			SortedSet<ExternalAccessPerms> externalAccessPermsOfRole = new TreeSet<>();
 			if (extRole.getJSONObject(i).has(EXTERNAL_AUTH_PERMS)) {
