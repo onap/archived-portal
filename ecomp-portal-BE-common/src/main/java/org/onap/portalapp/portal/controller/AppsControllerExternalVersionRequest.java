@@ -44,16 +44,8 @@ import org.onap.portalapp.portal.domain.EPUser;
 import org.onap.portalapp.portal.ecomp.model.PortalRestResponse;
 import org.onap.portalapp.portal.logging.aop.EPAuditLog;
 import org.onap.portalapp.portal.transport.OnboardingApp;
-import org.onap.portalapp.portal.utils.EcompPortalUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-
-import io.swagger.annotations.ApiOperation;
 
 @org.springframework.context.annotation.Configuration
 @EnableAspectJAutoProxy

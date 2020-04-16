@@ -42,7 +42,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.onap.music.eelf.logging.EELFLoggerDelegate;
 import org.onap.music.exceptions.MusicLockingException;
-import org.onap.music.exceptions.MusicServiceException;
 import org.onap.portalapp.music.service.MusicService;
 import org.onap.portalapp.music.util.MusicUtil;
 import org.springframework.session.Session;

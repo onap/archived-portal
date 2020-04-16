@@ -39,15 +39,10 @@ package org.onap.portalapp.portal.controller;
 
 import java.util.List;
 
-import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import javax.validation.ConstraintViolation;
 import javax.validation.Valid;
-import javax.validation.Validation;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
 import org.onap.portalapp.controller.EPRestrictedBaseController;
 import org.onap.portalapp.portal.domain.MicroserviceData;
 import org.onap.portalapp.portal.domain.WidgetCatalog;
