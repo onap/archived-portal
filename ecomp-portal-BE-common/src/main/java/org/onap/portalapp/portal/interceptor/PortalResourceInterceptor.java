@@ -39,19 +39,12 @@
  */
 package org.onap.portalapp.portal.interceptor;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.HashMap;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.mockito.internal.stubbing.answers.ThrowsException;
 import org.onap.aaf.cadi.CadiWrap;
 import org.onap.portalapp.controller.sessionmgt.SessionCommunicationController;
 import org.onap.portalapp.portal.controller.BasicAuthenticationController;
@@ -60,7 +53,6 @@ import org.onap.portalapp.portal.controller.SharedContextRestController;
 import org.onap.portalapp.portal.controller.WebAnalyticsExtAppController;
 import org.onap.portalapp.portal.domain.BasicAuthCredentials;
 import org.onap.portalapp.portal.domain.EPApp;
-import org.onap.portalapp.portal.domain.EPEndpoint;
 import org.onap.portalapp.portal.domain.EPUser;
 import org.onap.portalapp.portal.logging.aop.EPEELFLoggerAdvice;
 import org.onap.portalapp.portal.logging.format.EPAppMessagesEnum;
@@ -68,7 +60,6 @@ import org.onap.portalapp.portal.logging.logic.EPLogUtil;
 import org.onap.portalapp.portal.service.AdminRolesService;
 import org.onap.portalapp.portal.service.AppsCacheService;
 import org.onap.portalapp.portal.service.BasicAuthenticationCredentialService;
-import org.onap.portalapp.portal.service.ExternalAccessRolesService;
 import org.onap.portalapp.portal.utils.EPCommonSystemProperties;
 import org.onap.portalapp.portal.utils.EcompPortalUtils;
 import org.onap.portalapp.service.RemoteWebServiceCallService;

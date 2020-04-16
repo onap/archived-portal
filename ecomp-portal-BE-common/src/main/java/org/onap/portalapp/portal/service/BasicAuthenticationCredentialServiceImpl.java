@@ -50,7 +50,6 @@ import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.onap.portalsdk.core.onboarding.exception.CipherUtilException;
 import org.onap.portalsdk.core.onboarding.util.CipherUtil;
 import org.onap.portalsdk.core.service.DataAccessService;
-import org.onap.portalsdk.core.util.SystemProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.stereotype.Service;

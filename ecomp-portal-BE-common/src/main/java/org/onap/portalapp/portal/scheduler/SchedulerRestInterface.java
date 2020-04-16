@@ -41,7 +41,6 @@ import java.util.Collections;
 import java.util.Date;
 
 import javax.security.auth.login.CredentialException;
-import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedHashMap;
 

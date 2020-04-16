@@ -40,7 +40,6 @@
 package org.onap.portalapp.portal.scheduleraux;
 
 import org.glassfish.jersey.client.ClientResponse;
-import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 
 public class SchedulerAuxUtil {
 

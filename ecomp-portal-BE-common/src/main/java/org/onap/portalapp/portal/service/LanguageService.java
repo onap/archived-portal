@@ -16,9 +16,6 @@
 package org.onap.portalapp.portal.service;
 
 import com.alibaba.fastjson.JSONObject;
-import org.onap.portalapp.portal.domain.Language;
-
-import java.util.List;
 
 public interface LanguageService {
 
