@@ -70,7 +70,6 @@ import org.onap.portalapp.portal.utils.EPCommonSystemProperties;
 import org.onap.portalapp.portal.utils.EcompPortalUtils;
 import org.onap.portalapp.portal.utils.PortalConstants;
 import org.onap.portalapp.validation.DataValidator;
-import org.onap.portalapp.validation.SecureString;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.onap.portalsdk.core.onboarding.crossapi.PortalAPIResponse;
 import org.onap.portalsdk.core.onboarding.util.CipherUtil;

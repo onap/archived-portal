@@ -9,7 +9,7 @@
  * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *             http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
@@ -42,7 +42,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.onap.music.eelf.logging.EELFLoggerDelegate;
 import org.onap.music.exceptions.MusicLockingException;
-import org.onap.music.exceptions.MusicServiceException;
 import org.onap.portalapp.music.service.MusicService;
 import org.onap.portalapp.music.util.MusicUtil;
 import org.springframework.session.Session;

@@ -564,7 +564,11 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 		logger.debug(EELFLoggerDelegate.debugLogger, "getFunctionalMenuStaticInfo: getting user info");
 		String fnMenuStaticResponse = null;
 		try {
-			String orgUserIdStr = null, firstNameStr = null, lastNameStr = null, emailStr = null, lastLogin = null;
+			String orgUserIdStr = null;
+            String firstNameStr = null;
+            String lastNameStr = null;
+            String emailStr = null;
+            String lastLogin = null;
 			EPUser user = EPUserUtils.getUserSession(request);
 			firstNameStr = user.getFirstName();
 			lastNameStr = user.getLastName();
@@ -586,7 +590,10 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 
 			// If any item is missing from session, try the Shared Context
 			// service.
-			SharedContext orgUserIdSC = null, firstNameSC = null, lastNameSC = null, emailSC = null;
+			SharedContext orgUserIdSC = null;
+			SharedContext firstNameSC = null;
+			SharedContext lastNameSC = null;
+			SharedContext emailSC = null;
 			String sessionId = request.getSession().getId();
 			if (firstNameStr == null)
 				firstNameSC = sharedContextService.getSharedContext(sessionId,
