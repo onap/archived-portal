@@ -1,7 +1,10 @@
 .. This work is licensed under a Creative Commons Attribution 4.0 International License.
 .. http://creativecommons.org/licenses/by/4.0
 .. Copyright 2017-2020 AT&T Intellectual Property.  All rights reserved
+<<<<<<< HEAD
 .. _release_notes:
+=======
+>>>>>>> c4bce294... Add Frankfurt Release Notes
 
 
 Portal Platform Release Notes
