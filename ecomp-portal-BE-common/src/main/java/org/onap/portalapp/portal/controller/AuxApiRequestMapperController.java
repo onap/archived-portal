@@ -47,7 +47,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.jar.Attributes;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
