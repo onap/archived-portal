@@ -40,7 +40,6 @@ package org.onap.portalapp.portal.service;
 import javax.servlet.http.HttpServletRequest;
 
 import org.onap.portalapp.portal.domain.EPUser;
-import org.springframework.web.client.RestClientException;
 
 public interface MicroserviceProxyService {
 

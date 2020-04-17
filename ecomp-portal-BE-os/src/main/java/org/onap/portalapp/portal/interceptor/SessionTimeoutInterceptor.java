@@ -42,7 +42,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.onap.portalapp.authentication.LoginStrategy;
 import org.onap.portalapp.portal.domain.EPUser;
-import org.onap.portalapp.portal.utils.EcompPortalUtils;
 import org.onap.portalapp.util.EPUserUtils;
 import org.onap.portalapp.util.SessionCookieUtil;
 import org.onap.portalsdk.core.controller.FusionBaseController;
