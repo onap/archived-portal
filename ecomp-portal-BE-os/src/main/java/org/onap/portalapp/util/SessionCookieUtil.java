@@ -40,15 +40,10 @@ package org.onap.portalapp.util;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.onap.portalapp.portal.utils.EPCommonSystemProperties;
-import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
-import org.onap.portalsdk.core.onboarding.listener.PortalTimeoutHandler;
 import org.onap.portalsdk.core.onboarding.util.CipherUtil;
-import org.onap.portalsdk.core.onboarding.util.PortalApiConstants;
 import org.onap.portalsdk.core.util.SystemProperties;
-import org.onap.portalsdk.core.web.support.AppUtils;
 
 public class SessionCookieUtil extends CommonSessionCookieUtil{
 	

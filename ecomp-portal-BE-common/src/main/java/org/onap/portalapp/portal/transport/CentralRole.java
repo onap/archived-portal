@@ -42,8 +42,6 @@ import java.util.Date;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.onap.portalsdk.core.domain.RoleFunction;
-
 public class CentralRole implements Serializable {
 
 	private static final long serialVersionUID = -9210905386086213882L;

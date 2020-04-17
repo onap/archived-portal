@@ -45,7 +45,6 @@ import org.onap.portalapp.portal.logging.aop.EPAuditLog;
 import org.onap.portalapp.portal.logging.aop.EPEELFLoggerAdvice;
 import org.onap.portalapp.portal.logging.aop.EPMetricsLog;
 import org.onap.portalapp.portal.transport.FieldsValidator;
-import org.onap.portalapp.portal.utils.EcompPortalUtils;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.onap.portalsdk.core.util.SystemProperties.SecurityEventTypeEnum;
 import org.springframework.beans.factory.annotation.Autowired;

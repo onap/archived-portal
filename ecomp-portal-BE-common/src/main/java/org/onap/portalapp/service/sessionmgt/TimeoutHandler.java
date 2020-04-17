@@ -57,7 +57,6 @@ import org.onap.portalapp.portal.logging.logic.EPLogUtil;
 import org.onap.portalapp.portal.service.AppsCacheService;
 import org.onap.portalapp.portal.service.EPAppService;
 import org.onap.portalapp.portal.transport.OnboardingApp;
-import org.onap.portalapp.portal.utils.EcompPortalUtils;
 import org.onap.portalsdk.core.domain.sessionmgt.TimeoutVO;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.onap.portalsdk.core.onboarding.util.PortalApiConstants;

@@ -39,12 +39,7 @@ package org.onap.portalapp.portal.controller;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
 import org.json.JSONObject;
 import org.onap.portalapp.portal.domain.EPUser;
 import org.onap.portalapp.portal.ecomp.model.PortalRestResponse;

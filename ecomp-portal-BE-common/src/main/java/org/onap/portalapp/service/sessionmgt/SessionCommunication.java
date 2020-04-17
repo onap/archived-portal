@@ -57,7 +57,6 @@ import org.onap.portalapp.portal.service.AppsCacheService;
 import org.onap.portalapp.portal.transport.OnboardingApp;
 import org.onap.portalapp.portal.utils.EPCommonSystemProperties;
 import org.onap.portalapp.portal.utils.EcompPortalUtils;
-import org.onap.portalapp.util.SystemType;
 import org.onap.portalsdk.core.exception.UrlAccessRestrictedException;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.onap.portalsdk.core.onboarding.exception.CipherUtilException;

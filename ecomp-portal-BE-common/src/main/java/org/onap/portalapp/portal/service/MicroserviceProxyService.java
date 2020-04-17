@@ -3,7 +3,7 @@
  * ONAP Portal
  * ===================================================================
  * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
- * ===================================================================
+ * =================================================================== 
  *
  * Unless otherwise specified, all software contained herein is licensed
  * under the Apache License, Version 2.0 (the "License");
@@ -40,7 +40,6 @@ package org.onap.portalapp.portal.service;
 import javax.servlet.http.HttpServletRequest;
 
 import org.onap.portalapp.portal.domain.EPUser;
-import org.springframework.web.client.RestClientException;
 
 public interface MicroserviceProxyService {
 
