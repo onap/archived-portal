@@ -4,6 +4,7 @@
 .. _release_notes:
 
 
+
 Portal Platform Release Notes
 =============================
 Version: 3.2.0
