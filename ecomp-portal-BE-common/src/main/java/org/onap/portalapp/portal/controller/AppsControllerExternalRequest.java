@@ -65,6 +65,9 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -126,7 +129,7 @@ public class AppsControllerExternalRequest implements BasicAuthenticationControl
 	 * @return PortalRestResponse with success or failure
 	 */
 	@ApiOperation(value = "Creates a new user as a Portal administrator.", response = PortalRestResponse.class)
-	@RequestMapping(value = "/portalAdmin", method = RequestMethod.POST, produces = "application/json")
+	@PostMapping(value = "/portalAdmin", produces = "application/json")
 	@ResponseBody
 	public PortalRestResponse<String> postPortalAdmin(HttpServletRequest request, HttpServletResponse response,
 		@Valid @RequestBody EPUser epUser) {
@@ -200,7 +203,7 @@ public class AppsControllerExternalRequest implements BasicAuthenticationControl
 	 * @return OnboardingApp objects
 	 */
 	@ApiOperation(value = "Gets the specified application that is on-boarded in Portal.", response = OnboardingApp.class)
-	@RequestMapping(value = {ONBOARD_APP + "/{appId}"}, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = {ONBOARD_APP + "/{appId}"}, produces = "application/json")
 	@ResponseBody
 	public OnboardingApp getOnboardAppExternal(HttpServletRequest request, HttpServletResponse response,
 		@PathVariable("appId") Long appId) {
@@ -234,7 +237,7 @@ public class AppsControllerExternalRequest implements BasicAuthenticationControl
 	 * @return PortalRestResponse
 	 */
 	@ApiOperation(value = "Adds a new application to Portal.", response = PortalRestResponse.class)
-	@RequestMapping(value = {ONBOARD_APP}, method = RequestMethod.POST, produces = "application/json")
+	@PostMapping(value = {ONBOARD_APP}, produces = "application/json")
 	@ResponseBody
 	public PortalRestResponse<String> postOnboardAppExternal(HttpServletRequest request, HttpServletResponse response,
 		@Valid @RequestBody OnboardingApp newOnboardApp) {
@@ -322,7 +325,7 @@ public class AppsControllerExternalRequest implements BasicAuthenticationControl
 	 * @return PortalRestResponse
 	 */
 	@ApiOperation(value = "Updates information about an on-boarded application in Portal.", response = PortalRestResponse.class)
-	@RequestMapping(value = {ONBOARD_APP + "/{appId}"}, method = RequestMethod.PUT, produces = "application/json")
+	@PutMapping(value = {ONBOARD_APP + "/{appId}"}, produces = "application/json")
 	@ResponseBody
 	public PortalRestResponse<String> putOnboardAppExternal(HttpServletRequest request, HttpServletResponse response,
 		@PathVariable("appId") Long appId, @Valid @RequestBody OnboardingApp oldOnboardApp) {
