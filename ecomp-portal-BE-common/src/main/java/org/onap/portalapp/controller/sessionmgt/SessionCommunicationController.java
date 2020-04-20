@@ -54,6 +54,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import io.swagger.annotations.ApiOperation;
 
@@ -75,14 +77,14 @@ public class SessionCommunicationController  extends EPRestrictedRESTfulBaseCont
 	
 	@ApiOperation(value = "Gets session slot-check interval, a duration in milliseconds.",
     response = Integer.class)
- 	@RequestMapping(value={"/getSessionSlotCheckInterval"}, method = RequestMethod.GET, produces = "application/json")
+ 	@GetMapping(value={"/getSessionSlotCheckInterval"}, produces = "application/json")
 	public Integer getSessionSlotCheckInterval(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		return manageService.fetchSessionSlotCheckInterval();
 	}
 	
 	@ApiOperation(value = "Extends session timeout values for all on-boarded applications.",
     response = Boolean.class)
-	@RequestMapping(value={"/extendSessionTimeOuts"}, method = RequestMethod.POST)
+	@PostMapping(value={"/extendSessionTimeOuts"})
 	public Boolean extendSessionTimeOuts(HttpServletRequest request, HttpServletResponse response, @RequestParam String sessionMap) {
 		manageService.extendSessionTimeOuts(sessionMap);
 		

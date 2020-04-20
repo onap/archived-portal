@@ -62,6 +62,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+
 
 @RestController
 @org.springframework.context.annotation.Configuration
@@ -90,7 +93,7 @@ public class AppCatalogController extends EPRestrictedBaseController {
 	 * @throws IOException If sendError fails
 	 * @return List of items suitable for display
 	 */
-	@RequestMapping(value = { "/portalApi/appCatalog" }, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = { "/portalApi/appCatalog" }, produces = "application/json")
 	public List<AppCatalogItem> getAppCatalog(HttpServletRequest request, HttpServletResponse response)
 			throws IOException {
 		EPUser user = EPUserUtils.getUserSession(request);
@@ -125,7 +128,7 @@ public class AppCatalogController extends EPRestrictedBaseController {
 	 * @return FieldsValidator
 	 * @throws IOException If sendError fails
 	 */
-	@RequestMapping(value = { "/portalApi/appCatalog" }, method = RequestMethod.PUT, produces = "application/json")
+	@PutMapping(value = { "/portalApi/appCatalog" }, produces = "application/json")
 	public FieldsValidator putAppCatalogSelection(HttpServletRequest request,
 			@RequestBody AppCatalogPersonalization persRequest, HttpServletResponse response) throws IOException {
 		FieldsValidator result = new FieldsValidator();
