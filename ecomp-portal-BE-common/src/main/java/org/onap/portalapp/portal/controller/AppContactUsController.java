@@ -63,6 +63,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PostMapping
 
 @RestController
 @RequestMapping("/portalApi/contactus")
@@ -94,7 +96,7 @@ public class AppContactUsController extends EPRestrictedBaseController {
 	 * @param request HttpServletRequest
 	 * @return PortalRestResponse
 	 */
-	@RequestMapping(value = "/feedback", method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = "/feedback", produces = "application/json")
 	public PortalRestResponse<String> getPortalDetails(HttpServletRequest request) {
 		PortalRestResponse<String> portalRestResponse;
 		try {
@@ -123,7 +125,7 @@ public class AppContactUsController extends EPRestrictedBaseController {
 	 * @param request HttpServletRequest
 	 * @return PortalRestResponse<List<AppContactUsItem>>
 	 */
-	@RequestMapping(value = "/list", method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = "/list", produces = "application/json")
 	public PortalRestResponse<List<AppContactUsItem>> getAppContactUsList(HttpServletRequest request) {
 		PortalRestResponse<List<AppContactUsItem>> portalRestResponse;
 		try {
@@ -145,7 +147,7 @@ public class AppContactUsController extends EPRestrictedBaseController {
 	 * @param request HttpServletRequest
 	 * @return PortalRestResponse<List<AppContactUsItem>>
 	 */
-	@RequestMapping(value = "/allapps", method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = "/allapps", produces = "application/json")
 	public PortalRestResponse<List<AppContactUsItem>> getAppsAndContacts(HttpServletRequest request) {
 		PortalRestResponse<List<AppContactUsItem>> portalRestResponse;
 		try {
@@ -167,7 +169,7 @@ public class AppContactUsController extends EPRestrictedBaseController {
 	 * @param request HttpServletRequest
 	 * @return PortalRestResponse<List<AppCategoryFunctionsItem>>
 	 */
-	@RequestMapping(value = "/functions", method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = "/functions", produces = "application/json")
 	public PortalRestResponse<List<AppCategoryFunctionsItem>> getAppCategoryFunctions(HttpServletRequest request) {
 		PortalRestResponse<List<AppCategoryFunctionsItem>> portalRestResponse;
 		try {
@@ -190,7 +192,7 @@ public class AppContactUsController extends EPRestrictedBaseController {
 	 * @param contactUs AppContactUsItem
 	 * @return PortalRestResponse<String>
 	 */
-	@RequestMapping(value = "/save", method = RequestMethod.POST, produces = "application/json")
+	@PostMapping(value = "/save", produces = "application/json")
 	public PortalRestResponse<String> save(@RequestBody AppContactUsItem contactUs) {
 
 		if (contactUs == null || contactUs.getAppName() == null) {
@@ -210,7 +212,7 @@ public class AppContactUsController extends EPRestrictedBaseController {
 		return new PortalRestResponse<>(PortalRestStatusEnum.OK, saveAppContactUs, "");
 	}
 
-	@RequestMapping(value = "/saveAll", method = RequestMethod.POST, produces = "application/json")
+	@PostMapping(value = "/saveAll", produces = "application/json")
 	public PortalRestResponse<String> save(@RequestBody List<AppContactUsItem> contactUsList) {
 
 		if (contactUsList == null) {
@@ -237,7 +239,7 @@ public class AppContactUsController extends EPRestrictedBaseController {
 	 * @param id app ID
 	 * @return PortalRestResponse<String>
 	 */
-	@RequestMapping(value = "/delete/{appid}", method = RequestMethod.POST, produces = "application/json")
+	@PostMapping(value = "/delete/{appid}", produces = "application/json")
 	public PortalRestResponse<String> delete(@PathVariable("appid") Long id) {
 
 		String saveAppContactUs = FAILURE;
