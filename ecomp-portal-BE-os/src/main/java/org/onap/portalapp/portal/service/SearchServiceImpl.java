@@ -113,7 +113,7 @@ public class SearchServiceImpl implements SearchService {
 			resultOfSearch.addAll(resultOfAdditionalSearch);
 		}
 		resultOfSearch.addAll(resultOfSearchUserId);
-		resultOfSearch.stream().distinct().collect(Collectors.toList());
+		resultOfSearch = resultOfSearch.stream().distinct().collect(Collectors.toList());
 		resultOfSearch = this.cutSearchResultToMaximumSize(resultOfSearch);
 		ObjectMapper mapper = new ObjectMapper();
 		String result = "[]";
