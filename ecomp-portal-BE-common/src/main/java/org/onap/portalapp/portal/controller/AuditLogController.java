@@ -48,6 +48,7 @@ import org.onap.portalapp.validation.SecureString;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -91,7 +92,7 @@ public class AuditLogController extends EPRestrictedBaseController {
 	 * @param comment
 	 *            Comment
 	 */
-	@RequestMapping(value = "/store", method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = "/store", produces = "application/json")
 	public void auditLog(HttpServletRequest request, @RequestParam String affectedAppId, @RequestParam String type,
 			@RequestParam String comment) {
 		logger.debug(EELFLoggerDelegate.debugLogger, "auditLog: appId {}, type {}, comment {}", affectedAppId, type,

@@ -40,6 +40,7 @@ package org.onap.portalapp.portal.controller;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -56,7 +57,7 @@ public class BEPropertyReaderController extends FusionBaseController{
 
     private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(BEPropertyReaderController.class);
 
-	@RequestMapping(value = "/readProperty", method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = "/readProperty", produces = "application/json")
 	public PortalRestResponse<BEProperty> readProperty(HttpServletRequest request, @RequestParam String key) {
 		try {
 			return new PortalRestResponse<>(PortalRestStatusEnum.OK, "success", new BEProperty(key, SystemProperties.getProperty(key)));
