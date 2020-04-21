@@ -69,6 +69,10 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -92,7 +96,7 @@ public class PortalAdminController extends EPRestrictedBaseController {
 		this.auditService = auditService;
 	}
 
-	@RequestMapping(value = { "/portalApi/portalAdmins" }, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = { "/portalApi/portalAdmins" }, produces = "application/json")
 	public List<PortalAdmin> getPortalAdmins(HttpServletRequest request, HttpServletResponse response) {
 		EPUser user = EPUserUtils.getUserSession(request);
 		List<PortalAdmin> portalAdmins = null;
@@ -120,7 +124,7 @@ public class PortalAdminController extends EPRestrictedBaseController {
 	 * @param response 
 	 * @return FieldsValidator 
 	 */
-	@RequestMapping(value = { "/portalApi/portalAdmin" }, method = RequestMethod.POST)
+	@PostMapping(value = { "/portalApi/portalAdmin" })
 	public FieldsValidator createPortalAdmin(HttpServletRequest request, @RequestBody String userId,
 			HttpServletResponse response) {
 		EPUser user = EPUserUtils.getUserSession(request);
@@ -167,7 +171,7 @@ public class PortalAdminController extends EPRestrictedBaseController {
 		return fieldsValidator;
 	}
 
-	@RequestMapping(value = { "/portalApi/portalAdmin/{userInfo}" }, method = RequestMethod.DELETE)
+	@DeleteMapping(value = { "/portalApi/portalAdmin/{userInfo}" })
 	public FieldsValidator deletePortalAdmin(HttpServletRequest request, @PathVariable("userInfo") String userInfo,
 			HttpServletResponse response) {
 
@@ -225,8 +229,8 @@ public class PortalAdminController extends EPRestrictedBaseController {
 		return fieldsValidator;
 	}
 
-	@RequestMapping(value = {
-			"/portalApi/adminAppsRoles/{appId}" }, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = {
+			"/portalApi/adminAppsRoles/{appId}" }, produces = "application/json")
 	public List<EPRole> getRolesByApp(HttpServletRequest request, @PathVariable("appId") Long appId,
 			HttpServletResponse response) {
 		EPUser user = EPUserUtils.getUserSession(request);

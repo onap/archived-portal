@@ -69,6 +69,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
@@ -90,7 +94,7 @@ public class MicroserviceController extends EPRestrictedBaseController {
 	@Autowired
 	private MicroserviceService microserviceService;
 
-	@RequestMapping(value = { "/portalApi/microservices" }, method = RequestMethod.POST)
+	@PostMapping(value = { "/portalApi/microservices" })
 	public PortalRestResponse<String> createMicroservice(HttpServletRequest request, HttpServletResponse response,
 			@Valid @RequestBody MicroserviceData newServiceData) throws Exception {
 		if (newServiceData == null) {
@@ -113,13 +117,13 @@ public class MicroserviceController extends EPRestrictedBaseController {
 		return new PortalRestResponse<>(PortalRestStatusEnum.OK, "SUCCESS", "");
 	}
 
-	@RequestMapping(value = { "/portalApi/microservices" }, method = RequestMethod.GET)
+	@GetMapping(value = { "/portalApi/microservices" })
 	public List<MicroserviceData> getMicroservice(HttpServletRequest request, HttpServletResponse response)
 			throws Exception {
 		return microserviceService.getMicroserviceData();
 	}
 
-	@RequestMapping(value = { "/portalApi/microservices/{serviceId}" }, method = RequestMethod.PUT)
+	@PutMapping(value = { "/portalApi/microservices/{serviceId}" })
 	public PortalRestResponse<String> updateMicroservice(HttpServletRequest request, HttpServletResponse response,
 			@PathVariable("serviceId") long serviceId, @Valid @RequestBody MicroserviceData newServiceData) {
 
@@ -140,7 +144,7 @@ public class MicroserviceController extends EPRestrictedBaseController {
 		return new PortalRestResponse<>(PortalRestStatusEnum.OK, "SUCCESS", "");
 	}
 	
-	@RequestMapping(value = { "/portalApi/microservices/{serviceId}" }, method = RequestMethod.DELETE)
+	@DeleteMapping(value = { "/portalApi/microservices/{serviceId}" })
 	public PortalRestResponse<String> deleteMicroservice(HttpServletRequest request, HttpServletResponse response,
 			@PathVariable("serviceId") long serviceId) {
 		try {
