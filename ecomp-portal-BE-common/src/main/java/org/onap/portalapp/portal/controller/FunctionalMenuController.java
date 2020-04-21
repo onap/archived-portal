@@ -4,6 +4,8 @@
  * ===================================================================
  * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
+ *  Modification Copyright © 2020 IBM.
+ * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
  * under the Apache License, Version 2.0 (the "License");
@@ -82,6 +84,10 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -116,7 +122,7 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 	 *            HttpServletResponse
 	 * @return List of FunctionalMenuItem objects
 	 */
-	@RequestMapping(value = { "/portalApi/functionalMenu" }, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = { "/portalApi/functionalMenu" }, produces = "application/json")
 	public List<FunctionalMenuItem> getMenuItems(HttpServletRequest request, HttpServletResponse response) {
 		// TODO: should only the superuser be allowed to use this API?
 		List<FunctionalMenuItem> menuItems = null;
@@ -139,7 +145,7 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 	 *            HttpServletResponse
 	 * @return PortalRestResponse of ONAP portal title
 	 */
-	@RequestMapping(value = { "/portalApi/ecompTitle" }, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = { "/portalApi/ecompTitle" }, produces = "application/json")
 	public PortalRestResponse<String> getECOMPTitle(HttpServletRequest request, HttpServletResponse response) {
 		PortalRestResponse<String> portalRestResponse = null;
 		try {
@@ -164,8 +170,8 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 	 *            HttpServletResponse
 	 * @return List of FunctionalMenuItem objects
 	 */
-	@RequestMapping(value = {
-			"/portalApi/functionalMenuForEditing" }, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = {
+			"/portalApi/functionalMenuForEditing" }, produces = "application/json")
 	public List<FunctionalMenuItem> getMenuItemsForEditing(HttpServletRequest request, HttpServletResponse response) {
 		// TODO: should only the superuser be allowed to use this API?
 		EPUser user = EPUserUtils.getUserSession(request);
@@ -194,8 +200,8 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 	 *            HttpServletResponse
 	 * @return List of FunctionalMenuItem objects
 	 */
-	@RequestMapping(value = {
-			"/portalApi/functionalMenuForNotificationTree" }, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = {
+			"/portalApi/functionalMenuForNotificationTree" }, produces = "application/json")
 	public List<FunctionalMenuItem> getMenuItemsForNotifications(HttpServletRequest request,
 			HttpServletResponse response) {
 		// TODO: should only the superuser be allowed to use this API?
@@ -221,8 +227,8 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 	 *            application ID
 	 * @return List of FunctionalMenuItem objects
 	 */
-	@RequestMapping(value = {
-			"/portalApi/functionalMenuForApp/{appId}" }, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = {
+			"/portalApi/functionalMenuForApp/{appId}" }, produces = "application/json")
 	public List<FunctionalMenuItem> getMenuItemsForApp(HttpServletRequest request,
 			@PathVariable("appId") Integer appId) {
 		// TODO: should only the superuser be allowed to use this API?
@@ -248,8 +254,8 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 	 *            user ID
 	 * @return List of FunctionalMenuItem objects
 	 */
-	@RequestMapping(value = {
-			"/portalApi/functionalMenuForUser/{orgUserId}" }, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = {
+			"/portalApi/functionalMenuForUser/{orgUserId}" }, produces = "application/json")
 	public List<FunctionalMenuItem> getMenuItemsForUser(HttpServletRequest request,
 			@PathVariable("orgUserId") String orgUserId) {
 		// TODO: should only the superuser be allowed to use this API?
@@ -276,8 +282,8 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 	 *            HttpServletResponse
 	 * @return List of FunctionalMenuItem objects
 	 */
-	@RequestMapping(value = {
-			"/portalApi/functionalMenuForAuthUser" }, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = {
+			"/portalApi/functionalMenuForAuthUser" }, produces = "application/json")
 	public List<FunctionalMenuItem> getMenuItemsForAuthUser(HttpServletRequest request, HttpServletResponse response) {
 
 		EPUser user = EPUserUtils.getUserSession(request);
@@ -313,8 +319,8 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 	 *            menu ID
 	 * @return FunctionalMenuItem object
 	 */
-	@RequestMapping(value = {
-			"/portalApi/functionalMenuItemDetails/{menuId}" }, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = {
+			"/portalApi/functionalMenuItemDetails/{menuId}" }, produces = "application/json")
 	public FunctionalMenuItem getFunctionalMenuItemDetails(HttpServletRequest request,
 			@PathVariable("menuId") Long menuId, HttpServletResponse response) {
 		// TODO: return FunctionalMenuItemJson
@@ -349,7 +355,7 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 	 *            FunctionalMenuItemWithRoles
 	 * @return FieldsValidator
 	 */
-	@RequestMapping(value = { "/portalApi/functionalMenuItem" }, method = RequestMethod.POST)
+	@PostMapping(value = { "/portalApi/functionalMenuItem" })
 	public FieldsValidator createFunctionalMenuItem(HttpServletRequest request,
 			@RequestBody FunctionalMenuItemWithRoles menuItemJson, HttpServletResponse response) {
 		EPUser user = EPUserUtils.getUserSession(request);
@@ -389,7 +395,7 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 	 *            FunctionalMenuItemWithRoles
 	 * @return FieldsValidator
 	 */
-	@RequestMapping(value = { "/portalApi/functionalMenuItem" }, method = RequestMethod.PUT)
+	@PutMapping(value = { "/portalApi/functionalMenuItem" })
 	public FieldsValidator editFunctionalMenuItem(HttpServletRequest request,
 			@RequestBody FunctionalMenuItemWithRoles menuItemJson, HttpServletResponse response) {
 		EPUser user = EPUserUtils.getUserSession(request);
@@ -425,7 +431,7 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 	 *            menu identifier
 	 * @return FieldsValidator
 	 */
-	@RequestMapping(value = { "/portalApi/functionalMenuItem/{menuId}" }, method = RequestMethod.DELETE)
+	@DeleteMapping(value = { "/portalApi/functionalMenuItem/{menuId}" })
 	public FieldsValidator deleteFunctionalMenuItem(HttpServletRequest request, @PathVariable("menuId") Long menuId,
 			HttpServletResponse response) {
 		EPUser user = EPUserUtils.getUserSession(request);
@@ -451,7 +457,7 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 	 *            HttpServletResponse
 	 * @return FieldsValidator
 	 */
-	@RequestMapping(value = { "/portalApi/regenerateFunctionalMenuAncestors" }, method = RequestMethod.GET)
+	@GetMapping(value = { "/portalApi/regenerateFunctionalMenuAncestors" })
 	public FieldsValidator regenerateAncestorTable(HttpServletRequest request, HttpServletResponse response) {
 		// TODO: should only the superuser be allowed to use this API?
 		EPUser user = EPUserUtils.getUserSession(request);
@@ -480,7 +486,7 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 	 *            FunctionalMenuItemWithRoles
 	 * @return FieldsValidator
 	 */
-	@RequestMapping(value = { "/portalApi/setFavoriteItem" }, method = RequestMethod.POST)
+	@PostMapping(value = { "/portalApi/setFavoriteItem" })
 	public FieldsValidator addFavoriteItem(HttpServletRequest request,
 			@RequestBody FavoritesFunctionalMenuItem menuItemJson, HttpServletResponse response) {
 		EPUser user = EPUserUtils.getUserSession(request);
@@ -504,8 +510,8 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 	 *            HttpServletResponse
 	 * @return List of FavoritesFunctionalMenuItemJson
 	 */
-	@RequestMapping(value = {
-			"/portalApi/getFavoriteItems" }, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = {
+			"/portalApi/getFavoriteItems" }, produces = "application/json")
 	public List<FavoritesFunctionalMenuItemJson> getFavoritesForUser(HttpServletRequest request,
 			HttpServletResponse response) {
 		EPUser user = EPUserUtils.getUserSession(request);
@@ -529,7 +535,7 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 	 *            menu identifier
 	 * @return FieldsValidator
 	 */
-	@RequestMapping(value = { "/portalApi/removeFavoriteItem/{menuId}" }, method = RequestMethod.DELETE)
+	@DeleteMapping(value = { "/portalApi/removeFavoriteItem/{menuId}" })
 	public FieldsValidator deleteFavoriteItem(HttpServletRequest request, @PathVariable("menuId") Long menuId,
 			HttpServletResponse response) {
 		EPUser user = EPUserUtils.getUserSession(request);
@@ -556,8 +562,8 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 	 *            HttpServletResponse
 	 * @return JSON collection of key-value pairs shown below.
 	 */
-	@RequestMapping(value = {
-			"/portalApi/functionalMenuStaticInfo" }, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = {
+			"/portalApi/functionalMenuStaticInfo" }, produces = "application/json")
 	public String getFunctionalMenuStaticInfo(HttpServletRequest request, HttpServletResponse response) {
 
 		// Get user details from session
@@ -641,8 +647,8 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 	 * @throws IOException
 	 *             on error
 	 */
-	@RequestMapping(value = {
-			"/portalApi/userApplicationRoles" }, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = {
+			"/portalApi/userApplicationRoles" }, produces = "application/json")
 	public List<BusinessCardApplicationRolesList> getAppList(HttpServletRequest request, HttpServletResponse response,
 			@RequestParam("userId") String userId) throws IOException {
 
