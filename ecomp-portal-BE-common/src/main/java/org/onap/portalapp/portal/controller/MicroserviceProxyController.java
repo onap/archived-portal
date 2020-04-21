@@ -4,6 +4,8 @@
  * ===================================================================
  * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
+ *  Modification Copyright © 2020 IBM.
+ * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
  * under the Apache License, Version 2.0 (the "License");
@@ -52,6 +54,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
@@ -69,8 +72,7 @@ public class MicroserviceProxyController extends EPUnRestrictedBaseController {
 	@Autowired
 	private MicroserviceProxyService microserviceProxyService;
 
-	@RequestMapping(value = { "/portalApi/microservice/proxy/{serviceId}" }, method = {
-			RequestMethod.GET }, produces = "application/json")
+	@GetMapping(value = { "/portalApi/microservice/proxy/{serviceId}" }, produces = "application/json")
 	public String getMicroserviceProxy(HttpServletRequest request, HttpServletResponse response,
 			@PathVariable("serviceId") long serviceId) throws Exception {
 		EPUser user = EPUserUtils.getUserSession(request);
@@ -83,8 +85,7 @@ public class MicroserviceProxyController extends EPUnRestrictedBaseController {
 		return isValidJSON(answer) ? answer : "{\"error\":\"" + answer.replace(System.getProperty("line.separator"), "") + "\"}";
 	}
 
-	@RequestMapping(value = { "/portalApi/microservice/proxy/parameter/{widgetId}" }, method = {
-			RequestMethod.GET }, produces = "application/json")
+	@GetMapping(value = { "/portalApi/microservice/proxy/parameter/{widgetId}" }, produces = "application/json")
 	public String getMicroserviceProxyByWidgetId(HttpServletRequest request, HttpServletResponse response,
 			@PathVariable("widgetId") long widgetId) throws Exception {
 		EPUser user = EPUserUtils.getUserSession(request);
