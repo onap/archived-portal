@@ -60,6 +60,10 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -96,7 +100,7 @@ public class BasicAuthAccountController extends EPRestrictedBaseController {
 	 * @throws Exception
 	 *             on failure
 	 */
-	@RequestMapping(value = { "/portalApi/basicAuthAccount" }, method = RequestMethod.POST)
+	@PostMapping(value = { "/portalApi/basicAuthAccount" })
 	public PortalRestResponse<String> createBasicAuthAccount(HttpServletRequest request, HttpServletResponse response,
 			@RequestBody BasicAuthCredentials newBasicAuthAccount) throws Exception {
 
@@ -153,7 +157,7 @@ public class BasicAuthAccountController extends EPRestrictedBaseController {
 	 *             on failure
 	 */
 
-	@RequestMapping(value = { "/portalApi/basicAuthAccount" }, method = RequestMethod.GET)
+	@GetMapping(value = { "/portalApi/basicAuthAccount" })
 	public PortalRestResponse<List<BasicAuthCredentials>> getBasicAuthAccount(HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
 
@@ -182,7 +186,7 @@ public class BasicAuthAccountController extends EPRestrictedBaseController {
 	 * @throws Exception
 	 *             on failure
 	 */
-	@RequestMapping(value = { "/portalApi/basicAuthAccount/{accountId}" }, method = RequestMethod.PUT)
+	@PutMapping(value = { "/portalApi/basicAuthAccount/{accountId}" })
 	public PortalRestResponse<String> updateAccount(HttpServletRequest request, HttpServletResponse response,
 			@PathVariable("accountId") long accountId, @RequestBody BasicAuthCredentials newBasicAuthAccount)
 			throws Exception {
@@ -219,7 +223,7 @@ public class BasicAuthAccountController extends EPRestrictedBaseController {
 	 * @throws Exception
 	 *             on failure
 	 */
-	@RequestMapping(value = { "/portalApi/basicAuthAccount/{accountId}" }, method = RequestMethod.DELETE)
+	@DeleteMapping(value = { "/portalApi/basicAuthAccount/{accountId}" })
 	public PortalRestResponse<String> deleteAccount(HttpServletRequest request, HttpServletResponse response,
 			@PathVariable("accountId") long accountId) throws Exception {
 

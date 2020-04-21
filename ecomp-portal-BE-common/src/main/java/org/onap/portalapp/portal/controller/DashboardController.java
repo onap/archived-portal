@@ -78,6 +78,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -132,7 +136,7 @@ public class DashboardController extends EPRestrictedBaseController {
 	 *            Request parameter.
 	 * @return Rest response wrapped around a CommonWidgetMeta object.
 	 */
-	@RequestMapping(value = "/widgetData", method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = "/widgetData", produces = "application/json")
 	public PortalRestResponse<CommonWidgetMeta> getWidgetData(HttpServletRequest request,
 			@RequestParam String resourceType) {
 		if (!isValidResourceType(resourceType)) {
@@ -154,7 +158,7 @@ public class DashboardController extends EPRestrictedBaseController {
 	 *            read from POST body.
 	 * @return Rest response wrapped around a String; e.g., "success" or "ERROR"
 	 */
-	@RequestMapping(value = "/widgetDataBulk", method = RequestMethod.POST, produces = "application/json")
+	@PostMapping(value = "/widgetDataBulk", produces = "application/json")
 	public PortalRestResponse<String> saveWidgetDataBulk(@RequestBody CommonWidgetMeta commonWidgetMeta) {
 		logger.debug(EELFLoggerDelegate.debugLogger, "saveWidgetDataBulk: argument is {}", commonWidgetMeta);
 		if (!DATA_VALIDATOR.isValid(commonWidgetMeta)){
@@ -183,7 +187,7 @@ public class DashboardController extends EPRestrictedBaseController {
 	 *            read from POST body
 	 * @return Rest response wrapped around a String; e.g., "success" or "ERROR"
 	 */
-	@RequestMapping(value = "/widgetData", method = RequestMethod.POST, produces = "application/json")
+	@PostMapping(value = "/widgetData", produces = "application/json")
 	public PortalRestResponse<String> saveWidgetData(@RequestBody CommonWidget commonWidget, HttpServletRequest request, HttpServletResponse response) {
 		logger.debug(EELFLoggerDelegate.debugLogger, "saveWidgetData: argument is {}", commonWidget);
 		EPUser user = EPUserUtils.getUserSession(request);
@@ -249,7 +253,7 @@ public class DashboardController extends EPRestrictedBaseController {
 	 *            read from POST body
 	 * @return Rest response wrapped around a String; e.g., "success" or "ERROR"
 	 */
-	@RequestMapping(value = "/deleteData", method = RequestMethod.POST, produces = "application/json")
+	@GetMapping(value = "/deleteData", produces = "application/json")
 	public PortalRestResponse<String> deleteWidgetData(@RequestBody CommonWidget commonWidget) {
 		logger.debug(EELFLoggerDelegate.debugLogger, "deleteWidgetData: argument is {}", commonWidget);
 		if (!DATA_VALIDATOR.isValid(commonWidget)){
@@ -269,7 +273,7 @@ public class DashboardController extends EPRestrictedBaseController {
 	 *         Result Item.
 	 */
 	@EPAuditLog
-	@RequestMapping(value = "/search", method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = "/search", produces = "application/json")
 	public PortalRestResponse<Map<String, List<SearchResultItem>>> searchPortal(HttpServletRequest request,
 			@RequestParam String searchString) {
 		if (!DATA_VALIDATOR.isValid(new SecureString(searchString))){
@@ -330,7 +334,7 @@ public class DashboardController extends EPRestrictedBaseController {
 	 * @param request
 	 * @return Rest response wrapped around a list of String
 	 */
-	@RequestMapping(value = "/activeUsers", method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = "/activeUsers", produces = "application/json")
 	public List<String> getActiveUsers(HttpServletRequest request) {
 		List<String> activeUsers;
 		List<String> onlineUsers = new ArrayList<>();
@@ -358,7 +362,7 @@ public class DashboardController extends EPRestrictedBaseController {
 	 * @param request
 	 * @return Rest response wrapped around a number that is the number of milliseconds.
 	 */
-	@RequestMapping(value = "/onlineUserUpdateRate", method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = "/onlineUserUpdateRate", produces = "application/json")
 	public PortalRestResponse<Map<String, String>> getOnlineUserUpdateRate(HttpServletRequest request) {
 		try {
 			String updateRate = SystemProperties.getProperty(EPCommonSystemProperties.ONLINE_USER_UPDATE_RATE);	
@@ -381,7 +385,7 @@ public class DashboardController extends EPRestrictedBaseController {
 	 * @param request
 	 * @return Rest response wrapped around a number that is the window width threshold to collapse right menu.
 	 */
-	@RequestMapping(value = "/windowWidthThresholdRightMenu", method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = "/windowWidthThresholdRightMenu", produces = "application/json")
 	public PortalRestResponse<Map<String, String>> getWindowWidthThresholdForRightMenu(HttpServletRequest request) {
 		try {
 			String windowWidthString = SystemProperties.getProperty(EPCommonSystemProperties.WINDOW_WIDTH_THRESHOLD_RIGHT_MENU);	
@@ -402,7 +406,7 @@ public class DashboardController extends EPRestrictedBaseController {
 	 * @param request
 	 * @return Rest response wrapped around a number that is the window width threshold to collapse the left menu.
 	 */
-	@RequestMapping(value = "/windowWidthThresholdLeftMenu", method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = "/windowWidthThresholdLeftMenu", produces = "application/json")
 	public PortalRestResponse<Map<String, String>> getWindowWidthThresholdForLeftMenu(HttpServletRequest request) {
 		try {
 			String windowWidthString = SystemProperties.getProperty(EPCommonSystemProperties.WINDOW_WIDTH_THRESHOLD_LEFT_MENU);	
@@ -422,7 +426,7 @@ public class DashboardController extends EPRestrictedBaseController {
 	 * @param request
 	 * @return Rest response wrapped around a List of String
 	 */
-	@RequestMapping(value = "/relatedUsers", method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = "/relatedUsers", produces = "application/json")
 	public PortalRestResponse<List<String>> activeUsers(HttpServletRequest request) {
 		EPUser user = EPUserUtils.getUserSession(request);
 		try {

@@ -68,6 +68,10 @@ import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -90,7 +94,7 @@ public class DashboardSearchResultController extends EPRestrictedBaseController 
 	 *            Request parameter.
 	 * @return Rest response wrapped around a CommonWidgetMeta object.
 	 */
-	@RequestMapping(value = "/widgetData", method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = "/widgetData", produces = "application/json")
 	public PortalRestResponse<CommonWidgetMeta> getWidgetData(HttpServletRequest request,
 			@RequestParam String resourceType) {
 		if (stringIsNotSafeHtml(resourceType)) {
@@ -107,7 +111,7 @@ public class DashboardSearchResultController extends EPRestrictedBaseController 
 	 *            read from POST body.
 	 * @return Rest response wrapped around a String; e.g., "success" or "ERROR"
 	 */
-	@RequestMapping(value = "/widgetDataBulk", method = RequestMethod.POST, produces = "application/json")
+	@PostMapping(value = "/widgetDataBulk", produces = "application/json")
 	public PortalRestResponse<String> saveWidgetDataBulk(@Valid @RequestBody CommonWidgetMeta commonWidgetMeta) {
 		logger.debug(EELFLoggerDelegate.debugLogger, "saveWidgetDataBulk: argument is {}", commonWidgetMeta);
 		if (commonWidgetMeta.getCategory() == null || commonWidgetMeta.getCategory().trim().equals("")){
@@ -137,7 +141,7 @@ public class DashboardSearchResultController extends EPRestrictedBaseController 
 	 *            read from POST body
 	 * @return Rest response wrapped around a String; e.g., "success" or "ERROR"
 	 */
-	@RequestMapping(value = "/widgetData", method = RequestMethod.POST, produces = "application/json")
+	@PostMapping(value = "/widgetData", produces = "application/json")
 	public PortalRestResponse<String> saveWidgetData(@Valid @RequestBody CommonWidget commonWidget) {
 		logger.debug(EELFLoggerDelegate.debugLogger, "saveWidgetData: argument is {}", commonWidget);
 		if (commonWidget.getCategory() == null || commonWidget.getCategory().trim().equals("")){
@@ -186,7 +190,7 @@ public class DashboardSearchResultController extends EPRestrictedBaseController 
 	 *            read from POST body
 	 * @return Rest response wrapped around a String; e.g., "success" or "ERROR"
 	 */
-	@RequestMapping(value = "/deleteData", method = RequestMethod.POST, produces = "application/json")
+	@PostMapping(value = "/deleteData", produces = "application/json")
 	public PortalRestResponse<String> deleteWidgetData(@Valid @RequestBody CommonWidget commonWidget) {
 		if (commonWidget!=null){
 			Validator validator = VALIDATOR_FACTORY.getValidator();
@@ -208,7 +212,7 @@ public class DashboardSearchResultController extends EPRestrictedBaseController 
 	 * @return Rest response wrapped around a Map of String to List of Search
 	 *         Result Item.
 	 */
-	@RequestMapping(value = "/allPortal", method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = "/allPortal", produces = "application/json")
 	public PortalRestResponse<Map<String, List<SearchResultItem>>> searchPortal(HttpServletRequest request,
 			@RequestParam String searchString) {
 
@@ -246,7 +250,7 @@ public class DashboardSearchResultController extends EPRestrictedBaseController 
 	 * @param request
 	 * @return Rest response wrapped around a list of String
 	 */
-	@RequestMapping(value = "/activeUsers", method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = "/activeUsers", produces = "application/json")
 	public List<String> getActiveUsers(HttpServletRequest request) {
 		List<String> activeUsers = null;
 		List<String> onlineUsers = new ArrayList<>();
@@ -274,7 +278,7 @@ public class DashboardSearchResultController extends EPRestrictedBaseController 
 	 * @param request
 	 * @return Rest response wrapped around a List of String
 	 */
-	@RequestMapping(value = "/relatedUsers", method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = "/relatedUsers", produces = "application/json")
 	public PortalRestResponse<List<String>> activeUsers(HttpServletRequest request) {
 		EPUser user = EPUserUtils.getUserSession(request);
 		try {
