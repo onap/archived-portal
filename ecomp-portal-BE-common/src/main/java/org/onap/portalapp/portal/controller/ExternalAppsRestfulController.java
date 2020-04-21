@@ -83,6 +83,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -115,7 +119,7 @@ public class ExternalAppsRestfulController extends EPRestrictedRESTfulBaseContro
 	private EPRoleService epRoleService;
 
 	@ApiOperation(value = "Creates a Portal user notification for roles identified in the content from an external application.", response = PortalAPIResponse.class)
-	@RequestMapping(value = { "/publishNotification" }, method = RequestMethod.POST, produces = "application/json")
+	@PostMapping(value = { "/publishNotification" }, produces = "application/json")
 	@ResponseBody
 	public PortalAPIResponse publishNotification(HttpServletRequest request,
 			@RequestBody EpNotificationItem notificationItem) throws Exception {
@@ -175,7 +179,7 @@ public class ExternalAppsRestfulController extends EPRestrictedRESTfulBaseContro
 	}
 
 	@ApiOperation(value = "Gets favorite items within the functional menu for the current user.", response = FavoritesFunctionalMenuItemJson.class, responseContainer="List")
-	@RequestMapping(value = { "/getFavorites" }, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = { "/getFavorites" }, produces = "application/json")
 	public List<FavoritesFunctionalMenuItemJson> getFavoritesForUser(HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
 		String loginId = "";
@@ -204,8 +208,8 @@ public class ExternalAppsRestfulController extends EPRestrictedRESTfulBaseContro
 	}
 
 	@ApiOperation(value = "Gets functional menu items appropriate for the current user.", response = FunctionalMenuItem.class, responseContainer="List")
-	@RequestMapping(value = {
-			"/functionalMenuItemsForUser" }, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = {
+			"/functionalMenuItemsForUser" }, produces = "application/json")
 	public List<FunctionalMenuItem> getFunctionalMenuItemsForUser(HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
 		String loginId = "";
@@ -247,7 +251,7 @@ public class ExternalAppsRestfulController extends EPRestrictedRESTfulBaseContro
 	}
 	
 	@EPAuditLog
-	@RequestMapping(value = { "/validateCookie" }, method = RequestMethod.POST)
+	@PostMapping(value = { "/validateCookie" })
 	public boolean validateCookie(@RequestBody EPServiceCookie epServiceCookie, HttpServletRequest request) throws Exception {
 		Map<String,String> epServiceCookieValueMap = epServiceCookie.getValue();
 		if(epServiceCookieValueMap!=null) {

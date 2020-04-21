@@ -90,6 +90,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -124,8 +128,8 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 	private UserService userservice =  new UserServiceCentalizedImpl();
 
 	@ApiOperation(value = "Gets user role for an application.", response = CentralUser.class, responseContainer="List")
-	@RequestMapping(value = {
-			"/user/{loginId}" }, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = {
+			"/user/{loginId}" }, produces = "application/json")
 	public CentralUser getUser(HttpServletRequest request, HttpServletResponse response,
 			@PathVariable("loginId") String loginId) throws Exception {
 		if (!DATA_VALIDATOR.isValid(new SecureString(loginId))){
@@ -145,8 +149,8 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 	}
 	
 	@ApiOperation(value = "Gets user roles for an application which is upgraded to newer version.", response = String.class, responseContainer="List")
-	@RequestMapping(value = {
-			"/v1/user/{loginId}" }, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = {
+			"/v1/user/{loginId}" }, produces = "application/json")
 	public String getV2UserList(HttpServletRequest request, HttpServletResponse response,
 			@PathVariable("loginId") String loginId) throws Exception {
 		if (!DATA_VALIDATOR.isValid(new SecureString(loginId))){
@@ -166,8 +170,8 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 	}
 	
 	@ApiOperation(value = "Gets roles for an application.", response = CentralRole.class, responseContainer="Json")
-	@RequestMapping(value = {
-			"/roles" }, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = {
+			"/roles" }, produces = "application/json")
 	public List<CentralRole> getRolesForApp(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		logger.debug(EELFLoggerDelegate.debugLogger, "Request received for getRolesForApp");
 		List<CentralV2Role> v2CenRole = null;
@@ -190,8 +194,8 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 	}
 	
 	@ApiOperation(value = "Gets roles for an application which is upgraded to newer version.", response = CentralV2Role.class, responseContainer="Json")
-	@RequestMapping(value = {
-			"/v1/roles" }, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = {
+			"/v1/roles" }, produces = "application/json")
 	public List<CentralV2Role> getV2RolesForApp(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		logger.debug(EELFLoggerDelegate.debugLogger, "Request received for getV2RolesForApp");
 		List<CentralV2Role> answer = null;
@@ -212,8 +216,8 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 	}
 
 	@ApiOperation(value = "Gets all role functions for an application for older version.", response = CentralRoleFunction.class, responseContainer="Json")
-	@RequestMapping(value = {
-			"/functions" }, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = {
+			"/functions" }, produces = "application/json")
 	public List<CentralRoleFunction> getRoleFunctionsList(HttpServletRequest request, HttpServletResponse response)
 			throws Exception {
 		List<CentralV2RoleFunction> answer = null;
@@ -237,8 +241,8 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 	}	
 	
 	@ApiOperation(value = "Gets all role functions for an application which is upgraded to newer version.", response = CentralV2RoleFunction.class, responseContainer="Json")
-	@RequestMapping(value = {
-			"/v1/functions" }, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = {
+			"/v1/functions" }, produces = "application/json")
 	public List<CentralV2RoleFunction> getV2RoleFunctionsList(HttpServletRequest request, HttpServletResponse response)
 			throws Exception {
 		List<CentralV2RoleFunction> cenRoleFuncList = null;
@@ -261,8 +265,8 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 	
 
 	@ApiOperation(value = "Gets role information for an application.", response = CentralRole.class, responseContainer="Json")
-	@RequestMapping(value = {
-			"/role/{role_id}" }, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = {
+			"/role/{role_id}" }, produces = "application/json")
 	public CentralRole getRoleInfo(HttpServletRequest request, HttpServletResponse response,
 			@PathVariable("role_id") Long roleId) throws Exception {
 		CentralV2Role answer = null;
@@ -281,8 +285,8 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 	}
 	
 	@ApiOperation(value = "Gets v2 role information for an application which is upgraded to newer version.", response = CentralV2Role.class, responseContainer="Json")
-	@RequestMapping(value = {
-			"/v1/role/{role_id}" }, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = {
+			"/v1/role/{role_id}" }, produces = "application/json")
 	public CentralV2Role getV2RoleInfo(HttpServletRequest request, HttpServletResponse response,
 			@PathVariable("role_id") Long roleId) throws Exception {
 		CentralV2Role answer = null;
@@ -299,7 +303,7 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 	}
 	
 	@ApiOperation(value = "Gets role information for an application provided by function code.", response = CentralRoleFunction.class, responseContainer = "Json")
-	@RequestMapping(value = { "/function/{code}" }, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = { "/function/{code}" }, produces = "application/json")
 	public CentralRoleFunction getRoleFunction(HttpServletRequest request, HttpServletResponse response,
 			@PathVariable("code") String code) throws Exception {
 		CentralV2RoleFunction centralV2RoleFunction = null;
@@ -322,7 +326,7 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 	}
 	
 	@ApiOperation(value = "Gets role information for an application provided by function code.", response = CentralV2RoleFunction.class, responseContainer = "Json")
-	@RequestMapping(value = { "/v1/function/{code}" }, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = { "/v1/function/{code}" }, produces = "application/json")
 	public CentralV2RoleFunction getV2RoleFunction(HttpServletRequest request, HttpServletResponse response,
 			@PathVariable("code") String code) throws Exception {
 		CentralV2RoleFunction centralV2RoleFunction = null;
@@ -344,7 +348,7 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 	}
 
 	@ApiOperation(value = "Saves role function for an application.", response = PortalRestResponse.class, responseContainer = "Json")
-	@RequestMapping(value = { "/roleFunction" }, method = RequestMethod.POST, produces = "application/json")
+	@PostMapping(value = { "/roleFunction" }, produces = "application/json")
 	public PortalRestResponse<String> saveRoleFunction(HttpServletRequest request, HttpServletResponse response,
 			@RequestBody String roleFunc) {
 		String status = "Successfully saved!";
@@ -437,7 +441,7 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 	}
 	
 	@ApiOperation(value = "Deletes role function for an application.", response = PortalRestResponse.class, responseContainer = "Json")
-	@RequestMapping(value = { "/roleFunction/{code}" }, method = RequestMethod.DELETE, produces = "application/json")
+	@DeleteMapping(value = { "/roleFunction/{code}" }, produces = "application/json")
 	public PortalRestResponse<String> deleteRoleFunction(HttpServletRequest request, HttpServletResponse response,
 			@PathVariable("code") String code) {
 		if(!DATA_VALIDATOR.isValid(new SecureString(code))){
@@ -492,7 +496,7 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 	}	
 	
 	@ApiOperation(value = "Saves role for an application.", response = PortalRestResponse.class, responseContainer = "Json")
-	@RequestMapping(value = { "/role" }, method = RequestMethod.POST, produces = "application/json")
+	@PostMapping(value = { "/role" }, produces = "application/json")
 	public PortalRestResponse<String> saveRole(HttpServletRequest request, HttpServletResponse response,
 			@RequestBody Role role) {
 		try {
@@ -553,7 +557,7 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 	}
 	
 	@ApiOperation(value = "Deletes role for an application.", response = PortalRestResponse.class, responseContainer = "Json")
-	@RequestMapping(value = { "/deleteRole/{code}" }, method = RequestMethod.DELETE, produces = "application/json")
+	@DeleteMapping(value = { "/deleteRole/{code}" }, produces = "application/json")
 	public  PortalRestResponse<String> deleteRole(HttpServletRequest request, HttpServletResponse response,
 			@PathVariable String code) {
 		if(!DATA_VALIDATOR.isValid(new SecureString(code))){
@@ -608,7 +612,7 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 	}
 	
 	@ApiOperation(value = "Gets active roles for an application.", response = CentralRole.class, responseContainer = "Json")
-	@RequestMapping(value = { "/activeRoles" }, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = { "/activeRoles" }, produces = "application/json")
 	public  List<CentralRole> getActiveRoles(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		List<CentralRole> roles = null;
 		try {
@@ -624,7 +628,7 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 	}
 	
 	@ApiOperation(value = "Gets active roles for an application.", response = CentralV2Role.class, responseContainer = "Json")
-	@RequestMapping(value = { "/v1/activeRoles" }, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = { "/v1/activeRoles" }, produces = "application/json")
 	public  List<CentralV2Role> getV2ActiveRoles(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		List<CentralV2Role> cenRole = null;
 		try {
@@ -639,7 +643,7 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 	}
 	
 	@ApiOperation(value = "deletes user roles for an application.", response = PortalRestResponse.class, responseContainer = "Json")
-	@RequestMapping(value = { "/deleteDependcyRoleRecord/{roleId}" }, method = RequestMethod.DELETE, produces = "application/json")
+	@DeleteMapping(value = { "/deleteDependcyRoleRecord/{roleId}" }, produces = "application/json")
 	public PortalRestResponse<String> deleteDependencyRoleRecord(HttpServletRequest request, HttpServletResponse response,
 			@PathVariable("roleId") Long roleId) {
 		ExternalRequestFieldsValidator removeResult = null;
@@ -666,7 +670,7 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 	
 	
 	@ApiOperation(value = "deletes  roles for an application.", response = PortalRestResponse.class, responseContainer = "Json")
-	@RequestMapping(value = { "/v2/deleteRole/{roleId}" }, method = RequestMethod.DELETE, produces = "application/json")
+	@DeleteMapping(value = { "/v2/deleteRole/{roleId}" }, produces = "application/json")
 	public PortalRestResponse<String> deleteRole(HttpServletRequest request, HttpServletResponse response,
 			@PathVariable("roleId") Long roleId) {
 		ExternalRequestFieldsValidator removeResult = null;
@@ -693,7 +697,7 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 	
 	
 	@ApiOperation(value = "Bulk upload functions for an application.", response = PortalRestResponse.class, responseContainer = "Json")
-	@RequestMapping(value = { "/upload/portal/functions" }, method = RequestMethod.POST, produces = "application/json")
+	@PostMapping(value = { "/upload/portal/functions" }, produces = "application/json")
 	public  PortalRestResponse<String> bulkUploadFunctions(HttpServletRequest request, HttpServletResponse response) {
 		Integer result = 0;
 		try {
@@ -707,7 +711,7 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 	}
 	
 	@ApiOperation(value = "Bulk upload roles for an application.", response = PortalRestResponse.class, responseContainer = "Json")
-	@RequestMapping(value = { "/upload/portal/roles" }, method = RequestMethod.POST, produces = "application/json")
+	@PostMapping(value = { "/upload/portal/roles" }, produces = "application/json")
 	public  PortalRestResponse<String> bulkUploadRoles(HttpServletRequest request, HttpServletResponse response) {
 		Integer result = 0;
 		try {
@@ -721,7 +725,7 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 	}
 	
 	@ApiOperation(value = "Bulk upload role functions for an application.", response = PortalRestResponse.class, responseContainer = "Json")
-	@RequestMapping(value = { "/upload/portal/roleFunctions" }, method = RequestMethod.POST, produces = "application/json")
+	@PostMapping(value = { "/upload/portal/roleFunctions" }, produces = "application/json")
 	public  PortalRestResponse<String> bulkUploadRoleFunctions(HttpServletRequest request, HttpServletResponse response) {
 		Integer result = 0;
 		try {
@@ -735,7 +739,7 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 	}
 	
 	@ApiOperation(value = "Bulk upload user roles for an application.", response = PortalRestResponse.class, responseContainer = "Json")
-	@RequestMapping(value = { "/upload/portal/userRoles" }, method = RequestMethod.POST, produces = "application/json")
+	@PostMapping(value = { "/upload/portal/userRoles" }, produces = "application/json")
 	public  PortalRestResponse<String> bulkUploadUserRoles(HttpServletRequest request, HttpServletResponse response) {
 		Integer result = 0;
 		try {
@@ -749,7 +753,7 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 	}
 	
 	@ApiOperation(value = "Bulk upload users for renamed role of an application.", response = PortalRestResponse.class, responseContainer = "Json")
-	@RequestMapping(value = { "/upload/portal/userRole/{roleId}" }, method = RequestMethod.POST, produces = "application/json")
+	@PostMapping(value = { "/upload/portal/userRole/{roleId}" }, produces = "application/json")
 	public  PortalRestResponse<String> bulkUploadUsersSingleRole(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roleId) {
 		Integer result = 0;
 		try {
@@ -764,7 +768,7 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 	}
 	
 	@ApiOperation(value = "Bulk upload functions for an partner application.", response = PortalRestResponse.class, responseContainer = "Json")
-	@RequestMapping(value = { "/upload/partner/functions" }, method = RequestMethod.POST, produces = "application/json")
+	@PostMapping(value = { "/upload/partner/functions" }, produces = "application/json")
 	public  PortalRestResponse<String> bulkUploadPartnerFunctions(HttpServletRequest request, HttpServletResponse response) {
 		Integer addedFunctions = 0;
 		try {
@@ -779,7 +783,7 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 	}
 	
 	@ApiOperation(value = "Bulk upload roles for an partner application.", response = PortalRestResponse.class, responseContainer = "Json")
-	@RequestMapping(value = { "/upload/partner/roles" }, method = RequestMethod.POST, produces = "application/json")
+	@PostMapping(value = { "/upload/partner/roles" }, produces = "application/json")
 	public  PortalRestResponse<String> bulkUploadPartnerRoles(HttpServletRequest request, HttpServletResponse response, @RequestBody List<Role> upload) {
 		try {
 			externalAccessRolesService.bulkUploadPartnerRoles(request.getHeader(UEBKEY), upload);
@@ -792,7 +796,7 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 	}
 	
 	@ApiOperation(value = "Bulk upload role functions for an partner application.", response = PortalRestResponse.class, responseContainer = "Json")
-	@RequestMapping(value = { "/upload/partner/roleFunctions" }, method = RequestMethod.POST, produces = "application/json")
+	@PostMapping(value = { "/upload/partner/roleFunctions" }, produces = "application/json")
 	public  PortalRestResponse<String> bulkUploadPartnerRoleFunctions(HttpServletRequest request, HttpServletResponse response) {
 		Integer addedRoleFunctions = 0;
 		try {
@@ -808,7 +812,7 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 	}
 	
 	@ApiOperation(value = "Gets all functions along with global functions", response = List.class, responseContainer = "Json")
-	@RequestMapping(value = { "/menuFunctions" }, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = { "/menuFunctions" }, produces = "application/json")
 	public  List<String> getMenuFunctions(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		List<String> functionsList = null;
 		try {
@@ -822,7 +826,7 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 	}
 	
 	@ApiOperation(value = "Gets all active Users of application", response = String.class, responseContainer = "Json")
-	@RequestMapping(value = { "/users" }, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = { "/users" }, produces = "application/json")
 	public  List<EcompUser> getUsersOfApplication(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		List<EcompUser> users = null;
 		try {
@@ -882,7 +886,7 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 	}
 	
 	@ApiOperation(value = "Gets ecompUser of an application.", response = CentralUser.class, responseContainer = "List")
-	@RequestMapping(value = { "/v2/user/{loginId}" }, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = { "/v2/user/{loginId}" }, produces = "application/json")
 	public String getEcompUser(HttpServletRequest request, HttpServletResponse response,
 			@PathVariable("loginId") String loginId) throws Exception {
 		if(!DATA_VALIDATOR.isValid(new SecureString(loginId))){
@@ -913,7 +917,7 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 	}
 
 	@ApiOperation(value = "Gets user ecomp role for an application.", response = CentralUser.class, responseContainer = "List")
-	@RequestMapping(value = { "/v2/roles" }, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = { "/v2/roles" }, produces = "application/json")
 	public List<EcompRole> getEcompRolesOfApplication(HttpServletRequest request, HttpServletResponse response)
 			throws Exception {
 		List<EcompRole> ecompRoles = null;
