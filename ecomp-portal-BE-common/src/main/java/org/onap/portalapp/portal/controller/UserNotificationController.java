@@ -4,6 +4,8 @@
  * ===================================================================
  * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
+ * Modifications Copyright (c) 2020 IBM
+ * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
  * under the Apache License, Version 2.0 (the "License");
@@ -50,6 +52,8 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -87,8 +91,8 @@ public class UserNotificationController extends EPRestrictedBaseController {
     private static final String SUCCESS = "success";
     private static final String FAILURE = "FAILURE";
 
-    @RequestMapping(value = {
-            "/portalApi/getFunctionalMenuRole" }, method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = {
+            "/portalApi/getFunctionalMenuRole" }, produces = "application/json")
     public List<FunctionalMenuRole> getMenuIdRoleId(HttpServletRequest request, HttpServletResponse response) {
         // EPUser user = EPUserUtils.getUserSession(request);
         List<FunctionalMenuRole> menuRoleList = null;
@@ -96,8 +100,8 @@ public class UserNotificationController extends EPRestrictedBaseController {
         return menuRoleList;
     }
 
-    @RequestMapping(value = {
-            "/portalApi/getNotifications" }, method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = {
+            "/portalApi/getNotifications" }, produces = "application/json")
     public PortalRestResponse<List<EpNotificationItem>> getNotifications(HttpServletRequest request,
             HttpServletResponse response) {
         EPUser user = EPUserUtils.getUserSession(request);
@@ -114,8 +118,8 @@ public class UserNotificationController extends EPRestrictedBaseController {
         return portalRestResponse;
     }
 
-    @RequestMapping(value = {
-            "/portalApi/getAdminNotifications" }, method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = {
+            "/portalApi/getAdminNotifications" }, produces = "application/json")
     public List<EpNotificationItemVO> getAdminNotifications(HttpServletRequest request, HttpServletResponse response) {
         List<EpNotificationItemVO> adminNotificationList = null;
         EPUser user = EPUserUtils.getUserSession(request);
@@ -123,7 +127,7 @@ public class UserNotificationController extends EPRestrictedBaseController {
         return adminNotificationList;
     }
 
-    @RequestMapping(value = "/portalApi/saveNotification", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/portalApi/saveNotification", produces = "application/json")
     public PortalRestResponse<String> save(HttpServletRequest request, HttpServletResponse response,
             @RequestBody EpNotificationItem notificationItem) {
 
@@ -160,8 +164,8 @@ public class UserNotificationController extends EPRestrictedBaseController {
         return new PortalRestResponse<>(PortalRestStatusEnum.OK, "SUCCESS", "");
     }
 
-    @RequestMapping(value = {
-            "/portalApi/notificationUpdateRate" }, method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = {
+            "/portalApi/notificationUpdateRate" }, produces = "application/json")
     public PortalRestResponse<Map<String, String>> getNotificationUpdateRate(HttpServletRequest request) {
         try {
             String updateRate = SystemProperties.getProperty(EPCommonSystemProperties.NOTIFICATION_UPDATE_RATE);
@@ -178,8 +182,8 @@ public class UserNotificationController extends EPRestrictedBaseController {
         }
     }
 
-    @RequestMapping(value = {
-            "/portalApi/notificationRead" }, method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = {
+            "/portalApi/notificationRead" }, produces = "application/json")
     public PortalRestResponse<Map<String, String>> notificationRead(
             @RequestParam("notificationId") String notificationID, HttpServletRequest request) {
         try {
@@ -191,8 +195,8 @@ public class UserNotificationController extends EPRestrictedBaseController {
         }
     }
 
-    @RequestMapping(value = {
-            "/portalApi/getNotificationHistory" }, method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = {
+            "/portalApi/getNotificationHistory" }, produces = "application/json")
     public List<EpNotificationItemVO> getNotificationHistory(HttpServletRequest request, HttpServletResponse response) {
         EPUser user = EPUserUtils.getUserSession(request);
         List<EpNotificationItemVO> notificationList = null;
@@ -200,8 +204,7 @@ public class UserNotificationController extends EPRestrictedBaseController {
         return notificationList;
     }
 
-    @RequestMapping(value = { "/portalApi/notificationRole/{notificationId}/roles" }, method = {
-            RequestMethod.GET }, produces = "application/json")
+    @GetMapping(value = { "/portalApi/notificationRole/{notificationId}/roles" }, produces = "application/json")
     public List<Integer> testGetRoles(HttpServletRequest request, @PathVariable("notificationId") Long notificationId) {
         List<EpRoleNotificationItem> notifRoles = userNotificationService.getNotificationRoles(notificationId);
         ArrayList<Integer> rolesList = new ArrayList<>();
@@ -211,8 +214,7 @@ public class UserNotificationController extends EPRestrictedBaseController {
         return rolesList;
     }
 
-    @RequestMapping(value = { "/portalApi/getNotificationAppRoles" }, method = {
-            RequestMethod.GET }, produces = "application/json")
+    @GetMapping(value = { "/portalApi/getNotificationAppRoles" }, produces = "application/json")
     public List<EcompAppRole> getNotificationAppRoles(HttpServletRequest request, HttpServletResponse response) {
         List<EcompAppRole> epAppRoleList = null;
         try {
@@ -225,8 +227,8 @@ public class UserNotificationController extends EPRestrictedBaseController {
         return epAppRoleList;
     }
 
-    @RequestMapping(value = {
-            "/portalApi/getMessageRecipients" }, method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = {
+            "/portalApi/getMessageRecipients" }, produces = "application/json")
     public List<String> getMessageRecipients(@RequestParam("notificationId") Long notificationID) {
         // EPUser user = EPUserUtils.getUserSession(request);
         List<String> messageUserRecipients = null;
