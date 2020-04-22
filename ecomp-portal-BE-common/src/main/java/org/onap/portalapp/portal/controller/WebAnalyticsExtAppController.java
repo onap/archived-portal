@@ -77,6 +77,8 @@ import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.util.concurrent.SuccessCallback;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -117,7 +119,7 @@ public class WebAnalyticsExtAppController extends EPRestrictedRESTfulBaseControl
 	 * @return String
 	 */
 	@ApiOperation(value = "Gets javascript with functions that support gathering and reporting web analytics.", response = String.class)
-	@RequestMapping(value = { "/analytics" }, method = RequestMethod.GET, produces = "application/javascript")
+	@GetMapping(value = { "/analytics" }, produces = "application/javascript")
 	public String getAnalyticsScript(HttpServletRequest request) {
 		String responseText = "";
 		EPApp app = null;
@@ -162,7 +164,7 @@ public class WebAnalyticsExtAppController extends EPRestrictedRESTfulBaseControl
 	 *            Analytics
 	 * @return PortalAPIResponse
 	 */
-	@RequestMapping(value = { "/storeAnalytics" }, method = RequestMethod.POST, produces = "application/json")
+	@PostMapping(value = { "/storeAnalytics" }, produces = "application/json")
 	@ResponseBody
 	@ApiOperation(value = "Accepts data from partner applications with web analytics data.", response = PortalAPIResponse.class)
 	public PortalAPIResponse storeAnalyticsScript(HttpServletRequest request, @RequestBody Analytics analyticsMap) {

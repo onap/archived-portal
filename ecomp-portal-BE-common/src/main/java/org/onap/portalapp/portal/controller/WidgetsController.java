@@ -63,6 +63,10 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -86,7 +90,7 @@ public class WidgetsController extends EPRestrictedBaseController {
         this.persUserWidgetService = persUserWidgetService;
     }
 
-    @RequestMapping(value = { "/portalApi/widgets" }, method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = { "/portalApi/widgets" }, produces = "application/json")
     public List<OnboardingWidget> getOnboardingWidgets(HttpServletRequest request, HttpServletResponse response) {
         EPUser user = EPUserUtils.getUserSession(request);
         List<OnboardingWidget> onboardingWidgets = null;
@@ -118,7 +122,7 @@ public class WidgetsController extends EPRestrictedBaseController {
 
     // Attention: real json has all OnboardingWidget fields except "id", we use OnboardingWidget for not
     // to create new class for parsing
-    @RequestMapping(value = { "/portalApi/widgets/{widgetId}" }, method = { RequestMethod.PUT },
+    @PutMapping(value = { "/portalApi/widgets/{widgetId}" },
             produces = "application/json")
     public FieldsValidator putOnboardingWidget(HttpServletRequest request, @PathVariable("widgetId") Long widgetId,
             @RequestBody OnboardingWidget onboardingWidget, HttpServletResponse response) {
@@ -147,7 +151,7 @@ public class WidgetsController extends EPRestrictedBaseController {
 
     // Attention: real json has all OnboardingWidget fields except "id", we use OnboardingWidget for not
     // to create new class for parsing
-    @RequestMapping(value = { "/portalApi/widgets" }, method = { RequestMethod.POST }, produces = "application/json")
+    @PostMapping(value = { "/portalApi/widgets" }, produces = "application/json")
     public FieldsValidator postOnboardingWidget(HttpServletRequest request,
             @RequestBody OnboardingWidget onboardingWidget, HttpServletResponse response) {
         EPUser user = EPUserUtils.getUserSession(request);
@@ -173,7 +177,7 @@ public class WidgetsController extends EPRestrictedBaseController {
         return fieldsValidator;
     }
 
-    @RequestMapping(value = { "/portalApi/widgets/{widgetId}" }, method = { RequestMethod.DELETE },
+    @DeleteMapping(value = { "/portalApi/widgets/{widgetId}" },
             produces = "application/json")
     public FieldsValidator deleteOnboardingWidget(HttpServletRequest request, @PathVariable("widgetId") Long widgetId,
             HttpServletResponse response) {
@@ -199,7 +203,7 @@ public class WidgetsController extends EPRestrictedBaseController {
      * @return FieldsValidator
      * @throws IOException
      */
-    @RequestMapping(value = { "portalApi/widgetCatalogSelection" }, method = RequestMethod.PUT,
+    @PutMapping(value = { "portalApi/widgetCatalogSelection" },
             produces = "application/json")
     public FieldsValidator putWidgetCatalogSelection(HttpServletRequest request,
             @RequestBody WidgetCatalogPersonalization persRequest, HttpServletResponse response) throws IOException {
