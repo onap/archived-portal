@@ -50,6 +50,7 @@ import org.onap.portalsdk.core.web.support.AppUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -70,7 +71,7 @@ public class ONAPLoginController extends UnRestrictedBaseController {
 		this.loginStrategy = loginStrategy;
 	}
 
-	@RequestMapping(value = { "/doLogin" }, method = RequestMethod.GET)
+	@GetMapping(value = { "/doLogin" })
 	public ModelAndView doLogin(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		return loginStrategy.doLogin(request, response);
 	}
