@@ -74,6 +74,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.util.StopWatch;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
@@ -106,7 +108,7 @@ public class LoginController extends EPUnRestrictedBaseController implements Log
 
 	private String welcomeView;
 
-	@RequestMapping(value = { "/login.htm" }, method = RequestMethod.GET)
+	@GetMapping(value = { "/login.htm" })
 	public ModelAndView login(HttpServletRequest request) {
 		Map<String, Object> model = new HashMap<String, Object>();
 		String authentication = SystemProperties.getProperty(SystemProperties.AUTHENTICATION_MECHANISM);
@@ -119,7 +121,7 @@ public class LoginController extends EPUnRestrictedBaseController implements Log
 	}
 
 	@SuppressWarnings("rawtypes")
-	@RequestMapping(value = { "/open_source/login" }, method = RequestMethod.POST)
+	@PostMapping(value = { "/open_source/login" })
 	@ResponseBody
 	public String loginValidate(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
@@ -194,7 +196,7 @@ public class LoginController extends EPUnRestrictedBaseController implements Log
 	 * repaired.
 	 */
 
-	@RequestMapping(value = { "/processSingleSignOn" }, method = RequestMethod.GET)
+	@GetMapping(value = { "/processSingleSignOn" })
 	public ModelAndView processSingleSignOn(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
 		Map<Object, Object> model = new HashMap<Object, Object>();
