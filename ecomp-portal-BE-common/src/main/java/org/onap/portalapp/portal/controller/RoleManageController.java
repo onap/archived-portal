@@ -4,17 +4,19 @@
  * ===================================================================
  * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
- * Modifications Copyright (c) 2019 Samsung
+ * Modifications Copyright (c) 2019 Samsung 
  * ===================================================================
- *
+ * Modifications Copyright (c) 2020 IBM
+ * ===================================================================
+ * 
  * Unless otherwise specified, all software contained herein is licensed
  * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *             http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
+ * Unless required by applicable law or agreed to in writing, software 
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -96,6 +98,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
@@ -154,7 +158,7 @@ public class RoleManageController extends EPRestrictedBaseController {
 	 * @throws Exception
 	 */
 
-	@RequestMapping(value = { "/portalApi/get_roles/{appId}" }, method = RequestMethod.GET)
+	@GetMapping(value = { "/portalApi/get_roles/{appId}" })
 	public void getRoles(HttpServletRequest request, HttpServletResponse response, @PathVariable("appId") Long appId)
 			throws Exception {
 		try {
@@ -183,7 +187,7 @@ public class RoleManageController extends EPRestrictedBaseController {
 		}
 	}
 
-	@RequestMapping(value = { "/portalApi/role_list/toggleRole/{appId}/{roleId}" }, method = RequestMethod.POST)
+	@PostMapping(value = { "/portalApi/role_list/toggleRole/{appId}/{roleId}" })
 	public Map<String, Object> toggleRole(HttpServletRequest request, HttpServletResponse response,
 			@PathVariable("appId") Long appId, @PathVariable("roleId") Long roleId) throws Exception {
 		EPApp requestedApp = null;
@@ -227,7 +231,7 @@ public class RoleManageController extends EPRestrictedBaseController {
 		return responseMap;
 	}
 
-	@RequestMapping(value = { "/portalApi/role_list/removeRole/{appId}/{roleId}" }, method = RequestMethod.POST)
+	@PostMapping(value = { "/portalApi/role_list/removeRole/{appId}/{roleId}" })
 	public Map<String, Object> removeRole(HttpServletRequest request, HttpServletResponse response,
 			@PathVariable("appId") Long appId, @PathVariable("roleId") Long roleId) throws Exception {
 
@@ -293,7 +297,7 @@ public class RoleManageController extends EPRestrictedBaseController {
 		return responseMap;
 	}
 
-	@RequestMapping(value = { "/portalApi/role/saveRole/{appId}" }, method = RequestMethod.POST)
+	@PostMapping(value = { "/portalApi/role/saveRole/{appId}" })
 	public Map<String, Object> saveRole(HttpServletRequest request, HttpServletResponse response,
 			@PathVariable("appId") Long appId) throws Exception {
 		EPUser user = EPUserUtils.getUserSession(request);
@@ -415,29 +419,29 @@ public class RoleManageController extends EPRestrictedBaseController {
 		return responseMap;
 	}
 
-	@RequestMapping(value = { "/portalApi/role/removeRoleFunction" }, method = RequestMethod.POST)
+	@PostMapping(value = { "/portalApi/role/removeRoleFunction" })
 	public ModelAndView removeRoleRoleFunction(HttpServletRequest request, HttpServletResponse response)
 			throws Exception {
 		return getRoleController().removeRoleFunction(request, response);
 	}
 
-	@RequestMapping(value = { "/portalApi/role/addRoleFunction" }, method = RequestMethod.POST)
+	@PostMapping(value = { "/portalApi/role/addRoleFunction" })
 	public ModelAndView addRoleRoRoleFunction(HttpServletRequest request, HttpServletResponse response)
 			throws Exception {
 		return getRoleController().addRoleFunction(request, response);
 	}
 
-	@RequestMapping(value = { "/portalApi/role/removeChildRole" }, method = RequestMethod.POST)
+	@PostMapping(value = { "/portalApi/role/removeChildRole" })
 	public ModelAndView removeChildRole(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		return getRoleController().removeChildRole(request, response);
 	}
 
-	@RequestMapping(value = { "/portalApi/role/addChildRole" }, method = RequestMethod.POST)
+	@PostMapping(value = { "/portalApi/role/addChildRole" })
 	public ModelAndView addChildRole(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		return getRoleController().addChildRole(request, response);
 	}
 
-	@RequestMapping(value = { "/portalApi/get_role/{appId}/{roleId}" }, method = RequestMethod.GET)
+	@GetMapping(value = { "/portalApi/get_role/{appId}/{roleId}" })
 	public void getRole(HttpServletRequest request, HttpServletResponse response, @PathVariable("appId") Long appId,
 			@PathVariable("roleId") Long roleId) throws Exception {
 		try {
@@ -471,7 +475,7 @@ public class RoleManageController extends EPRestrictedBaseController {
 		}
 	}
 
-	@RequestMapping(value = { "/portalApi/get_role_functions/{appId}" }, method = RequestMethod.GET)
+	@GetMapping(value = { "/portalApi/get_role_functions/{appId}" })
 	public void getRoleFunctionList(HttpServletRequest request, HttpServletResponse response,
 			@PathVariable("appId") Long appId) throws Exception {
 		try {
@@ -502,7 +506,7 @@ public class RoleManageController extends EPRestrictedBaseController {
 		}
 	}
 
-	@RequestMapping(value = { "/portalApi/role_function_list/saveRoleFunction/{appId}" }, method = RequestMethod.POST)
+	@PostMapping(value = { "/portalApi/role_function_list/saveRoleFunction/{appId}" })
 	public PortalRestResponse<String> saveRoleFunction(HttpServletRequest request, HttpServletResponse response, @Valid @RequestBody CentralV2RoleFunction roleFunc,
 			@PathVariable("appId") Long appId) throws Exception {
 		if (roleFunc!=null) {
@@ -599,7 +603,7 @@ public class RoleManageController extends EPRestrictedBaseController {
 		}
 	}
 
-	@RequestMapping(value = { "/portalApi/role_function_list/removeRoleFunction/{appId}" }, method = RequestMethod.POST)
+	@PostMapping(value = { "/portalApi/role_function_list/removeRoleFunction/{appId}" })
 	public PortalRestResponse<String> removeRoleFunction(HttpServletRequest request, HttpServletResponse response,
 			@RequestBody String roleFunc, @PathVariable("appId") Long appId) throws Exception {
 		EPUser user = EPUserUtils.getUserSession(request);
@@ -676,7 +680,7 @@ public class RoleManageController extends EPRestrictedBaseController {
 		return new PortalRestResponse<>(PortalRestStatusEnum.OK, "Deleted Successfully!", "Success");
 	}
 
-	@RequestMapping(value = { "/portalApi/centralizedApps" }, method = RequestMethod.GET)
+	@GetMapping(value = { "/portalApi/centralizedApps" })
 	public List<CentralizedApp> getCentralizedAppRoles(HttpServletRequest request, HttpServletResponse response, String userId) {
 		if(userId!=null) {
 			SecureString secureString = new SecureString(userId);
@@ -719,7 +723,7 @@ public class RoleManageController extends EPRestrictedBaseController {
 		this.roleController = roleController;
 	}
 
-	@RequestMapping(value = { "/portalApi/syncRoles" }, method = RequestMethod.POST, produces = "application/json")
+	@PostMapping(value = { "/portalApi/syncRoles" }, produces = "application/json")
 	public PortalRestResponse<String> syncRoles(HttpServletRequest request, HttpServletResponse response,
 			@RequestBody Long appId) {
 		EPUser user = EPUserUtils.getUserSession(request);
@@ -741,7 +745,7 @@ public class RoleManageController extends EPRestrictedBaseController {
 		return new PortalRestResponse<>(PortalRestStatusEnum.OK, "Sync roles completed successfully!", "Success");
 	}
 
-	@RequestMapping(value = { "/portalApi/syncFunctions" }, method = RequestMethod.POST, produces = "application/json")
+	@PostMapping(value = { "/portalApi/syncFunctions" }, produces = "application/json")
 	public PortalRestResponse<String> syncFunctions(HttpServletRequest request, HttpServletResponse response,
 			@RequestBody Long appId) {
 		EPUser user = EPUserUtils.getUserSession(request);
@@ -826,8 +830,8 @@ public class RoleManageController extends EPRestrictedBaseController {
 		response.getWriter().write("Unauthorized User");
 	}
 
-	@RequestMapping(value = {
-			"/portalApi/uploadRoleFunction/{appId}" }, method = RequestMethod.POST, produces = "application/json")
+	@PostMapping(value = {
+			"/portalApi/uploadRoleFunction/{appId}" }, produces = "application/json")
 	public PortalRestResponse<String> bulkUploadRoleFunc(HttpServletRequest request, HttpServletResponse response,
 			@RequestBody UploadRoleFunctionExtSystem data, @PathVariable("appId") Long appId) {
 		EPUser user = EPUserUtils.getUserSession(request);
