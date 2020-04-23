@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequest; 
 import javax.servlet.http.HttpServletResponse;
 
 import org.onap.portalapp.widget.domain.ValidationRespond;
@@ -22,6 +22,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -59,7 +63,7 @@ public class WidgetsCatalogController {
 	private static final Logger logger = LoggerFactory.getLogger(WidgetsCatalogController.class);
 	
 	@ResponseBody
-	@RequestMapping(value = { "/microservices/widgetCatalog" }, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = { "/microservices/widgetCatalog" }, produces = "application/json")
 	public List<WidgetCatalog> getWidgetCatalog(HttpServletRequest request, HttpServletResponse response
 			,@RequestHeader(value="Authorization") String auth) throws IOException{
 		
@@ -79,7 +83,7 @@ public class WidgetsCatalogController {
 	}
 	
 	@ResponseBody
-	@RequestMapping(value = { "/microservices/widgetCatalog/{loginName}" }, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = { "/microservices/widgetCatalog/{loginName}" }, produces = "application/json")
 	public List<WidgetCatalog> getUserWidgetCatalog(HttpServletRequest request, HttpServletResponse response, 
 			@PathVariable("loginName") String loginName, @RequestHeader(value="Authorization") String auth) throws IOException {
 		List<WidgetCatalog> widgetCatalog = null;
@@ -98,7 +102,7 @@ public class WidgetsCatalogController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = { "/microservices/widgetCatalog/{widgetId}" }, method = RequestMethod.PUT, produces = "application/json")
+	@PutMapping(value = { "/microservices/widgetCatalog/{widgetId}" }, produces = "application/json")
 	public void updateWidgetCatalog(HttpServletRequest request, HttpServletResponse response,
 			@RequestBody WidgetCatalog newWidgetCatalog, @PathVariable("widgetId") long widgetId,
 			@RequestHeader(value="Authorization") String auth) throws IOException {
@@ -117,7 +121,7 @@ public class WidgetsCatalogController {
 	}
 	
 	@ResponseBody
-	@RequestMapping(value = { "/microservices/widgetCatalog" }, method = RequestMethod.POST, produces = "application/json")
+	@PostMapping(value = { "/microservices/widgetCatalog" }, produces = "application/json")
 	public ValidationRespond saveWidgetCatalog(HttpServletRequest request, HttpServletResponse response, @RequestHeader(value="Authorization") String auth,
 			@RequestParam("file") MultipartFile file, @RequestParam("widget") String widget) throws IOException {	
 	
@@ -148,7 +152,7 @@ public class WidgetsCatalogController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = { "/microservices/widgetCatalog/{widgetId}" }, method = RequestMethod.POST, produces = "application/json")
+	@PostMapping(value = { "/microservices/widgetCatalog/{widgetId}" }, produces = "application/json")
 	public ValidationRespond updateWidgetCatalogwithFiles(HttpServletRequest request, HttpServletResponse response, @RequestHeader(value="Authorization") String auth,
 			@RequestParam("file") MultipartFile file, @RequestParam("widget") String widget, @PathVariable("widgetId") long widgetId) throws IOException {	
 		logger.debug("microserivces updating with files {}", widgetId);
@@ -176,8 +180,7 @@ public class WidgetsCatalogController {
 	}
 	
 	@ResponseBody
-	@RequestMapping(value = { "/microservices/widgetCatalog/{widgetId}" }, method = {
-			RequestMethod.DELETE }, produces = "application/json")
+	@DeleteMapping(value = { "/microservices/widgetCatalog/{widgetId}" }, produces = "application/json")
 	public void deleteOnboardingWidget(HttpServletRequest request, HttpServletResponse response,
 			@PathVariable("widgetId") long widgetId, @RequestHeader(value="Authorization") String auth)  throws IOException{		
 		if(!util.authorization(auth, security_user, security_pass)){
@@ -196,7 +199,7 @@ public class WidgetsCatalogController {
 	}
 	
 	@ResponseBody
-	@RequestMapping(value = { "/microservices/widgetCatalog/parameters/{widgetId}" }, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = { "/microservices/widgetCatalog/parameters/{widgetId}" }, produces = "application/json")
 	public Long getServiceIdByWidget(HttpServletRequest request, HttpServletResponse response, 
 			@PathVariable("widgetId") Long widgetId, @RequestHeader(value="Authorization") String auth) throws IOException {
 		
@@ -217,7 +220,7 @@ public class WidgetsCatalogController {
 
 	
 	@ResponseBody
-	@RequestMapping(value = { "/microservices/widgetCatalog/service/{serviceId}" }, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = { "/microservices/widgetCatalog/service/{serviceId}" }, produces = "application/json")
 	public List<WidgetCatalog> getWidgetByServiceId(HttpServletRequest request, HttpServletResponse response, 
 			@PathVariable("serviceId") Long serviceId, @RequestHeader(value="Authorization") String auth) throws IOException {
 		List<WidgetCatalog> list = new ArrayList<>();
@@ -237,7 +240,7 @@ public class WidgetsCatalogController {
 	
 	
 	@ResponseBody
-	@RequestMapping(value = { "/microservices/download/{widgetId}" }, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = { "/microservices/download/{widgetId}" }, produces = "application/json")
 	public byte[] getWidgetZipFile(HttpServletRequest request, HttpServletResponse response, 
 			@PathVariable("widgetId") long widgetId, @RequestHeader(value="Authorization") String auth) throws Exception {
 		byte[] byteFile = null;
