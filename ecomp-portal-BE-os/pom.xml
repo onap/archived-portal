@@ -314,11 +314,6 @@
 			<artifactId>tiles-jsp</artifactId>
 			<version>3.0.5</version>
 		</dependency>
-		<dependency>
-			<groupId>org.apache.cxf</groupId>
-			<artifactId>cxf-rt-rs-client</artifactId>
-			<version>3.0.0-milestone1</version>
-		</dependency>
 		<!-- Mapper -->
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
@@ -628,11 +623,6 @@
 			<artifactId>mockito-core</artifactId>
 			<version>1.8.5</version>
 			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>commons-beanutils</groupId>
-			<artifactId>commons-beanutils</artifactId>
-			<version>1.9.3</version>
 		</dependency>
 		<!-- OpenID Connect Dependencies -->
 		<dependency>
