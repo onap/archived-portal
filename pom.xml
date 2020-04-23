@@ -28,7 +28,7 @@
 	<properties>
 		<!-- Jenkins should invoke mvn with argument -Dbuild.number=${BUILD_NUMBER} -->
 		<build.number>0</build.number>
-		<epsdk.version>2.6.0</epsdk.version>
+		<epsdk.version>3.3.0-SNAPSHOT</epsdk.version>
 		<springframework.version>4.3.24.RELEASE</springframework.version>
 		<springframework.security.version>4.2.13.RELEASE</springframework.security.version>
 		<hibernate.version>4.3.11.Final</hibernate.version>
@@ -297,7 +297,27 @@
 			  </execution>
 			</executions>
 		  </plugin>
-		  
+		  <plugin>
+                     <groupId>org.apache.maven.plugins</groupId>
+                     <artifactId>maven-enforcer-plugin</artifactId>
+                     <version>3.0.0-M2</version>
+                     <executions>
+                      <execution>
+                      <id>enforce-no-snapshots</id>
+                      <goals>
+                      <goal>enforce</goal>
+                      </goals>
+                    <configuration>
+                    <rules>
+                    <requireReleaseVersion>
+                     <message>No Snapshots Allowed!</message>
+                    </requireReleaseVersion>
+                    </rules>
+                    <fail>false</fail>
+                    </configuration>
+                  </execution>
+                 </executions>
+                 </plugin>
 		</plugins>
 	</build>
 
