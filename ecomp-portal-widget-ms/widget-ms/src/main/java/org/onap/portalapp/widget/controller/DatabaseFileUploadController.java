@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -24,7 +25,7 @@ public class DatabaseFileUploadController {
 	private static final Logger logger = LoggerFactory.getLogger(DatabaseFileUploadController.class); 
 
 	@ResponseBody
-	@RequestMapping(value = "/microservices/markup/{widgetId}", method = RequestMethod.GET)
+	@GetMapping(value = "/microservices/markup/{widgetId}")
 	public String getWidgetMarkup(HttpServletRequest request, HttpServletResponse response, @PathVariable("widgetId") long widgetId){
 		String markup = null;
 		try{
@@ -37,7 +38,7 @@ public class DatabaseFileUploadController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = "/microservices/{widgetId}/controller.js", method = RequestMethod.GET)
+	@GetMapping(value = "/microservices/{widgetId}/controller.js")
 	public String getWidgetController(HttpServletRequest request, HttpServletResponse response, @PathVariable("widgetId") long widgetId){
 		String controller = null;
 		try{
@@ -50,7 +51,7 @@ public class DatabaseFileUploadController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = "/microservices/{widgetId}/framework.js", method = RequestMethod.GET)
+	@GetMapping(value = "/microservices/{widgetId}/framework.js")
 	public String getWidgetFramework(HttpServletRequest request, HttpServletResponse response,
 			@PathVariable("widgetId") long widgetId){
 		String framework = null;
@@ -64,7 +65,7 @@ public class DatabaseFileUploadController {
 	}
 	
 	@ResponseBody
-	@RequestMapping(value = "/microservices/{widgetId}/styles.css", method = RequestMethod.GET)
+	@GetMapping(value = "/microservices/{widgetId}/styles.css")
 	public String getWidgetCSS(HttpServletRequest request, HttpServletResponse response,
 			@PathVariable("widgetId") long widgetId){
 		String css = null;
