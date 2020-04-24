@@ -125,7 +125,8 @@ export const environment = {
     "footerLogoImagePath": "",
     "footerLogoText": "",
     "intraSearcLink": "",
-    "extraSearcLink": "https://wiki.onap.org/dosearchsite.action?cql=siteSearch+~+searchStringPlaceHolder&queryString=searchStringPlaceHolder"
+    "extraSearcLink": "https://wiki.onap.org/dosearchsite.action?cql=siteSearch+~+searchStringPlaceHolder&queryString=searchStringPlaceHolder",
+    "browserCompatibilityMsg": "This Application is best viewed on Firefox, Chrome and Edge."
    },
     "getAccessUrl": "",
     "getAccessName":"",
