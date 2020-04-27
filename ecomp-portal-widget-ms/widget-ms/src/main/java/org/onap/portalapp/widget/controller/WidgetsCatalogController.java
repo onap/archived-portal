@@ -37,12 +37,12 @@ public class WidgetsCatalogController {
 
 	@Value("${server.port}")
 	String port;
-	@Value("${server.contextPath}")
+	@Value("${server.servlet.context-path}")
 	String context;
 	
-	@Value("${security.user.name}")
+	@Value("${spring.security.user.name}")
 	String security_user;
-	@Value("${security.user.password}")
+	@Value("${spring.security.user.password}")
 	String security_pass;
 	
 	@Autowired

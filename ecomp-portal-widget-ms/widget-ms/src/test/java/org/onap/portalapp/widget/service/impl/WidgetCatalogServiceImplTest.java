@@ -59,6 +59,7 @@ import org.mockito.MockitoAnnotations;
 import org.onap.portalapp.widget.domain.App;
 import org.onap.portalapp.widget.domain.RoleApp;
 import org.onap.portalapp.widget.domain.WidgetCatalog;
+import org.hibernate.query.NativeQuery;
 
 public class WidgetCatalogServiceImplTest {
 
@@ -75,7 +76,7 @@ public class WidgetCatalogServiceImplTest {
 	Criteria criteria;
 
 	@Mock
-	SQLQuery query;
+	NativeQuery query;
 
 	@Before
 	public void init() {

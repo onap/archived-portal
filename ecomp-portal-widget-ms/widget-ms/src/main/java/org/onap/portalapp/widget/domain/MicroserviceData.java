@@ -26,7 +26,7 @@ public class MicroserviceData {
 	@Id
 	@Column(name = "id")
 	@Digits(integer = 11, fraction = 0)
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
 
 	@Column(name = "name")

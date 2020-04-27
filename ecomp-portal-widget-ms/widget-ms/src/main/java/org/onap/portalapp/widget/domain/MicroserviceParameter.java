@@ -24,7 +24,7 @@ public class MicroserviceParameter {
 	
 	@Id
 	@Column(name = "id")
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Digits(integer = 11, fraction = 0)
 	private Long id;
 

@@ -30,7 +30,7 @@ public class WidgetCatalog{
 	
 	@Id
 	@Column(name = "widget_id")
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Digits(integer = 11, fraction = 0)
 	private long id;
 	

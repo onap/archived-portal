@@ -41,7 +41,7 @@ public class MicroserviceServiceImpl implements MicroserviceService{
 			Transaction tx = session.beginTransaction();		
 			session.save(newService);
 			tx.commit();
-			session.flush();
+//			session.flush();
 			session.close();
 		}
 		catch(Exception e){
@@ -58,7 +58,7 @@ public class MicroserviceServiceImpl implements MicroserviceService{
 			Transaction tx = session.beginTransaction();		
 			session.save(newParameter);
 			tx.commit();
-			session.flush();
+//			session.flush();
 			session.close();
 		}
 		catch(Exception e){
@@ -77,7 +77,7 @@ public class MicroserviceServiceImpl implements MicroserviceService{
 		
 		List<MicroserviceData> services = criteria.list();
 		logger.debug("MicroserviceServiceImpl.getMicroserviceByName: result={}", services);
-		session.flush();
+//		session.flush();
 		session.close();
 		
 		return (services.size() > 0) ? services.get(0).getId() : null;

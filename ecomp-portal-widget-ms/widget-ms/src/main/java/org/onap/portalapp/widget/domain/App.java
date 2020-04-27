@@ -21,7 +21,7 @@ public class App implements Serializable{
 
 	@Id
 	@Column(name = "APP_ID")
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Digits(integer = 11, fraction = 0)
 	private Long appId;
 
