@@ -55,12 +55,11 @@ public class MusicSessionRepositoryHandler {
 	
 	public Session get(String id) {
 		if(musicCache){
-		 // todo need to add the clean up for "sessions" map if musicCache is enabled 	     
+		 // need to add the clean up for "sessions" map if musicCache is enabled
 			return this.sessions.get(id);
 		}else{
 			try {
-				Session session = MusicService.getMetaAttribute(id);
-				return session;
+				return MusicService.getMetaAttribute(id);;
 			} catch (Exception e) {
 				logger.error(EELFLoggerDelegate.errorLogger, "get failed with id " + id, e);
 				return null;
@@ -72,7 +71,7 @@ public class MusicSessionRepositoryHandler {
 
 	public void remove(String id) {
 		if(musicCache){
-			 // todo need to add the clean up for "sessions" map if musicCache is enabled 	     
+			 // need to add the clean up for "sessions" map if musicCache is enabled
 			sessions.remove(id);	
 		}else{
 			try {
@@ -87,7 +86,7 @@ public class MusicSessionRepositoryHandler {
 
 	public void put(String id, MusicSession musicSession) {
 		if(musicCache){
-			 // todo need to add the clean up for "sessions" map if musicCache is enabled 	     
+			 //need to add the clean up for "sessions" map if musicCache is enabled
 			sessions.put(id, musicSession);		
 		}else{
 			try {
