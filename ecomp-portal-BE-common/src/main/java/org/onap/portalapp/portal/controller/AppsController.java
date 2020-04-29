@@ -86,6 +86,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
@@ -121,7 +125,7 @@ public class AppsController extends EPRestrictedBaseController {
 	 *            HttpServletResponse
 	 * @return List<EcompApp>
 	 */
-	@RequestMapping(value = { "/portalApi/userApps" }, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = { "/portalApi/userApps" }, produces = "application/json")
 	public List<EcompApp> getUserApps(HttpServletRequest request, HttpServletResponse response) {
 		EPUser user = EPUserUtils.getUserSession(request);
 		List<EcompApp> ecompApps = null;
@@ -152,7 +156,7 @@ public class AppsController extends EPRestrictedBaseController {
 	 * @throws IOException
 	 *             if sendError fails
 	 */
-	@RequestMapping(value = { "/portalApi/persUserApps" }, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = { "/portalApi/persUserApps" }, produces = "application/json")
 	public List<EcompApp> getPersUserApps(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		EPUser user = EPUserUtils.getUserSession(request);
 		List<EcompApp> ecompApps = null;
@@ -185,7 +189,7 @@ public class AppsController extends EPRestrictedBaseController {
 	 *            HttpServletResponse
 	 * @return List<AppIdAndNameTransportModel>
 	 */
-	@RequestMapping(value = { "/portalApi/adminApps" }, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = { "/portalApi/adminApps" }, produces = "application/json")
 	public List<AppIdAndNameTransportModel> getAdminApps(HttpServletRequest request, HttpServletResponse response) {
 		EPUser user = EPUserUtils.getUserSession(request);
 		List<AppIdAndNameTransportModel> adminApps = null;
@@ -214,8 +218,8 @@ public class AppsController extends EPRestrictedBaseController {
 	 *            HttpServletResponse
 	 * @return List<AppIdAndNameTransportModel>
 	 */
-	@RequestMapping(value = {
-			"/portalApi/appsForSuperAdminAndAccountAdmin" }, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = {
+			"/portalApi/appsForSuperAdminAndAccountAdmin" }, produces = "application/json")
 	public List<AppIdAndNameTransportModel> getAppsForSuperAdminAndAccountAdmin(HttpServletRequest request,
 			HttpServletResponse response) {
 		EPUser user = EPUserUtils.getUserSession(request);
@@ -246,7 +250,7 @@ public class AppsController extends EPRestrictedBaseController {
 	 * @return JSON with left menu
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	@RequestMapping(value = { "/portalApi/leftmenuItems" }, method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	@GetMapping(value = { "/portalApi/leftmenuItems" }, produces = "application/json;charset=UTF-8")
 	public String getLeftMenuItems(HttpServletRequest request, HttpServletResponse response) {
 		String menuList = null;
 		Set menuSet = (Set) AppUtils.getSession(request)
@@ -266,8 +270,8 @@ public class AppsController extends EPRestrictedBaseController {
 		return menuList;
 	}
 
-	@RequestMapping(value = {
-			PORTAL_API_USER_APPS_ORDER_BY_SORT_PREF }, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = {
+			PORTAL_API_USER_APPS_ORDER_BY_SORT_PREF }, produces = "application/json")
 	public List<EcompApp> getUserAppsOrderBySortPref(HttpServletRequest request, HttpServletResponse response) {
 		EPUser user = EPUserUtils.getUserSession(request);
 		List<EcompApp> ecompApps = null;
@@ -322,8 +326,8 @@ public class AppsController extends EPRestrictedBaseController {
 	 *            sort pref
 	 * @return FieldsValidator
 	 */
-	@RequestMapping(value = {
-			"/portalApi/saveUserAppsSortingManual" }, method = RequestMethod.PUT, produces = "application/json")
+	@PutMapping(value = {
+			"/portalApi/saveUserAppsSortingManual" }, produces = "application/json")
 	public FieldsValidator putUserAppsSortingManual(HttpServletRequest request,
 			@RequestBody List<EPAppsManualPreference> epAppsManualPref, HttpServletResponse response) {
 		FieldsValidator fieldsValidator = null;
@@ -346,8 +350,8 @@ public class AppsController extends EPRestrictedBaseController {
 		return fieldsValidator;
 	}
 
-	@RequestMapping(value = {
-			"/portalApi/saveUserWidgetsSortManual" }, method = RequestMethod.PUT, produces = "application/json")
+	@PutMapping(value = {
+			"/portalApi/saveUserWidgetsSortManual" }, produces = "application/json")
 	public FieldsValidator putUserWidgetsSortManual(HttpServletRequest request,
 			@RequestBody List<EPWidgetsSortPreference> saveManualWidgetSData, HttpServletResponse response) {
 		FieldsValidator fieldsValidator = null;
@@ -370,8 +374,8 @@ public class AppsController extends EPRestrictedBaseController {
 		return fieldsValidator;
 	}
 
-	@RequestMapping(value = {
-			"/portalApi/updateWidgetsSortPref" }, method = RequestMethod.PUT, produces = "application/json")
+	@PutMapping(value = {
+			"/portalApi/updateWidgetsSortPref" }, produces = "application/json")
 	public FieldsValidator putUserWidgetsSortPref(HttpServletRequest request,
 			@RequestBody List<EPWidgetsSortPreference> delManualWidgetData, HttpServletResponse response) {
 		FieldsValidator fieldsValidator = null;
@@ -406,8 +410,8 @@ public class AppsController extends EPRestrictedBaseController {
 	 *            data to delete
 	 * @return FieldsValidator
 	 */
-	@RequestMapping(value = {
-			"/portalApi/UpdateUserAppsSortManual" }, method = RequestMethod.PUT, produces = "application/json")
+	@PutMapping(value = {
+			"/portalApi/UpdateUserAppsSortManual" }, produces = "application/json")
 	public FieldsValidator deleteUserAppSortManual(HttpServletRequest request,
 			@RequestBody EPDeleteAppsManualSortPref delManualAppData, HttpServletResponse response) {
 		FieldsValidator fieldsValidator = null;
@@ -425,8 +429,8 @@ public class AppsController extends EPRestrictedBaseController {
 		return fieldsValidator;
 	}
 
-	@RequestMapping(value = {
-			"/portalApi/saveUserAppsSortingPreference" }, method = RequestMethod.PUT, produces = "application/json")
+	@PutMapping(value = {
+			"/portalApi/saveUserAppsSortingPreference" }, produces = "application/json")
 	public FieldsValidator putUserAppsSortingPreference(HttpServletRequest request,
 			@RequestBody EPAppsSortPreference userAppsValue, HttpServletResponse response) {
 		FieldsValidator fieldsValidator = null;
@@ -444,8 +448,8 @@ public class AppsController extends EPRestrictedBaseController {
 		return fieldsValidator;
 	}
 
-	@RequestMapping(value = {
-			"/portalApi/userAppsSortTypePreference" }, method = RequestMethod.GET, produces = "application/String")
+	@GetMapping(value = {
+			"/portalApi/userAppsSortTypePreference" }, produces = "application/String")
 	public String getUserAppsSortTypePreference(HttpServletRequest request, HttpServletResponse response) {
 		EPUser user = EPUserUtils.getUserSession(request);
 		String userSortPreference = null;
@@ -476,7 +480,7 @@ public class AppsController extends EPRestrictedBaseController {
 	 *            HTTP servlet response
 	 * @return List<AdminUserApplications>
 	 */
-	@RequestMapping(value = { "/portalApi/accountAdmins" }, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = { "/portalApi/accountAdmins" }, produces = "application/json")
 	public List<AdminUserApplications> getAppsAdministrators(HttpServletRequest request, HttpServletResponse response) {
 		EPUser user = EPUserUtils.getUserSession(request);
 		List<AdminUserApplications> admins = null;
@@ -494,7 +498,7 @@ public class AppsController extends EPRestrictedBaseController {
 		return admins;
 	}
 
-	@RequestMapping(value = { "/portalApi/availableApps" }, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = { "/portalApi/availableApps" }, produces = "application/json")
 	public List<AppsResponse> getApps(HttpServletRequest request, HttpServletResponse response) {
 		EPUser user = EPUserUtils.getUserSession(request);
 		List<AppsResponse> apps = null;
@@ -522,8 +526,8 @@ public class AppsController extends EPRestrictedBaseController {
 	 *            HTTP servlet response
 	 * @return List of applications
 	 */
-	@RequestMapping(value = {
-			"/portalApi/allAvailableApps" }, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = {
+			"/portalApi/allAvailableApps" }, produces = "application/json")
 	public List<AppsResponse> getAllApps(HttpServletRequest request, HttpServletResponse response) {
 		EPUser user = EPUserUtils.getUserSession(request);
 		List<AppsResponse> apps = null;
@@ -549,7 +553,7 @@ public class AppsController extends EPRestrictedBaseController {
 	 *            HTTP servlet response
 	 * @return List of applications
 	 */
-	@RequestMapping(value = { "/portalApi/appsFullList" }, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = { "/portalApi/appsFullList" }, produces = "application/json")
 	public List<EcompApp> getAppsFullList(HttpServletRequest request, HttpServletResponse response) {
 		EPUser user = EPUserUtils.getUserSession(request);
 		List<EcompApp> ecompApps = null;
@@ -570,7 +574,7 @@ public class AppsController extends EPRestrictedBaseController {
 	 *            HTTP servlet response
 	 * @return UserRoles
 	 */
-	@RequestMapping(value = { "/portalApi/userProfile" }, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = { "/portalApi/userProfile" }, produces = "application/json")
 	public UserRoles getUserProfile(HttpServletRequest request, HttpServletResponse response) {
 		EPUser user = EPUserUtils.getUserSession(request);
 		UserRoles userAndRoles = null;
@@ -597,8 +601,7 @@ public class AppsController extends EPRestrictedBaseController {
 	 *            application ID
 	 * @return List<LocalRole>
 	 */
-	@RequestMapping(value = { "/portalApi/appRoles/{appId}" }, method = {
-			RequestMethod.GET }, produces = "application/json")
+	@GetMapping(value = { "/portalApi/appRoles/{appId}" }, produces = "application/json")
 	public List<LocalRole> getAppRoles(HttpServletRequest request, @PathVariable("appId") Long appId,
 			HttpServletResponse response) {
 		List<LocalRole> roleList = null;
@@ -627,8 +630,7 @@ public class AppsController extends EPRestrictedBaseController {
 	 * @param response
 	 * @return EPApp object
 	 */
-	@RequestMapping(value = { "/portalApi/singleAppInfo" }, method = {
-			RequestMethod.GET }, produces = "application/json")
+	@GetMapping(value = { "/portalApi/singleAppInfo" }, produces = "application/json")
 	public EPApp getSingleAppInfo(HttpServletRequest request, HttpServletResponse response) {
 		EPApp app = null;
 		EPUser user = EPUserUtils.getUserSession(request);
@@ -657,8 +659,7 @@ public class AppsController extends EPRestrictedBaseController {
 	 * @param response
 	 * @return EPApp object
 	 */
-	@RequestMapping(value = { "/portalApi/singleAppInfoById" }, method = {
-			RequestMethod.GET }, produces = "application/json")
+	@GetMapping(value = { "/portalApi/singleAppInfoById" }, produces = "application/json")
 	public EPApp getSingleAppInfoById(HttpServletRequest request, HttpServletResponse response) {
 		EPApp app = null;
 		EPUser user = EPUserUtils.getUserSession(request);
@@ -690,7 +691,7 @@ public class AppsController extends EPRestrictedBaseController {
 	 *            HTTP servlet response
 	 * @return List<OnboardingApp>
 	 */
-	@RequestMapping(value = { PORTAL_API_ONBOARDING_APPS }, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = { PORTAL_API_ONBOARDING_APPS }, produces = "application/json")
 	public List<OnboardingApp> getOnboardingApps(HttpServletRequest request, HttpServletResponse response) {
 		EPUser user = EPUserUtils.getUserSession(request);
 		List<OnboardingApp> onboardingApps = null;
@@ -728,7 +729,7 @@ public class AppsController extends EPRestrictedBaseController {
 	 * @return FieldsValidator
 	 * @throws Exception 
 	 */
-	@RequestMapping(value = { PORTAL_API_ONBOARDING_APPS }, method = RequestMethod.PUT, produces = "application/json")
+	@PutMapping(value = { PORTAL_API_ONBOARDING_APPS }, produces = "application/json")
 	public FieldsValidator putOnboardingApp(HttpServletRequest request,
 			@RequestBody OnboardingApp modifiedOnboardingApp, HttpServletResponse response) {
 		FieldsValidator fieldsValidator = null;
@@ -784,7 +785,7 @@ public class AppsController extends EPRestrictedBaseController {
 	 *            app to add
 	 * @return FieldsValidator
 	 */
-	@RequestMapping(value = { PORTAL_API_ONBOARDING_APPS }, method = RequestMethod.POST, produces = "application/json")
+	@PostMapping(value = { PORTAL_API_ONBOARDING_APPS }, produces = "application/json")
 	public FieldsValidator postOnboardingApp(HttpServletRequest request, @RequestBody OnboardingApp newOnboardingApp,
 			HttpServletResponse response) {
 		FieldsValidator fieldsValidator = null;
@@ -845,8 +846,7 @@ public class AppsController extends EPRestrictedBaseController {
 	 *            ID of app to delete
 	 * @return FieldsValidator
 	 */
-	@RequestMapping(value = { "/portalApi/onboardingApps/{appId}" }, method = {
-			RequestMethod.DELETE }, produces = "application/json")
+	@DeleteMapping(value = { "/portalApi/onboardingApps/{appId}" }, produces = "application/json")
 	public FieldsValidator deleteOnboardingApp(HttpServletRequest request, @PathVariable("appId") Long appId,
 			HttpServletResponse response) {
 		FieldsValidator fieldsValidator = null;
