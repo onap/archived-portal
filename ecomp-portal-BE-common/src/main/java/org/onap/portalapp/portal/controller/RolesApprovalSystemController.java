@@ -219,9 +219,9 @@ public class RolesApprovalSystemController implements BasicAuthenticationControl
 	 *             If any field is missing.
 	 */
 	private void validateExtSystemUser(ExternalSystemUser extSysUser, boolean rolesRequired) throws Exception {
-		if (extSysUser.getLoginId() == null || extSysUser.getLoginId() == "")
+		if (extSysUser.getLoginId() == null || extSysUser.getLoginId().equals(""))
 			throw new Exception("Request has no login ID");
-		if (extSysUser.getApplicationName() == null || extSysUser.getApplicationName() == "")
+		if (extSysUser.getApplicationName() == null || extSysUser.getApplicationName().equals(""))
 			throw new Exception("Request has no application name");
 		if (extSysUser.getMyloginrequestId() == null)
 			throw new Exception("Request has no request ID");
