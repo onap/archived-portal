@@ -84,6 +84,10 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -106,7 +110,7 @@ public class AuxApiRequestMapperController implements ApplicationContextAware, B
 	private ManifestService manifestService;
 
 	@ApiOperation(value = "Gets user roles for an application which is upgraded to newer version.", response = String.class, responseContainer = "List")
-	@RequestMapping(value = { "/v3/user/{loginId}" }, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = { "/v3/user/{loginId}" }, produces = "application/json")
 	public String getUser(HttpServletRequest request, HttpServletResponse response,
 			@PathVariable("loginId") String loginId) throws Exception {
 		if (loginId!=null){
@@ -128,7 +132,7 @@ public class AuxApiRequestMapperController implements ApplicationContextAware, B
 
 	@SuppressWarnings("unchecked")
 	@ApiOperation(value = "Gets roles for an application which is upgraded to newer version.", response = CentralV2Role.class, responseContainer = "Json")
-	@RequestMapping(value = { "/v3/roles" }, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = { "/v3/roles" }, produces = "application/json")
 	public List<CentralV2Role> getRoles(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		Map<String, Object> res = getMethod(request, response);
 		request.getMethod();
@@ -143,7 +147,7 @@ public class AuxApiRequestMapperController implements ApplicationContextAware, B
 
 	@SuppressWarnings("unchecked")
 	@ApiOperation(value = "Saves role for an application.", response = PortalRestResponse.class, responseContainer = "Json")
-	@RequestMapping(value = { "/v3/role" }, method = RequestMethod.POST, produces = "application/json")
+	@PostMapping(value = { "/v3/role" }, produces = "application/json")
 	public PortalRestResponse<String> saveRole(HttpServletRequest request, HttpServletResponse response,
 			@RequestBody Role role) throws Exception {
 		Map<String, Object> res = getMethod(request, response);
@@ -158,7 +162,7 @@ public class AuxApiRequestMapperController implements ApplicationContextAware, B
 	}
 
 	@ApiOperation(value = "Gets v2 role information for an application which is upgraded to newer version.", response = CentralV2Role.class, responseContainer = "Json")
-	@RequestMapping(value = { "/v3/role/{role_id}" }, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = { "/v3/role/{role_id}" }, produces = "application/json")
 	public CentralV2Role getRoleInfo(HttpServletRequest request, HttpServletResponse response,
 			@PathVariable("role_id") Long roleId) throws Exception {
 		Map<String, Object> res = getMethod(request, response);
@@ -174,7 +178,7 @@ public class AuxApiRequestMapperController implements ApplicationContextAware, B
 
 	@SuppressWarnings("unchecked")
 	@ApiOperation(value = "Gets all active Users of application", response = String.class, responseContainer = "Json")
-	@RequestMapping(value = { "/v3/users" }, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = { "/v3/users" }, produces = "application/json")
 	public List<EcompUser> getUsersOfApplication(HttpServletRequest request, HttpServletResponse response)
 			throws Exception {
 		Map<String, Object> res = getMethod(request, response);
@@ -189,7 +193,7 @@ public class AuxApiRequestMapperController implements ApplicationContextAware, B
 
 	@SuppressWarnings("unchecked")
 	@ApiOperation(value = "Gets all role functions for an application which is upgraded to newer version.", response = CentralV2RoleFunction.class, responseContainer = "Json")
-	@RequestMapping(value = { "/v3/functions" }, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = { "/v3/functions" }, produces = "application/json")
 	public List<CentralV2RoleFunction> getRoleFunctionsList(HttpServletRequest request, HttpServletResponse response)
 			throws Exception {
 		Map<String, Object> res = getMethod(request, response);
@@ -203,7 +207,7 @@ public class AuxApiRequestMapperController implements ApplicationContextAware, B
 	}
 
 	@ApiOperation(value = "Gets role information for an application provided by function code.", response = CentralV2RoleFunction.class, responseContainer = "Json")
-	@RequestMapping(value = { "/v3/function/{code}" }, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = { "/v3/function/{code}" }, produces = "application/json")
 	public CentralV2RoleFunction getRoleFunction(HttpServletRequest request, HttpServletResponse response,
 			@PathVariable("code") String code) throws Exception {
 		if (code!=null){
@@ -224,7 +228,7 @@ public class AuxApiRequestMapperController implements ApplicationContextAware, B
 
 	@SuppressWarnings("unchecked")
 	@ApiOperation(value = "Saves role function for an application.", response = PortalRestResponse.class, responseContainer = "Json")
-	@RequestMapping(value = { "/v3/roleFunction" }, method = RequestMethod.POST, produces = "application/json")
+	@PostMapping(value = { "/v3/roleFunction" }, produces = "application/json")
 	public PortalRestResponse<String> saveRoleFunction(HttpServletRequest request, HttpServletResponse response,
 			@RequestBody String roleFunc) throws Exception {
 		if (roleFunc!=null){
@@ -249,7 +253,7 @@ public class AuxApiRequestMapperController implements ApplicationContextAware, B
 
 	@SuppressWarnings("unchecked")
 	@ApiOperation(value = "Deletes role function for an application.", response = PortalRestResponse.class, responseContainer = "Json")
-	@RequestMapping(value = { "/v3/roleFunction/{code}" }, method = RequestMethod.DELETE, produces = "application/json")
+	@DeleteMapping(value = { "/v3/roleFunction/{code}" }, produces = "application/json")
 	public PortalRestResponse<String> deleteRoleFunction(HttpServletRequest request, HttpServletResponse response,
 			@PathVariable("code") String code) throws Exception {
 		PortalRestResponse<String> result = null;
@@ -272,7 +276,7 @@ public class AuxApiRequestMapperController implements ApplicationContextAware, B
 
 	@SuppressWarnings("unchecked")
 	@ApiOperation(value = "deletes  roles for an application.", response = PortalRestResponse.class, responseContainer = "Json")
-	@RequestMapping(value = { "/v3/deleteRole/{roleId}" }, method = RequestMethod.DELETE, produces = "application/json")
+	@DeleteMapping(value = { "/v3/deleteRole/{roleId}" }, produces = "application/json")
 	public PortalRestResponse<String> deleteRole(HttpServletRequest request, HttpServletResponse response,
 			@PathVariable("roleId") Long roleId) throws Exception {
 		PortalRestResponse<String> result = null;
@@ -288,7 +292,7 @@ public class AuxApiRequestMapperController implements ApplicationContextAware, B
 
 	@SuppressWarnings("unchecked")
 	@ApiOperation(value = "Gets active roles for an application.", response = CentralV2Role.class, responseContainer = "Json")
-	@RequestMapping(value = { "/v3/activeRoles" }, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = { "/v3/activeRoles" }, produces = "application/json")
 	public List<CentralV2Role> getActiveRoles(HttpServletRequest request, HttpServletResponse response)
 			throws Exception {
 		List<CentralV2Role> cenRole = null;
@@ -302,7 +306,7 @@ public class AuxApiRequestMapperController implements ApplicationContextAware, B
 	}
 
 	@ApiOperation(value = "Gets ecompUser of an application.", response = CentralUser.class, responseContainer = "List")
-	@RequestMapping(value = { "/v4/user/{loginId}" }, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = { "/v4/user/{loginId}" }, produces = "application/json")
 	public String getEcompUser(HttpServletRequest request, HttpServletResponse response,
 			@PathVariable("loginId") String loginId) throws Exception {
 		Map<String, Object> res = getMethod(request, response);
@@ -325,7 +329,7 @@ public class AuxApiRequestMapperController implements ApplicationContextAware, B
 
 	@SuppressWarnings("unchecked")
 	@ApiOperation(value = "Gets user ecomp role for an application.", response = CentralUser.class, responseContainer = "List")
-	@RequestMapping(value = { "/v4/roles" }, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = { "/v4/roles" }, produces = "application/json")
 	public List<EcompRole> getEcompRolesOfApplication(HttpServletRequest request, HttpServletResponse response)
 			throws Exception {
 		Map<String, Object> res = getMethod(request, response);
@@ -339,8 +343,8 @@ public class AuxApiRequestMapperController implements ApplicationContextAware, B
 	}
 
 	@ApiOperation(value = "Gets session slot-check interval, a duration in milliseconds.", response = Integer.class)
-	@RequestMapping(value = {
-			"/v3/getSessionSlotCheckInterval" }, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = {
+			"/v3/getSessionSlotCheckInterval" }, produces = "application/json")
 	public Integer getSessionSlotCheckInterval(HttpServletRequest request, HttpServletResponse response)
 			throws Exception {
 		Map<String, Object> res = getMethod(request, response);
@@ -376,7 +380,7 @@ public class AuxApiRequestMapperController implements ApplicationContextAware, B
 	}
 
 	@ApiOperation(value = "Gets javascript with functions that support gathering and reporting web analytics.", response = String.class)
-	@RequestMapping(value = { "/v3/analytics" }, method = RequestMethod.GET, produces = "application/javascript")
+	@GetMapping(value = { "/v3/analytics" }, produces = "application/javascript")
 	public String getAnalyticsScript(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		Map<String, Object> res = getMethod(request, response);
 		String ans = null;
@@ -388,7 +392,7 @@ public class AuxApiRequestMapperController implements ApplicationContextAware, B
 		return ans;
 	}
 
-	@RequestMapping(value = { "/v3/storeAnalytics" }, method = RequestMethod.POST, produces = "application/json")
+	@PostMapping(value = { "/v3/storeAnalytics" }, produces = "application/json")
 	@ResponseBody
 	@ApiOperation(value = "Accepts data from partner applications with web analytics data.", response = PortalAPIResponse.class)
 	public PortalAPIResponse storeAnalyticsScript(HttpServletRequest request, HttpServletResponse response,
@@ -412,8 +416,8 @@ public class AuxApiRequestMapperController implements ApplicationContextAware, B
 
 	@SuppressWarnings("unchecked")
 	@ApiOperation(value = "Bulk upload functions for an application.", response = PortalRestResponse.class, responseContainer = "Json")
-	@RequestMapping(value = {
-			"/v3/upload/portal/functions" }, method = RequestMethod.POST, produces = "application/json")
+	@PostMapping(value = {
+			"/v3/upload/portal/functions" }, produces = "application/json")
 	public PortalRestResponse<String> bulkUploadFunctions(HttpServletRequest request, HttpServletResponse response)
 			throws Exception {
 		Optional<PortalRestResponse<String>> result = null;
@@ -433,7 +437,7 @@ public class AuxApiRequestMapperController implements ApplicationContextAware, B
 
 	@SuppressWarnings("unchecked")
 	@ApiOperation(value = "Bulk upload roles for an application.", response = PortalRestResponse.class, responseContainer = "Json")
-	@RequestMapping(value = { "/v3/upload/portal/roles" }, method = RequestMethod.POST, produces = "application/json")
+	@PostMapping(value = { "/v3/upload/portal/roles" }, produces = "application/json")
 	public PortalRestResponse<String> bulkUploadRoles(HttpServletRequest request, HttpServletResponse response)
 			throws Exception {
 		Optional<PortalRestResponse<String>> result;
@@ -453,8 +457,8 @@ public class AuxApiRequestMapperController implements ApplicationContextAware, B
 
 	@SuppressWarnings("unchecked")
 	@ApiOperation(value = "Bulk upload role functions for an application.", response = PortalRestResponse.class, responseContainer = "Json")
-	@RequestMapping(value = {
-			"/v3/upload/portal/roleFunctions" }, method = RequestMethod.POST, produces = "application/json")
+	@PostMapping(value = {
+			"/v3/upload/portal/roleFunctions" }, produces = "application/json")
 	public PortalRestResponse<String> bulkUploadRoleFunctions(HttpServletRequest request, HttpServletResponse response)
 			throws Exception {
 		Optional<PortalRestResponse<String>> result;
@@ -474,8 +478,8 @@ public class AuxApiRequestMapperController implements ApplicationContextAware, B
 
 	@SuppressWarnings("unchecked")
 	@ApiOperation(value = "Bulk upload user roles for an application.", response = PortalRestResponse.class, responseContainer = "Json")
-	@RequestMapping(value = {
-			"/v3/upload/portal/userRoles" }, method = RequestMethod.POST, produces = "application/json")
+	@PostMapping(value = {
+			"/v3/upload/portal/userRoles" }, produces = "application/json")
 	public PortalRestResponse<String> bulkUploadUserRoles(HttpServletRequest request, HttpServletResponse response)
 			throws Exception {
 		Optional<PortalRestResponse<String>> result;
@@ -496,8 +500,8 @@ public class AuxApiRequestMapperController implements ApplicationContextAware, B
 
 	@SuppressWarnings("unchecked")
 	@ApiOperation(value = "Bulk upload users for renamed role of an application.", response = PortalRestResponse.class, responseContainer = "Json")
-	@RequestMapping(value = {
-			"/v3/upload/portal/userRole/{roleId}" }, method = RequestMethod.POST, produces = "application/json")
+	@PostMapping(value = {
+			"/v3/upload/portal/userRole/{roleId}" }, produces = "application/json")
 	public PortalRestResponse<String> bulkUploadUsersSingleRole(HttpServletRequest request,
 			HttpServletResponse response, @PathVariable Long roleId) throws Exception {
 		Optional<PortalRestResponse<String>> result = null;
@@ -517,8 +521,8 @@ public class AuxApiRequestMapperController implements ApplicationContextAware, B
 
 	@SuppressWarnings("unchecked")
 	@ApiOperation(value = "Bulk upload functions for an partner application.", response = PortalRestResponse.class, responseContainer = "Json")
-	@RequestMapping(value = {
-			"/v3/upload/partner/functions" }, method = RequestMethod.POST, produces = "application/json")
+	@PostMapping(value = {
+			"/v3/upload/partner/functions" }, produces = "application/json")
 	public PortalRestResponse<String> bulkUploadPartnerFunctions(HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
 		Optional<PortalRestResponse<String>> result = null;
@@ -539,7 +543,7 @@ public class AuxApiRequestMapperController implements ApplicationContextAware, B
 	// not using
 	@SuppressWarnings("unchecked")
 	@ApiOperation(value = "Bulk upload roles for an partner application.", response = PortalRestResponse.class, responseContainer = "Json")
-	@RequestMapping(value = { "/v3/upload/partner/roles" }, method = RequestMethod.POST, produces = "application/json")
+	@PostMapping(value = { "/v3/upload/partner/roles" }, produces = "application/json")
 	public PortalRestResponse<String> bulkUploadPartnerRoles(HttpServletRequest request, HttpServletResponse response,
 			@RequestBody List<Role> upload) throws Exception {
 		Optional<PortalRestResponse<String>> result = null;
@@ -559,8 +563,8 @@ public class AuxApiRequestMapperController implements ApplicationContextAware, B
 
 	@SuppressWarnings("unchecked")
 	@ApiOperation(value = "Bulk upload role functions for an partner application.", response = PortalRestResponse.class, responseContainer = "Json")
-	@RequestMapping(value = {
-			"/v3/upload/partner/roleFunctions" }, method = RequestMethod.POST, produces = "application/json")
+	@PostMapping(value = {
+			"/v3/upload/partner/roleFunctions" }, produces = "application/json")
 	public PortalRestResponse<String> bulkUploadPartnerRoleFunctions(HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
 		Optional<PortalRestResponse<String>> result = null;
@@ -580,7 +584,7 @@ public class AuxApiRequestMapperController implements ApplicationContextAware, B
 
 	@SuppressWarnings("unchecked")
 	@ApiOperation(value = "Gets all functions along with global functions", response = List.class, responseContainer = "Json")
-	@RequestMapping(value = { "/v3/menuFunctions" }, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = { "/v3/menuFunctions" }, produces = "application/json")
 	public List<String> getMenuFunctions(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		List<String> functionsList = null;
 		Map<String, Object> res = getMethod(request, response);
@@ -795,7 +799,7 @@ public class AuxApiRequestMapperController implements ApplicationContextAware, B
 
 	@SuppressWarnings("unchecked")
 	@ApiOperation(value = "Creates an application user with the specified roles.", response = PortalRestResponse.class)
-	@RequestMapping(value = { "/v3/userProfile" }, method = RequestMethod.POST, produces = "application/json")
+	@PostMapping(value = { "/v3/userProfile" }, produces = "application/json")
 	public PortalRestResponse<String> postUserProfile(HttpServletRequest request,
 			@RequestBody ExternalSystemUser extSysUser, HttpServletResponse response) {
 
@@ -817,7 +821,7 @@ public class AuxApiRequestMapperController implements ApplicationContextAware, B
 
 	@SuppressWarnings("unchecked")
 	@ApiOperation(value = "Updates an application user to have only the specified roles.", response = PortalRestResponse.class)
-	@RequestMapping(value = { "/v3/userProfile" }, method = RequestMethod.PUT, produces = "application/json")
+	@PutMapping(value = { "/v3/userProfile" }, produces = "application/json")
 	public PortalRestResponse<String> putUserProfile(HttpServletRequest request,
 			@RequestBody ExternalSystemUser extSysUser, HttpServletResponse response) {
 
@@ -839,7 +843,7 @@ public class AuxApiRequestMapperController implements ApplicationContextAware, B
 
 	@SuppressWarnings("unchecked")
 	@ApiOperation(value = "Processes a request to delete one or more application roles for one	specified user who has roles.", response = PortalRestResponse.class)
-	@RequestMapping(value = { "/v3/userProfile" }, method = RequestMethod.DELETE, produces = "application/json")
+	@DeleteMapping(value = { "/v3/userProfile" }, produces = "application/json")
 	public PortalRestResponse<String> deleteUserProfile(HttpServletRequest request,
 			@RequestBody ExternalSystemUser extSysUser, HttpServletResponse response) {
 
@@ -884,7 +888,7 @@ public class AuxApiRequestMapperController implements ApplicationContextAware, B
 
 	@SuppressWarnings("unchecked")
 	@ApiOperation(value = "Creates a new user as a Portal administrator.", response = PortalRestResponse.class)
-	@RequestMapping(value = "/v3/portalAdmin", method = RequestMethod.POST, produces = "application/json")
+	@PostMapping(value = "/v3/portalAdmin", produces = "application/json")
 	@ResponseBody
 	public PortalRestResponse<String> postPortalAdmin(HttpServletRequest request, HttpServletResponse response,
 			@RequestBody EPUser epUser) {
@@ -906,7 +910,7 @@ public class AuxApiRequestMapperController implements ApplicationContextAware, B
 	}
 
 	@ApiOperation(value = "Gets the specified application that is on-boarded in Portal.", response = OnboardingApp.class)
-	@RequestMapping(value = { "/v3/onboardApp/{appId}" }, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = { "/v3/onboardApp/{appId}" }, produces = "application/json")
 	@ResponseBody
 	public OnboardingApp getOnboardAppExternal(HttpServletRequest request, HttpServletResponse response,
 			@PathVariable("appId") Long appId) {
@@ -922,7 +926,7 @@ public class AuxApiRequestMapperController implements ApplicationContextAware, B
 
 	@SuppressWarnings("unchecked")
 	@ApiOperation(value = "Adds a new application to Portal.", response = PortalRestResponse.class)
-	@RequestMapping(value = { "/v3/onboardApp" }, method = RequestMethod.POST, produces = "application/json")
+	@PostMapping(value = { "/v3/onboardApp" }, produces = "application/json")
 	@ResponseBody
 	public PortalRestResponse<String> postOnboardAppExternal(HttpServletRequest request, HttpServletResponse response,
 			@RequestBody OnboardingApp newOnboardApp) {
@@ -946,7 +950,7 @@ public class AuxApiRequestMapperController implements ApplicationContextAware, B
 
 	@SuppressWarnings("unchecked")
 	@ApiOperation(value = "Updates information about an on-boarded application in Portal.", response = PortalRestResponse.class)
-	@RequestMapping(value = { "/v3/onboardApp/{appId}" }, method = RequestMethod.PUT, produces = "application/json")
+	@PutMapping(value = { "/v3/onboardApp/{appId}" }, produces = "application/json")
 	@ResponseBody
 	public PortalRestResponse<String> putOnboardAppExternal(HttpServletRequest request, HttpServletResponse response,
 			@PathVariable("appId") Long appId, @RequestBody OnboardingApp oldOnboardApp) {
@@ -968,7 +972,7 @@ public class AuxApiRequestMapperController implements ApplicationContextAware, B
 	}
 
 	@ApiOperation(value = "Creates a Portal user notification for roles identified in the content from an external application.", response = PortalAPIResponse.class)
-	@RequestMapping(value = { "/v3/publishNotification" }, method = RequestMethod.POST, produces = "application/json")
+	@PostMapping(value = { "/v3/publishNotification" }, produces = "application/json")
 	@ResponseBody
 	public PortalAPIResponse publishNotification(HttpServletRequest request,
 			@RequestBody EpNotificationItem notificationItem, HttpServletResponse response) {
@@ -989,7 +993,7 @@ public class AuxApiRequestMapperController implements ApplicationContextAware, B
 
 	@SuppressWarnings("unchecked")
 	@ApiOperation(value = "Gets favorite items within the functional menu for the current user.", response = FavoritesFunctionalMenuItemJson.class, responseContainer = "List")
-	@RequestMapping(value = { "/v3/getFavorites" }, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = { "/v3/getFavorites" }, produces = "application/json")
 	public List<FavoritesFunctionalMenuItemJson> getFavoritesForUser(HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
 		List<FavoritesFunctionalMenuItemJson> favorites = null;
@@ -1004,8 +1008,8 @@ public class AuxApiRequestMapperController implements ApplicationContextAware, B
 
 	@SuppressWarnings("unchecked")
 	@ApiOperation(value = "Gets functional menu items appropriate for the current user.", response = FunctionalMenuItem.class, responseContainer = "List")
-	@RequestMapping(value = {
-			"/v3/functionalMenuItemsForUser" }, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = {
+			"/v3/functionalMenuItemsForUser" }, produces = "application/json")
 	public List<FunctionalMenuItem> getFunctionalMenuItemsForUser(HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
 		List<FunctionalMenuItem> fnMenuItems = null;
@@ -1020,7 +1024,7 @@ public class AuxApiRequestMapperController implements ApplicationContextAware, B
 
 	
 	@ApiOperation(value = "Gets MechId roles", response = String.class, responseContainer = "List")
-	@RequestMapping(value = { "/v3/systemUser" }, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = { "/v3/systemUser" }, produces = "application/json")
 	public List<AAFPermission> getSystemUserPerms(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		List<AAFPermission> permsList = null;
 		Map<String, Object> res = getMethod(request, response);
@@ -1033,7 +1037,7 @@ public class AuxApiRequestMapperController implements ApplicationContextAware, B
 	}
 	
 	@ApiOperation(value = "Update role description in external auth system for an application.", response = PortalRestResponse.class, responseContainer = "Json")
-	@RequestMapping(value = { "/v3/update/app/roleDescription" }, method = RequestMethod.PUT, produces = "application/json")
+	@PutMapping(value = { "/v3/update/app/roleDescription" }, produces = "application/json")
 	public  PortalRestResponse<String> updateAppRoleDescription(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		PortalRestResponse<String> result = null;
 		Map<String, Object> res = getMethod(request, response);
