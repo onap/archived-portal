@@ -39,11 +39,14 @@ package org.onap.portalapp.portal.exceptions;
 
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
+
 public class NonCentralizedAppExceptionTest {
 
 	@Test
     public void TestException2() {
         String s1 = "Value1";
         NonCentralizedAppException nca = new NonCentralizedAppException(s1);
+        assertEquals(nca.toString(),"Value1 is not Centralized Application");
 	}
 }
