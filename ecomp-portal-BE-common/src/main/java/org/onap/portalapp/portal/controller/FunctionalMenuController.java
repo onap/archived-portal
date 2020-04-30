@@ -575,10 +575,12 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
             String lastNameStr = null;
             String emailStr = null;
             String lastLogin = null;
+            boolean isSystemUser = false;
 			EPUser user = EPUserUtils.getUserSession(request);
 			firstNameStr = user.getFirstName();
 			lastNameStr = user.getLastName();
 			orgUserIdStr = user.getOrgUserId();
+			isSystemUser = user.isSystemUser();
 			emailStr = user.getEmail();
 			if (emailStr == null || emailStr.equals("")) {
 				EPUser userResult = searchService.searchUserByUserId(orgUserIdStr);
@@ -622,6 +624,7 @@ public class FunctionalMenuController extends EPRestrictedBaseController {
 			map.put("userId",
 					orgUserIdStr != null ? orgUserIdStr : (orgUserIdSC != null ? orgUserIdSC.getCvalue() : null));
 			map.put("last_login", lastLogin);
+			map.put("isSystemUser", String.valueOf(isSystemUser));
 			JSONObject j = new JSONObject(map);
 			fnMenuStaticResponse = j.toString();
 			// Be chatty in the log

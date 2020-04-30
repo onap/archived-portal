@@ -59,6 +59,7 @@ export class HeaderComponent implements OnInit {
     api = environment.api;
     brandName: string;
     brandLogoImagePath: string;
+    isSystemUser: boolean = false;
 
     constructor(public router: Router, private userProfileService: UserProfileService, private menusService: MenusService, private cookieService: CookieService) {
 
@@ -90,7 +91,7 @@ export class HeaderComponent implements OnInit {
 
     getUserInformation() {
         this.userProfileService.getFunctionalMenuStaticInfo().toPromise().then((res: any) => {
-            if (res == null || res.firstName == null || res.firstName == '' || res.lastName == null || res.lastName == '') {
+            if (res === null || res.firstName === null || res.firstName === '' || res.lastName === null || res.lastName === '') {
                 // $log.info('HeaderCtrl: failed to get all required data, trying user profile');
                 this.userProfileService.getUserProfile().toPromise().then((profile: any) => {
                     this.firstName = profile.firstName;
@@ -104,6 +105,9 @@ export class HeaderComponent implements OnInit {
                 this.loginSnippetEmail = res.email;
                 this.loginSnippetUserid = res.userId;
                 this.lastLogin = Date.parse(res.last_login);
+            }
+            if(res != null && res.isSystemUser === 'true'){
+                this.isSystemUser = true;
             }
             sessionStorage.userId = res.userId;
             this.menusService.getFunctionalMenuForUser().toPromise().then((jsonHeaderMenu: any) => {

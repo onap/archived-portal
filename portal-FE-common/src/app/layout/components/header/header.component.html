@@ -76,7 +76,7 @@
 <li class="dropdown-item" style="font-weight: lighter">
     {{firstName}}, {{lastName}}
 </li>
-<li class="dropdown-item">
+<li class="dropdown-item" *ngIf=(!isSystemUser)>
     <span class="dropdown-item-name"> {{ 'Email'}}: </span>
     <div>
         <span class="dropdown-item-value">
@@ -85,7 +85,8 @@
     </div>
 </li>
 <li class="dropdown-item">
-    <span class="dropdown-item-name"> {{ 'User Id' }}: </span>
+    <span class="dropdown-item-name" *ngIf=(!isSystemUser)> {{ 'User Id' }}: </span>
+    <span class="dropdown-item-name" *ngIf=(isSystemUser)> {{ 'System Id' }}: </span>
     <div>
         <span class="dropdown-item-value">
             {{loginSnippetUserid}}
