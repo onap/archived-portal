@@ -38,7 +38,7 @@
  
 .usb-item {
   background: #fff;
-  position: fixed;
+  position: relative;
 }
 
 .usb-item h3 {
@@ -79,13 +79,13 @@
 }
 
 .usb-item-vertical {
-  margin-top: 105px;
+  margin-top: 11px;
   text-align: center;
   width: 75px;
   height: 79%;
   top: 0;
   z-index: 1000;
-  box-shadow: 0 4px 5px rgba(0, 0, 0, 0.2);
+  /*box-shadow: 0 4px 5px rgba(0, 0, 0, 0.2);*/
 }
 
 .usb-item-vertical a {
