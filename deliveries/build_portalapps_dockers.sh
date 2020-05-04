@@ -76,7 +76,7 @@ else
         if [ "$SDK_DOCKERFILE" != "skip" ] && [ "SDK_APP_DIR" != "skip" ]; then
 	  echo "Build Portal-SDK app"
 	  cd $BASEDIR/$SDK_APP_DIR
-	  ${MVN} ${MVN_EXTRA_SDK} clean package
+	  ${MVN} ${MVN_EXTRA_SDK} clean package -Dskiptests=true
 	fi
 
 	echo "Java build complete."
