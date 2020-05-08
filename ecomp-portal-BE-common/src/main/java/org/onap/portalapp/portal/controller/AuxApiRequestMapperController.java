@@ -358,7 +358,7 @@ public class AuxApiRequestMapperController implements ApplicationContextAware, B
 	}
 
 	@ApiOperation(value = "Extends session timeout values for all on-boarded applications.", response = Boolean.class)
-	@RequestMapping(value = { "/v3/extendSessionTimeOuts" }, method = RequestMethod.POST)
+	@PostMapping(value = { "/v3/extendSessionTimeOuts" })
 	public Boolean extendSessionTimeOuts(HttpServletRequest request, HttpServletResponse response,
 			@RequestParam String sessionMap) throws Exception {
 
@@ -865,7 +865,7 @@ public class AuxApiRequestMapperController implements ApplicationContextAware, B
 
 	@SuppressWarnings("unchecked")
 	@ApiOperation(value = "Accepts messages from external ticketing systems and creates notifications for Portal users.", response = PortalRestResponse.class)
-	@RequestMapping(value = { "/v3/ticketevent" }, method = RequestMethod.POST)
+	@PostMapping(value = { "/v3/ticketevent" })
 	public PortalRestResponse<String> handleRequest(HttpServletRequest request, HttpServletResponse response,
 			@RequestBody String ticketEventJson) throws Exception {
 
