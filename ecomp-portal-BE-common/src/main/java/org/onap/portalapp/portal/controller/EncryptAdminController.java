@@ -59,6 +59,7 @@ import org.onap.portalsdk.core.service.DataAccessService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -75,7 +76,7 @@ public class EncryptAdminController implements BasicAuthenticationController {
 
 	EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(EncryptAdminController.class);
 
-	@RequestMapping(value = { "/executeEncryptQuery" }, method = RequestMethod.POST)
+	@PostMapping(value = { "/executeEncryptQuery" })
 	public Map<Long, String> executeEncrypt(HttpServletRequest request, HttpServletResponse response)
 			throws CipherUtilException {
 
