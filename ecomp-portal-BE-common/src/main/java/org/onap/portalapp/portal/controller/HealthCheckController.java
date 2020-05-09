@@ -46,6 +46,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.MDC;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.onap.music.main.MusicUtil;
@@ -118,7 +119,7 @@ public class HealthCheckController extends EPUnRestrictedBaseController {
 	private final String statusDown = "DOWN";
 	private final String statusOk = "OK";
 
-	@RequestMapping(value = { "/portalApi/healthCheck" }, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = { "/portalApi/healthCheck" } produces = "application/json")
 	public HealthStatus healthCheck(HttpServletRequest request, HttpServletResponse response) {
 		HealthStatus healthStatus = new HealthStatus(500, "");
 
@@ -229,8 +230,8 @@ public class HealthCheckController extends EPUnRestrictedBaseController {
 		return healthStatus;
 	}
 
-	@RequestMapping(value = {
-			"/portalApi/healthCheckSuspend" }, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = {
+			"/portalApi/healthCheckSuspend" } produces = "application/json")
 	public HealthStatus healthCheckSuspend(HttpServletRequest request, HttpServletResponse response) {
 		HealthStatus healthStatus = new HealthStatus(500, "Suspended for manual failover mechanism");
 
@@ -243,8 +244,8 @@ public class HealthCheckController extends EPUnRestrictedBaseController {
 		return healthStatus;
 	}
 
-	@RequestMapping(value = {
-			"/portalApi/healthCheckResume" }, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = {
+			"/portalApi/healthCheckResume" } produces = "application/json")
 	public HealthStatus healthCheckResume(HttpServletRequest request, HttpServletResponse response) {
 		HealthStatus healthStatus = new HealthStatus(500, "Resumed from manual failover mechanism");
 
@@ -255,7 +256,7 @@ public class HealthCheckController extends EPUnRestrictedBaseController {
 		return healthStatus;
 	}
 
-	@RequestMapping(value = { "/portalApi/ping" }, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = { "/portalApi/ping" } produces = "application/json")
 	public HealthStatus ping(HttpServletRequest request, HttpServletResponse response) {
 		HealthStatus healthStatus = new HealthStatus(200, "OK");
 		EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/ping", "GET result =", response.getStatus());
