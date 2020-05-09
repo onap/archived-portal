@@ -47,6 +47,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -91,7 +92,7 @@ public class ManifestController extends RestrictedBaseController {
 	 * { "error": "message" }
 	 *         </pre>
 	 */
-	@RequestMapping(value = { "/portalApi/manifest" }, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = { "/portalApi/manifest" }, produces = "application/json")
 	@ResponseBody
 	public Map<String, Object> getManifest(HttpServletRequest request) {
 		Map<String, Object> response = new HashMap<String, Object>();
