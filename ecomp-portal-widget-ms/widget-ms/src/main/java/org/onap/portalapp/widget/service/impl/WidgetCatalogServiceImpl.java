@@ -191,7 +191,7 @@ public class WidgetCatalogServiceImpl implements WidgetCatalogService {
 			Transaction tx = session.beginTransaction();		
 			session.save(newWidgetCatalog);
 			tx.commit();
-			session.flush();
+			//session.flush();
 			session.close();
 			updateAppId(newWidgetCatalog.getId(), newWidgetCatalog.getWidgetRoles());
 		}
@@ -217,7 +217,7 @@ public class WidgetCatalogServiceImpl implements WidgetCatalogService {
 			Transaction tx = session.beginTransaction();
 			session.update(newWidgetCatalog);
 			tx.commit();
-			session.flush();
+			//session.flush();
 			session.close();
 			updateAppId(newWidgetCatalog.getId(), newWidgetCatalog.getWidgetRoles());
 		}catch(Exception e){
@@ -268,7 +268,7 @@ public class WidgetCatalogServiceImpl implements WidgetCatalogService {
 		
 		List<MicroserviceData> widgets = criteria.list();
 		logger.debug("WidgetCatalogServiceImpl.getWidgetIdByName: result={}", widgets);
-		session.flush();
+//		session.flush();
 		session.close();
 		
 		return (widgets.size() > 0) ? true : false;

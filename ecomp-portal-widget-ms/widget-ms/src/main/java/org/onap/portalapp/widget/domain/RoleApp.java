@@ -33,7 +33,7 @@ public class RoleApp implements Serializable{
 
 	@Id
 	@Column(name = "ROLE_ID")
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Digits(integer = 11, fraction = 0)
 	private Long roleId;
 

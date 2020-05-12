@@ -134,7 +134,7 @@ public class WidgetsCatalogControllerTest {
 		List<WidgetCatalog> list = new ArrayList<WidgetCatalog>();
 		WidgetCatalog widget = new WidgetCatalog();
 		list.add(widget);
-		Mockito.when(widgetService.getWidgetCatalog()).thenReturn(list);
+		Mockito.lenient().when(widgetService.getWidgetCatalog()).thenReturn(list);
 		
 		mockMvc.perform(get("/microservices/widgetCatalog/"))
 		.andExpect(status().isBadRequest());
@@ -148,7 +148,7 @@ public class WidgetsCatalogControllerTest {
 		widget.setId(1);
 		widget.setName("junit");
 		list.add(widget);
-		Mockito.when(widgetService.getUserWidgetCatalog("test")).thenReturn(list);
+		Mockito.lenient().when(widgetService.getUserWidgetCatalog("test")).thenReturn(list);
 		
 		String security_user = "user";
 		String security_pass = "password";
@@ -170,7 +170,7 @@ public class WidgetsCatalogControllerTest {
 		widget.setId(1);
 		widget.setName("junit");
 		list.add(widget);
-		Mockito.when(widgetService.getUserWidgetCatalog("test")).thenReturn(list);
+		Mockito.lenient().when(widgetService.getUserWidgetCatalog("test")).thenReturn(list);
 		
 		String security_user = "user";
 		String security_pass = "password";
@@ -190,7 +190,7 @@ public class WidgetsCatalogControllerTest {
 	@Test
 	public void saveWidgetCatalog_ValidAuthorization_NoError() throws Exception {	
 		ValidationRespond respond = new ValidationRespond(true, null);
-		Mockito.when(storageService.checkZipFile(any(MultipartFile.class))).thenReturn(respond);
+		Mockito.lenient().when(storageService.checkZipFile(any(MultipartFile.class))).thenReturn(respond);
 		
 		String security_user = "user";
 		String security_pass = "password";
@@ -211,7 +211,7 @@ public class WidgetsCatalogControllerTest {
 	@Test
 	public void saveWidgetCatalog_Authorization_Error() throws Exception {	
 		ValidationRespond respond = new ValidationRespond(true, null);
-		Mockito.when(storageService.checkZipFile(any(MultipartFile.class))).thenReturn(respond);
+		Mockito.lenient().when(storageService.checkZipFile(any(MultipartFile.class))).thenReturn(respond);
 		
 		String security_user = "user";
 		String security_pass = "password";
@@ -270,7 +270,7 @@ public class WidgetsCatalogControllerTest {
 	@Test
 	public void updateWidgetCatalogwithFiles_ValidAuthorization_NoError() throws Exception {
 		ValidationRespond respond = new ValidationRespond(true, null);
-		Mockito.when(storageService.checkZipFile(any(MultipartFile.class))).thenReturn(respond);
+		Mockito.lenient().when(storageService.checkZipFile(any(MultipartFile.class))).thenReturn(respond);
 		
 		String security_user = "user";
 		String security_pass = "password";
@@ -420,7 +420,7 @@ public class WidgetsCatalogControllerTest {
 		widget.setId(1);
 		widget.setName("junit");
 		list.add(widget);
-		Mockito.when(widgetService.getWidgetsByServiceId(serviceId)).thenReturn(list);
+		Mockito.lenient().when(widgetService.getWidgetsByServiceId(serviceId)).thenReturn(list);
 		
 		String security_user = "user";
 		String security_pass = "password";
@@ -462,7 +462,7 @@ public class WidgetsCatalogControllerTest {
 		String wrong_pass = "wrong";
 		Long widgetId = new Long(1);
 		byte[] bytes="Test".getBytes();
-		Mockito.when(storageService.getWidgetCatalogContent(widgetId)).thenReturn(bytes);	
+		Mockito.lenient().when(storageService.getWidgetCatalogContent(widgetId)).thenReturn(bytes);	
 			
 		ReflectionTestUtils.setField(controller, "security_user", security_user, String.class);
 		ReflectionTestUtils.setField(controller, "security_pass", security_pass, String.class);
