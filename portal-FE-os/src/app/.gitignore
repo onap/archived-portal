@@ -1,5 +1,6 @@
 /ng-material-module.ts
 /layout/
+!layout/components/search-users
 /modals/
 /shared/
 !shared/interceptors/
