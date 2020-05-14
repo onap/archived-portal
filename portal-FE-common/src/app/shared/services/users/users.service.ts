@@ -78,8 +78,7 @@ export class UsersService {
   
   addNewUser(newUserData){
     console.log("User service : ", newUserData);
-    return this.http.post(this.api.saveNewUser, newUserData).subscribe((response)=>{
-    });
+	return this.http.post(this.api.saveNewUser, newUserData);
   }
 
 }
