@@ -56,6 +56,7 @@ export class SearchUsersComponent implements OnInit {
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @Output() passBackSelectedUser: EventEmitter<any> = new EventEmitter();
+  @Output() userNotFoundFlag = new EventEmitter<boolean>();
   searchString: string;
   txtResults = 'result';
   searchUsersResults: any;
@@ -65,6 +66,8 @@ export class SearchUsersComponent implements OnInit {
   selectedUser: any;
   displayedColumns: string[] = ['firstName'];
   dataSourceMap = new MatTableDataSource(this.searchUsersResults);
+  submitted = false;
+  message = " No users found with your query. Please change your search and try again.";
 
   ngOnInit() {
     this.searchString = '';
@@ -77,6 +80,7 @@ export class SearchUsersComponent implements OnInit {
       this.passBackSelectedUser.emit(systemUser);
   }
 
+  noUserFlag: boolean = false;
   searchUsers() {
     if (!this.isSystemUser) {
       this.isLoading = true;
@@ -85,11 +89,10 @@ export class SearchUsersComponent implements OnInit {
       this.userService.searchUsers(this.searchString).subscribe((_data: PortalAdmin) => {
         this.searchUsersResults = _data;
         if (this.searchUsersResults == null || this.searchUsersResults.length == 0) {
-          const modelRef = this.ngModal.open(ConfirmationModalComponent)
-          modelRef.componentInstance.title = "Confirmation";
-          modelRef.componentInstance.message = " No users found with your query. Please change your search and try again."
+          this.noUserFlag = true;
           this.isLoading = false;
         } else {
+          this.noUserFlag = false;
           this.showUserTable = true;
           this.isLoading = false;
           this.dataSourceMap = new MatTableDataSource(this.searchUsersResults);
@@ -102,6 +105,11 @@ export class SearchUsersComponent implements OnInit {
   setSelectedUser(user: PortalAdmin) {
     this.selectedUser = user;
     this.passBackSelectedUser.emit(this.selectedUser);
+  }
+
+  addNewUser() {
+    console.log("Emit the value to parent");
+    this.userNotFoundFlag.emit(true);
   }
 
 }
