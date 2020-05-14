@@ -68,3 +68,6 @@
             *matRowDef="let row; columns: displayedColumns; let i = index;"></tr>
     </table>
 </div>
+<div class="search-user-container" *ngIf="noUserFlag">
+    <p>{{message}} Or <a href="javascript:void(0);" (click)="addNewUser()"><b>Click Here</b></a> to add <b>New User!</b></p>
+</div>
