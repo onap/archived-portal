@@ -54,7 +54,6 @@ import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.onap.portalapp.portal.service.AppsCacheService;
 import org.onap.portalapp.portal.service.AppsCacheServiceImple;
 import org.onap.portalapp.portal.transport.OnboardingApp;
-import org.onap.portalapp.portal.utils.EPCommonSystemProperties;
 
 @Service("appsCacheService")
 @org.springframework.context.annotation.Configuration
