@@ -423,7 +423,13 @@ public class EcompPortalUtils {
 			decryptedPass = SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_AUTH_PASSWORD);
 			userName = SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_AUTH_USER_NAME);
 		}
-		String decPass = decrypted(decryptedPass);
+		String decPass;
+		try {
+			decPass = decrypted(decryptedPass);
+		} catch (Exception e) {
+			logger.warn(EELFLoggerDelegate.errorLogger, "decryptedPassword failed using non decrypted pwd from the Properties file", e);
+			decPass = decryptedPass;
+		}
 		String usernamePass = userName + ":" + decPass;
 		String encToBase64 = String.valueOf((DatatypeConverter.printBase64Binary(usernamePass.getBytes())));
 		HttpHeaders headers = new HttpHeaders();
