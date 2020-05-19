@@ -1,6 +1,8 @@
 /**
  * Copyright (C) 2019 CMCC, Inc. and others. All rights reserved.
  *
+ *  Modification Copyright © 2020 IBM.
+ * ===================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -22,6 +24,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import com.alibaba.fastjson.JSONObject;
@@ -33,19 +37,19 @@ public class LanguageController {
     @Autowired
     private LanguageService languageService;
 
-    @RequestMapping(value = "/language",method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @GetMapping(value = "/language", produces = "application/json;charset=UTF-8")
     public JSONObject getLanguageList() {
         return languageService.getLanguages();
     }
 
-    @RequestMapping(value = "/languageSetting/user/{loginId}",method = RequestMethod.POST)
+    @PostMapping(value = "/languageSetting/user/{loginId}")
     public void setUpUserLanguage(@RequestBody JSONObject jsonLanguageId,
                                   @PathVariable("loginId") String loginId) throws Exception {
         Integer languageId = jsonLanguageId.getInteger("languageId");
         languageService.setUpUserLanguage(languageId,loginId);
     }
 
-    @RequestMapping(value = "/languageSetting/user/{loginId}",method = RequestMethod.GET)
+    @GetMapping(value = "/languageSetting/user/{loginId}")
     public JSONObject getUserLanguage(HttpServletRequest request, HttpServletResponse response,
                                       @PathVariable("loginId") String loginId) {
         return languageService.getUserLanguage(loginId);
