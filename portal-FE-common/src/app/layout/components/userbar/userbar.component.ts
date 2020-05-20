@@ -82,7 +82,7 @@ export class UserbarComponent implements OnInit {
         // $log.error('UserbarCtrl::updateActiveUsers: failed to get active user');
         this.stop();
       } else {
-        var maxItems = 25;
+        var maxItems = 5;
         if (_res.length < maxItems)
           maxItems = _res.length;
         for (var i = 0; i < maxItems; i++) {
