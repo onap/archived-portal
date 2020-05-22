@@ -253,7 +253,7 @@ public class PortalResourceInterceptor extends ResourceInterceptor {
 							throw new Exception("Invalid credentials!");
 						}
 						else {
-							final String appUsername = application.getUsername();
+							final String appUsername = application.getAppBasicAuthUsername();
 							logger.debug(EELFLoggerDelegate.debugLogger, "appUsername : {}",appUsername);
 
 							String[] accountNamePassword = EcompPortalUtils.getUserNamePassword(authHeader);
@@ -317,8 +317,8 @@ public class PortalResourceInterceptor extends ResourceInterceptor {
 					throw new Exception("Invalid credentials!");
 				}
 				else {
-					final String appUsername = application.getUsername();
-					final String dbDecryptedPwd = CipherUtil.decryptPKC(application.getAppPassword());
+					final String appUsername = application.getAppBasicAuthUsername();
+					final String dbDecryptedPwd = CipherUtil.decryptPKC(application.getAppBasicAuthPassword());
 					if (appUsername.equals(accountNamePassword[0]) && dbDecryptedPwd.equals(accountNamePassword[1])) {
 						return true;
 					}

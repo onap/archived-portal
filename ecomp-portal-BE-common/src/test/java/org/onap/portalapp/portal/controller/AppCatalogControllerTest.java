@@ -59,6 +59,7 @@ import org.onap.portalapp.portal.controller.AppCatalogController;
 import org.onap.portalapp.portal.core.MockEPUser;
 import org.onap.portalapp.portal.domain.EPApp;
 import org.onap.portalapp.portal.domain.EPUser;
+import org.onap.portalapp.portal.domain.EpAppType;
 import org.onap.portalapp.portal.ecomp.model.AppCatalogItem;
 import org.onap.portalapp.portal.framework.MockitoTestSuite;
 import org.onap.portalapp.portal.service.AdminRolesService;
@@ -245,23 +246,23 @@ public class AppCatalogControllerTest extends MockitoTestSuite {
 
 		app.setName("Test");
 		app.setImageUrl("test");
-		app.setDescription("test");
-		app.setNotes("test");
-		app.setUrl("test");
+		app.setAppDescription("test");
+		app.setAppNotes("test");
+		app.setLandingPage("test");
 		app.setId((long) 1);
 		app.setAppRestEndpoint("test");
-		app.setAlternateUrl("test");
+		app.setAlternateLandingPage("test");
 		app.setName("test");
 		app.setMlAppName("test");
 		app.setMlAppAdminId("test");
-		app.setUsername("test");
-		app.setAppPassword("test");
+		app.setAppBasicAuthUsername("test");
+		app.setAppBasicAuthPassword("test");
 		app.setOpen(false);
 		app.setEnabled(false);
 		app.setUebKey("test");
 		app.setUebSecret("test");
 		app.setUebTopicName("test");
-		app.setAppType(1);
+		app.setAppType(EpAppType.GUI);
 
 		Mockito.when(appService.getApp(persRequest.getAppId())).thenReturn(app);
 
@@ -302,23 +303,23 @@ public class AppCatalogControllerTest extends MockitoTestSuite {
 
 		app.setName("Test");
 		app.setImageUrl("test");
-		app.setDescription("test");
-		app.setNotes("test");
-		app.setUrl("test");
+		app.setAppDescription("test");
+		app.setAppNotes("test");
+		app.setLandingPage("test");
 		app.setId((long) 1);
 		app.setAppRestEndpoint("test");
-		app.setAlternateUrl("test");
+		app.setAlternateLandingPage("test");
 		app.setName("test");
 		app.setMlAppName("test");
 		app.setMlAppAdminId("test");
-		app.setUsername("test");
-		app.setAppPassword("test");
+		app.setAppBasicAuthUsername("test");
+		app.setAppBasicAuthPassword("test");
 		app.setOpen(false);
 		app.setEnabled(false);
 		app.setUebKey("test");
 		app.setUebSecret("test");
 		app.setUebTopicName("test");
-		app.setAppType(1);
+		app.setAppType(EpAppType.GUI);
 
 		Mockito.when(appService.getApp(persRequest.getAppId())).thenReturn(app);
 

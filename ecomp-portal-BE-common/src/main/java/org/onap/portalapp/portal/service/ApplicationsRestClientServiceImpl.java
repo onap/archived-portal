@@ -176,8 +176,8 @@ public class ApplicationsRestClientServiceImpl implements ApplicationsRestClient
 		
 		if (externalApp != null) {
 			String appBaseUri = (type == SystemType.APPLICATION) ? externalApp.getAppRestEndpoint() : "";
-			String username = (type == SystemType.APPLICATION) ? externalApp.getUsername(): "";
-			String encriptedPwd = (type == SystemType.APPLICATION) ? externalApp.getAppPassword(): "";
+			String username = (type == SystemType.APPLICATION) ? externalApp.getAppBasicAuthUsername(): "";
+			String encriptedPwd = (type == SystemType.APPLICATION) ? externalApp.getAppBasicAuthPassword(): "";
 
 			String appName = (type == SystemType.APPLICATION) ? externalApp.getName(): "";
 			String decreptedAppPwd = StringUtils.EMPTY;
@@ -202,16 +202,16 @@ public class ApplicationsRestClientServiceImpl implements ApplicationsRestClient
 			WebClient client = createClientForPath(appBaseUri, restPath);
 			
 			
-			if(externalApp.getAppPassword().isEmpty() || externalApp.getAppPassword()==null){
+			if(externalApp.getAppBasicAuthPassword().isEmpty() || externalApp.getAppBasicAuthPassword()==null){
 				logger.debug(EELFLoggerDelegate.debugLogger, "Entering in the externalApp get app password contains null : {}");
 
 				externalApp = appsCacheService.getApp(1L);
 				logger.debug(EELFLoggerDelegate.debugLogger, "external App Information : {}",externalApp);
 
-				String mechidUsername=externalApp.getUsername();
+				String mechidUsername=externalApp.getAppBasicAuthUsername();
 				logger.debug(EELFLoggerDelegate.debugLogger, "external App mechidUsername Information : {}",mechidUsername);
 
-				String password=externalApp.getAppPassword();
+				String password=externalApp.getAppBasicAuthPassword();
 				String decreptedexternalAppPwd = StringUtils.EMPTY;
 				try {
 					decreptedexternalAppPwd = CipherUtil.decryptPKC(password,

@@ -740,13 +740,11 @@
           			<artifactId>jersey-servlet</artifactId> 
 				</exclusion> 
 			</exclusions> 
-	
-			
 		</dependency>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<version>1.18.4</version>
+			<version>1.14.8</version>
 		</dependency>
 
 		<dependency>

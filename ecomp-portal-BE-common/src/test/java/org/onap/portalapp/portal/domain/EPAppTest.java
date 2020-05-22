@@ -53,26 +53,23 @@ public class EPAppTest {
 		epApp.setId(1l);			
 		epApp.setName(TEST);
 		epApp.setImageUrl(TEST);
-		epApp.setDescription(TEST);
-		epApp.setNotes(TEST);
-		epApp.setUrl(TEST);
-		epApp.setAlternateUrl(TEST);
+		epApp.setAppDescription(TEST);
+		epApp.setAppNotes(TEST);
+		epApp.setLandingPage(TEST);
+		epApp.setAlternateLandingPage(TEST);
 		epApp.setAppRestEndpoint(TEST);
 		epApp.setMlAppName(TEST);
 		epApp.setMlAppAdminId(TEST);
 		epApp.setMotsId((long)1);
-		epApp.setUsername(TEST);
-		epApp.setAppPassword(TEST);
+		epApp.setAppBasicAuthUsername(TEST);
+		epApp.setAppBasicAuthPassword(TEST);
 		epApp.setOpen(false);
 		epApp.setEnabled(false);
 		epApp.setUebTopicName(TEST);
 		epApp.setUebSecret(TEST);
-		epApp.setAppType(1);
-		epApp.setCentralAuth(false);
+		epApp.setAppType(EpAppType.GUI);
+		epApp.setRolesInAAF(false);
 		epApp.setNameSpace(TEST);
-		epApp.setRestrictedApp(true);
-		epApp.setRestrictedApp(false);
-		epApp.setAppType(null);
 		epApp.setOpen(null);
 		epApp.setThumbnail(TEST.getBytes());
 		epApp.setUebKey(TEST);
@@ -89,24 +86,23 @@ public class EPAppTest {
 		epApp.setId(epApp1.getId());			
 		epApp.setName(epApp1.getName());
 		epApp.setImageUrl(epApp1.getImageUrl());
-		epApp.setDescription(epApp1.getDescription());
-		epApp.setNotes(epApp1.getNotes());
-		epApp.setUrl(epApp1.getUrl());
-		epApp.setAlternateUrl(epApp1.getAlternateUrl());
+		epApp.setAppDescription(epApp1.getAppDescription());
+		epApp.setAppNotes(epApp1.getAppNotes());
+		epApp.setLandingPage(epApp1.getLandingPage());
+		epApp.setAlternateLandingPage(epApp1.getAlternateLandingPage());
 		epApp.setAppRestEndpoint(epApp1.getAppRestEndpoint());
 		epApp.setMlAppName(epApp1.getMlAppName());
 		epApp.setMlAppAdminId(epApp1.getMlAppAdminId());
 		epApp.setMotsId(epApp1.getMotsId());
-		epApp.setUsername(epApp1.getUsername());
-		epApp.setAppPassword(epApp1.getAppPassword());
+		epApp.setAppBasicAuthUsername(epApp1.getAppBasicAuthUsername());
+		epApp.setAppBasicAuthPassword(epApp1.getAppBasicAuthPassword());
 		epApp.setOpen(epApp1.getOpen());
 		epApp.setEnabled(epApp1.getEnabled());
 		epApp.setUebTopicName(epApp1.getUebTopicName());
 		epApp.setUebSecret(epApp1.getUebSecret());
 		epApp.setAppType(epApp1.getAppType());
-		epApp.setCentralAuth(epApp1.getCentralAuth());
+		epApp.setRolesInAAF(epApp1.getRolesInAAF());
 		epApp.setNameSpace(epApp1.getNameSpace());
-		epApp.setRestrictedApp(epApp1.isRestrictedApp());
 	
 		epApp.setAppType(epApp1.getAppType());
 		
@@ -121,22 +117,22 @@ public class EPAppTest {
 		assertEquals(epApp.getName(), TEST);
 		assertEquals(epApp.getId(), Long.valueOf(1l));
 		assertEquals(epApp.getImageUrl(), TEST);
-		assertEquals(epApp.getDescription(), TEST);
-		assertEquals(epApp.getNotes(), TEST);
-		assertEquals(epApp.getUrl(), TEST);
-		assertEquals(epApp.getAlternateUrl(), TEST);
+		assertEquals(epApp.getAppDescription(), TEST);
+		assertEquals(epApp.getAppNotes(), TEST);
+		assertEquals(epApp.getLandingPage(), TEST);
+		assertEquals(epApp.getAlternateLandingPage(), TEST);
 		assertEquals(epApp.getAppRestEndpoint(), TEST);
 		assertEquals(epApp.getMlAppName(), TEST);
 		assertEquals(epApp.getMlAppAdminId(), TEST);
 		assertEquals(epApp.getMotsId(), new Long(1));
-		assertEquals(epApp.getUsername(), TEST);
-		assertEquals(epApp.getAppPassword(), TEST);
+		assertEquals(epApp.getAppBasicAuthUsername(), TEST);
+		assertEquals(epApp.getAppBasicAuthPassword(), TEST);
 		assertEquals(epApp.getOpen(), false);
 		assertEquals(epApp.getEnabled(), false);
 		assertEquals(epApp.getUebTopicName(), TEST);
 		assertEquals(epApp.getUebSecret(), TEST);
 		assertEquals(epApp.getAppType(), Integer.valueOf(1));
-		assertEquals(epApp.getCentralAuth(), false);
+		assertEquals(epApp.getRolesInAAF(), false);
 		assertEquals(epApp.getNameSpace(), TEST);
 		assertEquals(epApp.getUebKey(), TEST);
 		
@@ -150,9 +146,9 @@ public class EPAppTest {
 		assertNotNull(epApp.getContactUs());
 		
 		
-		epApp.setUsername(null);
+		epApp.setAppBasicAuthUsername(null);
 		assertFalse(epApp.equals(epApp1));
-		epApp.setUrl(null);
+		epApp.setLandingPage(null);
 		assertFalse(epApp.equals(epApp1));
 		epApp.setUebTopicName(null);
 		assertFalse(epApp.equals(epApp1));
@@ -163,7 +159,7 @@ public class EPAppTest {
 		assertFalse(epApp.equals(epApp1));
 		epApp.setOpen(null);
 		assertFalse(epApp.equals(epApp1));
-		epApp.setNotes(null);
+		epApp.setAppNotes(null);
 		assertFalse(epApp.equals(epApp1));
 		epApp.setNameSpace(null);
 		assertFalse(epApp.equals(epApp1));
@@ -180,22 +176,22 @@ public class EPAppTest {
 		assertFalse(epApp.equals(epApp1));
 		epApp.setEnabled(null);
 		assertFalse(epApp.equals(epApp1));
-		epApp.setDescription(null);
+		epApp.setAppDescription(null);
 		assertFalse(epApp.equals(epApp1));
 		epApp.setContactUs(null);
 		assertFalse(epApp.equals(epApp1));
 		
-		epApp.setCentralAuth(null);
+		epApp.setRolesInAAF(null);
 		assertFalse(epApp.equals(epApp1));
 		
 		epApp.setAppType(null);
 		assertFalse(epApp.equals(epApp1));
 		epApp.setAppRestEndpoint(null);
 		assertFalse(epApp.equals(epApp1));
-		epApp.setAppPassword(null);
+		epApp.setAppBasicAuthPassword(null);
 		assertFalse(epApp.equals(epApp1));
 		
-		epApp.setAlternateUrl(null);
+		epApp.setAlternateLandingPage(null);
 		assertFalse(epApp.equals(epApp1));
 	}	
 }

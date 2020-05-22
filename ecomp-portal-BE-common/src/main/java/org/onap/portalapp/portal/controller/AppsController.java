@@ -667,7 +667,7 @@ public class AppsController extends EPRestrictedBaseController {
 			String appId = request.getParameter("appParam");
 			app = appService.getApp(Long.valueOf(appId));
 			if(!EcompPortalUtils.checkIfRemoteCentralAccessAllowed()) {
-				app.setCentralAuth(false);
+				app.setRolesInAAF(false);
 			}
 			if (user != null && (adminRolesService.isAccountAdminOfApplication(user, app)
 					|| (adminRolesService.isSuperAdmin(user) && app.getId().equals(PortalConstants.PORTAL_APP_ID))))
@@ -721,7 +721,7 @@ public class AppsController extends EPRestrictedBaseController {
 	/**
 	 * 
 	 * @param request
-	 *            HTTP servlet request
+	 *            HTTP servlet request‰
 	 * @param response
 	 *            HTTP servlet response
 	 * @param modifiedOnboardingApp
@@ -734,7 +734,7 @@ public class AppsController extends EPRestrictedBaseController {
 			@RequestBody OnboardingApp modifiedOnboardingApp, HttpServletResponse response) {
 		FieldsValidator fieldsValidator = null;
 		EPUser user = null;
-		EPApp oldEPApp = appService.getApp(modifiedOnboardingApp.id);
+		EPApp oldEPApp = appService.getApp(modifiedOnboardingApp.getId());
 		
 		try {
 			user = EPUserUtils.getUserSession(request);
@@ -746,7 +746,7 @@ public class AppsController extends EPRestrictedBaseController {
 												response.getStatus());
 				return fieldsValidator;
 			} else {
-				if((oldEPApp.getCentralAuth() && modifiedOnboardingApp.isCentralAuth && !oldEPApp.getNameSpace().equalsIgnoreCase(modifiedOnboardingApp.nameSpace) && modifiedOnboardingApp.nameSpace!= null ) || (!oldEPApp.getCentralAuth() && modifiedOnboardingApp.isCentralAuth && modifiedOnboardingApp.nameSpace!= null))
+				if((oldEPApp.getRolesInAAF() && modifiedOnboardingApp.getRolesInAAF() && !oldEPApp.getNameSpace().equalsIgnoreCase(modifiedOnboardingApp.getNameSpace()) && modifiedOnboardingApp.getNameSpace()!= null ) || (!oldEPApp.getRolesInAAF() && modifiedOnboardingApp.getRolesInAAF() && modifiedOnboardingApp.getNameSpace() != null))
 				{
 					checkIfNameSpaceIsValid(modifiedOnboardingApp, fieldsValidator, response);
 				}	
@@ -795,7 +795,7 @@ public class AppsController extends EPRestrictedBaseController {
 				EcompPortalUtils.setBadPermissions(user, response, "postOnboardingApps");
 			} else {
 				newOnboardingApp.normalize();
-				if(newOnboardingApp.isCentralAuth != null && newOnboardingApp.isCentralAuth)
+				if(newOnboardingApp.getRolesInAAF() != null && newOnboardingApp.getRolesInAAF())
 					checkIfNameSpaceIsValid(newOnboardingApp, fieldsValidator, response);
 				fieldsValidator = appService.addOnboardingApp(newOnboardingApp, user);
 				response.setStatus(fieldsValidator.httpStatusCode.intValue());
@@ -911,7 +911,7 @@ public class AppsController extends EPRestrictedBaseController {
 	private void checkIfNameSpaceIsValid(OnboardingApp modifiedOnboardingApp, FieldsValidator fieldsValidator, HttpServletResponse response)
 		throws InvalidApplicationException {
 		try {
-			ResponseEntity<String> res  = appService.checkIfNameSpaceIsValid(modifiedOnboardingApp.nameSpace);
+			ResponseEntity<String> res  = appService.checkIfNameSpaceIsValid(modifiedOnboardingApp.getNameSpace());
 		} catch (HttpClientErrorException e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "checkIfNameSpaceExists failed", e);
 			EPLogUtil.logExternalAuthAccessAlarm(logger, e.getStatusCode());

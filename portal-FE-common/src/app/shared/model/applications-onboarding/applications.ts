@@ -57,7 +57,14 @@ export interface IApplications {
     uebTopicName ?: any;
     uebKey ?: any;
     uebSecret ?: any;
+    // ---- start ----to be removed
     restrictedApp ?: any;
     isCentralAuth ?: any;
-    nameSpace ?: any
+    // ---- end ----to be removed
+    applicationType ?: any;
+    rolesInAAF ?: any;
+    nameSpace ?: any;
+    usesCadi ?: any;
+    modeOfIntegration ?: any;
+    appAck ?: any;
 }

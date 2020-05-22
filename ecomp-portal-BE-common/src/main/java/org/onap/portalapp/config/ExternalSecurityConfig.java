@@ -55,11 +55,14 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 @Configuration
 @EnableWebSecurity
 public class ExternalSecurityConfig extends WebSecurityConfigurerAdapter {
+		
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		RequestMatcher csrfRequestMatcher = new RequestMatcher() {
-			private RegexRequestMatcher requestMatcher = new RegexRequestMatcher("/portalApi/.*", null);
-			private Pattern allowedMethods = Pattern.compile("^(GET|HEAD|TRACE|OPTIONS)$");
+			private RegexRequestMatcher requestMatcher = new RegexRequestMatcher("/xxxx/.*", null);
+			//private RegexRequestMatcher requestMatcher = new RegexRequestMatcher("/portalApi/.*", null);
+			private Pattern allowedMethods = Pattern.compile("^(GET|HEAD|TRACE|OPTIONS|POST|DELETE)$");
+			
 			@Override
 			public boolean matches(HttpServletRequest request) {
 				if(allowedMethods.matcher(request.getMethod()).matches())

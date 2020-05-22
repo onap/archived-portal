@@ -132,19 +132,19 @@ public class TimeoutHandler extends QuartzJobBean {
 			Map<Long, Map<String, TimeoutVO>> appSessionTimeOutMap = new Hashtable<Long, Map<String, TimeoutVO>>();
 			// determine the Max TimeOut Time for each of the managed sessions
 			for (OnboardingApp app : appList) {
-				if (app.restUrl == null) {
-					logger.info(EELFLoggerDelegate.debugLogger, "Session Management: null restUrl, not fetching from app " + app.name);
+				if (app.getRestUrl() == null) {
+					logger.info(EELFLoggerDelegate.debugLogger, "Session Management: null restUrl, not fetching from app " + app.getAppName());
 					continue;
 				}
-				logger.info(EELFLoggerDelegate.debugLogger, "Session Management: Calling App " + app.name + " at URL " + app.restUrl);
+				logger.info(EELFLoggerDelegate.debugLogger, "Session Management: Calling App " + app.getAppName() + " at URL " + app.getRestUrl());
 				String jsonSessionStr = fetchAppSessions(app);
-				logger.info(EELFLoggerDelegate.debugLogger, "Session Management: App " + app.name + " returned  " + jsonSessionStr);
+				logger.info(EELFLoggerDelegate.debugLogger, "Session Management: App " + app.getAppName() + " returned  " + jsonSessionStr);
 				if (jsonSessionStr == null || jsonSessionStr.isEmpty())
 					continue;
 
 				try {
 					Map<String, TimeoutVO> sessionTimeoutMap = mapper.readValue(jsonSessionStr, typeRef);
-					appSessionTimeOutMap.put(app.id, sessionTimeoutMap);
+					appSessionTimeOutMap.put(app.getId(), sessionTimeoutMap);
 					for (String portalJSessionId : sessionTimeoutMap.keySet()) {
 						final TimeoutVO maxTimeoutVO = portalSessionTimeoutMap.get(portalJSessionId);
 						final TimeoutVO compareTimeoutVO = sessionTimeoutMap.get(portalJSessionId);
@@ -168,12 +168,12 @@ public class TimeoutHandler extends QuartzJobBean {
 
 			// post the updated session timeouts back to the Apps
 			for (OnboardingApp app : appList) {
-				if (app.restUrl == null) {
-					logger.warn(EELFLoggerDelegate.errorLogger, "Session Management: null restUrl, not posting back to app " + app.name);
+				if (app.getRestUrl() == null) {
+					logger.warn(EELFLoggerDelegate.errorLogger, "Session Management: null restUrl, not posting back to app " + app.getAppName());
 					continue;
 				}
 
-				Map<String, TimeoutVO> sessionTimeoutMap = appSessionTimeOutMap.get(app.id);
+				Map<String, TimeoutVO> sessionTimeoutMap = appSessionTimeOutMap.get(app.getId());
 				if (sessionTimeoutMap == null || sessionTimeoutMap.isEmpty())
 					continue;
 
@@ -184,7 +184,7 @@ public class TimeoutHandler extends QuartzJobBean {
 						if (maxTimeoutVO == null || setTimeoutVO == null) {
 							String message = String.format(
 									"Session Management: Failed to update the session timeouts for the app: %s and the sessionId: %s.",
-									app.name, portalJSessionId);
+									app.getAppName(), portalJSessionId);
 							logger.warn(EELFLoggerDelegate.errorLogger, message);
 							continue;
 						}
@@ -194,7 +194,7 @@ public class TimeoutHandler extends QuartzJobBean {
 						continue;
 					}
 				}
-				logger.info(EELFLoggerDelegate.debugLogger, "Session Management: Updating App " + app.restUrl);
+				logger.info(EELFLoggerDelegate.debugLogger, "Session Management: Updating App " + app.getRestUrl());
 				String sessionTimeoutMapStr = "";
 				try {
 					sessionTimeoutMapStr = mapper.writeValueAsString(sessionTimeoutMap);
