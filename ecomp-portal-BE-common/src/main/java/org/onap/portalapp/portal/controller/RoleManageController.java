@@ -166,7 +166,7 @@ public class RoleManageController extends EPRestrictedBaseController {
 			EPApp requestedApp = appService.getApp(appId);
 			if (isAuthorizedUser(user, requestedApp)) {
 				fieldsValidation(requestedApp);
-				if (requestedApp.getCentralAuth()) {
+				if (requestedApp.getRolesInAAF()) {
 					List<CentralV2Role> answer = null;
 					Map<String, Object> model = new HashMap<>();
 					ObjectMapper mapper = new ObjectMapper();
@@ -244,7 +244,7 @@ public class RoleManageController extends EPRestrictedBaseController {
 			requestedApp = appService.getApp(appId);
 			if (isAuthorizedUser(user, requestedApp)) {
 				fieldsValidation(requestedApp);
-				if (requestedApp.getCentralAuth()) {
+				if (requestedApp.getRolesInAAF()) {
 					externalRequestFieldsValidator = externalAccessRolesService.deleteDependencyRoleRecord(roleId,
 							requestedApp.getUebKey(), user.getOrgUserId());
 					boolean deleteResponse = externalRequestFieldsValidator.isResult();
@@ -307,7 +307,7 @@ public class RoleManageController extends EPRestrictedBaseController {
 			EPApp requestedApp = appService.getApp(appId);
 			if (isAuthorizedUser(user, requestedApp)) {
 				fieldsValidation(requestedApp);
-				if (requestedApp != null && requestedApp.getCentralAuth().equals(true)) {
+				if (requestedApp != null && requestedApp.getRolesInAAF().equals(true)) {
 					ObjectMapper mapper = new ObjectMapper();
 					mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 					JsonNode root = mapper.readTree(request.getReader());
@@ -450,7 +450,7 @@ public class RoleManageController extends EPRestrictedBaseController {
 			EPApp requestedApp = appService.getApp(appId);
 			if (isAuthorizedUser(user, requestedApp)) {
 				fieldsValidation(requestedApp);
-				if (requestedApp.getCentralAuth()) {
+				if (requestedApp.getRolesInAAF()) {
 					CentralV2Role answer = externalAccessRolesService.getRoleInfo(roleId, requestedApp.getUebKey());
 					logger.info(EELFLoggerDelegate.applicationLogger, "role_id" + roleId);
 					Map<String, Object> model = new HashMap<>();
@@ -483,7 +483,7 @@ public class RoleManageController extends EPRestrictedBaseController {
 			EPApp requestedApp = appService.getApp(appId);
 			if (isAuthorizedUser(user, requestedApp)) {
 				fieldsValidation(requestedApp);
-				if (requestedApp.getCentralAuth()) {
+				if (requestedApp.getRolesInAAF()) {
 					List<CentralV2RoleFunction> answer = null;
 					Map<String, Object> model = new HashMap<>();
 					ObjectMapper mapper = new ObjectMapper();
@@ -525,7 +525,7 @@ public class RoleManageController extends EPRestrictedBaseController {
 			EPApp requestedApp = appService.getApp(appId);
 			if (isAuthorizedUser(user, requestedApp)) {
 				fieldsValidation(requestedApp);
-				if (requestedApp.getCentralAuth() && roleFunc!=null) {
+				if (requestedApp.getRolesInAAF() && roleFunc!=null) {
 					String code = roleFunc.getType() + PIPE + roleFunc.getCode() + PIPE + roleFunc.getAction();
 					CentralV2RoleFunction domainRoleFunction = externalAccessRolesService.getRoleFunction(code,
 							requestedApp.getUebKey());
@@ -624,7 +624,7 @@ public class RoleManageController extends EPRestrictedBaseController {
 			EPApp requestedApp = appService.getApp(appId);
 			if (isAuthorizedUser(user, requestedApp)) {
 				fieldsValidation(requestedApp);
-				if (requestedApp.getCentralAuth()) {
+				if (requestedApp.getRolesInAAF()) {
 					ObjectMapper mapper = new ObjectMapper();
 					String data = roleFunc;
 					boolean getDelFuncResponse = false;
@@ -811,7 +811,7 @@ public class RoleManageController extends EPRestrictedBaseController {
 			throw new InvalidApplicationException("Invalid credentials");
 		}
 		if (!appInfo.isEmpty() && EcompPortalUtils.checkIfRemoteCentralAccessAllowed()
-				&& appInfo.get(0).getCentralAuth()) {
+				&& appInfo.get(0).getRolesInAAF()) {
 			ResponseEntity<String> response = externalAccessRolesService.getNameSpaceIfExists(appInfo.get(0));
 			if (response.getStatusCode().value() == HttpServletResponse.SC_NOT_FOUND)
 				throw new InvalidApplicationException("Invalid NameSpace");

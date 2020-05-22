@@ -53,16 +53,16 @@ public class EPUserAppTest {
         EPApp epApp = new EPApp();
         epApp.setName("test");
         epApp.setImageUrl("test");
-        epApp.setDescription("test");
-        epApp.setNotes("test");
-        epApp.setUrl("test");
-        epApp.setAlternateUrl("test");
+        epApp.setAppDescription("test");
+        epApp.setAppNotes("test");
+        epApp.setLandingPage("test");
+        epApp.setAlternateLandingPage("test");
         epApp.setAppRestEndpoint("test");
         epApp.setMlAppName("test");
         epApp.setMlAppAdminId("test");
         epApp.setMotsId((long)1);
-        epApp.setUsername("test");
-        epApp.setAppPassword("test");
+        epApp.setAppBasicAuthUsername("test");
+        epApp.setAppBasicAuthPassword("test");
             
         
         //Role
@@ -90,16 +90,16 @@ public class EPUserAppTest {
         EPApp epApp = new EPApp();
         epApp.setName("test");
         epApp.setImageUrl("test");
-        epApp.setDescription("test");
-        epApp.setNotes("test");
-        epApp.setUrl("test");
-        epApp.setAlternateUrl("test");
+        epApp.setAppDescription("test");
+        epApp.setAppNotes("test");
+        epApp.setLandingPage("test");
+        epApp.setAlternateLandingPage("test");
         epApp.setAppRestEndpoint("test");
         epApp.setMlAppName("test");
         epApp.setMlAppAdminId("test");
         epApp.setMotsId((long)1);
-        epApp.setUsername("test");
-        epApp.setAppPassword("test");
+        epApp.setAppBasicAuthUsername("test");
+        epApp.setAppBasicAuthPassword("test");
         user.setApp(epApp);
         
         //Role
@@ -152,16 +152,16 @@ public class EPUserAppTest {
         epApp.setId((long) 12345);
         epApp.setName("test");
         epApp.setImageUrl("test");
-        epApp.setDescription("test");
-        epApp.setNotes("test");
-        epApp.setUrl("test");
-        epApp.setAlternateUrl("test");
+        epApp.setAppDescription("test");
+        epApp.setAppNotes("test");
+        epApp.setLandingPage("test");
+        epApp.setAlternateLandingPage("test");
         epApp.setAppRestEndpoint("test");
         epApp.setMlAppName("test");
         epApp.setMlAppAdminId("test");
         epApp.setMotsId((long)1);
-        epApp.setUsername("test");
-        epApp.setAppPassword("test");
+        epApp.setAppBasicAuthUsername("test");
+        epApp.setAppBasicAuthPassword("test");
         return epApp;
     }
 

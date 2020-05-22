@@ -147,17 +147,17 @@ public class EPAppCommonServiceImpl implements EPAppService {
 	public Boolean onboardingAppFieldsValidation(OnboardingApp onboardingApp) {
 		//FieldsValidator fieldsValidator = new FieldsValidator();
 
-		if ((!onboardingApp.restrictedApp) &&( onboardingApp.name == null || onboardingApp.name.length() == 0 || onboardingApp.restrictedApp == null
-				|| onboardingApp.url == null || onboardingApp.url.length() == 0 || onboardingApp.restUrl == null || onboardingApp.restUrl.length() == 0
-			    || onboardingApp.username == null || onboardingApp.username.length() == 0
-				|| onboardingApp.isOpen == null
-				|| (onboardingApp.id != null && onboardingApp.id.equals(ECOMP_APP_ID)))
+		if ((!onboardingApp.getRestrictedApp()) &&( onboardingApp.getAppName() == null || onboardingApp.getAppName().length() == 0 || onboardingApp.getRestrictedApp() == null
+				|| onboardingApp.getLandingPage() == null || onboardingApp.getLandingPage().length() == 0 || onboardingApp.getRestUrl() == null || onboardingApp.getRestUrl().length() == 0
+			    || onboardingApp.getAppBasicAuthUsername() == null || onboardingApp.getAppBasicAuthUsername().length() == 0
+				|| onboardingApp.getIsOpen() == null
+				|| (onboardingApp.getId() != null && onboardingApp.getId().equals(ECOMP_APP_ID)))
 				// For a normal app (appType == PortalConstants.PortalAppId),
 				// these fields must be filled
 				// in.
 				// For a restricted app (appType==2), they will be empty.
-				|| ((onboardingApp.restrictedApp) && (onboardingApp.name == null || onboardingApp.name.length() == 0
-						|| onboardingApp.url == null || onboardingApp.url.length() == 0 || onboardingApp.isOpen == null))) {
+				|| ((onboardingApp.getRestrictedApp()) && (onboardingApp.getAppName() == null || onboardingApp.getAppName().length() == 0
+						|| onboardingApp.getLandingPage() == null || onboardingApp.getLandingPage().length() == 0 || onboardingApp.getIsOpen() == null))) {
 			return false;
 		}
 		return true;
@@ -165,8 +165,8 @@ public class EPAppCommonServiceImpl implements EPAppService {
 	}
 	
 	private Boolean onboardingInactiveAppFieldsForValidation(OnboardingApp onboardingApp) {
-		if (onboardingApp.name == null || onboardingApp.name.length() == 0
-				|| onboardingApp.isOpen == null) {
+		if (onboardingApp.getAppName() == null || onboardingApp.getAppName().length() == 0
+				|| onboardingApp.getIsOpen() == null) {
 			return false;
 		}
 		return true;
@@ -174,28 +174,28 @@ public class EPAppCommonServiceImpl implements EPAppService {
 
 	protected FieldsValidator onboardingAppFieldsChecker(OnboardingApp onboardingApp) {
 		FieldsValidator fieldsValidator = new FieldsValidator();
-		if (onboardingApp.isCentralAuth) {
-			if (!onboardingApp.isEnabled) {
+		if (onboardingApp.getRolesInAAF()) {
+			if (!onboardingApp.getIsEnabled()) {
 				if (!onboardingInactiveAppFieldsForValidation(onboardingApp)) {
 					fieldsValidator.httpStatusCode = new Long(HttpServletResponse.SC_BAD_REQUEST);
 				}
-			} else if (onboardingApp.isEnabled) {
-				if (onboardingAppFieldsValidation(onboardingApp) == false || onboardingApp.nameSpace == null
-						|| onboardingApp.nameSpace.length() == 0) {
+			} else if (onboardingApp.getIsEnabled()) {
+				if (onboardingAppFieldsValidation(onboardingApp) == false || onboardingApp.getNameSpace() == null
+						|| onboardingApp.getNameSpace().length() == 0) {
 					fieldsValidator.httpStatusCode = new Long(HttpServletResponse.SC_BAD_REQUEST);
 				}
 			}
 		} else {
-			if (!onboardingApp.isEnabled) {
+			if (!onboardingApp.getIsEnabled()) {
 				if (!onboardingInactiveAppFieldsForValidation(onboardingApp)) {
 					fieldsValidator.httpStatusCode = new Long(HttpServletResponse.SC_BAD_REQUEST);
 				}
-			} else if (onboardingApp.isEnabled) {
-				if(onboardingApp.restrictedApp && onboardingAppFieldsValidation(onboardingApp) == false){
+			} else if (onboardingApp.getIsEnabled()) {
+				if(onboardingApp.getRestrictedApp() && onboardingAppFieldsValidation(onboardingApp) == false){
 					fieldsValidator.httpStatusCode = new Long(HttpServletResponse.SC_BAD_REQUEST);
 				}
-				else if (!onboardingApp.restrictedApp && (onboardingAppFieldsValidation(onboardingApp) == false || onboardingApp.appPassword == null
-						|| onboardingApp.appPassword.length() == 0)) {
+				else if (!onboardingApp.getRestrictedApp() && (onboardingAppFieldsValidation(onboardingApp) == false || onboardingApp.getAppBasicAuthPassword() == null
+						|| onboardingApp.getAppBasicAuthPassword().length() == 0)) {
 					fieldsValidator.httpStatusCode = new Long(HttpServletResponse.SC_BAD_REQUEST);
 				}
 			}
@@ -268,15 +268,15 @@ public class EPAppCommonServiceImpl implements EPAppService {
 			ecompApp.setId(app.getId());
 			ecompApp.setName(app.getName());
 			ecompApp.setImageUrl(app.getImageUrl());
-			ecompApp.setDescription(app.getDescription());
-			ecompApp.setNotes(app.getNotes());
-			ecompApp.setUrl(app.getUrl());
-			ecompApp.setAlternateUrl(app.getAlternateUrl());
+			ecompApp.setDescription(app.getAppDescription());
+			ecompApp.setNotes(app.getAppNotes());
+			ecompApp.setUrl(app.getLandingPage());
+			ecompApp.setAlternateUrl(app.getAlternateLandingPage());
 			ecompApp.setUebTopicName(app.getUebTopicName());
 			//ecompApp.setUebKey(app.getUebKey());
 			ecompApp.setUebSecret(app.getUebSecret());
 			ecompApp.setEnabled(app.getEnabled());
-			ecompApp.setCentralAuth(app.getCentralAuth());
+			ecompApp.setCentralAuth(app.getRolesInAAF());
 			ecompApp.setNameSpace(app.getNameSpace());
 			ecompApp.setRestrictedApp(app.isRestrictedApp());
 			ecompAppList.add(ecompApp);
@@ -381,7 +381,7 @@ public class EPAppCommonServiceImpl implements EPAppService {
 			if (apps.size() > 0) {
 				EPApp app = apps.get(0);
 				if (!EcompPortalUtils.checkIfRemoteCentralAccessAllowed()) {
-					app.setCentralAuth(false);
+					app.setRolesInAAF(false);
 				}
 				return app;
 			} else{
@@ -582,14 +582,14 @@ public class EPAppCommonServiceImpl implements EPAppService {
 		FieldsValidator fieldsValidator = new FieldsValidator();
 		if(onboardingApp.isCentralAuth){
 		if (onboardingApp.name == null || onboardingApp.name.length() == 0 || onboardingApp.url == null
-				|| onboardingApp.url.length() == 0 || onboardingApp.restrictedApp == null
-				|| onboardingApp.isOpen == null || onboardingApp.isEnabled == null
-				|| (onboardingApp.id != null && ECOMP_APP_ID.equals(onboardingApp.id.toString()))
+				|| onboardingApp.url.length() == 0 || onboardingApp.getRestrictedApp() == null
+				|| onboardingApp.getIsOpen() == null || onboardingApp.getIsEnabled() == null
+				|| (onboardingApp.getId() != null && ECOMP_APP_ID.equals(onboardingApp.getId().toString()))
 				// For a normal app (appType == PortalConstants.PortalAppId),
 				// these fields must be filled
 				// in.
 				// For a restricted app (appType==2), they will be empty.
-				|| ((!onboardingApp.restrictedApp) && (onboardingApp.myLoginsAppName == null
+				|| ((!onboardingApp.getRestrictedApp()) && (onboardingApp.myLoginsAppName == null
 						|| onboardingApp.myLoginsAppName.length() == 0 || onboardingApp.myLoginsAppOwner == null
 						|| onboardingApp.myLoginsAppOwner.length() == 0 || onboardingApp.username == null
 						|| onboardingApp.username.length() == 0 ))) {
@@ -598,14 +598,14 @@ public class EPAppCommonServiceImpl implements EPAppService {
 		}else{
 
 			if (onboardingApp.name == null || onboardingApp.name.length() == 0 || onboardingApp.url == null
-					|| onboardingApp.url.length() == 0 || onboardingApp.restrictedApp == null
-					|| onboardingApp.isOpen == null || onboardingApp.isEnabled == null
-					|| (onboardingApp.id != null && ECOMP_APP_ID.equals(onboardingApp.id.toString()))
+					|| onboardingApp.url.length() == 0 || onboardingApp.getRestrictedApp() == null
+					|| onboardingApp.getIsOpen() == null || onboardingApp.getIsEnabled() == null
+					|| (onboardingApp.getId() != null && ECOMP_APP_ID.equals(onboardingApp.getId().toString()))
 					// For a normal app (appType == PortalConstants.PortalAppId),
 					// these fields must be filled
 					// in.
 					// For a restricted app (appType==2), they will be empty.
-					|| ((!onboardingApp.restrictedApp) && (onboardingApp.myLoginsAppName == null
+					|| ((!onboardingApp.getRestrictedApp()) && (onboardingApp.myLoginsAppName == null
 							|| onboardingApp.myLoginsAppName.length() == 0 || onboardingApp.myLoginsAppOwner == null
 							|| onboardingApp.myLoginsAppOwner.length() == 0 || onboardingApp.username == null
 							|| onboardingApp.username.length() == 0 || onboardingApp.appPassword == null
@@ -815,7 +815,7 @@ public class EPAppCommonServiceImpl implements EPAppService {
 		}
 		return finalsortedAppsByManual;
 	}
-
+	
 	@Override
 	public List<OnboardingApp> getOnboardingApps() {
 		@SuppressWarnings("unchecked")
@@ -823,7 +823,7 @@ public class EPAppCommonServiceImpl implements EPAppService {
 		List<OnboardingApp> onboardingAppsList = new ArrayList<OnboardingApp>();
 		for (EPApp app : apps) {
 			OnboardingApp onboardingApp = new OnboardingApp();
-			app.setAppPassword(EPCommonSystemProperties.APP_DISPLAY_PASSWORD);//to hide password from get request
+			app.setAppBasicAuthPassword(EPCommonSystemProperties.APP_DISPLAY_PASSWORD);//to hide password from get request
 			createOnboardingFromApp(app, onboardingApp);
 			onboardingAppsList.add(onboardingApp);
 		}
@@ -846,7 +846,7 @@ public class EPAppCommonServiceImpl implements EPAppService {
 		onboardingAppsList = getOnboardingApps();
 		
 		final List<Integer> userAdminApps1 = userAdminApps;
-		List<OnboardingApp> userApplicationAdmins = onboardingAppsList.stream().filter(x -> userAdminApps1.contains((int) (long)x.id)).collect(Collectors.toList());
+		List<OnboardingApp> userApplicationAdmins = onboardingAppsList.stream().filter(x -> userAdminApps1.contains((int) (long)x.getId())).collect(Collectors.toList());
 		
         return userApplicationAdmins;
 	}
@@ -870,13 +870,13 @@ public class EPAppCommonServiceImpl implements EPAppService {
 		boolean duplicatedNameSpace = false;
 		boolean duplicatedName = false;
 		List<EPApp> apps;
-		if (onboardingApp.id == null) {
+		if (onboardingApp.getId() == null) {
 			List<Criterion> restrictionsList = new ArrayList<Criterion>();
-			Criterion nameCrit = Restrictions.eq("name",onboardingApp.name);
+			Criterion nameCrit = Restrictions.eq("name",onboardingApp.getAppName());
 			Criterion nameSpaceCrit = null;
 			Criterion	orCrit = null;
-			if (onboardingApp.isCentralAuth) {
-				nameSpaceCrit = Restrictions.eq("nameSpace", onboardingApp.nameSpace);
+			if (onboardingApp.getRolesInAAF()) {
+				nameSpaceCrit = Restrictions.eq("nameSpace", onboardingApp.getNameSpace());
 				orCrit = Restrictions.or(nameCrit, nameSpaceCrit);
 			} else
 				orCrit = Restrictions.or(nameCrit);
@@ -884,12 +884,12 @@ public class EPAppCommonServiceImpl implements EPAppService {
 			apps = (List<EPApp>) dataAccessService.getList(EPApp.class, null, restrictionsList, null);
 		} else {
 			List<Criterion> restrictionsList = new ArrayList<Criterion>();
-			Criterion idCrit =Restrictions.eq("id", onboardingApp.id);
-			Criterion nameCrit = Restrictions.eq("name",onboardingApp.name);
+			Criterion idCrit =Restrictions.eq("id", onboardingApp.getId());
+			Criterion nameCrit = Restrictions.eq("name",onboardingApp.getAppName());
 			Criterion nameSpaceCrit = null;
 			Criterion orCrit= null;
-			if (onboardingApp.isCentralAuth) {
-				nameSpaceCrit = Restrictions.eq("nameSpace",onboardingApp.nameSpace);
+			if (onboardingApp.getRolesInAAF()) {
+				nameSpaceCrit = Restrictions.eq("nameSpace",onboardingApp.getNameSpace());
 				orCrit = Restrictions.or(idCrit, nameSpaceCrit, nameCrit);
 			}
 			else
@@ -900,16 +900,16 @@ public class EPAppCommonServiceImpl implements EPAppService {
 			
 		}
 		for (EPApp app : apps) {
-			if (onboardingApp.id != null && onboardingApp.id.equals(app.getId())) {
+			if (onboardingApp.getId() != null && onboardingApp.getId().equals(app.getId())) {
 				continue;
 			}
-			if (!duplicatedName && app.getName().equalsIgnoreCase(onboardingApp.name)) {
+			if (!duplicatedName && app.getName().equalsIgnoreCase(onboardingApp.getAppName())) {
 				duplicatedName = true;
 				if (duplicatedName) {
 					break;
 				}
 			}
-			if (!duplicatedNameSpace && app.getNameSpace().equalsIgnoreCase(onboardingApp.nameSpace)) {
+			if (!duplicatedNameSpace && app.getNameSpace().equalsIgnoreCase(onboardingApp.getNameSpace())) {
 				duplicatedNameSpace = true;
 				if (duplicatedNameSpace) {
 					break;
@@ -937,8 +937,8 @@ public class EPAppCommonServiceImpl implements EPAppService {
 			validateOnboardingApp(modifiedOnboardingApp, fieldsValidator);
 		}
 		if (fieldsValidator.httpStatusCode.intValue() == HttpServletResponse.SC_OK) {
-			if (modifiedOnboardingApp.id != null) {
-				updateApp(modifiedOnboardingApp.id, modifiedOnboardingApp, fieldsValidator, user);
+			if (modifiedOnboardingApp.getId() != null) {
+				updateApp(modifiedOnboardingApp.getId(), modifiedOnboardingApp, fieldsValidator, user);
 			} else {
 				fieldsValidator.httpStatusCode = new Long(HttpServletResponse.SC_BAD_REQUEST);
 			}
@@ -953,7 +953,7 @@ public class EPAppCommonServiceImpl implements EPAppService {
 			validateOnboardingApp(newOnboardingApp, fieldsValidator);
 		}
 		if (fieldsValidator.httpStatusCode.intValue() == HttpServletResponse.SC_OK) {
-			if (newOnboardingApp.id == null) {
+			if (newOnboardingApp.getId() == null) {
 				updateApp(null, newOnboardingApp, fieldsValidator, user);
 			} else {
 				fieldsValidator.httpStatusCode = new Long(HttpServletResponse.SC_BAD_REQUEST);
@@ -1211,7 +1211,7 @@ public class EPAppCommonServiceImpl implements EPAppService {
 		logger.debug(EELFLoggerDelegate.debugLogger, "LR: entering updateApp");
 		// Separate out the code for a restricted app, since it doesn't need any
 		// of the UEB code.
-		if (onboardingApp.restrictedApp) {
+		if (Boolean.TRUE.equals(onboardingApp.getRestrictedApp())) {
 			boolean result = false;
 			Session localSession = null;
 			Transaction transaction = null;
@@ -1234,7 +1234,7 @@ public class EPAppCommonServiceImpl implements EPAppService {
 				createAppFromOnboarding(app, onboardingApp, localSession);
 				localSession.saveOrUpdate(app);
 				// Enable or disable all menu items associated with this app
-				setFunctionalMenuItemsEnabled(localSession, onboardingApp.isEnabled, appId);
+				setFunctionalMenuItemsEnabled(localSession, onboardingApp.getIsEnabled(), appId);
 				transaction.commit();
 				result = true;
 			} catch (Exception e) {
@@ -1300,7 +1300,7 @@ public class EPAppCommonServiceImpl implements EPAppService {
 				logger.debug(EELFLoggerDelegate.debugLogger,
 						"updateRestrictedApp: finished calling localSession.saveOrUpdate");
 				// Enable or disable all menu items associated with this app
-				setFunctionalMenuItemsEnabled(localSession, onboardingApp.isEnabled, appId);
+				setFunctionalMenuItemsEnabled(localSession, onboardingApp.getIsEnabled(), appId);
 				logger.debug(EELFLoggerDelegate.debugLogger,
 						"updateRestrictedApp: finished calling setFunctionalMenuItemsEnabled");
 				transaction.commit();
@@ -1405,10 +1405,10 @@ public class EPAppCommonServiceImpl implements EPAppService {
 							topicManager.createTopic(
 									PortalApiProperties.getProperty(PortalApiConstants.UEB_APP_KEY),
 									PortalApiProperties.getProperty(PortalApiConstants.UEB_APP_SECRET),
-									appMailboxName, "ECOMP outbox for app" + onboardingApp.name);
+									appMailboxName, "ECOMP outbox for app" + onboardingApp.getAppName());
 							successfullyCreatedMailbox = true;
 							logger.debug(EELFLoggerDelegate.debugLogger,
-									"Successfully created " + appMailboxName + " for App " + onboardingApp.name);
+									"Successfully created " + appMailboxName + " for App " + onboardingApp.getAppName());
 							logger.debug(EELFLoggerDelegate.debugLogger, "    Key = " + appKey + " Secret = "
 									+ appSecret + " generated using = " + user.getEmail());
 							break;
@@ -1487,7 +1487,7 @@ public class EPAppCommonServiceImpl implements EPAppService {
 				logger.debug(EELFLoggerDelegate.debugLogger,
 						"LR: updateApp: finished calling localSession.saveOrUpdate");
 				// Enable or disable all menu items associated with this app
-				setFunctionalMenuItemsEnabled(localSession, onboardingApp.isEnabled, appId);
+				setFunctionalMenuItemsEnabled(localSession, onboardingApp.getIsEnabled(), appId);
 				logger.debug(EELFLoggerDelegate.debugLogger,
 						"LR: updateApp: finished calling setFunctionalMenuItemsEnabled");
 				transaction.commit();
@@ -1528,27 +1528,35 @@ public class EPAppCommonServiceImpl implements EPAppService {
 	 */
 	@Override
 	public void createOnboardingFromApp(EPApp app, OnboardingApp onboardingApp) {
-		onboardingApp.id = app.getId();
-		onboardingApp.name = app.getName();
-		onboardingApp.imageUrl = app.getImageUrl();
-		onboardingApp.description = app.getDescription();
-		onboardingApp.notes = app.getNotes();
-		onboardingApp.url = app.getUrl();
-		onboardingApp.alternateUrl = app.getAlternateUrl();
-		onboardingApp.restUrl = app.getAppRestEndpoint();
-		onboardingApp.isOpen = app.getOpen();
-		onboardingApp.isEnabled = app.getEnabled();
-		onboardingApp.username = app.getUsername();
-		onboardingApp.appPassword = (app.getAppPassword().equals(EPCommonSystemProperties.APP_DISPLAY_PASSWORD)) ? EPCommonSystemProperties.APP_DISPLAY_PASSWORD :decryptedPassword(app.getAppPassword(), app);
-		onboardingApp.uebTopicName = app.getUebTopicName();
-		onboardingApp.uebKey = app.getUebKey();
-		onboardingApp.uebSecret = app.getUebSecret();
-		onboardingApp.isCentralAuth = app.getCentralAuth();
-		onboardingApp.nameSpace = app.getNameSpace();
+		onboardingApp.setId(app.getId());
+		onboardingApp.setAppName(app.getName());
+		onboardingApp.setImageUrl(app.getImageUrl());
+		onboardingApp.setAppDescription(app.getAppDescription());
+		onboardingApp.setAppNotes(app.getAppNotes());
+		onboardingApp.setLandingPage(app.getLandingPage());
+		onboardingApp.setAlternateLandingPage(app.getAlternateLandingPage());
+		onboardingApp.setRestUrl(app.getAppRestEndpoint());
+		onboardingApp.setIsOpen(app.getOpen());
+		onboardingApp.setIsEnabled(app.getEnabled());
+		onboardingApp.setAppBasicAuthUsername(app.getAppBasicAuthUsername());
+		
+		String effectivePwd = null;
+		if (app.getAppBasicAuthPassword().equals(EPCommonSystemProperties.APP_DISPLAY_PASSWORD))
+			effectivePwd = EPCommonSystemProperties.APP_DISPLAY_PASSWORD;
+		else
+			effectivePwd = decryptedPassword(app.getAppBasicAuthPassword(), app);
+		
+		onboardingApp.setAppBasicAuthPassword(effectivePwd);
+		onboardingApp.setUebTopicName(app.getUebTopicName());
+		onboardingApp.setUebKey(app.getUebKey());
+		onboardingApp.setUebSecret(app.getUebSecret());
+		onboardingApp.setRolesInAAF(app.getRolesInAAF());
+		onboardingApp.setNameSpace(app.getNameSpace());
 		onboardingApp.setRestrictedApp(app.isRestrictedApp());
-		// if (app.getThumbnail() != null)
-		// onboardingApp.thumbnail = new
-		// String(Base64.getEncoder().encode(app.getThumbnail()));
+		onboardingApp.setModeOfIntegration(app.getModeOfIntegration());
+		onboardingApp.setAppAck(app.getAppAck());
+		onboardingApp.setUsesCadi(app.getUsesCadi());
+		onboardingApp.setApplicationType(app.getAppType().toString());
 	}
 
 	/**
@@ -1561,26 +1569,31 @@ public class EPAppCommonServiceImpl implements EPAppService {
 	 * @return The first argument.
 	 */
 	protected EPApp createAppFromOnboarding(EPApp app, OnboardingApp onboardingApp, Session localSession) {
-		app.setName(onboardingApp.name);
-		app.setDescription(onboardingApp.description);
-		app.setNotes(onboardingApp.notes);
-		app.setUrl(onboardingApp.url);
-		app.setAlternateUrl(onboardingApp.alternateUrl);
-		app.setAppRestEndpoint(onboardingApp.restUrl);
-		app.setOpen(onboardingApp.isOpen);
-		app.setEnabled(onboardingApp.isEnabled);
-		app.setUsername(onboardingApp.username);
-		if(!onboardingApp.appPassword.equals(EPCommonSystemProperties.APP_DISPLAY_PASSWORD))
-		app.setAppPassword(this.encryptedPassword(onboardingApp.appPassword, app));
+		app.setName(onboardingApp.getAppName());
+		app.setAppDescription(onboardingApp.getAppDescription());
+		app.setAppNotes(onboardingApp.getAppNotes());
+		app.setLandingPage(onboardingApp.getLandingPage());
+		app.setAlternateLandingPage(onboardingApp.getAlternateLandingPage());
+		app.setAppRestEndpoint(onboardingApp.getRestUrl());
+		app.setOpen(onboardingApp.getIsOpen());
+		app.setEnabled(onboardingApp.getIsEnabled());
+		app.setAppBasicAuthUsername(onboardingApp.getAppBasicAuthUsername());
+		if(!onboardingApp.getAppBasicAuthPassword().equals(EPCommonSystemProperties.APP_DISPLAY_PASSWORD))
+		app.setAppBasicAuthPassword(this.encryptedPassword(onboardingApp.getAppBasicAuthPassword(), app));
 		//app.setUebTopicName(onboardingApp.uebTopicName);
-		app.setUebKey(onboardingApp.uebKey);
-		app.setUebSecret(onboardingApp.uebSecret);
-		app.setCentralAuth(onboardingApp.isCentralAuth);
-		app.setNameSpace(onboardingApp.nameSpace);
-		app.setRestrictedApp(onboardingApp.restrictedApp);
-		if (!StringUtils.isEmpty(onboardingApp.thumbnail)) {
+		app.setUebKey(onboardingApp.getUebKey());
+		app.setUebSecret(onboardingApp.getUebSecret());
+		app.setRolesInAAF(onboardingApp.getRolesInAAF());
+		app.setNameSpace(onboardingApp.getNameSpace());
+		app.setAppType(new Integer(onboardingApp.getApplicationType()));		
+		app.setModeOfIntegration(onboardingApp.getModeOfIntegration());
+		app.setAppAck(onboardingApp.getAppAck());
+		app.setUsesCadi(onboardingApp.getUsesCadi());
+		
+		
+		if (!StringUtils.isEmpty(onboardingApp.getThumbnail())) {
 			logger.debug(EELFLoggerDelegate.debugLogger, "createAppFromOnboarding: onboarding thumbnail is NOT empty");
-			String[] splitBase64Thumbnail = onboardingApp.thumbnail.split("base64,");
+			String[] splitBase64Thumbnail = onboardingApp.getThumbnail().split("base64,");
 			logger.debug(EELFLoggerDelegate.debugLogger,
 					"createAppFromOnboarding: length of splitBase64Thumbnail: " + splitBase64Thumbnail.length);
 			if (splitBase64Thumbnail.length > 1) {
@@ -1592,7 +1605,7 @@ public class EPAppCommonServiceImpl implements EPAppService {
 				app.setImageUrl(constructImageName(onboardingApp));
 				app.setThumbnail(decodedImage);
 			}
-		} else if (app.getThumbnail() != null && onboardingApp.imageLink == null) {
+		} else if (app.getThumbnail() != null && onboardingApp.getImageLink() == null) {
 			// The thumbnail that came in from the json is empty; the previous
 			// thumbnail is NOT empty. Must delete it.
 			logger.debug(EELFLoggerDelegate.debugLogger,
@@ -1607,7 +1620,7 @@ public class EPAppCommonServiceImpl implements EPAppService {
 	}
 
 	protected String constructImageName(OnboardingApp onboardingApp) {
-		return "portal_" + String.valueOf(onboardingApp.url.hashCode() + "_" + (int) (Math.random() * 100000.0))
+		return "portal_" + String.valueOf(onboardingApp.getLandingPage().hashCode() + "_" + (int) (Math.random() * 100000.0))
 				+ ".png";
 	}
 
@@ -1929,9 +1942,11 @@ public class EPAppCommonServiceImpl implements EPAppService {
 		logger.debug(EELFLoggerDelegate.debugLogger, "checkIfNameSpaceExists: Connecting to External Auth system for : "+namespace);
 		ResponseEntity<String> response = null;
 		try {
-			response = template
-					.exchange(SystemProperties.getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_URL)
-							+ "nss/" + namespace, HttpMethod.GET, entity, String.class);
+			
+			String namespaceUrl = SystemProperties.
+					getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_URL) + "nss/" + namespace;
+			
+			response = template.exchange(namespaceUrl, HttpMethod.GET, entity, String.class);
 			logger.debug(EELFLoggerDelegate.debugLogger, "checkIfNameSpaceExists for"+ namespace ,
 					response.getStatusCode().value());
 			if (response.getStatusCode().value() == 200) {

@@ -35,36 +35,14 @@
  *
  * 
  */
+package org.onap.portalapp.portal.domain;
 
-export interface IApplications {
-    id ?: any;
-    name ?: any;
-    imageUrl ?: any;
-    imageLink ?: any;
-    description ?: any;
-    notes ?: any;
-    url ?: any
-    alternateUrl ?: any;
-    restUrl ?: any;
-    isOpen ?: any;
-    isEnabled ?: any;
-    motsId ?: any;
-    myLoginsAppName ?: any;
-    myLoginsAppOwner ?: any;
-    username ?: any;
-    appPassword ?: any;
-    thumbnail ?: any;
-    uebTopicName ?: any;
-    uebKey ?: any;
-    uebSecret ?: any;
-    // ---- start ----to be removed
-    restrictedApp ?: any;
-    isCentralAuth ?: any;
-    // ---- end ----to be removed
-    applicationType ?: any;
-    rolesInAAF ?: any;
-    nameSpace ?: any;
-    usesCadi ?: any;
-    modeOfIntegration ?: any;
-    appAck ?: any;
+public interface EpAppType {
+	public static final int GUI = 1;
+	public static final int HYPERLINK = 2;
+	public static final int NONGUI = 3;
+
+	public static final String GUI_STR = "gui";
+	public static final String HYPERLINK_STR = "hyperlink";
+	public static final String NONGUI_STR = "nongui";
 }

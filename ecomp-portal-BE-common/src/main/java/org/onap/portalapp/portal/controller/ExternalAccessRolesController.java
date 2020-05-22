@@ -851,7 +851,7 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 		if(app.isEmpty()){
 			throw new Exception(INVALID_UEB_KEY);
 		}
-		if(!app.isEmpty() && app.get(0).getCentralAuth()){
+		if(!app.isEmpty() && app.get(0).getRolesInAAF()){
 			ResponseEntity<String> response = externalAccessRolesService.getNameSpaceIfExists(app.get(0));
 			if (response.getStatusCode().value() == HttpServletResponse.SC_NOT_FOUND)
 				throw new Exception("Invalid NameSpace");

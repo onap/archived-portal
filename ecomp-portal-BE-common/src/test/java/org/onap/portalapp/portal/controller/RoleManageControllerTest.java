@@ -73,6 +73,7 @@ import org.onap.portalapp.portal.domain.CentralV2RoleFunction;
 import org.onap.portalapp.portal.domain.CentralizedApp;
 import org.onap.portalapp.portal.domain.EPApp;
 import org.onap.portalapp.portal.domain.EPUser;
+import org.onap.portalapp.portal.domain.EpAppType;
 import org.onap.portalapp.portal.ecomp.model.PortalRestResponse;
 import org.onap.portalapp.portal.ecomp.model.PortalRestStatusEnum;
 import org.onap.portalapp.portal.ecomp.model.UploadRoleFunctionExtSystem;
@@ -170,16 +171,18 @@ public class RoleManageControllerTest {
 
 	@Test
 	public void getRoleIfRoleIdNullTest() throws Exception {
+		EPApp app = mockApp();
+		app.setRolesInAAF(true);
 		PowerMockito.mockStatic(EPUserUtils.class);
 		PowerMockito.mockStatic(EcompPortalUtils.class);
 		EPUser user = mockUser.mockEPUser();
 		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
 		Mockito.when(EcompPortalUtils.checkIfRemoteCentralAccessAllowed()).thenReturn(true);
-		Mockito.when(appService.getApp((long) 1)).thenReturn(CentralApp());
-		Mockito.when(adminRolesService.isAccountAdminOfApplication(user, CentralApp())).thenReturn(true);
+		Mockito.when(appService.getApp((long) 1)).thenReturn(app);
+		Mockito.when(adminRolesService.isAccountAdminOfApplication(user, app)).thenReturn(true);
 		List<EPApp> apps = new ArrayList<>();
-		apps.add(CentralApp());
-		Mockito.when(externalAccessRolesService.getApp(CentralApp().getUebKey())).thenReturn(apps);
+		apps.add(app);
+		Mockito.when(externalAccessRolesService.getApp(app.getUebKey())).thenReturn(apps);
 		ResponseEntity<String> result = new ResponseEntity<>(HttpStatus.OK);
 		Mockito.when(externalAccessRolesService.getNameSpaceIfExists(apps.get(0))).thenReturn(result);
 		CentralV2Role answer = new CentralV2Role.CentralV2RoleBuilder().createCentralV2Role();
@@ -191,7 +194,7 @@ public class RoleManageControllerTest {
 		PrintWriter writer = new PrintWriter(sw);
 		Mockito.when(mockedResponse.getWriter()).thenReturn(writer);
 		List<EPApp> appList = new ArrayList<>();
-		appList.add(CentralApp());
+		appList.add(app);
 		ResponseEntity<String> response = new ResponseEntity<>(HttpStatus.OK);
 		Mockito.when(externalAccessRolesService.getNameSpaceIfExists(Matchers.anyObject())).thenReturn(response);
 		Mockito.when(externalAccessRolesService.getApp(Matchers.anyString())).thenReturn(appList);
@@ -241,23 +244,26 @@ public class RoleManageControllerTest {
 
 		app.setName("Test");
 		app.setImageUrl("test");
-		app.setDescription("test");
-		app.setNotes("test");
-		app.setUrl("test");
+		app.setAppDescription("test");
+		app.setAppNotes("test");
+		app.setLandingPage("test");
 		app.setId((long) 1);
 		app.setAppRestEndpoint("test");
-		app.setAlternateUrl("test");
+		app.setAlternateLandingPage("test");
 		app.setName("test");
 		app.setMlAppName("test");
 		app.setMlAppAdminId("test");
-		app.setUsername("test");
-		app.setAppPassword("test");
+		app.setAppBasicAuthUsername("test");
+		app.setAppBasicAuthPassword("test");
 		app.setOpen(false);
 		app.setEnabled(false);
 		app.setUebKey("test");
 		app.setUebSecret("test");
 		app.setUebTopicName("test");
-		app.setAppType(1);
+		app.setAppType(EpAppType.GUI);
+		app.setModeOfIntegration("test");
+		app.setAppAck(false);
+		app.setUsesCadi(false);
 		return app;
 
 	}
@@ -265,7 +271,7 @@ public class RoleManageControllerTest {
 	@Test
 	public void getRolesTest() throws Exception {
 		EPApp app = mockApp();
-		app.setCentralAuth(true);
+		app.setRolesInAAF(true);
 		PowerMockito.mockStatic(EPUserUtils.class);
 		PowerMockito.mockStatic(EcompPortalUtils.class);
 		EPUser user = mockUser.mockEPUser();
@@ -298,13 +304,16 @@ public class RoleManageControllerTest {
 
 	@Test
 	public void getRoleFunctionListTest() throws Exception {
+		EPApp app = mockApp();
+		app.setRolesInAAF(true);
 		PowerMockito.mockStatic(EPUserUtils.class);
 		PowerMockito.mockStatic(EcompPortalUtils.class);
 		EPUser user = mockUser.mockEPUser();
 		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
 		Mockito.when(EcompPortalUtils.checkIfRemoteCentralAccessAllowed()).thenReturn(true);
-		Mockito.when(adminRolesService.isAccountAdminOfApplication(user, CentralApp())).thenReturn(true);
-		Mockito.when(appService.getApp((long) 1)).thenReturn(CentralApp());
+		Mockito.when(adminRolesService.isAccountAdminOfApplication(user, app)).thenReturn(true);
+		
+		Mockito.when(appService.getApp((long) 1)).thenReturn(app);
 		List<CentralV2RoleFunction> answer = new ArrayList<>();
 		Mockito.when(externalAccessRolesService.getRoleFuncList("test")).thenReturn(answer);
 		StringWriter sw = new StringWriter();
@@ -326,13 +335,15 @@ public class RoleManageControllerTest {
 
 	@Test
 	public void saveRoleFunctionTest() throws Exception {
+		EPApp app = mockApp();
+		app.setRolesInAAF(true);
 		PowerMockito.mockStatic(EPUserUtils.class);
 		PowerMockito.mockStatic(EcompPortalUtils.class);
 		EPUser user = mockUser.mockEPUser();
 		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
 		Mockito.when(EcompPortalUtils.checkIfRemoteCentralAccessAllowed()).thenReturn(true);
-		Mockito.when(adminRolesService.isAccountAdminOfApplication(user, CentralApp())).thenReturn(true);
-		Mockito.when(appService.getApp((long) 1)).thenReturn(CentralApp());
+		Mockito.when(adminRolesService.isAccountAdminOfApplication(user, app)).thenReturn(true);
+		Mockito.when(appService.getApp((long) 1)).thenReturn(app);
 		Mockito.doNothing().when(roleFunctionListController).saveRoleFunction(mockedRequest, mockedResponse, "test");
 		CentralV2RoleFunction addNewFunc = new CentralV2RoleFunction();
 		addNewFunc.setCode("Test");
@@ -351,7 +362,7 @@ public class RoleManageControllerTest {
 		List<EPUser> userList = new ArrayList<>();
 		userList.add(user);
 		List<EPApp> appList = new ArrayList<>();
-		appList.add(CentralApp());
+		appList.add(app);
 		Mockito.when(externalAccessRolesService.getUser("guestT")).thenReturn(userList);
 		StringWriter sw = new StringWriter();
 		PrintWriter writer = new PrintWriter(sw);
@@ -430,14 +441,16 @@ public class RoleManageControllerTest {
 
 	@Test
 	public void removeRoleFunctionTest() throws Exception {
+		EPApp app = mockApp();
+		app.setRolesInAAF(true);
 		PowerMockito.mockStatic(EPUserUtils.class);
 		PowerMockito.mockStatic(EcompPortalUtils.class);
 		EPUser user = mockUser.mockEPUser();
 		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
 		Mockito.when(EcompPortalUtils.checkIfRemoteCentralAccessAllowed()).thenReturn(true);
-		Mockito.when(adminRolesService.isAccountAdminOfApplication(user, CentralApp())).thenReturn(true);
+		Mockito.when(adminRolesService.isAccountAdminOfApplication(user, app)).thenReturn(true);
 		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
-		Mockito.when(appService.getApp((long) 1)).thenReturn(CentralApp());
+		Mockito.when(appService.getApp((long) 1)).thenReturn(app);
 		String roleFun = "{\"name\":\"Test\",\"type\":\"Test\",\"action\":\"Test\", \"code\":\"Test\"}";
 		CentralV2RoleFunction roleFunction = mockCentralRoleFunction();
 		Mockito.when(externalAccessRolesService.getRoleFunction("Test|Test|Test", "test")).thenReturn(roleFunction);
@@ -447,7 +460,7 @@ public class RoleManageControllerTest {
 		Mockito.when(externalAccessRolesService.deleteCentralRoleFunction(Matchers.anyString(), Matchers.anyObject()))
 				.thenReturn(true);
 		List<EPApp> appList = new ArrayList<>();
-		appList.add(CentralApp());
+		appList.add(app);
 		ResponseEntity<String> response = new ResponseEntity<>(HttpStatus.OK);
 		Mockito.when(externalAccessRolesService.getNameSpaceIfExists(Matchers.anyObject())).thenReturn(response);
 		Mockito.when(externalAccessRolesService.getApp(Matchers.anyString())).thenReturn(appList);
@@ -512,7 +525,7 @@ public class RoleManageControllerTest {
 	@Test
 	public void removeRoleFunctionIfAppNotCentralizedTest() throws Exception {
 		EPApp app = mockApp();
-		app.setCentralAuth(false);
+		app.setRolesInAAF(false);
 		Mockito.when(appService.getApp((long) 1)).thenReturn(app);
 		String roleFun = "{\"name\":\"Test\",\"code\":\"Test\"}";
 		roleManageController.removeRoleFunction(mockedRequest, mockedResponse, roleFun, (long) 1);
@@ -1021,14 +1034,14 @@ public class RoleManageControllerTest {
 
 	public EPApp CentralApp() {
 		EPApp app = mockApp();
-		app.setCentralAuth(true);
+		app.setRolesInAAF(true);
 		app.setNameSpace("com.test");
 		return app;
 	}
 
 	public EPApp NonCentralApp() {
 		EPApp app = mockApp();
-		app.setCentralAuth(false);
+		app.setRolesInAAF(false);
 		return app;
 	}
 

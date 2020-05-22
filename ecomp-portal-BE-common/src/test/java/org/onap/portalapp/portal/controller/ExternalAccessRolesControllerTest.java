@@ -63,6 +63,7 @@ import org.onap.portalapp.portal.core.MockEPUser;
 import org.onap.portalapp.portal.domain.CentralV2RoleFunction;
 import org.onap.portalapp.portal.domain.EPApp;
 import org.onap.portalapp.portal.domain.EPUser;
+import org.onap.portalapp.portal.domain.EpAppType;
 import org.onap.portalapp.portal.ecomp.model.PortalRestResponse;
 import org.onap.portalapp.portal.ecomp.model.PortalRestStatusEnum;
 import org.onap.portalapp.portal.framework.MockitoTestSuite;
@@ -125,23 +126,23 @@ public class ExternalAccessRolesControllerTest {
 		EPApp app = new EPApp();
 		app.setName("Test");
 		app.setImageUrl("test");
-		app.setDescription("test");
-		app.setNotes("test");
-		app.setUrl("test");
+		app.setAppDescription("test");
+		app.setAppNotes("test");
+		app.setLandingPage("test");
 		app.setId((long) 1);
 		app.setAppRestEndpoint("test");
-		app.setAlternateUrl("test");
+		app.setAlternateLandingPage("test");
 		app.setName("test");
 		app.setMlAppName("test");
 		app.setMlAppAdminId("test");
-		app.setUsername("test");
-		app.setAppPassword("test");
+		app.setAppBasicAuthUsername("test");
+		app.setAppBasicAuthPassword("test");
 		app.setOpen(false);
 		app.setEnabled(false);
 		app.setUebKey("test");
 		app.setUebSecret("test");
 		app.setUebTopicName("test");
-		app.setAppType(1);
+		app.setAppType(EpAppType.GUI);
 		return app;
 	}
 
@@ -166,7 +167,7 @@ public class ExternalAccessRolesControllerTest {
 		PrintWriter writer = new PrintWriter(sw);
 		Mockito.when(mockedResponse.getWriter()).thenReturn(writer);
 		EPApp app = mockApp();
-		app.setCentralAuth(true);
+		app.setRolesInAAF(true);
 		List<EPApp> appList = new ArrayList<>();
 		appList.add(app);
 		Mockito.when(mockedRequest.getHeader("uebkey")).thenReturn(uebKey);
@@ -207,7 +208,7 @@ public class ExternalAccessRolesControllerTest {
 		String expectedCentralUser = "test";
 		String loginId = "test";
 		EPApp app = mockApp();
-		app.setCentralAuth(true);
+		app.setRolesInAAF(true);
 		List<EPApp> appList = new ArrayList<>();
 		appList.add(app);
 		Mockito.when(mockedRequest.getHeader("uebkey")).thenReturn(uebKey);
@@ -225,7 +226,7 @@ public class ExternalAccessRolesControllerTest {
 		String expectedCentralUser = null;
 		String loginId = "test";
 		EPApp app = mockApp();
-		app.setCentralAuth(true);
+		app.setRolesInAAF(true);
 		List<EPApp> appList = new ArrayList<>();
 		appList.add(app);
 		Mockito.when(mockedRequest.getHeader("uebkey")).thenReturn(uebKey);
@@ -245,7 +246,7 @@ public class ExternalAccessRolesControllerTest {
 		List<CentralV2Role> centralV2RoleList = new ArrayList<>();
 		List<CentralRole> centralRoleList = new ArrayList<>();
 		EPApp app = mockApp();
-		app.setCentralAuth(true);
+		app.setRolesInAAF(true);
 		applicationList.add(app);
 		ResponseEntity<String> response = new ResponseEntity<>(HttpStatus.FOUND);
 		Mockito.when(externalAccessRolesService.getNameSpaceIfExists(applicationList.get(0))).thenReturn(response);
@@ -267,7 +268,7 @@ public class ExternalAccessRolesControllerTest {
 		List<CentralV2Role> centralV2RoleList = new ArrayList<>();
 		List<CentralRole> centralRoleList = new ArrayList<>();
 		EPApp app = mockApp();
-		app.setCentralAuth(true);
+		app.setRolesInAAF(true);
 		applicationList.add(app);
 		ResponseEntity<String> response = null;
 		Mockito.when(externalAccessRolesService.getNameSpaceIfExists(applicationList.get(0))).thenReturn(response);
@@ -289,7 +290,7 @@ public class ExternalAccessRolesControllerTest {
 		List<EPApp> applicationList = new ArrayList<>();
 		List<CentralV2Role> centralV2Role = new ArrayList<>();
 		EPApp app = mockApp();
-		app.setCentralAuth(true);
+		app.setRolesInAAF(true);
 		applicationList.add(app);
 		ResponseEntity<String> response = new ResponseEntity<>(HttpStatus.FOUND);
 		Mockito.when(externalAccessRolesService.getNameSpaceIfExists(applicationList.get(0))).thenReturn(response);
@@ -309,7 +310,7 @@ public class ExternalAccessRolesControllerTest {
 		List<EPApp> applicationList = new ArrayList<>();
 		List<CentralV2Role> centralV2Role = new ArrayList<>();
 		EPApp app = mockApp();
-		app.setCentralAuth(true);
+		app.setRolesInAAF(true);
 		applicationList.add(app);
 		ResponseEntity<String> response = null;
 		Mockito.when(externalAccessRolesService.getNameSpaceIfExists(applicationList.get(0))).thenReturn(response);
@@ -354,7 +355,7 @@ public class ExternalAccessRolesControllerTest {
 		List<EPApp> applicationList = new ArrayList<>();
 		List<CentralV2RoleFunction> centralV2RoleFunction = new ArrayList<>();
 		EPApp app = mockApp();
-		app.setCentralAuth(true);
+		app.setRolesInAAF(true);
 		applicationList.add(app);
 		ResponseEntity<String> response = new ResponseEntity<>(HttpStatus.FOUND);
 		Mockito.when(externalAccessRolesService.getNameSpaceIfExists(applicationList.get(0))).thenReturn(response);
@@ -387,7 +388,7 @@ public class ExternalAccessRolesControllerTest {
 		List<EPApp> applicationList = new ArrayList<>();
 		List<CentralV2RoleFunction> centralV2RoleFunction = new ArrayList<>();
 		EPApp app = mockApp();
-		app.setCentralAuth(true);
+		app.setRolesInAAF(true);
 		applicationList.add(app);
 		ResponseEntity<String> response = new ResponseEntity<>(HttpStatus.FOUND);
 		Mockito.when(externalAccessRolesService.getNameSpaceIfExists(applicationList.get(0))).thenReturn(response);
@@ -419,7 +420,7 @@ public class ExternalAccessRolesControllerTest {
 		long roleId = 1;
 		CentralV2Role centralV2Role = new CentralV2Role.CentralV2RoleBuilder().createCentralV2Role();
 		EPApp app = mockApp();
-		app.setCentralAuth(true);
+		app.setRolesInAAF(true);
 		applicationList.add(app);
 		Mockito.when(mockedRequest.getHeader("uebkey")).thenReturn(uebKey);
 		ResponseEntity<String> response = new ResponseEntity<>(HttpStatus.FOUND);
@@ -467,7 +468,7 @@ public class ExternalAccessRolesControllerTest {
 		long roleId = 1;
 		CentralV2Role centralV2Role = new CentralV2Role.CentralV2RoleBuilder().createCentralV2Role();
 		EPApp app = mockApp();
-		app.setCentralAuth(true);
+		app.setRolesInAAF(true);
 		applicationList.add(app);
 		Mockito.when(mockedRequest.getHeader("uebkey")).thenReturn(uebKey);
 		ResponseEntity<String> response = new ResponseEntity<>(HttpStatus.FOUND);
@@ -516,7 +517,7 @@ public class ExternalAccessRolesControllerTest {
 		CentralV2RoleFunction centralV2RoleFunction = new CentralV2RoleFunction();
 		centralV2RoleFunction.setCode("test");
 		EPApp app = mockApp();
-		app.setCentralAuth(true);
+		app.setRolesInAAF(true);
 		applicationList.add(app);
 		Mockito.when(mockedRequest.getHeader("uebkey")).thenReturn(uebKey);
 		ResponseEntity<String> response = new ResponseEntity<>(HttpStatus.FOUND);
@@ -537,7 +538,7 @@ public class ExternalAccessRolesControllerTest {
 		String code = "test";
 		CentralV2RoleFunction centralV2RoleFunction = null;
 		EPApp app = mockApp();
-		app.setCentralAuth(true);
+		app.setRolesInAAF(true);
 		applicationList.add(app);
 		Mockito.when(mockedRequest.getHeader("uebkey")).thenReturn(uebKey);
 		ResponseEntity<String> response = new ResponseEntity<>(HttpStatus.FOUND);
@@ -565,7 +566,7 @@ public class ExternalAccessRolesControllerTest {
 	@Test
 	public void getRoleFunctionTest() throws Exception {
 		EPApp mockApp = mockApp();
-		mockApp.setCentralAuth(true);
+		mockApp.setRolesInAAF(true);
 		List<EPApp> mockAppList = new ArrayList<>();
 		mockAppList.add(mockApp);
 		StringWriter sw = new StringWriter();
@@ -607,7 +608,7 @@ public class ExternalAccessRolesControllerTest {
 	public void getRoleFunctionXSSTest() throws Exception {
 		String expected = getXSSKeyJson();
 		EPApp mockApp = mockApp();
-		mockApp.setCentralAuth(true);
+		mockApp.setRolesInAAF(true);
 		List<EPApp> mockAppList = new ArrayList<>();
 		mockAppList.add(mockApp);
 		StringWriter sw = new StringWriter();
@@ -656,7 +657,7 @@ public class ExternalAccessRolesControllerTest {
 	public void saveRoleFunctionExceptionTest() throws Exception {
 		List<EPApp> applicationList = new ArrayList<>();
 		EPApp app = mockApp();
-		app.setCentralAuth(true);
+		app.setRolesInAAF(true);
 		applicationList.add(app);
 		Mockito.when(externalAccessRolesService.getApp(mockedRequest.getHeader(uebKey))).thenReturn(applicationList);
 		PortalRestResponse<String> portalRestResponse = null;
@@ -679,7 +680,7 @@ public class ExternalAccessRolesControllerTest {
 		List<EPUser> userList = new ArrayList<>();
 		userList.add(user);
 		EPApp app = mockApp();
-		app.setCentralAuth(true);
+		app.setRolesInAAF(true);
 		applicationList.add(app);
 		JSONObject roleFunc = new JSONObject();
 		roleFunc.put("type", "test_type");
@@ -720,7 +721,7 @@ public class ExternalAccessRolesControllerTest {
 		List<EPUser> userList = new ArrayList<>();
 		userList.add(user);
 		EPApp app = mockApp();
-		app.setCentralAuth(true);
+		app.setRolesInAAF(true);
 		applicationList.add(app);
 		JSONObject roleFunc = new JSONObject();
 		roleFunc.put("type", "<script>alert(“XSS”)</script> ");
@@ -768,7 +769,7 @@ public class ExternalAccessRolesControllerTest {
 		List<EPUser> userList = new ArrayList<>();
 		userList.add(user);
 		EPApp app = mockApp();
-		app.setCentralAuth(true);
+		app.setRolesInAAF(true);
 		List<EPApp> appList = new ArrayList<>();
 		appList.add(app);
 		expectedportalRestResponse.setStatus(PortalRestStatusEnum.OK);
@@ -799,7 +800,7 @@ public class ExternalAccessRolesControllerTest {
 		List<EPUser> userList = new ArrayList<>();
 		userList.add(user);
 		EPApp app = mockApp();
-		app.setCentralAuth(true);
+		app.setRolesInAAF(true);
 		List<EPApp> appList = new ArrayList<>();
 		appList.add(app);
 		String code = "<script>alert(‘XSS’)</script>";
@@ -831,7 +832,7 @@ public class ExternalAccessRolesControllerTest {
 	public void getActiveRolesValidationTest() throws Exception {
 		List<CentralRole> expectedRolesList = null;
 		EPApp app = mockApp();
-		app.setCentralAuth(true);
+		app.setRolesInAAF(true);
 		List<EPApp> appList = new ArrayList<>();
 		appList.add(app);
 		List<CentralV2Role> cenRoles = new ArrayList<>();
@@ -1112,7 +1113,7 @@ public class ExternalAccessRolesControllerTest {
 		Mockito.when(mockedResponse.getWriter()).thenReturn(writer);
 		List<EPApp> applicationList = new ArrayList<>();
 		EPApp app = mockApp();
-		app.setCentralAuth(true);
+		app.setRolesInAAF(true);
 		applicationList.add(app);
 		Mockito.when(externalAccessRolesService.getApp(mockedRequest.getHeader(uebKey))).thenReturn(applicationList);
 		Mockito.when(externalAccessRolesService.getAllAppUsers(mockedRequest.getHeader(uebKey))).thenReturn(users);
@@ -1209,7 +1210,7 @@ public class ExternalAccessRolesControllerTest {
 		List<EPApp> applicationList = new ArrayList<>();
 		EPApp app = mockApp();
 		app.setUebKey("uebKey");
-		app.setCentralAuth(true);
+		app.setRolesInAAF(true);
 		applicationList.add(app);
 		Mockito.when(externalAccessRolesService.getApp(mockedRequest.getHeader(uebKey))).thenReturn(applicationList);
 		ResponseEntity<String> response = new ResponseEntity<>(HttpStatus.OK);
@@ -1222,7 +1223,7 @@ public class ExternalAccessRolesControllerTest {
 		List<EPApp> applicationList = new ArrayList<>();
 		EPApp app = mockApp();
 		app.setUebKey("uebKey");
-		app.setCentralAuth(true);
+		app.setRolesInAAF(true);
 		applicationList.add(app);
 		Mockito.when(externalAccessRolesService.getApp(mockedRequest.getHeader(uebKey))).thenReturn(applicationList);
 		ResponseEntity<String> response = new ResponseEntity<>(HttpStatus.OK);
@@ -1241,7 +1242,7 @@ public class ExternalAccessRolesControllerTest {
 	public void getEpUserExceptionTest() throws Exception {
 		List<EPApp> applicationList = new ArrayList<>();
 		EPApp app = mockApp();
-		app.setCentralAuth(true);
+		app.setRolesInAAF(true);
 		Mockito.when(externalAccessRolesService.getApp(mockedRequest.getHeader(uebKey))).thenReturn(applicationList);
 		StringWriter sw = new StringWriter();
 		PrintWriter writer = new PrintWriter(sw);
@@ -1254,7 +1255,7 @@ public class ExternalAccessRolesControllerTest {
 		List<EPApp> applicationList = new ArrayList<>();
 		EPApp app = mockApp();
 		app.setUebKey("uebKey");
-		app.setCentralAuth(true);
+		app.setRolesInAAF(true);
 		applicationList.add(app);
 		Mockito.when(externalAccessRolesService.getApp(mockedRequest.getHeader(uebKey))).thenReturn(applicationList);
 		ResponseEntity<String> response = new ResponseEntity<>(HttpStatus.OK);
@@ -1279,7 +1280,7 @@ public class ExternalAccessRolesControllerTest {
 		List<EPApp> applicationList = new ArrayList<>();
 		EPApp app = mockApp();
 		app.setUebKey("uebKey");
-		app.setCentralAuth(true);
+		app.setRolesInAAF(true);
 		applicationList.add(app);
 		Mockito.when(externalAccessRolesService.getApp(mockedRequest.getHeader(uebKey))).thenReturn(applicationList);
 		ResponseEntity<String> response = new ResponseEntity<>(HttpStatus.OK);
@@ -1297,7 +1298,7 @@ public class ExternalAccessRolesControllerTest {
 	public void getEPRolesOfApplicationExceptionTest() throws Exception {
 		List<EPApp> applicationList = new ArrayList<>();
 		EPApp app = mockApp();
-		app.setCentralAuth(true);
+		app.setRolesInAAF(true);
 		Mockito.when(externalAccessRolesService.getApp(mockedRequest.getHeader(uebKey))).thenReturn(applicationList);
 		StringWriter sw = new StringWriter();
 		PrintWriter writer = new PrintWriter(sw);
@@ -1319,7 +1320,7 @@ public class ExternalAccessRolesControllerTest {
 		List<EPUser> userList = new ArrayList<>();
 		userList.add(user);
 		EPApp app = mockApp();
-		app.setCentralAuth(true);
+		app.setRolesInAAF(true);
 		List<EPApp> appList = new ArrayList<>();
 		appList.add(app);
 		expectedportalRestResponse.setStatus(PortalRestStatusEnum.OK);
@@ -1351,7 +1352,7 @@ public class ExternalAccessRolesControllerTest {
 		List<EPUser> userList = new ArrayList<>();
 		userList.add(user);
 		EPApp app = mockApp();
-		app.setCentralAuth(true);
+		app.setRolesInAAF(true);
 		List<EPApp> appList = new ArrayList<>();
 		appList.add(app);
 		expectedportalRestResponse.setStatus(PortalRestStatusEnum.ERROR);
@@ -1383,7 +1384,7 @@ public class ExternalAccessRolesControllerTest {
 		List<EPUser> userList = new ArrayList<>();
 		userList.add(user);
 		EPApp app = mockApp();
-		app.setCentralAuth(true);
+		app.setRolesInAAF(true);
 		List<EPApp> appList = new ArrayList<>();
 		appList.add(app);
 		expectedportalRestResponse.setStatus(PortalRestStatusEnum.ERROR);
@@ -1435,7 +1436,7 @@ public class ExternalAccessRolesControllerTest {
 		List<EPUser> userList = new ArrayList<>();
 		userList.add(user);
 		EPApp app = mockApp();
-		app.setCentralAuth(true);
+		app.setRolesInAAF(true);
 		List<EPApp> appList = new ArrayList<>();
 		appList.add(app);
 		expectedportalRestResponse.setStatus(PortalRestStatusEnum.OK);
@@ -1467,7 +1468,7 @@ public class ExternalAccessRolesControllerTest {
 		List<EPUser> userList = new ArrayList<>();
 		userList.add(user);
 		EPApp app = mockApp();
-		app.setCentralAuth(true);
+		app.setRolesInAAF(true);
 		List<EPApp> appList = new ArrayList<>();
 		appList.add(app);
 		String code = "<img src=xss onerror=alert(1)>";
@@ -1497,7 +1498,7 @@ public class ExternalAccessRolesControllerTest {
 		List<EPUser> userList = new ArrayList<>();
 		userList.add(user);
 		EPApp app = mockApp();
-		app.setCentralAuth(true);
+		app.setRolesInAAF(true);
 		List<EPApp> appList = new ArrayList<>();
 		appList.add(app);
 		expectedportalRestResponse.setStatus(PortalRestStatusEnum.ERROR);

@@ -74,6 +74,7 @@ import org.onap.portalapp.portal.domain.EPUserAppsManualSortPreference;
 import org.onap.portalapp.portal.domain.EPUserAppsSortPreference;
 import org.onap.portalapp.portal.domain.EPWidgetsManualSortPreference;
 import org.onap.portalapp.portal.domain.EcompApp;
+import org.onap.portalapp.portal.domain.EpAppType;
 import org.onap.portalapp.portal.domain.UserRole;
 import org.onap.portalapp.portal.domain.UserRoles;
 import org.onap.portalapp.portal.ecomp.model.AppCatalogItem;
@@ -157,24 +158,24 @@ public class EPAppCommonServiceImplTest {
 		EPApp app = new EPApp();
 		app.setName("Test");
 		app.setImageUrl("test");
-		app.setDescription("test");
-		app.setNotes("test");
-		app.setUrl("test");
+		app.setAppDescription("test");
+		app.setAppNotes("test");
+		app.setLandingPage("test");
 		app.setId((long) 1);
 		app.setAppRestEndpoint("test");
-		app.setAlternateUrl("test");
+		app.setAlternateLandingPage("test");
 		app.setName("test");
 		app.setMlAppName("test");
 		app.setMlAppAdminId("test");
-		app.setUsername("test");
-		app.setAppPassword("test");
+		app.setAppBasicAuthUsername("test");
+		app.setAppBasicAuthPassword("test");
 		app.setOpen(false);
 		app.setEnabled(false);
-		app.setCentralAuth(true);
+		app.setRolesInAAF(true);
 		app.setUebKey("test");
 		app.setUebSecret("test");
 		app.setUebTopicName("test");
-		app.setAppType(1);
+		app.setAppType(EpAppType.GUI);
 		return app;
 	}
 	
@@ -439,7 +440,7 @@ public class EPAppCommonServiceImplTest {
 	public void getRestrictedAppRolesTest() {
 		EPUser user = mockUser.mockEPUser();
 		EPApp mockApp = mockApp();
-		mockApp.setRestrictedApp(true);
+		mockApp.setAppType(EpAppType.HYPERLINK);
 		user.setLoginId("guestT");
 		List<LocalRole> expected = new ArrayList<>();
 		LocalRole localRole = new LocalRole();
@@ -458,7 +459,7 @@ public class EPAppCommonServiceImplTest {
 	public void getPoralAppRolesTest() {
 		EPUser user = mockUser.mockEPUser();
 		EPApp mockApp = mockApp();
-		mockApp.setRestrictedApp(false);
+		mockApp.setAppType(EpAppType.GUI);
 		mockApp.setId(1l);
 		user.setLoginId("guestT");
 		List<LocalRole> expected = new ArrayList<>();
@@ -477,7 +478,7 @@ public class EPAppCommonServiceImplTest {
 	public void getNonPortalAndNonRestrictedAppRolesTest() {
 		EPUser user = mockUser.mockEPUser();
 		EPApp mockApp = mockApp();
-		mockApp.setRestrictedApp(false);
+		mockApp.setAppType(EpAppType.GUI);
 		mockApp.setId(2l);
 		user.setLoginId("guestT");
 		List<LocalRole> expected = new ArrayList<>();
@@ -539,15 +540,15 @@ public class EPAppCommonServiceImplTest {
 		List<EPApp> mockAppList = new ArrayList<>();
 		OnboardingApp onboardApp = new OnboardingApp();
 		onboardApp.setRestrictedApp(false);
-		onboardApp.name = "test1";
-		onboardApp.url = "http://test.com";
-		onboardApp.isOpen = false;
-		onboardApp.isEnabled = true;
-		onboardApp.username = "test123";
-		onboardApp.appPassword = "test123";
+		onboardApp.setAppName("test1");
+		onboardApp.setLandingPage("http://test.com");
+		onboardApp.setIsOpen(false);
+		onboardApp.setIsEnabled(true);
+		onboardApp.setAppBasicAuthUsername("test123");
+		onboardApp.setAppBasicAuthPassword("test123");
 		List<Criterion> restrictionsList = new ArrayList<Criterion>();
-		Criterion urlCrit = Restrictions.eq("url", onboardApp.url);
-		Criterion nameCrit = Restrictions.eq("name", onboardApp.name);
+		Criterion urlCrit = Restrictions.eq("url", onboardApp.getLandingPage());
+		Criterion nameCrit = Restrictions.eq("name", onboardApp.getAppName());
 		Criterion orCrit = Restrictions.or(urlCrit, nameCrit);
 		restrictionsList.add(orCrit);
 		List<String> uebList = new ArrayList<>();
@@ -573,42 +574,46 @@ public class EPAppCommonServiceImplTest {
 		EPApp mockApp = mockApp();
 		mockApp.setName("test1");
 		mockApp.setId(2l);
-		mockApp.setUrl("http://test.com");
-		mockApp.setUsername("test123");
-		mockApp.setAppPassword("test123");
-		mockApp.setRestrictedApp(false);
+		mockApp.setLandingPage("http://test.com");
+		mockApp.setAppBasicAuthUsername("test123");
+		mockApp.setAppBasicAuthPassword("*******");
+		mockApp.setAppType(EpAppType.GUI);
 		mockApp.setEnabled(true);
 		mockApp.setOpen(false);
 		List<EPApp> mockAppList = new ArrayList<>();
 		mockAppList.add(mockApp);
 		OnboardingApp onboardApp = new OnboardingApp();
 		onboardApp.setRestrictedApp(false);
-		onboardApp.name = "test1";
-		onboardApp.id = 2l;
-		onboardApp.url = "http://test.com";
-		onboardApp.restUrl = "http://test.com";
-		onboardApp.isOpen = false;
-		onboardApp.isEnabled = true;
-		onboardApp.thumbnail = "test123imgthumbnail";
-		onboardApp.username = "test123";
-		onboardApp.appPassword = "test123";
-		onboardApp.isCentralAuth=true;
-		onboardApp.myLoginsAppName="test123";
-		onboardApp.myLoginsAppOwner="test123";
-		onboardApp.nameSpace="com.test";
+		onboardApp.setAppName("test1");
+		onboardApp.setId(2l);
+		onboardApp.setLandingPage("http://test.com");
+		onboardApp.setRestUrl("http://test.com");
+		onboardApp.setIsOpen(false);
+		onboardApp.setIsEnabled (true);
+		onboardApp.setThumbnail("test123imgthumbnail");
+		onboardApp.setAppBasicAuthUsername("test123");
+		onboardApp.setAppBasicAuthPassword("*******");
+		onboardApp.setRolesInAAF(true);
+		onboardApp.setMyLoginsAppName("test123");
+		onboardApp.setMyLoginsAppOwner("test123");
+		onboardApp.setNameSpace("com.test");
+		onboardApp.setModeOfIntegration("sdk");
+		onboardApp.setAppAck(true);
+		onboardApp.setUsesCadi(false);
+		onboardApp.setApplicationType("1");
 		
 		List<Criterion> restrictionsList1 = new ArrayList<Criterion>();
-		Criterion idCrit = Restrictions.eq("id", onboardApp.id);
-		Criterion urlCrit = Restrictions.eq("url", onboardApp.url);
-		Criterion nameCrit = Restrictions.eq("name", onboardApp.name);
+		Criterion idCrit = Restrictions.eq("id", onboardApp.getId());
+		Criterion urlCrit = Restrictions.eq("url", onboardApp.getLandingPage());
+		Criterion nameCrit = Restrictions.eq("name", onboardApp.getAppName());
 		Criterion orCrit = Restrictions.or(idCrit, urlCrit, nameCrit);
 		restrictionsList1.add(orCrit);
 		Mockito.when((List<EPApp>) dataAccessService.getList(EPApp.class, null, restrictionsList1, null))
 				.thenReturn(mockAppList);
-		Mockito.when((EPApp) session.get(EPApp.class, onboardApp.id)).thenReturn(mockApp);
+		Mockito.when((EPApp) session.get(EPApp.class, onboardApp.getId())).thenReturn(mockApp);
 		String sql = "SELECT m.menu_id, m.column_num, m.text, m.parent_menu_id, m.url, m.active_yn "
 				+ "FROM fn_menu_functional m, fn_menu_functional_roles r " + "WHERE m.menu_id = r.menu_id "
-				+ " AND r.app_id = '" + onboardApp.id + "' ";
+				+ " AND r.app_id = '" + onboardApp.getId() + "' ";
 		List<Integer> roles = new ArrayList<>();
 		roles.add(1);
 		roles.add(2);
@@ -1268,8 +1273,8 @@ public class EPAppCommonServiceImplTest {
 		OnboardingApp onboardingApp = new OnboardingApp();
 
 		onboardingApp.setRestrictedApp(true);
-		onboardingApp.isCentralAuth=false;
-		onboardingApp.isEnabled= true;
+		onboardingApp.setRolesInAAF(false);
+		onboardingApp.setIsEnabled(true);
 		FieldsValidator actual = epAppCommonServiceImpl.addOnboardingApp(onboardingApp, epUser);
 		assertEquals(expected.getHttpStatusCode(), actual.getHttpStatusCode());	
 	}
