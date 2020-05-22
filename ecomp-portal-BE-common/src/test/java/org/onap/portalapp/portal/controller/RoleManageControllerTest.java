@@ -73,6 +73,7 @@ import org.onap.portalapp.portal.domain.CentralV2RoleFunction;
 import org.onap.portalapp.portal.domain.CentralizedApp;
 import org.onap.portalapp.portal.domain.EPApp;
 import org.onap.portalapp.portal.domain.EPUser;
+import org.onap.portalapp.portal.domain.EpAppType;
 import org.onap.portalapp.portal.ecomp.model.PortalRestResponse;
 import org.onap.portalapp.portal.ecomp.model.PortalRestStatusEnum;
 import org.onap.portalapp.portal.ecomp.model.UploadRoleFunctionExtSystem;
@@ -241,23 +242,23 @@ public class RoleManageControllerTest {
 
 		app.setName("Test");
 		app.setImageUrl("test");
-		app.setDescription("test");
-		app.setNotes("test");
-		app.setUrl("test");
+		app.setAppDescription("test");
+		app.setAppNotes("test");
+		app.setLandingPage("test");
 		app.setId((long) 1);
 		app.setAppRestEndpoint("test");
-		app.setAlternateUrl("test");
+		app.setAlternateLandingPage("test");
 		app.setName("test");
 		app.setMlAppName("test");
 		app.setMlAppAdminId("test");
-		app.setUsername("test");
-		app.setAppPassword("test");
+		app.setAppBasicAuthUsername("test");
+		app.setAppBasicAuthPassword("test");
 		app.setOpen(false);
 		app.setEnabled(false);
 		app.setUebKey("test");
 		app.setUebSecret("test");
 		app.setUebTopicName("test");
-		app.setAppType(1);
+		app.setAppType(EpAppType.GUI);
 		return app;
 
 	}
@@ -265,7 +266,7 @@ public class RoleManageControllerTest {
 	@Test
 	public void getRolesTest() throws Exception {
 		EPApp app = mockApp();
-		app.setCentralAuth(true);
+		app.setRolesInAAF(true);
 		PowerMockito.mockStatic(EPUserUtils.class);
 		PowerMockito.mockStatic(EcompPortalUtils.class);
 		EPUser user = mockUser.mockEPUser();
@@ -512,7 +513,7 @@ public class RoleManageControllerTest {
 	@Test
 	public void removeRoleFunctionIfAppNotCentralizedTest() throws Exception {
 		EPApp app = mockApp();
-		app.setCentralAuth(false);
+		app.setRolesInAAF(false);
 		Mockito.when(appService.getApp((long) 1)).thenReturn(app);
 		String roleFun = "{\"name\":\"Test\",\"code\":\"Test\"}";
 		roleManageController.removeRoleFunction(mockedRequest, mockedResponse, roleFun, (long) 1);
@@ -1021,14 +1022,14 @@ public class RoleManageControllerTest {
 
 	public EPApp CentralApp() {
 		EPApp app = mockApp();
-		app.setCentralAuth(true);
+		app.setRolesInAAF(true);
 		app.setNameSpace("com.test");
 		return app;
 	}
 
 	public EPApp NonCentralApp() {
 		EPApp app = mockApp();
-		app.setCentralAuth(false);
+		app.setRolesInAAF(false);
 		return app;
 	}
 

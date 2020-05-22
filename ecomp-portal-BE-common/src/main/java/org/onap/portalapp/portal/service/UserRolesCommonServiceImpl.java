@@ -376,7 +376,7 @@ public class UserRolesCommonServiceImpl  {
 								.setParameter("appId",appId)
 								.list();
 						for (EPRole role : roles) {
-							if (!extRequestValue && app.getCentralAuth()) {
+							if (!extRequestValue && app.getRolesInAAF()) {
 								rolesMap.put(role.getId(), role);
 							} else {
 								rolesMap.put(role.getAppRoleId(), role);
@@ -1091,7 +1091,7 @@ public class UserRolesCommonServiceImpl  {
 
 				Boolean systemUser = (newAppRolesForUser.getIsSystemUser() != null ? newAppRolesForUser.getIsSystemUser() : false);
 
-				if ((app.getCentralAuth() || app.getId().equals(PortalConstants.PORTAL_APP_ID)) && systemUser) {
+				if ((app.getRolesInAAF() || app.getId().equals(PortalConstants.PORTAL_APP_ID)) && systemUser) {
 
 					Set<EcompRole> userRolesInLocalApp = postUsersRolesToLocalApp(roleInAppForUserList, mapper,
 							applicationsRestClientService, appId, userId);
@@ -1108,12 +1108,12 @@ public class UserRolesCommonServiceImpl  {
 					result = applyChangesInUserRolesForAppToEcompDB(rolesInAppForUser, epRequestValue, "Portal",
 							systemUser,rolesGotDeletedByApprover,false);
 
-				}else if (!app.getCentralAuth() && systemUser)
+				}else if (!app.getRolesInAAF() && systemUser)
 				{
 					throw new Exception("For non-centralized application we cannot add systemUser");
 				}
 				else{	// if centralized app
-				if (app.getCentralAuth()) {
+				if (app.getRolesInAAF()) {
 					if (!app.getId().equals(PortalConstants.PORTAL_APP_ID)) {
 						pushRemoteUser(roleInAppForUserList, userId, app, mapper, searchService,
 									applicationsRestClientService,false);
@@ -1133,7 +1133,7 @@ public class UserRolesCommonServiceImpl  {
 					result = applyChangesInUserRolesForAppToEcompDB(rolesInAppForUser, epRequestValue, "Portal", systemUser,rolesGotDeletedFromApprover,checkIfUserisOnlyRoleAdmin);
 				} 
 				// In case if portal is not centralized then follow existing approach
-				else if(!app.getCentralAuth() && app.getId().equals(PortalConstants.PORTAL_APP_ID)){
+				else if(!app.getRolesInAAF() && app.getId().equals(PortalConstants.PORTAL_APP_ID)){
 					Set<EcompRole> userRolesInLocalApp = postUsersRolesToLocalApp(roleInAppForUserList, mapper,
 							applicationsRestClientService, appId, userId);	
 					RolesInAppForUser rolesInAppForUser = constructRolesInAppForUserUpdate(userId, appId,
@@ -1142,7 +1142,7 @@ public class UserRolesCommonServiceImpl  {
 					result = applyChangesInUserRolesForAppToEcompDB(rolesInAppForUser, epRequestValue, "Portal",false,rolesGotDeletedByApprover,false);
 				} else{// remote app
 					EPUser remoteAppUser = null;
-					if(!app.getCentralAuth() && !app.getId().equals(PortalConstants.PORTAL_APP_ID)){
+					if(!app.getRolesInAAF() && !app.getId().equals(PortalConstants.PORTAL_APP_ID)){
 						
 						remoteAppUser = checkIfRemoteUserExits(userId, app, applicationsRestClientService);
 		
@@ -1620,7 +1620,7 @@ public class UserRolesCommonServiceImpl  {
 				}
 				
 				//If Non-Centralized app make sure you sync app roles before assigning to user
-				if (!app.getId().equals(PortalConstants.PORTAL_APP_ID) && !app.getCentralAuth()) {
+				if (!app.getId().equals(PortalConstants.PORTAL_APP_ID) && !app.getRolesInAAF()) {
 					logger.debug(EELFLoggerDelegate.debugLogger, "setExternalRequestUserAppRole: Starting GET roles for app {}",app.getId());
 					EcompRole[] appRoles = applicationsRestClientService.get(EcompRole[].class, app.getId(), "/roles");
 					logger.debug(EELFLoggerDelegate.debugLogger, "setExternalRequestUserAppRole: Finshed GET roles for app {} and payload {}",app.getId(), appRoles);
@@ -1647,7 +1647,7 @@ public class UserRolesCommonServiceImpl  {
 							.anyMatch(roleList -> roleList.getRoleId().equals(PortalConstants.ACCOUNT_ADMIN_ROLE_ID));
 				}
 				// if Centralized app
-				if (app.getCentralAuth()) {
+				if (app.getRolesInAAF()) {
 					// We should add If user does not exist in remote application
 					try {
 						// If adding just account admin role dont make remote application user call or
@@ -1686,7 +1686,7 @@ public class UserRolesCommonServiceImpl  {
 					result = applyChangesInUserRolesForAppToEcompDB(rolesInAppForUser, externalSystemRequest, reqType,false,rolesGotDeletedByApprover,false);
 				} 
 				// If local application is not centralized 
-				else if(!app.getCentralAuth() && app.getId().equals(PortalConstants.PORTAL_APP_ID)){
+				else if(!app.getRolesInAAF() && app.getId().equals(PortalConstants.PORTAL_APP_ID)){
 					Set<EcompRole> userRolesInLocalApp = postUsersRolesToLocalApp(roleInAppForUserList, mapper,
 							applicationsRestClientService, app.getId(), orgUserId);	
 					RolesInAppForUser rolesInAppForUser = constructRolesInAppForUserUpdate(orgUserId, app.getId(),
@@ -1896,7 +1896,7 @@ public class UserRolesCommonServiceImpl  {
 		// for onap portal app, no need to make a remote call
 		List<Role> roleList = new ArrayList<>();
 		if (appId == PortalConstants.PORTAL_APP_ID) {		
-			if(app.getCentralAuth()){
+			if(app.getRolesInAAF()){
 				List<CentralV2Role> cenRoleList = externalAccessRolesService.getRolesForApp(app.getUebKey());
 				for(CentralV2Role cenRole : cenRoleList){
 					Role role = new Role();
@@ -1935,7 +1935,7 @@ public class UserRolesCommonServiceImpl  {
 		EcompRole[] appRoles = null;
 		boolean checkIfUserisApplicationAccAdmin = false;
 		List<EcompRole> roles = new ArrayList<>();
-			if (app.getCentralAuth()) {
+			if (app.getRolesInAAF()) {
 				final Map<String, Long> appParams = new HashMap<>();
 				appParams.put("appId", app.getId());
 				List<EPRole> applicationRoles = dataAccessService.executeNamedQuery("getActiveRolesOfApplication",
@@ -2038,14 +2038,14 @@ public class UserRolesCommonServiceImpl  {
 		// If there is an exception in the rest client api, then null will
 		// be returned.
 		if (appRoles != null) {
-			if(!app.getCentralAuth()) {
+			if(!app.getRolesInAAF()) {
 			syncAppRoles(sessionFactory, appId, appRoles);
 			}
 			EcompRole[] userAppRoles = null;
 			try {
 				try {
 					
-					if(app.getCentralAuth()){
+					if(app.getRolesInAAF()){
 						final Map<String, String> params = new HashMap<>();
 						final Map<String, Long> userParams = new HashMap<>();
 						params.put("orgUserIdValue", userId);
@@ -2315,7 +2315,7 @@ public class UserRolesCommonServiceImpl  {
 		
 		EPApp app = appsService.getApp(appId);
 		//If local or centralized application
-		if (appId == PortalConstants.PORTAL_APP_ID || app.getCentralAuth()) {
+		if (appId == PortalConstants.PORTAL_APP_ID || app.getRolesInAAF()) {
 			Map<String, Object> params = new HashMap<>();
 			params.put("id", app.getId());
 			params.put("active", true);

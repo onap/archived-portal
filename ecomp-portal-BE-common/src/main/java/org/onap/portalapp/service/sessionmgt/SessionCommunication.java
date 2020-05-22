@@ -85,12 +85,12 @@ public class SessionCommunication {
 		String appResponse = "";
 		String appName = "";
 		int responseCode = 0;
-		if (app != null && app.name != null && app.name != "") {
+		if (app != null && app.getAppName() != null && app.getAppName() != "") {
 			try {
-				appName = app.name;
-				String url = app.restUrl + "/sessionTimeOuts";
-				String encriptedPwdDB = app.appPassword;
-				String appUserName = app.username;
+				appName = app.getAppName();
+				String url = app.getRestUrl() + "/sessionTimeOuts";
+				String encriptedPwdDB = app.getAppBasicAuthPassword();
+				String appUserName = app.getAppBasicAuthUsername();
 
 				setLocalMDCContext(app, "/sessionTimeOuts", url);
 
@@ -157,12 +157,12 @@ public class SessionCommunication {
 		try {
 			if (app == null)
 				throw new Exception("SessionCommunication.pingSession: app is null");
-			if (app != null && app.name != null && app.name != "") {
-				appName = app.name;
+			if (app != null && app.getAppName() != null && app.getAppName() != "") {
+				appName = app.getAppName();
 			}
-			String url = app.restUrl + "/updateSessionTimeOuts";
-			String encriptedPwdDB = app.appPassword;
-			String appUserName = app.username;
+			String url = app.getRestUrl() + "/updateSessionTimeOuts";
+			String encriptedPwdDB = app.getAppBasicAuthPassword();
+			String appUserName = app.getAppBasicAuthUsername();
 
 			setLocalMDCContext(app, "/updateSessionTimeOuts", url);
 
@@ -218,13 +218,13 @@ public class SessionCommunication {
 	public Boolean timeoutSession(OnboardingApp app, String portalJSessionId) throws Exception {
 		String appName = "Unknwon";
 		int responseCode = 0;
-		if (app != null && app.name != null && app.name != "") {
+		if (app != null && app.getAppName() != null && app.getAppName() != "") {
 			try {
-				appName = app.name;
-				String url = app.restUrl + "/timeoutSession" + "?portalJSessionId=" + portalJSessionId;
+				appName = app.getAppName();
+				String url = app.getRestUrl() + "/timeoutSession" + "?portalJSessionId=" + portalJSessionId;
 
-				String encriptedPwdDB = app.appPassword;
-				String appUserName = app.username;
+				String encriptedPwdDB = app.getAppBasicAuthPassword();
+				String appUserName = app.getAppBasicAuthUsername();
 				// String decreptedPwd = CipherUtil.decrypt(encriptedPwdDB,
 				// SystemProperties.getProperty(SystemProperties.Decryption_Key));
 
@@ -287,7 +287,7 @@ public class SessionCommunication {
 			MDC.put(EPCommonSystemProperties.PROTOCOL, EPCommonSystemProperties.HTTPS);
 		}
 		MDC.put(EPCommonSystemProperties.FULL_URL, url);
-		MDC.put(EPCommonSystemProperties.TARGET_ENTITY, app.myLoginsAppName);
+		MDC.put(EPCommonSystemProperties.TARGET_ENTITY, app.getMyLoginsAppName());
 		MDC.put(EPCommonSystemProperties.TARGET_SERVICE_NAME, restPath);
 	}
 
@@ -332,15 +332,15 @@ public class SessionCommunication {
 		 Map<String,String> headersMap = new HashMap<>();
 		EPApp externalApp = null;
 
-		if(app.appPassword.isEmpty() || app.appPassword==null){
+		if(app.getAppBasicAuthPassword().isEmpty() || app.getAppBasicAuthPassword()==null){
 			logger.debug(EELFLoggerDelegate.debugLogger, "Entering in the externalApp get app password contains null : {}");
 			externalApp = appsCacheService.getApp(1L);
 			logger.debug(EELFLoggerDelegate.debugLogger, "external App Information : {}",externalApp);
 
-			String mechidUsername=externalApp.getUsername();
+			String mechidUsername=externalApp.getAppBasicAuthUsername();
 			logger.debug(EELFLoggerDelegate.debugLogger, "external App mechidUsername Information : {}",mechidUsername);
 
-			String password=externalApp.getAppPassword();
+			String password=externalApp.getAppBasicAuthPassword();
 			String decreptedexternalAppPwd = StringUtils.EMPTY;
 			try {
 				decreptedexternalAppPwd = CipherUtil.decryptPKC(password,
@@ -353,8 +353,8 @@ public class SessionCommunication {
 			encriptedPwdDB = decreptedexternalAppPwd;
 		
 		}else{
-			appUserName = app.username;
-			encriptedPwdDB = app.appPassword;
+			appUserName = app.getAppBasicAuthUsername();
+			encriptedPwdDB = app.getAppBasicAuthPassword();
 		}
 		
 		headersMap.put("username", appUserName);

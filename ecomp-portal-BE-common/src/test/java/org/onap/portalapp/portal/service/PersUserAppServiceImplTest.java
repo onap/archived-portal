@@ -53,6 +53,7 @@ import org.onap.portalapp.portal.core.MockEPUser;
 import org.onap.portalapp.portal.domain.EPApp;
 import org.onap.portalapp.portal.domain.EPUser;
 import org.onap.portalapp.portal.domain.EPUserApp;
+import org.onap.portalapp.portal.domain.EpAppType;
 import org.onap.portalapp.portal.domain.PersUserAppSelection;
 import org.onap.portalapp.portal.framework.MockitoTestSuite;
 import org.onap.portalapp.portal.service.AdminRolesService;
@@ -88,23 +89,23 @@ public class PersUserAppServiceImplTest {
 		EPApp app = new EPApp();
 		app.setName("Test");
 		app.setImageUrl("test");
-		app.setDescription("test");
-		app.setNotes("test");
-		app.setUrl("test");
+		app.setAppDescription("test");
+		app.setAppNotes("test");
+		app.setLandingPage("test");
 		app.setId((long) 1);
 		app.setAppRestEndpoint("test");
-		app.setAlternateUrl("test");
+		app.setAlternateLandingPage("test");
 		app.setName("test");
 		app.setMlAppName("test");
 		app.setMlAppAdminId("test");
-		app.setUsername("test");
-		app.setAppPassword("test");
+		app.setAppBasicAuthUsername("test");
+		app.setAppBasicAuthPassword("test");
 		app.setOpen(true);
 		app.setEnabled(false);
 		app.setUebKey("test");
 		app.setUebSecret("test");
 		app.setUebTopicName("test");
-		app.setAppType(1);
+		app.setAppType(EpAppType.GUI);
 		return app;
 	}
 

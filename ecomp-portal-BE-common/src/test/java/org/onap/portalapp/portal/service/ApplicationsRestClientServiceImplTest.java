@@ -91,7 +91,7 @@ public class ApplicationsRestClientServiceImplTest {
 	public void unt_get_failure() throws HTTPException{
 		EPApp appTest=new EPApp();
 		appTest.setAppRestEndpoint("https");
-		appTest.setAppPassword("testPassword");
+		appTest.setAppBasicAuthPassword("testPassword");
 		Mockito.when(appsCacheService.getApp(Matchers.anyLong())).thenReturn(appTest);
 		ApplicationsRestClientServiceImpl appservice=serviceImpl.get(ApplicationsRestClientServiceImpl.class, 12L,"/path" );
 		Assert.assertNull(appservice);
@@ -109,7 +109,7 @@ public class ApplicationsRestClientServiceImplTest {
 		Mockito.when(response.getStatus()).thenReturn(HttpStatus.SC_OK);
 		EPApp appTest=new EPApp();
 		appTest.setAppRestEndpoint("https");
-		appTest.setAppPassword("testPassword");
+		appTest.setAppBasicAuthPassword("testPassword");
 		Mockito.when(appsCacheService.getApp(Matchers.anyLong())).thenReturn(appTest);
 		ApplicationsRestClientServiceImpl appservice=serviceImpl.get(ApplicationsRestClientServiceImpl.class, 12L,"/path" );
 		Assert.assertNull(appservice);
@@ -127,7 +127,7 @@ public class ApplicationsRestClientServiceImplTest {
 		Mockito.when(response.getStatus()).thenReturn(1);
 		EPApp appTest=new EPApp();
 		appTest.setAppRestEndpoint("https");
-		appTest.setAppPassword("testPassword");
+		appTest.setAppBasicAuthPassword("testPassword");
 		Mockito.when(appsCacheService.getApp(Matchers.anyLong())).thenReturn(appTest);
 		ApplicationsRestClientServiceImpl appservice=serviceImpl.get(ApplicationsRestClientServiceImpl.class, 12L,"/path" );
 		Assert.assertNull(appservice);
@@ -139,7 +139,7 @@ public class ApplicationsRestClientServiceImplTest {
 		PowerMockito.mockStatic(Object.class);
 		EPApp appTest=new EPApp();
 		appTest.setAppRestEndpoint("https");
-		appTest.setAppPassword("testPassword");
+		appTest.setAppBasicAuthPassword("testPassword");
 		Mockito.when(appsCacheService.getApp(Matchers.anyLong())).thenReturn(appTest);
 		ApplicationsRestClientServiceImpl appservice=serviceImpl.post(ApplicationsRestClientServiceImpl.class, 12L, Matchers.any() , "/path",Matchers.any());
 		Assert.assertNull(appservice);
@@ -163,7 +163,7 @@ public class ApplicationsRestClientServiceImplTest {
 		Mockito.when(response.getStatus()).thenReturn(HttpStatus.SC_OK);
 		EPApp appTest=new EPApp();
 		appTest.setAppRestEndpoint("https");
-		appTest.setAppPassword("testPassword");
+		appTest.setAppBasicAuthPassword("testPassword");
 		Mockito.when(appsCacheService.getApp(Matchers.anyLong())).thenReturn(appTest);
 		ApplicationsRestClientServiceImpl appservice=serviceImpl.post(ApplicationsRestClientServiceImpl.class, 12L,payload,"/path",SystemType.APPLICATION);
 		Assert.assertNull(appservice);
@@ -188,7 +188,7 @@ public class ApplicationsRestClientServiceImplTest {
 		Mockito.when(response.getStatus()).thenReturn(HttpStatus.SC_OK);
 		EPApp appTest=new EPApp();
 		appTest.setAppRestEndpoint("https");
-		appTest.setAppPassword("testPassword");
+		appTest.setAppBasicAuthPassword("testPassword");
 		Mockito.when(appsCacheService.getApp(Matchers.anyLong())).thenReturn(appTest);
 		ApplicationsRestClientServiceImpl appservice=serviceImpl.post(ApplicationsRestClientServiceImpl.class, 12L,payload,"/path",SystemType.APPLICATION);
 		Assert.assertNull(appservice);
@@ -213,7 +213,7 @@ public class ApplicationsRestClientServiceImplTest {
 		Mockito.when(response.getStatus()).thenReturn(1);
 		EPApp appTest=new EPApp();
 		appTest.setAppRestEndpoint("https");
-		appTest.setAppPassword("testPassword");
+		appTest.setAppBasicAuthPassword("testPassword");
 		Mockito.when(appsCacheService.getApp(Matchers.anyLong())).thenReturn(appTest);
 		ApplicationsRestClientServiceImpl appservice=serviceImpl.post(ApplicationsRestClientServiceImpl.class, 12L,payload,"/path",SystemType.APPLICATION);
 		Assert.assertNull(appservice);
@@ -232,7 +232,7 @@ public class ApplicationsRestClientServiceImplTest {
 		Mockito.when(response.getStatus()).thenReturn(1);
 		EPApp appTest=new EPApp();
 		appTest.setAppRestEndpoint("https");
-		appTest.setAppPassword("testPassword");
+		appTest.setAppBasicAuthPassword("testPassword");
 		Mockito.when(appsCacheService.getApp(Matchers.anyLong())).thenReturn(appTest);
 		ApplicationsRestClientServiceImpl appservice=serviceImpl.get(ApplicationsRestClientServiceImpl.class, 12L,"/path" , Matchers.anyBoolean());
 		Assert.assertNull(appservice);
