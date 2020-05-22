@@ -268,7 +268,7 @@ public class AppsControllerExternalRequestTest extends MockitoTestSuite {
 		expectedportalRestResponse.setStatus(portalRestStatusEnum.ERROR);
 
 		OnboardingApp expectedOnboardingApp = new OnboardingApp();
-		expectedOnboardingApp.id = (long) 1;
+		expectedOnboardingApp.setId(1l);
 
 		PortalRestResponse<String> actualPortalRestResponse = appsControllerExternalRequest
 				.postOnboardAppExternal(mockedRequest, mockedResponse, expectedOnboardingApp);
@@ -285,13 +285,29 @@ public class AppsControllerExternalRequestTest extends MockitoTestSuite {
 		expectedportalRestResponse.setStatus(portalRestStatusEnum.ERROR);
 
 		OnboardingApp expectedOnboardingApp = new OnboardingApp();
-		expectedOnboardingApp.id = null;
 
+		expectedOnboardingApp.setId(null);
+		
 		PortalRestResponse<String> actualPortalRestResponse = appsControllerExternalRequest
 				.postOnboardAppExternal(mockedRequest, mockedResponse, expectedOnboardingApp);
 		assertEquals(actualPortalRestResponse, expectedportalRestResponse);
 
 	}
+	
+	private OnboardingApp createExpectedApp() {
+
+		OnboardingApp expectedOnboardingApp = new OnboardingApp();;
+		expectedOnboardingApp.setAppName("test");
+		expectedOnboardingApp.setLandingPage("test.com");
+		expectedOnboardingApp.setRestUrl("<script>alert(/XSS”)</script>");
+		expectedOnboardingApp.setMyLoginsAppOwner("testUser");
+		expectedOnboardingApp.setRestrictedApp(false);
+		expectedOnboardingApp.setIsOpen(true);
+		expectedOnboardingApp.setIsEnabled(true);
+		return expectedOnboardingApp;
+
+	}
+	
 
 	@Test
 	public void postOnboardAppExternalXSSTest() {
@@ -302,14 +318,8 @@ public class AppsControllerExternalRequestTest extends MockitoTestSuite {
 		PortalRestStatusEnum portalRestStatusEnum = null;
 		expectedportalRestResponse.setStatus(portalRestStatusEnum.ERROR);
 
-		OnboardingApp expectedOnboardingApp = new OnboardingApp();;
-		expectedOnboardingApp.name = "test";
-		expectedOnboardingApp.url="test.com";
-		expectedOnboardingApp.restUrl="<script>alert(/XSS”)</script>";
-		expectedOnboardingApp.myLoginsAppOwner="testUser";
-		expectedOnboardingApp.restrictedApp=false;
-		expectedOnboardingApp.isOpen=true;
-		expectedOnboardingApp.isEnabled=true;
+		OnboardingApp expectedOnboardingApp = createExpectedApp();
+
 		EPUser user = mockUser.mockEPUser();
 		user.setEmail("guestT@test.portal.onap.org");
 		user.setLoginPwd("pwd");
@@ -332,8 +342,9 @@ public class AppsControllerExternalRequestTest extends MockitoTestSuite {
 		expectedportalRestResponse.setStatus(portalRestStatusEnum.ERROR);
 		Long appId = null;
 		OnboardingApp expectedOnboardingApp = new OnboardingApp();
-		expectedOnboardingApp.id = null;
-
+		
+		expectedOnboardingApp.setId(null);
+		
 		PortalRestResponse<String> actualPortalRestResponse = appsControllerExternalRequest
 				.putOnboardAppExternal(mockedRequest, mockedResponse, appId, expectedOnboardingApp);
 		assertEquals(actualPortalRestResponse, expectedportalRestResponse);
@@ -348,14 +359,8 @@ public class AppsControllerExternalRequestTest extends MockitoTestSuite {
 		PortalRestStatusEnum portalRestStatusEnum = null;
 		expectedportalRestResponse.setStatus(portalRestStatusEnum.ERROR);
 
-		OnboardingApp expectedOnboardingApp = new OnboardingApp();;
-		expectedOnboardingApp.name = "test";
-		expectedOnboardingApp.url="test.com";
-		expectedOnboardingApp.restUrl="<script>alert(/XSS”)</script>";
-		expectedOnboardingApp.myLoginsAppOwner="testUser";
-		expectedOnboardingApp.restrictedApp=false;
-		expectedOnboardingApp.isOpen=true;
-		expectedOnboardingApp.isEnabled=true;
+		OnboardingApp expectedOnboardingApp = createExpectedApp();
+		
 		EPUser user = mockUser.mockEPUser();
 		user.setEmail("guestT@test.portal.onap.org");
 		user.setLoginPwd("pwd");
@@ -381,7 +386,9 @@ public class AppsControllerExternalRequestTest extends MockitoTestSuite {
 		expectedportalRestResponse.setStatus(portalRestStatusEnum.ERROR);
 		Long appId = (long) 1;
 		OnboardingApp expectedOnboardingApp = new OnboardingApp();
-		expectedOnboardingApp.id = (long) 1;
+		
+		expectedOnboardingApp.setId(1l);
+		
 		PortalRestResponse<String> actualPortalRestResponse = appsControllerExternalRequest
 				.putOnboardAppExternal(mockedRequest, mockedResponse, appId, expectedOnboardingApp);
 		assertEquals(actualPortalRestResponse, expectedportalRestResponse);
@@ -390,21 +397,14 @@ public class AppsControllerExternalRequestTest extends MockitoTestSuite {
 	@Test
 	public void putOnboardAppExternalIfOnboardingAppDetailsTest() {
 		PortalRestResponse<String> expectedportalRestResponse = new PortalRestResponse<String>();
-		expectedportalRestResponse.setMessage("Failed to find user: testUser");
+		expectedportalRestResponse.setMessage("Failed to find user: 12");
 		expectedportalRestResponse.setResponse(null);
 		PortalRestStatusEnum portalRestStatusEnum = null;
 		expectedportalRestResponse.setStatus(portalRestStatusEnum.ERROR);
 		Long appId = (long) 1;
 
-		OnboardingApp expectedOnboardingApp = new OnboardingApp();
-		expectedOnboardingApp.id = (long) 1;
-		expectedOnboardingApp.name = "test";
-		expectedOnboardingApp.url="test.com";
-		expectedOnboardingApp.restUrl="test1.com";
-		expectedOnboardingApp.myLoginsAppOwner="testUser";
-		expectedOnboardingApp.restrictedApp=false;
-		expectedOnboardingApp.isOpen=true;
-		expectedOnboardingApp.isEnabled=true;
+		OnboardingApp expectedOnboardingApp = createOldOnapApp(1l);
+		
 		EPUser user = mockUser.mockEPUser();
 		user.setEmail("guestT@test.portal.onap.org");
 		user.setLoginPwd("pwd");
@@ -422,6 +422,27 @@ public class AppsControllerExternalRequestTest extends MockitoTestSuite {
 		assertEquals(actualPortalRestResponse, expectedportalRestResponse);
 	}
 	
+	private OnboardingApp createOldOnapApp(Long id) {
+
+		OnboardingApp oldOnboardApp = new OnboardingApp();
+		oldOnboardApp.setId(id);
+		oldOnboardApp.setAppName("test");
+		oldOnboardApp.setLandingPage("test.com");
+		oldOnboardApp.setRestUrl("test1.com");
+		oldOnboardApp.setMyLoginsAppOwner("12");
+		oldOnboardApp.setRestrictedApp(false);
+		oldOnboardApp.setIsOpen(true);
+		oldOnboardApp.setIsEnabled(true);
+		oldOnboardApp.setModeOfIntegration("test");
+		oldOnboardApp.setAppAck(false);
+		oldOnboardApp.setUsesCadi(false);
+		oldOnboardApp.setModeOfIntegration("test");
+		oldOnboardApp.setAppAck(false);
+		oldOnboardApp.setUsesCadi(false);
+		
+		return oldOnboardApp;
+	}
+	
 	@Test
 	public void putOnboardAppExternalIfOnboardingAppDetailsTest2() throws Exception {
 
@@ -433,15 +454,7 @@ public class AppsControllerExternalRequestTest extends MockitoTestSuite {
 		
 		Long appId = (long) 1;
 		
-		OnboardingApp oldOnboardApp = new OnboardingApp();
-		oldOnboardApp.id = (long) 1;
-		oldOnboardApp.name = "test";
-		oldOnboardApp.url="test.com";
-		oldOnboardApp.restUrl="test1.com";
-		oldOnboardApp.myLoginsAppOwner="12";
-		oldOnboardApp.restrictedApp=false;
-		oldOnboardApp.isOpen=true;
-		oldOnboardApp.isEnabled=true;
+		OnboardingApp oldOnboardApp = createOldOnapApp(1l);
 		
 		
 		EPUser user = mockUser.mockEPUser();
@@ -451,7 +464,7 @@ public class AppsControllerExternalRequestTest extends MockitoTestSuite {
 		List<EPUser> expectedList = new ArrayList<EPUser>();
 		expectedList.add(user);
 		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
-		Mockito.when(userService.getUserByUserId(oldOnboardApp.myLoginsAppOwner)).thenReturn(expectedList);
+		Mockito.when(userService.getUserByUserId(oldOnboardApp.getMyLoginsAppOwner())).thenReturn(expectedList);
 		//Mockito.when(userService.saveNewUser(user, "Yes")).thenReturn(null);
 		Mockito.when(adminRolesService.isSuperAdmin(user)).thenReturn(true);
 		
@@ -479,15 +492,7 @@ public class AppsControllerExternalRequestTest extends MockitoTestSuite {
 		
 		Long appId = (long) 1;
 		
-		OnboardingApp oldOnboardApp = new OnboardingApp();
-		oldOnboardApp.id = (long) 1;
-		oldOnboardApp.name = "test";
-		oldOnboardApp.url="test.com";
-		oldOnboardApp.restUrl="test1.com";
-		oldOnboardApp.myLoginsAppOwner="12";
-		oldOnboardApp.restrictedApp=false;
-		oldOnboardApp.isOpen=true;
-		oldOnboardApp.isEnabled=true;
+		OnboardingApp oldOnboardApp = createOldOnapApp(1l);
 		
 		
 		EPUser user = mockUser.mockEPUser();
@@ -497,7 +502,7 @@ public class AppsControllerExternalRequestTest extends MockitoTestSuite {
 		List<EPUser> expectedList = new ArrayList<EPUser>();
 		expectedList.add(user);
 		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
-		Mockito.when(userService.getUserByUserId(oldOnboardApp.myLoginsAppOwner)).thenReturn(expectedList);
+		Mockito.when(userService.getUserByUserId(oldOnboardApp.getMyLoginsAppOwner())).thenReturn(expectedList);
 		//Mockito.when(userService.saveNewUser(user, "Yes")).thenReturn(null);
 		Mockito.when(adminRolesService.isSuperAdmin(user)).thenReturn(true);
 		
@@ -524,16 +529,7 @@ public class AppsControllerExternalRequestTest extends MockitoTestSuite {
 	
 	Long appId = (long) 1;
 	
-	OnboardingApp oldOnboardApp = new OnboardingApp();
-	oldOnboardApp.id = (long) 1;
-	oldOnboardApp.name = "test";
-	oldOnboardApp.url="test.com";
-	oldOnboardApp.restUrl="test1.com";
-	oldOnboardApp.myLoginsAppOwner="12";
-	oldOnboardApp.restrictedApp=false;
-	oldOnboardApp.isOpen=true;
-	oldOnboardApp.isEnabled=true;
-	
+	OnboardingApp oldOnboardApp = createOldOnapApp(1l);
 	
 	EPUser user = mockUser.mockEPUser();
 	user.setEmail("guestT@test.portal.onap.org");
@@ -542,7 +538,7 @@ public class AppsControllerExternalRequestTest extends MockitoTestSuite {
 	List<EPUser> expectedList = new ArrayList<EPUser>();
 	expectedList.add(user);
 	Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
-	Mockito.when(userService.getUserByUserId(oldOnboardApp.myLoginsAppOwner)).thenReturn(expectedList);
+	Mockito.when(userService.getUserByUserId(oldOnboardApp.getMyLoginsAppOwner())).thenReturn(expectedList);
 	//Mockito.when(userService.saveNewUser(user, "Yes")).thenReturn(null);
 	Mockito.when(adminRolesService.isSuperAdmin(user)).thenReturn(false);
 
@@ -569,17 +565,10 @@ public class AppsControllerExternalRequestTest extends MockitoTestSuite {
 		user.setLoginId("Test");
 		Long appId = (long) 1;
 		
-		OnboardingApp oldOnboardApp = new OnboardingApp();
-		oldOnboardApp.id = (long) 1;
-		oldOnboardApp.name = "test";
-		oldOnboardApp.url="test.com";
-		oldOnboardApp.restUrl="test1.com";
-		oldOnboardApp.myLoginsAppOwner="12";
-		oldOnboardApp.restrictedApp=false;
-		oldOnboardApp.isOpen=true;
-		oldOnboardApp.isEnabled=true;
+		OnboardingApp oldOnboardApp = createOldOnapApp(1l);
+		
 		Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
-		Mockito.when(userService.getUserByUserId(oldOnboardApp.myLoginsAppOwner)).thenThrow(nullPointerException);
+		Mockito.when(userService.getUserByUserId(oldOnboardApp.getMyLoginsAppOwner())).thenThrow(nullPointerException);
 		PortalRestResponse<String> actualPortalRestResponse = appsControllerExternalRequest
 				.putOnboardAppExternal(mockedRequest, mockedResponse, appId,oldOnboardApp);
 		assertEquals(actualPortalRestResponse, expectedportalRestResponse);
@@ -596,18 +585,7 @@ public class AppsControllerExternalRequestTest extends MockitoTestSuite {
 	
 	Long appId = (long) 1;
 	
-	
-	
-	OnboardingApp newOnboardApp = new OnboardingApp();
-	//newOnboardApp.id = (long) 1;
-	newOnboardApp.name = "test";
-	newOnboardApp.url="test.com";
-	newOnboardApp.restUrl="test1.com";
-	newOnboardApp.myLoginsAppOwner="12";
-	newOnboardApp.restrictedApp=false;
-	newOnboardApp.isOpen=true;
-	newOnboardApp.isEnabled=true;
-	
+	OnboardingApp newOnboardApp = createOldOnapApp(null);
 	
 	EPUser user = mockUser.mockEPUser();
 	user.setEmail("guestT@test.portal.onap.org");
@@ -616,7 +594,7 @@ public class AppsControllerExternalRequestTest extends MockitoTestSuite {
 	List<EPUser> expectedList = new ArrayList<EPUser>();
 	expectedList.add(user);
 	Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
-	Mockito.when(userService.getUserByUserId(newOnboardApp.myLoginsAppOwner)).thenReturn(expectedList);
+	Mockito.when(userService.getUserByUserId(newOnboardApp.getMyLoginsAppOwner())).thenReturn(expectedList);
 	//Mockito.when(userService.saveNewUser(user, "Yes")).thenReturn(null);
 	Mockito.when(adminRolesService.isSuperAdmin(user)).thenReturn(false);
 
@@ -634,25 +612,14 @@ public class AppsControllerExternalRequestTest extends MockitoTestSuite {
 	public void postOnboardAppExternalIsNotSuperAdminTest() throws Exception {
 
 	PortalRestResponse<String> expectedportalRestResponse = new PortalRestResponse<String>();
-	expectedportalRestResponse.setMessage("java.lang.NullPointerException");
+	expectedportalRestResponse.setMessage("Unexpected field: id");	
 	expectedportalRestResponse.setResponse(null);
 	PortalRestStatusEnum portalRestStatusEnum = null;
 	expectedportalRestResponse.setStatus(portalRestStatusEnum.ERROR);
 	
 	Long appId = (long) 1;
 	
-	
-	
-	OnboardingApp newOnboardApp = new OnboardingApp();
-	//newOnboardApp.id = (long) 1;
-	newOnboardApp.name = "test";
-	newOnboardApp.url="test.com";
-	newOnboardApp.restUrl="test1.com";
-	newOnboardApp.myLoginsAppOwner="12";
-	newOnboardApp.restrictedApp=false;
-	newOnboardApp.isOpen=true;
-	newOnboardApp.isEnabled=true;
-	
+	OnboardingApp newOnboardApp = createOldOnapApp(1l);
 	
 	EPUser user = mockUser.mockEPUser();
 	user.setEmail("guestT@test.portal.onap.org");
@@ -661,7 +628,7 @@ public class AppsControllerExternalRequestTest extends MockitoTestSuite {
 	List<EPUser> expectedList = new ArrayList<EPUser>();
 	expectedList.add(user);
 	Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
-	Mockito.when(userService.getUserByUserId(newOnboardApp.myLoginsAppOwner)).thenReturn(expectedList);
+	Mockito.when(userService.getUserByUserId(newOnboardApp.getMyLoginsAppOwner())).thenReturn(expectedList);
 	//Mockito.when(userService.saveNewUser(user, "Yes")).thenReturn(null);
 	Mockito.when(adminRolesService.isSuperAdmin(user)).thenReturn(true);
 
@@ -686,18 +653,7 @@ public class AppsControllerExternalRequestTest extends MockitoTestSuite {
 	
 	Long appId = (long) 1;
 	
-	
-	
-	OnboardingApp newOnboardApp = new OnboardingApp();
-	//newOnboardApp.id = (long) 1;
-	newOnboardApp.name = "test";
-	newOnboardApp.url="test.com";
-	newOnboardApp.restUrl="test1.com";
-	newOnboardApp.myLoginsAppOwner="12";
-	newOnboardApp.restrictedApp=false;
-	newOnboardApp.isOpen=true;
-	newOnboardApp.isEnabled=true;
-	
+	OnboardingApp newOnboardApp = createOldOnapApp(null);
 	
 	EPUser user = mockUser.mockEPUser();
 	user.setEmail("guestT@test.portal.onap.org");
@@ -706,7 +662,7 @@ public class AppsControllerExternalRequestTest extends MockitoTestSuite {
 	List<EPUser> expectedList = new ArrayList<EPUser>();
 	expectedList.add(user);
 	Mockito.when(EPUserUtils.getUserSession(mockedRequest)).thenReturn(user);
-	Mockito.when(userService.getUserByUserId(newOnboardApp.myLoginsAppOwner)).thenReturn(expectedList);
+	Mockito.when(userService.getUserByUserId(newOnboardApp.getMyLoginsAppOwner())).thenReturn(expectedList);
 	//Mockito.when(userService.saveNewUser(user, "Yes")).thenReturn(null);
 	Mockito.when(adminRolesService.isSuperAdmin(user)).thenReturn(true);
 

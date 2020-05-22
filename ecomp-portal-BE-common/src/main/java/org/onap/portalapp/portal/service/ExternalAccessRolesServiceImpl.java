@@ -1183,13 +1183,13 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
                                 .setModified(epApp.getModified()).setCreatedId(epApp.getCreatedId())
                                 .setModifiedId(epApp.getModifiedId()).setRowNum(epApp.getRowNum())
                                 .setName(epApp.getName()).setImageUrl(epApp.getImageUrl())
-                                .setDescription(epApp.getDescription()).setNotes(epApp.getNotes())
-                                .setUrl(epApp.getUrl()).setAlternateUrl(epApp.getAlternateUrl())
+                                .setDescription(epApp.getAppDescription()).setNotes(epApp.getAppNotes())
+                                .setUrl(epApp.getLandingPage()).setAlternateUrl(epApp.getLandingPage())
                                 .setRestEndpoint(epApp.getAppRestEndpoint()).setMlAppName(epApp.getMlAppName())
                                 .setMlAppAdminId(epApp.getMlAppAdminId()).setMotsId(String.valueOf(epApp.getMotsId()))
-                                .setAppPassword(epApp.getAppPassword()).setOpen(String.valueOf(epApp.getOpen()))
+                                .setAppPassword(epApp.getAppBasicAuthPassword()).setOpen(String.valueOf(epApp.getOpen()))
                                 .setEnabled(String.valueOf(epApp.getEnabled())).setThumbnail(epApp.getThumbnail())
-                                .setUsername(epApp.getUsername()).setUebKey(epApp.getUebKey())
+                                .setUsername(epApp.getAppBasicAuthUsername()).setUebKey(epApp.getUebKey())
                                 .setUebSecret(epApp.getUebSecret()).setUebTopicName(epApp.getUebTopicName())
                                 .createCentralApp();
 						cenApp.setAppPassword(EPCommonSystemProperties.APP_DISPLAY_PASSWORD);
@@ -3005,7 +3005,7 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 		params.put("uebKey", app.getUebKey());
 		List<BulkUploadUserRoles> userRolesList = null;
 		Integer userRolesAdded = 0;
-		if (app.getCentralAuth()) {
+		if (app.getRolesInAAF()) {
 			userRolesList = dataAccessService.executeNamedQuery("getBulkUserRoles", params, null);
 			for (BulkUploadUserRoles userRolesUpload : userRolesList) {
 				if (!userRolesUpload.getOrgUserId().equals("su1234")) {
@@ -3602,7 +3602,7 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 		params.put("roleId", String.valueOf(roleId));
 		List<BulkUploadUserRoles> userRolesList = null;
 		Integer userRolesAdded = 0;
-		if (app.getCentralAuth()) {
+		if (app.getRolesInAAF()) {
 			userRolesList = dataAccessService.executeNamedQuery("getBulkUsersForSingleRole", params, null);
 			for (BulkUploadUserRoles userRolesUpload : userRolesList) {
 				userRolesUpload.setRoleName(modifiedRoleName);

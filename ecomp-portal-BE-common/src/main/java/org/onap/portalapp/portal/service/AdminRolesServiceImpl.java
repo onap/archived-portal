@@ -349,7 +349,7 @@ public class AdminRolesServiceImpl implements AdminRolesService {
 			for (AppNameIdIsAdmin appNameIdIsAdmin : newAppsWhereUserIsAdmin) {
 				EPApp app = (EPApp) localSession.get(EPApp.class, appNameIdIsAdmin.id);
 				try {
-					if (app.getCentralAuth()) {
+					if (app.getRolesInAAF()) {
 						String extRole = app.getNameSpace() + "." + PortalConstants.ADMIN_ROLE.replaceAll(" ", "_");
 						HttpEntity<String> entity = new HttpEntity<>(headers);
 						String name = "";

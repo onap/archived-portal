@@ -208,7 +208,7 @@ public class AppsControllerExternalRequest implements BasicAuthenticationControl
 		@PathVariable("appId") Long appId) {
 		EPApp epApp = appService.getApp(appId);
 		OnboardingApp obApp = new OnboardingApp();
-		epApp.setAppPassword(EPCommonSystemProperties.APP_DISPLAY_PASSWORD); //to hide password from get request
+		epApp.setAppBasicAuthPassword(EPCommonSystemProperties.APP_DISPLAY_PASSWORD); //to hide password from get request
 		appService.createOnboardingFromApp(epApp, obApp);
 		EcompPortalUtils.logAndSerializeObject(logger, "getOnboardAppExternal", RESPONSE, obApp);
 		return obApp;
@@ -252,7 +252,7 @@ public class AppsControllerExternalRequest implements BasicAuthenticationControl
 				return portalResponse;
 		}
 		// Validate fields
-		if (newOnboardApp.id != null) {
+		if (newOnboardApp.getId() != null) {
 			portalResponse.setStatus(PortalRestStatusEnum.ERROR);
 			portalResponse.setMessage("Unexpected field: id");
 			return portalResponse;
@@ -266,10 +266,10 @@ public class AppsControllerExternalRequest implements BasicAuthenticationControl
 
 		try {
 		    List<EPUser> userList;
-			userList = userService.getUserByUserId(newOnboardApp.myLoginsAppOwner);
+			userList = userService.getUserByUserId(newOnboardApp.getMyLoginsAppOwner());
 			if (userList == null || userList.size() != 1) {
                 portalResponse.setStatus(PortalRestStatusEnum.ERROR);
-				portalResponse.setMessage("Failed to find user: " + newOnboardApp.myLoginsAppOwner);
+				portalResponse.setMessage("Failed to find user: " + newOnboardApp.getMyLoginsAppOwner());
 
 				return portalResponse;
 			}
@@ -343,7 +343,7 @@ public class AppsControllerExternalRequest implements BasicAuthenticationControl
 
 		// Validate fields.
 
-		if (appId == null || !appId.equals(oldOnboardApp.id)) {
+		if (appId == null || !appId.equals(oldOnboardApp.getId())) {
 			portalResponse.setStatus(PortalRestStatusEnum.ERROR);
 			portalResponse.setMessage("Unexpected value for field: id");
 			return portalResponse;
@@ -358,10 +358,10 @@ public class AppsControllerExternalRequest implements BasicAuthenticationControl
 
 		try {
             List<EPUser> userList;
-			userList = userService.getUserByUserId(oldOnboardApp.myLoginsAppOwner);
+			userList = userService.getUserByUserId(oldOnboardApp.getMyLoginsAppOwner());
 			if (userList == null || userList.size() != 1) {
                 portalResponse.setStatus(PortalRestStatusEnum.ERROR);
-				portalResponse.setMessage("Failed to find user: " + oldOnboardApp.myLoginsAppOwner);
+				portalResponse.setMessage("Failed to find user: " + oldOnboardApp.getMyLoginsAppOwner());
 
 				return portalResponse;
             }
@@ -398,15 +398,15 @@ public class AppsControllerExternalRequest implements BasicAuthenticationControl
 	}
 
 	private boolean checkIfFieldsAreNull(OnboardingApp onboardingApp) {
-		return onboardingApp.name == null || onboardingApp.url == null || onboardingApp.restUrl == null
-			|| onboardingApp.myLoginsAppOwner == null || onboardingApp.restrictedApp == null
-			|| onboardingApp.isOpen == null || onboardingApp.isEnabled == null;
+		return onboardingApp.getAppName() == null || onboardingApp.getLandingPage() == null || onboardingApp.getRestUrl() == null
+			|| onboardingApp.getMyLoginsAppOwner() == null || onboardingApp.getRestrictedApp() == null
+			|| onboardingApp.getIsOpen() == null || onboardingApp.getIsEnabled() == null;
 	}
 
 	private boolean checkIfFieldsAreEmpty(OnboardingApp onboardingApp) {
-		return onboardingApp.name.trim().isEmpty()
-			|| onboardingApp.url.trim().isEmpty()
-			|| onboardingApp.restUrl.trim().isEmpty()
-			|| onboardingApp.myLoginsAppOwner.trim().isEmpty();
+		return onboardingApp.getAppName().trim().isEmpty()
+			|| onboardingApp.getLandingPage().trim().isEmpty()
+			|| onboardingApp.getRestUrl().trim().isEmpty()
+			|| onboardingApp.getMyLoginsAppOwner().trim().isEmpty();
 	}
 }

@@ -52,45 +52,72 @@ import org.onap.portalsdk.core.domain.support.DomainVo;
 public class EPApp extends DomainVo {
 
 	private static final long serialVersionUID = 1L;
+
 	@SafeHtml
 	private String name;
+
 	@SafeHtml
 	private String imageUrl;
+
 	@SafeHtml
-	private String description;
+	private String appDescription;
+
 	@SafeHtml
-	private String notes;
+	private String appNotes;
+
 	@SafeHtml
-	private String url;
+	private String landingPage;
+
 	@SafeHtml
-	private String alternateUrl;
+	private String alternateLandingPage;
+
 	@SafeHtml
 	private String appRestEndpoint;
+
 	@SafeHtml
 	private String mlAppName;
+
 	@SafeHtml
 	private String mlAppAdminId;
 	private Long motsId;
+
 	@SafeHtml
-	private String username;
+	private String appBasicAuthUsername;
+
 	@SafeHtml
-	private String appPassword;
+	private String appBasicAuthPassword;
+
 	@Lob
 	private byte[] thumbnail;
+
 	private Boolean open;
+
 	private Boolean enabled;
+
 	@SafeHtml
 	private String uebTopicName;
+
 	@SafeHtml
 	private String uebKey;
+
 	@SafeHtml
 	private String uebSecret;
+
 	private Integer appType;
+
 	@Valid
 	private AppContactUs contactUs;
-	private Boolean centralAuth;
+
+	private Boolean rolesInAAF;
 	@SafeHtml
-	private String	nameSpace;
+	private String nameSpace;
+
+	@SafeHtml
+	private String modeOfIntegration;
+
+	private Boolean appAck;
+
+	private Boolean usesCadi;
 
 	public EPApp() {
 		// Attention!!!
@@ -102,8 +129,8 @@ public class EPApp extends DomainVo {
 		this.name = "";
 		this.mlAppName = "";
 		this.mlAppAdminId = "";
-		this.username = "";
-		this.appPassword = "";
+		this.appBasicAuthUsername = "";
+		this.appBasicAuthPassword = "";
 		this.open = new Boolean(false);
 		this.enabled = new Boolean(true);
 		this.uebTopicName = "";
@@ -131,8 +158,6 @@ public class EPApp extends DomainVo {
 		this.imageUrl = imageUrl;
 	}
 
-
-
 	public byte[] getThumbnail() {
 		return this.thumbnail;
 	}
@@ -141,36 +166,36 @@ public class EPApp extends DomainVo {
 		this.thumbnail = thumbnail;
 	}
 
-	public String getDescription() {
-		return description;
+	public String getAppDescription() {
+		return appDescription;
 	}
 
-	public void setDescription(String description) {
-		this.description = description;
+	public void setAppDescription(String appDescription) {
+		this.appDescription = appDescription;
 	}
 
-	public String getNotes() {
-		return notes;
+	public String getAppNotes() {
+		return appNotes;
 	}
 
-	public void setNotes(String notes) {
-		this.notes = notes;
+	public void setAppNotes(String appNotes) {
+		this.appNotes = appNotes;
 	}
 
-	public String getUrl() {
-		return url;
+	public String getLandingPage() {
+		return landingPage;
 	}
 
-	public void setUrl(String url) {
-		this.url = url;
+	public void setLandingPage(String landingPage) {
+		this.landingPage = landingPage;
 	}
 
-	public String getAlternateUrl() {
-		return alternateUrl;
+	public String getAlternateLandingPage() {
+		return alternateLandingPage;
 	}
 
-	public void setAlternateUrl(String alternateUrl) {
-		this.alternateUrl = alternateUrl;
+	public void setAlternateLandingPage(String alternateLandingPage) {
+		this.alternateLandingPage = alternateLandingPage;
 	}
 
 	public String getAppRestEndpoint() {
@@ -211,25 +236,25 @@ public class EPApp extends DomainVo {
 		this.motsId = motsId;
 	}
 
-	public String getUsername() {
-		return username;
+	public String getAppBasicAuthUsername() {
+		return appBasicAuthUsername;
 	}
 
-	public void setUsername(String username) {
-		this.username = username;
+	public void setAppBasicAuthUsername(String appBasicAuthUsername) {
+		this.appBasicAuthUsername = appBasicAuthUsername;
 	}
 
-	public String getAppPassword() {
-		return appPassword;
+	public String getAppBasicAuthPassword() {
+		return appBasicAuthPassword;
 	}
 
-	public void setAppPassword(String appPassword) {
-		if (StringUtils.isEmpty(appPassword)) {
-			appPassword = "";
+	public void setAppBasicAuthPassword(String appBasicAuthPassword) {
+		if (StringUtils.isEmpty(appBasicAuthPassword)) {
+			appBasicAuthPassword = "";
 		}
-		this.appPassword = appPassword;
+		this.appBasicAuthPassword = appBasicAuthPassword;
 	}
-
+	
 	public Boolean getOpen() {
 		return open;
 	}
@@ -250,25 +275,6 @@ public class EPApp extends DomainVo {
 			enabled = new Boolean(true);
 		}
 		this.enabled = enabled;
-	}
-
-	public Integer getAppType() {
-		return appType;
-	}
-
-	public void setAppType(Integer appType) {
-		if (appType == null) {
-			appType = new Integer(1);
-		}
-		this.appType = appType;
-	}
-
-	public void setRestrictedApp(Boolean restrictedApp) {
-		Integer result = 1;
-		if (restrictedApp) {
-			result = 2;
-		}
-		this.appType = result;
 	}
 
 	public Boolean isRestrictedApp() {
@@ -308,6 +314,14 @@ public class EPApp extends DomainVo {
 		return this.uebSecret;
 	}
 
+	public Integer getAppType() {
+		return appType;
+	}
+
+	public void setAppType(Integer appType) {
+		this.appType = appType;
+	}
+
 	public void setUebSecret(String uebSecret) {
 		if (StringUtils.isEmpty(uebSecret)) {
 			this.uebSecret = "";
@@ -322,18 +336,18 @@ public class EPApp extends DomainVo {
 	public void setContactUs(AppContactUs contactUs) {
 		this.contactUs = contactUs;
 	}
-	
-	public Boolean getCentralAuth() {
-		return centralAuth;
+
+	public Boolean getRolesInAAF() {
+		return rolesInAAF;
 	}
 
-	public void setCentralAuth(Boolean centralAuth) {
-		if (centralAuth == null) {
-			centralAuth = new Boolean(false);
+	public void setRolesInAAF(Boolean rolesInAAF) {
+		if (rolesInAAF == null) {
+			rolesInAAF = new Boolean(false);
 		}
-		this.centralAuth = centralAuth;
+		this.rolesInAAF = rolesInAAF;
 	}
-	
+
 	public String getNameSpace() {
 		return nameSpace;
 	}
@@ -345,38 +359,71 @@ public class EPApp extends DomainVo {
 		this.nameSpace = nameSpace;
 	}
 
+	public String getModeOfIntegration() {
+		return modeOfIntegration;
+	}
+
+	public void setModeOfIntegration(String modeOfIntegration) {
+		this.modeOfIntegration = modeOfIntegration;
+	}
+
+	public Boolean getAppAck() {
+		return appAck;
+	}
+
+	public void setAppAck(Boolean appAck) {
+		this.appAck = appAck;
+	}
+
+	public Boolean getUsesCadi() {
+		return usesCadi;
+	}
+
+	public void setUsesCadi(Boolean usesCadi) {
+		this.usesCadi = usesCadi;
+	}
+	
 	@Override
 	public String toString() {
-		String str = "[" + getId() + ":" + getName() + "]";
-		return str;
+		return "EPApp [name=" + name + ", imageUrl=" + imageUrl + ", appDescription=" + appDescription + ", appNotes="
+				+ appNotes + ", landingPage=" + landingPage + ", alternateLandingPage=" + alternateLandingPage
+				+ ", appRestEndpoint=" + appRestEndpoint + ", mlAppName=" + mlAppName + ", mlAppAdminId=" + mlAppAdminId
+				+ ", motsId=" + motsId + ", appBasicAuthUsername=" + appBasicAuthUsername + ", appBasicAuthPassword="
+				+ appBasicAuthPassword + ", thumbnail=" + Arrays.toString(thumbnail) + ", open=" + open + ", enabled="
+				+ enabled + ", uebTopicName=" + uebTopicName + ", uebKey=" + uebKey + ", uebSecret=" + uebSecret
+				+ ", appType=" + appType + ", contactUs=" + contactUs + ", rolesInAAF=" + rolesInAAF + ", nameSpace="
+				+ nameSpace + ", modeOfIntegration=" + modeOfIntegration + ", appAck=" + appAck + ", usesCadi="
+				+ usesCadi + "]";
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((alternateUrl == null) ? 0 : alternateUrl.hashCode());
-		result = prime * result + ((appPassword == null) ? 0 : appPassword.hashCode());
+		result = prime * result + ((alternateLandingPage == null) ? 0 : alternateLandingPage.hashCode());
+		result = prime * result + ((appAck == null) ? 0 : appAck.hashCode());
+		result = prime * result + ((appBasicAuthPassword == null) ? 0 : appBasicAuthPassword.hashCode());
+		result = prime * result + ((appBasicAuthUsername == null) ? 0 : appBasicAuthUsername.hashCode());
+		result = prime * result + ((appDescription == null) ? 0 : appDescription.hashCode());
+		result = prime * result + ((appNotes == null) ? 0 : appNotes.hashCode());
 		result = prime * result + ((appRestEndpoint == null) ? 0 : appRestEndpoint.hashCode());
 		result = prime * result + ((appType == null) ? 0 : appType.hashCode());
-		result = prime * result + ((centralAuth == null) ? 0 : centralAuth.hashCode());
-		result = prime * result + ((contactUs == null) ? 0 : contactUs.hashCode());
-		result = prime * result + ((description == null) ? 0 : description.hashCode());
 		result = prime * result + ((enabled == null) ? 0 : enabled.hashCode());
 		result = prime * result + ((imageUrl == null) ? 0 : imageUrl.hashCode());
+		result = prime * result + ((landingPage == null) ? 0 : landingPage.hashCode());
 		result = prime * result + ((mlAppAdminId == null) ? 0 : mlAppAdminId.hashCode());
 		result = prime * result + ((mlAppName == null) ? 0 : mlAppName.hashCode());
+		result = prime * result + ((modeOfIntegration == null) ? 0 : modeOfIntegration.hashCode());
 		result = prime * result + ((motsId == null) ? 0 : motsId.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		result = prime * result + ((nameSpace == null) ? 0 : nameSpace.hashCode());
-		result = prime * result + ((notes == null) ? 0 : notes.hashCode());
 		result = prime * result + ((open == null) ? 0 : open.hashCode());
+		result = prime * result + ((rolesInAAF == null) ? 0 : rolesInAAF.hashCode());
 		result = prime * result + Arrays.hashCode(thumbnail);
 		result = prime * result + ((uebKey == null) ? 0 : uebKey.hashCode());
 		result = prime * result + ((uebSecret == null) ? 0 : uebSecret.hashCode());
 		result = prime * result + ((uebTopicName == null) ? 0 : uebTopicName.hashCode());
-		result = prime * result + ((url == null) ? 0 : url.hashCode());
-		result = prime * result + ((username == null) ? 0 : username.hashCode());
+		result = prime * result + ((usesCadi == null) ? 0 : usesCadi.hashCode());
 		return result;
 	}
 
@@ -384,20 +431,40 @@ public class EPApp extends DomainVo {
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (obj == null)
+		if (!super.equals(obj))
 			return false;
-		if (getClass() != obj.getClass())
+		if (!(obj instanceof EPApp))
 			return false;
 		EPApp other = (EPApp) obj;
-		if (alternateUrl == null) {
-			if (other.alternateUrl != null)
+		if (alternateLandingPage == null) {
+			if (other.alternateLandingPage != null)
 				return false;
-		} else if (!alternateUrl.equals(other.alternateUrl))
+		} else if (!alternateLandingPage.equals(other.alternateLandingPage))
 			return false;
-		if (appPassword == null) {
-			if (other.appPassword != null)
+		if (appAck == null) {
+			if (other.appAck != null)
 				return false;
-		} else if (!appPassword.equals(other.appPassword))
+		} else if (!appAck.equals(other.appAck))
+			return false;
+		if (appBasicAuthPassword == null) {
+			if (other.appBasicAuthPassword != null)
+				return false;
+		} else if (!appBasicAuthPassword.equals(other.appBasicAuthPassword))
+			return false;
+		if (appBasicAuthUsername == null) {
+			if (other.appBasicAuthUsername != null)
+				return false;
+		} else if (!appBasicAuthUsername.equals(other.appBasicAuthUsername))
+			return false;
+		if (appDescription == null) {
+			if (other.appDescription != null)
+				return false;
+		} else if (!appDescription.equals(other.appDescription))
+			return false;
+		if (appNotes == null) {
+			if (other.appNotes != null)
+				return false;
+		} else if (!appNotes.equals(other.appNotes))
 			return false;
 		if (appRestEndpoint == null) {
 			if (other.appRestEndpoint != null)
@@ -409,21 +476,6 @@ public class EPApp extends DomainVo {
 				return false;
 		} else if (!appType.equals(other.appType))
 			return false;
-		if (centralAuth == null) {
-			if (other.centralAuth != null)
-				return false;
-		} else if (!centralAuth.equals(other.centralAuth))
-			return false;
-		if (contactUs == null) {
-			if (other.contactUs != null)
-				return false;
-		} else if (!contactUs.equals(other.contactUs))
-			return false;
-		if (description == null) {
-			if (other.description != null)
-				return false;
-		} else if (!description.equals(other.description))
-			return false;
 		if (enabled == null) {
 			if (other.enabled != null)
 				return false;
@@ -434,6 +486,11 @@ public class EPApp extends DomainVo {
 				return false;
 		} else if (!imageUrl.equals(other.imageUrl))
 			return false;
+		if (landingPage == null) {
+			if (other.landingPage != null)
+				return false;
+		} else if (!landingPage.equals(other.landingPage))
+			return false;
 		if (mlAppAdminId == null) {
 			if (other.mlAppAdminId != null)
 				return false;
@@ -443,6 +500,11 @@ public class EPApp extends DomainVo {
 			if (other.mlAppName != null)
 				return false;
 		} else if (!mlAppName.equals(other.mlAppName))
+			return false;
+		if (modeOfIntegration == null) {
+			if (other.modeOfIntegration != null)
+				return false;
+		} else if (!modeOfIntegration.equals(other.modeOfIntegration))
 			return false;
 		if (motsId == null) {
 			if (other.motsId != null)
@@ -459,15 +521,15 @@ public class EPApp extends DomainVo {
 				return false;
 		} else if (!nameSpace.equals(other.nameSpace))
 			return false;
-		if (notes == null) {
-			if (other.notes != null)
-				return false;
-		} else if (!notes.equals(other.notes))
-			return false;
 		if (open == null) {
 			if (other.open != null)
 				return false;
 		} else if (!open.equals(other.open))
+			return false;
+		if (rolesInAAF == null) {
+			if (other.rolesInAAF != null)
+				return false;
+		} else if (!rolesInAAF.equals(other.rolesInAAF))
 			return false;
 		if (!Arrays.equals(thumbnail, other.thumbnail))
 			return false;
@@ -486,16 +548,13 @@ public class EPApp extends DomainVo {
 				return false;
 		} else if (!uebTopicName.equals(other.uebTopicName))
 			return false;
-		if (url == null) {
-			if (other.url != null)
+		if (usesCadi == null) {
+			if (other.usesCadi != null)
 				return false;
-		} else if (!url.equals(other.url))
-			return false;
-		if (username == null) {
-			if (other.username != null)
-				return false;
-		} else if (!username.equals(other.username))
+		} else if (!usesCadi.equals(other.usesCadi))
 			return false;
 		return true;
 	}
+
+	
 }

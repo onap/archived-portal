@@ -152,7 +152,7 @@ public class PortalResourceInterceptorTest {
 		data.add("test/test");
 		List<EPApp> apps=new ArrayList<>();
 		EPApp app=new EPApp();
-		app.setUsername("test");
+		app.setAppBasicAuthUsername("test");
 		apps.add(app);
 		when(request.getRequestURI()).thenReturn("test/portalApi/test/test");
 		
