@@ -1,0 +1,11 @@
+distribution_type: container
+container_release_tag: 3.2.3
+project: portal
+ref: a942e5cdc2998560a2810d4eec028301339623b5
+containers:
+    - name: portal-app
+      version: 3.2.0-STAGING-latest
+    - name: portal-wms
+      version: 3.2.0-STAGING-latest
+    - name: portal-db
+      version: 0.2.0-STAGING-latest
