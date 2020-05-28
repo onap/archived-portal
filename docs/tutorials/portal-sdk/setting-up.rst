@@ -18,7 +18,7 @@ Clone the Portal SDK repository with git:
 
 ::
 
-    git clone http://gerrit.onap.org/r/portal/sdk
+    git clone --depth 1 http://gerrit.onap.org/r/portal/sdk
 
 Building the base
 -----------------

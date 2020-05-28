@@ -18,7 +18,7 @@ Clone the Portal repository with git:
 
 ::
 
-    git clone "https://gerrit.onap.org/r/portal"
+    git clone --depth 1 "https://gerrit.onap.org/r/portal"
 
 Building
 -----------------
