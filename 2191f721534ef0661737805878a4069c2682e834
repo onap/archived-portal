@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5ac47457_53200ced",
+        "filename": "ecomp-portal-BE-common/src/main/java/org/onap/portalapp/portal/interceptor/PortalResourceInterceptor.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 375,
+      "author": {
+        "id": 679
+      },
+      "writtenOn": "2020-06-01T19:20:35Z",
+      "side": 1,
+      "message": "Please remove the commented part",
+      "revId": "2191f721534ef0661737805878a4069c2682e834",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
