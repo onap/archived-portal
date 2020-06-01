@@ -169,22 +169,26 @@ export class DashboardApplicationCatalogComponent implements OnInit {
         this.applicationCatalogService.layout = [];
         for (let entry of data) {
           //console.log("Check the URL" + environment.api.appThumbnail);
-          var appCatalog = {
-            x: -1,
-            y: -1,
-            id: entry.id,
-            name: entry.name,
-            subHeaderText: entry.notes,
-            imageLink: environment.api.appThumbnail.replace(':appId', <string><any>entry.id),
-            restrictedApp: entry.restrictedApp,
-            select: entry.select,
-            access: entry.access,
-            pending: entry.pending,
-            order: entry.order,
-            url: entry.url,
-            appid: entry.id
-          };
-          this.applicationCatalogService.addItem(appCatalog);
+          console.log("ApplicationType ", entry.applicationType);
+          if(entry.applicationType != '3'){
+            var appCatalog = {
+              x: -1,
+              y: -1,
+              id: entry.id,
+              name: entry.name,
+              subHeaderText: entry.notes,
+              imageLink: environment.api.appThumbnail.replace(':appId', <string><any>entry.id),
+              applicationType: entry.applicationType,
+              select: entry.select,
+              access: entry.access,
+              pending: entry.pending,
+              order: entry.order,
+              url: entry.url,
+              appid: entry.id
+            };
+            console.log("App Catalog : ", appCatalog);
+            this.applicationCatalogService.addItem(appCatalog);
+          }
         }
       }
     }, error => {
@@ -199,7 +203,7 @@ export class DashboardApplicationCatalogComponent implements OnInit {
 
   openAddRoleModal(item: any) {
     //console.log("OpenModal check" + item.id+" "+item.url);
-    if (item.restrictedApp) {
+    if (item.applicationType =='2') {
       // Link-based apps open in their own browser tab
       window.open(item.url, '_blank');
     } else{
