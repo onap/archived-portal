@@ -67,6 +67,7 @@ import org.onap.portalapp.util.SystemType;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.onap.portalsdk.core.onboarding.exception.CipherUtilException;
 import org.onap.portalsdk.core.onboarding.util.CipherUtil;
+import org.onap.portalsdk.core.onboarding.util.KeyConstants;
 import org.onap.portalsdk.core.util.SystemProperties;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -193,8 +194,10 @@ public class ApplicationsRestClientServiceImpl implements ApplicationsRestClient
 
 			if(!encriptedPwd.isEmpty() || encriptedPwd != null || StringUtils.isEmpty(encriptedPwd)){
 			try {
+				/*decreptedAppPwd = CipherUtil.decryptPKC(encriptedPwd,
+						SystemProperties.getProperty(SystemProperties.Decryption_Key)); */
 				decreptedAppPwd = CipherUtil.decryptPKC(encriptedPwd,
-						SystemProperties.getProperty(SystemProperties.Decryption_Key));
+						KeyProperties.getProperty(KeyConstants.CIPHER_ENCRYPTION_KEY));
 			} catch (Exception e) {
 				logger.error(EELFLoggerDelegate.errorLogger, "createClientFor failed to decrypt", e);
 			}
@@ -214,8 +217,10 @@ public class ApplicationsRestClientServiceImpl implements ApplicationsRestClient
 				String password=externalApp.getAppPassword();
 				String decreptedexternalAppPwd = StringUtils.EMPTY;
 				try {
+					/*decreptedexternalAppPwd = CipherUtil.decryptPKC(password,
+							SystemProperties.getProperty(SystemProperties.Decryption_Key)); */
 					decreptedexternalAppPwd = CipherUtil.decryptPKC(password,
-							SystemProperties.getProperty(SystemProperties.Decryption_Key));
+							KeyProperties.getProperty(KeyConstants.CIPHER_ENCRYPTION_KEY));
 				} catch (CipherUtilException e) {
 					logger.error(EELFLoggerDelegate.errorLogger, "failed to decreptedexternalAppPwd when external app pwd is null", e);
 				}

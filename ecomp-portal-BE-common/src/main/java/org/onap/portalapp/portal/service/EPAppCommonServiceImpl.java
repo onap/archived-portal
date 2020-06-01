@@ -94,6 +94,8 @@ import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.onap.portalsdk.core.onboarding.ueb.Helper;
 import org.onap.portalsdk.core.onboarding.ueb.TopicManager;
 import org.onap.portalsdk.core.onboarding.util.CipherUtil;
+import org.onap.portalsdk.core.onboarding.util.KeyConstants;
+import org.onap.portalsdk.core.onboarding.util.KeyProperties;
 import org.onap.portalsdk.core.onboarding.util.PortalApiConstants;
 import org.onap.portalsdk.core.onboarding.util.PortalApiProperties;
 import org.onap.portalsdk.core.service.DataAccessService;
@@ -1616,8 +1618,10 @@ public class EPAppCommonServiceImpl implements EPAppService {
 		String result = "";
 		if (encryptedAppPwd != null && !encryptedAppPwd.isEmpty()) {
 			try {
+				/*result = CipherUtil.decryptPKC(encryptedAppPwd,
+						SystemProperties.getProperty(SystemProperties.Decryption_Key)); */
 				result = CipherUtil.decryptPKC(encryptedAppPwd,
-						SystemProperties.getProperty(SystemProperties.Decryption_Key));
+						KeyProperties.getProperty(KeyConstants.CIPHER_ENCRYPTION_KEY));
 			} catch (Exception e) {
 				logger.error(EELFLoggerDelegate.errorLogger, "decryptedPassword failed for app " + app.getName(), e);
 			}
@@ -1629,8 +1633,10 @@ public class EPAppCommonServiceImpl implements EPAppService {
 		String result = "";
 		if (decryptedAppPwd != null && !decryptedAppPwd.isEmpty()) {
 			try {
+				/*result = CipherUtil.encryptPKC(decryptedAppPwd,
+						SystemProperties.getProperty(SystemProperties.Decryption_Key)); */
 				result = CipherUtil.encryptPKC(decryptedAppPwd,
-						SystemProperties.getProperty(SystemProperties.Decryption_Key));
+						KeyProperties.getProperty(KeyConstants.CIPHER_ENCRYPTION_KEY));
 			} catch (Exception e) {
 				logger.error(EELFLoggerDelegate.errorLogger, "encryptedPassword failed for app " + app.getName(), e);
 			}

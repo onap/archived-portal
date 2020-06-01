@@ -52,6 +52,8 @@ import org.onap.portalapp.portal.logging.aop.EPMetricsLog;
 import org.onap.portalapp.portal.utils.EPCommonSystemProperties;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.onap.portalsdk.core.onboarding.util.CipherUtil;
+import org.onap.portalsdk.core.onboarding.util.KeyConstants;
+import org.onap.portalsdk.core.onboarding.util.KeyProperties;
 import org.onap.portalsdk.core.service.DataAccessService;
 import org.onap.portalsdk.core.util.SystemProperties;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -196,8 +198,10 @@ public class MicroserviceServiceImpl implements MicroserviceService {
 		String result = "";
 		if (encryptedPwd != null && !encryptedPwd.isEmpty()) {
 			try {
+				/*result = CipherUtil.decryptPKC(encryptedPwd,
+						SystemProperties.getProperty(SystemProperties.Decryption_Key)); */
 				result = CipherUtil.decryptPKC(encryptedPwd,
-						SystemProperties.getProperty(SystemProperties.Decryption_Key));
+						KeyProperties.getProperty(KeyConstants.CIPHER_ENCRYPTION_KEY));
 			} catch (Exception e) {
 				logger.error(EELFLoggerDelegate.errorLogger, "decryptedPassword failed", e);
 				throw e;
@@ -210,8 +214,10 @@ public class MicroserviceServiceImpl implements MicroserviceService {
 		String result = "";
 		if (decryptedPwd != null && !decryptedPwd.isEmpty()) {
 			try {
+				/*result = CipherUtil.encryptPKC(decryptedPwd,
+						SystemProperties.getProperty(SystemProperties.Decryption_Key));*/
 				result = CipherUtil.encryptPKC(decryptedPwd,
-						SystemProperties.getProperty(SystemProperties.Decryption_Key));
+						KeyProperties.getProperty(KeyConstants.CIPHER_ENCRYPTION_KEY));
 			} catch (Exception e) {
 				logger.error(EELFLoggerDelegate.errorLogger, "encryptedPassword failed", e);
 				throw e;
