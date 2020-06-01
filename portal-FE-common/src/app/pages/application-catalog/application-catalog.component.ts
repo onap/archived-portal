@@ -63,9 +63,13 @@ export class ApplicationCatalogComponent implements OnInit {
 
   get options(): GridsterConfig {
     return this.applicationCatalogService.options;
-  } get layout(): GridsterItem[] {
+  } 
+  
+  get layout(): GridsterItem[] {
     return this.applicationCatalogService.layout;
-  } constructor(private applicationCatalogService: ApplicationCatalogService, private externalRequestAccessService: ExternalRequestAccessService, private userService: UsersService, private modal: NgbModal) { }
+  } 
+  
+  constructor(private applicationCatalogService: ApplicationCatalogService, private externalRequestAccessService: ExternalRequestAccessService, private userService: UsersService, private modal: NgbModal) { }
 
   ngOnInit() {
     this.applicationCatalogService.clearCatalog();
@@ -99,26 +103,32 @@ export class ApplicationCatalogComponent implements OnInit {
     this.applicationCatalogService.getAppCatalog().subscribe(data => {
       //console.log("Response data" + data);
       this.appCatalogData = data;
+      console.log("Application Catalog : ", this.appCatalogData);
       for (let entry of this.appCatalogData) {
         //console.log("Check the URL" + environment.api.appThumbnail);
-        var appCatalog = {
-          x: -1,
-          y: -1,
-          id: entry.id,
-          name: entry.name,
-          mlAppName: entry.mlAppName,
-          imageLink: environment.api.appThumbnail.replace(':appId', <string><any>entry.id),
-          restricted: entry.restricted,
-          select: entry.select,
-          access: entry.access,
-          pending: entry.pending,
-          mlproperty: this.resultAccessValue
-        };
-        this.applicationCatalogService.addItem(appCatalog);
+        //if applicationType is not 3('Non-Gui'), applicationType should be 1 or 2
+        if(entry.applicationType != "3"){
+          var appCatalog = {
+            x: -1,
+            y: -1,
+            id: entry.id,
+            name: entry.name,
+            mlAppName: entry.mlAppName,
+            imageLink: environment.api.appThumbnail.replace(':appId', <string><any>entry.id),
+            applicationType: entry.applicationType,
+            select: entry.select,
+            access: entry.access,
+            pending: entry.pending,
+            mlproperty: this.resultAccessValue
+          };
+          this.applicationCatalogService.addItem(appCatalog);
+        }
       }
     }, error => {
       console.log('getAppCatalogServices Error Object' + error);
     });
+
+    console.log("Layout : ", this.layout);
   };
 
   storeSelection(appCatalogData: any) {
@@ -147,8 +157,8 @@ export class ApplicationCatalogComponent implements OnInit {
     });
   };
   openAddRoleModal(item: any) {
-    //console.log("OpenModal check" + item.id);
-    if ((!item.restricted) && (item.mlproperty)) {
+    console.log("OpenModal check" + item.id);
+    if ((item.applicationType == "1") && (item.mlproperty)) {
       this.modal.open(CatalogModalComponent);
     }
   }
