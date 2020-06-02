@@ -1618,8 +1618,6 @@ public class EPAppCommonServiceImpl implements EPAppService {
 		String result = "";
 		if (encryptedAppPwd != null && !encryptedAppPwd.isEmpty()) {
 			try {
-				/*result = CipherUtil.decryptPKC(encryptedAppPwd,
-						SystemProperties.getProperty(SystemProperties.Decryption_Key)); */
 				result = CipherUtil.decryptPKC(encryptedAppPwd,
 						KeyProperties.getProperty(KeyConstants.CIPHER_ENCRYPTION_KEY));
 			} catch (Exception e) {
@@ -1633,8 +1631,6 @@ public class EPAppCommonServiceImpl implements EPAppService {
 		String result = "";
 		if (decryptedAppPwd != null && !decryptedAppPwd.isEmpty()) {
 			try {
-				/*result = CipherUtil.encryptPKC(decryptedAppPwd,
-						SystemProperties.getProperty(SystemProperties.Decryption_Key)); */
 				result = CipherUtil.encryptPKC(decryptedAppPwd,
 						KeyProperties.getProperty(KeyConstants.CIPHER_ENCRYPTION_KEY));
 			} catch (Exception e) {

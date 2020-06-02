@@ -73,8 +73,6 @@ public class SessionCookieUtil extends CommonSessionCookieUtil{
 	public static void setUpUserIdCookie(HttpServletRequest request,
 			HttpServletResponse response,String userId) throws Exception {
 		logger.info("************** session cookie util set up UserId cookie begins");
-//		userId = CipherUtil.encrypt(userId,
-//				SystemProperties.getProperty(SystemProperties.Decryption_Key));
 		userId = CipherUtil.encrypt(userId,
 				KeyProperties.getProperty(KeyConstants.CIPHER_ENCRYPTION_KEY));
 		Cookie cookie1 = new Cookie(USER_ID, userId);
@@ -96,8 +94,6 @@ public class SessionCookieUtil extends CommonSessionCookieUtil{
 				if (cookie.getName().equals(USER_ID))
 					userIdcookie = cookie;
 		if(userIdcookie!=null){
-			/*userId = CipherUtil.decrypt(userIdcookie.getValue(),
-					SystemProperties.getProperty(SystemProperties.Decryption_Key));*/
 			userId = CipherUtil.decrypt(userIdcookie.getValue(),
 					KeyProperties.getProperty(KeyConstants.CIPHER_ENCRYPTION_KEY));
 		}

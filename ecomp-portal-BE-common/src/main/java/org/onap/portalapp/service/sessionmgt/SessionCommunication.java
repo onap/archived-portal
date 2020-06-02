@@ -227,8 +227,6 @@ public class SessionCommunication {
 
 				String encriptedPwdDB = app.appPassword;
 				String appUserName = app.username;
-				// String decreptedPwd = CipherUtil.decrypt(encriptedPwdDB,
-				// SystemProperties.getProperty(SystemProperties.Decryption_Key));
 
 				setLocalMDCContext(app, "/timeoutSession", url);
 
@@ -345,8 +343,6 @@ public class SessionCommunication {
 			String password=externalApp.getAppPassword();
 			String decreptedexternalAppPwd = StringUtils.EMPTY;
 			try {
-				/*decreptedexternalAppPwd = CipherUtil.decryptPKC(password,
-						SystemProperties.getProperty(SystemProperties.Decryption_Key)); */
 				decreptedexternalAppPwd = CipherUtil.decryptPKC(password,
 						KeyProperties.getProperty(KeyConstants.CIPHER_ENCRYPTION_KEY));
 			} catch (CipherUtilException e) {

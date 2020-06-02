@@ -436,8 +436,6 @@ public class EcompPortalUtils {
 		String result = "";
 		if (encrypted != null && encrypted.length() > 0) {
 			try {
-				/*result = CipherUtil.decryptPKC(encrypted,
-						SystemProperties.getProperty(SystemProperties.Decryption_Key)); */
 				result = CipherUtil.decryptPKC(encrypted,
 						KeyProperties.getProperty(KeyConstants.CIPHER_ENCRYPTION_KEY));
 			} catch (Exception e) {

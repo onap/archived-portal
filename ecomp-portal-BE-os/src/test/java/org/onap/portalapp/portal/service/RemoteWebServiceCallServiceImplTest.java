@@ -57,6 +57,8 @@ import org.onap.portalapp.portal.domain.EPApp;
 import org.onap.portalapp.portal.framework.MockitoTestSuite;
 import org.onap.portalapp.service.RemoteWebServiceCallServiceImpl;
 import org.onap.portalsdk.core.onboarding.util.CipherUtil;
+import org.onap.portalsdk.core.onboarding.util.KeyConstants;
+import org.onap.portalsdk.core.onboarding.util.KeyProperties;
 import org.onap.portalsdk.core.service.DataAccessService;
 import org.onap.portalsdk.core.util.SystemProperties;
 import org.powermock.api.mockito.PowerMockito;
@@ -101,7 +103,7 @@ public class RemoteWebServiceCallServiceImplTest {
 		appList.add(app);
 		Mockito.when(dataAccessService.getList(EPApp.class, criteria.toString(), null, null)).thenReturn(appList);
 		String secretKey = null;
-		Mockito.when(SystemProperties.getProperty(SystemProperties.Decryption_Key)).thenReturn(secretKey);
+		Mockito.when(KeyProperties.getProperty(KeyConstants.CIPHER_ENCRYPTION_KEY)).thenReturn(secretKey);
 		Mockito.when(CipherUtil.decryptPKC("password",
 				secretKey == null ? null : secretKey)).thenReturn("pwd");
 		assertFalse(remoteWebServiceCallServiceImpl.verifyRESTCredential(secretKey,"requestUebKey","requestAppName","requestPassword"));
@@ -120,7 +122,7 @@ public class RemoteWebServiceCallServiceImplTest {
 		appList.add(app);
 		Mockito.when(dataAccessService.getList(EPApp.class, criteria.toString(), null, null)).thenReturn(appList);
 		String secretKey = null;
-		Mockito.when(SystemProperties.getProperty(SystemProperties.Decryption_Key)).thenReturn(secretKey);
+		Mockito.when(KeyProperties.getProperty(KeyConstants.CIPHER_ENCRYPTION_KEY)).thenReturn(secretKey);
 		Mockito.when(CipherUtil.decryptPKC("password",
 				secretKey == null ? null : secretKey)).thenReturn("pwd");
 		assertTrue(remoteWebServiceCallServiceImpl.verifyRESTCredential(secretKey,"requestUebKey","requestAppName","pwd"));
@@ -139,7 +141,7 @@ public class RemoteWebServiceCallServiceImplTest {
 		appList.add(app);
 		Mockito.when(dataAccessService.getList(EPApp.class, criteria.toString(), null, null)).thenReturn(null);
 		String secretKey = null;
-		Mockito.when(SystemProperties.getProperty(SystemProperties.Decryption_Key)).thenReturn(secretKey);
+		Mockito.when(KeyProperties.getProperty(KeyConstants.CIPHER_ENCRYPTION_KEY)).thenReturn(secretKey);
 		Mockito.when(CipherUtil.decryptPKC("password",
 				secretKey == null ? null : secretKey)).thenReturn("pwd");
 		assertFalse(remoteWebServiceCallServiceImpl.verifyRESTCredential(secretKey,"requestUebKey","requestAppName","pwd"));

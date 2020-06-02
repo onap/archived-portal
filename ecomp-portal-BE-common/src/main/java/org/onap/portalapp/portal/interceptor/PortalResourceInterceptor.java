@@ -372,7 +372,6 @@ public class PortalResourceInterceptor extends ResourceInterceptor {
 		String result = "";
 		if (encrypted != null && encrypted.length() > 0) {
 			try {
-				//result = CipherUtil.decryptPKC(encrypted, SystemProperties.getProperty(SystemProperties.Decryption_Key));
 				result = CipherUtil.decryptPKC(encrypted, KeyProperties.getProperty(KeyConstants.CIPHER_ENCRYPTION_KEY));
 			} catch (Exception e) {
 				logger.error(EELFLoggerDelegate.errorLogger, "decryptedPassword failed", e);
@@ -386,8 +385,6 @@ public class PortalResourceInterceptor extends ResourceInterceptor {
 		String result = "";
 		if (decryptedPwd != null && decryptedPwd.length() > 0) {
 			try {
-				/*result = CipherUtil.encryptPKC(decryptedPwd,
-						SystemProperties.getProperty(SystemProperties.Decryption_Key)); */
 				result = CipherUtil.encryptPKC(decryptedPwd,
 						KeyProperties.getProperty(KeyConstants.CIPHER_ENCRYPTION_KEY));
 			} catch (Exception e) {

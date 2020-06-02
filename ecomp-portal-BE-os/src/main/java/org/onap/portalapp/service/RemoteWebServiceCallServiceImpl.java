@@ -73,8 +73,6 @@ public class RemoteWebServiceCallServiceImpl extends WebServiceCallServiceImpl i
 		
 		String encryptedPwdDB = appRecord.getAppPassword();
 		String appUserName = appRecord.getUsername();
-		/*String decryptedPwd = CipherUtil.decryptPKC(encryptedPwdDB,
-				secretKey == null ? SystemProperties.getProperty(SystemProperties.Decryption_Key) : secretKey); */
 		String decryptedPwd = CipherUtil.decryptPKC(encryptedPwdDB,
 				secretKey == null ? KeyProperties.getProperty(KeyConstants.CIPHER_ENCRYPTION_KEY) : secretKey);
 		if (decryptedPwd.equals(requestPassword) && appUserName.equals(requestAppName))

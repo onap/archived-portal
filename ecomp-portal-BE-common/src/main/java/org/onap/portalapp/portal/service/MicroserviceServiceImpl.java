@@ -198,8 +198,6 @@ public class MicroserviceServiceImpl implements MicroserviceService {
 		String result = "";
 		if (encryptedPwd != null && !encryptedPwd.isEmpty()) {
 			try {
-				/*result = CipherUtil.decryptPKC(encryptedPwd,
-						SystemProperties.getProperty(SystemProperties.Decryption_Key)); */
 				result = CipherUtil.decryptPKC(encryptedPwd,
 						KeyProperties.getProperty(KeyConstants.CIPHER_ENCRYPTION_KEY));
 			} catch (Exception e) {
@@ -214,8 +212,6 @@ public class MicroserviceServiceImpl implements MicroserviceService {
 		String result = "";
 		if (decryptedPwd != null && !decryptedPwd.isEmpty()) {
 			try {
-				/*result = CipherUtil.encryptPKC(decryptedPwd,
-						SystemProperties.getProperty(SystemProperties.Decryption_Key));*/
 				result = CipherUtil.encryptPKC(decryptedPwd,
 						KeyProperties.getProperty(KeyConstants.CIPHER_ENCRYPTION_KEY));
 			} catch (Exception e) {

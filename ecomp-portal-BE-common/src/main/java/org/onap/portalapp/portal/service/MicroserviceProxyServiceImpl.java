@@ -178,8 +178,6 @@ public class MicroserviceProxyServiceImpl implements MicroserviceProxyService {
 		String result = "";
 		if (encryptedPwd != null && encryptedPwd.length() > 0) {
 			try {
-				/*result = CipherUtil.decryptPKC(encryptedPwd,
-						SystemProperties.getProperty(SystemProperties.Decryption_Key)); */
 				result = CipherUtil.decryptPKC(encryptedPwd,
 						KeyProperties.getProperty(KeyConstants.CIPHER_ENCRYPTION_KEY));
 			} catch (Exception e) {

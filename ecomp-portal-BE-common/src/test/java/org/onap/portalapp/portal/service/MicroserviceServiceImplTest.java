@@ -58,6 +58,8 @@ import org.onap.portalapp.portal.domain.MicroserviceData;
 import org.onap.portalapp.portal.domain.MicroserviceParameter;
 import org.onap.portalapp.portal.utils.EPCommonSystemProperties;
 import org.onap.portalsdk.core.onboarding.util.CipherUtil;
+import org.onap.portalsdk.core.onboarding.util.KeyConstants;
+import org.onap.portalsdk.core.onboarding.util.KeyProperties;
 import org.onap.portalsdk.core.service.DataAccessService;
 import org.onap.portalsdk.core.service.DataAccessServiceImpl;
 import org.onap.portalsdk.core.util.SystemProperties;
@@ -169,7 +171,7 @@ public class MicroserviceServiceImplTest {
 		restrictionsList2.add(serviceIdCriterion);
 		Mockito.when((List<MicroserviceParameter>) dataAccessService.getList(MicroserviceParameter.class, null, restrictionsList2, null)).thenReturn(microserviceParameters);
 		Mockito.when(CipherUtil.decryptPKC("xyz",
-				SystemProperties.getProperty(SystemProperties.Decryption_Key))).thenReturn("abc");
+				KeyProperties.getProperty(KeyConstants.CIPHER_ENCRYPTION_KEY))).thenReturn("abc");
 		List<MicroserviceData> actual = microserviceServiceImpl.getMicroserviceData();
 		assertNotNull(actual);
 	}
@@ -200,7 +202,7 @@ public class MicroserviceServiceImplTest {
 		restrictionsList2.add(serviceIdCriterion);
 		Mockito.when((List<MicroserviceParameter>) dataAccessService.getList(MicroserviceParameter.class, null, restrictionsList2, null)).thenReturn(microserviceParameters);
 		Mockito.when(CipherUtil.decryptPKC("xyz",
-				SystemProperties.getProperty(SystemProperties.Decryption_Key))).thenThrow(BadPaddingException.class);
+				KeyProperties.getProperty(KeyConstants.CIPHER_ENCRYPTION_KEY))).thenThrow(BadPaddingException.class);
 		List<MicroserviceData> actual = microserviceServiceImpl.getMicroserviceData();
 		assertNotNull(actual);
 	}
@@ -221,7 +223,7 @@ public class MicroserviceServiceImplTest {
 		Criterion serviceIdCriterion = Restrictions.eq("serviceId", 1l);
 		restrictionsList.add(serviceIdCriterion);
 		PowerMockito.mockStatic(SystemProperties.class);
-		Mockito.when(SystemProperties.getProperty(SystemProperties.Decryption_Key)).thenReturn(TEST);
+		Mockito.when(KeyProperties.getProperty(KeyConstants.CIPHER_ENCRYPTION_KEY)).thenReturn(TEST);
 		Mockito.when(CipherUtil.encryptPKC(TEST, TEST)).thenReturn(TEST);
 		
 		Mockito.when((List<MicroserviceParameter>) dataAccessService.getList(MicroserviceParameter.class, null, restrictionsList, null)).thenReturn(microserviceParameters);
