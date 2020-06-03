@@ -34,7 +34,7 @@
 		<hibernate.version>4.3.11.Final</hibernate.version>
 		<fasterxml.version>2.8.11.4</fasterxml.version>
 		<!-- NOT provided by OParent, unfortunately -->
-		<jacocoVersion>0.7.6.201602180812</jacocoVersion>
+		<jacocoVersion>0.8.1</jacocoVersion>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<encoding>UTF-8</encoding>
 		<!-- <sonar.exclusions>**/scripts/**/*,**.js</sonar.exclusions>  -->
