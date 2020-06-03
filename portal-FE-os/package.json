@@ -3,7 +3,7 @@
   "version": "7.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve --host www.portal.onap.org --port 8989 --open",
+    "start": "ng serve --host www.portal.onap.org --port 9200 --open",
     "build": "ng build --prod --aot=false --build-optimizer=false",
     "test": "ng test --watch=false --code-coverage --browsers=ChromeHeadless",
     "lint": "ng lint",

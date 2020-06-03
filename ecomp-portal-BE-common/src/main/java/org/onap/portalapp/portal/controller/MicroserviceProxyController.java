@@ -105,9 +105,16 @@ public class MicroserviceProxyController extends EPUnRestrictedBaseController {
 	 */
 	private boolean isValidJSON(String response) {
 		try {
+			if(response != null && !response.isEmpty())
+			{
 			final ObjectMapper mapper = new ObjectMapper();
 			mapper.readTree(response);
 			return true;
+			}
+			else
+			{
+			return false;
+			}
 		} catch (IOException e) {
 			logger.debug(EELFLoggerDelegate.debugLogger, "isValidJSON failed", e);
 			return false;

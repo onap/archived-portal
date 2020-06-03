@@ -17,7 +17,7 @@ SET GLOBAL character_set_database   = utf8;
 SET GLOBAL character_set_results    = utf8;
 SET GLOBAL character_set_server     = utf8;
 
-create database portal;
+create database portal_os;
 
 use portal;
 
