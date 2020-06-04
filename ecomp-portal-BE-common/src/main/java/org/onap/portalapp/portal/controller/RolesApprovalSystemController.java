@@ -56,7 +56,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.annotations.ApiOperation;
@@ -81,7 +83,7 @@ public class RolesApprovalSystemController implements BasicAuthenticationControl
 	 * @return PortalRestResponse with appropriate status value and message
 	 */
 	@ApiOperation(value = "Creates an application user with the specified roles.", response = PortalRestResponse.class)
-	@RequestMapping(value = { "/userProfile" }, method = RequestMethod.POST, produces = "application/json")
+	@PostMapping(value = { "/userProfile" }, produces = "application/json")
 	public PortalRestResponse<String> postUserProfile(HttpServletRequest request,
 			@RequestBody ExternalSystemUser extSysUser, HttpServletResponse response) {
 		ExternalRequestFieldsValidator reqResult = null;
@@ -129,7 +131,7 @@ public class RolesApprovalSystemController implements BasicAuthenticationControl
 	 * @return PortalRestResponse with appropriate status value and message
 	 */
 	@ApiOperation(value = "Updates an application user to have only the specified roles.", response = PortalRestResponse.class)
-	@RequestMapping(value = { "/userProfile" }, method = RequestMethod.PUT, produces = "application/json")
+	@PutMapping(value = { "/userProfile" }, produces = "application/json")
 	public PortalRestResponse<String> putUserProfile(HttpServletRequest request,
 			@RequestBody ExternalSystemUser extSysUser, HttpServletResponse response) {
 		ExternalRequestFieldsValidator reqResult = null;
@@ -176,7 +178,7 @@ public class RolesApprovalSystemController implements BasicAuthenticationControl
 	 * @return PortalRestResponse with appropriate status value and message
 	 */
 	@ApiOperation(value = "Processes a request to delete one or more application roles for one	specified user who has roles.", response = PortalRestResponse.class)
-	@RequestMapping(value = { "/userProfile" }, method = RequestMethod.DELETE, produces = "application/json")
+	@DeleteMapping(value = { "/userProfile" }, produces = "application/json")
 	public PortalRestResponse<String> deleteUserProfile(HttpServletRequest request,
 			@RequestBody ExternalSystemUser extSysUser, HttpServletResponse response) {
 		ExternalRequestFieldsValidator reqResult  = null;
