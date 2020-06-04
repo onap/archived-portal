@@ -77,6 +77,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -102,7 +104,7 @@ public class SchedulerController extends EPRestrictedBaseController {
 		this.adminRolesService = adminRolesService;
 	}
 
-	@RequestMapping(value = "/get_time_slots/{scheduler_request}", method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = "/get_time_slots/{scheduler_request}", produces = "application/json")
 	public ResponseEntity<String> getTimeSlots(HttpServletRequest request,
 			@PathVariable("scheduler_request") String schedulerRequest) throws Exception {
 		if (checkIfUserISValidToMakeSchedule(request)) {
@@ -169,7 +171,7 @@ public class SchedulerController extends EPRestrictedBaseController {
 	}
 
 	@SuppressWarnings("unchecked")
-	@RequestMapping(value = "/post_create_new_vnf_change", method = RequestMethod.POST, produces = "application/json")
+	@PostMapping(value = "/post_create_new_vnf_change", produces = "application/json")
 	public ResponseEntity<String> postCreateNewVNFChange(HttpServletRequest request,
 			@RequestBody JSONObject schedulerRequest) throws Exception {
 		if (checkIfUserISValidToMakeSchedule(request)) {
@@ -249,7 +251,7 @@ public class SchedulerController extends EPRestrictedBaseController {
 		}
 	}
 
-	@RequestMapping(value = "/submit_vnf_change_timeslots", method = RequestMethod.POST, produces = "application/json")
+	@PostMapping(value = "/submit_vnf_change_timeslots", produces = "application/json")
 	public ResponseEntity<String> postSubmitVnfChangeTimeslots(HttpServletRequest request,
 			@RequestBody JSONObject schedulerRequest) throws Exception {
 		if (checkIfUserISValidToMakeSchedule(request)) {
@@ -335,7 +337,7 @@ public class SchedulerController extends EPRestrictedBaseController {
 	 * @return Rest response wrapped around a String; e.g., "success" or "ERROR"
 	 * @throws Exception 
 	 */
-	@RequestMapping(value = "/get_scheduler_constant", method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = "/get_scheduler_constant", produces = "application/json")
 	public PortalRestResponse<Map<String, String>> getSchedulerConstant(HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
 		logger.debug(EELFLoggerDelegate.debugLogger, "get scheduler constant");
