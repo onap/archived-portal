@@ -67,6 +67,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -105,7 +106,7 @@ public class TicketEventController implements BasicAuthenticationController {
     @ApiOperation(
             value = "Accepts messages from external ticketing systems and creates notifications for Portal users.",
             response = PortalRestResponse.class)
-    @RequestMapping(value = { "/ticketevent" }, method = RequestMethod.POST)
+    @PostMapping(value = { "/ticketevent" })
     public PortalRestResponse<String> handleRequest(HttpServletRequest request, HttpServletResponse response,
             @RequestBody String ticketEventJson) throws Exception {
 

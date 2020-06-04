@@ -82,8 +82,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -117,7 +117,7 @@ public class UserRolesController extends EPRestrictedBaseController {
      * @param response HttpServletResponse
      * @return array of found users as json
      */
-    @RequestMapping(value = { "/portalApi/queryUsers" }, method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = { "/portalApi/queryUsers" }, produces = "application/json")
     public String getPhoneBookSearchResult(HttpServletRequest request, @RequestParam("search") String searchString,
             HttpServletResponse response) {
         EPUser user = EPUserUtils.getUserSession(request);
@@ -147,8 +147,7 @@ public class UserRolesController extends EPRestrictedBaseController {
      * @param response HttpServletResponse
      * @return for GET: array of all applications with boolean isAdmin=true/false for each application
      */
-    @RequestMapping(value = { "/portalApi/adminAppsRoles" }, method = {
-            RequestMethod.GET }, produces = "application/json")
+    @GetMapping(value = { "/portalApi/adminAppsRoles" }, produces = "application/json")
     public AppsListWithAdminRole getAppsWithAdminRoleStateForUser(HttpServletRequest request,
             @RequestParam("user") String orgUserId, HttpServletResponse response) {
 
@@ -198,8 +197,7 @@ public class UserRolesController extends EPRestrictedBaseController {
      * @param response HttpServletResponse
      * @return FieldsValidator
      */
-    @RequestMapping(value = { "/portalApi/adminAppsRoles" }, method = {
-            RequestMethod.PUT }, produces = "application/json")
+    @PutMapping(value = { "/portalApi/adminAppsRoles" }, produces = "application/json")
     public FieldsValidator putAppsWithAdminRoleStateForUser(HttpServletRequest request,
             @RequestBody AppsListWithAdminRole newAppsListWithAdminRoles, HttpServletResponse response) {
 
@@ -275,8 +273,7 @@ public class UserRolesController extends EPRestrictedBaseController {
      * @param extRequestValue set to false if request is from users page otherwise true
      * @return List<RoleInAppForUser>
      */
-    @RequestMapping(value = { "/portalApi/userAppRoles" }, method = {
-            RequestMethod.GET }, produces = "application/json")
+    @GetMapping(value = { "/portalApi/userAppRoles" }, produces = "application/json")
     public List<RoleInAppForUser> getAppRolesForUser(HttpServletRequest request, @RequestParam("user") String orgUserId,
             @RequestParam("app") Long appid, @RequestParam("externalRequest") Boolean extRequestValue,
             @RequestParam("isSystemUser") Boolean isSystemUser,
@@ -354,8 +351,7 @@ public class UserRolesController extends EPRestrictedBaseController {
         return result;
     }
 
-    @RequestMapping(value = { "/portalApi/userAppRoles" }, method = {
-            RequestMethod.PUT }, produces = "application/json")
+    @PutMapping(value = { "/portalApi/userAppRoles" }, produces = "application/json")
     public PortalRestResponse<String> putAppWithUserRoleStateForUser(HttpServletRequest request,
             @RequestBody AppWithRolesForUser newAppRolesForUser, HttpServletResponse response) {
         // FieldsValidator fieldsValidator = new FieldsValidator();
@@ -435,8 +431,7 @@ public class UserRolesController extends EPRestrictedBaseController {
         return portalResponse;
     }
 
-    @RequestMapping(value = { "/portalApi/updateRemoteUserProfile" }, method = {
-            RequestMethod.GET }, produces = "application/json")
+    @GetMapping(value = { "/portalApi/updateRemoteUserProfile" }, produces = "application/json")
     public PortalRestResponse<String> updateRemoteUserProfile(HttpServletRequest request,
             HttpServletResponse response) {
 
@@ -455,8 +450,7 @@ public class UserRolesController extends EPRestrictedBaseController {
 
     }
 
-    @RequestMapping(value = { "/portalApi/app/{appId}/users" }, method = {
-            RequestMethod.GET }, produces = "application/json")
+    @GetMapping(value = { "/portalApi/app/{appId}/users" }, produces = "application/json")
     public List<UserApplicationRoles> getUsersFromAppEndpoint(HttpServletRequest request,
             @PathVariable("appId") Long appId) throws HTTPException {
         try {
@@ -468,8 +462,7 @@ public class UserRolesController extends EPRestrictedBaseController {
         }
     }
 
-    @RequestMapping(value = { "/portalApi/app/{appId}/roles" }, method = {
-            RequestMethod.GET }, produces = "application/json")
+    @GetMapping(value = { "/portalApi/app/{appId}/roles" }, produces = "application/json")
     public List<EcompRole> testGetRoles(HttpServletRequest request, @PathVariable("appId") Long appId)
             throws HTTPException {
         EcompRole[] appRoles = applicationsRestClientService.get(EcompRole[].class, appId, "/roles");
@@ -480,8 +473,7 @@ public class UserRolesController extends EPRestrictedBaseController {
         return rolesList;
     }
 
-    @RequestMapping(value = { "/portalApi/admin/import/app/{appId}/roles" }, method = {
-            RequestMethod.GET }, produces = "application/json")
+    @GetMapping(value = { "/portalApi/admin/import/app/{appId}/roles" }, produces = "application/json")
     public List<EPRole> importRolesFromRemoteApplication(HttpServletRequest request, @PathVariable("appId") Long appId)
             throws HTTPException {
         List<EPRole> rolesList = userRolesService.importRolesFromRemoteApplication(appId);
@@ -491,8 +483,7 @@ public class UserRolesController extends EPRestrictedBaseController {
         return rolesList;
     }
 
-    @RequestMapping(value = { "/portalApi/app/{appId}/user/{orgUserId}/roles" }, method = {
-            RequestMethod.GET }, produces = "application/json")
+    @GetMapping(value = { "/portalApi/app/{appId}/user/{orgUserId}/roles" }, produces = "application/json")
     public EcompRole testGetRoles(HttpServletRequest request, @PathVariable("appId") Long appId,
             @PathVariable("orgUserId") String orgUserId) throws Exception {
         if (!EcompPortalUtils.legitimateUserId(orgUserId)) {
@@ -513,8 +504,7 @@ public class UserRolesController extends EPRestrictedBaseController {
         return roles[0];
     }
 
-    @RequestMapping(value = { "/portalApi/saveUserAppRoles" }, method = {
-            RequestMethod.PUT }, produces = "application/json")
+    @PutMapping(value = { "/portalApi/saveUserAppRoles" }, produces = "application/json")
     public FieldsValidator putAppWithUserRoleRequest(HttpServletRequest request,
             @RequestBody AppWithRolesForUser newAppRolesForUser, HttpServletResponse response) {
         FieldsValidator fieldsValidator = null;
@@ -534,8 +524,7 @@ public class UserRolesController extends EPRestrictedBaseController {
         return fieldsValidator;
     }
 
-    @RequestMapping(value = { "/portalApi/appCatalogRoles" }, method = {
-            RequestMethod.GET }, produces = "application/json")
+    @GetMapping(value = { "/portalApi/appCatalogRoles" }, produces = "application/json")
     public List<EPUserAppCatalogRoles> getUserAppCatalogRoles(HttpServletRequest request,
             @RequestParam("appName") String appName) {
         EPUser user = EPUserUtils.getUserSession(request);
@@ -560,7 +549,7 @@ public class UserRolesController extends EPRestrictedBaseController {
                 }
             };
 
-    @RequestMapping(value = "/portalApi/externalRequestAccessSystem", method = RequestMethod.GET,
+    @GetMapping(value = "/portalApi/externalRequestAccessSystem",
             produces = "application/json")
     public ExternalSystemAccess readExternalRequestAccess(HttpServletRequest request) {
         ExternalSystemAccess result = null;
@@ -574,8 +563,7 @@ public class UserRolesController extends EPRestrictedBaseController {
         return result;
     }
 
-    @RequestMapping(value = { "/portalApi/checkIfUserIsSuperAdmin" }, method = RequestMethod.GET,
-            produces = "application/json")
+    @GetMapping(value = { "/portalApi/checkIfUserIsSuperAdmin" }, produces = "application/json")
     public boolean checkIfUserIsSuperAdmin(HttpServletRequest request,
             HttpServletResponse response) {
         EPUser user = EPUserUtils.getUserSession(request);
