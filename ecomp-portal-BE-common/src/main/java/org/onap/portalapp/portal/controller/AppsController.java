@@ -883,7 +883,7 @@ public class AppsController extends EPRestrictedBaseController {
 	 *            Application ID
 	 * @return Bytes with the app thumbnail image; null if not available.
 	 */
-	@RequestMapping(value = { "/portalApi/appThumbnail/{appId}" }, method = { RequestMethod.GET })
+	@GetMapping(value = { "/portalApi/appThumbnail/{appId}" })
 	public HttpEntity<byte[]> getAppThumbnail(HttpServletRequest request, @PathVariable("appId") Long appId,
 			HttpServletResponse response) {
 		EPApp app = appService.getApp(appId);

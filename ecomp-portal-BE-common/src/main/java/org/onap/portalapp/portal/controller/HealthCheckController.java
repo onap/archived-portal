@@ -47,9 +47,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.MDC;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.onap.music.main.MusicUtil;
 import org.onap.portalapp.controller.EPUnRestrictedBaseController;
