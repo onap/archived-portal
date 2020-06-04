@@ -42,6 +42,8 @@ import org.onap.portalapp.portal.domain.EPEndpoint;
 import org.onap.portalapp.portal.domain.EPEndpointAccount;
 import org.onap.portalapp.portal.framework.MockitoTestSuite;
 import org.onap.portalsdk.core.onboarding.util.CipherUtil;
+import org.onap.portalsdk.core.onboarding.util.KeyConstants;
+import org.onap.portalsdk.core.onboarding.util.KeyProperties;
 import org.onap.portalsdk.core.service.DataAccessService;
 import org.onap.portalsdk.core.service.DataAccessServiceImpl;
 import org.onap.portalsdk.core.util.SystemProperties;
@@ -51,7 +53,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ CipherUtil.class , SystemProperties.class})
+@PrepareForTest({ CipherUtil.class , SystemProperties.class, KeyProperties.class, KeyConstants.class})
 public class BasicAuthAccountServiceImplTest {
 	@Mock
 	DataAccessService dataAccessService = new DataAccessServiceImpl();
@@ -92,11 +94,12 @@ public class BasicAuthAccountServiceImplTest {
 	@Test
 	public void saveBasicAuthAccountTest_password() throws Exception{
 		PowerMockito.mockStatic(CipherUtil.class);
-		PowerMockito.mockStatic(SystemProperties.class);
+		PowerMockito.mockStatic(KeyProperties.class);
+		PowerMockito.mockStatic(KeyConstants.class);
 		BasicAuthCredentials credentials = new BasicAuthCredentials();
 		credentials.setPassword("password");
 		String result = null;
-		Mockito.when(CipherUtil.encryptPKC("password", SystemProperties.getProperty(SystemProperties.Decryption_Key))).thenReturn(result);
+		Mockito.when(CipherUtil.encryptPKC("password", KeyProperties.getProperty(KeyConstants.CIPHER_ENCRYPTION_KEY))).thenReturn(result);
 		basicAuthAccountServiceImpl.saveBasicAuthAccount(credentials);
 	}
 	
@@ -163,7 +166,8 @@ public class BasicAuthAccountServiceImplTest {
 	@Test
 	public void getAccountDataTest_password() throws Exception {
 		PowerMockito.mockStatic(CipherUtil.class);
-		PowerMockito.mockStatic(SystemProperties.class);
+		PowerMockito.mockStatic(KeyProperties.class);
+		PowerMockito.mockStatic(KeyConstants.class);
 		List<BasicAuthCredentials> list = new ArrayList<>();
 		BasicAuthCredentials basicAuthCredentials = new BasicAuthCredentials();
 		basicAuthCredentials.setPassword("password");
@@ -171,7 +175,7 @@ public class BasicAuthAccountServiceImplTest {
 		Mockito.when((List<BasicAuthCredentials>) dataAccessService.getList(BasicAuthCredentials.class, null))
 		.thenReturn(list);
 		String result = null;
-		Mockito.when(CipherUtil.decryptPKC("password", SystemProperties.getProperty(SystemProperties.Decryption_Key))).thenReturn(result);
+		Mockito.when(CipherUtil.decryptPKC("password", KeyProperties.getProperty(KeyConstants.CIPHER_ENCRYPTION_KEY))).thenReturn(result);
 		
 	}
 
