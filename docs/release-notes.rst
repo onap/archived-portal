@@ -1,12 +1,7 @@
 .. This work is licensed under a Creative Commons Attribution 4.0 International License.
 .. http://creativecommons.org/licenses/by/4.0
-<<<<<<< HEAD   (1b5673 Skiping SDK DB and WMS Dockerfile)
-.. Copyright 2017-2019 AT&T Intellectual Property.  All rights reserved
-=======
 .. Copyright 2017-2020 AT&T Intellectual Property.  All rights reserved
 .. _release_notes:
->>>>>>> CHANGE (f8a5f0 Added Frankfurt Release Notes)
-
 
 Portal Platform Release Notes
 =============================
@@ -71,11 +66,11 @@ Quick Links:
 
 **Other**
         * Below are the docker images released as part of Portal Platform project:
-        * onap/portal-app:3.2.0
-        * onap/portal-db:3.2.0
-        * onap/portal-sdk:3.0.0
-        * onap/portal-wms:3.2.0
-        * portal/sdk java artifacts - (Release branch: “release-3.0.0”)
+        * onap/portal-app:3.2.3
+        * onap/portal-db:3.2.3
+        * onap/portal-sdk:3.2.0
+        * onap/portal-wms:3.2.3
+        * portal/sdk java artifacts - (Release branch: “release-3.2.0”; Jar Version: "3.0.0")
 
 Version: 2.6.0
 --------------
