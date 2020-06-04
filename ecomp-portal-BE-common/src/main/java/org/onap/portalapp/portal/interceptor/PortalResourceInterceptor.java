@@ -72,6 +72,8 @@ import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.onap.portalsdk.core.onboarding.listener.PortalTimeoutHandler;
 import org.onap.portalsdk.core.onboarding.util.AuthUtil;
 import org.onap.portalsdk.core.onboarding.util.CipherUtil;
+import org.onap.portalsdk.core.onboarding.util.KeyConstants;
+import org.onap.portalsdk.core.onboarding.util.KeyProperties;
 import org.onap.portalsdk.core.onboarding.util.PortalApiConstants;
 import org.onap.portalsdk.core.onboarding.util.PortalApiProperties;
 import org.onap.portalsdk.core.util.SystemProperties;
@@ -370,7 +372,7 @@ public class PortalResourceInterceptor extends ResourceInterceptor {
 		String result = "";
 		if (encrypted != null && encrypted.length() > 0) {
 			try {
-				result = CipherUtil.decryptPKC(encrypted, SystemProperties.getProperty(SystemProperties.Decryption_Key));
+				result = CipherUtil.decryptPKC(encrypted, KeyProperties.getProperty(KeyConstants.CIPHER_ENCRYPTION_KEY));
 			} catch (Exception e) {
 				logger.error(EELFLoggerDelegate.errorLogger, "decryptedPassword failed", e);
 				throw e;
@@ -384,7 +386,7 @@ public class PortalResourceInterceptor extends ResourceInterceptor {
 		if (decryptedPwd != null && decryptedPwd.length() > 0) {
 			try {
 				result = CipherUtil.encryptPKC(decryptedPwd,
-						SystemProperties.getProperty(SystemProperties.Decryption_Key));
+						KeyProperties.getProperty(KeyConstants.CIPHER_ENCRYPTION_KEY));
 			} catch (Exception e) {
 				logger.error(EELFLoggerDelegate.errorLogger, "encryptedPassword() failed", e);
 				throw e;
