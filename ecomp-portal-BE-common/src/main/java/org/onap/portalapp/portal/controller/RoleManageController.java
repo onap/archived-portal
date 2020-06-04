@@ -7,7 +7,7 @@
  * Modifications Copyright (c) 2019 Samsung 
  * ===================================================================
  * Modifications Copyright (c) 2020 IBM
- * ===================================================================
+ * =================================================================== 
  * 
  * Unless otherwise specified, all software contained herein is licensed
  * under the Apache License, Version 2.0 (the "License");
@@ -97,10 +97,8 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 import com.fasterxml.jackson.databind.DeserializationFeature;
