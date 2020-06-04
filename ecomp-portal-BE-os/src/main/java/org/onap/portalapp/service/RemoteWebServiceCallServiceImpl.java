@@ -38,13 +38,13 @@
 package org.onap.portalapp.service;
 
 import java.util.List;
-
 import org.onap.portalapp.portal.domain.EPApp;
 import org.onap.portalapp.service.RemoteWebServiceCallService;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.onap.portalsdk.core.onboarding.util.CipherUtil;
+import org.onap.portalsdk.core.onboarding.util.KeyConstants;
+import org.onap.portalsdk.core.onboarding.util.KeyProperties;
 import org.onap.portalsdk.core.service.WebServiceCallServiceImpl;
-import org.onap.portalsdk.core.util.SystemProperties;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -71,8 +71,7 @@ public class RemoteWebServiceCallServiceImpl extends WebServiceCallServiceImpl i
 		
 		String encryptedPwdDB = appRecord.getAppPassword();
 		String appUserName = appRecord.getUsername();
-		String decryptedPwd = CipherUtil.decryptPKC(encryptedPwdDB,
-				secretKey == null ? SystemProperties.getProperty(SystemProperties.Decryption_Key) : secretKey);
+		String decryptedPwd = CipherUtil.decryptPKC(encryptedPwdDB,secretKey == null ? KeyProperties.getProperty(KeyConstants.CIPHER_ENCRYPTION_KEY) : secretKey);
 		if (decryptedPwd.equals(requestPassword) && appUserName.equals(requestAppName))
 			return true;
 		else

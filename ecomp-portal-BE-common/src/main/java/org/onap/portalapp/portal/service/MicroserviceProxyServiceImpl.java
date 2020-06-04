@@ -50,6 +50,8 @@ import org.onap.portalapp.portal.logging.aop.EPMetricsLog;
 import org.onap.portalapp.portal.utils.EcompPortalUtils;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.onap.portalsdk.core.onboarding.util.CipherUtil;
+import org.onap.portalsdk.core.onboarding.util.KeyConstants;
+import org.onap.portalsdk.core.onboarding.util.KeyProperties;
 import org.onap.portalsdk.core.util.SystemProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
@@ -177,7 +179,7 @@ public class MicroserviceProxyServiceImpl implements MicroserviceProxyService {
 		if (encryptedPwd != null && encryptedPwd.length() > 0) {
 			try {
 				result = CipherUtil.decryptPKC(encryptedPwd,
-						SystemProperties.getProperty(SystemProperties.Decryption_Key));
+						KeyProperties.getProperty(KeyConstants.CIPHER_ENCRYPTION_KEY));
 			} catch (Exception e) {
 				logger.error(EELFLoggerDelegate.errorLogger, "decryptedPassword failed", e);
 				throw e;
