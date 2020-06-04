@@ -58,6 +58,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -75,7 +76,7 @@ public class SchedulerAuxController extends EPRestrictedBaseController {
 	/** The logger. */
 	private static EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(SchedulerAuxController.class);
 
-	@RequestMapping(value = "/get_policy", method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = "/get_policy", produces = "application/json")
 	public ResponseEntity<String> getPolicyInfo(HttpServletRequest request) throws Exception {
 		try {
 
