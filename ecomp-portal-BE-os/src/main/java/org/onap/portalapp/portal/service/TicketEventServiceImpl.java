@@ -39,7 +39,6 @@
  */
 package org.onap.portalapp.portal.service;
 
-import org.onap.portalapp.portal.service.TicketEventService;
 import org.onap.portalapp.portal.utils.EPCommonSystemProperties;
 import org.onap.portalsdk.core.util.SystemProperties;
 import org.springframework.stereotype.Service;

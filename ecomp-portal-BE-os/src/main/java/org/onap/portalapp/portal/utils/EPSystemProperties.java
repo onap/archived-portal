@@ -37,7 +37,6 @@
  */
 package org.onap.portalapp.portal.utils;
 
-import org.onap.portalapp.portal.utils.EPCommonSystemProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
