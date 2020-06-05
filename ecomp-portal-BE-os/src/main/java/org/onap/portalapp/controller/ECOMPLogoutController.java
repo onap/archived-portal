@@ -52,7 +52,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
@@ -69,7 +69,7 @@ public class ECOMPLogoutController extends EPUnRestrictedBaseController {
     EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(ECOMPLogoutController.class);
 
     @EPAuditLog
-    @RequestMapping(value = { "/logout.htm" }, method = RequestMethod.GET)
+    @GetMapping(value = { "/logout.htm" })
     public ModelAndView logOut(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 

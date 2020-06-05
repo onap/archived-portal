@@ -40,8 +40,6 @@ package org.onap.portalapp.portal.service;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.onap.portalapp.portal.service.SearchService;
-import org.onap.portalapp.portal.service.SearchServiceImpl;
 import org.onap.portalapp.portal.domain.EPUser;
 import org.onap.portalapp.portal.logging.aop.EPMetricsLog;
 import org.onap.portalapp.portal.transport.UserWithNameSurnameTitle;
