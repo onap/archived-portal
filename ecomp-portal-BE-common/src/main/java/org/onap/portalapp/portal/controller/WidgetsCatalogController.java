@@ -80,8 +80,10 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -135,7 +137,7 @@ public class WidgetsCatalogController extends EPRestrictedBaseController {
 		});
 	}
 
-	@RequestMapping(value = { "/portalApi/microservices/widgetCatalog/{loginName}" }, method = RequestMethod.GET)
+	@GetMapping(value = { "/portalApi/microservices/widgetCatalog/{loginName}" })
 	public List<WidgetCatalog> getUserWidgetCatalog(@PathVariable("loginName") String loginName) {
 		List<WidgetCatalog> widgets = new ArrayList<>();
 		try {
@@ -155,7 +157,7 @@ public class WidgetsCatalogController extends EPRestrictedBaseController {
 		return widgets;
 	}
 
-	@RequestMapping(value = { "/portalApi/microservices/widgetCatalog" }, method = RequestMethod.GET)
+	@GetMapping(value = { "/portalApi/microservices/widgetCatalog" })
 	public List<WidgetCatalog> getWidgetCatalog() {
 		List<WidgetCatalog> widgets = new ArrayList<>();
 		try {
@@ -175,8 +177,8 @@ public class WidgetsCatalogController extends EPRestrictedBaseController {
 		return widgets;
 	}
 
-	@RequestMapping(value = {
-			"/portalApi/microservices/widgetCatalog/{widgetId}" }, method = RequestMethod.PUT, produces = "application/json")
+	@PutMapping(value = {
+			"/portalApi/microservices/widgetCatalog/{widgetId}" }, produces = "application/json")
 	public void updateWidgetCatalog(@RequestBody WidgetCatalog newWidgetCatalog, @PathVariable("widgetId") long widgetId) throws Exception {
 		template.exchange(
 				EcompPortalUtils.widgetMsProtocol() + "://"
@@ -186,7 +188,7 @@ public class WidgetsCatalogController extends EPRestrictedBaseController {
 				HttpMethod.PUT, new HttpEntity<>(newWidgetCatalog, WidgetServiceHeaders.getInstance()), String.class);
 	}
 
-	@RequestMapping(value = { "/portalApi/microservices/widgetCatalog/{widgetId}" }, method = RequestMethod.DELETE)
+	@DeleteMapping(value = { "/portalApi/microservices/widgetCatalog/{widgetId}" })
 	public void deleteOnboardingWidget(@PathVariable("widgetId") long widgetId) throws Exception {
 		template.exchange(
 				EcompPortalUtils.widgetMsProtocol() + "://"
@@ -196,7 +198,7 @@ public class WidgetsCatalogController extends EPRestrictedBaseController {
 				HttpMethod.DELETE, new HttpEntity<>(WidgetServiceHeaders.getInstance()), String.class);
 	}
 
-	@RequestMapping(value = { "/portalApi/microservices/widgetCatalog/{widgetId}" }, method = RequestMethod.POST)
+	@PostMapping(value = { "/portalApi/microservices/widgetCatalog/{widgetId}" })
 	public String updateWidgetCatalogWithFiles(HttpServletRequest request,
 			@PathVariable("widgetId") long widgetId) throws RestClientException, Exception {
 		MultipartHttpServletRequest mRequest;
@@ -230,7 +232,7 @@ public class WidgetsCatalogController extends EPRestrictedBaseController {
 		return respond;
 	}
 
-	@RequestMapping(value = { "/portalApi/microservices/widgetCatalog" }, method = RequestMethod.POST)
+	@PostMapping(value = { "/portalApi/microservices/widgetCatalog" })
 	public String createWidgetCatalog(HttpServletRequest request)
 			throws Exception {
 
@@ -272,7 +274,7 @@ public class WidgetsCatalogController extends EPRestrictedBaseController {
 		return respond;
 	}
 
-	@RequestMapping(value = "/portalApi/microservices/{widgetId}/framework.js", method = RequestMethod.GET)
+	@GetMapping(value = "/portalApi/microservices/{widgetId}/framework.js")
 	public String getWidgetFramework(@PathVariable("widgetId") long widgetId) throws Exception {
 		return template.getForObject(EcompPortalUtils.widgetMsProtocol() + "://"
 				+ widgetMService.getServiceLocation(whatService,
@@ -281,7 +283,7 @@ public class WidgetsCatalogController extends EPRestrictedBaseController {
 				WidgetServiceHeaders.getInstance());
 	}
 
-	@RequestMapping(value = "/portalApi/microservices/{widgetId}/controller.js", method = RequestMethod.GET)
+	@GetMapping(value = "/portalApi/microservices/{widgetId}/controller.js")
 	public String getWidgetController(@PathVariable("widgetId") long widgetId) throws Exception {
 		return template.getForObject(EcompPortalUtils.widgetMsProtocol() + "://"
 				+ widgetMService.getServiceLocation(whatService,
@@ -290,7 +292,7 @@ public class WidgetsCatalogController extends EPRestrictedBaseController {
 				WidgetServiceHeaders.getInstance());
 	}
 
-	@RequestMapping(value = "/portalApi/microservices/{widgetId}/style.css", method = RequestMethod.GET)
+	@GetMapping(value = "/portalApi/microservices/{widgetId}/style.css")
 	public String getWidgetCSS(@PathVariable("widgetId") long widgetId) throws Exception {
 		return template.getForObject(EcompPortalUtils.widgetMsProtocol() + "://"
 				+ widgetMService.getServiceLocation(whatService,
@@ -299,7 +301,7 @@ public class WidgetsCatalogController extends EPRestrictedBaseController {
 				WidgetServiceHeaders.getInstance());
 	}
 
-	@RequestMapping(value = { "/portalApi/microservices/parameters/{widgetId}" }, method = RequestMethod.GET)
+	@GetMapping(value = { "/portalApi/microservices/parameters/{widgetId}" })
 	public PortalRestResponse<List<WidgetParameterResult>> getWidgetParameterResult(HttpServletRequest request,
 			@PathVariable("widgetId") long widgetId) throws Exception {
 		EPUser user = EPUserUtils.getUserSession(request);
@@ -335,17 +337,17 @@ public class WidgetsCatalogController extends EPRestrictedBaseController {
         return new PortalRestResponse<>(PortalRestStatusEnum.OK, "SUCCESS", list);
 	}
 
-	@RequestMapping(value = { "/portalApi/microservices/services/{paramId}" }, method = RequestMethod.GET)
+	@GetMapping(value = { "/portalApi/microservices/services/{paramId}" })
 	public List<WidgetCatalogParameter> getUserParameterById(	@PathVariable("paramId") long paramId) {
         return widgetParameterService.getUserParameterById(paramId);
 	}
 
-	@RequestMapping(value = { "/portalApi/microservices/services/{paramId}" }, method = RequestMethod.DELETE)
+	@DeleteMapping(value = { "/portalApi/microservices/services/{paramId}" })
 	public void deleteUserParameterById(@PathVariable("paramId") long paramId) {
 		widgetParameterService.deleteUserParameterById(paramId);
 	}
 
-	@RequestMapping(value = { "/portalApi/microservices/download/{widgetId}" }, method = RequestMethod.GET)
+	@GetMapping(value = { "/portalApi/microservices/download/{widgetId}" })
 	public void doDownload(HttpServletRequest request, HttpServletResponse response,
 			@PathVariable("widgetId") long widgetId) throws Exception {
 
@@ -394,7 +396,7 @@ public class WidgetsCatalogController extends EPRestrictedBaseController {
 		}
 	}
 
-	@RequestMapping(value = { "/portalApi/microservices/parameters" }, method = RequestMethod.POST)
+	@PostMapping(value = { "/portalApi/microservices/parameters" })
 	public PortalRestResponse<String> saveWidgetParameter(HttpServletRequest request,
 			@RequestBody WidgetCatalogParameter widgetParameters) {
 		EPUser user = EPUserUtils.getUserSession(request);
@@ -414,7 +416,7 @@ public class WidgetsCatalogController extends EPRestrictedBaseController {
 		return new PortalRestResponse<>(PortalRestStatusEnum.OK, "SUCCESS", "");
 	}
 
-	@RequestMapping(value = { "/portalApi/microservices/uploadFlag" }, method = RequestMethod.GET)
+	@GetMapping(value = { "/portalApi/microservices/uploadFlag" })
 	public String getUploadFlag() {
 	     String uplaodFlag="";
 		try {
