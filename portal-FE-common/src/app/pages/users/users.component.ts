@@ -212,6 +212,8 @@ export class UsersComponent implements OnInit {
           this.accountUsers = accountUsers;
           if (!accountUsers || accountUsers.length === 0) {
             this.noUsersInApp = true;
+			this.showSpinner = false;
+            return null;
           }
           this.showSpinner = false;
           this.adminsDataSource = new MatTableDataSource(this.accountUsers);
