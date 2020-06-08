@@ -97,7 +97,7 @@ public class RemoteWebServiceCallServiceImplTest {
 		String criteria= " where ueb_key = 'requestUebKey'";
 		List<EPApp> appList = new ArrayList<>();
 		EPApp app = new EPApp();
-		app.setAppPassword("password");
+		app.setAppBasicAuthPassword("password");
 		appList.add(app);
 		Mockito.when(dataAccessService.getList(EPApp.class, criteria.toString(), null, null)).thenReturn(appList);
 		String secretKey = null;
@@ -115,8 +115,8 @@ public class RemoteWebServiceCallServiceImplTest {
 		String criteria= " where ueb_key = 'requestUebKey'";
 		List<EPApp> appList = new ArrayList<>();
 		EPApp app = new EPApp();
-		app.setAppPassword("password");
-		app.setUsername("requestAppName");
+		app.setAppBasicAuthPassword("password");
+		app.setAppBasicAuthUsername("requestAppName");
 		appList.add(app);
 		Mockito.when(dataAccessService.getList(EPApp.class, criteria.toString(), null, null)).thenReturn(appList);
 		String secretKey = null;
@@ -134,8 +134,8 @@ public class RemoteWebServiceCallServiceImplTest {
 		String criteria= " where ueb_key = 'requestUebKey'";
 		List<EPApp> appList = new ArrayList<>();
 		EPApp app = new EPApp();
-		app.setAppPassword("password");
-		app.setUsername("requestAppName");
+		app.setAppBasicAuthPassword("password");
+		app.setAppBasicAuthUsername("requestAppName");
 		appList.add(app);
 		Mockito.when(dataAccessService.getList(EPApp.class, criteria.toString(), null, null)).thenReturn(null);
 		String secretKey = null;
@@ -160,8 +160,8 @@ public class RemoteWebServiceCallServiceImplTest {
 //		String criteria= " where ueb_key = 'requestUebKey'";
 		List<EPApp> appList = new ArrayList<>();
 		EPApp app = new EPApp();
-		app.setAppPassword("password");
-		app.setUsername("requestAppName");
+		app.setAppBasicAuthPassword("password");
+		app.setAppBasicAuthUsername("requestAppName");
 		appList.add(app);
 		Mockito.when(dataAccessService.getList(EPApp.class, criteria.toString(), null, null)).thenReturn(null);
 		assertFalse(remoteWebServiceCallServiceImpl.verifyAppKeyCredential("test"));
@@ -175,8 +175,8 @@ public class RemoteWebServiceCallServiceImplTest {
 		String criteria= " where ueb_key = 'test'";
 		List<EPApp> appList = new ArrayList<>();
 		EPApp app = new EPApp();
-		app.setAppPassword("password");
-		app.setUsername("requestAppName");
+		app.setAppBasicAuthPassword("password");
+		app.setAppBasicAuthUsername("requestAppName");
 		appList.add(app);
 		Mockito.when(dataAccessService.getList(EPApp.class, criteria.toString(), null, null)).thenReturn(appList);
 		assertTrue(remoteWebServiceCallServiceImpl.verifyAppKeyCredential("test"));

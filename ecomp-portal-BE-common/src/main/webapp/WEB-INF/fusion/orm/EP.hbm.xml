@@ -328,10 +328,10 @@
 			<column name="app_name" not-null="true" default="?"></column>
 		</property>
 		<property name="imageUrl" column="app_image_url" />
-		<property name="description" column="app_description" />
-		<property name="notes" column="app_notes" />
-		<property name="url" column="app_url" />
-		<property name="alternateUrl" column="app_alternate_url" />
+		<property name="appDescription" column="app_description" />
+		<property name="appNotes" column="app_notes" />
+		<property name="landingPage" column="app_url" />
+		<property name="alternateLandingPage" column="app_alternate_url" />
 		<property name="appRestEndpoint" column="app_rest_endpoint" />
 		<property name="mlAppName" type="string">
 			<column name="ml_app_name" not-null="true" default="?"></column>
@@ -340,11 +340,11 @@
 			<column name="ml_app_admin_id" not-null="true" default="?"></column>
 		</property>
 		<property name="motsId" column="mots_id" />
-		<property name="appPassword" type="string">
+		<property name="appBasicAuthPassword" type="string">
 			<column name="app_password" not-null="true" default="?"></column>
 		</property>
 		<property name="thumbnail" column="thumbnail" />
-		<property name="username" type="string">
+		<property name="appBasicAuthUsername" type="string">
 			<column name="app_username" not-null="true" default="?"></column>
 		</property>
 		<property name="open" type="yes_no">
@@ -365,12 +365,22 @@
 		<property name="appType" type="integer">
 			<column name="app_type"></column>
 		</property>
-		<property name="centralAuth" type="yes_no">
+		<property name="rolesInAAF" type="yes_no">
 			<column name="auth_central"></column>
 		</property>
 		<property name="nameSpace" type="string">
 			<column name="auth_namespace"></column>
 		</property>
+		<property name="modeOfIntegration" type="string">
+			<column name="mode_of_integration"></column>
+		</property>
+		<property name="appAck" type="yes_no">
+			<column name="ack_app"></column>
+		</property>
+		<property name="usesCadi" type="yes_no">
+			<column name="uses_cadi"></column>
+		</property>
+
 		<one-to-one name="contactUs" class="AppContactUs" cascade="save-update"></one-to-one>
 
 	</class>

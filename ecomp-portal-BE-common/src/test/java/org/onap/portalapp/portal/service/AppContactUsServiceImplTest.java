@@ -55,6 +55,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.onap.portalapp.portal.domain.AppContactUs;
 import org.onap.portalapp.portal.domain.EPApp;
+import org.onap.portalapp.portal.domain.EpAppType;
 import org.onap.portalapp.portal.ecomp.model.AppCategoryFunctionsItem;
 import org.onap.portalapp.portal.ecomp.model.AppContactUsItem;
 import org.onap.portalapp.portal.framework.MockitoTestSuite;
@@ -92,23 +93,23 @@ public class AppContactUsServiceImplTest {
 		EPApp app = new EPApp();
 		app.setName("Test");
 		app.setImageUrl("test");
-		app.setDescription("test");
-		app.setNotes("test");
-		app.setUrl("test");
+		app.setAppDescription("test");
+		app.setAppNotes("test");
+		app.setLandingPage("test");
 		app.setId((long) 1);
 		app.setAppRestEndpoint("test");
-		app.setAlternateUrl("test");
+		app.setAlternateLandingPage("test");
 		app.setName("test");
 		app.setMlAppName("test");
 		app.setMlAppAdminId("test");
-		app.setUsername("test");
-		app.setAppPassword("test");
+		app.setAppBasicAuthUsername("test");
+		app.setAppBasicAuthPassword("test");
 		app.setOpen(true);
 		app.setEnabled(false);
 		app.setUebKey("test");
 		app.setUebSecret("test");
 		app.setUebTopicName("test");
-		app.setAppType(1);
+		app.setAppType(EpAppType.GUI);
 		return app;
 	}
  	@Test

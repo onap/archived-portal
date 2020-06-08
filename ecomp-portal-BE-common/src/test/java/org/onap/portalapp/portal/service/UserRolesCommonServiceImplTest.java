@@ -81,6 +81,7 @@ import org.onap.portalapp.portal.domain.EPUserAppCatalogRoles;
 import org.onap.portalapp.portal.domain.EPUserAppRoles;
 import org.onap.portalapp.portal.domain.EPUserAppRolesRequest;
 import org.onap.portalapp.portal.domain.EPUserAppRolesRequestDetail;
+import org.onap.portalapp.portal.domain.EpAppType;
 import org.onap.portalapp.portal.domain.ExternalSystemAccess;
 import org.onap.portalapp.portal.transport.*;
 import org.onap.portalapp.portal.utils.EPCommonSystemProperties;
@@ -168,24 +169,24 @@ public class UserRolesCommonServiceImplTest {
 		EPApp app = new EPApp();
 		app.setName("Test");
 		app.setImageUrl("test");
-		app.setDescription("test");
-		app.setNotes("test");
-		app.setUrl("test");
+		app.setAppDescription("test");
+		app.setAppNotes("test");
+		app.setLandingPage("test");
 		app.setId((long) 1);
 		app.setAppRestEndpoint("test");
-		app.setAlternateUrl("test");
+		app.setAlternateLandingPage("test");
 		app.setName("test");
 		app.setMlAppName("test");
 		app.setMlAppAdminId("test");
-		app.setUsername("test");
-		app.setAppPassword("test");
+		app.setAppBasicAuthUsername("test");
+		app.setAppBasicAuthPassword("test");
 		app.setOpen(false);
 		app.setEnabled(false);
-		app.setCentralAuth(true);
+		app.setRolesInAAF(true);
 		app.setUebKey("test");
 		app.setUebSecret("test");
 		app.setUebTopicName("test");
-		app.setAppType(1);
+		app.setAppType(EpAppType.GUI);
 		return app;
 	}
 
@@ -261,7 +262,7 @@ public class UserRolesCommonServiceImplTest {
 		EPUser user = mockUser.mockEPUser();
 		user.setId(1l);
 		EPApp mockApp = mockApp();
-		mockApp.setCentralAuth(false);
+		mockApp.setRolesInAAF(false);
 		EPRole mockEPRole = new EPRole();
 		mockEPRole.setId(1l);
 		mockEPRole.setName("test1");
@@ -356,7 +357,7 @@ public class UserRolesCommonServiceImplTest {
 		mockEpUserList.add(user);
 		EPApp mockApp = mockApp();
 		mockApp.setId(2l);
-		mockApp.setCentralAuth(false);
+		mockApp.setRolesInAAF(false);
 		Mockito.when(epAppCommonServiceImpl.getApp(mockApp.getId())).thenReturn(mockApp);
 		List<RoleInAppForUser> mockRoleInAppForUserList = new ArrayList<>();
 		RoleInAppForUser mockRoleInAppForUser = new RoleInAppForUser();
@@ -524,7 +525,7 @@ public class UserRolesCommonServiceImplTest {
 		EPApp mockApp = mockApp();
 		mockApp.setNameSpace("com.test.com");
 		mockApp.setId(1l);
-		mockApp.setCentralAuth(true);
+		mockApp.setRolesInAAF(true);
 		Mockito.when(epAppCommonServiceImpl.getApp(mockApp.getId())).thenReturn(mockApp);
 		Mockito.when(EcompPortalUtils.checkIfRemoteCentralAccessAllowed()).thenReturn(true);
 		AppWithRolesForUser mockWithRolesForUser = new AppWithRolesForUser();
@@ -698,7 +699,7 @@ public class UserRolesCommonServiceImplTest {
 		EPApp mockApp = mockApp();
 		mockApp.setNameSpace("com.test.com");
 		mockApp.setId(2l);
-		mockApp.setCentralAuth(false);
+		mockApp.setRolesInAAF(false);
 		Mockito.when(epAppCommonServiceImpl.getApp(mockApp.getId())).thenReturn(mockApp);
 		Mockito.when(EcompPortalUtils.checkIfRemoteCentralAccessAllowed()).thenReturn(true);
 		AppWithRolesForUser mockWithRolesForUser = new AppWithRolesForUser();
@@ -831,7 +832,7 @@ public class UserRolesCommonServiceImplTest {
 		EPApp mockApp = mockApp();
 		mockApp.setNameSpace("com.test.com");
 		mockApp.setId(1l);
-		mockApp.setCentralAuth(true);
+		mockApp.setRolesInAAF(true);
 		Mockito.when(EcompPortalUtils.checkIfRemoteCentralAccessAllowed()).thenReturn(true);
 		ExternalSystemUser externalSystemUser = new ExternalSystemUser();
 		List<ExternalSystemRoleApproval> mockExternalSystemRoleApprovalList = new ArrayList<>();
@@ -999,7 +1000,7 @@ public class UserRolesCommonServiceImplTest {
 		EPApp mockApp = mockApp();
 		mockApp.setId(2l);
 		mockApp.setEnabled(true);
-		mockApp.setCentralAuth(false);
+		mockApp.setRolesInAAF(false);
 		ExternalSystemUser externalSystemUser = new ExternalSystemUser();
 		List<ExternalSystemRoleApproval> mockExternalSystemRoleApprovalList = new ArrayList<>();
 		ExternalSystemRoleApproval mockExternalSystemRoleApproval = new ExternalSystemRoleApproval();
@@ -1187,7 +1188,7 @@ public class UserRolesCommonServiceImplTest {
 		EPApp mockApp = mockApp();
 		mockApp.setId(1l);
 		mockApp.setEnabled(true);
-		mockApp.setCentralAuth(true);
+		mockApp.setRolesInAAF(true);
 		EPUser user = mockUser.mockEPUser();
 		EPUser user2 = mockUser.mockEPUser();
 		user2.setActive(true);
@@ -1263,7 +1264,7 @@ public class UserRolesCommonServiceImplTest {
 		EPApp mockApp = mockApp();
 		mockApp.setId(2l);
 		mockApp.setEnabled(true);
-		mockApp.setCentralAuth(false);
+		mockApp.setRolesInAAF(false);
 		Mockito.when(epAppCommonServiceImpl.getApp(mockApp.getId())).thenReturn(mockApp);
 		List<UserApplicationRoles> mockUserApplicationRolesNonCentralizedList = new ArrayList<>();
 		UserApplicationRoles mockUserApplicationRoles = new UserApplicationRoles();
@@ -1318,7 +1319,7 @@ public class UserRolesCommonServiceImplTest {
 		EPApp mockApp = mockApp();
 		mockApp.setId(2l);
 		mockApp.setEnabled(true);
-		mockApp.setCentralAuth(false);
+		mockApp.setRolesInAAF(false);
 		EPUser user = mockUser.mockEPUser();
 		AppWithRolesForUser appWithRolesForUser = new AppWithRolesForUser();
 		List<RoleInAppForUser> mockRoleInAppForUserList = new ArrayList<>();
@@ -1371,7 +1372,7 @@ public class UserRolesCommonServiceImplTest {
 		EPApp mockApp = mockApp();
 		mockApp.setId(2l);
 		mockApp.setEnabled(true);
-		mockApp.setCentralAuth(false);
+		mockApp.setRolesInAAF(false);
 		List<EPRole> expected = new ArrayList<>();
 		EPRole epRole = new EPRole();
 		epRole.setAppId(mockApp.getId());
@@ -1400,7 +1401,7 @@ public class UserRolesCommonServiceImplTest {
 		EPApp mockApp = mockApp();
 		mockApp.setId(2l);
 		mockApp.setEnabled(true);
-		mockApp.setCentralAuth(false);
+		mockApp.setRolesInAAF(false);
 		EPUser user = mockUser.mockEPUser();
 		List<EPUserApp> expected = new ArrayList<>();
 		EPUserApp epUserApp = new EPUserApp();
@@ -1426,7 +1427,7 @@ public class UserRolesCommonServiceImplTest {
 		EPApp mockApp = mockApp();
 		mockApp.setId(2l);
 		mockApp.setEnabled(true);
-		mockApp.setCentralAuth(false);
+		mockApp.setRolesInAAF(false);
 		EPUser user = mockUser.mockEPUser();
 		List<EPUserAppCatalogRoles> expected = new ArrayList<>();
 		EPUserAppCatalogRoles epUserAppCatalogRoles = new EPUserAppCatalogRoles();
@@ -1458,7 +1459,7 @@ public class UserRolesCommonServiceImplTest {
 		EPApp mockApp = mockApp();
 		mockApp.setId(2l);
 		mockApp.setEnabled(true);
-		mockApp.setCentralAuth(false);
+		mockApp.setRolesInAAF(false);
 		EPUser user = mockUser.mockEPUser();
 		List<EPUserApp> expected = new ArrayList<>();
 		EPUserApp epUserApp = new EPUserApp();
@@ -1488,7 +1489,7 @@ public class UserRolesCommonServiceImplTest {
 		EPApp mockApp2 = mockApp();
 		mockApp.setId(2l);
 		mockApp.setEnabled(true);
-		mockApp.setCentralAuth(false);
+		mockApp.setRolesInAAF(false);
 		EPUser user = mockUser.mockEPUser();
 		List<EPApp> mockEpAppList = new ArrayList<>();
 		mockEpAppList.add(mockApp);
