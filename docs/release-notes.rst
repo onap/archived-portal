@@ -1,7 +1,7 @@
 .. This work is licensed under a Creative Commons Attribution 4.0 International License.
 .. http://creativecommons.org/licenses/by/4.0
 .. Copyright 2017-2019 AT&T Intellectual Property.  All rights reserved
-
+.. _release_notes:
 
 Portal Platform Release Notes
 =============================
@@ -28,6 +28,12 @@ This release contains an Angular upgrade, bug fixes and security enhancements.
         * Fixed Sonar reported critical issues.
 
 **Known Issues**
+        * User management pages do not work properly. We will be addressing this in the Guilin release. So, the work around is:
+
+           1.  If we try to add user role by navigating directly to an application, like A&AI, we are unable to add roles.
+           2.  However, With Portal admin privileges a user (in this case Demo user) can navigate to User screen and select Portal/Default from the drop down.
+           3.  Then update user roles for A&AI and other applications in the popup.
+           4.  We validated that this operation is correctly updating the role in AAF.
 
 **Security Notes**
 
@@ -71,7 +77,7 @@ Quick Links:
         * onap/portal-db:3.2.3
         * onap/portal-sdk:3.2.0
         * onap/portal-wms:3.2.3
-        * portal/sdk java artifacts - (Release branch: “release-3.0.0”)
+        * portal/sdk java artifacts - (Release branch: “release-3.2.0”; Jar Version: "3.0.0")
 
 
 Version: 2.6.0
