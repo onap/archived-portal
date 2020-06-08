@@ -28,6 +28,12 @@ This release contains an Angular upgrade, bug fixes and security enhancements.
         * Fixed Sonar reported critical issues.
 
 **Known Issues**
+        * User management pages do not work properly. We will be addressing this in the Gilian release. So, the work around is:
+
+           1.  If we try to add user role by navigating directly to an application, like A&AI, we are unable to add roles.
+           2.  However, With Portal admin privileges a user (in this case Demo user) can navigate to User screen and select Portal/Default from the drop down.
+           3.  Then update user roles for A&AI and other applications in the popup.
+           4.  We validated that this operation is correctly updating the role in AAF.
 
 **Security Notes**
 
