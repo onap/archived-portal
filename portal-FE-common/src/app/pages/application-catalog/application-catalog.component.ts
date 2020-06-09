@@ -101,6 +101,7 @@ export class ApplicationCatalogComponent implements OnInit {
       this.appCatalogData = data;
       for (let entry of this.appCatalogData) {
         //console.log("Check the URL" + environment.api.appThumbnail);
+		if(entry.applicationType != "3"){
         var appCatalog = {
           x: -1,
           y: -1,
@@ -108,7 +109,7 @@ export class ApplicationCatalogComponent implements OnInit {
           name: entry.name,
           mlAppName: entry.mlAppName,
           imageLink: environment.api.appThumbnail.replace(':appId', <string><any>entry.id),
-          restricted: entry.restricted,
+          applicationType: entry.applicationType,
           select: entry.select,
           access: entry.access,
           pending: entry.pending,
@@ -116,6 +117,7 @@ export class ApplicationCatalogComponent implements OnInit {
         };
         this.applicationCatalogService.addItem(appCatalog);
       }
+	  }
     }, error => {
       console.log('getAppCatalogServices Error Object' + error);
     });
@@ -148,7 +150,7 @@ export class ApplicationCatalogComponent implements OnInit {
   };
   openAddRoleModal(item: any) {
     //console.log("OpenModal check" + item.id);
-    if ((!item.restricted) && (item.mlproperty)) {
+    if ((item.applicationType == "1") && (item.mlproperty)) {
       this.modal.open(CatalogModalComponent);
     }
   }
