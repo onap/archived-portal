@@ -169,6 +169,7 @@ export class DashboardApplicationCatalogComponent implements OnInit {
         this.applicationCatalogService.layout = [];
         for (let entry of data) {
           //console.log("Check the URL" + environment.api.appThumbnail);
+		  if(entry.applicationType != '3'){
           var appCatalog = {
             x: -1,
             y: -1,
@@ -176,7 +177,7 @@ export class DashboardApplicationCatalogComponent implements OnInit {
             name: entry.name,
             subHeaderText: entry.notes,
             imageLink: environment.api.appThumbnail.replace(':appId', <string><any>entry.id),
-            restrictedApp: entry.restrictedApp,
+            applicationType: entry.applicationType,
             select: entry.select,
             access: entry.access,
             pending: entry.pending,
@@ -186,6 +187,7 @@ export class DashboardApplicationCatalogComponent implements OnInit {
           };
           this.applicationCatalogService.addItem(appCatalog);
         }
+		}
       }
     }, error => {
       console.log('getAppCatalogServices Error Object' + error);
@@ -199,7 +201,7 @@ export class DashboardApplicationCatalogComponent implements OnInit {
 
   openAddRoleModal(item: any) {
     //console.log("OpenModal check" + item.id+" "+item.url);
-    if (item.restrictedApp) {
+    if (item.applicationType =='2') {
       // Link-based apps open in their own browser tab
       window.open(item.url, '_blank');
     } else{

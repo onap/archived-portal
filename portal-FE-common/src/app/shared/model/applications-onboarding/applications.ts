@@ -37,34 +37,40 @@
  */
 
 export interface IApplications {
-    id ?: any;
-    name ?: any;
-    imageUrl ?: any;
-    imageLink ?: any;
-    description ?: any;
-    notes ?: any;
-    url ?: any
-    alternateUrl ?: any;
-    restUrl ?: any;
-    isOpen ?: any;
-    isEnabled ?: any;
-    motsId ?: any;
-    myLoginsAppName ?: any;
-    myLoginsAppOwner ?: any;
-    username ?: any;
-    appPassword ?: any;
-    thumbnail ?: any;
-    uebTopicName ?: any;
-    uebKey ?: any;
-    uebSecret ?: any;
+    id?: any;
+    appName?: any;
+    imageUrl?: any;
+    imageLink?: any;
+    appDescription?: any;
+    appNotes?: any;
+    landingPage?: any
+    alternateUrl?: any;
+    restUrl?: any;
+    isOpen?: any;
+    isEnabled?: any;
+    motsId?: any;
+    myLoginsAppName?: any;
+    myLoginsAppOwner?: any;
+    appBasicAuthUsername?: any;
+    appBasicAuthPassword?: any;
+    thumbnail?: any;
+    uebTopicName?: any;
+    uebKey?: any;
+    uebSecret?: any;
+    applicationType?: any;
+    rolesInAAF?: any;
     // ---- start ----to be removed
-    restrictedApp ?: any;
-    isCentralAuth ?: any;
+    restrictedApp?: any;
+    name?: any;
+    isCentralAuth?: any;
+    description?: any;
+    notes?: any;
+    url?: any;
+    username?: any;
+    appPassword?: any;
     // ---- end ----to be removed
-    applicationType ?: any;
-    rolesInAAF ?: any;
-    nameSpace ?: any;
-    usesCadi ?: any;
-    modeOfIntegration ?: any;
-    appAck ?: any;
+    nameSpace?: any;
+    usesCadi?: any;
+    modeOfIntegration?: any;
+    appAck?: any;
 }

@@ -41,7 +41,7 @@ export interface IApplicationCatalog {
     mlAppName: string;
     imageUrl: string;
     url: string;
-    restricted: boolean;
+    applicationType: string;
     open: boolean;
     access: boolean;
     select: boolean;
