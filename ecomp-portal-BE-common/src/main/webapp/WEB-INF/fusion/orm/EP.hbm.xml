@@ -1258,7 +1258,7 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 				a.ML_APP_NAME 		, a.ML_APP_ADMIN_ID , a.MOTS_ID 			, a.APP_PASSWORD ,
     			a.THUMBNAIL 		, a.APP_USERNAME	, a.OPEN 				, a.ENABLED , 
 				a.UEB_TOPIC_NAME 	, a.UEB_KEY 		, a.UEB_SECRET 			, a.APP_TYPE          , a.AUTH_CENTRAL ,
-				a.AUTH_NAMESPACE
+				a.AUTH_NAMESPACE	, a.MODE_OF_INTEGRATION, a.ACK_APP			, a.USES_CADI
 		    from FN_APP a
 		    -- Portal assigns role 999 to app administrator		    
 			left outer join	FN_USER_ROLE         r ON a.APP_ID = r.APP_ID and r.USER_ID = :userId and r.ROLE_ID != 999
@@ -1278,7 +1278,7 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 			   	b.ML_APP_NAME 		, b.ML_APP_ADMIN_ID , b.MOTS_ID 			, b.APP_PASSWORD ,
     			b.THUMBNAIL 		, b.APP_USERNAME	, b.OPEN 				, b.ENABLED , 
           b.UEB_TOPIC_NAME 	, b.UEB_KEY 		, b.UEB_SECRET 			, b.APP_TYPE         , b.AUTH_CENTRAL ,
-          b.AUTH_NAMESPACE
+          b.AUTH_NAMESPACE	, b.MODE_OF_INTEGRATION		, b.ACK_APP		, b.USES_CADI
           from fn_user_role a, fn_app b, ep_app_role_function c   , fn_role d , ep_app_function e
           where a.user_id =:userId  and b.app_id = c.app_id and a.app_id = c.role_app_id and b.enabled = 'Y' and c.role_id = d.role_id and d.active_yn='Y' and a.role_id = d.role_id and e.app_id = c.app_id
 		  order by app_name
@@ -1299,7 +1299,7 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 				a.ML_APP_NAME 		, a.ML_APP_ADMIN_ID , a.MOTS_ID 			, a.APP_PASSWORD ,
     			a.THUMBNAIL 		, a.APP_USERNAME	, a.OPEN 				, a.ENABLED , 
 				a.UEB_TOPIC_NAME 	, a.UEB_KEY 		, a.UEB_SECRET 			, a.APP_TYPE         , a.AUTH_CENTRAL ,
-				a.AUTH_NAMESPACE
+				a.AUTH_NAMESPACE	, a.MODE_OF_INTEGRATION, a.ACK_APP			, a.USES_CADI
 		    from FN_APP a
 		    -- Portal assigns role 999 to app administrator		    
 			left outer join	FN_USER_ROLE         r ON a.APP_ID = r.APP_ID and r.USER_ID = :userId and r.ROLE_ID != 999
@@ -1317,7 +1317,7 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 			   	b.ML_APP_NAME 		, b.ML_APP_ADMIN_ID , b.MOTS_ID 			, b.APP_PASSWORD ,
     			b.THUMBNAIL 		, b.APP_USERNAME	, b.OPEN 				, b.ENABLED , 
           b.UEB_TOPIC_NAME 	, b.UEB_KEY 		, b.UEB_SECRET 			, b.APP_TYPE         , b.AUTH_CENTRAL ,
-          b.AUTH_NAMESPACE
+          b.AUTH_NAMESPACE	, b.MODE_OF_INTEGRATION, b.ACK_APP			, b.USES_CADI
           from fn_user_role a, fn_app b, ep_app_role_function c   , fn_role d , ep_app_function e
           where a.user_id =:userId  and b.app_id = c.app_id and a.app_id = c.role_app_id and b.enabled = 'Y' and c.role_id = d.role_id and d.active_yn='Y' and a.role_id = d.role_id and e.app_id = c.app_id
 		order by app_name
@@ -1629,7 +1629,11 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 			    a.APP_ID as id, a.APP_NAME as name, a.ML_APP_NAME as mlAppName, a.APP_IMAGE_URL as imageUrl,
 			    a.APP_DESCRIPTION as description, a.APP_NOTES as notes,
 			    a.APP_URL as url, a.APP_ALTERNATE_URL as alternateUrl,
-				IF(a.app_type = '2', TRUE, FALSE) as restricted,
+				-- IF(a.app_type = '2', TRUE, FALSE) as restricted,
+				case
+					when a.app_type = '2' and a.app_type = '3' then TRUE
+					else FALSE
+				end as restricted,
 			    IF(a.open = 'Y', TRUE, FALSE) as open,
                 -- ACCESS(-ible) means user has a defined role OR the application is open 
 				case

@@ -855,7 +855,8 @@ public class EPAppCommonServiceImpl implements EPAppService {
 	public List<OnboardingApp> getEnabledNonOpenOnboardingApps() {
 		@SuppressWarnings("unchecked")
 		List<EPApp> apps = dataAccessService.getList(EPApp.class,
-				" where enabled = true and open = false and id!=" + ECOMP_APP_ID, null, null);
+				" where enabled = true and open = false and app_type!= 3 and id!=" + ECOMP_APP_ID, null, null);
+	
 		List<OnboardingApp> onboardingAppsList = new ArrayList<OnboardingApp>();
 		for (EPApp app : apps) {
 			OnboardingApp onboardingApp = new OnboardingApp();

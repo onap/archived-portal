@@ -1086,7 +1086,6 @@ public class UserRolesCommonServiceImpl  {
 						}
 					}
 				}
-					
 				applyChangesToUserAppRolesForMyLoginsRequest(user, appId);
 
 				Boolean systemUser = (newAppRolesForUser.getIsSystemUser() != null ? newAppRolesForUser.getIsSystemUser() : false);
@@ -1114,7 +1113,10 @@ public class UserRolesCommonServiceImpl  {
 				}
 				else{	// if centralized app
 				if (app.getRolesInAAF()) {
-					if (!app.getId().equals(PortalConstants.PORTAL_APP_ID)) {
+				
+					if (!app.getId().equals(PortalConstants.PORTAL_APP_ID) && (app.getAppAck() != null && app.getAppAck())) {
+						logger.debug(EELFLoggerDelegate.debugLogger,"setAppWithUserRoleStateForUser: calling pushRemoteUser method for Central application");
+						logger.debug(EELFLoggerDelegate.debugLogger,"setAppWithUserRoleStateForUser:"+app.getAppAck());
 						pushRemoteUser(roleInAppForUserList, userId, app, mapper, searchService,
 									applicationsRestClientService,false);
 					}
@@ -1125,8 +1127,8 @@ public class UserRolesCommonServiceImpl  {
 							userRolesInLocalApp);
 					List<RoleInAppForUser> roleAppUserList = rolesInAppForUser.roles;
 					if (EcompPortalUtils.checkIfRemoteCentralAccessAllowed()) {
-						
-						// Apply changes in external Access system
+
+					// Apply changes in external Access system
 						updateUserRolesInExternalSystem(app, rolesInAppForUser.orgUserId, roleAppUserList,
 								epRequestValue,false,rolesGotDeletedFromApprover,checkIfUserisOnlyRoleAdmin);
 					}
