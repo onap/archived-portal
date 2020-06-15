@@ -1271,6 +1271,7 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 				or
 				(a.OPEN = 'N' and r.ROLE_ID is null and p.STATUS_CD = 'S')
 			)
+			and a.app_type != 3 
 			union
 		select distinct  -- multiple roles yield multiple rows
 			    b.APP_ID			, b.APP_NAME 		, b.APP_IMAGE_URL  		,b.APP_DESCRIPTION , 
@@ -1310,6 +1311,7 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 		        or
 				(a.OPEN = 'N' and r.USER_ID is not null and (p.STATUS_CD is null or p.STATUS_CD != 'H'))
 			)
+			and a.app_type != 3 
 			union
 		select distinct  -- multiple roles yield multiple rows
 			    b.APP_ID			, b.APP_NAME 		, b.APP_IMAGE_URL  		,b.APP_DESCRIPTION , 
@@ -1354,6 +1356,7 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 				or
 				(a.OPEN = 'N' and r.ROLE_ID is null and p.STATUS_CD = 'S')
 			)
+			and a.app_type != 3
 			union
 		  select distinct  -- multiple roles yield multiple rows
 			    b.APP_ID			, b.APP_NAME 		, b.APP_IMAGE_URL  		,b.APP_DESCRIPTION , 
@@ -1399,7 +1402,9 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 				(a.OPEN = 'Y' and p.STATUS_CD = 'S')
 		        or
 				(a.OPEN = 'N' and r.USER_ID is not null and (p.STATUS_CD is null or p.STATUS_CD != 'H'))
-			)union
+			)
+			and a.app_type != 3
+			union
 		select distinct  -- multiple roles yield multiple rows
 			    b.APP_ID			, b.APP_NAME 		, b.APP_IMAGE_URL  		,b.APP_DESCRIPTION , 
 	    		b.APP_NOTES 		, b.APP_URL 		, b.APP_ALTERNATE_URL 	, b.APP_REST_ENDPOINT ,
@@ -1453,7 +1458,9 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 				(a.OPEN = 'N' and r.ROLE_ID is not null and (p.STATUS_CD is null or p.STATUS_CD != 'H'))
 				or
 				(a.OPEN = 'N' and r.ROLE_ID is null and p.STATUS_CD = 'S')
-			)union
+			)
+			and a.app_type != 3
+			union
 		   select distinct  -- multiple roles yield multiple rows
 			    b.APP_ID			, b.APP_NAME 		, b.APP_IMAGE_URL  		,b.APP_DESCRIPTION , 
 	    		b.APP_NOTES 		, b.APP_URL 		, b.APP_ALTERNATE_URL 	, b.APP_REST_ENDPOINT ,
@@ -1501,7 +1508,9 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 				(a.OPEN = 'Y' and p.STATUS_CD = 'S')
 		        or
 				(a.OPEN = 'N' and r.USER_ID is not null and (p.STATUS_CD is null or p.STATUS_CD != 'H'))
-			)union
+			)
+			and a.app_type != 3
+			union
 		  select distinct  -- multiple roles yield multiple rows
 			    b.APP_ID			, b.APP_NAME 		, b.APP_IMAGE_URL  		,b.APP_DESCRIPTION , 
 	    		b.APP_NOTES 		, b.APP_URL 		, b.APP_ALTERNATE_URL 	, b.APP_REST_ENDPOINT ,
@@ -1550,7 +1559,9 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 				(a.OPEN = 'N' and r.ROLE_ID is not null and (p.STATUS_CD is null or p.STATUS_CD != 'H'))
 				or
 				(a.OPEN = 'N' and r.ROLE_ID is null and p.STATUS_CD = 'S')
-			)union
+			)
+			and a.app_type != 3
+			union
 		select distinct  -- multiple roles yield multiple rows
 			    b.APP_ID			, b.APP_NAME 		, b.APP_IMAGE_URL  		,b.APP_DESCRIPTION , 
 	    		b.APP_NOTES 		, b.APP_URL 		, b.APP_ALTERNATE_URL 	, b.APP_REST_ENDPOINT ,
@@ -1595,7 +1606,9 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 				(a.OPEN = 'Y' and p.STATUS_CD = 'S')
 		        or
 				(a.OPEN = 'N' and r.USER_ID is not null and (p.STATUS_CD is null or p.STATUS_CD != 'H'))
-			)union
+			)
+			and a.app_type != 3
+			union
 		select distinct  -- multiple roles yield multiple rows
 			    b.APP_ID			, b.APP_NAME 		, b.APP_IMAGE_URL  		,b.APP_DESCRIPTION , 
 	    		b.APP_NOTES 		, b.APP_URL 		, b.APP_ALTERNATE_URL 	, b.APP_REST_ENDPOINT ,
@@ -1629,11 +1642,7 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
 			    a.APP_ID as id, a.APP_NAME as name, a.ML_APP_NAME as mlAppName, a.APP_IMAGE_URL as imageUrl,
 			    a.APP_DESCRIPTION as description, a.APP_NOTES as notes,
 			    a.APP_URL as url, a.APP_ALTERNATE_URL as alternateUrl,
-				-- IF(a.app_type = '2', TRUE, FALSE) as restricted,
-				case
-					when a.app_type = '2' and a.app_type = '3' then TRUE
-					else FALSE
-				end as restricted,
+				IF(a.app_type = '2', TRUE, FALSE) as restricted,
 			    IF(a.open = 'Y', TRUE, FALSE) as open,
                 -- ACCESS(-ible) means user has a defined role OR the application is open 
 				case
@@ -1661,8 +1670,7 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
             left outer join FN_USER_ROLE         r ON a.APP_ID = r.APP_ID and r.USER_ID = :userId and r.ROLE_ID != 999
 			left outer join FN_PERS_USER_APP_SEL p ON a.APP_ID = p.APP_ID and p.USER_ID = :userId
       left outer join EP_USER_ROLES_REQUEST q ON a.APP_ID = q.APP_ID and q.USER_ID = :userId and q.request_status = 'P'
-      where a.ENABLED = 'Y'
-      
+      where a.ENABLED = 'Y' and a.app_type != 3
 			-- Show accessible apps first, then the rest; sort by name within each set.
             order by access desc, app_name asc
 		    ;
@@ -1911,7 +1919,7 @@ where fn_role.app_id = fn_app.app_id and fn_app.enabled='Y' and fn_role.active_y
             left outer join FN_USER_ROLE         r ON a.APP_ID = r.APP_ID and r.USER_ID = :userId and r.ROLE_ID != 999
 			left outer join FN_PERS_USER_APP_SEL p ON a.APP_ID = p.APP_ID and p.USER_ID = :userId
 			left outer join EP_USER_ROLES_REQUEST q ON a.APP_ID = q.APP_ID and q.USER_ID = :userId and q.request_status = 'P'
-			where a.ENABLED = 'Y'
+			where a.ENABLED = 'Y' and a.app_type != 3
 			-- Show accessible apps first, then the rest; sort by name within each set.
             order by access desc, app_name asc
 		    ;
