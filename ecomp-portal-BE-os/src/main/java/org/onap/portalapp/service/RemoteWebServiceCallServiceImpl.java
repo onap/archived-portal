@@ -39,7 +39,6 @@ package org.onap.portalapp.service;
 
 import java.util.List;
 import org.onap.portalapp.portal.domain.EPApp;
-import org.onap.portalapp.service.RemoteWebServiceCallService;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.onap.portalsdk.core.onboarding.util.CipherUtil;
 import org.onap.portalsdk.core.onboarding.util.KeyConstants;
