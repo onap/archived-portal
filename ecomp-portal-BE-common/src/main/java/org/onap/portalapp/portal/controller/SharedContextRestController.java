@@ -63,6 +63,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -114,7 +116,7 @@ public class SharedContextRestController extends EPRestrictedRESTfulBaseControll
 	 *             on bad arguments
 	 */
 	@ApiOperation(value = "Gets a value for the specified context and key.", response = SharedContext.class)
-	@RequestMapping(value = { "/get" }, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = { "/get" }, produces = "application/json")
 	public String getContext(HttpServletRequest request, @RequestParam String context_id, @RequestParam String ckey)
 			throws Exception {
 		logger.debug(EELFLoggerDelegate.debugLogger, "getContext for ID " + context_id + ", key " + ckey);
@@ -151,7 +153,7 @@ public class SharedContextRestController extends EPRestrictedRESTfulBaseControll
 	 *             on bad arguments
 	 */
 	@ApiOperation(value = "Gets user information for the specified context.", response = SharedContext.class, responseContainer = "List")
-	@RequestMapping(value = { "/get_user" }, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = { "/get_user" }, produces = "application/json")
 	public String getUserContext(HttpServletRequest request, @RequestParam String context_id) throws Exception {
 
 		logger.debug(EELFLoggerDelegate.debugLogger, "getUserContext for ID " + context_id);
@@ -197,7 +199,7 @@ public class SharedContextRestController extends EPRestrictedRESTfulBaseControll
 	 *             on bad arguments
 	 */
 	@ApiOperation(value = "Tests for presence of the specified key in the specified context.", response = SharedContextJsonResponse.class)
-	@RequestMapping(value = { "/check" }, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = { "/check" }, produces = "application/json")
 	public String checkContext(HttpServletRequest request, @RequestParam String context_id, @RequestParam String ckey)
 			throws Exception {
 
@@ -236,7 +238,7 @@ public class SharedContextRestController extends EPRestrictedRESTfulBaseControll
 	 *             on bad arguments
 	 */
 	@ApiOperation(value = "Removes the specified key in the specified context.", response = SharedContextJsonResponse.class)
-	@RequestMapping(value = { "/remove" }, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = { "/remove" }, produces = "application/json")
 	public String removeContext(HttpServletRequest request, @RequestParam String context_id, @RequestParam String ckey)
 			throws Exception {
 
@@ -275,7 +277,7 @@ public class SharedContextRestController extends EPRestrictedRESTfulBaseControll
 	 *             on bad arguments
 	 */
 	@ApiOperation(value = "Clears all key-value pairs in the specified context.", response = SharedContextJsonResponse.class)
-	@RequestMapping(value = { "/clear" }, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = { "/clear" }, produces = "application/json")
 	public String clearContext(HttpServletRequest request, @RequestParam String context_id) throws Exception {
 
 		logger.debug(EELFLoggerDelegate.debugLogger, "clearContext for " + context_id);
@@ -311,7 +313,7 @@ public class SharedContextRestController extends EPRestrictedRESTfulBaseControll
 	 *             on bad arguments
 	 */
 	@ApiOperation(value = "Sets a context value for the specified context and key. Creates the context if no context with the specified ID-key pair exists, overwrites the value if it exists already.", response = SharedContextJsonResponse.class)
-	@RequestMapping(value = { "/set" }, method = RequestMethod.POST, produces = "application/json")
+	@PostMapping(value = { "/set" }, produces = "application/json")
 	public String setContext(HttpServletRequest request, @RequestBody String userJson) throws Exception {
 		if (userJson !=null){
 		SecureString secureUserJson = new SecureString(userJson);
