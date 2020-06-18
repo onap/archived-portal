@@ -43,7 +43,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.onap.portalapp.portal.utils.EPCommonSystemProperties;
 import org.onap.portalsdk.core.onboarding.util.CipherUtil;
-import org.onap.portalsdk.core.util.SystemProperties;
+import org.onap.portalsdk.core.onboarding.util.KeyConstants;
+import org.onap.portalsdk.core.onboarding.util.KeyProperties;
 
 public class SessionCookieUtil extends CommonSessionCookieUtil{
 	
@@ -72,7 +73,7 @@ public class SessionCookieUtil extends CommonSessionCookieUtil{
 			HttpServletResponse response,String userId) throws Exception {
 		logger.info("************** session cookie util set up UserId cookie begins");
 		userId = CipherUtil.encrypt(userId,
-				SystemProperties.getProperty(SystemProperties.Decryption_Key));
+				KeyProperties.getProperty(KeyConstants.CIPHER_ENCRYPTION_KEY));
 		Cookie cookie1 = new Cookie(USER_ID, userId);
 		cookie1.setSecure(true);
 		cookie1.setMaxAge(cookieMaxAge);
@@ -93,7 +94,7 @@ public class SessionCookieUtil extends CommonSessionCookieUtil{
 					userIdcookie = cookie;
 		if(userIdcookie!=null){
 			userId = CipherUtil.decrypt(userIdcookie.getValue(),
-					SystemProperties.getProperty(SystemProperties.Decryption_Key));
+					KeyProperties.getProperty(KeyConstants.CIPHER_ENCRYPTION_KEY));
 		}
 		
 		logger.info("************** session cookie util set up EP cookie completed");
