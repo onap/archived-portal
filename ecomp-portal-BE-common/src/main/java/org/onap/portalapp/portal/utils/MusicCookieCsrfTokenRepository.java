@@ -62,7 +62,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
-import org.onap.portalapp.portal.utils.EPCommonSystemProperties;
 
 
 public final class MusicCookieCsrfTokenRepository implements CsrfTokenRepository {
