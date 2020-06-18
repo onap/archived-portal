@@ -48,7 +48,7 @@ import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -60,7 +60,7 @@ public class WidgetMSController extends EPRestrictedBaseController {
 	private WidgetMService widgetMService;
 
 	// Get location of a healthy node running our service
-	@RequestMapping(value = { "/service/{service}" }, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = { "/service/{service}" }, produces = "application/json")
 	public PortalRestResponse<String> getServiceLocation(HttpServletRequest request, HttpServletResponse response,
 			@PathVariable("service") String service) {
 
