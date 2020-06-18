@@ -662,7 +662,7 @@ public class ExternalAccessRolesControllerTest {
 		Mockito.when(externalAccessRolesService.getApp(mockedRequest.getHeader(uebKey))).thenReturn(applicationList);
 		PortalRestResponse<String> portalRestResponse = null;
 		PortalRestResponse<String> expectedportalRestResponse = new PortalRestResponse<>();
-		expectedportalRestResponse.setMessage(null);
+		expectedportalRestResponse.setMessage("argument \"content\" is null");
 		expectedportalRestResponse.setResponse("Failed");
 		expectedportalRestResponse.setStatus(PortalRestStatusEnum.ERROR);
 		Mockito.when(mockedRequest.getHeader("uebkey")).thenReturn(uebKey);
