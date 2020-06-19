@@ -245,7 +245,7 @@ export class RoleComponent implements OnInit {
     this.roleDataSource = new MatTableDataSource(this.availableRoles);
     this.applicationsService.getSingleAppInfoById(val).subscribe((res: any) => {
       this.appName = res.name;
-      if (res.centralAuth == true) {
+      if (res.rolesInAAF == true) {
         this.syncRolesApplied = true;
       }
     });
