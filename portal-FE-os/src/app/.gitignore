@@ -6,4 +6,5 @@
 !shared/interceptors/
 /pages/
 !pages/application-onboarding
+!pages/information-tooltip
 !pages/users

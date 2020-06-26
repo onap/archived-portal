@@ -96,6 +96,7 @@ import { ApplicationPipesModule } from '../shared/pipes/application-pipes.module
 import { UsersComponent } from './users/users.component';
 import { NewUserModalComponent } from './users/new-user-modal/new-user-modal.component';
 import { BulkUserComponent } from './users/bulk-user/bulk-user.component';
+import { InformationTooltipComponent } from './information-tooltip/information-tooltip.component';
 import { UserDetailsFormComponent } from './users/user-details-form/user-details-form.component';
 
 
@@ -149,7 +150,8 @@ import { UserDetailsFormComponent } from './users/user-details-form/user-details
     DashboardWidgetCatalogComponent,
     FunctionalMenuDialogComponent,
     GetAccessComponent,
-    UserDetailsFormComponent
+    UserDetailsFormComponent,
+    InformationTooltipComponent
   ],
   imports: [
     CommonModule,
