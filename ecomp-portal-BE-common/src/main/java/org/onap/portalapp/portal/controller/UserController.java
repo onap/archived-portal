@@ -55,6 +55,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -79,7 +81,7 @@ public class UserController extends EPRestrictedBaseController {
 	 * 
 	 * @return PortalRestResponse of EPUser
 	 */
-	@RequestMapping(value = { "/portalApi/loggedinUser" }, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = { "/portalApi/loggedinUser" }, produces = "application/json")
 	public PortalRestResponse<ProfileDetail> getLoggedinUser(HttpServletRequest request) {
 		PortalRestResponse<ProfileDetail> portalRestResponse = null;
 		try {
@@ -106,8 +108,8 @@ public class UserController extends EPRestrictedBaseController {
 	 *            Body with user information
 	 * @return PortalRestResponse of String
 	 */
-	@RequestMapping(value = {
-			"/portalApi/modifyLoggedinUser" }, method = RequestMethod.PUT, produces = "application/json")
+	@PutMapping(value = {
+			"/portalApi/modifyLoggedinUser" }, produces = "application/json")
 	public PortalRestResponse<String> modifyLoggedinUser(HttpServletRequest request,
 			@RequestBody ProfileDetail profileDetail) {
 		PortalRestResponse<String> portalRestResponse = null;
