@@ -1127,8 +1127,7 @@ public class UserRolesCommonServiceImpl  {
 							userRolesInLocalApp);
 					List<RoleInAppForUser> roleAppUserList = rolesInAppForUser.roles;
 					if (EcompPortalUtils.checkIfRemoteCentralAccessAllowed()) {
-
-					// Apply changes in external Access system
+						// Apply changes in external Access system
 						updateUserRolesInExternalSystem(app, rolesInAppForUser.orgUserId, roleAppUserList,
 								epRequestValue,false,rolesGotDeletedFromApprover,checkIfUserisOnlyRoleAdmin);
 					}
@@ -1147,7 +1146,7 @@ public class UserRolesCommonServiceImpl  {
 					if(!app.getRolesInAAF() && !app.getId().equals(PortalConstants.PORTAL_APP_ID)){
 						
 						remoteAppUser = checkIfRemoteUserExits(userId, app, applicationsRestClientService);
-		
+
 						if (remoteAppUser == null) {
 							remoteAppUser = addRemoteUser(roleInAppForUserList, userId, app, mapper, searchService, applicationsRestClientService);
 						}
@@ -1655,6 +1654,7 @@ public class UserRolesCommonServiceImpl  {
 						// If adding just account admin role dont make remote application user call or
 						// if request has only single non admin role then make remote call
 						if (!(app.getId().equals(PortalConstants.PORTAL_APP_ID) && reqType.equals("DELETE"))
+								&& (app.getAppAck() != null && app.getAppAck())
 								&& ((checkIfAdminRoleExists && roleInAppForUserList.size() > 1)
 										|| (!checkIfAdminRoleExists && roleInAppForUserList.size() >= 1))) {
 							// check if admin role exist then delete
@@ -1664,6 +1664,7 @@ public class UserRolesCommonServiceImpl  {
 								return (role.getRoleId().equals(PortalConstants.ACCOUNT_ADMIN_ROLE_ID));
 							});
 							String orgUserIdNewOrExist = (userInfo.size() != 0 || !userInfo.isEmpty()) ? user.getOrgUserId() : orgUserId;
+								
 							pushRemoteUser(remoteUserRoles, orgUserIdNewOrExist , app, mapper, searchService,
 									applicationsRestClientService,true);
 						}
