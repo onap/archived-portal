@@ -48,6 +48,9 @@ import { InformationModalComponent } from 'src/app/modals/information-modal/info
 import { BrowserDynamicTestingModule } from '@angular/platform-browser-dynamic/testing';
 import { NgbModalBackdrop } from '@ng-bootstrap/ng-bootstrap/modal/modal-backdrop';
 import { ConfirmationModalComponent } from 'src/app/modals/confirmation-modal/confirmation-modal.component';
+import { InformationTooltipComponent } from '../../information-tooltip/information-tooltip.component';
+import { MatTooltipModule } from '@angular/material';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
 
 describe('ApplicationDetailsDialogComponent', () => {
@@ -57,9 +60,10 @@ describe('ApplicationDetailsDialogComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ApplicationDetailsDialogComponent,InformationModalComponent,ConfirmationModalComponent],
-      imports: [NgMaterialModule,FormsModule,HttpClientTestingModule,NgbModule.forRoot()],
-      providers: [NgbActiveModal]  
+      declarations: [ ApplicationDetailsDialogComponent,InformationModalComponent,ConfirmationModalComponent, InformationTooltipComponent],
+      imports: [NgMaterialModule,FormsModule,HttpClientTestingModule,NgbModule.forRoot(), MatTooltipModule],
+      providers: [NgbActiveModal],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).overrideModule(BrowserDynamicTestingModule, { set: { entryComponents: [InformationModalComponent,ConfirmationModalComponent] } })
     .compileComponents();
   }));
@@ -80,20 +84,20 @@ describe('ApplicationDetailsDialogComponent', () => {
     expect(component.removeImage).toHaveBeenCalledWith();
   });
   it('saveChanges should return stubbed value', () => {
-    component.applicationObj.isCentralAuth = true;
+    component.applicationObj.rolesInAAF = true;
     component.applicationObj.isEnabled = false;
     spyOn(component, 'saveChanges').and.callThrough();
     component.saveChanges();
     expect(component.saveChanges).toHaveBeenCalledWith();
     component.applicationObj.isEnabled = true;
-    component.applicationObj.url = 'www.test.com'
+    component.applicationObj.landingPage = 'www.test.com'
     component.applicationObj.restrictedApp =true;
     
     //spyOn(component, 'saveChanges').and.callThrough();
     component.saveChanges();
     expect(component.saveChanges).toHaveBeenCalledWith();
-    component.applicationObj.isCentralAuth = false;
-    component.applicationObj.url = 'test'
+    component.applicationObj.rolesInAAF = false;
+    component.applicationObj.landingPage = 'test'
     component.applicationObj.restrictedApp =false;
     component.applicationObj.isOpen = true;
     component.isEditMode =true;
@@ -102,7 +106,7 @@ describe('ApplicationDetailsDialogComponent', () => {
     expect(component.saveChanges).toHaveBeenCalledWith();
   });
   it('saveChanges Central Auth is disabled', () => {
-    component.applicationObj.isCentralAuth = false;
+    component.applicationObj.rolesInAAF = false;
     component.applicationObj.isEnabled = false;
     spyOn(component, 'saveChanges').and.callThrough();
     component.saveChanges();
@@ -115,11 +119,11 @@ describe('ApplicationDetailsDialogComponent', () => {
   });
 
   it('saveChanges URL validation changes', () => {
-    component.applicationObj.isCentralAuth = true;
+    component.applicationObj.rolesInAAF = true;
     component.applicationObj.isEnabled = true;
-    component.applicationObj.name ='test';
-    component.applicationObj.url = 'https://www.test.com'
-    component.applicationObj.username ='test'
+    component.applicationObj.appName ='test';
+    component.applicationObj.landingPage = 'https://www.test.com'
+    component.applicationObj.appBasicAuthUsername ='test'
     component.applicationObj.nameSpace ='ONAP'
     spyOn(component, 'saveChanges').and.callThrough();
     component.saveChanges();
