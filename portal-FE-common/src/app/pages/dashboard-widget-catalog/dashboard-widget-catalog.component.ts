@@ -82,7 +82,8 @@ export class DashboardWidgetCatalogComponent implements OnInit {
           //console.log("What is coming from backend" + JSON.parse(data));
           this.widgetCatalogData = data;
           console.log(this.widgetCatalogData);
-          for (let entry of this.widgetCatalogData) {
+		  if(this.widgetCatalogData != null){
+			  for (let entry of this.widgetCatalogData) {
             if (entry[1] == 'Events' || entry[1] == 'News' || entry[1] == 'Resources') {
               if(entry[4] === 'S' || entry[4] === null)
               {
@@ -96,6 +97,7 @@ export class DashboardWidgetCatalogComponent implements OnInit {
             }
             }
           }
+		  }
         });
       }
     });
