@@ -35,6 +35,10 @@
  *
  * 
  */
+
+ .application-details-modal{
+     min-height: 37vw;
+ }
    
 .application-details-modal .app-properties-mainapp-properties-main{
        padding-left: 40px;
@@ -58,7 +62,7 @@
    
 .application-details-modal .app-properties-main .property{
     position: relative;
-    margin-bottom: 18px;
+    margin-bottom: 16px;
 }
 .application-details-modal .app-properties-main .checkbox-label{
     display: inline-block;
@@ -73,7 +77,7 @@
 }
 .application-details-modal .app-properties-main .preview{
     width: 220px;
-    margin-top: 22px;
+    margin-top: 11px;
     display: block;
 }
    
@@ -89,6 +93,17 @@
    
 .application-details-modal .app-properties-main .input-field{
     width: 220px;
+}
+
+mat-select {
+    width: 16em;
+    margin: 0;
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+    border-width: 2px;
+    border-style: ridge;
+    border-color: initial;
 }
    
 .application-details-modal .app-properties-main .input-file-field{
@@ -129,6 +144,10 @@
     width: 16em;
 }
 
+.application-details-modal select {
+    width: 16em;
+}
+
 .application-details-modal input[type="url"] {
     width: 16em;
 }
@@ -160,4 +179,19 @@
     cursor: pointer;
     color: #007bff;
 }
-   
+.application-deatils-radio-group{
+    display: flex;
+    flex-direction: column;
+}
+
+mat-radio-group{
+    margin-left: 10%;
+}
+
+.modal-footer{
+    width: 100%;
+}
+
+mat-form-field{
+ width: 94%;
+}

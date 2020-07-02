@@ -46,7 +46,7 @@
                 <input matInput type="text" (keyup)="applyFilter($event.target.value)" placeholder="Search in entire table">
             </mat-form-field>
 
-            <button type="button" style="float: right;" class="btn btn-primary" (click)="openAddApplicationModal('')">
+            <button type="button" style="float: right;" class="btn btn-primary" (click)="openAddApplicationModal('', 'add')">
             <i class="icon ion-md-person-add"></i>&nbsp;Add App
             </button>
           
@@ -56,7 +56,7 @@
                     <!-- Thumbnail Column -->
                     <ng-container matColumnDef="thumbnail">
                         <th id="col1" mat-header-cell *matHeaderCellDef> Thumbnail  </th>
-                        <td (click)="openAddApplicationModal(element)" id="rowheader_t1_{{i}}-thumbnail" 
+                        <td (click)="openAddApplicationModal(element, 'edit')" id="rowheader_t1_{{i}}-thumbnail" 
                             mat-cell *matCellDef="let element; let i = index;">
                             <div><img class="small-thumbnail" src={{element.imageLink}}></div>
                         </td>
@@ -65,64 +65,71 @@
                     <!-- Application Name Column -->
                     <ng-container matColumnDef="applicationName">
                         <th id="col2" mat-header-cell *matHeaderCellDef> Application Name </th>
-                        <td (click)="openAddApplicationModal(element)" id="rowheader_t1_{{i}}-applicationName" 
-                            mat-cell *matCellDef="let element; let i=index;"> {{element.name}} </td>
+                        <td (click)="openAddApplicationModal(element, 'edit')" id="rowheader_t1_{{i}}-applicationName" 
+                            mat-cell *matCellDef="let element; let i=index;"> {{element.appName}} </td>
                     </ng-container>
 
                     <!-- Active Column -->
                     <ng-container matColumnDef="active">
                         <th id="col2" mat-header-cell *matHeaderCellDef> Active </th>
-                        <td (click)="openAddApplicationModal(element)" id="rowheader_t1_{{i}}-active" 
+                        <td (click)="openAddApplicationModal(element, 'edit')" id="rowheader_t1_{{i}}-active" 
                             mat-cell *matCellDef="let element; let i=index;"> {{(element.isEnabled) ? 'yes' : 'no'}} </td>
                     </ng-container>
 
                     <!-- Integration Type Column -->
                     <ng-container matColumnDef="integrationType">
                         <th id="col2" mat-header-cell *matHeaderCellDef> Integration Type </th>
-                        <td (click)="openAddApplicationModal(element)" id="rowheader_t1_{{i}}-integrationType" 
-                            mat-cell *matCellDef="let element; let i=index;"> {{(element.restrictedApp) ? 'link' : 'standard'}} </td>
+                        <td (click)="openAddApplicationModal(element, 'edit')" id="rowheader_t1_{{i}}-integrationType" 
+                            mat-cell *matCellDef="let element; let i=index;"> {{(element.applicationType == 2) ? 'link' : 'standard'}} </td>
+                    </ng-container>
+                    
+                     <!-- Mode Of Integration Type Column -->
+                     <ng-container matColumnDef="modeOfIntegration">
+                        <th id="col2" mat-header-cell *matHeaderCellDef> Mode Of Integration </th>
+                        <td (click)="openAddApplicationModal(element, 'edit')" id="rowheader_t1_{{i}}-modeOfIntegration" 
+                            mat-cell *matCellDef="let element; let i=index;"> {{element.modeOfIntegration}} </td>
                     </ng-container>
 
                     <!-- Guest Access Column-->
                     <ng-container matColumnDef="guestAccess">
                         <th id="col2" mat-header-cell *matHeaderCellDef> Guest Access </th>
-                        <td (click)="openAddApplicationModal(element)" id="rowheader_t1_{{i}}-guestAccess" 
+                        <td (click)="openAddApplicationModal(element, 'edit')" id="rowheader_t1_{{i}}-guestAccess" 
                             mat-cell *matCellDef="let element; let i=index;">{{(element.isOpen) ? 'yes' : 'no'}} </td>
                     </ng-container>
 
                     <!-- url  column -->
-                    <ng-container matColumnDef="url">
-                        <th id="col2" mat-header-cell *matHeaderCellDef> Url </th>
-                        <td (click)="openAddApplicationModal(element)" id="rowheader_t1_{{i}}-url" 
-                            mat-cell *matCellDef="let element; let i=index;">{{element.url}} </td>
+                    <ng-container matColumnDef="landingPage">
+                        <th id="col2" mat-header-cell *matHeaderCellDef> Landing Page </th>
+                        <td (click)="openAddApplicationModal(element, 'edit')" id="rowheader_t1_{{i}}-url" 
+                            mat-cell *matCellDef="let element; let i=index;">{{element.landingPage}} </td>
                     </ng-container>
 
                         <!-- rest url  column -->
                         <ng-container matColumnDef="restURL">
                         <th id="col2" mat-header-cell *matHeaderCellDef> REST Url </th>
-                        <td (click)="openAddApplicationModal(element)" id="rowheader_t1_{{i}}-restURL" 
+                        <td (click)="openAddApplicationModal(element, 'edit')" id="rowheader_t1_{{i}}-restURL" 
                             mat-cell *matCellDef="let element; let i=index;">{{element.restUrl}} </td>
                     </ng-container>
 
                     <!-- communicationKey column -->
                     <ng-container matColumnDef="communicationKey">
                         <th id="col2" mat-header-cell *matHeaderCellDef> Communication Key </th>
-                        <td (click)="openAddApplicationModal(element)" id="rowheader_t1_{{i}}-communicationKey" 
+                        <td (click)="openAddApplicationModal(element, 'edit')" id="rowheader_t1_{{i}}-communicationKey" 
                             mat-cell *matCellDef="let element; let i=index;">{{element.uebKey}} </td>
                     </ng-container>
 
                     <!-- applicationNamespace column -->
                     <ng-container matColumnDef="applicationNamespace">
                         <th id="col2" mat-header-cell *matHeaderCellDef> Application Namespace </th>
-                        <td (click)="openAddApplicationModal(element)" id="rowheader_t1_{{i}}-applicationNamespace" 
+                        <td (click)="openAddApplicationModal(element, 'edit')" id="rowheader_t1_{{i}}-applicationNamespace" 
                             mat-cell *matCellDef="let element; let i=index;">{{element.nameSpace}} </td>
                     </ng-container>
 
                     <!-- centralAuthAccess column -->
                     <ng-container matColumnDef="centralAuthAccess">
                         <th id="col2" mat-header-cell *matHeaderCellDef> Central Auth Access </th>
-                        <td (click)="openAddApplicationModal(element)" id="rowheader_t1_{{i}}-centralAuthAccess" 
-                            mat-cell *matCellDef="let element; let i=index;">{{(element.isCentralAuth) ? 'yes' : 'no'}} </td>
+                        <td (click)="openAddApplicationModal(element, 'edit')" id="rowheader_t1_{{i}}-centralAuthAccess" 
+                            mat-cell *matCellDef="let element; let i=index;">{{(element.rolesInAAF) ? 'yes' : 'no'}} </td>
                     </ng-container>
 
                     <!-- Delete Column -->
