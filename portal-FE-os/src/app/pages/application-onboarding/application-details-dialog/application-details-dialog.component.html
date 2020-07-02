@@ -36,240 +36,305 @@
 -->
 
 <div class="container">
- 	<!--Modal Headers-->
+	<!--Modal Headers-->
 	<div class="modal-header">
 		<h4 class="modal-title">Application Details</h4>
 		<button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('Cross')">
 			<span aria-hidden="true">&times;</span>
 		</button>
 	</div>
-	 <!--Modal Body goes here-->
+	<!--Modal Body goes here-->
 	<div class="modal-body">
 		<div class="application-details-modal">
-		  <div class="app-properties-main" scroll-top="appDetails.scrollApi">
-			<form name="appForm" novalidate autocomplete="off">
-				<div id="app-left-container" class="left-container">
-					<div class="property-label checkbox-label">
+			<div class="app-properties-main" scroll-top="appDetails.scrollApi">
+				<form name="appForm" novalidate autocomplete="off">
+					<div id="app-left-container" class="left-container">
+						<!-- <div class="property-label checkbox-label">
 						<mat-checkbox  name="isRestrictedApp" type="checkbox" [(ngModel)]="applicationObj.restrictedApp"
 							id="checkbox-app-is-restricted" [disabled]="isEditMode"	[checked]="applicationObj.restrictedApp">
 							Hyperlink only application
 						</mat-checkbox>
-					</div>
-				
-					<div class="property required">
-						<div class="property-label">Application Name</div>
-						<input id="input-app-name" type="text"
-						[(ngModel)]="applicationObj.name" maxlength="100" name="name"
-						pattern="/^[a-zA-Z0-9_\-\s\&]*$/" required="true" />
-		
-						<div id="error-container-conflict" class="error-container" ng-show="appDetails.conflictMessages.name"
-							id="conflictMessages-name">
-							<small id="app-name-error-conflict" class="err-message"
-								ng-bind="appDetails.conflictMessages.name">
-							</small>
-						</div>
-						
-						<div id="error-container-edit" class="error-container" 
-							*ngIf="(!applicationObj.name ||  applicationObj.name.length == 0)">
-							<small id="app-name-error-required" class="err-message">
-								Application name is required
-							</small> 
-						</div>
-					</div>
-					
-					<div [ngClass]="(applicationObj.isEnabled) ? 'property required' : 'property'">
-						<div id="url-property-label" class="property-label">URL</div>
-							<input id="input-app-url" [(ngModel)]="applicationObj.url"
-							maxlength="256" name="url" type="url" placeholder="https://"
-							pattern="/^((?:https?\:\/\/|ftp?\:\/\/)?(w{3}.)?(?:[-a-z0-9]+\.)*[-a-z0-9]+.*)[^-_.]$/i" required />
+					</div> -->
 
-						<div id="error-container-edit" class="error-container" 
-							*ngIf="(applicationObj.isEnabled && applicationObj.url=='')">
-							<small id="app-name-error-required" class="err-message">
-								Application URL is required
-							</small> 
-						</div>
-					</div>
-					
-					<div [ngClass]="(applicationObj.isEnabled) ? 'property required' : 'property'"
-						[hidden] ="applicationObj.restrictedApp">
-						<div class="property-label">Rest API URL</div>	
-						<input id="input-app-rest-url" [(ngModel)]="applicationObj.restUrl"
-						name="restUrl" type="url" placeholder="https://"
-						pattern="/^((?:https?\:\/\/|ftp?\:\/\/)?(w{3}.)?(?:[-a-z0-9]+\.)*[-a-z0-9]+.*)[^-_.]$/i" maxlength="256"
-						ng-required="!applicationObj.restrictedApp" />
-		
-						<div id="error-container-edit" class="error-container" 
-							*ngIf="(applicationObj.isEnabled && applicationObj.restUrl=='')">
-							<small id="app-name-error-required" class="err-message">
-								Rest API URL is required
-							</small> 
-						</div>
-					</div>	
-					
-					<div [ngClass]="(applicationObj.isEnabled || applicationObj.isCentralAuth) ? 'property required' : 'property'" 
-						[hidden] ="applicationObj.restrictedApp">
-						<div id="username-property-label" class="property-label">Username</div>					
-						<input type="text" id="input-username-property"  [(ngModel)]="applicationObj.username" name="username"
-						maxlength="256" ng-required="!appDetails.app.restrictedApp" />
-						
-						<div id="error-container-edit" class="error-container" 
-							*ngIf="((applicationObj.isEnabled || applicationObj.isCentralAuth) && applicationObj.username =='')">
-							<small id="app-name-error-required" class="err-message">
-								App Username is required
-							</small> 
-						</div>
-					</div>
-	
-					<div [ngClass]="(applicationObj.isEnabled && !applicationObj.isCentralAuth) ? 'property required' : 'property'"
-						[hidden] ="applicationObj.restrictedApp">
-						<div id="pwd-property-label" class="property-label">Password</div>
-						<input type="password" id="input-mylogins-password"
-							[(ngModel)]="applicationObj.appPassword" autocomplete="new-password"
-						name="appPassword" maxlength="256"/>
+						<div class="property required">
+							<div class="property-label" style="display: flex;">
+								<span style="flex: 9">Application Name</span>
+								<app-information-tooltip style="flex: 1;"
+									[textMessage]="'Application Name Information'">
+								</app-information-tooltip>
+							</div>
+							<input #applicationName id="input-app-name" type="text" [(ngModel)]="applicationObj.appName"
+								maxlength="100" name="name" pattern="/^[a-zA-Z0-9_\-\s\&]*$/" required="true" />
 
-						<div id="error-container-edit" class="error-container" 
-							*ngIf="(applicationObj.isEnabled && !applicationObj.isCentralAuth && applicationObj.appPassword =='')">
-							<small id="app-name-error-required" class="err-message">
-								Password is required
-							</small> 
+							<div id="error-container-conflict" class="error-container"
+								ng-show="appDetails.conflictMessages.name" id="conflictMessages-name">
+								<small id="app-name-error-conflict" class="err-message"
+									ng-bind="appDetails.conflictMessages.name">
+								</small>
+							</div>
 						</div>
-					</div>
-				</div>
-				
-				<!-- Right container-->
-				<div class="right-container">
-				<div class="property">
-					<div class="property-label">Upload Image</div>
-					<input type="file" id="input-app-image-upload"
-						class="input-file-field input-app-image-upload-ht"
-						accept="image/*" [(ngModel)]="applicationObj.originalImage"
-						name="appImage" image-upload="applicationObj.originalImage"
-						image-upload-resize-max-height="300"
-						image-upload-resize-max-width="360"
-						image-upload-resize-quality="0.7"
-						image-upload-api="appDetails.imageApi" 
-						(change)="appImageHandler($event)" />
-	
-					<div id="app-error-image-upload-type" class="error-container"
-						*ngIf="appImageTypeError" class="ng-hide">
-						<div class="error-container">
-							<small id="error-app-invalid-image-size" class="err-message">File must be an image</small>
-						</div>
-					</div>
-	
-					<div id="app-error-image-upload" class="error-container"
-						*ngIf="(applicationObj.originalImage && applicationObj.originalImage.dirty)">
-						<div ng-messages="appForm.appImage.$error"
-						class="error-container">
-						<small id="error-app-invalid-image-size" class="err-message"
-							ng-message="imageSize">Image file must be smaller than
-							1MB</small>
-						</div>
-					</div>
-					
-					<div class="property-label preview">
-						<span  class="left-label">Preview</span>
-						<span  class="remove" (click)="removeImage()">Remove</span>
-					</div>
-					<img id="image-app-preview" class="image-preview"
-								src="{{applicationObj.imageLink || applicationObj.thumbnail || emptyImgForPreview}}" />
-	
-					<br/>
-					<div id="property-active" class="property-active">
-						<mat-checkbox name="isEnabled" [(ngModel)]="applicationObj.isEnabled"
-							[checked]="applicationObj.isEnabled"
-							id="checkbox-app-is-enabled">Active
-						</mat-checkbox>
-					</div>
-					
-					<div id="property-guest-access" class="property-guest-access">
-						<mat-checkbox name="isOpen" [(ngModel)]="applicationObj.isOpen" id="checkbox-app-is-open"
-						[checked]="(applicationObj.isOpen || applicationObj.restrictedApp)"
-						[disabled]="applicationObj.restrictedApp">Allow guest access</mat-checkbox>
-					</div>
-						
-					<div class="table-control" style="display: inline-flex;" [hidden] ="applicationObj.restrictedApp">
-						<div id="property-is-central-auth" class="property"	[hidden] ="applicationObj.restrictedApp">
-							<mat-checkbox name="isCentralAuth" [(ngModel)]="applicationObj.isCentralAuth"
-								id="checkbox-app-is-central-auth" [checked]="applicationObj.isCentralAuth">
-								Centralized
+
+						<div id="property-active" class="property-active" style="display: flex;
+						justify-content: flex-end;margin-right: 16px;">
+							<mat-checkbox name="isEnabled" [(ngModel)]="applicationObj.isEnabled"
+								[checked]="applicationObj.isEnabled" id="checkbox-app-is-enabled">Active
 							</mat-checkbox>
 						</div>
-					
-						<div class="centralized-key" aria-haspopup="true"  style="padding-left: 150px;"> 
-							<div b2b-flyout-toggler class="notification-div" >
-								<div id="tooltip" class="icon-primary-flat-info" tabindex="0"
-								b2b-accessibility-click="13,32" aria-label="notifications"
-								aria-haspopup="true" 
-								role="button"></div>
+
+						<div class="property">
+							<div class="property-label" style="display: flex;">
+								<mat-label style="flex: 9">Application Type</mat-label>
+								<app-information-tooltip style="flex: 1;"
+									[textMessage]="'Application Type Information - Gui, Hyperlink or Non-gui'">
+								</app-information-tooltip>
 							</div>
-						
-							<!--<div id="notification" align="left">
-								<p class="uuid-text"
-								style="font: normal 12px Omnes-ECOMP-W02, Arial;">
-								To convert the non-centralized app to centralized app please
-								follow below steps. <a href="https://wiki.web.att.com/display/ECops/BulkUpload" target="_blank">
-									https://wiki.web.att.com/display/ECops/BulkUpload</a>
-								</p>
-							</div>-->
-						</div>
-					</div>
-										
-					<div class="table-control" style="display: inline-flex;" [hidden] ="applicationObj.restrictedApp">
-						<div id="property-communication-key" class="property"
-							[hidden] ="applicationObj.restrictedApp" style="width: 250px;">
-							<div id="property-communication-key-label" class="property-label">Application UUID</div>
-							<input type="text" id="input-UEB-communication-key"
-							[(ngModel)]="applicationObj.uebKey" name="uebKey" 
-							readonly="readonly" [disabled]="true"/>
+							<mat-select [disabled]="action === 'edit'" [(value)]="applicationObj.applicationType">
+								<mat-option *ngFor="let appType of applicationTypeArray" [value]="appType.value">
+									{{appType.name}}
+								</mat-option>
+							</mat-select>
 						</div>
 
-						<div class="communitcaion-key" aria-haspopup="true" style="padding-left: 20px;">
-						<div b2b-flyout-toggler class="notification-div">
-							<div id="tooltip" class="icon-primary-flat-info" tabindex="0"
-							b2b-accessibility-click="13,32" aria-label="notifications"
-							aria-haspopup="true"
-							role="button"></div>
+						<div class="property" *ngIf="applicationObj.applicationType == '1'">
+							<div class="property-label" style="display: flex;">
+								<mat-label style="flex: 9">Mode of Integration</mat-label>
+								<app-information-tooltip style="flex: 1;"
+									[textMessage]="'Mode Of Integration. SDK or Framework'">
+								</app-information-tooltip>
+							</div>
+							<mat-select [(value)]="applicationObj.modeOfIntegration">
+								<mat-option *ngFor="let integrationType of modeOfIntegration"
+									[value]="integrationType.value">
+									{{integrationType.name}}
+								</mat-option>
+							</mat-select>
 						</div>
-						<!--<div id="notification" align="left">
-							<p class="uuid-text" style="font: normal 12px Omnes-ECOMP-W02, Arial;">Application UUID is used as a communication
-							key between application and portal.Please place this value in
-							portal.properties</p>
-						</div>-->
-						</div>	    
-					</div>  
-	
-					<div class="table-control" style="display: inline-flex;" [hidden] ="applicationObj.restrictedApp">
-						
-					<div [ngClass]="(applicationObj.isCentralAuth) ? 'property required' : 'property'"  
-						[hidden] ="applicationObj.restrictedApp" style="width: 250px;">
-						<div id="pwd-property-label" class="property-label" >Name Space</div>
-						<input type="text" id="input-mylogins-auth-namespace"
-							[(ngModel)]="applicationObj.nameSpace" name="appAuthNameSpace"
-							maxlength="256" [disabled]="!applicationObj.isCentralAuth" />
+
+						<div class="property" *ngIf="!(applicationObj.applicationType == '2')">
+							<div class="property-label" style="display: flex;">
+								<mat-label style="flex: 9">Roles Management Type</mat-label>
+								<app-information-tooltip style="flex: 1;" [textMessage]="'Roles Management Type'">
+								</app-information-tooltip>
+							</div>
+							<mat-select [(value)]="applicationObj.rolesInAAF">
+								<mat-option *ngFor="let roleRepo of rolesManagementType" [value]="roleRepo.value">
+									{{roleRepo.name}}
+								</mat-option>
+							</mat-select>
+						</div>
+
+						<div *ngIf="!((applicationObj.applicationType=='2') || (!applicationObj.rolesInAAF))"
+							class="property-active" style="display: flex;">
+							<mat-checkbox style="flex: 9" name="appAck" [(ngModel)]="applicationObj.appAck">
+								Notify App For AAF Operations
+							</mat-checkbox>
+							<app-information-tooltip style="flex: 1;"
+								[textMessage]="'Notify application for AAF operations'">
+							</app-information-tooltip>
+						</div>
+
+						<div class="property-active" *ngIf="!(applicationObj.applicationType == '2' 
+						||(!applicationObj.rolesInAAF))">
+							<mat-checkbox name="usesCadi" [(ngModel)]="applicationObj.usesCadi"
+								[checked]="applicationObj.usesCadi">Is CADI Enabled?
+							</mat-checkbox>
+						</div>
+
+						<div class="table-control" style="display: inline-flex;"
+							*ngIf="!(applicationObj.applicationType == '2' || !applicationObj.rolesInAAF)">
+
+							<div [ngClass]="(applicationObj.rolesInAAF) ? 'property required' : 'property'"
+								style="width: 250px;">
+								<div id="pwd-property-label" class="property-label">AAF Namespace</div>
+								<input type="text" id="input-mylogins-auth-namespace"
+									[(ngModel)]="applicationObj.nameSpace" name="appAuthNameSpace" maxlength="256"
+									[disabled]="!applicationObj.rolesInAAF" />
+							</div>
+							<div class="communitcaion-key" aria-haspopup="true" style="padding-left: 20px;">
+
+								<div b2b-flyout-toggler class="notification-div">
+									<div id="tooltip" class="icon-primary-flat-info" tabindex="0"
+										b2b-accessibility-click="13,32" aria-label="notifications" aria-haspopup="true"
+										role="button"></div>
+								</div>
+								<!--<div id="notification" align="left">
+								<p class="nameSpace-text"  style="font: normal 12px Omnes-ECOMP-W02, Arial;">NameSpace should be created in AAF and portal mechid should be admin of the given namespace.</p>
+							</div>-->
+							</div>
+						</div>
+
+						<div *ngIf="!(applicationObj.applicationType == '3')"
+							[ngClass]="(applicationObj.isEnabled) ? 'property required' : 'property'">
+							<div class="property-label" style="display: flex;">
+								<span style="flex: 9">Landing Page</span>
+								<app-information-tooltip style="flex: 1;" [textMessage]="'Application URL Information'">
+								</app-information-tooltip>
+							</div>
+							<input id="input-app-url" [(ngModel)]="applicationObj.landingPage" maxlength="256"
+								name="url" type="url" placeholder="https://"
+								pattern="/^((?:https?\:\/\/|ftp?\:\/\/)?(w{3}.)?(?:[-a-z0-9]+\.)*[-a-z0-9]+.*)[^-_.]$/i"
+								required />
+
+							<div id="error-container-edit" class="error-container"
+								*ngIf="(applicationObj.isEnabled && applicationObj.landingPage=='')">
+								<small id="app-name-error-required" class="err-message">
+									Landing Page URL is required
+								</small>
+							</div>
+						</div>
+
+						<div [ngClass]="(applicationObj.isEnabled) ? 'property required' : 'property'"
+							*ngIf="!(applicationObj.applicationType == '2' || applicationObj.applicationType == '3')">
+							<div class="property-label" style="display: flex;">
+								<span style="flex: 9">Rest API URL</span>
+								<app-information-tooltip style="flex: 1;" [textMessage]="'Rest Api URL Information'">
+								</app-information-tooltip>
+							</div>
+							<input id="input-app-rest-url" [(ngModel)]="applicationObj.restUrl" name="restUrl"
+								type="url" placeholder="https://"
+								pattern="/^((?:https?\:\/\/|ftp?\:\/\/)?(w{3}.)?(?:[-a-z0-9]+\.)*[-a-z0-9]+.*)[^-_.]$/i"
+								maxlength="256" ng-required="applicationObj.applicationType == '1'" />
+
+							<div id="error-container-edit" class="error-container"
+								*ngIf="(applicationObj.isEnabled && applicationObj.restUrl=='')">
+								<small id="app-name-error-required" class="err-message">
+									Rest API URL is required
+								</small>
+							</div>
+						</div>
+
+						<div [ngClass]="(applicationObj.isEnabled || applicationObj.rolesInAAF) ? 'property required' : 'property'"
+							*ngIf="!(applicationObj.applicationType == '2')">
+							<div id="username-property-label" class="property-label" style="display: flex;">
+								<span style="flex: 9">Auth Configured User</span>
+								<app-information-tooltip style="flex: 1;"
+									[textMessage]="'Basic Authentication Username Information'">
+								</app-information-tooltip>
+							</div>
+							<input type="text" id="input-username-property"
+								[(ngModel)]="applicationObj.appBasicAuthUsername" name="username" maxlength="256"
+								ng-required="!appDetails.app.restrictedApp" />
+
+							<div id="error-container-edit" class="error-container"
+								*ngIf="((applicationObj.isEnabled || applicationObj.rolesInAAF) && applicationObj.appBasicAuthUsername =='')">
+								<small id="app-name-error-required" class="err-message">
+									App Username is required
+								</small>
+							</div>
+						</div>
+
+						<div [ngClass]="(applicationObj.isEnabled && !applicationObj.rolesInAAF) ? 'property required' : 'property'"
+							*ngIf="!(applicationObj.applicationType == '2' || (applicationObj.rolesInAAF && applicationObj.usesCadi))">
+							<div id="pwd-property-label" class="property-label" style="display: flex;">
+								<span style="flex: 9">Basic Auth Password</span>
+								<app-information-tooltip style="flex: 1;"
+									[textMessage]="'Basic Authentication Password Information'">
+								</app-information-tooltip>
+							</div>
+							<input type="password" id="input-mylogins-password"
+								[(ngModel)]="applicationObj.appBasicAuthPassword" autocomplete="new-password"
+								name="appPassword" maxlength="256" />
+
+							<div id="error-container-edit" class="error-container"
+								*ngIf="(applicationObj.isEnabled && !applicationObj.rolesInAAF && applicationObj.appBasicAuthPassword =='')">
+								<small id="app-name-error-required" class="err-message">
+									Password is required
+								</small>
+							</div>
+						</div>
 					</div>
-					<div class="communitcaion-key" aria-haspopup="true" style="padding-left: 20px;">
-					
-						<div b2b-flyout-toggler class="notification-div">
-							<div id="tooltip" class="icon-primary-flat-info" tabindex="0"
-							b2b-accessibility-click="13,32" aria-label="notifications"
-							aria-haspopup="true"
-							role="button"></div>
-						</div>	  
-						<!--<div id="notification" align="left">
-							<p class="nameSpace-text"  style="font: normal 12px Omnes-ECOMP-W02, Arial;">NameSpace should be created in AAF and portal mechid should be admin of the given namespace.</p>
-						</div>-->
-						</div>	
-					</div>	
-				</div>
-				</div>
-			</form>
+
+					<!-- Right container-->
+					<div class="right-container">
+
+						<div class="property" *ngIf="!(applicationObj.applicationType == '3')">
+							<div class="property-label" style="display: flex;">
+								<span style="flex: 9">Upload
+									Image</span>
+								<app-information-tooltip style="flex: 1;"
+									[textMessage]="'Image file must be smaller than 1MB'">
+								</app-information-tooltip>
+							</div>
+							<input type="file" id="input-app-image-upload"
+								class="input-file-field input-app-image-upload-ht" accept="image/*"
+								[(ngModel)]="applicationObj.originalImage" name="appImage"
+								image-upload="applicationObj.originalImage" image-upload-resize-max-height="300"
+								image-upload-resize-max-width="360" image-upload-resize-quality="0.7"
+								image-upload-api="appDetails.imageApi" (change)="appImageHandler($event)" />
+
+							<div id="app-error-image-upload-type" class="error-container" *ngIf="appImageTypeError"
+								class="ng-hide">
+								<div class="error-container">
+									<small id="error-app-invalid-image-size" class="err-message">File must be an
+										image</small>
+								</div>
+							</div>
+
+							<div id="app-error-image-upload" class="error-container"
+								*ngIf="(applicationObj.originalImage && applicationObj.originalImage.dirty)">
+								<div ng-messages="appForm.appImage.$error" class="error-container">
+									<small id="error-app-invalid-image-size" class="err-message"
+										ng-message="imageSize">Image file must be smaller than
+										1MB</small>
+								</div>
+							</div>
+						</div>
+
+
+						<div class="property" *ngIf="!(applicationObj.applicationType == '3')">
+							<div class="property-label preview">
+								<span class="left-label">Preview</span>
+								<span class="remove" (click)="removeImage()">Remove</span>
+							</div>
+							<img id="image-app-preview" class="image-preview"
+								src="{{applicationObj.imageLink || applicationObj.thumbnail || emptyImgForPreview}}" />
+						</div>
+
+						<div class="property" *ngIf="!(applicationObj.applicationType == '3')">
+							<div id="property-guest-access" class="property-guest-access">
+								<mat-checkbox name="isOpen" [(ngModel)]="applicationObj.isOpen"
+									id="checkbox-app-is-open"
+									[checked]="(applicationObj.isOpen || applicationObj.applicationType == '2')"
+									[disabled]="applicationObj.applicationType == '2'">Allow guest access
+								</mat-checkbox>
+							</div>
+						</div>
+
+						<div class="table-control" style="display: inline-flex;"
+							*ngIf="!(applicationObj.applicationType == '2')">
+							<div id="property-communication-key" class="property"
+								*ngIf="!(applicationObj.applicationType == '2' || applicationObj.applicationType == '3')"
+								style="width: 250px;">
+								<div id="property-communication-key-label" class="property-label">Application
+									UUID</div>
+								<input type="text" id="input-UEB-communication-key" [(ngModel)]="applicationObj.uebKey"
+									name="uebKey" readonly="readonly" [disabled]="true" />
+							</div>
+
+							<div class="communitcaion-key" aria-haspopup="true" style="padding-left: 20px;">
+								<div b2b-flyout-toggler class="notification-div">
+									<div id="tooltip" class="icon-primary-flat-info" tabindex="0"
+										b2b-accessibility-click="13,32" aria-label="notifications" aria-haspopup="true"
+										role="button"></div>
+								</div>
+								<!--<div id="notification" align="left">
+								<p class="uuid-text" style="font: normal 12px Omnes-ECOMP-W02, Arial;">Application UUID is used as a communication
+								key between application and portal.Please place this value in
+								portal.properties</p>
+							</div>-->
+							</div>
+						</div>
+					</div>
+				</form>
 			</div>
 		</div>
-	 </div>
-	 <div class="modal-footer">
-		<button type="button" class="btn btn-primary" [disabled]="(!applicationObj.name ||  applicationObj.name.length == 0)" (click)="saveChanges()">Save</button> &nbsp;
-		<button type="button" class="btn btn-primary" (click)="activeModal.close('Close')">Cancel</button>
+
+		<div class="modal-footer">
+			<button type="button" class="btn btn-primary"
+				[disabled]="(!applicationObj.appName ||  applicationObj.appName.length == 0)"
+				(click)="saveChanges()">Save</button> &nbsp;
+			<button type="button" class="btn btn-primary" (click)="activeModal.close('Close')">Cancel</button>
+		</div>
+
 	</div>
 </div>
