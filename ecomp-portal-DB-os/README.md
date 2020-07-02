@@ -10,9 +10,9 @@ DDL
 
 For an Opensource instance run only 
 
-3_2: script PortalDDLMySql_2_1_Common.sql.
+3_3: script PortalDDLMySql_3_3_Common.sql.
 
-3_2: PortalDDLMySql_3_2_OS.sql is only a placeholder at this time.
+3_3: PortalDDLMySql_3_2_OS.sql is only a placeholder at this time.
 
 DML
 

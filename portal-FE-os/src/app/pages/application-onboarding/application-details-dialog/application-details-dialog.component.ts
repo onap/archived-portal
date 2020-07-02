@@ -36,7 +36,7 @@
  *
  */
 
-import { Component, OnInit, Input, Output, EventEmitter, PLATFORM_ID, Inject, Injector} from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, ViewChild, ElementRef, Inject, PLATFORM_ID, Injector } from '@angular/core';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { IApplications } from 'src/app/shared/model/applications-onboarding/applications';
 import { ApplicationsService } from 'src/app/shared/services';
@@ -51,6 +51,7 @@ import { isPlatformBrowser } from '@angular/common';
 })
 export class ApplicationDetailsDialogComponent implements OnInit {
 
+  addEditAction: any;
   emptyImg = null;
   emptyImgForPreview:string;
   conflictMessages = {};
@@ -71,34 +72,75 @@ export class ApplicationDetailsDialogComponent implements OnInit {
      }
 
   @Input() applicationObj: IApplications;
+  @Input() action: any;
   @Output() passEntry: EventEmitter<any> = new EventEmitter();
+  @ViewChild('applicationName') applicationNameElement: ElementRef;
 
   newAppModel = {
     'id': null,
-    'name': null,
+    'appName': null,
     'imageUrl': null,
-    'description': null,
-    'notes': null,
-    'url': null,
+    'appDescription': null,
+    'appNotes': null,
+    'landingPage': null,
     'alternateUrl': null,
     'restUrl': null,
     'isOpen': false,
-    'username': null,
-    'appPassword': null,
+    'appBasicAuthUsername': null,
+    'appBasicAuthPassword': null,
     'thumbnail': this.emptyImg,
     'isEnabled': false,
-    'restrictedApp': false,
-    'nameSpace':null,
-    'isCentralAuth': false,
-    'uebTopicName':null,
+    'applicationType': null,
+    'rolesInAAF': false,
+    'nameSpace': null,
+    'uebTopicName': null,
     'uebKey': null,
     'uebSecret': null,
-    'imageLink': null
+    'imageLink': null,
+    'usesCadi': true,
+    'modeOfIntegration': null,
+    'appAck': false,
+    'restrictedApp': false
   };
 
+  applicationTypeArray: any[] = [
+    { name: 'GUI Application', value: "1" },
+    { name: 'HyperLink Application', value: "2" },
+    { name: 'Non-GUI Application', value: "3" }
+
+  ];
+
+  rolesManagementType: any[] = [
+    { name: 'Roles in Application (Non-Centralized)', value: false },
+    { name: 'Roles in AAF (Centralized)', value: true }
+  ];
+
+  modeOfIntegration: any[] = [
+    { name: 'Portal SDK Based', value: 'sdk' },
+    { name: 'Framework Based', value: 'fw' }
+  ]
 
   ngOnInit() {
-    if(this.applicationObj.id){
+
+    this.addEditAction = this.action;
+
+
+    if (this.action === 'add') {
+      this.applicationObj.applicationType = "1";
+      if (this.applicationObj.applicationType == '1') {
+        this.applicationObj.modeOfIntegration = this.modeOfIntegration[0].value;
+      }
+      this.applicationObj.rolesInAAF = true;
+      this.applicationObj.usesCadi = true;
+      this.applicationObj.appAck = false;
+      console.log("Action : ", this.action);
+      console.log("Focus : ", this.applicationNameElement.nativeElement);
+      setTimeout(() => { // this will make the execution after the above boolean has changed
+        this.applicationNameElement.nativeElement.focus();
+      }, 0);
+    }
+
+    if (this.applicationObj.id) {
       this.isEditMode = true;
     }else{
       this.isEditMode = false;
@@ -167,59 +209,91 @@ export class ApplicationDetailsDialogComponent implements OnInit {
   /** Add/Edit Application Method*/
   saveChanges() {
     //console.log("addNewApplication getting called..");
-    if(this.applicationObj.isCentralAuth){
+    if (this.applicationObj.rolesInAAF) {
+      //if valid.
+      if (this.applicationObj.applicationType == "1") {
+        console.log("Gui Application valodations");
         //if valid.
-        if(!this.applicationObj.isEnabled){
-          if(((this.applicationObj.name == 'undefined' || !this.applicationObj.name)||(this.applicationObj.nameSpace == 'undefined'
-          || !this.applicationObj.nameSpace) ||(this.applicationObj.username == 'undefined' || !this.applicationObj.username))) {
-            this.openConfirmationModal('','Please fill in all required fields(*) for centralized application');
+        if (!this.applicationObj.isEnabled) {
+          if (((this.applicationObj.appName == 'undefined' || !this.applicationObj.appName) || (this.applicationObj.nameSpace == 'undefined'
+            || !this.applicationObj.nameSpace) || (this.applicationObj.appBasicAuthUsername == 'undefined' || !this.applicationObj.appBasicAuthUsername))) {
+            this.openConfirmationModal('', 'Please fill in all required fields(*) for centralized application');
             return;
           }
         }
-        if(this.applicationObj.isEnabled){
-          if(((this.applicationObj.name == 'undefined' || !this.applicationObj.name)
-          ||(this.applicationObj.url == 'undefined'|| !this.applicationObj.url)
-          ||(this.applicationObj.username == 'undefined' || !this.applicationObj.username)||(this.applicationObj.nameSpace == 'undefined'
-          || !this.applicationObj.nameSpace))) {
+        if (this.applicationObj.isEnabled) {
+          if (((this.applicationObj.appName == 'undefined' || !this.applicationObj.appName)
+            || (this.applicationObj.landingPage == 'undefined' || !this.applicationObj.landingPage)
+            || (this.applicationObj.appBasicAuthUsername == 'undefined' || !this.applicationObj.appBasicAuthUsername) || (this.applicationObj.nameSpace == 'undefined'
+              || !this.applicationObj.nameSpace))) {
 
-            this.openConfirmationModal('','Please fill in all required fields(*) for centralized active application');
+            this.openConfirmationModal('', 'Please fill in all required fields(*) for centralized active application');
             return;
           }
         }
-    }else{
-        if(!this.applicationObj.isEnabled) {
-            if((this.applicationObj.name == 'undefined' || !this.applicationObj.name)){
-                this.openConfirmationModal('','Please fill in all required field(*) ApplicationName to Save the applictaion');
-                return;
-            }
-        }else if(this.applicationObj.isEnabled && !this.applicationObj.restrictedApp){
-          if((this.applicationObj.name == 'undefined' || !this.applicationObj.name)
-            ||(this.applicationObj.url == 'undefined'|| !this.applicationObj.url)
-            ||(this.applicationObj.username == 'undefined' || !this.applicationObj.username)||
-            (this.applicationObj.appPassword== 'undefined' || !this.applicationObj.appPassword)) {
-
-              this.openConfirmationModal('','Please fill in all required fields(*) along with password as the app is not centralized');
-              return;
+      } else if (this.applicationObj.applicationType == "3") {
+        console.log("Non-Gui Application valodations");
+        if (!this.applicationObj.isEnabled) {
+          if (((this.applicationObj.appName == 'undefined' || !this.applicationObj.appName) || (this.applicationObj.nameSpace == 'undefined'
+            || !this.applicationObj.nameSpace) || (this.applicationObj.appBasicAuthUsername == 'undefined' || !this.applicationObj.appBasicAuthUsername))) {
+            this.openConfirmationModal('', 'Please fill in all required fields(*) for centralized application');
+            return;
           }
-        }else if(this.applicationObj.isEnabled && this.applicationObj.restrictedApp){
-            if((this.applicationObj.name == 'undefined' || !this.applicationObj.name) ||(this.applicationObj.url == 'undefined'
-            || !this.applicationObj.url)){
-                this.openConfirmationModal('','Please fill in all required fields(*)');
-                return;
-            }
         }
+
+        if (this.applicationObj.isEnabled) {
+          if (((this.applicationObj.appName == 'undefined' || !this.applicationObj.appName)
+            || (this.applicationObj.appBasicAuthUsername == 'undefined' || !this.applicationObj.appBasicAuthUsername) || (this.applicationObj.nameSpace == 'undefined'
+              || !this.applicationObj.nameSpace))) {
+
+            this.openConfirmationModal('', 'Please fill in all required fields(*) for centralized active application');
+            return;
+          }
+        }
+      }
+    } else {
+      console.log("Non-centralized applications validation");
+      this.applicationObj.appAck = null;
+      if (!this.applicationObj.isEnabled) {
+        if ((this.applicationObj.appName == 'undefined' || !this.applicationObj.appName)) {
+          this.openConfirmationModal('', 'Please fill in all required field(*) ApplicationName to Save the applictaion');
+          return;
+        }
+      } else if (this.applicationObj.isEnabled && (this.applicationObj.applicationType == "1")) {
+        if ((this.applicationObj.appName == 'undefined' || !this.applicationObj.appName)
+          || (this.applicationObj.landingPage == 'undefined' || !this.applicationObj.landingPage)
+          || (this.applicationObj.appBasicAuthUsername == 'undefined' || !this.applicationObj.appBasicAuthUsername) ||
+          (this.applicationObj.appBasicAuthPassword == 'undefined' || !this.applicationObj.appBasicAuthPassword)) {
+
+          this.openConfirmationModal('', 'Please fill in all required fields(*) along with password as the app is not centralized');
+          return;
+        }
+      } else if (this.applicationObj.isEnabled && (this.applicationObj.applicationType == "3")) {
+        console.log("Non gui validation");
+        if ((this.applicationObj.appName == 'undefined' || !this.applicationObj.appName)
+          || (this.applicationObj.appBasicAuthUsername == 'undefined' || !this.applicationObj.appBasicAuthUsername)) {
+          this.openConfirmationModal('', 'Please fill in all required fields(*)');
+          return;
+        }
+      } else if (this.applicationObj.isEnabled && (this.applicationObj.applicationType == "2")) {
+        if ((this.applicationObj.appName == 'undefined' || !this.applicationObj.appName) || (this.applicationObj.landingPage == 'undefined'
+          || !this.applicationObj.landingPage)) {
+          this.openConfirmationModal('', 'Please fill in all required fields(*)');
+          return;
+        }
+      }
     }
 
     //URL Validation
-    if(this.applicationObj.isEnabled){
-      if(this.applicationObj.url && this.applicationObj.url !='undefined' && this.applicationObj.url != ''){
-        let isValidURL = this.isUrlValid(this.applicationObj.url);
-        if(!isValidURL){
-          this.openConfirmationModal('Error','Application URL must be a valid URL.');
+    if (this.applicationObj.isEnabled && this.applicationObj.applicationType == "1") {
+      if (this.applicationObj.landingPage && this.applicationObj.landingPage != 'undefined' && this.applicationObj.landingPage != '') {
+        let isValidURL = this.isUrlValid(this.applicationObj.landingPage);
+        if (!isValidURL) {
+          this.openConfirmationModal('Error', 'Application URL must be a valid URL.');
           return;
         }
-      }else{
-        this.openConfirmationModal('Error','Application URL is required.');
+      } else {
+        this.openConfirmationModal('Error', 'Application URL is required.');
         return;
       }
     }
@@ -227,34 +301,40 @@ export class ApplicationDetailsDialogComponent implements OnInit {
 
     this.isSaving = true;
     // For a restricted app, null out all irrelevant fields
-    if(this.applicationObj.restrictedApp) {
+    if (this.applicationObj.applicationType == "2") {
+      console.log("Hyperlinka pplication validation");
       this.newAppModel.restUrl = null;
       this.newAppModel.isOpen = true;
-      this.newAppModel.username = null;
-      this.newAppModel.appPassword = null;
+      this.newAppModel.appBasicAuthUsername = null;
+      this.newAppModel.appBasicAuthPassword = null;
       this.newAppModel.uebTopicName = null;
       this.newAppModel.uebKey = null;
       this.newAppModel.uebSecret = null;
+      this.newAppModel.restrictedApp = true;
 
       /**Need to set below fields values based on input provided in the dialog */
-      this.newAppModel.restrictedApp = this.applicationObj.restrictedApp;
-      this.newAppModel.name = this.applicationObj.name;
-      this.newAppModel.url = this.applicationObj.url;
-      if(this.applicationObj.isEnabled){
+      this.newAppModel.applicationType = this.applicationObj.applicationType;
+      this.newAppModel.appName = this.applicationObj.appName;
+      this.newAppModel.landingPage = this.applicationObj.landingPage;
+      this.newAppModel.usesCadi = this.applicationObj.usesCadi;
+      if (this.applicationObj.isEnabled) {
         this.newAppModel.isEnabled = this.applicationObj.isEnabled;
       }else{
         this.newAppModel.isEnabled = false;
       }
+      console.log("New Model : ", this.newAppModel);
+    } else {
 
-    }else{
-
-       /**Need to set below fields values based on input provided in the dialog */
-       this.newAppModel.restrictedApp = false;
-       this.newAppModel.name = this.applicationObj.name;
-       this.newAppModel.url = this.applicationObj.url;
-       this.newAppModel.restUrl = this.applicationObj.restUrl;
-       this.newAppModel.username = this.applicationObj.username;
-       this.newAppModel.appPassword = this.applicationObj.appPassword;
+      /**Need to set below fields values based on input provided in the dialog */
+      this.newAppModel.applicationType = this.applicationObj.applicationType;
+      this.newAppModel.appName = this.applicationObj.appName;
+      this.newAppModel.landingPage = this.applicationObj.landingPage;
+      this.newAppModel.restUrl = this.applicationObj.restUrl;
+      this.newAppModel.appBasicAuthUsername = this.applicationObj.appBasicAuthUsername;
+      this.newAppModel.appBasicAuthPassword = this.applicationObj.appBasicAuthPassword;
+      this.newAppModel.modeOfIntegration = this.applicationObj.modeOfIntegration;
+      this.newAppModel.usesCadi = this.applicationObj.usesCadi;
+      this.newAppModel.appAck = this.applicationObj.appAck;
 
        if(this.applicationObj.isEnabled){
         this.newAppModel.isEnabled = this.applicationObj.isEnabled;
@@ -269,11 +349,12 @@ export class ApplicationDetailsDialogComponent implements OnInit {
        }
        //console.log("this.applicationObj.isOpen",this.applicationObj.isOpen);
 
-       if(this.applicationObj.isCentralAuth){
-        this.newAppModel.isCentralAuth = this.applicationObj.isCentralAuth;
-       }else{
-        this.newAppModel.isCentralAuth = false;
-       }
+      if (this.applicationObj.rolesInAAF) {
+        this.newAppModel.rolesInAAF = this.applicationObj.rolesInAAF;
+      } else {
+        this.newAppModel.rolesInAAF = false;
+        this.newAppModel.usesCadi = false;
+      }
 
     }
 
@@ -283,7 +364,17 @@ export class ApplicationDetailsDialogComponent implements OnInit {
       this.newAppModel.nameSpace = this.applicationObj.nameSpace;
     }
 
-    if(this.isEditMode){
+    if (this.applicationObj.applicationType == "2" || this.applicationObj.applicationType == "3") {
+      this.applicationObj.modeOfIntegration = null;
+    }
+
+    if (this.newAppModel.applicationType == "2" || this.newAppModel.applicationType == "3") {
+      this.newAppModel.modeOfIntegration = null;
+    }
+
+    if (this.isEditMode) {
+      console.log("Edit application Object : ", JSON.stringify(this.applicationObj));
+      console.log("Mode Of iNtegration : ", this.applicationObj.modeOfIntegration);
       this.applicationsService.updateOnboardingApp(this.applicationObj)
         .subscribe( _data => {
           this.result = _data;
