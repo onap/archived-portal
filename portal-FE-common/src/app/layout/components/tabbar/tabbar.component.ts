@@ -40,6 +40,7 @@ import { FormControl } from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Tab } from './tab';
 import { AddTabFunctionService } from 'src/app/shared/services/tab/add-tab-function.service';
+import { AuditLogService } from 'src/app/shared/services/auditLog/audit-log.service';
 
 @Component({
   selector: 'app-tabbar',
@@ -49,11 +50,12 @@ import { AddTabFunctionService } from 'src/app/shared/services/tab/add-tab-funct
 export class TabbarComponent implements OnInit {
 
   tabs = [];
+  tabsInfoObject = [];
   mainTab = 'Home';
   selected = new FormControl(0);
   collapedSideBar: boolean;
 
-  constructor(private sanitizer: DomSanitizer, private addTabFuntionService: AddTabFunctionService) {
+  constructor(private sanitizer: DomSanitizer, private addTabFuntionService: AddTabFunctionService, private auditLogService: AuditLogService) {
 
   }
 
@@ -61,7 +63,9 @@ export class TabbarComponent implements OnInit {
 
     this.addTabFuntionService.listen().subscribe((m: any) => {
       console.log(m);
+      this.createAppObject(m);
       this.addTab(true, m.title, m.url);
+      
     })
   }
 
@@ -76,6 +80,15 @@ export class TabbarComponent implements OnInit {
     }
   }
 
+  createAppObject(app:any) {
+    this.tabsInfoObject.push(app);
+  }
+
+  removeAppObject(index:number) {
+    this.tabsInfoObject.splice(index, 1);
+
+  }
+
   removeTab(index: number) {
     this.tabs.splice(index, 1);
   }
@@ -85,11 +98,28 @@ export class TabbarComponent implements OnInit {
   }
 
   tabChanged($event) {
+    console.log("$event.index "+$event.value);
 
     for (const ttab of this.tabs) {
       ttab.active = false;
     }
     if(this.tabs.length != 0 && $event.index != 0)
       this.tabs[$event.index - 1].active = true;
+  }
+
+  auditLog($event) {
+    var app = this.tabsInfoObject[$event.index - 1];
+    var comment = '';
+    if(app.content==null || app.content==''){
+       comment= app.title;
+    }
+    else{
+       comment = app.content;
+    }
+    this.auditLogService.storeAudit(app.appId, 'tab', comment).subscribe(data => {
+      console.log('Tab action Saved');
+    }, error => {
+      console.log('auditLog Save Error' + error);
+    });
   }
 }
