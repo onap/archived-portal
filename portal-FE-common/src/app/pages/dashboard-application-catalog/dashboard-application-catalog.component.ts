@@ -46,6 +46,7 @@ import { CatalogModalComponent } from '../catalog-modal/catalog-modal.component'
 import { ExternalRequestAccessService } from 'src/app/shared/services/external-request-access-service/external-request-access.service';
 import { UsersService } from 'src/app/shared/services/users/users.service';
 import { AddTabFunctionService } from 'src/app/shared/services/tab/add-tab-function.service';
+import { AuditLogService } from 'src/app/shared/services/auditLog/audit-log.service';
 
 @Component({
   selector: 'app-dashboard-application-catalog',
@@ -67,7 +68,7 @@ export class DashboardApplicationCatalogComponent implements OnInit {
     return this.applicationCatalogService.options;
   } get layout(): GridsterItem[] {
     return this.applicationCatalogService.layout;
-  } constructor(private applicationCatalogService: ApplicationCatalogService, private externalRequestAccessService: ExternalRequestAccessService, private userService: UsersService,private addTabFuntionService: AddTabFunctionService) {
+  } constructor(private applicationCatalogService: ApplicationCatalogService, private externalRequestAccessService: ExternalRequestAccessService, private userService: UsersService,private addTabFuntionService: AddTabFunctionService, private auditLogService: AuditLogService) {
     this.sortOptions = [{
       index: 0,
       value: 'N',
@@ -213,5 +214,13 @@ export class DashboardApplicationCatalogComponent implements OnInit {
     };
       this.addTabFuntionService.filter(tabContent);
     }
+  }
+
+  auditLog(app:any) {
+    this.auditLogService.storeAudit(app.appId, 'app', app.url).subscribe(data => {
+      console.log('App action Saved');
+    }, error => {
+      console.log('auditLog Save Error' + error);
+    });
   }
 }
