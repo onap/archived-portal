@@ -92,4 +92,11 @@ export class TabbarComponent implements OnInit {
     if(this.tabs.length != 0 && $event.index != 0)
       this.tabs[$event.index - 1].active = true;
   }
+  
+  setStyle() {  
+    const style = {
+       'margin-left': this.collapedSideBar ? '80px' : '370px',
+    };
+    return style;
+  }
 }

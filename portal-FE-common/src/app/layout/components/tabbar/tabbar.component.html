@@ -59,7 +59,7 @@
             <div style="display: flex; flex-direction:row;">
               <app-sidebar (collapsedEvent)="receiveCollapsed($event)"></app-sidebar>
               <app-userbar></app-userbar>
-              <div class="container" style="margin-left: 370px;">
+              <div class="container" [ngStyle]="setStyle()">
                 <router-outlet></router-outlet>
               </div>
             </div>
