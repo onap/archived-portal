@@ -38,7 +38,7 @@
   <div style="display: flex; flex-direction:column">
 
       <mat-tab-group [selectedIndex]="selected.value" (selectedIndexChange)="selected.setValue($event)"
-        (selectedTabChange)="tabChanged($event)">
+        (selectedTabChange)="tabChanged($event);auditLog($event)" >
         <mat-tab [label]="mainTab">
           <!--
             <mat-grid-list cols="5">
@@ -68,10 +68,10 @@
 
         </mat-tab>
 
-        <mat-tab *ngFor="let tab of tabs; let index = index">
+        <mat-tab *ngFor="let tab of tabs; let index = index" >
           <ng-template mat-tab-label>
             {{tab.label | elipsis: 13}} &nbsp;
-            <i class="icon ion-md-close-circle" (click)="removeTab(index)"></i>
+            <i class="icon ion-md-close-circle" (click)="removeTab(index);removeAppObject(index)"></i>
           </ng-template>
 
 
