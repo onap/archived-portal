@@ -43,6 +43,7 @@ import { NgMaterialModule } from 'src/app/ng-material-module';
 import { Component } from '@angular/core';
 import { ElipsisPipe } from 'src/app/shared/pipes/elipsis/elipsis.pipe';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { HttpClientTestingModule} from '@angular/common/http/testing';
 
 describe('TabbarComponent', () => {
   let component: TabbarComponent;
@@ -51,7 +52,7 @@ describe('TabbarComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [ TabbarComponent, AppSideBarStubComponent, AppUserBarStubComponent,RouterOutletStubComponent,AppFooterBarStubComponent,ElipsisPipe],
-      imports: [NgMaterialModule,BrowserAnimationsModule]
+      imports: [NgMaterialModule,BrowserAnimationsModule,HttpClientTestingModule]
     })
     .compileComponents();
   }));
