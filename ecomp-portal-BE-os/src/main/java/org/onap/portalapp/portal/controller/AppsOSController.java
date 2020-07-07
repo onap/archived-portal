@@ -56,6 +56,8 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import lombok.NoArgsConstructor;
@@ -80,7 +82,7 @@ public class AppsOSController extends AppsController {
      * @param contactUs
      * @return
      */
-    @RequestMapping(value = "/portalApi/saveNewUser", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/portalApi/saveNewUser", produces = "application/json")
     public PortalRestResponse<String> saveNewUser(HttpServletRequest request, @RequestBody EPUser newUser) {
         EPUser user = EPUserUtils.getUserSession(request);
         if (newUser == null)
@@ -107,7 +109,7 @@ public class AppsOSController extends AppsController {
         return new PortalRestResponse<>(PortalRestStatusEnum.OK, saveNewUser, "");
     }
 
-    @RequestMapping(value = { "/portalApi/currentUserProfile/{loginId}" }, method = RequestMethod.GET,
+    @GetMapping(value = { "/portalApi/currentUserProfile/{loginId}" },
             produces = "application/json")
     public String getCurrentUserProfile(HttpServletRequest request, @PathVariable("loginId") String loginId) {
 

@@ -53,6 +53,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -63,12 +64,12 @@ import org.springframework.web.servlet.ModelAndView;
 @EPAuditLog
 @NoArgsConstructor
 public class ONAPWelcomeController extends EPRestrictedBaseController{
-	@RequestMapping(value = "/index.htm", method = RequestMethod.GET)
+	@GetMapping(value = "/index.htm")
     public String getIndexPage(HttpServletRequest request) {
 		return "/index";
     }
 	
-	@RequestMapping(value = {"/app/*","/applicationsHome", "/dashboard", "/widgetsHome", "/kpidash*", "/admins", "/users", "/portalAdmins", "/applications", "/widgets", "/functionalMenu", "/contactUs", "/getAccess","/appCatalog", "/widgetOnboarding", "/accountOnboarding"}, method = RequestMethod.GET)
+	@GetMapping(value = {"/app/*","/applicationsHome", "/dashboard", "/widgetsHome", "/kpidash*", "/admins", "/users", "/portalAdmins", "/applications", "/widgets", "/functionalMenu", "/contactUs", "/getAccess","/appCatalog", "/widgetOnboarding", "/accountOnboarding"})
     public String getEcompSinglePage(HttpServletRequest request, HttpServletResponse response) {
 		return "forward:/index.html";
     }
