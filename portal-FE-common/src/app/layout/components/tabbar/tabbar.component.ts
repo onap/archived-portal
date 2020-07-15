@@ -110,6 +110,7 @@ export class TabbarComponent implements OnInit {
   setStyle() {  
     const style = {
        'margin-left': this.collapedSideBar ? '80px' : '370px',
+       'max-width': this.collapedSideBar ? '1540px' : '1140px'
     };
     return style;
   }
