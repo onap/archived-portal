@@ -61,7 +61,7 @@ export class ApplicationOnboardingComponent implements OnInit {
   emptyImgForPreview: string;
   isUserSuperAdmin: boolean = false;
   displayedColumns: string[] = ['thumbnail', 'applicationName','active', 
-  'integrationType', 'guestAccess', 'url','restURL',
+  'integrationType', 'modeOfIntegration', 'guestAccess', 'landingPage','restURL',
   'communicationKey', 'applicationNamespace', 'centralAuthAccess'];
   dataSource = new MatTableDataSource(this.appsList);
   @ViewChild(MatSort) sort: MatSort;
@@ -112,9 +112,11 @@ export class ApplicationOnboardingComponent implements OnInit {
     this.dataSource.paginator = this.paginator;
   };
 
-  openAddApplicationModal(rowData: any) {
+  openAddApplicationModal(rowData: any, action:any) {
+    console.log("Action : ", action);
     const modalRef = this.ngbModal.open(ApplicationDetailsDialogComponent, { size: 'lg' });
     modalRef.componentInstance.title = 'Application Details';
+    modalRef.componentInstance.action = action;
     //console.log("selectedData in parent",rowData);
     if(rowData != 'undefined' && rowData){
       modalRef.componentInstance.applicationObj = rowData;
@@ -162,7 +164,7 @@ export class ApplicationOnboardingComponent implements OnInit {
         if(res) {
           this.isUserSuperAdmin = true;
           this.displayedColumns = ['thumbnail', 'applicationName','active', 
-          'integrationType', 'guestAccess', 'url','restURL',
+          'integrationType', 'modeOfIntegration', 'guestAccess', 'landingPage','restURL',
           'communicationKey', 'applicationNamespace', 'centralAuthAccess', 'delete'];
         }  
         //console.log("isUserSuperAdmin :: ",this.isUserSuperAdmin);

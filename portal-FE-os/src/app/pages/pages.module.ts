@@ -35,7 +35,7 @@
  *
  *
  */
-import { NgModule } from '@angular/core';
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
@@ -96,7 +96,9 @@ import { ApplicationPipesModule } from '../shared/pipes/application-pipes.module
 import { UsersComponent } from './users/users.component';
 import { NewUserModalComponent } from './users/new-user-modal/new-user-modal.component';
 import { BulkUserComponent } from './users/bulk-user/bulk-user.component';
+import { InformationTooltipComponent } from './information-tooltip/information-tooltip.component';
 import { UserDetailsFormComponent } from './users/user-details-form/user-details-form.component';
+import { MatTooltipModule } from '@angular/material';
 
 
 @NgModule({
@@ -149,7 +151,8 @@ import { UserDetailsFormComponent } from './users/user-details-form/user-details
     DashboardWidgetCatalogComponent,
     FunctionalMenuDialogComponent,
     GetAccessComponent,
-    UserDetailsFormComponent
+    UserDetailsFormComponent,
+    InformationTooltipComponent
   ],
   imports: [
     CommonModule,
@@ -163,7 +166,8 @@ import { UserDetailsFormComponent } from './users/user-details-form/user-details
     MatIconModule,
     MatCheckboxModule,
     FormsModule,
-    PluginModule
+    PluginModule,
+    MatTooltipModule
   ],
   entryComponents: [
     SchedulerComponent,
@@ -193,7 +197,9 @@ import { UserDetailsFormComponent } from './users/user-details-form/user-details
       useClass: HeaderInterceptor,
       multi: true,
     }],
-
+    schemas: [
+      CUSTOM_ELEMENTS_SCHEMA
+    ]
 
 })
 export class PagesModule {
