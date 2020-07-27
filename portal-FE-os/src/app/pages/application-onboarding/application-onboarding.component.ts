@@ -114,7 +114,7 @@ export class ApplicationOnboardingComponent implements OnInit {
 
   openAddApplicationModal(rowData: any, action:any) {
     console.log("Action : ", action);
-    const modalRef = this.ngbModal.open(ApplicationDetailsDialogComponent, { size: 'lg' });
+    const modalRef = this.ngbModal.open(ApplicationDetailsDialogComponent, { size: 'lg', backdrop: 'static', keyboard: false });
     modalRef.componentInstance.title = 'Application Details';
     modalRef.componentInstance.action = action;
     //console.log("selectedData in parent",rowData);
@@ -136,7 +136,7 @@ export class ApplicationOnboardingComponent implements OnInit {
   }
 
   deleteApplication(application: IApplications){
-    let confirmationMsg = 'You are about to delete this App : ' + application.name+ '. Click OK to continue.';
+    let confirmationMsg = 'You are about to delete this App : ' + application.appName+ '. Click OK to continue.';
     this.openInformationModal("Confirmation",confirmationMsg).result.then((result) => {
       if (result === 'Ok') {
         if(!application || application == null){
@@ -150,7 +150,11 @@ export class ApplicationOnboardingComponent implements OnInit {
             this.getOnboardingApps();
           }, error => {
             console.log(error);
-            this.openConfirmationModal('Error', error);
+            if(error && error.status == 405){
+              this.openConfirmationModal('', 'Application : ' + application.appName+ ' can not be deleted as it is associsted with one of the Microservices.');
+            }else{
+              this.openConfirmationModal('Error', error.message);
+            }
         });
       }
     }, (resut) => {

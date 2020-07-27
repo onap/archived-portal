@@ -86,7 +86,7 @@
         <div *ngFor="let tab of tabs; let index = index"
           [style.display]='tab.active? "inline" : "none"'
           [style.position]='tab.active? "static" : "absolute"'
-          [style.height]='tab.active? "45rem" : "45rem"'>
+          [style.height]='tab.active? "calc(100vh)" : "calc(0vh)"'>
 
           <iframe id="tabframe-{{tab.label.split(' ').join('-')}}-{{index}}" scrolling='yes' frameBorder='0' width='100%'
             scrolling='yes' frameBorder='0' width='100%' height='90%' [src]='tab.url'></iframe>
