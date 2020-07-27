@@ -217,7 +217,7 @@ export class DashboardApplicationCatalogComponent implements OnInit {
   }
 
   auditLog(app:any) {
-    this.auditLogService.storeAudit(app.appId, 'app', app.url).subscribe(data => {
+    this.auditLogService.storeAudit(app.appid, 'app', app.url).subscribe(data => {
       console.log('App action Saved');
     }, error => {
       console.log('auditLog Save Error' + error);
