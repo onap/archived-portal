@@ -11,5 +11,6 @@ ADD COLUMN ack_app CHAR(1) DEFAULT 'Y' AFTER ueb_topic_name;
 ALTER TABLE fn_app
 ADD COLUMN uses_cadi CHAR(1) DEFAULT NULL AFTER ueb_topic_name;
 
+update fn_app set uses_cadi='Y' where COALESCE(app_password, '') = '';
 
 commit;
