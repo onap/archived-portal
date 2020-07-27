@@ -75,6 +75,7 @@ import org.onap.portalapp.portal.domain.EPUserAppsManualSortPreference;
 import org.onap.portalapp.portal.domain.EPUserAppsSortPreference;
 import org.onap.portalapp.portal.domain.EPWidgetsManualSortPreference;
 import org.onap.portalapp.portal.domain.EcompApp;
+import org.onap.portalapp.portal.domain.MicroserviceData;
 import org.onap.portalapp.portal.domain.UserRole;
 import org.onap.portalapp.portal.domain.UserRoles;
 import org.onap.portalapp.portal.ecomp.model.AppCatalogItem;
@@ -975,6 +976,16 @@ public class EPAppCommonServiceImpl implements EPAppService {
 		}
 		final Map<String, Long> params = new HashMap<>();
 		params.put("app_id", appid);
+		
+		//Checking if App is associated with any exiting microservices- ep_microservice:
+		final Map<String, Long> queryparams = new HashMap<>();
+		queryparams.put("applicationId", appid);
+		List<MicroserviceData> microservicesList  = dataAccessService.executeNamedQuery( "getMicroservicesByAppId", queryparams, null);
+		if(microservicesList!=null && microservicesList.size()>0) {
+			fieldsValidator.httpStatusCode = new Long(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+			return fieldsValidator;
+		}
+		
 		List<EPUserAppRolesRequest> EPUserAppRolesRequestList= new ArrayList<>();
 		EPUserAppRolesRequestList = dataAccessService.executeNamedQuery( "getRequestIdsForApp", params, null);
 	    for(int i=0;i<EPUserAppRolesRequestList.size();i++)
