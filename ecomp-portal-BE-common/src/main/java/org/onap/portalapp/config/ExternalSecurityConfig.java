@@ -72,6 +72,6 @@ public class ExternalSecurityConfig extends WebSecurityConfigurerAdapter {
 		if(MusicUtil.isMusicEnable())
 			http.csrf().csrfTokenRepository(MusicCookieCsrfTokenRepository.withHttpOnlyFalse()).requireCsrfProtectionMatcher(csrfRequestMatcher);
 		else
-			http.csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()).requireCsrfProtectionMatcher(csrfRequestMatcher);
+			http.csrf().disable();
 	}
 }

@@ -30,5 +30,7 @@ public interface StorageService {
     
     void update(MultipartFile file, WidgetCatalog newWidget, long widgetId);
     
+    void updateJsFile(MultipartFile file, WidgetCatalog newWidget, long widgetId);
+    
 	byte[] getWidgetCatalogContent(long widgetId) throws Exception;
 }
