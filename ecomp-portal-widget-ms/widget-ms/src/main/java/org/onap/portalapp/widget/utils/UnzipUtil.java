@@ -51,8 +51,7 @@ public class UnzipUtil {
 			ZipEntry entry = zipIn.getNextEntry();
 			Map<String, byte[]> map = new HashMap<>();
 	
-			String[] requiredKeys = { WidgetConstant.WIDGET_CONTROLLER_LOCATION, WidgetConstant.WIDGET_MARKUP_LOCATION,
-					WidgetConstant.WIDGET_STYLE_LOCATION };
+			String[] requiredKeys = { WidgetConstant.WIDGET_CONTROLLER_LOCATION };
 			for (String k : requiredKeys)
 				map.put(k, null);
 	

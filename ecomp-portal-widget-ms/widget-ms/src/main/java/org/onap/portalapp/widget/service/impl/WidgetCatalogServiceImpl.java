@@ -148,9 +148,7 @@ public class WidgetCatalogServiceImpl implements WidgetCatalogService {
 	@Override
 	public WidgetCatalog getWidgetCatalog(Long widgetCatalogId) {
 		Session session = sessionFactory.getCurrentSession();
-		Transaction tx = session.beginTransaction();
 		WidgetCatalog widget = (WidgetCatalog) session.get(WidgetCatalog.class, widgetCatalogId);
-		tx.commit();
 		logger.debug("WidgetCatalogServiceImpl.getWidgetCatalog: getting widget={}", widget);
 		return widget;
 	}
