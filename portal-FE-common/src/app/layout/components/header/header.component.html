@@ -118,6 +118,14 @@
         <br>
     </div>
 </div>
+<div class = "language-dropdown">
+    <span class="dropdown-item-name"> {{ 'Language' }}: </span>
+    <select #langSelect (change)="setLanguage(langSelect.value)">
+        <option *ngFor="let lang of languages" [value]="lang.languageId" [selected]="lang.selected">
+            {{ lang.languageAlias }}
+        </option>
+    </select>
+</div>
 <hr>
 <div id="reg-logout-div" >
 <button type="button" class="btn btn-primary"  (click)="allAppsLogout()">

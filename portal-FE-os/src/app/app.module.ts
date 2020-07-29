@@ -45,6 +45,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HeaderInterceptor } from './shared/interceptors/header-interceptor';
 import { CookieService } from 'ngx-cookie-service';
+import { TranslateModule } from '@ngx-translate/core';
 
 
 @NgModule({
@@ -53,7 +54,8 @@ import { CookieService } from 'ngx-cookie-service';
         BrowserModule,
         BrowserAnimationsModule,
         HttpClientModule,
-        AppRoutingModule
+        AppRoutingModule,
+        TranslateModule.forRoot(),
     ],
     declarations: [AppComponent],
     providers: [CookieService,{

@@ -57,7 +57,7 @@
 
           <div style="display: flex; flex-direction:column; overflow-y: scroll; height: calc(100vh - 100px)">
             <div style="display: flex; flex-direction:row;">
-              <app-sidebar (collapsedEvent)="receiveCollapsed($event)"></app-sidebar>
+              <app-sidebar (collapsedEvent)="receiveCollapsed($event)" [langFromTab]="inputedLanguage"></app-sidebar>
               <app-userbar></app-userbar>
               <div class="container" style="margin-left: 370px;">
                 <router-outlet></router-outlet>

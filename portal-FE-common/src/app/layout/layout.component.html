@@ -36,8 +36,9 @@
 
   -->
 
-  <app-header></app-header>
-  <app-tabbar></app-tabbar>
+
+<app-header (languageEvent)="setLanguage($event)"></app-header>
+<app-tabbar [language]="language"></app-tabbar>
 
 
 

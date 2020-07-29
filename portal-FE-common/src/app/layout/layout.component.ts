@@ -2,7 +2,7 @@
  * ============LICENSE_START==========================================
  * ONAP Portal SDK
  * ===================================================================
- * Copyright © 2019 AT&T Intellectual Property. All rights reserved.
+ * Copyright ï¿½ 2019 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
@@ -45,6 +45,7 @@ import { Component, OnInit } from '@angular/core';
 export class LayoutComponent implements OnInit {
 
     collapedSideBar: boolean;
+    language: string;
 
     constructor() {}
 
@@ -52,5 +53,9 @@ export class LayoutComponent implements OnInit {
 
     receiveCollapsed($event) {
         this.collapedSideBar = $event;
+    }
+    
+    setLanguage(lang) {
+        this.language= lang;
     }
 }
