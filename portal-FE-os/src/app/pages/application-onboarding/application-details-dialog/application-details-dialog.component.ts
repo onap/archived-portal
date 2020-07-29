@@ -75,6 +75,7 @@ export class ApplicationDetailsDialogComponent implements OnInit {
   @Input() action: any;
   @Output() passEntry: EventEmitter<any> = new EventEmitter();
   @ViewChild('applicationName') applicationNameElement: ElementRef;
+  @ViewChild('inputAppImageUpload') inputAppImageUpload: ElementRef;
 
   newAppModel = {
     'id': null,
@@ -200,6 +201,7 @@ export class ApplicationDetailsDialogComponent implements OnInit {
         this.applicationObj.imageUrl = null;
         this.applicationObj.imageLink = null;
         this.emptyImgForPreview = '../../../assets/images/default_app_image.gif';
+        this.inputAppImageUpload.nativeElement.value = "";
       }
     }, (resut) => {
       return;

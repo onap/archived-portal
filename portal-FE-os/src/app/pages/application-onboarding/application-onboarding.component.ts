@@ -66,6 +66,7 @@ export class ApplicationOnboardingComponent implements OnInit {
   dataSource = new MatTableDataSource(this.appsList);
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatPaginator) paginator: MatPaginator;
+  showEcompSpinner:boolean = false;
 
   constructor(public applicationsService: ApplicationsService, public ngbModal: NgbModal) { }
 
@@ -77,11 +78,13 @@ export class ApplicationOnboardingComponent implements OnInit {
 
   getOnboardingApps(){
     //console.log("getOnboardingApps called");
+    this.showEcompSpinner = true;
     this.applicationsService.getOnboardingApps()
       .subscribe(_data => {
           this.result = _data;
           if (this.result == null || this.result == 'undefined') {
               console.log('WidgetOnboardingService::getOnboardingWidgets Failed: Result or result.data is null');
+              this.showEcompSpinner = false;
           }else {
             this.appsList = _data;
             for (var i = 0; i < this.appsList.length; i++) {
@@ -94,11 +97,14 @@ export class ApplicationOnboardingComponent implements OnInit {
               }                    			
             }
             this.populateTableData(this.appsList);
+            this.showEcompSpinner = false;
           }
       }, error =>{
         console.log(error);
+        this.showEcompSpinner = false;
         this.openConfirmationModal('Error', error.message);
     });
+    this.showEcompSpinner = false;
   }
 
   applyFilter(filterValue: string) {
@@ -143,13 +149,16 @@ export class ApplicationOnboardingComponent implements OnInit {
           console.log('ApplicationOnboardingCtrl::deleteApplication: No apllication or ID... cannot delete');
           return;
         }
+        this.showEcompSpinner = true;
         this.appsList.splice(this.appsList.indexOf(application), 1);
         this.applicationsService.deleteOnboardingApp(application.id)
           .subscribe( data => {
             this.result = data;
             this.getOnboardingApps();
+            this.showEcompSpinner = false;
           }, error => {
             console.log(error);
+            this.showEcompSpinner = false;
             if(error && error.status == 405){
               this.openConfirmationModal('', 'Application : ' + application.appName+ ' can not be deleted as it is associsted with one of the Microservices.');
             }else{

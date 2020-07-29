@@ -252,10 +252,10 @@
 								<span style="flex: 9">Upload
 									Image</span>
 								<app-information-tooltip style="flex: 1;"
-									[textMessage]="'Image file must be smaller than 1MB'">
+									[textMessage]="'Image file(.png or.jpg or.jpeg with dimension 200X200 pixel) must be smaller than 1MB.'">
 								</app-information-tooltip>
 							</div>
-							<input type="file" id="input-app-image-upload"
+							<input #inputAppImageUpload type="file" id="input-app-image-upload"
 								class="input-file-field input-app-image-upload-ht" accept="image/*"
 								[(ngModel)]="applicationObj.originalImage" name="appImage"
 								image-upload="applicationObj.originalImage" image-upload-resize-max-height="300"
@@ -284,7 +284,10 @@
 						<div class="property" *ngIf="!(applicationObj.applicationType == '3')">
 							<div class="property-label preview">
 								<span class="left-label">Preview</span>
-								<span class="remove" (click)="removeImage()">Remove</span>
+								<span *ngIf="(applicationObj.imageLink && applicationObj.imageLink.indexOf('default_app_image.gif') == -1
+								||applicationObj.thumbnail && applicationObj.thumbnail.indexOf('default_app_image.gif') == -1
+								||emptyImgForPreview && emptyImgForPreview.indexOf('default_app_image.gif') == -1)" 
+								class="remove" (click)="removeImage()">Remove</span>
 							</div>
 							<img id="image-app-preview" class="image-preview"
 								src="{{applicationObj.imageLink || applicationObj.thumbnail || emptyImgForPreview}}" />

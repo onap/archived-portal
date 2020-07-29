@@ -51,6 +51,7 @@
             </button>
           
             <div class="apps-table">
+                <span class="ecomp-spinner" *ngIf="showEcompSpinner"></span>
                 <!-- Applications Table goes here-->
                 <table mat-table [dataSource]="dataSource" matSort>
                     <!-- Thumbnail Column -->
