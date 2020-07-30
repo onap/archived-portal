@@ -353,28 +353,6 @@ public class WidgetsCatalogControllerTest {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void getWidgetControllerTest() throws Exception {
-		PowerMockito.mockStatic(EcompPortalUtils.class);
-		PowerMockito.mockStatic(SystemProperties.class);
-		PowerMockito.mockStatic(EPCommonSystemProperties.class);
-		PowerMockito.mockStatic(CipherUtil.class);
-		Mockito.when(EcompPortalUtils.widgetMsProtocol()).thenReturn("test1");
-		Mockito.when(SystemProperties.getProperty(EPCommonSystemProperties.WIDGET_MS_PROTOCOL)).thenReturn("https");
-		Mockito.when(SystemProperties.getProperty("microservices.widget.local.port")).thenReturn("test");
-		Mockito.when(EcompPortalUtils.getPropertyOrDefault("microservices.widget.username", "widget_user"))
-				.thenReturn("test");
-		Mockito.when(CipherUtil
-				.decryptPKC(EcompPortalUtils.getPropertyOrDefault("microservices.widget.password", "widget_password")))
-				.thenReturn("abc");
-		Mockito.when(widgetMService.getServiceLocation("widgets-service", "test")).thenReturn("test.com");
-		Mockito.when(template.getForObject(Mockito.anyString(), Mockito.any(Class.class), Mockito.any(String.class)))
-				.thenReturn("test123");
-		String result = widgetsCatalogController.getWidgetController(1);
-		assertNull(result);
-	}
-
-	@SuppressWarnings("unchecked")
-	@Test
 	public void getWidgetCSSTest() throws Exception {
 		PowerMockito.mockStatic(EcompPortalUtils.class);
 		PowerMockito.mockStatic(SystemProperties.class);
