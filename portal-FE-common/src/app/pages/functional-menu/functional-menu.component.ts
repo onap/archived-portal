@@ -151,43 +151,42 @@ export class FunctionalMenuComponent implements OnInit {
    * @param ngbModal 
    */
   buildTree(treedataarray,ngbModal: NgbModal , _self){
-    //console.log("treedataarray>>>>",treedataarray);
-  //   $(function() {
-  //       $('#jqTree').tree('loadData', treedataarray);
-  //       $('#jqTree').tree({
-  //           data: treedataarray,
-  //           autoOpen: false,
-  //           dragAndDrop: true,
-  //           onCreateLi: function(node, $li) {
-  //               ////console.log("node >>",node);
-  //           }
-  //       }).on(
-  //         'tree.contextmenu',
-  //         function(event:any) {
-  //             // The clicked node is 'event.node'
-  //             var node = event.node;
-  //             openMenuDetailsModal(node, "view");
-  //         }
-  //       );
+    console.log("treedataarray>>>>",treedataarray);
+    $(function() {
+        (<any>$('#jqTree')).tree('loadData', treedataarray);
+        (<any>$('#jqTree')).tree({
+            data: treedataarray,
+            autoOpen: false,
+            dragAndDrop: true,
+            onCreateLi: function(node, $li) {
+                ////console.log("node >>",node);
+            }
+        }).on(
+          'tree.contextmenu',
+          function(event:any) {
+              // The clicked node is 'event.node'
+              var node = event.node;
+              openMenuDetailsModal(node, "view");
+          }
+        );
 
-  //       var openMenuDetailsModal = function(node: any, actionName: string ){
-  //         const modalRef = ngbModal.open(FunctionalMenuDialogComponent, { size: 'lg' });
-  //         modalRef.componentInstance.title = 'Functional Menu ',actionName;
-  //         if(node != 'undefined' && node){
-  //           modalRef.componentInstance.nodedata = node;
-  //           modalRef.componentInstance.operationName = actionName;
-  //         }else{
-  //           modalRef.componentInstance.nodedata  = {};
-  //         }
-  //         modalRef.componentInstance.passEntry.subscribe((receivedEntry: any) => {
-  //           //console.log("receivedEntry>>>>",receivedEntry);
-  //           ngbModal.dismissAll();
-  //           if(receivedEntry.httpStatusCode===200){
-  //             _self.getFunctionalMenu();
-  //           }
-  //         });
-  //       }
-  //    });
-  // }
+        var openMenuDetailsModal = function(node: any, actionName: string ){
+          const modalRef = ngbModal.open(FunctionalMenuDialogComponent, { size: 'lg' });
+          modalRef.componentInstance.title = 'Functional Menu ',actionName;
+          if(node != 'undefined' && node){
+            modalRef.componentInstance.nodedata = node;
+            modalRef.componentInstance.operationName = actionName;
+          }else{
+            modalRef.componentInstance.nodedata  = {};
+          }
+          modalRef.componentInstance.passEntry.subscribe((receivedEntry: any) => {
+            //console.log("receivedEntry>>>>",receivedEntry);
+            ngbModal.dismissAll();
+            if(receivedEntry.httpStatusCode===200){
+              _self.getFunctionalMenu();
+            }
+          });
+        }
+     });
   }
 }
