@@ -154,6 +154,7 @@ public class WidgetCatalogServiceImpl implements WidgetCatalogService {
 	}
 	
 	@Override
+	@Transactional
 	public void deleteWidgetCatalog(long widgetCatalogId) {
 		logger.debug("WidgetCatalogServiceImpl.deleteWidgetCatalog: deleting the widget with widgetId={}", widgetCatalogId);
 		WidgetCatalog widget = getWidgetCatalog(widgetCatalogId);
@@ -162,7 +163,7 @@ public class WidgetCatalogServiceImpl implements WidgetCatalogService {
 			return;
 		}
 		Session session = sessionFactory.getCurrentSession();
-		Transaction tx = session.beginTransaction();
+		//Transaction tx = session.beginTransaction();
 		Query query = session.createSQLQuery("delete from ep_pers_user_widget_sel where widget_id = :widgetId ").setParameter("widgetId", widgetCatalogId);
 		query.executeUpdate();
 		query = session.createSQLQuery("delete from ep_pers_user_widget_placement where widget_id = :widgetId ").setParameter("widgetId", widgetCatalogId);
@@ -172,7 +173,7 @@ public class WidgetCatalogServiceImpl implements WidgetCatalogService {
 		query = session.createSQLQuery("delete from ep_widget_catalog_parameter where widget_id = :widgetId ").setParameter("widgetId", widgetCatalogId);
 		query.executeUpdate();
 		session.delete(widget);
-		tx.commit();
+		//tx.commit();
 	}
 	
 	@Override
