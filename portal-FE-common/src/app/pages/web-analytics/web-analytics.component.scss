@@ -44,6 +44,11 @@
     padding-bottom: 15px;
     padding-right: 40px;
     font-weight: bold;
+    white-space: nowrap;
+}
+
+td.mat-cell, td.mat-footer-cell, th.mat-header-cell {
+   padding-right: 45px;
 }
 
 .ion-md-trash{
