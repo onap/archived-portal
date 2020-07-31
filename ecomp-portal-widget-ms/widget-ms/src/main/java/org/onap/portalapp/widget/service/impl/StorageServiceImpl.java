@@ -73,7 +73,7 @@ public class StorageServiceImpl implements StorageService {
 		Criteria criteria = session.createCriteria(WidgetFile.class);
 		criteria.add(Restrictions.eq("widgetId", widgetId));
 		List<WidgetFile> widgetFiles = criteria.list();
-		session.flush();
+		//session.flush();
 		session.close();
 		if (widgetFiles.size() > 0)
 			widgetFile = widgetFiles.get(0);
@@ -148,7 +148,7 @@ public class StorageServiceImpl implements StorageService {
 			logger.error("StorageServiceImpl.save: Failed to store file " + file.getOriginalFilename(), e);
 			throw new StorageException("Failed to store file " + file.getOriginalFilename(), e);
 		}
-		saveHelper(newWidget, widgetId, map);
+		saveJsHelper(newWidget, widgetId, map);
 	}
 
 	@Override
@@ -167,7 +167,7 @@ public class StorageServiceImpl implements StorageService {
 			throw new StorageException("Failed to store file " + file.getName(), e);
 		}
 		
-		saveHelper(newWidget, widgetId, map);
+		saveJsHelper(newWidget, widgetId, map);
 	}
 
 	/**
@@ -259,6 +259,90 @@ public class StorageServiceImpl implements StorageService {
 				widgetId);
 
 	}
+	
+	/**
+	 * Helper method to UnZip File
+	 * 
+	 * @param file
+	 */
+	private Map<String, byte[]> unZipFile(MultipartFile file) {
+		UnzipUtil unzipper = new UnzipUtil();
+		Map<String, byte[]> map;
+		File convFile;
+		try {
+			if (file.isEmpty()) {
+				logger.error("StorageServiceImpl.update: Failed to store empty file " + file.getOriginalFilename());
+				throw new StorageException("Failed to store empty file " + file.getOriginalFilename());
+			}
+			String fileLocation = file.getOriginalFilename();
+			logger.debug("StorageServiceImpl.update: store the widget to:" + fileLocation);
+			convFile = new File(fileLocation);
+			try(FileOutputStream fos = new FileOutputStream(convFile)){
+				fos.write(file.getBytes());
+			}
+			map = unzipper.unzip_db(fileLocation, ".", "tempWidgets");
+			convFile.delete();
+			return map;
+		} catch (IOException e) {
+			logger.error("StorageServiceImpl.update: Failed to store file " + file.getOriginalFilename(), e);
+			throw new StorageException("StorageServiceImpl.update: Failed to store file " + file.getOriginalFilename(),
+					e);
+		}
+	}
+	
+	/**
+	 * Helper method for saving widget file (controller.js) to ep_widget_catalog_files table in database
+	 * 
+	 * @param newWidget
+	 * @param widgetId
+	 * @param map
+	 */
+	private void saveJsHelper(WidgetCatalog newWidget, long widgetId, Map<String, byte[]> map) {
+
+		logger.debug("Going to save controller.js " + newWidget);
+		WidgetFile widgetFile = new WidgetFile();
+		widgetFile.setName(newWidget.getName());
+		widgetFile.setWidgetId(widgetId);
+		final byte[] controllerLoc = map.get(WidgetConstant.WIDGET_CONTROLLER_LOCATION);
+		if (controllerLoc == null || controllerLoc.length == 0)
+			throw new IllegalArgumentException(
+					"Map is missing required key " + WidgetConstant.WIDGET_CONTROLLER_LOCATION);
+		String javascript = new String(controllerLoc);
+
+		widgetFile.setController(javascript.getBytes());
+		Session session = sessionFactory.openSession();
+		session.save(widgetFile);
+		session.flush();
+		session.close();
+		logger.debug(
+				"StorageServiceImpl.save: saved controller.js file to the database for widget {}",
+				widgetId);
+
+	}
+	
+	@Override
+	public void updateJsFile(MultipartFile file, WidgetCatalog newWidget, long widgetId) {
+		Map<String, byte[]> map;
+		map = unZipFile(file);
+		//Get existing widget file from DB	
+		WidgetFile widgetFile = getWidgetFile(widgetId);
+		
+		String javascript = new String(map.get(WidgetConstant.WIDGET_CONTROLLER_LOCATION));
+		widgetFile.setController(javascript.getBytes());
+		Session session = sessionFactory.openSession();
+		Transaction tx = session.beginTransaction();
+		session.update(widgetFile);
+		tx.commit();
+		session.flush();
+		session.close();
+		logger.debug(
+				"StorageServiceImpl.save: updated controller.js file to the database for widget {}",
+				widgetId);
+	}
+	
+	
+	
+	
 
 	@Override
 	public void update(MultipartFile file, WidgetCatalog newWidget, long widgetId) {
@@ -424,53 +508,14 @@ public class StorageServiceImpl implements StorageService {
 	public byte[] getWidgetCatalogContent(long widgetId) throws Exception {
 
 		WidgetCatalog widget = widgetCatalogService.getWidgetCatalog(widgetId);
-		String namespace = "Portal" + widgetId + "Widget";
-		String controllerName = "Portal" + widgetId + "Ctrl";
-		String cssName = "portal" + widgetId + "-css-ready";
-
-		String styles = getWidgetCSS(widgetId).replaceAll(cssName, widget.getName() + "-css-ready");
 		File f = File.createTempFile("temp", ".zip");
 		try(ZipOutputStream out = new ZipOutputStream(new FileOutputStream(f))){
-			ZipEntry e = new ZipEntry(widget.getName() + "/styles/styles.css");
-			out.putNextEntry(new ZipEntry(widget.getName() + "/"));
-			out.putNextEntry(new ZipEntry(widget.getName() + "/styles/"));
-			out.putNextEntry(e);
-			byte[] data = styles.getBytes();
-			out.write(data, 0, data.length);
+			String javascript = getWidgetController(widgetId);
 	
-			String widgetData = namespace + "=" + namespace + "||{};" + "var res = " + namespace + ".widgetData;";
-			String javascript = getWidgetController(widgetId).replace(widgetData, "").replace(namespace + ".controller =",
-					"");
-	
-			String functionHeader = javascript.substring(javascript.indexOf("function"), javascript.indexOf(")") + 1);
-			javascript = javascript.replaceFirst(controllerName, widget.getName() + "Ctrl");
-			String functionParam = functionHeader.substring(functionHeader.indexOf("(") + 1, functionHeader.indexOf(")"));
-			StringBuilder injectStr = new StringBuilder().append("[");
-			List<String> paramList = Arrays.asList(functionParam.split(","));
-			for (int i = 0; i < paramList.size(); i++) {
-				if (i == paramList.size() - 1)
-					injectStr.append("'" + paramList.get(i).trim() + "'];");
-				else
-					injectStr.append("'" + paramList.get(i).trim() + "',");
-			}
-			javascript = javascript.replace(";" + namespace + ".controller.$inject = " + injectStr.toString(), "");
-	
-			e = new ZipEntry(widget.getName() + "/js/controller.js");
+			ZipEntry e = new ZipEntry(widget.getName() + "/js/controller.js");
 			out.putNextEntry(new ZipEntry(widget.getName() + "/js/"));
 			out.putNextEntry(e);
-			data = javascript.getBytes();
-			out.write(data, 0, data.length);
-	
-			String html = getWidgetMarkup(widgetId).replaceFirst(controllerName, widget.getName() + "Ctrl");
-	
-			// new
-			// String(map.get(WidgetConstant.WIDGET_MARKUP_LOCATION)).replaceFirst(functionName,
-			// controllerName);;
-	
-			e = new ZipEntry(widget.getName() + "/markup/markup.html");
-			out.putNextEntry(new ZipEntry(widget.getName() + "/markup/"));
-			out.putNextEntry(e);
-			data = html.getBytes();
+			byte[] data = javascript.getBytes();
 			out.write(data, 0, data.length);
 			out.closeEntry();
 			byte[] result = Files.readAllBytes(Paths.get(f.getPath()));

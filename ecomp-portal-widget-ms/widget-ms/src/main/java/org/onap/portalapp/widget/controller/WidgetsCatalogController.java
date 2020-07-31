@@ -163,13 +163,14 @@ public class WidgetsCatalogController {
 		try {
 			//check the zip file structure first
 			respond = storageService.checkZipFile(file);
+			logger.debug("Check file validity"+respond.isValid()+respond.getError());
 			if(respond.isValid()){
 				//update the widget catalog
 				WidgetCatalog newWidget = new ObjectMapper().readValue(widget, WidgetCatalog.class);
 				widgetCatalogService.updateWidgetCatalog(widgetId, newWidget);
 				logger.debug("WidgetsCatalogController.saveWidgetCatalog: updating widget with widgetId={}", widgetId);
 				//update the widget zip file
-				storageService.update(file, newWidget, widgetId);
+				storageService.updateJsFile(file, newWidget, widgetId);
 			}
 		} catch (Exception e) {
 			logger.error("Exception occurred while performing WidgetsCatalogController.saveWidgetCatalog in widget microservices. Details:", e);
