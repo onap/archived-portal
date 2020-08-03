@@ -282,16 +282,7 @@ public class WidgetsCatalogController extends EPRestrictedBaseController {
                 + MS_WIDGET_URL + widgetId + "/framework.js", String.class,
 				WidgetServiceHeaders.getInstance());
 	}
-
-	@GetMapping(value = "/portalApi/microservices/{widgetId}/controller.js")
-	public String getWidgetController(@PathVariable("widgetId") long widgetId) throws Exception {
-		return template.getForObject(EcompPortalUtils.widgetMsProtocol() + "://"
-				+ widgetMService.getServiceLocation(whatService,
-						SystemProperties.getProperty(MS_WIDGET_LOCAL_PORT))
-                + MS_WIDGET_URL + widgetId + "/controller.js", String.class,
-				WidgetServiceHeaders.getInstance());
-	}
-
+	
 	@GetMapping(value = "/portalApi/microservices/{widgetId}/style.css")
 	public String getWidgetCSS(@PathVariable("widgetId") long widgetId) throws Exception {
 		return template.getForObject(EcompPortalUtils.widgetMsProtocol() + "://"
