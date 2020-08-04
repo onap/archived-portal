@@ -35,7 +35,7 @@
  *
  *
  */
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input, OnChanges } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Tab } from './tab';
@@ -54,6 +54,9 @@ export class TabbarComponent implements OnInit {
   mainTab = 'Home';
   selected = new FormControl(0);
   collapedSideBar: boolean;
+  inputedLanguage: string;
+  @Input() language:string;
+
 
   constructor(private sanitizer: DomSanitizer, private addTabFuntionService: AddTabFunctionService, private auditLogService: AuditLogService) {
 
@@ -68,6 +71,14 @@ export class TabbarComponent implements OnInit {
       
     })
   }
+  
+  ngOnChanges() {
+    this.changeLang(this.language);
+  }
+  changeLang(lang){
+    this.inputedLanguage=lang;
+  }
+
 
   addTab(selectAfterAdding: boolean, label: string, url: string) {
     const tab = new Tab(label);
