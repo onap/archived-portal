@@ -151,9 +151,6 @@ public class SchedulerRestInterface implements SchedulerRestInterfaceIfc {
 				
 		logger.debug(EELFLoggerDelegate.debugLogger, "Client Initialized");
 		
-		
-		
-
 	}
 
 	@SuppressWarnings("unchecked")
@@ -178,7 +175,7 @@ public class SchedulerRestInterface implements SchedulerRestInterfaceIfc {
 			if (cres.getEntity() != null) {
 				try {
 					String str = (cres).readEntity(String.class);
-					if (t.getClass().getName().equals(String.class.getName())) {
+					if (t.getClass().isAssignableFrom(String.class)) {
 						t = (T) str;
 
 					} else {
@@ -233,7 +230,7 @@ public class SchedulerRestInterface implements SchedulerRestInterfaceIfc {
 
 				try {
 					String str = (cres).readEntity(String.class);
-					if (t.getClass().getName().equals(String.class.getName())) {
+					if (t.getClass().isAssignableFrom(String.class)) {
 						t = (T) str;
 
 					} else {

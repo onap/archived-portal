@@ -57,17 +57,17 @@ public class SchedulerUtil {
 
 	public static GetTimeSlotsWrapper getTimeSlotsWrapResponse (GetTimeSlotsRestObject<String> rs) {	
 		
-		String resp_str = "";
+		String respStr = "";
 		int status = 0;
 		
 		if ( rs != null ) {
-			resp_str = rs.get();
+			respStr = rs.get();
 			status = rs.getStatusCode();
 		}
 				
 		GetTimeSlotsWrapper w = new GetTimeSlotsWrapper();
 		
-		w.setEntity(resp_str);
+		w.setEntity(respStr);
 		w.setStatus (status);
 		
 		return (w);
@@ -75,19 +75,19 @@ public class SchedulerUtil {
 	
 	public static PostSubmitVnfChangeTimeSlotsWrapper postSubmitNewVnfWrapResponse (PostSubmitVnfChangeRestObject<String> rs) {	
 		
-		String resp_str = "";
+		String respStr = "";
 		int status = 0;
 		String uuid = "";
 		
 		if ( rs != null ) {
-			resp_str = rs.get();
+			respStr = rs.get();
 			status = rs.getStatusCode();
 			uuid = rs.getUUID();
 		}
 				
 		PostSubmitVnfChangeTimeSlotsWrapper w = new PostSubmitVnfChangeTimeSlotsWrapper();
 		
-		w.setEntity(resp_str);
+		w.setEntity(respStr);
 		w.setStatus (status);
 		w.setUuid(uuid);
 		
@@ -96,19 +96,19 @@ public class SchedulerUtil {
 	
 	public static PostCreateNewVnfWrapper postCreateNewVnfWrapResponse (PostCreateNewVnfRestObject<String> rs) {	
 		
-		String resp_str = "";
+		String respStr = "";
 		int status = 0;
 		String uuid = "";
 		
 		if ( rs != null ) {
-			resp_str = rs.get();
+			respStr = rs.get();
 			status = rs.getStatusCode();
 			uuid = rs.getUUID();
 		}
 				
 		PostCreateNewVnfWrapper w = new PostCreateNewVnfWrapper();
 		
-		w.setEntity(resp_str);
+		w.setEntity(respStr);
 		w.setStatus (status);
 		w.setUuid(uuid);
 		
@@ -121,14 +121,14 @@ public class SchedulerUtil {
 		ObjectMapper mapper = new ObjectMapper();
 		String r_json_str = "";
 	    if ( t != null ) {
-		    try {
-		    	r_json_str = mapper.writeValueAsString(t);
-		    }
-		    catch ( com.fasterxml.jackson.core.JsonProcessingException j ) {
-					logger.debug(EELFLoggerDelegate.debugLogger,
-						DateUtil.getDateFormat().format(new Date()) + "<== " + methodName + " Unable " + "to "
-							+ "parse object as json");
-				}
+            try {
+                r_json_str = mapper.writeValueAsString(t);
+            } catch (com.fasterxml.jackson.core.JsonProcessingException j) {
+                logger.debug(
+                        EELFLoggerDelegate.debugLogger, DateUtil.getDateFormat().format(new Date())
+                                + "<== " + methodName + " Unable " + "to " + "parse object as json",
+                        j);
+            }
 	    }
 	    return (r_json_str);
 	}

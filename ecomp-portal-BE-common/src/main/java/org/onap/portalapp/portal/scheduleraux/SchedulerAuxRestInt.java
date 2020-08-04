@@ -63,24 +63,21 @@ public class SchedulerAuxRestInt {
 	 *
 	 * @param r the r
 	 */
-	public void logRequest ( RequestDetails r ) {
-		  SimpleDateFormat dateFormat = DateUtil.getDateFormat();
-    	String methodName = "logRequest";
-	    ObjectMapper mapper = new ObjectMapper();
-	    String r_json_str = "";
-	    if ( r != null ) {
-	    	r_json_str = r.toString();
-		    try {
-		    	r_json_str = mapper.writeValueAsString(r);
-		    }
-		    catch ( com.fasterxml.jackson.core.JsonProcessingException j ) {
-		    	logger.debug(EELFLoggerDelegate.debugLogger, dateFormat.format(new Date()) + "<== " +  methodName + " "
-						+ "Unable to "
-						+ "parse request as json");
-		    }
-	    }
-	    logger.debug(EELFLoggerDelegate.debugLogger,dateFormat.format(new Date()) + "<== " +  methodName + " Request="
-				+ "(" +
-				r_json_str + ")");
+    public void logRequest(RequestDetails r) {
+        SimpleDateFormat dateFormat = DateUtil.getDateFormat();
+        String methodName = "logRequest";
+        ObjectMapper mapper = new ObjectMapper();
+        String rJsonStr = "";
+        if (r != null) {
+            rJsonStr = r.toString();
+            try {
+                rJsonStr = mapper.writeValueAsString(r);
+            } catch (com.fasterxml.jackson.core.JsonProcessingException j) {
+                logger.debug(EELFLoggerDelegate.debugLogger, dateFormat.format(new Date()) + "<== "
+                        + methodName + " " + "Unable to " + "parse request as json", j);
+            }
+        }
+        logger.debug(EELFLoggerDelegate.debugLogger, dateFormat.format(new Date()) + "<== "
+                + methodName + " Request=" + "(" + rJsonStr + ")");
     }
 }

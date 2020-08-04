@@ -62,6 +62,9 @@ import org.onap.portalsdk.core.service.DataAccessService;
 public class EPRoleServiceImpl implements EPRoleService {
     EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(EPRoleServiceImpl.class);
 
+    private static final String GET_APP_ROLE_SQL_FORMAT =
+            "SELECT * FROM fn_role where APP_ID = %s AND APP_ROLE_ID = %s";
+
     @Autowired
     private DataAccessService dataAccessService;
 
@@ -123,10 +126,6 @@ public class EPRoleServiceImpl implements EPRoleService {
         return (EPRole) getDataAccessService().getDomainObject(EPRole.class, id, null);
     }
 
-    // TODO: refactor
-    private static final String GET_APP_ROLE_SQL_FORMAT =
-            "SELECT * FROM fn_role where APP_ID = %s AND APP_ROLE_ID = %s";
-
     @SuppressWarnings("unchecked")
     public EPRole getRole(Long appId, Long appRoleid) {
         if (appId == null || appRoleid == null) {
@@ -185,7 +184,7 @@ public class EPRoleServiceImpl implements EPRoleService {
             if (roles != null) {
                 return roles.get(0);
             }
-        } else if (resultsCount == 1) {
+        } else if (roles!=null && resultsCount == 1) {
             return roles.get(0);
         }
         return null;
