@@ -40,7 +40,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { TabbarComponent } from './tabbar.component';
 import { NgMaterialModule } from 'src/app/ng-material-module';
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { ElipsisPipe } from 'src/app/shared/pipes/elipsis/elipsis.pipe';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientTestingModule} from '@angular/common/http/testing';
