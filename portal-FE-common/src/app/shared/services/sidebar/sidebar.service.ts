@@ -50,5 +50,10 @@ export class SidebarService {
     return this.http.get(this.api.leftmenuItems);
 
   }
+  
+  getAllLanguages() {
+    return this.http.get(this.api.getLanguages);
+  }
+
 
 }
