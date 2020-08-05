@@ -65,4 +65,6 @@ describe('LayoutComponent', () => {
 class AppheaderStubComponent {}
 
 @Component({selector: 'app-tabbar', template: ''})
-class AppTabBarStubComponent { }
+class AppTabBarStubComponent { 
+ @Input() language: string;
+}

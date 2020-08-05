@@ -69,7 +69,9 @@ describe('TabbarComponent', () => {
 });
 
 @Component({selector: 'app-sidebar', template: ''})
-class AppSideBarStubComponent {}
+class AppSideBarStubComponent {
+	@Input() langFromTab:string;
+}
 
 @Component({selector: 'router-outlet', template: ''})
 class RouterOutletStubComponent { }
