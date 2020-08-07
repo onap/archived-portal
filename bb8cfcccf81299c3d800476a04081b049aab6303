@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "eda028d9_178a07bf",
+        "filename": "portal-FE-common/src/app/layout/components/sidebar/sidebar.component.ts",
+        "patchSetId": 1
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 679
+      },
+      "writtenOn": "2020-08-07T21:23:52Z",
+      "side": 1,
+      "message": "Please refactor this; seems to be a duplicate of ngOnInit",
+      "revId": "bb8cfcccf81299c3d800476a04081b049aab6303",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
