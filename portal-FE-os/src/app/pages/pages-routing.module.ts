@@ -56,6 +56,10 @@ import { ContactUsComponent } from './contact-us/contact-us.component';
 import { RoleFunctionsComponent } from './role/role-functions/role-functions.component';
 import { NotificationHistoryComponent } from './notification-history/notification-history.component';
 import { GetAccessComponent } from './get-access/get-access.component';
+import { HeaderTabsWrapperComponent } from './analytics/Report_List/header-tabs-wrapper-component/header-tabs-wrapper.component';
+import { RunReportFormFieldsComponent } from './analytics/Report_List/Report/run/run-report-form-fields/run-report-form-fields.component';
+import { DisplayAreaComponent } from './analytics/Report_List/display-area/display-area.component';
+import { ReportComponent } from './analytics/Report_List/Report/report.component';
 
 const routes: Routes = [
     { path: '', component: DashboardComponent },
@@ -77,6 +81,13 @@ const routes: Routes = [
     { path: 'contactUs', component: ContactUsComponent },
     { path: 'getAccess', component: GetAccessComponent },
     { path: 'recentNotifications', component: NotificationHistoryComponent },
+	{ path: 'report-list', component:ReportComponent},
+    { path: 'create', component: HeaderTabsWrapperComponent},
+    { path: 'v2/app/reports/:reportMode/:reportId', component: HeaderTabsWrapperComponent},
+    { path: 'v2/app/run/:reportId', component: RunReportFormFieldsComponent},
+    { path: 'v2/app/run/:reportId/:queryParameters', component: RunReportFormFieldsComponent},
+    { path: 'run', component: RunReportFormFieldsComponent},
+    { path: 'displayArea/:menuId', component: DisplayAreaComponent}
 ];
 
 @NgModule({
