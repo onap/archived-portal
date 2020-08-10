@@ -1634,7 +1634,11 @@ public class EPAppCommonServiceImpl implements EPAppService {
 	}
 
 	protected String constructImageName(OnboardingApp onboardingApp) {
-		return "portal_" + String.valueOf(onboardingApp.getLandingPage().hashCode() + "_" + (int) (Math.random() * 100000.0))
+		String appLandingPageURL = onboardingApp.getLandingPage();
+		if(appLandingPageURL == null) {
+			appLandingPageURL = "";
+		}
+		return "portal_" + String.valueOf(appLandingPageURL.hashCode() + "_" + (int) (Math.random() * 100000.0))
 				+ ".png";
 	}
 

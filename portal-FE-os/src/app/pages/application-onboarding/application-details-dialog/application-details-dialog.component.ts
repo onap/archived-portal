@@ -377,6 +377,14 @@ export class ApplicationDetailsDialogComponent implements OnInit {
     if (this.isEditMode) {
       console.log("Edit application Object : ", JSON.stringify(this.applicationObj));
       console.log("Mode Of iNtegration : ", this.applicationObj.modeOfIntegration);
+      if (this.applicationObj.applicationType == "1" &&  !this.applicationObj.rolesInAAF 
+        || this.applicationObj.applicationType == "3" &&  !this.applicationObj.rolesInAAF) {
+        this.applicationObj.usesCadi = false;
+      }
+
+      if(this.applicationObj && this.applicationObj.usesCadi){
+        this.applicationObj.appBasicAuthPassword = null;
+      }
       this.applicationsService.updateOnboardingApp(this.applicationObj)
         .subscribe( _data => {
           this.result = _data;
@@ -420,6 +428,14 @@ export class ApplicationDetailsDialogComponent implements OnInit {
 
     }else{
       //console.log("Coming inside add application",this.newAppModel);
+      if (this.newAppModel.applicationType == "1" &&  !this.newAppModel.rolesInAAF 
+        || this.newAppModel.applicationType == "3" &&  !this.newAppModel.rolesInAAF) {
+        this.newAppModel.usesCadi = false;
+      }
+
+      if(this.newAppModel && this.newAppModel.usesCadi){
+        this.newAppModel.appBasicAuthPassword = null;
+      }
 
       this.applicationsService.addOnboardingApp(this.newAppModel)
         .subscribe( _data => {
@@ -436,7 +452,7 @@ export class ApplicationDetailsDialogComponent implements OnInit {
           console.log(error);
           if(error.status == 409){
             this.openConfirmationModal('Error', 'There was a problem adding the application changes. ' +
-            'The Application Name and URL should  be unique.  Error: ' +
+            'The Application Name and Namespace should  be unique.  Error: ' +
             error.status);
             return;
           } else if(error.status == 500){
