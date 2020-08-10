@@ -20,6 +20,8 @@
 		<sonar.tests>src</sonar.tests>
 		<sonar.sourceEncoding>UTF-8</sonar.sourceEncoding>
 		<sonar.nodejs.executable>${project.basedir}\node\</sonar.nodejs.executable>
+                <epsdk.version>3.3.0-SNAPSHOT</epsdk.version>
+
 	</properties>
 
 	<build>
@@ -43,6 +45,61 @@
 						-->
 					</filesets>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+        		<artifactId>maven-dependency-plugin</artifactId>
+        			<executions>
+						<execution>
+							<id>unpack</id>
+							<phase>initialize</phase>
+							<goals>
+							<goal>unpack</goal>
+							</goals>
+							<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>org.onap.portal.sdk</groupId>
+									<artifactId>epsdk-app-overlay</artifactId>
+									<version>${epsdk.version}</version>
+									<type>war</type>
+									<overWrite>false</overWrite>
+									<includes>ngapp/src/app/pages/analytics/**</includes>
+									<outputDirectory>${basedir}/</outputDirectory>
+								</artifactItem>
+							</artifactItems>
+							<overWriteReleases>true</overWriteReleases>
+							<overWriteSnapshots>true</overWriteSnapshots>
+							</configuration>
+						</execution>
+					</executions>
+						
+        			
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>3.0.2</version>
+				<executions>
+
+					<execution>
+						<id>copy-analytics</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${basedir}/src/app/pages/</outputDirectory>
+							
+							<resources>
+								<resource>
+									<directory>${basedir}/ngapp/src/app/pages</directory>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+
+				</executions>
 			</plugin>
 
 			<plugin>
