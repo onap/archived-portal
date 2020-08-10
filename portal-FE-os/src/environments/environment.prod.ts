@@ -1,5 +1,6 @@
 export const environment = {
   production: true,
+  baseUrl: '',
   "api": {
     "singleAppInfo": "portalApi/singleAppInfo",
     "singleAppInfoById": "portalApi/singleAppInfoById",

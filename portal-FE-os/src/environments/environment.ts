@@ -4,6 +4,7 @@
 
 export const environment = {
   production: false,
+  baseUrl: 'http://www.portal.onap.org:9080/portal-be-os/',
   "api": {
     "singleAppInfo": "http://www.portal.onap.org:9080/portal-be-os/portalApi/singleAppInfo",
     "singleAppInfoById": "http://www.portal.onap.org:9080/portal-be-os/portalApi/singleAppInfoById",
