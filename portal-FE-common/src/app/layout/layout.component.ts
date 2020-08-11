@@ -45,6 +45,8 @@ import { Component, OnInit } from '@angular/core';
 export class LayoutComponent implements OnInit {
 
     collapedSideBar: boolean;
+	language: string;
+
 
     constructor() {}
 
@@ -52,5 +54,9 @@ export class LayoutComponent implements OnInit {
 
     receiveCollapsed($event) {
         this.collapedSideBar = $event;
+    }
+	
+	setLanguage(lang) {
+        this.language= lang;
     }
 }

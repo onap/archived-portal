@@ -38,7 +38,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { LayoutComponent } from './layout.component';
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 describe('LayoutComponent', () => {
   let component: LayoutComponent;
@@ -65,4 +65,4 @@ describe('LayoutComponent', () => {
 class AppheaderStubComponent {}
 
 @Component({selector: 'app-tabbar', template: ''})
-class AppTabBarStubComponent { }
+class AppTabBarStubComponent { @Input() language: string; }

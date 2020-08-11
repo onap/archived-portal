@@ -61,7 +61,19 @@ export class MenusService {
 
   setFavoriteItem(menuId) {
     return this.http.post(this.apiUrl.setFavoriteItem, menuId);
+  }
+  
+  getAllLanguages() {
+    return this.http.get(this.apiUrl.getLanguages);
+  }
 
+  setLanguage(langId, loginId) {
+    const body = { languageId: langId}
+    return this.http.post(this.apiUrl.updateLang.replace(':loginId',loginId ), body);
+  }
+
+  getCurrentLang(loginId) {
+    return this.http.get(this.apiUrl.getCurrentLang.replace(':loginId',loginId ));
   }
 
   removeFavoriteItem(menuId) {

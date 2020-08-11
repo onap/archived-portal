@@ -35,7 +35,7 @@
  *
  * 
  */
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { UserProfileService, MenusService } from 'src/app/shared/services';
 import { CookieService } from 'ngx-cookie-service';
@@ -60,6 +60,10 @@ export class HeaderComponent implements OnInit {
     brandName: string;
     brandLogoImagePath: string;
     isSystemUser: boolean = false;
+	languages: string[] = [];
+    result: any;
+	
+    @Output() languageEvent = new EventEmitter();
 
     constructor(public router: Router, private userProfileService: UserProfileService, private menusService: MenusService, private cookieService: CookieService) {
 
@@ -87,6 +91,20 @@ export class HeaderComponent implements OnInit {
         if(this.api.brandLogoImagePath != ''){
            this.brandLogoImagePath = this.api.brandLogoImagePath;
         }
+		
+		this.menusService.getAllLanguages().subscribe(data =>{
+        this.result = data;
+            for(let lang of this.result.languageList ){
+                this.languages.push(lang);
+            }
+			
+        this.menusService.getCurrentLang(this.loginSnippetUserid).subscribe(data=>{
+        this.result = data;
+                this.languages.map((obj:any)=>{
+                    obj.selected = obj.languageId == parseInt(this.result.languageId);
+                })   ;
+            });
+        });
     }
 
     getUserInformation() {
@@ -195,5 +213,13 @@ export class HeaderComponent implements OnInit {
 
     onLoggedout() {
         localStorage.removeItem('isLoggedin');
+    }
+	
+	setLanguage(langId : string){
+        
+        this.menusService.setLanguage(langId, this.loginSnippetUserid).subscribe(data =>{
+            console.log("Language Applied :", data);
+            this.languageEvent.emit(langId);
+        });
     }
 }

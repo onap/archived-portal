@@ -35,7 +35,7 @@
  *
  * 
  */
-import { Component, Output, EventEmitter, OnInit, Input } from '@angular/core';
+import { Component, Output, EventEmitter, OnInit, Input, OnChanges } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { SidebarService } from '../../../shared/services/index'
 
@@ -57,6 +57,9 @@ export class SidebarComponent implements OnInit {
     menuData: Array<object> = [];
     page: any;
 
+    languageFinal : string;
+    @Input() langFromTab:string;
+
     @Output() collapsedEvent = new EventEmitter<boolean>();
 
     constructor(public router: Router, public sidebarService: SidebarService) {
@@ -71,64 +74,74 @@ export class SidebarComponent implements OnInit {
         });
     }
 
-    ngOnInit() {
+    ngOnChanges() {
+        this.changeLang(this.langFromTab);
+    }
+    
+    changeLang(lang){
+        this.menuData=[];
         this.isActive = false;
         this.collapsed = false;
+        this.languageFinal=lang;
         this.showMenu = '';
         this.pushRightClass = 'push-right';
         this.sidebarService.getLeftMenu()
-            .subscribe(data => {
-                this.result = data;
-                if (this.result.data && this.result.data2) {
-                    this.leftParentData = JSON.parse(this.result.data);
-                    this.leftChildData = JSON.parse(this.result.data2);
-                } else {
-                    this.labelName = this.result.label;
-                    this.leftParentData = this.result.navItems;
-                    this.showOnlyParentMenu = true;
+        .subscribe(data => {
+            this.result = data;
+            if (this.result.data && this.result.data2) {
+                this.leftParentData = JSON.parse(this.result.data);
+                this.leftChildData = JSON.parse(this.result.data2);
+            } else {
+                this.labelName = this.result.label;
+                this.leftParentData = this.result.navItems;
+                this.showOnlyParentMenu = true;
+            }
+
+            for (var i = 0; i < this.leftParentData.length; i++) {
+                var parentItem = {
+                    name: null,
+                    imageSrc: null,
+                    href: null,
+                    menuItems: [],
+                    state: null
                 }
+                if (this.showOnlyParentMenu) {
+                    parentItem.name = this.leftParentData[i].name;
+                    parentItem.imageSrc = this.leftParentData[i].imageSrc;
+                    parentItem.state = '/'+this.leftParentData[i].state;
+                } else {
+                    parentItem.name = this.leftParentData[i].label;
+                    parentItem.imageSrc = this.leftParentData[i].imageSrc;
+                }
+                // Add link to items with no subitems
+                if (!this.showOnlyParentMenu) {
+                    if (this.leftChildData[i].length == 0)
+                        parentItem.href = this.leftParentData[i].action;
 
-                for (var i = 0; i < this.leftParentData.length; i++) {
-                    var parentItem = {
-                        name: null,
-                        imageSrc: null,
-                        href: null,
-                        menuItems: [],
-                        state: null
-                    }
-                    if (this.showOnlyParentMenu) {
-                        parentItem.name = this.leftParentData[i].name;
-                        parentItem.imageSrc = this.leftParentData[i].imageSrc;
-                        parentItem.state = '/'+this.leftParentData[i].state;
-                    } else {
-                        parentItem.name = this.leftParentData[i].label;
-                        parentItem.imageSrc = this.leftParentData[i].imageSrc;
-                    }
-                    // Add link to items with no subitems
-                    if (!this.showOnlyParentMenu) {
-                        if (this.leftChildData[i].length == 0)
-                            parentItem.href = this.leftParentData[i].action;
+                    for (var j = 0; j < this.leftChildData[i].length; j++) {
 
-                        for (var j = 0; j < this.leftChildData[i].length; j++) {
+                        var childItem = {
+                            name: null,
+                            href: null
+                        };
+                        if (this.leftChildData[i][j].label != null && this.leftChildData[i][j].label.length > 0) {
 
-                            var childItem = {
-                                name: null,
-                                href: null
-                            };
-                            if (this.leftChildData[i][j].label != null && this.leftChildData[i][j].label.length > 0) {
-
-                                childItem.name = this.leftChildData[i][j].label;
-                                childItem.href = this.leftChildData[i][j].action;
-                                parentItem.menuItems.push(childItem);
-                            }
+                            childItem.name = this.leftChildData[i][j].label;
+                            childItem.href = this.leftChildData[i][j].action;
+                            parentItem.menuItems.push(childItem);
                         }
                     }
-                    this.menuData.push(parentItem);
                 }
+                this.menuData.push(parentItem);
+            }
 
-            });
-
+        });        
     }
+
+    ngOnInit() {
+        this.changeLang("");
+    }
+
     eventCalled() {
         this.isActive = !this.isActive;
     }
