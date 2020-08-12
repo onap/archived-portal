@@ -99,6 +99,35 @@ import { BulkUserComponent } from './users/bulk-user/bulk-user.component';
 import { InformationTooltipComponent } from './information-tooltip/information-tooltip.component';
 import { UserDetailsFormComponent } from './users/user-details-form/user-details-form.component';
 import { MatTooltipModule } from '@angular/material';
+import { HeaderTabsWrapperComponent } from './analytics/Report_List/header-tabs-wrapper-component/header-tabs-wrapper.component';
+import { RunReportFormFieldsComponent } from './analytics/Report_List/Report/run/run-report-form-fields/run-report-form-fields.component';
+import { DisplayAreaComponent } from './analytics/Report_List/display-area/display-area.component';
+import { HeaderTabsComponent } from './analytics/Report_List/header-tabs-component/header-tabs.component';
+import { MatTableModule, MatPaginatorModule, MatSortModule, MatTabsModule, MatButtonToggleModule, MatTooltipModule, MatExpansionModule, MatFormFieldModule, MatGridListModule, MatCardModule, MatMenuModule, MatButtonModule } from '@angular/material';
+import { DefinitionComponent } from './analytics/Report_List/Report/definition/definition.component';
+import { SQLComponent } from './analytics/Report_List/Report/sql/sql.component';
+import { ColumnsComponent } from './analytics/Report_List/Report/columns/columns.component';
+import { FormFieldsComponent } from './analytics/Report_List/Report/form-fields/form-fields.component';
+import { ChartWizardComponent } from './analytics/Report_List/Report/chart-wizard/chart-wizard.component';
+import { SecurityComponent } from './analytics/Report_List/Report/security/security.component';
+import { LogComponent } from './analytics/Report_List/Report/log/log.component';
+import { RunComponent } from './analytics/Report_List/Report/run/run.component';
+import { DefinitionSaveDialogComponent } from './analytics/Report_List/Report/definition/definition-save-dialog/definition-save-dialog.component';
+import { SQLSaveChangesDialogComponent } from './analytics/Report_List/Report/sql/sql-save-changes-dialog/sql-save-changes-dialog.component';
+import { SQLValidateChangesDialogComponent } from './analytics/Report_List/Report/sql/sql-validate-changes-dialog/sql-validate-changes-dialog.component';
+import { SQLValidateSuccessDialogComponent } from './analytics/Report_List/Report/sql/sql-validate-success-dialog/sql-validate-success-dialog.component';
+import { SQLValidateErrorDialogComponent } from './analytics/Report_List/Report/sql/sql-validate-error-dialog/sql-validate-error-dialog.component';
+import { ReportComponent } from './analytics/Report_List/Report/report.component';
+import { DashboardReportGridComponent } from './analytics/Report_List/Report/definition/dashboard-report-grid/dashboard-report-grid.component';
+import { DataChartComponent } from './analytics/Report_List/Report/definition/dashboard-report-grid/data-chart/data-chart.component';
+import { RunDashboardReportComponent } from './analytics/Report_List/Report/run/run-report/run-dashboard-report/run-dashboard-report.component';
+import { EditDrillDownLinkComponent } from './analytics/Report_List/Report/columns/columns-edit-component/edit-drill-down-link/edit-drill-down-link.component';
+import { FormFieldsAddEditComponent } from './analytics/Report_List/Report/form-fields/form-fields-add-edit/form-fields-add-edit.component';
+import { RunReportResultSetComponent } from './analytics/Report_List/Report/run/run-report-result-set/run-report-result-set.component';
+import { ColumnListComponent } from './analytics/Report_List/Report/columns/column-list/column-list.component';
+import { ColumnsEditComponent } from './analytics/Report_List/Report/columns/columns-edit-component/columns-edit.component';
+import { ReportListComponent } from './analytics/Report_List/report-list.component';
+import { RunReportComponent } from './analytics/Report_List/Report/run/run-report/run-report.component';
 
 
 @NgModule({
@@ -152,7 +181,35 @@ import { MatTooltipModule } from '@angular/material';
     FunctionalMenuDialogComponent,
     GetAccessComponent,
     UserDetailsFormComponent,
-    InformationTooltipComponent
+    InformationTooltipComponent,
+	RunReportFormFieldsComponent,
+    HeaderTabsWrapperComponent,
+    DisplayAreaComponent,
+    HeaderTabsComponent,
+    DefinitionComponent,
+    SQLComponent,
+    ColumnsComponent,
+    FormFieldsComponent,
+    ChartWizardComponent,
+    SecurityComponent,
+    LogComponent,
+    RunComponent,
+    DefinitionSaveDialogComponent,
+    SQLSaveChangesDialogComponent,
+    SQLValidateChangesDialogComponent,
+    SQLValidateSuccessDialogComponent,
+    SQLValidateErrorDialogComponent,
+    ReportComponent,
+    DashboardReportGridComponent, 
+    DataChartComponent, 
+    RunDashboardReportComponent,
+    EditDrillDownLinkComponent,
+    FormFieldsAddEditComponent,
+    RunReportResultSetComponent,
+    ColumnListComponent,
+    ColumnsEditComponent,
+    ReportListComponent,
+    RunReportComponent
   ],
   imports: [
     CommonModule,
@@ -167,7 +224,18 @@ import { MatTooltipModule } from '@angular/material';
     MatCheckboxModule,
     FormsModule,
     PluginModule,
-    MatTooltipModule
+    MatTooltipModule,
+	MatTableModule,
+    MatPaginatorModule,
+    MatSortModule,
+    MatTabsModule,
+    MatButtonToggleModule,
+    MatExpansionModule,
+    MatFormFieldModule,
+    MatGridListModule,
+    MatCardModule,
+    MatMenuModule,
+    MatButtonModule
   ],
   entryComponents: [
     SchedulerComponent,
