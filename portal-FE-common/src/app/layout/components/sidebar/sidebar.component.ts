@@ -75,14 +75,15 @@ export class SidebarComponent implements OnInit {
     }
 
     ngOnChanges() {
-        this.changeLang(this.langFromTab);
+        if(this.langFromTab)
+           this.changeLang();
     }
     
-    changeLang(lang){
+    changeLang(){
         this.menuData=[];
         this.isActive = false;
         this.collapsed = false;
-        this.languageFinal=lang;
+       // this.languageFinal=lang;
         this.showMenu = '';
         this.pushRightClass = 'push-right';
         this.sidebarService.getLeftMenu()
@@ -139,7 +140,7 @@ export class SidebarComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.changeLang("");
+        this.changeLang();
     }
 
     eventCalled() {

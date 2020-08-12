@@ -218,7 +218,6 @@ export class HeaderComponent implements OnInit {
 	setLanguage(langId : string){
         
         this.menusService.setLanguage(langId, this.loginSnippetUserid).subscribe(data =>{
-            console.log("Language Applied :", data);
             this.languageEvent.emit(langId);
         });
     }
