@@ -141,7 +141,7 @@ public class EPLeftMenuServiceImpl implements EPLeftMenuService {
 			MenuData menuData = iterator.next();
 			for (int index = 0; index < displayTexts.size(); index++) {
 				DisplayText displayText = displayTexts.get(index);
-				if (menuData.getId() == displayText.getTextId()) {
+				if (menuData.getId().equals(displayText.getTextId())) {
 					menuData.setLabel(displayText.getLabel());
 					break;
 				}
