@@ -5,6 +5,16 @@
 
 Portal Platform Release Notes
 =============================
+
+Version: 2.6.0 Maintenance
+--------------
+:Release Date: 2020-08-24
+
+El Alto Maintenance Release 1
+
+The primary goal of this maintenance release is to address expired certificates.
+PORTAL-878 Portal certificate renewal pwd patch
+
 Version: 2.6.0
 --------------
 :Release Date: 2019-10-03
@@ -12,7 +22,6 @@ Version: 2.6.0
 .. toctree::
     :maxdepth: 1
 
-Maintanance release with bug fixes and security enhancements.
 
 **No New Features**
 
