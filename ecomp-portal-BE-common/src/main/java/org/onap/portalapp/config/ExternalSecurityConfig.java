@@ -69,6 +69,11 @@ public class ExternalSecurityConfig extends WebSecurityConfigurerAdapter {
 				return false;
 			}
 		};
+		
+		
+		//Added this code to enable Raptor charts within Iframe
+		http.headers().frameOptions().sameOrigin();
+		
 		if(MusicUtil.isMusicEnable())
 			http.csrf().csrfTokenRepository(MusicCookieCsrfTokenRepository.withHttpOnlyFalse()).requireCsrfProtectionMatcher(csrfRequestMatcher);
 		else
