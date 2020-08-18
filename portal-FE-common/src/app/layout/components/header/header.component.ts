@@ -92,17 +92,20 @@ export class HeaderComponent implements OnInit {
            this.brandLogoImagePath = this.api.brandLogoImagePath;
         }
 		
-		this.menusService.getAllLanguages().subscribe(data =>{
-        this.result = data;
+	}
+
+    getLanguageInfo() {
+        this.menusService.getAllLanguages().subscribe(data =>{
+            this.result = data;
             for(let lang of this.result.languageList ){
                 this.languages.push(lang);
             }
-			
-        this.menusService.getCurrentLang(this.loginSnippetUserid).subscribe(data=>{
-        this.result = data;
+
+            this.menusService.getCurrentLang(this.loginSnippetUserid).subscribe(data=>{
+            this.result = data;
                 this.languages.map((obj:any)=>{
                     obj.selected = obj.languageId == parseInt(this.result.languageId);
-                })   ;
+                })   ;                
             });
         });
     }
@@ -123,6 +126,7 @@ export class HeaderComponent implements OnInit {
                 this.loginSnippetEmail = res.email;
                 this.loginSnippetUserid = res.userId;
                 this.lastLogin = Date.parse(res.last_login);
+                this.getLanguageInfo();
             }
             if(res != null && res.isSystemUser === 'true'){
                 this.isSystemUser = true;
