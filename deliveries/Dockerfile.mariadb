@@ -6,6 +6,13 @@ ARG DB_SCRIPT_DIR=${DB_SCRIPT_DIR}
 #Add config file
 COPY my.cnf /etc/mysql/my.cnf
 
+# mysql user and group already created by mariadb image
+
+ARG user=mysql
+ARG group=mysql
+
+RUN mkdir /opt/$user && chown -R $user:$group /opt/$user
+
 # Scripts are executed in alphabetical order
 
 # Portal DDL and DML at v3.2
@@ -20,3 +27,8 @@ COPY ${DB_SCRIPT_DIR}/EcompSdkDDLMySql_3_2_Common.sql       /docker-entrypoint-i
 COPY ${DB_SCRIPT_DIR}/EcompSdkDDLMySql_3_2_OS.sql           /docker-entrypoint-initdb.d/
 COPY ${DB_SCRIPT_DIR}/EcompSdkDMLMySql_3_2_Common.sql       /docker-entrypoint-initdb.d/
 COPY ${DB_SCRIPT_DIR}/EcompSdkDMLMySql_3_2_OS.sql           /docker-entrypoint-initdb.d/
+
+RUN chown $user:$group /opt /var -R
+RUN chmod 777 /var/lib/mysql
+
+USER mysql
