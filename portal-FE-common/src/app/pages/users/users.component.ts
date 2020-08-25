@@ -212,7 +212,8 @@ export class UsersComponent implements OnInit {
           this.accountUsers = accountUsers;
           if (!accountUsers || accountUsers.length === 0) {
             this.noUsersInApp = true;
-			this.showSpinner = false;
+            this.showSpinner = false;
+            this.accountUsers = [];
             return null;
           }
           this.showSpinner = false;
