@@ -15,7 +15,7 @@ RUN mkdir /opt/$user && chown -R $user:$group /opt/$user
 
 # Scripts are executed in alphabetical order
 
-# Portal DDL and DML at v3.3
+# Portal DDL and DML at  v3.3
 COPY ${DB_SCRIPT_DIR}/PortalDDLMySql_3_3_Common.sql /docker-entrypoint-initdb.d/
 COPY ${DB_SCRIPT_DIR}/PortalDDLMySql_3_2_OS.sql     /docker-entrypoint-initdb.d/
 COPY ${DB_SCRIPT_DIR}/PortalDMLMySql_3_3_Common.sql /docker-entrypoint-initdb.d/
