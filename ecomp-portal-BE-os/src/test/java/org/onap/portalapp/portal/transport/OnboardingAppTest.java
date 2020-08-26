@@ -35,14 +35,14 @@ public class OnboardingAppTest {
 		oba.setUebTopicName("topicName");
 		oba.setRestrictedApp(false);
 		oba2.normalize();
-		oba.name="test";
-		oba.appPassword="pass";
-		oba.username="username";
+		oba.setAppName("test");
+		oba.setAppBasicAuthPassword("pass");
+		oba.setAppBasicAuthUsername("username");
 		oba.normalize();
-		assertEquals("test", oba.name);
-		assertEquals("key", oba.uebKey);
-		assertEquals("secret", oba.uebSecret);
-		assertEquals(false, oba.restrictedApp);
+		assertEquals("test", oba.getAppName());
+		assertEquals("key", oba.getUebKey());
+		assertEquals("secret", oba.getUebSecret());
+		assertEquals(false, oba.getRestrictedApp());
 		
 	}
 
