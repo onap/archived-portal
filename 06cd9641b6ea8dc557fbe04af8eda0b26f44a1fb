@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "abb8031b_71d7a545",
+        "filename": "deliveries/Dockerfile.mariadb",
+        "patchSetId": 1
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 679
+      },
+      "writtenOn": "2020-08-27T14:36:14Z",
+      "side": 1,
+      "message": "move 3_2 to 3_3",
+      "range": {
+        "startLine": 18,
+        "startChar": 0,
+        "endLine": 18,
+        "endChar": 29
+      },
+      "revId": "06cd9641b6ea8dc557fbe04af8eda0b26f44a1fb",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
