@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "21112e2b_db1a17b6",
+        "filename": "ecomp-portal-BE-os/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 361,
+      "author": {
+        "id": 679
+      },
+      "writtenOn": "2020-08-31T14:55:41Z",
+      "side": 1,
+      "message": "please remove commented version",
+      "revId": "5ee7a0464bac9cc235b931c6099067b8822a4100",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
