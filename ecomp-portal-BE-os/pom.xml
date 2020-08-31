@@ -358,7 +358,8 @@
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi</artifactId>
-			<version>3.15</version>
+			<!-- <version>3.15</version> -->
+			<version>4.1.2</version>
 			<exclusions>
 				<exclusion>
 					<groupId>commons-logging</groupId>
@@ -428,11 +429,12 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		<dependency>
+		<!-- <dependency>
 			<groupId>commons-codec</groupId>
 			<artifactId>commons-codec</artifactId>
 			<version>1.9</version>
-		</dependency>
+			<version>1.14</version>
+		</dependency> -->
 		<dependency>
 			<groupId>com.att.nsa</groupId>
 			<artifactId>cambriaClient</artifactId>
