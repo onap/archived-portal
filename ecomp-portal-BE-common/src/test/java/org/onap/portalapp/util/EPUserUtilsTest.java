@@ -333,7 +333,7 @@ public class EPUserUtilsTest {
 	@Test(expected=RoleFunctionException.class)
 	public void decodeFunctionCodeTestWithException() throws DecoderException, RoleFunctionException {
 		PowerMockito.mockStatic(Hex.class);
-		PowerMockito.when(Hex.decodeHex(Matchers.any())).thenThrow(DecoderException.class);
+		PowerMockito.when(Hex.decodeHex(Matchers.anyString().toCharArray())).thenThrow(DecoderException.class);
 		EPUserUtils.decodeFunctionCode("n+");
 	}
 	
