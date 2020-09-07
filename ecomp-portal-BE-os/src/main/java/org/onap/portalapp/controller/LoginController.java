@@ -59,9 +59,11 @@ import org.onap.portalapp.command.EPLoginBean;
 import org.onap.portalapp.portal.domain.SharedContext;
 import org.onap.portalapp.portal.service.EPLoginService;
 import org.onap.portalapp.portal.service.EPRoleFunctionService;
+import org.onap.portalapp.portal.service.ExternalAccessRolesService;
 import org.onap.portalapp.portal.service.SharedContextService;
 import org.onap.portalapp.portal.utils.EPCommonSystemProperties;
 import org.onap.portalapp.portal.utils.EPSystemProperties;
+import org.onap.portalapp.portal.utils.EcompPortalUtils;
 import org.onap.portalapp.util.EPUserUtils;
 import org.onap.portalapp.util.SessionCookieUtil;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
@@ -103,6 +105,8 @@ public class LoginController extends EPUnRestrictedBaseController implements Log
 	private SharedContextService sharedContextService;
 	@Autowired
 	private EPRoleFunctionService ePRoleFunctionService;
+	@Autowired
+	private ExternalAccessRolesService externalAccessRolesService ;
 
 	private String viewName = "login";
 
@@ -125,6 +129,7 @@ public class LoginController extends EPUnRestrictedBaseController implements Log
 	@ResponseBody
 	public String loginValidate(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
+		String orgUserId = "";
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		JsonNode root = mapper.readTree(request.getReader());
@@ -179,6 +184,18 @@ public class LoginController extends EPUnRestrictedBaseController implements Log
 			SessionCookieUtil.setUpUserIdCookie(request, response, loginId);
 
 			JSONObject j = new JSONObject("{success: success}");
+			
+			try {
+				//if app is centralized then sync user roles from the external auth system
+				orgUserId = commandBean.getUser().getOrgUserId();
+				if(EcompPortalUtils.checkIfRemoteCentralAccessAllowed()) {
+					externalAccessRolesService.syncApplicationUserRolesFromExtAuthSystem(orgUserId);
+					logger.info(EELFLoggerDelegate.errorLogger, "Sync: Sync Application UserRoles From ExtAuthSystem is done..");
+				}
+			} catch (Exception e) {
+				logger.info(EELFLoggerDelegate.errorLogger, "Sync: Sync Application UserRoles From ExtAuthSystem Faild..",
+						e);
+			}
 
 			return j.toString();
 		}
