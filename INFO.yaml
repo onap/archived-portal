@@ -4,9 +4,9 @@ project_creation_date: '2017-02-02'
 project_category: ''
 lifecycle_state: 'Incubation'
 project_lead: &onap_portal_ptl
-    name: 'Manoop Talasila'
-    email: 'mt2061@att.com'
-    id: 'mt2061'
+    name: 'Sunder Tattavarada'
+    email: 'statta@research.att.com'
+    id: 'statta'
     company: 'ATT'
     timezone: 'America/New_York'
 primary_contact: *onap_portal_ptl
@@ -37,9 +37,9 @@ committers:
       id: 'mt2061'
       timezone: 'America/New_York'
     - name: 'Sunder Tattavarada'
-      email: 'st782s@att.com'
+      email: 'statta@research.att.com'
       company: 'ATT'
-      id: 'st782s'
+      id: 'statta'
       timezone: 'America/New_York'
     - name: 'Lorraine A Welch'
       email: 'lb2391@att.com'
@@ -48,3 +48,4 @@ committers:
       timezone: 'America/New_York'
 tsc:
     approval: 'https://lists.onap.org/pipermail/onap-tsc'
+    
