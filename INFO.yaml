@@ -6,7 +6,7 @@ lifecycle_state: 'Incubation'
 project_lead: &onap_portal_ptl
     name: 'Sunder Tattavarada'
     email: 'statta@research.att.com'
-    id: 'statta'
+    id: 'tattasunder'
     company: 'ATT'
     timezone: 'America/New_York'
 primary_contact: *onap_portal_ptl
@@ -39,7 +39,7 @@ committers:
     - name: 'Sunder Tattavarada'
       email: 'statta@research.att.com'
       company: 'ATT'
-      id: 'statta'
+      id: 'tattasunder'
       timezone: 'America/New_York'
     - name: 'Lorraine A Welch'
       email: 'lb2391@att.com'
