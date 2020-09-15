@@ -40,12 +40,13 @@ RUN cd ${PORTALCONTEXT} && unzip -q *.war && rm *.war
 COPY ${FE_DIR} ${PORTALCONTEXT}/public
 
 VOLUME ${TOMCATHOME}/logs
+RUN mkdir -p ${TOMCATHOME}/temp
 
 # Switch to unprivileged user
 RUN addgroup -g 1000 -S portal && adduser -u 1000 -S portal -G portal
+RUN chown portal:portal ${TOMCATHOME}/temp
 USER portal
 
-# Switch back to root
 WORKDIR /
 
 # Define commonly used ENV variables
