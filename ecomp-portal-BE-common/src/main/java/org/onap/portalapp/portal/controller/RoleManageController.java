@@ -258,21 +258,13 @@ public class RoleManageController extends EPRestrictedBaseController {
 								"Deleted role for app:" + app.getId() + " and role:'" + roleId + "'",
 								PortalConstants.AUDIT_LOG_COMMENT_SIZE));
 						auditService.logActivity(auditLog, null);
-						MDC.put(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP,
-								EPEELFLoggerAdvice.getCurrentDateTimeUTC());
-						MDC.put(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP,
-								EPEELFLoggerAdvice.getCurrentDateTimeUTC());
-						EcompPortalUtils.calculateDateTimeDifferenceForLog(
-								MDC.get(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP),
-								MDC.get(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP));
-						logger.info(EELFLoggerDelegate.auditLogger,
-								EPLogUtil.formatAuditLogMessage("RoleManageController.removeRole",
-										EcompAuditLog.CD_ACTIVITY_EXTERNAL_AUTH_DELETE_ROLE,
-										String.valueOf(requestedUser.getId()), requestedUser.getOrgUserId(),
-										roleId.toString()));
-						MDC.remove(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP);
-						MDC.remove(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP);
-						MDC.remove(SystemProperties.MDC_TIMER);
+						String auditMessageInfo = EPLogUtil.formatAuditLogMessage("RoleManageController.removeRole",
+								EcompAuditLog.CD_ACTIVITY_EXTERNAL_AUTH_DELETE_ROLE,
+								String.valueOf(requestedUser.getId()), requestedUser.getOrgUserId(),
+								roleId.toString());		
+				
+						EPLogUtil.logAuditMessage(logger, auditMessageInfo);
+						
 					} else {
 						restCallStatus = "Remove Role failed";
 						responseMap.put("error", externalRequestFieldsValidator.getDetailMessage());
@@ -379,19 +371,11 @@ public class RoleManageController extends EPRestrictedBaseController {
 								PortalConstants.AUDIT_LOG_COMMENT_SIZE));
 						auditLog.setAffectedRecordId(user.getOrgUserId());
 						auditService.logActivity(auditLog, null);
-						MDC.put(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP,
-								EPEELFLoggerAdvice.getCurrentDateTimeUTC());
-						MDC.put(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP,
-								EPEELFLoggerAdvice.getCurrentDateTimeUTC());
-						EcompPortalUtils.calculateDateTimeDifferenceForLog(
-								MDC.get(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP),
-								MDC.get(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP));
-						logger.info(EELFLoggerDelegate.auditLogger,
-								EPLogUtil.formatAuditLogMessage("RoleManageController.saveRole", activityCode,
-										String.valueOf(user.getId()), user.getOrgUserId(), role.getName()));
-						MDC.remove(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP);
-						MDC.remove(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP);
-						MDC.remove(SystemProperties.MDC_TIMER);
+						String auditMessageInfo = EPLogUtil.formatAuditLogMessage("RoleManageController.saveRole", activityCode,
+								String.valueOf(user.getId()), user.getOrgUserId(), role.getName());		
+				
+						EPLogUtil.logAuditMessage(logger, auditMessageInfo);
+						
 						responseMap.put("status", "Success");
 						responseMap.put("role", domainRole);
 					} else {
@@ -573,16 +557,10 @@ public class RoleManageController extends EPRestrictedBaseController {
 				"saveRoleFunction role for app:" + app.getId() + " and function:'" + code + "'",
 				PortalConstants.AUDIT_LOG_COMMENT_SIZE));
 		auditService.logActivity(auditLog, null);
-		MDC.put(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP, EPEELFLoggerAdvice.getCurrentDateTimeUTC());
-		MDC.put(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP, EPEELFLoggerAdvice.getCurrentDateTimeUTC());
-		EcompPortalUtils.calculateDateTimeDifferenceForLog(MDC.get(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP),
-				MDC.get(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP));
-		logger.info(EELFLoggerDelegate.auditLogger,
-				EPLogUtil.formatAuditLogMessage("RoleManageController.saveRoleFunction", activityCode,
-						String.valueOf(requestedUser.getId()), requestedUser.getOrgUserId(), code));
-		MDC.remove(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP);
-		MDC.remove(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP);
-		MDC.remove(SystemProperties.MDC_TIMER);
+		String auditMessageInfo = EPLogUtil.formatAuditLogMessage("RoleManageController.saveRoleFunction", activityCode,
+				String.valueOf(requestedUser.getId()), requestedUser.getOrgUserId(), code);		
+
+		EPLogUtil.logAuditMessage(logger, auditMessageInfo);
 	}
 
 	private void addIfTypeActionDoesNotExits(CentralV2RoleFunction domainRoleFunction) {
@@ -645,21 +623,12 @@ public class RoleManageController extends EPRestrictedBaseController {
 												+ domainRoleFunction.getCode() + "'",
 										PortalConstants.AUDIT_LOG_COMMENT_SIZE));
 						auditService.logActivity(auditLog, null);
-						MDC.put(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP,
-								EPEELFLoggerAdvice.getCurrentDateTimeUTC());
-						MDC.put(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP,
-								EPEELFLoggerAdvice.getCurrentDateTimeUTC());
-						EcompPortalUtils.calculateDateTimeDifferenceForLog(
-								MDC.get(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP),
-								MDC.get(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP));
-						logger.info(EELFLoggerDelegate.auditLogger,
-								EPLogUtil.formatAuditLogMessage("RoleManageController.removeRoleFunction",
-										EcompAuditLog.CD_ACTIVITY_EXTERNAL_AUTH_DELETE_FUNCTION,
-										String.valueOf(user.getId()), user.getOrgUserId(),
-										domainRoleFunction.getCode()));
-						MDC.remove(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP);
-						MDC.remove(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP);
-						MDC.remove(SystemProperties.MDC_TIMER);
+						String auditMessageInfo = EPLogUtil.formatAuditLogMessage("RoleManageController.removeRoleFunction",
+								EcompAuditLog.CD_ACTIVITY_EXTERNAL_AUTH_DELETE_FUNCTION,
+								String.valueOf(user.getId()), user.getOrgUserId(),
+								domainRoleFunction.getCode());		
+
+						EPLogUtil.logAuditMessage(logger, auditMessageInfo);
 						logger.info(EELFLoggerDelegate.auditLogger,
 								"Remove role function " + domainRoleFunction.getName());
 					}
