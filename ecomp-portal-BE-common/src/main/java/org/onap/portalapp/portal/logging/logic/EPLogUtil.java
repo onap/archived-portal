@@ -38,18 +38,28 @@
 package org.onap.portalapp.portal.logging.logic;
 
 import static com.att.eelf.configuration.Configuration.MDC_ALERT_SEVERITY;
+import static com.att.eelf.configuration.Configuration.MDC_SERVICE_NAME;
 
+import java.net.InetAddress;
 import java.text.MessageFormat;
 
+import org.onap.portalapp.portal.domain.EcompAuditLog;
+import org.onap.portalapp.portal.logging.aop.EPEELFLoggerAdvice;
 import org.onap.portalapp.portal.logging.format.EPAppMessagesEnum;
+import org.onap.portalapp.portal.utils.EPCommonSystemProperties;
+import org.onap.portalapp.portal.utils.EcompPortalUtils;
 import org.onap.portalsdk.core.logging.format.AlarmSeverityEnum;
 import org.onap.portalsdk.core.logging.format.ErrorSeverityEnum;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
+import org.onap.portalsdk.core.util.SystemProperties;
 import org.slf4j.MDC;
 import org.springframework.http.HttpStatus;
 
+import com.att.eelf.configuration.Configuration;
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
+import com.att.eelf.configuration.EELFLogger.Level;
+
 
 public class EPLogUtil {
 
@@ -88,27 +98,27 @@ public class EPLogUtil {
 			AlarmSeverityEnum alarmSeverityEnum = epMessageEnum.getAlarmSeverity();
 			ErrorSeverityEnum errorSeverityEnum = epMessageEnum.getErrorSeverity();
 
-			MDC.put(MDC_ALERT_SEVERITY, alarmSeverityEnum.severity());
+			MDC.put("ErrorCategory", errorSeverityEnum.name());
 			MDC.put("ErrorCode", epMessageEnum.getErrorCode());
 			MDC.put("ErrorDescription", epMessageEnum.getErrorDescription());
-			MDC.put("ClassName", EPLogUtil.class.getName());
 
 			String resolution = EPLogUtil
 					.formatMessage(epMessageEnum.getDetails() + " " + epMessageEnum.getResolution(), (Object[]) param);
 			if (errorSeverityEnum == ErrorSeverityEnum.WARN) {
-				errorLogger.warn(resolution);
+				EELFLoggerDelegate.logWrite(errorLogger, Level.WARN, resolution, null, null);
+				
 			} else if (errorSeverityEnum == ErrorSeverityEnum.INFO) {
-				errorLogger.info(resolution);
+				EELFLoggerDelegate.logWrite(errorLogger, Level.INFO, resolution, null, null);
 			} else {
-				errorLogger.error(resolution);
+				EELFLoggerDelegate.logWrite(errorLogger, Level.ERROR, resolution, null, null);
 			}
+			
 		} catch (Exception e) {
 			errorLogger.error("logEcompError failed", e);
 		} finally {
 			MDC.remove("ErrorCode");
 			MDC.remove("ErrorDescription");
-			MDC.remove("ClassName");
-			MDC.remove(MDC_ALERT_SEVERITY);
+			MDC.remove("ErrorCategory");
 		}
 	}
 
@@ -130,35 +140,43 @@ public class EPLogUtil {
 	@SuppressWarnings("static-access")
 	public static void logEcompError(EELFLoggerDelegate classLogger, EPAppMessagesEnum epMessageEnum, Throwable th,
 			String... param) {
-
+		//INFO, WARN, ERROR, FATAL
 		AlarmSeverityEnum alarmSeverityEnum = epMessageEnum.getAlarmSeverity();
 		ErrorSeverityEnum errorSeverityEnum = epMessageEnum.getErrorSeverity();
 
-		MDC.put(MDC_ALERT_SEVERITY, alarmSeverityEnum.severity());
+		MDC.put("ErrorCategory", errorSeverityEnum.name());
 		MDC.put("ErrorCode", epMessageEnum.getErrorCode());
 		MDC.put("ErrorDescription", epMessageEnum.getErrorDescription());
+		MDC.put(MDC_SERVICE_NAME, EPCommonSystemProperties.ECOMP_PORTAL_BE);
 
 		final String message = EPLogUtil.formatMessage(epMessageEnum.getDetails() + " " + epMessageEnum.getResolution(),
 				(Object[]) param);
 		if (errorSeverityEnum == ErrorSeverityEnum.INFO) {
-			if (th == null)
-				classLogger.info(classLogger.errorLogger, message);
-			else
-				classLogger.info(classLogger.errorLogger, message, th);
+			if (th == null) {
+				EELFLoggerDelegate.logWrite(classLogger.errorLogger, Level.INFO, message, null, null);
+			}
+			else {
+				EELFLoggerDelegate.logWrite(classLogger.errorLogger, Level.INFO, message, null, th.getMessage());
+			}
 		} else if (errorSeverityEnum == ErrorSeverityEnum.WARN) {
-			if (th == null)
-				classLogger.warn(classLogger.errorLogger, message);
-			else
-				classLogger.warn(classLogger.errorLogger, message, th);
+			if (th == null) {
+				EELFLoggerDelegate.logWrite(classLogger.errorLogger, Level.WARN, message, null, null);
+			}
+			else {
+				EELFLoggerDelegate.logWrite(classLogger.errorLogger, Level.WARN, message, null, th.getMessage());
+			}
 		} else {
-			if (th == null)
-				classLogger.error(classLogger.errorLogger, message);
-			else
-				classLogger.error(classLogger.errorLogger, message, th);
+			if (th == null) {
+				EELFLoggerDelegate.logWrite(classLogger.errorLogger, Level.ERROR, message, null, null);
+			}
+			else {
+				EELFLoggerDelegate.logWrite(classLogger.errorLogger, Level.ERROR, message, null, th.getMessage());
+			}
 		}
 
 		// Clean up
-		MDC.remove(MDC_ALERT_SEVERITY);
+		MDC.remove(MDC_SERVICE_NAME);
+		MDC.remove("ErrorCategory");
 		MDC.remove("ErrorCode");
 		MDC.remove("ErrorDescription");
 	}
@@ -181,6 +199,32 @@ public class EPLogUtil {
 		return sbFormattedMessage.toString();
 	}
 
+	public static void logAuditMessage(EELFLoggerDelegate classLogger, String message) {
+		MDC.put(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP, EPEELFLoggerAdvice.getCurrentDateTimeUTC());
+		MDC.put(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP, EPEELFLoggerAdvice.getCurrentDateTimeUTC());
+		EcompPortalUtils.calculateDateTimeDifferenceForLog(
+				MDC.get(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP),
+				MDC.get(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP));
+		MDC.put("CustomField1", "EXIT");
+		MDC.put("CustomField2", "InvocationID="+MDC.get(Configuration.MDC_KEY_REQUEST_ID));
+		try {
+			MDC.put(Configuration.MDC_SERVER_FQDN, InetAddress.getLocalHost().getCanonicalHostName());
+		} catch (Exception e) {
+			EELFLoggerDelegate.logWrite(classLogger.errorLogger, Level.WARN, message, null, " exception while setting IP adress.");
+		}
+		MDC.put(EPCommonSystemProperties.STATUS_CODE, "COMPLETE");
+		
+		EELFLoggerDelegate.logWrite(classLogger.auditLogger, Level.INFO, message, null, null);
+		MDC.remove(Configuration.MDC_SERVER_FQDN);
+		MDC.remove(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP);
+		MDC.remove(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP);
+		MDC.remove(EPCommonSystemProperties.STATUS_CODE);
+		MDC.remove(SystemProperties.MDC_TIMER);
+		MDC.remove("CustomField1");
+		MDC.remove("CustomField2");
+	}
+	
+	
 	/**
 	 * Builds a comma-separated string of values to document a user action.
 	 * 

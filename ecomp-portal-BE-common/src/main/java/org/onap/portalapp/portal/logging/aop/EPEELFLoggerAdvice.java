@@ -137,6 +137,45 @@ public class EPEELFLoggerAdvice {
 		}
 
 		EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(className);
+		logger.debug(EELFLoggerDelegate.debugLogger, "EPEELFLoggerAdvice#after: finished {}", methodName);
+		// add the metrics log
+		logger.info(EELFLoggerDelegate.metricsLogger,  methodName + " operation is completed.");
+
+		// Log security message, if necessary
+		if (securityEventType != null) {
+			MDC.put(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP,getCurrentDateTimeUTC());
+			MDC.put(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP, getCurrentDateTimeUTC());
+			this.calculateDateTimeDifference(MDC.get(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP),MDC.get(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP));
+			MDC.put(EPCommonSystemProperties.STATUS_CODE, "INPROGRESS");
+			MDC.put("CustomField1", "ENTRY");
+			MDC.put("CustomField2", "InvocationID="+MDC.get(Configuration.MDC_KEY_REQUEST_ID));
+			try {
+				MDC.put(Configuration.MDC_SERVER_FQDN, InetAddress.getLocalHost().getCanonicalHostName());
+			} catch (Exception e) {
+				adviceLogger.error(EELFLoggerDelegate.errorLogger,
+						" while setting the IP address ", e);
+			}
+			this.logSecurityMessage(logger, securityEventType, methodName);
+
+			// Outgoing & LDAP messages are part of Incoming requests so,
+			// keep "RequestId", "PartnerName", "ServiceName", "LoginId" &
+			// "ResponseCode" etc. in memory and remove it only when
+			// finished processing the parent incoming message.
+			if (securityEventType != SecurityEventTypeEnum.OUTGOING_REST_MESSAGE
+					&& securityEventType != SecurityEventTypeEnum.LDAP_PHONEBOOK_USER_SEARCH) {
+				MDC.remove(Configuration.MDC_KEY_REQUEST_ID);
+				MDC.remove(EPCommonSystemProperties.PARTNER_NAME);
+				MDC.remove(Configuration.MDC_SERVICE_NAME);
+				MDC.remove(EPCommonSystemProperties.MDC_LOGIN_ID);
+				MDC.remove(EPCommonSystemProperties.EXTERNAL_API_RESPONSE_CODE);
+			}else{
+				MDC.remove(Configuration.MDC_KEY_REQUEST_ID);
+				MDC.remove(EPCommonSystemProperties.PARTNER_NAME);
+				MDC.remove(Configuration.MDC_SERVICE_NAME);
+			}
+			
+			MDC.remove(Configuration.MDC_SERVER_FQDN);
+		}
 		logger.debug(EELFLoggerDelegate.debugLogger, "EPEELFLoggerAdvice#before: entering {}", methodName);
 		return new Object[] { "" };
 	}
@@ -220,7 +259,14 @@ public class EPEELFLoggerAdvice {
 			MDC.put(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP, getCurrentDateTimeUTC());
 			this.calculateDateTimeDifference(MDC.get(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP),
 					MDC.get(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP));
-
+			MDC.put("CustomField1", "EXIT");
+			MDC.put("CustomField2", "InvocationID="+MDC.get(Configuration.MDC_KEY_REQUEST_ID));
+			try {
+				MDC.put(Configuration.MDC_SERVER_FQDN, InetAddress.getLocalHost().getCanonicalHostName());
+			} catch (Exception e) {
+				adviceLogger.error(EELFLoggerDelegate.errorLogger,
+						" while setting the IP address ", e);
+			}
 			this.logSecurityMessage(logger, securityEventType, methodName);
 
 			// Outgoing & LDAP messages are part of Incoming requests so,
@@ -241,6 +287,7 @@ public class EPEELFLoggerAdvice {
 			}
 
 			// clear when finishes audit logging
+			MDC.remove(Configuration.MDC_SERVER_FQDN);
 			MDC.remove(EPCommonSystemProperties.FULL_URL);
 			MDC.remove(EPCommonSystemProperties.PROTOCOL);
 			MDC.remove(EPCommonSystemProperties.STATUS_CODE);
@@ -248,7 +295,10 @@ public class EPEELFLoggerAdvice {
 			MDC.remove(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP);
 			MDC.remove(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP);
 			MDC.remove(EPCommonSystemProperties.RESPONSE_CODE);
+			
 		}
+		MDC.remove("CustomField1");
+		MDC.remove("CustomField2");
 		MDC.remove(className + methodName + EPCommonSystemProperties.METRICSLOG_BEGIN_TIMESTAMP);
 		MDC.remove(EPCommonSystemProperties.METRICSLOG_BEGIN_TIMESTAMP);
 		MDC.remove(EPCommonSystemProperties.METRICSLOG_END_TIMESTAMP);

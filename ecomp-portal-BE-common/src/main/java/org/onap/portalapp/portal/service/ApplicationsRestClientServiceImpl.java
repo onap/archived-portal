@@ -198,7 +198,7 @@ public class ApplicationsRestClientServiceImpl implements ApplicationsRestClient
 				decreptedAppPwd = CipherUtil.decryptPKC(encriptedPwd,
 						KeyProperties.getProperty(KeyConstants.CIPHER_ENCRYPTION_KEY));
 			} catch (Exception e) {
-				logger.error(EELFLoggerDelegate.errorLogger, "createClientFor failed to decrypt", e);
+				logger.error(EELFLoggerDelegate.errorLogger, "createClientFor failed to decrypt", e.getMessage());
 			}
 			}
 			WebClient client = createClientForPath(appBaseUri, restPath);
@@ -339,7 +339,7 @@ public class ApplicationsRestClientServiceImpl implements ApplicationsRestClient
 			MDC.put(EPCommonSystemProperties.EXTERNAL_API_RESPONSE_CODE,
 					Integer.toString(HttpServletResponse.SC_INTERNAL_SERVER_ERROR));
 			EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeRestApiGeneralError, e);
-			logger.error(EELFLoggerDelegate.errorLogger, "Exception occurred while making the GET REST API call", e);
+			logger.error(EELFLoggerDelegate.errorLogger, "Exception occurred while making the GET REST API call", e.getMessage());
 		}
 		return response;
 	}
@@ -366,7 +366,7 @@ public class ApplicationsRestClientServiceImpl implements ApplicationsRestClient
 			MDC.put(EPCommonSystemProperties.EXTERNAL_API_RESPONSE_CODE,
 					Integer.toString(HttpServletResponse.SC_INTERNAL_SERVER_ERROR));
 			EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeRestApiGeneralError, e);
-			logger.error(EELFLoggerDelegate.errorLogger, "Exception occurred while making the POST REST API call", e);
+			logger.error(EELFLoggerDelegate.errorLogger, "Exception occurred while making the POST REST API call", e.getMessage());
 		}
 
 		if (response != null) {
@@ -419,7 +419,7 @@ public class ApplicationsRestClientServiceImpl implements ApplicationsRestClient
 			MDC.put(EPCommonSystemProperties.EXTERNAL_API_RESPONSE_CODE,
 					Integer.toString(HttpServletResponse.SC_INTERNAL_SERVER_ERROR));
 			EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeRestApiGeneralError, e);
-			logger.error(EELFLoggerDelegate.errorLogger, "Exception occurred while making the PUT REST API call", e);
+			logger.error(EELFLoggerDelegate.errorLogger, "Exception occurred while making the PUT REST API call", e.getMessage());
 		}
 
 		if (response != null) {
