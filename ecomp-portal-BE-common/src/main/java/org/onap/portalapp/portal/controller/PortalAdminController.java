@@ -151,18 +151,11 @@ public class PortalAdminController extends EPRestrictedBaseController {
 				} catch (Exception e) {
 					logger.error(EELFLoggerDelegate.errorLogger, "createPortalAdmin: failed for save audit log", e);
 				}
-				MDC.put(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP, EPEELFLoggerAdvice.getCurrentDateTimeUTC());
-				MDC.put(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP, EPEELFLoggerAdvice.getCurrentDateTimeUTC());
-				EcompPortalUtils.calculateDateTimeDifferenceForLog(
-						MDC.get(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP),
-						MDC.get(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP));
-				logger.info(EELFLoggerDelegate.auditLogger,
-						EPLogUtil.formatAuditLogMessage("PortalAdminController.createPortalAdmin",
-								EcompAuditLog.CD_ACTIVITY_ADD_PORTAL_ADMIN, user.getOrgUserId(), userId,
-								"A new Portal Admin has been added"));
-				MDC.remove(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP);
-				MDC.remove(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP);
-				MDC.remove(SystemProperties.MDC_TIMER);
+				String auditMessageInfo = EPLogUtil.formatAuditLogMessage("PortalAdminController.createPortalAdmin",
+							EcompAuditLog.CD_ACTIVITY_ADD_PORTAL_ADMIN, user.getOrgUserId(), userId,
+							"A new Portal Admin has been added");		
+			
+				EPLogUtil.logAuditMessage(logger, auditMessageInfo);
 			}
 		}
 		EcompPortalUtils.logAndSerializeObject(logger, "/portalAdmin", "POST result =", response.getStatus());
@@ -208,19 +201,12 @@ public class PortalAdminController extends EPRestrictedBaseController {
 				auditLog.setActivityCode(EcompAuditLog.CD_ACTIVITY_DELETE_PORTAL_ADMIN);
 				auditLog.setAffectedRecordId(sbcid);
 				auditService.logActivity(auditLog, null);
-				
-				MDC.put(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP, EPEELFLoggerAdvice.getCurrentDateTimeUTC());
-				MDC.put(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP, EPEELFLoggerAdvice.getCurrentDateTimeUTC());
-				EcompPortalUtils.calculateDateTimeDifferenceForLog(
-						MDC.get(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP),
-						MDC.get(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP));
-				logger.info(EELFLoggerDelegate.auditLogger,
-						EPLogUtil.formatAuditLogMessage("PortalAdminController.deletePortalAdmin",
-								EcompAuditLog.CD_ACTIVITY_DELETE_PORTAL_ADMIN, user.getOrgUserId(), sbcid,
-								"A Portal Admin has been deleted"));
-				MDC.remove(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP);
-				MDC.remove(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP);
-				MDC.remove(SystemProperties.MDC_TIMER);
+				String auditMessageInfo = EPLogUtil.formatAuditLogMessage("PortalAdminController.deletePortalAdmin",
+						EcompAuditLog.CD_ACTIVITY_DELETE_PORTAL_ADMIN, user.getOrgUserId(), sbcid,
+						"A Portal Admin has been deleted");		
+		
+				EPLogUtil.logAuditMessage(logger, auditMessageInfo);
+			
 			}
 		}
 		EcompPortalUtils.logAndSerializeObject(logger, "/portalAdmin", "DELETE result =", response.getStatus());

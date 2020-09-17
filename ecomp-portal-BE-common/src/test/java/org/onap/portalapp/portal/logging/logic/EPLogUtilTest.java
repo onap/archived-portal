@@ -56,19 +56,19 @@ public class EPLogUtilTest {
 	
 	private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(EPLogUtilTest.class);
 
-	@Test
-	public void testLogEcompError() {
-		
-
-		EPAppMessagesEnum epAppMessagesEnum=	EPAppMessagesEnum.BeHealthCheckRecovery;
-		AlarmSeverityEnum alarmSeverityEnum=AlarmSeverityEnum.INFORMATIONAL;
-		epAppMessagesEnum.setAlarmSeverity(alarmSeverityEnum);
-		epAppMessagesEnum.setErrorSeverity(ErrorSeverityEnum.INFO);
-		
-		EPLogUtil.logEcompError( epAppMessagesEnum,"testError");
-		
-
-	}
+//	@Test
+//	public void testLogEcompError() {
+//		
+//
+//		EPAppMessagesEnum epAppMessagesEnum=	EPAppMessagesEnum.BeHealthCheckRecovery;
+//		AlarmSeverityEnum alarmSeverityEnum=AlarmSeverityEnum.INFORMATIONAL;
+//		epAppMessagesEnum.setAlarmSeverity(alarmSeverityEnum);
+//		epAppMessagesEnum.setErrorSeverity(ErrorSeverityEnum.INFO);
+//		
+////		EPLogUtil.logEcompError( epAppMessagesEnum,"testError");
+//		
+//
+//	}
 	
 	@Test
 	public void testLogEcompErrorWithDelegate() {

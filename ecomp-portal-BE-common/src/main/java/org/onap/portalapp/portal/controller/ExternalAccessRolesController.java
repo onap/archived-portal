@@ -412,17 +412,10 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 								PortalConstants.AUDIT_LOG_COMMENT_SIZE));
 				auditLog.setAffectedRecordId(user.getOrgUserId());
 				auditService.logActivity(auditLog, null);
-				MDC.put(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP, EPEELFLoggerAdvice.getCurrentDateTimeUTC());
-				MDC.put(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP, EPEELFLoggerAdvice.getCurrentDateTimeUTC());
-				EcompPortalUtils.calculateDateTimeDifferenceForLog(
-						MDC.get(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP),
-						MDC.get(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP));
-				logger.info(EELFLoggerDelegate.auditLogger,
-						EPLogUtil.formatAuditLogMessage("ExternalAccessRolesController.saveRoleFunction", activityCode,
-								String.valueOf(user.getId()), user.getOrgUserId(), availableRoleFunction.getCode()));
-				MDC.remove(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP);
-				MDC.remove(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP);
-				MDC.remove(SystemProperties.MDC_TIMER);
+				String auditMessageInfo = EPLogUtil.formatAuditLogMessage("ExternalAccessRolesController.saveRoleFunction", activityCode,
+						String.valueOf(user.getId()), user.getOrgUserId(), availableRoleFunction.getCode());		
+				EPLogUtil.logAuditMessage(logger, auditMessageInfo);	
+				
 			} else {
 				logger.error(EELFLoggerDelegate.errorLogger, "saveRoleFunction failed");
 				return new PortalRestResponse<>(PortalRestStatusEnum.ERROR,
@@ -465,18 +458,11 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 						PortalConstants.AUDIT_LOG_COMMENT_SIZE));
 				auditLog.setAffectedRecordId(user.getOrgUserId());
 				auditService.logActivity(auditLog, null);
-				MDC.put(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP, EPEELFLoggerAdvice.getCurrentDateTimeUTC());
-				MDC.put(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP, EPEELFLoggerAdvice.getCurrentDateTimeUTC());
-				EcompPortalUtils.calculateDateTimeDifferenceForLog(
-						MDC.get(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP),
-						MDC.get(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP));
-				logger.info(EELFLoggerDelegate.auditLogger,
-						EPLogUtil.formatAuditLogMessage("ExternalAccessRolesController.deleteRoleFunction",
-								EcompAuditLog.CD_ACTIVITY_EXTERNAL_AUTH_DELETE_FUNCTION, String.valueOf(user.getId()),
-								user.getOrgUserId(), code));
-				MDC.remove(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP);
-				MDC.remove(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP);
-				MDC.remove(SystemProperties.MDC_TIMER);
+				String auditMessageInfo = EPLogUtil.formatAuditLogMessage("ExternalAccessRolesController.deleteRoleFunction",
+						EcompAuditLog.CD_ACTIVITY_EXTERNAL_AUTH_DELETE_FUNCTION, String.valueOf(user.getId()),
+						user.getOrgUserId(), code);		
+				EPLogUtil.logAuditMessage(logger, auditMessageInfo);	
+				
 			} else {
 				logger.error(EELFLoggerDelegate.errorLogger, "deleteRoleFunction failed");
 				return new PortalRestResponse<>(PortalRestStatusEnum.ERROR,
@@ -521,17 +507,10 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 						PortalConstants.AUDIT_LOG_COMMENT_SIZE));
 				auditLog.setAffectedRecordId(user.getOrgUserId());
 				auditService.logActivity(auditLog, null);
-				MDC.put(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP, EPEELFLoggerAdvice.getCurrentDateTimeUTC());
-				MDC.put(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP, EPEELFLoggerAdvice.getCurrentDateTimeUTC());
-				EcompPortalUtils.calculateDateTimeDifferenceForLog(
-						MDC.get(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP),
-						MDC.get(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP));
-				logger.info(EELFLoggerDelegate.auditLogger,
-						EPLogUtil.formatAuditLogMessage("ExternalAccessRolesController.saveRole", activityCode,
-								String.valueOf(user.getId()), user.getOrgUserId(), role.getName()));
-				MDC.remove(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP);
-				MDC.remove(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP);
-				MDC.remove(SystemProperties.MDC_TIMER);
+				String auditMessageInfo = EPLogUtil.formatAuditLogMessage("ExternalAccessRolesController.saveRole", activityCode,
+						String.valueOf(user.getId()), user.getOrgUserId(), role.getName());		
+				EPLogUtil.logAuditMessage(logger, auditMessageInfo);	
+				
 			} else {
 				if(saveRoleResult.getDetailMessage().contains("406")){
 					response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
@@ -582,18 +561,11 @@ public class ExternalAccessRolesController implements BasicAuthenticationControl
 						PortalConstants.AUDIT_LOG_COMMENT_SIZE));
 				auditLog.setAffectedRecordId(user.getOrgUserId());
 				auditService.logActivity(auditLog, null);
-				MDC.put(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP, EPEELFLoggerAdvice.getCurrentDateTimeUTC());
-				MDC.put(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP, EPEELFLoggerAdvice.getCurrentDateTimeUTC());
-				EcompPortalUtils.calculateDateTimeDifferenceForLog(
-						MDC.get(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP),
-						MDC.get(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP));
-				logger.info(EELFLoggerDelegate.auditLogger,
-						EPLogUtil.formatAuditLogMessage("ExternalAccessRolesController.deleteRole",
-								EcompAuditLog.CD_ACTIVITY_EXTERNAL_AUTH_DELETE_ROLE, String.valueOf(user.getId()),
-								user.getOrgUserId(), code));
-				MDC.remove(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP);
-				MDC.remove(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP);
-				MDC.remove(SystemProperties.MDC_TIMER);
+				String auditMessageInfo = EPLogUtil.formatAuditLogMessage("ExternalAccessRolesController.deleteRole",
+						EcompAuditLog.CD_ACTIVITY_EXTERNAL_AUTH_DELETE_ROLE, String.valueOf(user.getId()),
+						user.getOrgUserId(), code);		
+				EPLogUtil.logAuditMessage(logger, auditMessageInfo);	
+				
 			} else {
 				logger.error(EELFLoggerDelegate.errorLogger, "deleteRole failed");
 				return new PortalRestResponse<>(PortalRestStatusEnum.ERROR,
