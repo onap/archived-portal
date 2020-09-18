@@ -1,31 +1,31 @@
 {
   "plugin1": {
     "name": "Plugin 2",
-    "path": "/assets/plugins/plugin1.js",
+    "path": "assets/plugins/plugin1.js",
     "deps": ["shared"]
   },
   "plugin2": {
     "name": "Plugin 2",
-    "path": "/assets/plugins/plugin2.js",
+    "path": "assets/plugins/plugin2.js",
     "deps": ["shared"]
   },
   "News": {
     "name": "News",
-    "path": "/assets/plugins/News.js",
+    "path": "assets/plugins/News.js",
     "deps": ["shared"]
   },
   "Resources": {
     "name": "Resources",
-    "path": "/assets/plugins/Resources.js",
+    "path": "assets/plugins/Resources.js",
     "deps": ["shared"]
   },
   "Events": {
     "name": "Events",
-    "path": "/assets/plugins/Events.js",
+    "path": "assets/plugins/Events.js",
     "deps": ["shared"]
   },
   "shared": {
     "name": "Shared",
-    "path": "/assets/plugins/shared.js"
+    "path": "assets/plugins/shared.js"
   }
 }
