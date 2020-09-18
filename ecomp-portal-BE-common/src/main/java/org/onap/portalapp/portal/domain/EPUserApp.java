@@ -116,8 +116,7 @@ public class EPUserApp extends DomainVo implements java.io.Serializable, Compara
 
 		return (otherUserIdIsSameAsThisUserId(castOther))
 				&& (otherAppIdIsSameAsThis(castOther))
-				&& (otherRoleIsSameAsThis(castOther))
-				&& (otherPriorityIsSameAsThis(castOther));
+				&& (otherRoleIsSameAsThis(castOther));
 	}
 
 	public int hashCode() {
@@ -126,22 +125,18 @@ public class EPUserApp extends DomainVo implements java.io.Serializable, Compara
 		result = 37 * result + (int) (this.getUserId()==null ? 0 : this.getUserId().intValue());
 		result = 37 * result + (int) (this.getApp().getId()==null ? 0 : this.getApp().getId().intValue());
 		result = 37 * result + (int) (this.getRole().getId()==null ? 0 : this.getRole().getId().intValue());
-		result = 37 * result + (int) (this.priority==null ? 0 : this.priority);
 		return result;
 	}
 
 	public int compareTo(Object other){
 	    EPUserApp castOther = (EPUserApp) other;
 
-	    Long c1 = (this.getUserId()==null ? 0 : this.getUserId()) + (this.getApp()==null||this.getApp().getId()==null ? 0 : this.getApp().getId()) + (this.getRole()==null||this.getRole().getId()==null ? 0 : this.getRole().getId()) + (this.priority==null ? 0 : this.priority);
-	    Long c2 = (castOther.getUserId()==null ? 0 : castOther.getUserId()) + (castOther.getApp()==null||castOther.getApp().getId()==null ? 0 : castOther.getApp().getId()) + (castOther.getRole()==null||castOther.getRole().getId()==null ? 0 : castOther.getRole().getId()) + (castOther.priority==null ? 0 : castOther.priority);
+	    Long c1 = (this.getUserId()==null ? 0 : this.getUserId()) + (this.getApp()==null||this.getApp().getId()==null ? 0 : this.getApp().getId()) + (this.getRole()==null||this.getRole().getId()==null ? 0 : this.getRole().getId());
+	    Long c2 = (castOther.getUserId()==null ? 0 : castOther.getUserId()) + (castOther.getApp()==null||castOther.getApp().getId()==null ? 0 : castOther.getApp().getId()) + (castOther.getRole()==null||castOther.getRole().getId()==null ? 0 : castOther.getRole().getId());
 
 	    return c1.compareTo(c2);
 	}
-	private boolean otherPriorityIsSameAsThis(EPUserApp other){
-		return (this.priority==null && other.getPriority()==null) || this.getPriority().equals(other.getPriority());
-	}
-
+	
 	private boolean otherRoleIsSameAsThis(EPUserApp other){
 		return this.getRole().getId().equals(other.getRole().getId());
 	}
