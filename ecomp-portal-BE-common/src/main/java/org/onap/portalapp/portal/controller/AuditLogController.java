@@ -56,6 +56,7 @@ import com.att.eelf.configuration.Configuration;
 
 import org.onap.portalapp.controller.EPRestrictedBaseController;
 import org.onap.portalapp.portal.domain.EPUser;
+import org.onap.portalapp.portal.domain.EcompAuditLog;
 import org.onap.portalapp.portal.logging.aop.EPEELFLoggerAdvice;
 import org.onap.portalapp.portal.logging.logic.EPLogUtil;
 import org.onap.portalapp.portal.utils.EPCommonSystemProperties;
@@ -150,21 +151,11 @@ public class AuditLogController extends EPRestrictedBaseController {
 					String requestId = UUID.randomUUID().toString();
 					MDC.put(Configuration.MDC_KEY_REQUEST_ID, requestId);
 				}
-				// Log file
-				MDC.put(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP, EPEELFLoggerAdvice.getCurrentDateTimeUTC());
-				SimpleDateFormat ecompLogDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
-				String beginDateTime = MDC.get(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP);
-				Date beginDate = ecompLogDateFormat.parse(beginDateTime);
-				auditService.logActivity(auditLog, null);
-				String endDateTime = MDC.get(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP);
-				Date endDate = ecompLogDateFormat.parse(endDateTime);
-				String timeDifference = String.format("%d", endDate.getTime() - beginDate.getTime());
-				MDC.put(SystemProperties.MDC_TIMER, timeDifference);
-				MDC.put(EPCommonSystemProperties.STATUS_CODE, "COMPLETE");
-				logger.info(EELFLoggerDelegate.auditLogger, EPLogUtil.formatAuditLogMessage(
-						"AuditLogController.auditLog", cdType, user.getOrgUserId(), affectedAppId, comment));
-				MDC.remove(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP);
-				MDC.remove(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP);
+				String auditMessageInfo = EPLogUtil.formatAuditLogMessage(
+						"AuditLogController.auditLog", cdType, user.getOrgUserId(), affectedAppId, comment);		
+		
+				EPLogUtil.logAuditMessage(logger, auditMessageInfo);				
+
 			}
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "auditLog failed", e);

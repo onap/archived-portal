@@ -149,7 +149,7 @@ public class AdminRolesServiceImpl implements AdminRolesService {
 							" where userId = " + user.getId() + " and role.id = " + ACCOUNT_ADMIN_ROLE_ID, null, null);
 				} catch (Exception e) {
 					logger.error(EELFLoggerDelegate.errorLogger, "getAppsWithAdminRoleStateForUser 1 failed", e);
-					EPLogUtil.logEcompError(EPAppMessagesEnum.BeDaoSystemError);
+					EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeDaoSystemError);
 				}
 				for (EPUserApp userApp : userAppList) {
 					appsUserAdmin.put(userApp.getAppId(), userApp.getUserId());
@@ -166,7 +166,7 @@ public class AdminRolesServiceImpl implements AdminRolesService {
 				appsList = dataAccessService.getList(EPApp.class, null);
 			} catch (Exception e) {
 				logger.error(EELFLoggerDelegate.errorLogger, "getAppsWithAdminRoleStateForUser 2 failed", e);
-				EPLogUtil.logEcompError(EPAppMessagesEnum.BeDaoSystemError);
+				EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeDaoSystemError);
 			}
 			for (EPApp app : appsList) {
 				AppNameIdIsAdmin appNameIdIsAdmin = new AppNameIdIsAdmin();

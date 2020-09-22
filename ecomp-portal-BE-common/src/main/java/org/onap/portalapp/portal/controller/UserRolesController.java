@@ -55,6 +55,7 @@ import org.onap.portalapp.portal.ecomp.model.PortalRestResponse;
 import org.onap.portalapp.portal.ecomp.model.PortalRestStatusEnum;
 import org.onap.portalapp.portal.logging.aop.EPAuditLog;
 import org.onap.portalapp.portal.logging.aop.EPEELFLoggerAdvice;
+import org.onap.portalapp.portal.logging.format.EPAppMessagesEnum;
 import org.onap.portalapp.portal.logging.logic.EPLogUtil;
 import org.onap.portalapp.portal.service.AdminRolesService;
 import org.onap.portalapp.portal.service.ApplicationsRestClientService;
@@ -242,21 +243,12 @@ public class UserRolesController extends EPRestrictedBaseController {
             auditLog.setComments(
                     EcompPortalUtils.truncateString(newAppRoles.toString(), PortalConstants.AUDIT_LOG_COMMENT_SIZE));
             auditService.logActivity(auditLog, null);
+			String auditMessageInfo = EPLogUtil.formatAuditLogMessage("UserRolesController.putAppsWithAdminRoleStateForUser",
+                    EcompAuditLog.CD_ACTIVITY_UPDATE_ACCOUNT_ADMIN, user.getOrgUserId(),
+                    newAppsListWithAdminRoles.orgUserId, newAppRoles.toString());		
 
-            MDC.put(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP, EPEELFLoggerAdvice.getCurrentDateTimeUTC());
-            MDC.put(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP, EPEELFLoggerAdvice.getCurrentDateTimeUTC());
-            EcompPortalUtils.calculateDateTimeDifferenceForLog(
-                    MDC.get(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP),
-                    MDC.get(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP));
-            if (newAppsListWithAdminRoles != null) {
-                logger.info(EELFLoggerDelegate.auditLogger,
-                        EPLogUtil.formatAuditLogMessage("UserRolesController.putAppsWithAdminRoleStateForUser",
-                                EcompAuditLog.CD_ACTIVITY_UPDATE_ACCOUNT_ADMIN, user.getOrgUserId(),
-                                newAppsListWithAdminRoles.orgUserId, newAppRoles.toString()));
-            }
-            MDC.remove(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP);
-            MDC.remove(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP);
-            MDC.remove(SystemProperties.MDC_TIMER);
+			EPLogUtil.logAuditMessage(logger, auditMessageInfo);
+            
         }
         EcompPortalUtils.logAndSerializeObject(logger, "/portalApi/adminAppsRoles", "put result =", changesApplied);
 
@@ -400,20 +392,13 @@ public class UserRolesController extends EPRestrictedBaseController {
                     auditLog.setComments(EcompPortalUtils.truncateString(sbUserApps.toString(),
                             PortalConstants.AUDIT_LOG_COMMENT_SIZE));
                     auditService.logActivity(auditLog, null);
+        			String auditMessageInfo = EPLogUtil.formatAuditLogMessage("UserRolesController.putAppWithUserRoleStateForUser",
+                            EcompAuditLog.CD_ACTIVITY_UPDATE_USER, user.getOrgUserId(),
+                            newAppRolesForUser.getOrgUserId(), sbUserApps.toString());		
 
-                    MDC.put(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP,
-                            EPEELFLoggerAdvice.getCurrentDateTimeUTC());
-                    EcompPortalUtils.calculateDateTimeDifferenceForLog(
-                            MDC.get(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP),
-                            MDC.get(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP));
-                    logger.info(EELFLoggerDelegate.auditLogger,
-                            EPLogUtil.formatAuditLogMessage("UserRolesController.putAppWithUserRoleStateForUser",
-                                    EcompAuditLog.CD_ACTIVITY_UPDATE_USER, user.getOrgUserId(),
-                                    newAppRolesForUser.getOrgUserId(), sbUserApps.toString()));
-                    MDC.remove(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP);
-                    MDC.remove(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP);
-                    MDC.remove(SystemProperties.MDC_TIMER);
-                    portalResponse = new PortalRestResponse<>(PortalRestStatusEnum.OK, "success", null);
+        			EPLogUtil.logAuditMessage(logger, auditMessageInfo);
+
+        			portalResponse = new PortalRestResponse<>(PortalRestStatusEnum.OK, "success", null);
 
                 }
                 if (!changesApplied.isResult())

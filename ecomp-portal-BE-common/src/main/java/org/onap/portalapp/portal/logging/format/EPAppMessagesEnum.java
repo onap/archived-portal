@@ -77,159 +77,162 @@ public enum EPAppMessagesEnum {
 	900-999 Unknown Errors 
 										- Unexpected exception
 										*/
-	
+
+	PortalCommonError(EPErrorCodesEnum.PORTAL_COMMON_ERROR, ErrorTypeEnum.SYSTEM_ERROR, AlarmSeverityEnum.INFORMATIONAL, ErrorSeverityEnum.ERROR,
+			"900", "exception", "Details: {0}.", "Please check the logs for more information."),
+
 	BeUebAuthenticationError(EPErrorCodesEnum.BEUEBAUTHENTICATIONERROR_ONE_ARGUMENT, ErrorTypeEnum.AUTHENTICATION_PROBLEM, AlarmSeverityEnum.MAJOR, ErrorSeverityEnum.ERROR,
-								"ERR100E", "An Authentication failure occurred during access to UEB server", "Details: {0}.", "Please check UEB server list and keys configured under Portal.Properties file."),
+								"100", "An Authentication failure occurred during access to UEB server", "Details: {0}.", "Please check UEB server list and keys configured under Portal.Properties file."),
 	
 	BeRestApiAuthenticationError(EPErrorCodesEnum.BERESTAPIAUTHENTICATIONERROR, ErrorTypeEnum.AUTHENTICATION_PROBLEM, AlarmSeverityEnum.MAJOR, ErrorSeverityEnum.ERROR,
-								"ERR101E", "Rejected an incoming REST API request due to invalid credentials", "", "Please check application credentials defined in Database or properties files."),
+								"101", "Rejected an incoming REST API request due to invalid credentials", "", "Please check application credentials defined in Database or properties files."),
 
 	InternalAuthenticationInfo(EPErrorCodesEnum.INTERNALAUTHENTICATIONINFO_ONE_ARGUMENT, ErrorTypeEnum.AUTHENTICATION_PROBLEM, AlarmSeverityEnum.INFORMATIONAL, ErrorSeverityEnum.INFO,
-								"ERR199I", "Internal authentication problem", "Details: {0}.", "Please check the logs for more information."),
+								"199", "Internal authentication problem", "Details: {0}.", "Please check the logs for more information."),
 	
 	InternalAuthenticationWarning(EPErrorCodesEnum.INTERNALAUTHENTICATIONWARNING_ONE_ARGUMENT, ErrorTypeEnum.AUTHENTICATION_PROBLEM, AlarmSeverityEnum.MINOR, ErrorSeverityEnum.WARN,
-								"ERR199W", "Internal authentication problem", "Details: {0}.", "Please check the logs for more information."),
+								"199", "Internal authentication problem", "Details: {0}.", "Please check the logs for more information."),
 	
 	InternalAuthenticationError(EPErrorCodesEnum.INTERNALAUTHENTICATIONERROR_ONE_ARGUMENT, ErrorTypeEnum.AUTHENTICATION_PROBLEM, AlarmSeverityEnum.MAJOR, ErrorSeverityEnum.ERROR,
-								"ERR199E", "Internal authentication problem", "Details: {0}.", "Please check the logs for more information."),
+								"199", "Internal authentication problem", "Details: {0}.", "Please check the logs for more information."),
 	
 	InternalAuthenticationFatal(EPErrorCodesEnum.INTERNALAUTHENTICATIONFATAL_ONE_ARGUMENT, ErrorTypeEnum.AUTHENTICATION_PROBLEM, AlarmSeverityEnum.CRITICAL, ErrorSeverityEnum.FATAL,
-								"ERR199F", "Internal authentication problem", "Details: {0}.", "Please check the logs for more information."),
+								"199", "Internal authentication problem", "Details: {0}.", "Please check the logs for more information."),
 	
 	BeHealthCheckError(EPErrorCodesEnum.BeHEALTHCHECKERROR, ErrorTypeEnum.SYSTEM_ERROR, AlarmSeverityEnum.CRITICAL, ErrorSeverityEnum.ERROR,
-								"ERR200E", "ECOMP-PORTAL Back-end probably lost connectivity to either one of the following components: MySQL DB, UEB Cluster", "", "Please check the logs for more information."),
+								"200", "ECOMP-PORTAL Back-end probably lost connectivity to either one of the following components: MySQL DB, UEB Cluster", "", "Please check the logs for more information."),
 
 	BeHealthCheckMySqlError(EPErrorCodesEnum.BEHEALTHCHECKMYSQLERROR, ErrorTypeEnum.SYSTEM_ERROR, AlarmSeverityEnum.CRITICAL, ErrorSeverityEnum.ERROR,
-								"ERR201E", "ECOMP-PORTAL Back-end probably lost connectivity to MySQL DB", "", "Check connectivity to MYSQL is configured correctly under system.properties file."),
+								"201", "ECOMP-PORTAL Back-end probably lost connectivity to MySQL DB", "", "Check connectivity to MYSQL is configured correctly under system.properties file."),
 
 	BeHealthCheckUebClusterError(EPErrorCodesEnum.BEHEALTHCHECKUEBCLUSTERERROR, ErrorTypeEnum.SYSTEM_ERROR, AlarmSeverityEnum.CRITICAL, ErrorSeverityEnum.ERROR,
-								"ERR203E", "ECOMP-PORTAL Back-end probably lost connectivity to UEB Cluster", "", "Check connectivity to UEB cluster which is configured under portal.properties file."),
+								"203", "ECOMP-PORTAL Back-end probably lost connectivity to UEB Cluster", "", "Check connectivity to UEB cluster which is configured under portal.properties file."),
 	
 	FeHealthCheckError(EPErrorCodesEnum.FEHEALTHCHECKERROR, ErrorTypeEnum.SYSTEM_ERROR, AlarmSeverityEnum.CRITICAL, ErrorSeverityEnum.ERROR,
-								"ERR204E", "Unable to connect to a valid ECOMP-PORTAL Back-end Server.", "", "Please check connectivity from this FE instance towards BE or BE Load Balancer."),
+								"204", "Unable to connect to a valid ECOMP-PORTAL Back-end Server.", "", "Please check connectivity from this FE instance towards BE or BE Load Balancer."),
 	
 	BeHealthCheckRecovery(EPErrorCodesEnum.BEHEALTHCHECKRECOVERY, ErrorTypeEnum.RECOVERY, AlarmSeverityEnum.INFORMATIONAL, ErrorSeverityEnum.INFO,
-								"ERR205I", "ECOMP-PORTAL Back-end Recovery to either one of the following components: MySQL DB, UEB Cluster", "", "Please check logs for more specific information about the problem."),
+								"205", "ECOMP-PORTAL Back-end Recovery to either one of the following components: MySQL DB, UEB Cluster", "", "Please check logs for more specific information about the problem."),
 	
 	BeHealthCheckMySqlRecovery(EPErrorCodesEnum.BEHEALTHCHECKMYSQLRECOVERY, ErrorTypeEnum.RECOVERY, AlarmSeverityEnum.INFORMATIONAL, ErrorSeverityEnum.INFO,
-								"ERR206I", "ECOMP-PORTAL Back-end connection recovery to MySQL DB", "", "Please check logs for more specific information about the problem."),
+								"206", "ECOMP-PORTAL Back-end connection recovery to MySQL DB", "", "Please check logs for more specific information about the problem."),
 	
 	BeHealthCheckUebClusterRecovery(EPErrorCodesEnum.BEHEALTHCHECKUEBCLUSTERRECOVERY, ErrorTypeEnum.RECOVERY, AlarmSeverityEnum.INFORMATIONAL, ErrorSeverityEnum.INFO,
-								"ERR208I", "ECOMP-PORTAL Back-end connection recovery to UEB Cluster", "", "Please check logs for more specific information about the problem."),
+								"208", "ECOMP-PORTAL Back-end connection recovery to UEB Cluster", "", "Please check logs for more specific information about the problem."),
 	
 	FeHealthCheckRecovery(EPErrorCodesEnum.FEHEALTHCHECKRECOVERY, ErrorTypeEnum.RECOVERY, AlarmSeverityEnum.INFORMATIONAL, ErrorSeverityEnum.INFO,
-								"ERR209I", "Connectivity to ECOMP-PORTAL Front-end Server is recovered", "", "Please check logs for more specific information about the problem."),
+								"209", "Connectivity to ECOMP-PORTAL Front-end Server is recovered", "", "Please check logs for more specific information about the problem."),
     
 	BeUebConnectionError(EPErrorCodesEnum.BEUEBCONNECTIONERROR_ONE_ARGUMENT, ErrorTypeEnum.CONNECTION_PROBLEM, AlarmSeverityEnum.MAJOR, ErrorSeverityEnum.ERROR,
-    							"ERR210E", "ECOMP-PORTAL Back-end probably lost connectivity to UEB Cluster", "Details: {0}.", "Please check UEB server list and keys configured under Portal.Properties file."),
+    							"210", "ECOMP-PORTAL Back-end probably lost connectivity to UEB Cluster", "Details: {0}.", "Please check UEB server list and keys configured under Portal.Properties file."),
     
     BeUebUnkownHostError(EPErrorCodesEnum.BEUEBUNKOWNHOSTERROR_ONE_ARGUMENT, ErrorTypeEnum.CONNECTION_PROBLEM, AlarmSeverityEnum.MAJOR, ErrorSeverityEnum.ERROR,
-    							"ERR211E", "ECOMP-PORTAL Back-end probably lost connectivity to UEB Cluster", "Cannot reach host: {0}.", "Please check UEB server list and keys configured under Portal.Properties file."),
+    							"211", "ECOMP-PORTAL Back-end probably lost connectivity to UEB Cluster", "Cannot reach host: {0}.", "Please check UEB server list and keys configured under Portal.Properties file."),
 	
     BeUebRegisterOnboardingAppError(EPErrorCodesEnum.BEUEBREGISTERONBOARDINGAPPERROR, ErrorTypeEnum.CONNECTION_PROBLEM, AlarmSeverityEnum.MAJOR, ErrorSeverityEnum.ERROR,
-    							"ERR212E", "Failed to register the On-boarding application with UEB Communication server", "Details: {0}.", "Please check UEB server list and keys configured under Portal.Properties file."),
+    							"212", "Failed to register the On-boarding application with UEB Communication server", "Details: {0}.", "Please check UEB server list and keys configured under Portal.Properties file."),
     
     BeHttpConnectionError(EPErrorCodesEnum.BEHTTPCONNECTIONERROR_ONE_ARGUMENT, ErrorTypeEnum.CONNECTION_PROBLEM, AlarmSeverityEnum.MAJOR, ErrorSeverityEnum.ERROR,
-								"ERR213E", "It could be that communication to an external application might resulted an exception or failed to reach the external application", 
+								"213", "It could be that communication to an external application might resulted an exception or failed to reach the external application", 
 								"Details: {0}.", "Please check logs for more information."),
 	MusicHealthCheckZookeeperError(EPErrorCodesEnum.MUSICHEALTHCHECKZOOKEEPERERROR_ONE_ARGUMENT, ErrorTypeEnum.SYSTEM_ERROR, AlarmSeverityEnum.MAJOR, ErrorSeverityEnum.ERROR,
-                                "ERR214E", "Connectivity to Music Cluster -zookeeper server", "Details: {0}.", "Please check zookeeper server list and check the logs for more information"),
+                                "214", "Connectivity to Music Cluster -zookeeper server", "Details: {0}.", "Please check zookeeper server list and check the logs for more information"),
 	
     MusicHealthCheckCassandraError(EPErrorCodesEnum.MUSICHEALTHCHECKCASSANDRAERROR_ONE_ARGUMENT, ErrorTypeEnum.SYSTEM_ERROR, AlarmSeverityEnum.MAJOR, ErrorSeverityEnum.ERROR,
-                                "ERR215E", "Connectivity to Music Cluster -Cassandra server", "Details: {0}.", "Please check Cassandra server list and check the logs for more information"),
+                                "215", "Connectivity to Music Cluster -Cassandra server", "Details: {0}.", "Please check Cassandra server list and check the logs for more information"),
     
     InternalConnectionInfo(EPErrorCodesEnum.INTERNALCONNECTIONINFO_ONE_ARGUMENT, ErrorTypeEnum.CONNECTION_PROBLEM, AlarmSeverityEnum.INFORMATIONAL, ErrorSeverityEnum.INFO,
-								"ERR299I", "Internal Connection problem", "Details: {0}.", "Please check logs for more information."),
+								"299", "Internal Connection problem", "Details: {0}.", "Please check logs for more information."),
     
 	InternalConnectionWarning(EPErrorCodesEnum.INTERNALCONNECTIONWARNING_ONE_ARGUMENT, ErrorTypeEnum.CONNECTION_PROBLEM, AlarmSeverityEnum.MINOR, ErrorSeverityEnum.WARN,
-								"ERR299W", "Internal Connection problem", "Details: {0}.", "Please check logs for more information."),
+								"299", "Internal Connection problem", "Details: {0}.", "Please check logs for more information."),
     
     InternalConnectionError(EPErrorCodesEnum.INTERNALCONNECTIONERROR_ONE_ARGUMENT, ErrorTypeEnum.CONNECTION_PROBLEM, AlarmSeverityEnum.MAJOR, ErrorSeverityEnum.ERROR,
-    							"ERR299E", "Internal Connection problem", "Details: {0}.", "Please check logs for more information."),
+    							"299", "Internal Connection problem", "Details: {0}.", "Please check logs for more information."),
     
     InternalConnectionFatal(EPErrorCodesEnum.INTERNALCONNECTIONFATAL_ONE_ARGUMENT, ErrorTypeEnum.CONNECTION_PROBLEM, AlarmSeverityEnum.CRITICAL, ErrorSeverityEnum.FATAL,
-    							"ERR299F", "Internal Connection problem", "Details: {0}.", "Please check logs for more information."),
+    							"299", "Internal Connection problem", "Details: {0}.", "Please check logs for more information."),
     
     BeUebObjectNotFoundError(EPErrorCodesEnum.BEUEBOBJECTNOTFOUNDERROR_ONE_ARGUMENT, ErrorTypeEnum.DATA_ERROR, AlarmSeverityEnum.MAJOR, ErrorSeverityEnum.ERROR,
-    							"ERR303E", "Error occurred during access to U-EB Server.", "Data not found: {0}.", "An error occurred during access to UEB Server, {1} failed to either register or unregister to/from UEB topic."),
+    							"303", "Error occurred during access to U-EB Server.", "Data not found: {0}.", "An error occurred during access to UEB Server, {1} failed to either register or unregister to/from UEB topic."),
     
     BeUserMissingError(EPErrorCodesEnum.BEUSERMISSINGERROR_ONE_ARGUMENT, ErrorTypeEnum.DATA_ERROR, AlarmSeverityEnum.MAJOR, ErrorSeverityEnum.ERROR,
-    							"ERR310E", "User is not found", "", "User {0} must be added to the corresponding application with proper user roles."),
+    							"310", "User is not found", "", "User {0} must be added to the corresponding application with proper user roles."),
     
     BeUserInactiveWarning(EPErrorCodesEnum.BEUSERINACTIVEWARNING_ONE_ARGUMENT, ErrorTypeEnum.DATA_ERROR, AlarmSeverityEnum.MINOR, ErrorSeverityEnum.WARN,
-    							"ERR313W", "User is found but in-active", "", "User {0} must be added to the corresponding application with proper user roles."),
+    							"313", "User is found but in-active", "", "User {0} must be added to the corresponding application with proper user roles."),
     
     BeUserAdminPrivilegesInfo(EPErrorCodesEnum.BEUSERADMINPRIVILEGESINFO_ONE_ARGUMENT, ErrorTypeEnum.DATA_ERROR, AlarmSeverityEnum.MINOR, ErrorSeverityEnum.WARN,
-    							"ERR314W", "User is found but don't have administrative privileges", "", "User {0} should be given administrator role for the corresponding application to perform the necessary actions."),
+    							"314", "User is found but don't have administrative privileges", "", "User {0} should be given administrator role for the corresponding application to perform the necessary actions."),
     
     BeInvalidJsonInput(EPErrorCodesEnum.BEINVALIDJSONINPUT, ErrorTypeEnum.SYSTEM_ERROR, AlarmSeverityEnum.MAJOR, ErrorSeverityEnum.ERROR,
-    							"ERR405E", "Failed to convert JSON input to object", "", "Please check logs for more information."),
+    							"405", "Failed to convert JSON input to object", "", "Please check logs for more information."),
     
     BeIncorrectHttpStatusError(EPErrorCodesEnum.BEINCORRECTHTTPSTATUSERROR, ErrorTypeEnum.SYSTEM_ERROR, AlarmSeverityEnum.MAJOR, ErrorSeverityEnum.ERROR,
-    							"ERR407E", "Communication to an external application is resulted in with Incorrect Http response code", "", "Please check logs for more information."),
+    							"407", "Communication to an external application is resulted in with Incorrect Http response code", "", "Please check logs for more information."),
     
     BeInitializationError(EPErrorCodesEnum.BEINITIALIZATIONERROR, ErrorTypeEnum.SYSTEM_ERROR, AlarmSeverityEnum.CRITICAL, ErrorSeverityEnum.ERROR,
-    							"ERR500E", "ECOMP-PORTAL Back-end was not initialized properly", "", "Please check logs for more information."),
+    							"500", "ECOMP-PORTAL Back-end was not initialized properly", "", "Please check logs for more information."),
     
     BeUebSystemError(EPErrorCodesEnum.BEUEBSYSTEMERROR, ErrorTypeEnum.SYSTEM_ERROR, AlarmSeverityEnum.MAJOR, ErrorSeverityEnum.ERROR,
-    							"ERR502E", "Error occurred during access to U-EB Server", "Details: {0}.", "An error occurred in {1} distribution mechanism. Please check the logs for more information."),
+    							"502", "Error occurred during access to U-EB Server", "Details: {0}.", "An error occurred in {1} distribution mechanism. Please check the logs for more information."),
     
     BeDaoSystemError(EPErrorCodesEnum.BEDAOSYSTEMERROR, ErrorTypeEnum.SYSTEM_ERROR, AlarmSeverityEnum.CRITICAL, ErrorSeverityEnum.ERROR,
-    							"ERR505E", "Performing DDL or DML operations on database might have failed", "", "Please check MySQL DB health or look at the logs for more details."),
+    							"505", "Performing DDL or DML operations on database might have failed", "", "Please check MySQL DB health or look at the logs for more details."),
     
     BeSystemError(EPErrorCodesEnum.BESYSTEMERROR, ErrorTypeEnum.SYSTEM_ERROR, AlarmSeverityEnum.CRITICAL, ErrorSeverityEnum.ERROR,
-    							"ERR506E", "Unexpected error during operation", "", "Please check logs for more information."),
+    							"506", "Unexpected error during operation", "", "Please check logs for more information."),
     
     BeExecuteRollbackError(EPErrorCodesEnum.BEEXECUTEROLLBACKERROR, ErrorTypeEnum.DATA_ERROR, AlarmSeverityEnum.MAJOR, ErrorSeverityEnum.ERROR,
-    							"ERR507E", "Roll-back operation towards database has failed", "", "Please check MYSQL DB health or look at the logs for more details."),
+    							"507", "Roll-back operation towards database has failed", "", "Please check MYSQL DB health or look at the logs for more details."),
     
     FeHttpLoggingError(EPErrorCodesEnum.FEHTTPLOGGINGERROR, ErrorTypeEnum.SYSTEM_ERROR, AlarmSeverityEnum.MINOR, ErrorSeverityEnum.ERROR,
-    							"ERR517E", "Error when logging FE HTTP request/response", "", "Please check MYSQL DB health or look at the logs for more details."),
+    							"517", "Error when logging FE HTTP request/response", "", "Please check MYSQL DB health or look at the logs for more details."),
     
 	FePortalServletError(EPErrorCodesEnum.FEPORTALSERVLETERROR, ErrorTypeEnum.SYSTEM_ERROR, AlarmSeverityEnum.MAJOR, ErrorSeverityEnum.ERROR,
-								"ERR518E", "Error when trying to access FE Portal page.", "", "Please check logs for more information."),
+								"518", "Error when trying to access FE Portal page.", "", "Please check logs for more information."),
 	
     BeDaoCloseSessionError(EPErrorCodesEnum.BEDAOCLOSESESSIONERROR, ErrorTypeEnum.SYSTEM_ERROR, AlarmSeverityEnum.MAJOR, ErrorSeverityEnum.ERROR,
-    							"ERR519E", "Close local session operation with database failed", "", "Please check MYSQL DB health or look at the logs form more details."),
+    							"519", "Close local session operation with database failed", "", "Please check MYSQL DB health or look at the logs form more details."),
     
     BeRestApiGeneralError(EPErrorCodesEnum.BERESTAPIGENERALERROR, ErrorTypeEnum.SYSTEM_ERROR, AlarmSeverityEnum.CRITICAL, ErrorSeverityEnum.ERROR,
-    							"ERR900E", "Unexpected error during ECOMP-PORTAL Back-end REST API execution", "", "Please check error log for more information."),
+    							"900", "Unexpected error during ECOMP-PORTAL Back-end REST API execution", "", "Please check error log for more information."),
     
     FeHealthCheckGeneralError(EPErrorCodesEnum.FEHEALTHCHECKGENERALERROR, ErrorTypeEnum.SYSTEM_ERROR, AlarmSeverityEnum.CRITICAL, ErrorSeverityEnum.ERROR,
-    							"ERR901E", "General error during FE Health Check", "", "Please check error log for more information."),
+    							"901", "General error during FE Health Check", "", "Please check error log for more information."),
     
     InternalUnexpectedInfo(EPErrorCodesEnum.INTERNALUNEXPECTEDINFO_ONE_ARGUMENT, ErrorTypeEnum.SYSTEM_ERROR, AlarmSeverityEnum.INFORMATIONAL, ErrorSeverityEnum.INFO,
-    							"ERR999I", "Unexpected error", "Details: {0}.", "Please check logs for more information."),
+    							"999", "Unexpected error", "Details: {0}.", "Please check logs for more information."),
     
     InternalUnexpectedWarning(EPErrorCodesEnum.INTERNALUNEXPECTEDWARNING_ONE_ARGUMENT, ErrorTypeEnum.SYSTEM_ERROR, AlarmSeverityEnum.MINOR, ErrorSeverityEnum.WARN,
-    							"ERR999W", "Unexpected error", "Details: {0}.", "Please check logs for more information."),
+    							"999", "Unexpected error", "Details: {0}.", "Please check logs for more information."),
     
     InternalUnexpectedError(EPErrorCodesEnum.INTERNALUNEXPECTEDERROR_ONE_ARGUMENT, ErrorTypeEnum.SYSTEM_ERROR, AlarmSeverityEnum.MAJOR, ErrorSeverityEnum.ERROR,
-    							"ERR999E", "Unexpected error", "Details: {0}.", "Please check logs for more information."),
+    							"999", "Unexpected error", "Details: {0}.", "Please check logs for more information."),
     
     InternalUnexpectedFatal(EPErrorCodesEnum.INTERNALUNEXPECTEDFATAL_ONE_ARGUMENT, ErrorTypeEnum.SYSTEM_ERROR, AlarmSeverityEnum.CRITICAL, ErrorSeverityEnum.FATAL,
-    							"ERR999F", "Unexpected error", "Details: {0}.", "Please check logs for more information."),
+    							"999", "Unexpected error", "Details: {0}.", "Please check logs for more information."),
     
     ExternalAuthAccessConnectionError(EPErrorCodesEnum.EXTERNALAUTHACCESS_CONNECTIONERROR, ErrorTypeEnum.CONNECTION_PROBLEM, AlarmSeverityEnum.MAJOR, ErrorSeverityEnum.ERROR,
-			"ERR220E", "AAF Connection problem", "Details: {0}.", "Please check logs for more information."),
+			"220", "AAF Connection problem", "Details: {0}.", "Please check logs for more information."),
 
     ExternalAuthAccessAuthenticationError(EPErrorCodesEnum.EXTERNALAUTHACCESS_AUTHENTICATIONERROR, ErrorTypeEnum.AUTHENTICATION_PROBLEM, AlarmSeverityEnum.MAJOR, ErrorSeverityEnum.ERROR,
-			"ERR120E", "AAF authentication problem", "Details: {0}.", "Please check logs for more information."),
+			"120", "AAF authentication problem", "Details: {0}.", "Please check logs for more information."),
     
     ExternalAuthAccessGeneralError(EPErrorCodesEnum.EXTERNALAUTHACCESS_GENERALERROR, ErrorTypeEnum.SYSTEM_ERROR, AlarmSeverityEnum.MAJOR, ErrorSeverityEnum.ERROR,
-			"ERR520E", "Unexpected error", "Details: {0}.", "Please check logs for more information."),
+			"520", "Unexpected error", "Details: {0}.", "Please check logs for more information."),
     
     SchedulerAccessConnectionError(EPErrorCodesEnum.SCHEDULER_ACCESS_CONNECTIONERROR, ErrorTypeEnum.CONNECTION_PROBLEM, AlarmSeverityEnum.MAJOR, ErrorSeverityEnum.ERROR,
-			"ERR240E", "Scheduler Connection problem", "Details: {0}.", "Please check logs for more information."),
+			"240", "Scheduler Connection problem", "Details: {0}.", "Please check logs for more information."),
 
     SchedulerAuxAccessAuthenticationError(EPErrorCodesEnum.SCHEDULERAUX_ACCESS_AUTHENTICATIONERROR, ErrorTypeEnum.AUTHENTICATION_PROBLEM, AlarmSeverityEnum.MAJOR, ErrorSeverityEnum.ERROR,
-			"ERR140E", "SchedulerAux authentication problem", "Details: {0}.", "Please check logs for more information."),
+			"140", "SchedulerAux authentication problem", "Details: {0}.", "Please check logs for more information."),
     
     SchedulerAccessGeneralError(EPErrorCodesEnum.SCHEDULER_ACCESS_GENERALERROR, ErrorTypeEnum.SYSTEM_ERROR, AlarmSeverityEnum.MAJOR, ErrorSeverityEnum.ERROR,
-			"ERR540E", "Unexpected Scheduler error", "Details: {0}.", "Please check logs for more information."),
+			"540", "Unexpected Scheduler error", "Details: {0}.", "Please check logs for more information."),
     
     SchedulerInvalidAttributeError(EPErrorCodesEnum.SCHEDULER_INVALID_ATTRIBUTEERROR, ErrorTypeEnum.SYSTEM_ERROR, AlarmSeverityEnum.MAJOR, ErrorSeverityEnum.ERROR,
-			"ERR515E", "Unable to create Scheduler", "Details: {0}.", "Please check logs for more information."),
+			"515", "Unable to create Scheduler", "Details: {0}.", "Please check logs for more information."),
 
 	;
 	

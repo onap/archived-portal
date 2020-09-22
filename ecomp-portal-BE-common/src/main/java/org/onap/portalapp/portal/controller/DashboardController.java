@@ -302,15 +302,10 @@ public class DashboardController extends EPRestrictedBaseController {
 				MDC.put(EPCommonSystemProperties.PARTNER_NAME, EPCommonSystemProperties.ECOMP_PORTAL_FE);
 				MDC.put(com.att.eelf.configuration.Configuration.MDC_SERVICE_NAME, EPCommonSystemProperties.ECOMP_PORTAL_BE);
 				auditService.logActivity(auditLog, null);
-				MDC.put(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP,EPEELFLoggerAdvice.getCurrentDateTimeUTC());
-				
 				MDC.put(EPCommonSystemProperties.STATUS_CODE, "COMPLETE");
-				EcompPortalUtils.calculateDateTimeDifferenceForLog(MDC.get(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP),MDC.get(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP));
-				logger.info(EELFLoggerDelegate.auditLogger, EPLogUtil.formatAuditLogMessage("DashboardController.PortalRestResponse", 
-						EcompAuditLog.CD_ACTIVITY_SEARCH, user.getOrgUserId(), null, searchString));	
-				MDC.remove(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP);
-				MDC.remove(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP);
-				MDC.remove(SystemProperties.MDC_TIMER);
+				String auditMessageInfo = EPLogUtil.formatAuditLogMessage("DashboardController.PortalRestResponse", 
+						EcompAuditLog.CD_ACTIVITY_SEARCH, user.getOrgUserId(), null, searchString);		
+				EPLogUtil.logAuditMessage(logger, auditMessageInfo);				
 				MDC.remove(EPCommonSystemProperties.STATUS_CODE);
 				return new PortalRestResponse<>(PortalRestStatusEnum.OK, "success", results);
 			}
