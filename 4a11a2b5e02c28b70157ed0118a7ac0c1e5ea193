@@ -16,6 +16,24 @@
       "revId": "4a11a2b5e02c28b70157ed0118a7ac0c1e5ea193",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "34b2f390_b10c3ee7",
+        "filename": "ecomp-portal-BE-os/src/main/webapp/WEB-INF/conf/system.properties",
+        "patchSetId": 1
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 679
+      },
+      "writtenOn": "2020-09-22T18:30:33Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "996456a1_03d56d42",
+      "revId": "4a11a2b5e02c28b70157ed0118a7ac0c1e5ea193",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
