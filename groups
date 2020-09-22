@@ -2,4 +2,3 @@
 #
 c61590081d6e5ad7399373df353f07f031e0f284                               	saml/onap-gerrit-portal-committers
 daebbf523be390041a1a9c0e340a6d833aae5043                               	GitHub Replication
-ldap:cn=onap-gerrit-portal-committers,ou=Groups,dc=freestandards,dc=org	ldap/onap-gerrit-portal-committers
