@@ -1,4 +1,4 @@
-FROM mariadb:latest
+FROM mariadb:10.4.14
 
 ARG DB_SCRIPT_DIR=${DB_SCRIPT_DIR}
 
