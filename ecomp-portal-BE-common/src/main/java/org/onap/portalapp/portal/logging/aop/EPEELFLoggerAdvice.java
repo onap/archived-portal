@@ -173,13 +173,12 @@ public class EPEELFLoggerAdvice {
 			
 			MDC.remove(Configuration.MDC_SERVER_FQDN);
 		} else {
-		MDC.put(SystemProperties.METRICSLOG_END_TIMESTAMP, getCurrentDateTimeUTC());
-		this.calculateDateTimeDifference(MDC.get(SystemProperties.METRICSLOG_BEGIN_TIMESTAMP),MDC.get(SystemProperties.METRICSLOG_END_TIMESTAMP));
-		MDC.put("CustomField1", "INVOKE");
-			
+			MDC.put(SystemProperties.METRICSLOG_END_TIMESTAMP, getCurrentDateTimeUTC());
+			this.calculateDateTimeDifference(MDC.get(SystemProperties.METRICSLOG_BEGIN_TIMESTAMP),MDC.get(SystemProperties.METRICSLOG_END_TIMESTAMP));
+			MDC.put("CustomField1", "INVOKE");
+			MDC.put("CustomField2", " InvocationID="+MDC.get(Configuration.MDC_KEY_REQUEST_ID));
+			logger.info(EELFLoggerDelegate.metricsLogger, methodName + " operation is started.");		
 		}
-		MDC.put("CustomField2", " InvocationID="+MDC.get(Configuration.MDC_KEY_REQUEST_ID));
-		logger.info(EELFLoggerDelegate.metricsLogger, methodName + " operation is started.");
 		logger.debug(EELFLoggerDelegate.debugLogger, "EPEELFLoggerAdvice#before: entering {}", methodName);
 		} catch (Exception e) {
 			adviceLogger.error(EELFLoggerDelegate.errorLogger, "before failed", e);
@@ -252,10 +251,9 @@ public class EPEELFLoggerAdvice {
 			MDC.put(EPCommonSystemProperties.RESPONSE_CODE, externalAPIResponseCode);
 			MDC.put(EPCommonSystemProperties.STATUS_CODE, "ERROR");
 		}
-
+		MDC.put(SystemProperties.STATUS_CODE, "COMPLETE");
 		EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(className);
 		
-
 		// Log security message, if necessary
 		if (securityEventType != null) {
 			MDC.put(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP,
@@ -300,15 +298,13 @@ public class EPEELFLoggerAdvice {
 			MDC.remove(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP);
 			MDC.remove(EPCommonSystemProperties.RESPONSE_CODE);
 			
-		} else{
-				MDC.put(SystemProperties.CUSTOM_FIELD1, "INVOKE-RETURN");
-			}
-
-			MDC.put(SystemProperties.STATUS_CODE, "COMPLETE");
+		} else {
+			MDC.put(SystemProperties.CUSTOM_FIELD1, "INVOKE-RETURN");
 			MDC.put("CustomField2", " InvocationID="+MDC.get(Configuration.MDC_KEY_REQUEST_ID));
+			// add the metrics log
+			logger.info(EELFLoggerDelegate.metricsLogger,  methodName + " operation is completed.");
+		}
 		logger.debug(EELFLoggerDelegate.debugLogger, "EPEELFLoggerAdvice#after: finished {}", methodName);
-		// add the metrics log
-		logger.info(EELFLoggerDelegate.metricsLogger,  methodName + " operation is completed.");
 		MDC.remove("CustomField1");
 		MDC.remove("CustomField2");
 		MDC.remove(className + methodName + EPCommonSystemProperties.METRICSLOG_BEGIN_TIMESTAMP);
