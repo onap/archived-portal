@@ -54,6 +54,7 @@ import org.onap.portalsdk.core.exception.SessionExpiredException;
 import org.onap.portalsdk.core.logging.format.AlarmSeverityEnum;
 import org.onap.portalsdk.core.logging.format.AuditLogFormatter;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
+import org.onap.portalsdk.core.logging.logic.LoggerProperties;
 import org.onap.portalsdk.core.util.SystemProperties;
 import org.onap.portalsdk.core.util.SystemProperties.SecurityEventTypeEnum;
 import org.onap.portalsdk.core.web.support.UserUtils;
@@ -108,6 +109,7 @@ public class EPEELFLoggerAdvice {
 	 * @return Object array
 	 */
 	public Object[] before(SecurityEventTypeEnum securityEventType, Object[] args, Object[] passOnArgs) {
+		try {
 		String className = "";
 		if (passOnArgs.length > 0 && passOnArgs[0] != null)
 			className = passOnArgs[0].toString();
@@ -117,6 +119,7 @@ public class EPEELFLoggerAdvice {
 
 		// Initialize Request defaults only for controller methods.
 		MDC.put(className + methodName + EPCommonSystemProperties.METRICSLOG_BEGIN_TIMESTAMP, getCurrentDateTimeUTC());
+		MDC.put(EPCommonSystemProperties.METRICSLOG_BEGIN_TIMESTAMP, getCurrentDateTimeUTC());
 		MDC.put(EPCommonSystemProperties.TARGET_ENTITY, EPCommonSystemProperties.ECOMP_PORTAL_BE);
 		MDC.put(EPCommonSystemProperties.TARGET_SERVICE_NAME, methodName);
 		if (MDC.get(Configuration.MDC_KEY_REQUEST_ID) == null||MDC.get(Configuration.MDC_KEY_REQUEST_ID).isEmpty()){
@@ -124,31 +127,24 @@ public class EPEELFLoggerAdvice {
 			MDC.put(Configuration.MDC_KEY_REQUEST_ID, requestId);
 		}
 		MDC.put(EPCommonSystemProperties.PARTNER_NAME, "Unknown");
-		MDC.put(Configuration.MDC_SERVICE_NAME, EPCommonSystemProperties.ECOMP_PORTAL_BE);
 
+		EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(className);
+		MDC.put(SystemProperties.STATUS_CODE, "INPROGRESS");
+
+		// Log security message, if necessary
 		if (securityEventType != null) {
 			MDC.put(className + methodName + EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP,
 					getCurrentDateTimeUTC());
+			MDC.put(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP,getCurrentDateTimeUTC());
+			MDC.put(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP, getCurrentDateTimeUTC());
+			this.calculateDateTimeDifference(MDC.get(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP),MDC.get(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP));
+			MDC.put("CustomField1", "ENTRY");
+			MDC.put("CustomField2", "InvocationID="+MDC.get(Configuration.MDC_KEY_REQUEST_ID));
 			HttpServletRequest req = null;
 			if (args.length > 0 && args[0] != null && args[0] instanceof HttpServletRequest) {
 				req = (HttpServletRequest) args[0];
 				this.setHttpRequestBasedDefaultsIntoGlobalLoggingContext(req, securityEventType, methodName);
 			}
-		}
-
-		EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(className);
-		logger.debug(EELFLoggerDelegate.debugLogger, "EPEELFLoggerAdvice#after: finished {}", methodName);
-		// add the metrics log
-		logger.info(EELFLoggerDelegate.metricsLogger,  methodName + " operation is completed.");
-
-		// Log security message, if necessary
-		if (securityEventType != null) {
-			MDC.put(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP,getCurrentDateTimeUTC());
-			MDC.put(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP, getCurrentDateTimeUTC());
-			this.calculateDateTimeDifference(MDC.get(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP),MDC.get(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP));
-			MDC.put(EPCommonSystemProperties.STATUS_CODE, "INPROGRESS");
-			MDC.put("CustomField1", "ENTRY");
-			MDC.put("CustomField2", "InvocationID="+MDC.get(Configuration.MDC_KEY_REQUEST_ID));
 			try {
 				MDC.put(Configuration.MDC_SERVER_FQDN, InetAddress.getLocalHost().getCanonicalHostName());
 			} catch (Exception e) {
@@ -173,10 +169,21 @@ public class EPEELFLoggerAdvice {
 				MDC.remove(EPCommonSystemProperties.PARTNER_NAME);
 				MDC.remove(Configuration.MDC_SERVICE_NAME);
 			}
+			logger.debug(EELFLoggerDelegate.debugLogger, "{} was invoked.", methodName);
 			
 			MDC.remove(Configuration.MDC_SERVER_FQDN);
+		} else {
+		MDC.put(SystemProperties.METRICSLOG_END_TIMESTAMP, getCurrentDateTimeUTC());
+		this.calculateDateTimeDifference(MDC.get(SystemProperties.METRICSLOG_BEGIN_TIMESTAMP),MDC.get(SystemProperties.METRICSLOG_END_TIMESTAMP));
+		MDC.put("CustomField1", "INVOKE");
+			
 		}
+		MDC.put("CustomField2", " InvocationID="+MDC.get(Configuration.MDC_KEY_REQUEST_ID));
+		logger.info(EELFLoggerDelegate.metricsLogger, methodName + " operation is started.");
 		logger.debug(EELFLoggerDelegate.debugLogger, "EPEELFLoggerAdvice#before: entering {}", methodName);
+		} catch (Exception e) {
+			adviceLogger.error(EELFLoggerDelegate.errorLogger, "before failed", e);
+		}
 		return new Object[] { "" };
 	}
 
@@ -191,6 +198,7 @@ public class EPEELFLoggerAdvice {
 	 */
 	public void after(SecurityEventTypeEnum securityEventType, String statusCode, String responseCode, Object[] args,
 			Object[] returnArgs, Object[] passOnArgs) {
+		try {
 		String className = "";
 		if (passOnArgs.length > 0 && passOnArgs[0] != null)
 			className = passOnArgs[0].toString();
@@ -216,8 +224,6 @@ public class EPEELFLoggerAdvice {
 			MDC.put(EPCommonSystemProperties.PARTNER_NAME, "Unknown");
 		}
 		
-		MDC.put(Configuration.MDC_SERVICE_NAME, EPCommonSystemProperties.ECOMP_PORTAL_BE);
-
 
 		MDC.put(EPCommonSystemProperties.METRICSLOG_BEGIN_TIMESTAMP,
 				MDC.get(className + methodName + EPCommonSystemProperties.METRICSLOG_BEGIN_TIMESTAMP));
@@ -248,9 +254,7 @@ public class EPEELFLoggerAdvice {
 		}
 
 		EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(className);
-		logger.debug(EELFLoggerDelegate.debugLogger, "EPEELFLoggerAdvice#after: finished {}", methodName);
-		// add the metrics log
-		logger.info(EELFLoggerDelegate.metricsLogger,  methodName + " operation is completed.");
+		
 
 		// Log security message, if necessary
 		if (securityEventType != null) {
@@ -296,7 +300,15 @@ public class EPEELFLoggerAdvice {
 			MDC.remove(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP);
 			MDC.remove(EPCommonSystemProperties.RESPONSE_CODE);
 			
-		}
+		} else{
+				MDC.put(SystemProperties.CUSTOM_FIELD1, "INVOKE-RETURN");
+			}
+
+			MDC.put(SystemProperties.STATUS_CODE, "COMPLETE");
+			MDC.put("CustomField2", " InvocationID="+MDC.get(Configuration.MDC_KEY_REQUEST_ID));
+		logger.debug(EELFLoggerDelegate.debugLogger, "EPEELFLoggerAdvice#after: finished {}", methodName);
+		// add the metrics log
+		logger.info(EELFLoggerDelegate.metricsLogger,  methodName + " operation is completed.");
 		MDC.remove("CustomField1");
 		MDC.remove("CustomField2");
 		MDC.remove(className + methodName + EPCommonSystemProperties.METRICSLOG_BEGIN_TIMESTAMP);
@@ -305,6 +317,9 @@ public class EPEELFLoggerAdvice {
 		MDC.remove(EPCommonSystemProperties.MDC_TIMER);
 		MDC.remove(EPCommonSystemProperties.TARGET_ENTITY);
 		MDC.remove(EPCommonSystemProperties.TARGET_SERVICE_NAME);
+		} catch (Exception e) {
+			adviceLogger.error(EELFLoggerDelegate.errorLogger, "after failed", e);
+		}
 	
 	}
 
