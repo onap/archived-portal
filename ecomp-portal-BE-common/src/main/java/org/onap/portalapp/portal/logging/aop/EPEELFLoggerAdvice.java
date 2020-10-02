@@ -129,7 +129,7 @@ public class EPEELFLoggerAdvice {
 		MDC.put(EPCommonSystemProperties.PARTNER_NAME, "Unknown");
 
 		EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(className);
-		MDC.put(SystemProperties.STATUS_CODE, "INPROGRESS");
+		MDC.put(EPCommonSystemProperties.STATUS_CODE, "INPROGRESS");
 
 		// Log security message, if necessary
 		if (securityEventType != null) {
@@ -138,8 +138,6 @@ public class EPEELFLoggerAdvice {
 			MDC.put(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP,getCurrentDateTimeUTC());
 			MDC.put(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP, getCurrentDateTimeUTC());
 			this.calculateDateTimeDifference(MDC.get(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP),MDC.get(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP));
-			MDC.put("CustomField1", "ENTRY");
-			MDC.put("CustomField2", "InvocationID="+MDC.get(Configuration.MDC_KEY_REQUEST_ID));
 			HttpServletRequest req = null;
 			if (args.length > 0 && args[0] != null && args[0] instanceof HttpServletRequest) {
 				req = (HttpServletRequest) args[0];
@@ -151,6 +149,8 @@ public class EPEELFLoggerAdvice {
 				adviceLogger.error(EELFLoggerDelegate.errorLogger,
 						" while setting the IP address ", e);
 			}
+			MDC.put(SystemProperties.CUSTOM_FIELD1, "ENTRY");
+			MDC.put(SystemProperties.CUSTOM_FIELD2, "InvocationID="+MDC.get(Configuration.MDC_KEY_REQUEST_ID));
 			this.logSecurityMessage(logger, securityEventType, methodName);
 
 			// Outgoing & LDAP messages are part of Incoming requests so,
@@ -175,8 +175,8 @@ public class EPEELFLoggerAdvice {
 		} else {
 			MDC.put(SystemProperties.METRICSLOG_END_TIMESTAMP, getCurrentDateTimeUTC());
 			this.calculateDateTimeDifference(MDC.get(SystemProperties.METRICSLOG_BEGIN_TIMESTAMP),MDC.get(SystemProperties.METRICSLOG_END_TIMESTAMP));
-			MDC.put("CustomField1", "INVOKE");
-			MDC.put("CustomField2", " InvocationID="+MDC.get(Configuration.MDC_KEY_REQUEST_ID));
+			MDC.put(SystemProperties.CUSTOM_FIELD1, "INVOKE");
+			MDC.put(SystemProperties.CUSTOM_FIELD2, " InvocationID="+MDC.get(Configuration.MDC_KEY_REQUEST_ID));
 			logger.info(EELFLoggerDelegate.metricsLogger, methodName + " operation is started.");		
 		}
 		logger.debug(EELFLoggerDelegate.debugLogger, "EPEELFLoggerAdvice#before: entering {}", methodName);
@@ -251,7 +251,7 @@ public class EPEELFLoggerAdvice {
 			MDC.put(EPCommonSystemProperties.RESPONSE_CODE, externalAPIResponseCode);
 			MDC.put(EPCommonSystemProperties.STATUS_CODE, "ERROR");
 		}
-		MDC.put(SystemProperties.STATUS_CODE, "COMPLETE");
+		MDC.put(EPCommonSystemProperties.STATUS_CODE, "COMPLETE");
 		EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(className);
 		
 		// Log security message, if necessary
@@ -261,8 +261,8 @@ public class EPEELFLoggerAdvice {
 			MDC.put(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP, getCurrentDateTimeUTC());
 			this.calculateDateTimeDifference(MDC.get(EPCommonSystemProperties.AUDITLOG_BEGIN_TIMESTAMP),
 					MDC.get(EPCommonSystemProperties.AUDITLOG_END_TIMESTAMP));
-			MDC.put("CustomField1", "EXIT");
-			MDC.put("CustomField2", "InvocationID="+MDC.get(Configuration.MDC_KEY_REQUEST_ID));
+			MDC.put(SystemProperties.CUSTOM_FIELD1, "EXIT");
+			MDC.put(SystemProperties.CUSTOM_FIELD2, "InvocationID="+MDC.get(Configuration.MDC_KEY_REQUEST_ID));
 			try {
 				MDC.put(Configuration.MDC_SERVER_FQDN, InetAddress.getLocalHost().getCanonicalHostName());
 			} catch (Exception e) {
@@ -300,13 +300,13 @@ public class EPEELFLoggerAdvice {
 			
 		} else {
 			MDC.put(SystemProperties.CUSTOM_FIELD1, "INVOKE-RETURN");
-			MDC.put("CustomField2", " InvocationID="+MDC.get(Configuration.MDC_KEY_REQUEST_ID));
+			MDC.put(SystemProperties.CUSTOM_FIELD2, " InvocationID="+MDC.get(Configuration.MDC_KEY_REQUEST_ID));
 			// add the metrics log
 			logger.info(EELFLoggerDelegate.metricsLogger,  methodName + " operation is completed.");
 		}
 		logger.debug(EELFLoggerDelegate.debugLogger, "EPEELFLoggerAdvice#after: finished {}", methodName);
-		MDC.remove("CustomField1");
-		MDC.remove("CustomField2");
+		MDC.remove(SystemProperties.CUSTOM_FIELD1);
+		MDC.remove(SystemProperties.CUSTOM_FIELD2);
 		MDC.remove(className + methodName + EPCommonSystemProperties.METRICSLOG_BEGIN_TIMESTAMP);
 		MDC.remove(EPCommonSystemProperties.METRICSLOG_BEGIN_TIMESTAMP);
 		MDC.remove(EPCommonSystemProperties.METRICSLOG_END_TIMESTAMP);
