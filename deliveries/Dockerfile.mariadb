@@ -1,4 +1,8 @@
+<<<<<<< HEAD   (57379c Merge "pushing error and audit log changes for portal")
 FROM mariadb:latest
+=======
+FROM mariadb:10.5.5
+>>>>>>> CHANGE (8531f1 Update mariaDB version in portal-db Dockerfile)
 
 ARG DB_SCRIPT_DIR=${DB_SCRIPT_DIR}
 
