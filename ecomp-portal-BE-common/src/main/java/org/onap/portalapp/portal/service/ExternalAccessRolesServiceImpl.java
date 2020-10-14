@@ -2812,12 +2812,36 @@ public class ExternalAccessRolesServiceImpl implements ExternalAccessRolesServic
 						EPRole updateRoleInactive = roleList.get(0);
 						updateRoleInactive.setActive(false);
 						dataAccessService.saveDomainObject(updateRoleInactive, null);
+						
+						/**
+						 * Newly Added - Deleting User Role association as this role is not present in AAF and got removed from AAF directly
+						*/
+						deleteUserRoleAssociation(updateRoleInactive, app);
 					}
 				}
 			} catch (Exception e) {
 				logger.error(EELFLoggerDelegate.errorLogger,
 						"syncApplicationRolesWithEcompDB: Failed to de-activate role ", e);
 			}
+		}
+	}
+	
+	/**
+	 * Delete User Role Association mapping in Portal DB - In case of particular role is already removed from AAF directly.
+	 * @param epRole
+	 */
+	private void deleteUserRoleAssociation(EPRole epRole, EPApp app) {		
+		Session localSession = sessionFactory.openSession();
+		Query query = null;
+		try {
+			String sql = "DELETE FROM FN_USER_ROLE where role_id=" +epRole.getId() + " AND app_id=" +app.getId();
+			logger.debug(EELFLoggerDelegate.debugLogger,"deleteUserRoleAssociation: sql :"+ sql);
+			query = localSession.createSQLQuery(sql);
+			query.executeUpdate();
+		} catch (Exception e) {
+			logger.error(EELFLoggerDelegate.errorLogger, "deleteUserRoleAssociation: failed", e);
+		} finally {
+			localSession.close();
 		}
 	}
 
