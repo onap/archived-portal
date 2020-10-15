@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.onap.portal</groupId>
 		<artifactId>onap-portal-parent</artifactId>
-		<version>3.4.0</version>
+		<version>3.5.0</version>
 	</parent>
 
 	<artifactId>portal-be-common</artifactId>

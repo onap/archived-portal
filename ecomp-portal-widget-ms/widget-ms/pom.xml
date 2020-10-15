@@ -14,7 +14,7 @@
 
 	<groupId>org.onap.portal</groupId>
 	<artifactId>widget-ms</artifactId>
-	<version>3.4.0</version>
+	<version>3.5.0</version>
 	<packaging>jar</packaging>
 	<name>widget-microservice</name>
 
