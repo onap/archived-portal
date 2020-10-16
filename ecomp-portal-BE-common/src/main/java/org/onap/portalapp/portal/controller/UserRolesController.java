@@ -407,7 +407,7 @@ public class UserRolesController extends EPRestrictedBaseController {
             } catch (Exception e) {
                 logger.error(EELFLoggerDelegate.errorLogger,
                         "putAppWithUserRoleStateForUser: failed for app {}, user {}", newAppRolesForUser.getAppId(),
-                        newAppRolesForUser.getOrgUserId(), e);
+                        newAppRolesForUser.getOrgUserId(), e.getMessage());
                 portalResponse = new PortalRestResponse<>(PortalRestStatusEnum.ERROR, e.getMessage(), null);
             }
         }
