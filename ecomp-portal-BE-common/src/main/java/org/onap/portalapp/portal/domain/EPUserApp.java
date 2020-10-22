@@ -97,7 +97,7 @@ public class EPUserApp extends DomainVo implements java.io.Serializable, Compara
 	}
 		
 	public Integer getPriority() {
-		return (this.priority == null) ? 1 : priority;
+		return priority;
 	}
 
 	public void setPriority(Integer priority) {
