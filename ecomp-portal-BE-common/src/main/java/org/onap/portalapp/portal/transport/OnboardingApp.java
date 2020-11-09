@@ -33,12 +33,15 @@
  *
  * ============LICENSE_END============================================
  *
- * 
+ *
  */
 package org.onap.portalapp.portal.transport;
 
 import org.hibernate.validator.constraints.SafeHtml;
 import org.onap.portalapp.portal.domain.EpAppType;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 /**
  * Model of rows in the fn_app table; serialized as a message add or update an
@@ -66,7 +69,7 @@ public class OnboardingApp {
 
 	@SafeHtml
 	private String applicationType;
-	
+
 	private Boolean isOpen;
 
 	private Boolean isEnabled;
@@ -79,6 +82,7 @@ public class OnboardingApp {
 	@SafeHtml
 	private String appBasicAuthUsername;
 	@SafeHtml
+	@JsonProperty(access = Access.WRITE_ONLY)
 	private String appBasicAuthPassword;
 	@SafeHtml
 	private String thumbnail;
@@ -90,7 +94,7 @@ public class OnboardingApp {
 	private String uebSecret;
 
 	private Boolean restrictedApp;
-	
+
 	private Boolean rolesInAAF;
 	@SafeHtml
 	private String nameSpace;
@@ -101,7 +105,7 @@ public class OnboardingApp {
 	private Boolean appAck;
 
 	private Boolean usesCadi;
-	
+
 	/**
 	 * Sets the name, myLoginsAppName, myLoginsAppOwner, username and
 	 * appPassword fields to the empty string OR trims leading/trailing space,
@@ -330,7 +334,7 @@ public class OnboardingApp {
 	public void setApplicationType(String applicationType) {
 		this.applicationType = applicationType;
 	}
-	
+
 	public Integer appTypePersistedValue() {
 		switch (this.getApplicationType()) {
 		case EpAppType.GUI_STR:

@@ -33,18 +33,21 @@
  *
  * ============LICENSE_END============================================
  *
- * 
+ *
  */
 package org.onap.portalapp.portal.domain;
 
 import java.util.Arrays;
 
 import javax.persistence.Lob;
-
 import javax.validation.Valid;
+
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.validator.constraints.SafeHtml;
 import org.onap.portalsdk.core.domain.support.DomainVo;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 /**
  * Model for all columns in the fn_app table.
@@ -85,6 +88,7 @@ public class EPApp extends DomainVo {
 	private String appBasicAuthUsername;
 
 	@SafeHtml
+	@JsonProperty(access = Access.WRITE_ONLY)
 	private String appBasicAuthPassword;
 
 	@Lob
@@ -254,7 +258,7 @@ public class EPApp extends DomainVo {
 		}
 		this.appBasicAuthPassword = appBasicAuthPassword;
 	}
-	
+
 	public Boolean getOpen() {
 		return open;
 	}
@@ -281,6 +285,7 @@ public class EPApp extends DomainVo {
 		return (this.appType == 2 ? true : false);
 	}
 
+	@Override
 	public int compareTo(Object obj) {
 		Long c1 = getId();
 		Long c2 = ((EPApp) obj).getId();
@@ -382,7 +387,7 @@ public class EPApp extends DomainVo {
 	public void setUsesCadi(Boolean usesCadi) {
 		this.usesCadi = usesCadi;
 	}
-	
+
 	@Override
 	public String toString() {
 		return "EPApp [name=" + name + ", imageUrl=" + imageUrl + ", appDescription=" + appDescription + ", appNotes="
@@ -556,5 +561,5 @@ public class EPApp extends DomainVo {
 		return true;
 	}
 
-	
+
 }

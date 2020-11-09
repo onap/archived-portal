@@ -35,7 +35,7 @@
  *
  * ============LICENSE_END============================================
  *
- * 
+ *
  */
 package org.onap.portalapp.portal.service;
 
@@ -135,8 +135,8 @@ public class EPAppCommonServiceImpl implements EPAppService {
 	@Autowired
 	protected SessionFactory sessionFactory;
 	@Autowired
-	private DataAccessService dataAccessService;	
-	
+	private DataAccessService dataAccessService;
+
 	RestTemplate template = new RestTemplate();
 
 	@PostConstruct
@@ -146,7 +146,7 @@ public class EPAppCommonServiceImpl implements EPAppService {
 		ECOMP_APP_ID = SystemProperties.getProperty(EPCommonSystemProperties.ECOMP_APP_ID);
 		RESTRICTED_APP_ROLE_ID = SystemProperties.getProperty(EPCommonSystemProperties.RESTRICTED_APP_ROLE_ID);
 	}
-	
+
 	public Boolean onboardingAppFieldsValidation(OnboardingApp onboardingApp) {
 		//FieldsValidator fieldsValidator = new FieldsValidator();
 
@@ -164,9 +164,9 @@ public class EPAppCommonServiceImpl implements EPAppService {
 			return false;
 		}
 		return true;
-		
+
 	}
-	
+
 	private Boolean onboardingInactiveAppFieldsForValidation(OnboardingApp onboardingApp) {
 		if (onboardingApp.getAppName() == null || onboardingApp.getAppName().length() == 0
 				|| onboardingApp.getIsOpen() == null) {
@@ -221,15 +221,15 @@ public class EPAppCommonServiceImpl implements EPAppService {
 				EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeDaoSystemError, e);
 				return null;
 			}
-			
+
 		} else {
 			logger.error(EELFLoggerDelegate.errorLogger,
 					"getUserAsAdminApps: only Account Admin may invoke this function!");
 			return new ArrayList<EPApp>();
 		}
 	}
-	
-	
+
+
 
 	@Override
 	public List<EPApp> getUserByOrgUserIdAsAdminApps(String orgUserId) {
@@ -297,8 +297,8 @@ public class EPAppCommonServiceImpl implements EPAppService {
 		}
 	}
 
-	
-	
+
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<AppIdAndNameTransportModel> getAdminApps(EPUser user) {
@@ -366,21 +366,21 @@ public class EPAppCommonServiceImpl implements EPAppService {
 		try {
 			params.put("appName", appName);
 			@SuppressWarnings("unchecked")
-			List<EPApp> apps = (List<EPApp>) dataAccessService.executeNamedQuery("getMyloginAppDetails", params, null);
+			List<EPApp> apps = dataAccessService.executeNamedQuery("getMyloginAppDetails", params, null);
 			return (apps.size() > 0) ? apps.get(0) : null;
 		} catch(Exception e) {
 			EPLogUtil.logEcompError(logger, EPAppMessagesEnum.BeDaoSystemError, e);
 			return null;
 		}
 	}
-	
+
 	@Override
 	public EPApp getAppDetailByAppName(String appName) {
 		final Map<String, String> params = new HashMap<String, String>();
 		try {
 			params.put("appName", appName);
 			@SuppressWarnings("unchecked")
-			List<EPApp> apps = (List<EPApp>) dataAccessService.executeNamedQuery("getAppDetailsByAppName", params, null);
+			List<EPApp> apps = dataAccessService.executeNamedQuery("getAppDetailsByAppName", params, null);
 			if (apps.size() > 0) {
 				EPApp app = apps.get(0);
 				if (!EcompPortalUtils.checkIfRemoteCentralAccessAllowed()) {
@@ -443,7 +443,7 @@ public class EPAppCommonServiceImpl implements EPAppService {
 		try {
 			Map<String, String> params = new HashMap<>();
 			params.put("accountAdminRoleId", ACCOUNT_ADMIN_ROLE_ID);
-			List<AdminUserApp> adminApps = (List<AdminUserApp>) dataAccessService.executeNamedQuery("getAppsAdmins",
+			List<AdminUserApp> adminApps = dataAccessService.executeNamedQuery("getAppsAdmins",
 					params, null);
 			return aggregateRowsResultsByUserId(adminApps);
 		} catch (Exception e) {
@@ -482,7 +482,7 @@ public class EPAppCommonServiceImpl implements EPAppService {
 		return appsModified;
 	}
 
-	
+
 	@Override
 	public List<AppsResponse> getAllApplications(Boolean all) {
 		// If all is true, return both active and inactive apps. Otherwise, just
@@ -615,8 +615,8 @@ public class EPAppCommonServiceImpl implements EPAppService {
 							|| onboardingApp.appPassword.length() == 0))) {
 				fieldsValidator.httpStatusCode = new Long(HttpServletResponse.SC_BAD_REQUEST);
 			}
-			
-			
+
+
 		}
 		return fieldsValidator;
 	}*/
@@ -818,7 +818,7 @@ public class EPAppCommonServiceImpl implements EPAppService {
 		}
 		return finalsortedAppsByManual;
 	}
-	
+
 	@Override
 	public List<OnboardingApp> getOnboardingApps() {
 		@SuppressWarnings("unchecked")
@@ -832,25 +832,25 @@ public class EPAppCommonServiceImpl implements EPAppService {
 		}
 		return onboardingAppsList;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<OnboardingApp> getAdminAppsOfUser(EPUser user) {
-		
+
 		List<OnboardingApp> onboardingAppsList = new ArrayList<OnboardingApp>();
 		List<Integer> userAdminApps = new ArrayList<>();
 		final Map<String, Long> userParams = new HashMap<>();
-		userParams.put("userId", user.getId());	
+		userParams.put("userId", user.getId());
 		userAdminApps =  dataAccessService.executeNamedQuery("getAllAdminAppsofTheUser", userParams, null);
-		
+
 //		userAdminApps.removeIf(x -> x == Integer.valueOf(ECOMP_APP_ID));
-		
+
 		logger.debug(EELFLoggerDelegate.debugLogger, "Is account admin for userAdminApps() - for user {}, found userAdminAppsSize {}", user.getOrgUserId(), userAdminApps.size());
 		onboardingAppsList = getOnboardingApps();
-		
+
 		final List<Integer> userAdminApps1 = userAdminApps;
 		List<OnboardingApp> userApplicationAdmins = onboardingAppsList.stream().filter(x -> userAdminApps1.contains((int) (long)x.getId())).collect(Collectors.toList());
-		
+
         return userApplicationAdmins;
 	}
 
@@ -859,7 +859,7 @@ public class EPAppCommonServiceImpl implements EPAppService {
 		@SuppressWarnings("unchecked")
 		List<EPApp> apps = dataAccessService.getList(EPApp.class,
 				" where enabled = true and open = false and app_type!= 3 and id!=" + ECOMP_APP_ID, null, null);
-	
+
 		List<OnboardingApp> onboardingAppsList = new ArrayList<OnboardingApp>();
 		for (EPApp app : apps) {
 			OnboardingApp onboardingApp = new OnboardingApp();
@@ -898,10 +898,10 @@ public class EPAppCommonServiceImpl implements EPAppService {
 			}
 			else
 			 orCrit = Restrictions.or(idCrit, nameCrit);
-			
+
 			restrictionsList.add(orCrit);
 			apps = (List<EPApp>) dataAccessService.getList(EPApp.class, null, restrictionsList, null);
-			
+
 		}
 		for (EPApp app : apps) {
 			if (onboardingApp.getId() != null && onboardingApp.getId().equals(app.getId())) {
@@ -919,7 +919,7 @@ public class EPAppCommonServiceImpl implements EPAppService {
 					break;
 				}
 			}
-			
+
 		}
 		if (duplicatedNameSpace || duplicatedName) {
 			if (duplicatedNameSpace) {
@@ -943,6 +943,8 @@ public class EPAppCommonServiceImpl implements EPAppService {
 		if (fieldsValidator.httpStatusCode.intValue() == HttpServletResponse.SC_OK) {
 			if (modifiedOnboardingApp.getId() != null) {
 				updateApp(modifiedOnboardingApp.getId(), modifiedOnboardingApp, fieldsValidator, user);
+				logger.info(EELFLoggerDelegate.auditLogger, "Updated " + modifiedOnboardingApp.getAppName() +
+						" onboarding application details by user " + user.getLoginId());
 			} else {
 				fieldsValidator.httpStatusCode = new Long(HttpServletResponse.SC_BAD_REQUEST);
 			}
@@ -959,6 +961,8 @@ public class EPAppCommonServiceImpl implements EPAppService {
 		if (fieldsValidator.httpStatusCode.intValue() == HttpServletResponse.SC_OK) {
 			if (newOnboardingApp.getId() == null) {
 				updateApp(null, newOnboardingApp, fieldsValidator, user);
+				logger.info(EELFLoggerDelegate.auditLogger, "Added " + newOnboardingApp.getAppName() +
+						" Onboarding application by user " + user.getLoginId());
 			} else {
 				fieldsValidator.httpStatusCode = new Long(HttpServletResponse.SC_BAD_REQUEST);
 			}
@@ -976,7 +980,7 @@ public class EPAppCommonServiceImpl implements EPAppService {
 		}
 		final Map<String, Long> params = new HashMap<>();
 		params.put("app_id", appid);
-		
+
 		//Checking if App is associated with any exiting microservices- ep_microservice:
 		final Map<String, Long> queryparams = new HashMap<>();
 		queryparams.put("applicationId", appid);
@@ -985,13 +989,13 @@ public class EPAppCommonServiceImpl implements EPAppService {
 			fieldsValidator.httpStatusCode = new Long(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
 			return fieldsValidator;
 		}
-		
+
 		List<EPUserAppRolesRequest> EPUserAppRolesRequestList= new ArrayList<>();
 		EPUserAppRolesRequestList = dataAccessService.executeNamedQuery( "getRequestIdsForApp", params, null);
 	    for(int i=0;i<EPUserAppRolesRequestList.size();i++)
 	    {
 	     dataAccessService.deleteDomainObjects(EPUserAppRolesRequestDetail.class , "req_id=" + EPUserAppRolesRequestList.get(i).getId(),null);
-	    	
+
 	    }
 	    Session localSession = null;
 		Transaction transaction = null;
@@ -999,7 +1003,7 @@ public class EPAppCommonServiceImpl implements EPAppService {
 		try {
 			localSession = sessionFactory.openSession();
 			transaction = localSession.beginTransaction();
-			
+
 			// 1) Remove the URL for any functional menu item associated with
 			// this app
 			logger.debug(EELFLoggerDelegate.debugLogger, "deleteOnboardingApp: Deleting URL for any functional menu item associated with app");
@@ -1024,33 +1028,33 @@ public class EPAppCommonServiceImpl implements EPAppService {
 			// that are associated with this app
 			 dataAccessService.executeNamedQuery("removeAppFromEpAppRoleFunction", params, null);
 			 logger.debug(EELFLoggerDelegate.debugLogger, "deleteOnboardingApp: Deleted all roles, rolefunctions, appid records from ep_app_role_function that are associated with this app");
-			 
+
 			 logger.debug(EELFLoggerDelegate.debugLogger, "deleteOnboardingApp: Deleting all rolefunctions, appid records from ep_app_function that are associated with this app");
 			// 5)Remove all rolefunctions, appid records from ep_app_function
 			// that are associated with this app
 			 dataAccessService.executeNamedQuery("removeAppFromEpAppFunction", params, null);
 			 logger.debug(EELFLoggerDelegate.debugLogger, "deleteOnboardingApp:  Deleted all rolefunctions, appid records from ep_app_function that are associated with this app");
-	 
+
 			 logger.debug(EELFLoggerDelegate.debugLogger, "deleteOnboardingApp: Deleting all records from fn_user_role associated with this app");
 			// 6)Remove all records from fn_user_role associated with this app
 			 dataAccessService.executeNamedQuery("removeAppFromFnUserRole", params, null);
 			 logger.debug(EELFLoggerDelegate.debugLogger, "deleteOnboardingApp: Deleted all records from fn_user_role associated with this app");
-			 
+
 			 logger.debug(EELFLoggerDelegate.debugLogger, "deleteOnboardingApp: Deleting any widgets associated with this app");
 			// 7)Remove any widgets associated with this app
 			 dataAccessService.executeNamedQuery("removeAppFromEpWidgetCatalogRole", params, null);
 			 logger.debug(EELFLoggerDelegate.debugLogger, "deleteOnboardingApp: Deleted widgets associated with this app");
-			 
+
 			 logger.debug(EELFLoggerDelegate.debugLogger, "deleteOnboardingApp: Deleting any roles associated with this app");
 			// 8)Remove any roles associated with this app
 			 dataAccessService.executeNamedQuery("removeAppFromEpRoleNotification", params, null);
 			 logger.debug(EELFLoggerDelegate.debugLogger, "deleteOnboardingApp: Deleted roles associated with this app");
-			 
+
 			 logger.debug(EELFLoggerDelegate.debugLogger, "deleteOnboardingApp: Deleting all records from fn_role associated with this app");
 			// 9)Remove all records from fn_role associated with this app
 			 dataAccessService.executeNamedQuery("removeAppFromFnRole", params, null);
 			 logger.debug(EELFLoggerDelegate.debugLogger, "deleteOnboardingApp: Deleted all records from fn_role associated with this app");
-			
+
 			 logger.debug(EELFLoggerDelegate.debugLogger, "deleteOnboardingApp: Deleting in table fn_app_contact_us entries associated with this app");
 			 // 10)Remove app contact us entries
 			 dataAccessService.executeNamedQuery("removeAppFromAppContactUs", params, null);
@@ -1060,27 +1064,27 @@ public class EPAppCommonServiceImpl implements EPAppService {
 			// 11)Remove rows in the app personalization selection table
 			 dataAccessService.executeNamedQuery("removeAppFromEpPersUserAppSel", params, null);
 			 logger.debug(EELFLoggerDelegate.debugLogger, "deleteOnboardingApp: Deleted rows in the fn_pers_user_app_sel table");
-			 
+
 			 logger.debug(EELFLoggerDelegate.debugLogger, "deleteOnboardingApp: Deleting rows in the ep_pers_user_app_man_sort table");
 			// 12)Remove rows in the app personalization sort table
 			 dataAccessService.executeNamedQuery("removeAppFromEpPersUserAppManSort", params, null);
 			 logger.debug(EELFLoggerDelegate.debugLogger, "deleteOnboardingApp: Deleted rows in the ep_pers_user_app_man_sort table");
-			 
+
 			 logger.debug(EELFLoggerDelegate.debugLogger, "deleteOnboardingApp: Deleting rows in the ep_user_roles_request table");
 			// 13)Remove rows in the app personalization sort table
 			 dataAccessService.executeNamedQuery("removeAppFromEpUserRolesRequest", params, null);
 			 logger.debug(EELFLoggerDelegate.debugLogger, "deleteOnboardingApp: Deleted rows in the ep_user_roles_request table");
-			 
+
 			 logger.debug(EELFLoggerDelegate.debugLogger, "deleteOnboardingApp: Deleting rows in the ep_web_analytics_source");
 			// 14)Remove rows in the ep_web_analytics_source
 			 dataAccessService.executeNamedQuery("removeAppFromEpWebAnalytics", params, null);
 			 logger.debug(EELFLoggerDelegate.debugLogger, "deleteOnboardingApp: Deleted rows in the ep_web_analytics_source");
-			 
+
 			 logger.debug(EELFLoggerDelegate.debugLogger, "deleteOnboardingApp: Deleting the app ");
 			// 15)Delete the app
 			 dataAccessService.executeNamedQuery("removeAppFromFnApp", params, null);
 			 logger.debug(EELFLoggerDelegate.debugLogger, "deleteOnboardingApp: Deleted the app");
-			
+
 			/*
 			// 1) Remove the URL for any functional menu item associated with
 			// this app
@@ -1105,15 +1109,15 @@ public class EPAppCommonServiceImpl implements EPAppService {
 			logQuery(sql);
 			query = localSession.createSQLQuery(sql);
 			query.executeUpdate();
-			
-			
+
+
 			// Remove all roles, rolefunctions, appid records from ep_app_role_function
 			// that are associated with this app
 		    sql = "DELETE FROM ep_app_role_function WHERE app_id='" + appid + "'";
 			logger.debug(EELFLoggerDelegate.debugLogger, "Executing query: " + sql);
 			 query = localSession.createSQLQuery(sql);
 			query.executeUpdate();
-			
+
 			//Remove all rolefunctions, appid records from ep_app_function
 			// that are associated with this app
 			sql = "DELETE FROM ep_app_function WHERE app_id='" + appid + "'";
@@ -1264,10 +1268,10 @@ public class EPAppCommonServiceImpl implements EPAppService {
 
 		} else {
 			updateRestrictedApp(appId, onboardingApp, fieldsValidator, user);
-			
+
 		}
 	}
-	
+
 
 	protected void updateRestrictedApp(Long appId, OnboardingApp onboardingApp, FieldsValidator fieldsValidator,
 			EPUser user) {
@@ -1367,6 +1371,7 @@ public class EPAppCommonServiceImpl implements EPAppService {
 							service = _service;
 						}
 
+						@Override
 						public void createTopic(String key, String secret, String topicName,
 								String topicDescription) throws HttpException, CambriaApiException, IOException {
 
@@ -1387,6 +1392,7 @@ public class EPAppCommonServiceImpl implements EPAppService {
 							tm.createTopic(topicName, topicDescription, 1, 1);
 						}
 
+						@Override
 						public void addPublisher(String topicOwnerKey, String topicOwnerSecret, String publisherKey,
 								String topicName) throws HttpException, CambriaApiException, IOException {
 							logger.info("==> addPublisher to topic " + topicName);
@@ -1534,7 +1540,7 @@ public class EPAppCommonServiceImpl implements EPAppService {
 	 * Populates a transport model of the application from a database row model.
 	 * Leaves out the thumbnail because the FE fetches images via a different
 	 * API.
-	 * 
+	 *
 	 * @param app
 	 *            Model of database row
 	 * @param onboardingApp
@@ -1553,13 +1559,13 @@ public class EPAppCommonServiceImpl implements EPAppService {
 		onboardingApp.setIsOpen(app.getOpen());
 		onboardingApp.setIsEnabled(app.getEnabled());
 		onboardingApp.setAppBasicAuthUsername(app.getAppBasicAuthUsername());
-		
+
 		String effectivePwd = null;
 		if (app.getAppBasicAuthPassword().equals(EPCommonSystemProperties.APP_DISPLAY_PASSWORD))
 			effectivePwd = EPCommonSystemProperties.APP_DISPLAY_PASSWORD;
 		else
 			effectivePwd = decryptedPassword(app.getAppBasicAuthPassword(), app);
-		
+
 		onboardingApp.setAppBasicAuthPassword(effectivePwd);
 		onboardingApp.setUebTopicName(app.getUebTopicName());
 		onboardingApp.setUebKey(app.getUebKey());
@@ -1576,7 +1582,7 @@ public class EPAppCommonServiceImpl implements EPAppService {
 	/**
 	 * Creates a database object for an application from an uploaded transport
 	 * model. Must decode the thumbnail, if any.
-	 * 
+	 *
 	 * @param app
 	 * @param onboardingApp
 	 * @param localSession
@@ -1599,12 +1605,12 @@ public class EPAppCommonServiceImpl implements EPAppService {
 		app.setUebSecret(onboardingApp.getUebSecret());
 		app.setRolesInAAF(onboardingApp.getRolesInAAF());
 		app.setNameSpace(onboardingApp.getNameSpace());
-		app.setAppType(new Integer(onboardingApp.getApplicationType()));		
+		app.setAppType(new Integer(onboardingApp.getApplicationType()));
 		app.setModeOfIntegration(onboardingApp.getModeOfIntegration());
 		app.setAppAck(onboardingApp.getAppAck());
 		app.setUsesCadi(onboardingApp.getUsesCadi());
-		
-		
+
+
 		if (!StringUtils.isEmpty(onboardingApp.getThumbnail())) {
 			logger.debug(EELFLoggerDelegate.debugLogger, "createAppFromOnboarding: onboarding thumbnail is NOT empty");
 			String[] splitBase64Thumbnail = onboardingApp.getThumbnail().split("base64,");
@@ -1880,7 +1886,7 @@ public class EPAppCommonServiceImpl implements EPAppService {
 	public List<EPApp> getUserRemoteApps(String id) {
 		throw new RuntimeException(" Cannot be called from parent class");
 	}
-	
+
 	@Override
 	public UserRoles getUserProfileForLeftMenu(String loginId) {
 		final Map<String, String> params = new HashMap<>();
@@ -1893,8 +1899,8 @@ public class EPAppCommonServiceImpl implements EPAppService {
 
 		return usersRolesList.get(0);
 	}
-	
-	
+
+
 	@Override
 	public UserRoles getUserProfileForRolesLeftMenu(String loginId) {
 		final Map<String, String> params = new HashMap<>();
@@ -1907,7 +1913,7 @@ public class EPAppCommonServiceImpl implements EPAppService {
 
 		return usersRolesList.get(0);
 	}
-	
+
 	@Override
 	public UserRoles getUserProfileNormalizedForLeftMenu(EPUser user) {
 		// Check database.
@@ -1921,7 +1927,7 @@ public class EPAppCommonServiceImpl implements EPAppService {
 
 		return userAndRoles;
 	}
-	
+
 	@Override
 	public UserRoles getUserProfileNormalizedForRolesLeftMenu(EPUser user) {
 		// Check database.
@@ -1936,7 +1942,7 @@ public class EPAppCommonServiceImpl implements EPAppService {
 		return userAndRoles;
 	}
 
-	
+
 	public UserRoles createUserRoles(EPUser user)
 	{
 		UserRole userRole = new UserRole();
@@ -1949,7 +1955,7 @@ public class EPAppCommonServiceImpl implements EPAppService {
 		userRole.setUser_Id(-1L);
 		UserRoles userAndRoles = new UserRoles(userRole);
 		return userAndRoles;
-		
+
 	}
 
 	@SuppressWarnings("unused")
@@ -1960,10 +1966,10 @@ public class EPAppCommonServiceImpl implements EPAppService {
 		logger.debug(EELFLoggerDelegate.debugLogger, "checkIfNameSpaceExists: Connecting to External Auth system for : "+namespace);
 		ResponseEntity<String> response = null;
 		try {
-			
+
 			String namespaceUrl = SystemProperties.
 					getProperty(EPCommonSystemProperties.EXTERNAL_CENTRAL_ACCESS_URL) + "nss/" + namespace;
-			
+
 			response = template.exchange(namespaceUrl, HttpMethod.GET, entity, String.class);
 			logger.debug(EELFLoggerDelegate.debugLogger, "checkIfNameSpaceExists for"+ namespace ,
 					response.getStatusCode().value());
@@ -1973,11 +1979,11 @@ public class EPAppCommonServiceImpl implements EPAppService {
 				JSONArray namespaceArray = jsonObj.getJSONArray("ns");
 				if(!namespaceArray.getJSONObject(0).has("admin")){
 					logger.error(EELFLoggerDelegate.errorLogger,
-							"No admins are available for requested namespace:" + namespace);		
+							"No admins are available for requested namespace:" + namespace);
 					throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED,
 							"Portal Mechid is not an admin of" + namespace);
 				}
-				
+
 				JSONArray namespaceAdminArray = namespaceArray.getJSONObject(0).getJSONArray("admin");
 				ArrayList<String> list = new ArrayList<String>();
 				if (namespaceAdminArray != null) {
@@ -1997,7 +2003,7 @@ public class EPAppCommonServiceImpl implements EPAppService {
 							"Portal Mechid is not an admin of" + namespace);
 				}
 			}
-			
+
 		} catch (HttpClientErrorException e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "checkIfNameSpaceExists failed", e);
 			EPLogUtil.logExternalAuthAccessAlarm(logger, e.getStatusCode());
