@@ -40,6 +40,9 @@ package org.onap.portalapp.portal.transport;
 import org.hibernate.validator.constraints.SafeHtml;
 import org.onap.portalapp.portal.domain.EpAppType;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
+
 /**
  * Model of rows in the fn_app table; serialized as a message add or update an
  * on-boarded application.
@@ -79,6 +82,7 @@ public class OnboardingApp {
 	@SafeHtml
 	private String appBasicAuthUsername;
 	@SafeHtml
+	@JsonProperty(access = Access.WRITE_ONLY)
 	private String appBasicAuthPassword;
 	@SafeHtml
 	private String thumbnail;
