@@ -46,6 +46,9 @@ import org.apache.commons.lang.StringUtils;
 import org.hibernate.validator.constraints.SafeHtml;
 import org.onap.portalsdk.core.domain.support.DomainVo;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
+
 /**
  * Model for all columns in the fn_app table.
  */
@@ -85,6 +88,7 @@ public class EPApp extends DomainVo {
 	private String appBasicAuthUsername;
 
 	@SafeHtml
+	@JsonProperty(access = Access.WRITE_ONLY)
 	private String appBasicAuthPassword;
 
 	@Lob

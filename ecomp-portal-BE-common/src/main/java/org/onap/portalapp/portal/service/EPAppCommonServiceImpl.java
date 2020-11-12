@@ -943,6 +943,8 @@ public class EPAppCommonServiceImpl implements EPAppService {
 		if (fieldsValidator.httpStatusCode.intValue() == HttpServletResponse.SC_OK) {
 			if (modifiedOnboardingApp.getId() != null) {
 				updateApp(modifiedOnboardingApp.getId(), modifiedOnboardingApp, fieldsValidator, user);
+				logger.info(EELFLoggerDelegate.auditLogger, "Updated " + modifiedOnboardingApp.getAppName() + 
+						" onboarding application details by user " + user.getLoginId());
 			} else {
 				fieldsValidator.httpStatusCode = new Long(HttpServletResponse.SC_BAD_REQUEST);
 			}
@@ -959,6 +961,8 @@ public class EPAppCommonServiceImpl implements EPAppService {
 		if (fieldsValidator.httpStatusCode.intValue() == HttpServletResponse.SC_OK) {
 			if (newOnboardingApp.getId() == null) {
 				updateApp(null, newOnboardingApp, fieldsValidator, user);
+				logger.info(EELFLoggerDelegate.auditLogger, "Added " + newOnboardingApp.getAppName() + 
+						" Onboarding application by user " + user.getLoginId());
 			} else {
 				fieldsValidator.httpStatusCode = new Long(HttpServletResponse.SC_BAD_REQUEST);
 			}
