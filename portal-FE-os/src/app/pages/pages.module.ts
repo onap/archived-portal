@@ -56,7 +56,7 @@ import { FunctionalMenuComponent } from './functional-menu/functional-menu.compo
 import { GridsterModule } from 'angular-gridster2';
 import { InformationModalComponent } from '../modals/information-modal/information-modal.component';
 import { NgMaterialModule } from '../ng-material-module';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModalConfig, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { NewPortalAdminComponent } from './portal-admins/new-portal-admin/new-portal-admin.component';
 import { NotificationHistoryComponent } from './notification-history/notification-history.component';
 import { PagesComponent } from './pages.component';
@@ -272,8 +272,10 @@ import { RunReportComponent } from './analytics/Report_List/Report/run/run-repor
 })
 export class PagesModule {
 
-  constructor(public ngbModalService: NgbModal) {
+  constructor(public ngbModalService: NgbModal, configModal: NgbModalConfig) {
     this.addSchdulerEventListners();
+    configModal.backdrop = 'static';
+    configModal.keyboard = false;
   }
 
 
