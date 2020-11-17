@@ -6,6 +6,70 @@
 
 Portal Platform Release Notes
 =============================
+Version: 3.4.2
+--------------
+:Release Date: 2020-11-19
+
+.. toctree::
+    :maxdepth: 1
+
+This release contains security enhancement and Analytics Framework (aka Raptor) Upgrade to support reprots, charts, etc.
+
+**New Features**
+
+        * Removed zookeeper dependency
+        * Code updates for Conformance to ONAP Logging specifications (Audit, Metrics, Error logs)
+
+**Bug Fixes**
+
+        * Fix nexus-iq reported scan issues for portal and SDK components
+
+**Known Issues**
+        * None
+
+**Security Notes**
+
+        * Containers to run as Non-Root user: portal, portal-sdk, portal-widget, mariaDB backend db
+        * Removal of hard-coded passwords/security credentials in HELM charts and use secrets
+
+*Fixed Security Issues*
+
+        * Portal-966 - Start portal mariadb/cassandra docker with non root user [`PORTAL-966 <hhttps://jira.onap.org/browse/PORTAL-966>`_]
+        * PORTAL - 946 - No root (superuser) access to database from application container - Portal [`PORTAL-946 <https://jira.onap.org/browse/PORTAL-946>`_]
+        * PORTAL - 944 - Continue hardcoded passwords removal - Portal [`PORTAL-944 <https://jira.onap.org/browse/PORTAL-944>`_]
+
+*Known Security Issues*
+        * Cassandra docker image still needs to be updated, so that cassandra container starts as a non-root user
+
+*Known Vulnerabilities in Used Modules*
+        * None
+
+Quick Links:
+     - `PORTAL project page <https://wiki.onap.org/display/DW/Portal+Platform+Project>`_
+
+     - `Passing Badge information for PORTAL <https://bestpractices.coreinfrastructure.org/en/projects/1441>`_
+
+     - `Project Vulnerability Review Table for PORTAL <https://wiki.onap.org/pages/viewpage.action?pageId=68542388>`_
+
+**Upgrade Notes**
+        * These still apply:
+        1. For https Apps onboarded to portal, a certificate has to be downloaded in the browser when first trying to access the landing page of the App.
+        2. For onboarded Apps using http (since Portal is using https) the browser asks the user to click to Proceed to the unsafe URL.
+        3. For onboarded Apps using http the icon in the URL bar will appear red, click on it and allow unsafe scripts. Different browsers use different methods to accomplish this, Firefox has a security icon near the URL that you can click on "Unblock" and "Disable protection for now"
+        4. The first time some apps are selected in the Applications panel, an error stating the webpage might be temporarily down, copy the presented URL to a new browser; once that is done, the application will open in the Portal.
+
+**Deprecation Notes**
+        * Policy GUI depricated
+        * A&AI GUI depricated
+
+**Other**
+        * Below are the docker images released as part of Portal Platform project:
+        * onap/portal-app:3.4.2
+        * onap/portal-db:3.4.1
+        * onap/portal-sdk:3.4.2
+        * onap/portal-wms:3.4.2
+        * portal/sdk java artifacts - (Release branch: “release-3.3.0”; Jar Version: "3.3.0")
+
 Version: 3.2.0
 --------------
 :Release Date: 2020-05-21
@@ -87,7 +151,7 @@ El Alto Maintenance Release 1
 
 The primary goal of this maintenance release is to address expired certificates.
 PORTAL-878 Portal certificate renewal pwd patch
-        
+
 Version: 2.6.0
 --------------
 :Release Date: 2019-10-03
