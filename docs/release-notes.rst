@@ -6,6 +6,66 @@
 
 Portal Platform Release Notes
 =============================
+Version: 3.4.2
+--------------
+:Release Date: 2020-11-19
+
+.. toctree::
+    :maxdepth: 1
+
+This release contains security enhancement and Analytics Framework (aka Raptor) Upgrade to support reprots, charts, etc.
+
+**New Features**
+
+        * Removed zookeeper dependency
+
+**Bug Fixes**
+
+        * Fix Blackduck reported scan issues for portal and SDK components
+
+**Known Issues**
+        *
+
+**Security Notes**
+
+        * Containers to run as Non-Root user: portal, portal-sdk, portal-widget, mariaDB backend db
+        * Removal of hard-coded passwords/security credentials in HELM charts and use secrets
+
+*Fixed Security Issues*
+
+        * Portal-966 - Start portal mariadb/cassandra docker with non root user [`PORTAL-966 <hhttps://jira.onap.org/browse/PORTAL-966>`_]
+        * PORTAL - 946 - No root (superuser) access to database from application container - Portal [`PORTAL-946 <https://jira.onap.org/browse/PORTAL-946>`_]
+        * PORTAL - 944 - Continue hardcoded passwords removal - Portal [`PORTAL-944 <https://jira.onap.org/browse/PORTAL-944>`_]
+
+*Known Security Issues*
+        * Cassandra docker image still needs to be updated, so that cassandra container starts as a non-root user
+
+*Known Vulnerabilities in Used Modules*
+        * P
+
+Quick Links:
+     - `PORTAL project page <https://wiki.onap.org/display/DW/Portal+Platform+Project>`_
+
+     - `Passing Badge information for PORTAL <https://bestpractices.coreinfrastructure.org/en/projects/1441>`_
+
+     - `Project Vulnerability Review Table for PORTAL <https://wiki.onap.org/pages/viewpage.action?pageId=68542388>`_
+
+**Upgrade Notes**
+        * These still apply:
+
+
+**Deprecation Notes**
+        * Policy GUI depricated
+        * A&AI GUI depricated
+
+**Other**
+        * Below are the docker images released as part of Portal Platform project:
+        * onap/portal-app:3.4.2
+        * onap/portal-db:3.4.1
+        * onap/portal-sdk:3.4.2
+        * onap/portal-wms:3.4.2
+        * portal/sdk java artifacts - (Release branch: “release-3.4.2”; Jar Version: "3.0.0")
+
 Version: 3.2.0
 --------------
 :Release Date: 2020-05-21
@@ -87,7 +147,7 @@ El Alto Maintenance Release 1
 
 The primary goal of this maintenance release is to address expired certificates.
 PORTAL-878 Portal certificate renewal pwd patch
-        
+
 Version: 2.6.0
 --------------
 :Release Date: 2019-10-03
