@@ -58,6 +58,10 @@ import org.onap.portalapp.portal.scheduler.SchedulerProperties;
 import org.onap.portalapp.portal.scheduler.util.CustomJacksonJaxBJsonProvider;
 import org.onap.portalapp.util.DateUtil;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
+import org.onap.portalsdk.core.onboarding.exception.CipherUtilException;
+import org.onap.portalsdk.core.onboarding.util.CipherUtil;
+import org.onap.portalsdk.core.onboarding.util.KeyConstants;
+import org.onap.portalsdk.core.onboarding.util.KeyProperties;
 
  /**
   *  General SSL client using the VID tomcat keystore. It doesn't use client certificates.
@@ -93,7 +97,15 @@ public class HttpsBasicClient{
 			String truststorePassword = SchedulerProperties.getProperty(SchedulerProperties.VID_TRUSTSTORE_PASSWD_X);
 			
 			
-			String decryptedTruststorePassword = Password.deobfuscate(truststorePassword);
+			String decryptedTruststorePassword = null;
+			try {
+					decryptedTruststorePassword = CipherUtil.decryptPKC(truststorePassword, KeyProperties.getProperty(KeyConstants.CIPHER_ENCRYPTION_KEY));
+				} 
+			catch (CipherUtilException e) {
+				logger.error(EELFLoggerDelegate.errorLogger, "failed to decrypt; Using as is", e);
+				decryptedTruststorePassword = truststorePassword;
+			}
+
 			//logger.debug(dateFormat.format(new Date()) + " " + methodName + " decrypted_truststore_password=" + decrypted_truststore_password);
 			
 			File tr = new File (truststorePath);
