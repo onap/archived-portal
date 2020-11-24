@@ -39,6 +39,7 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { IMircroservies } from 'src/app/shared/model/microservice-onboarding/microservices';
 import { MicroserviceService, WidgetOnboardingService } from '../../../shared/services/index';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ConfirmationModalComponent } from 'src/app/modals/confirmation-modal/confirmation-modal.component';
 
 @Component({
   selector: 'app-microservice-add-details',
@@ -291,13 +292,17 @@ export class MicroserviceAddDetailsComponent implements OnInit {
       this.microservice.createService(newService)
         .subscribe( data => {
           this.result = data;
-          console.log("add microservice response :: ",this.result);
-          this.passEntry.emit(this.result);
-          this.ngbModal.dismissAll();
-        }, error => {
-          this.ngbModal.dismissAll();
-          console.log(error);
-      }); 
+          if(this.result.status === 'OK'){
+            console.log("add microservice response :: ",this.result);
+            this.passEntry.emit(this.result);
+            this.ngbModal.dismissAll();
+          }
+          else {
+            const modalErrorRef = this.ngbModal.open(ConfirmationModalComponent);
+            modalErrorRef.componentInstance.title = 'Error';
+            modalErrorRef.componentInstance.message = this.result.response;
+          }
+        }); 
     }
   }
 }

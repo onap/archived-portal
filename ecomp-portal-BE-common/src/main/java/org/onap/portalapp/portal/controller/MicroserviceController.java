@@ -51,6 +51,7 @@ import org.onap.portalapp.portal.domain.WidgetCatalog;
 import org.onap.portalapp.portal.domain.WidgetServiceHeaders;
 import org.onap.portalapp.portal.ecomp.model.PortalRestResponse;
 import org.onap.portalapp.portal.ecomp.model.PortalRestStatusEnum;
+import org.onap.portalapp.portal.exceptions.DuplicateRecordException;
 import org.onap.portalapp.portal.logging.aop.EPAuditLog;
 import org.onap.portalapp.portal.service.WidgetMService;
 import org.onap.portalapp.portal.service.MicroserviceService;
@@ -101,9 +102,12 @@ public class MicroserviceController extends EPRestrictedBaseController {
 					"ERROR", "MicroserviceData is not valid");
 			}
 		}
-		long serviceId = microserviceService.saveMicroservice(newServiceData);
-
 		try {
+			List<MicroserviceData> microServiceData = microserviceService.getMicroserviceData();
+			for(MicroserviceData exitMicroservice: microServiceData)
+				if(exitMicroservice.getName().equalsIgnoreCase(newServiceData.getName()))
+					throw new DuplicateRecordException("Microservice already exists: " + exitMicroservice.getName());
+			long serviceId = microserviceService.saveMicroservice(newServiceData);
 			microserviceService.saveServiceParameters(serviceId, newServiceData.getParameterList());
 		} catch (Exception e) {
 			return new PortalRestResponse<>(PortalRestStatusEnum.ERROR, "FAILURE", e.getMessage());
