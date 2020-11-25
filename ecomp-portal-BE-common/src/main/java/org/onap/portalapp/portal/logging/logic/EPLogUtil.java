@@ -119,21 +119,21 @@ public class EPLogUtil {
 				classLogger.logWrite(classLogger.errorLogger, Level.INFO, message, null, null);
 			}
 			else {
-				classLogger.logWrite(classLogger.errorLogger, Level.INFO, message, null, th.getMessage());
+				classLogger.logWrite(classLogger.errorLogger, Level.INFO, message, null, th);
 			}
 		} else if (errorSeverityEnum == ErrorSeverityEnum.WARN) {
 			if (th == null) {
 				classLogger.logWrite(classLogger.errorLogger, Level.WARN, message, null, null);
 			}
 			else {
-				classLogger.logWrite(classLogger.errorLogger, Level.WARN, message, null, th.getMessage());
+				classLogger.logWrite(classLogger.errorLogger, Level.WARN, message, null, th);
 			}
 		} else {
 			if (th == null) {
 				classLogger.logWrite(classLogger.errorLogger, Level.ERROR, message, null, null);
 			}
 			else {
-				classLogger.logWrite(classLogger.errorLogger, Level.ERROR, message, null, th.getMessage());
+				classLogger.logWrite(classLogger.errorLogger, Level.ERROR, message, null, th);
 			}
 		}
 
