@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ce9b9e83_4256126c",
+        "filename": "ecomp-portal-BE-common/src/main/java/org/onap/portalapp/portal/scheduler/SchedulerRestInterface.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 122,
+      "author": {
+        "id": 679
+      },
+      "writtenOn": "2020-12-07T22:24:36Z",
+      "side": 1,
+      "message": "cannot log passwords; please remove",
+      "revId": "09b941c92e5ec3b2a2798706f2b03926185bffd3",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
