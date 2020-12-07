@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "4094724d_8cc2dcc3",
+        "filename": "ecomp-portal-BE-common/src/main/java/org/onap/portalapp/music/service/MusicService.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 679
+      },
+      "writtenOn": "2020-12-07T22:22:33Z",
+      "side": 1,
+      "message": "replace by using logger.error(..)",
+      "revId": "110d21da6134ca8c0e0626ec08dd64067783af94",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8677b981_a402c20b",
+        "filename": "ecomp-portal-BE-common/src/main/java/org/onap/portalapp/music/service/MusicService.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 679
+      },
+      "writtenOn": "2020-12-07T22:22:33Z",
+      "side": 1,
+      "message": "please remove main method",
+      "revId": "110d21da6134ca8c0e0626ec08dd64067783af94",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
