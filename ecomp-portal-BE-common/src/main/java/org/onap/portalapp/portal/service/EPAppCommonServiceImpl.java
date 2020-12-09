@@ -208,6 +208,7 @@ public class EPAppCommonServiceImpl implements EPAppService {
 		return fieldsValidator;
 	}
 
+	
 	@Override
 	public List<EPApp> getUserAsAdminApps(EPUser user) {
 		if (adminRolesService.isAccountAdmin(user)) {

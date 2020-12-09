@@ -96,7 +96,6 @@ public class HttpsBasicClient{
 				truststorePath);
 			String truststorePassword = SchedulerProperties.getProperty(SchedulerProperties.VID_TRUSTSTORE_PASSWD_X);
 			
-			
 			String decryptedTruststorePassword = null;
 			try {
 					decryptedTruststorePassword = CipherUtil.decryptPKC(truststorePassword, KeyProperties.getProperty(KeyConstants.CIPHER_ENCRYPTION_KEY));

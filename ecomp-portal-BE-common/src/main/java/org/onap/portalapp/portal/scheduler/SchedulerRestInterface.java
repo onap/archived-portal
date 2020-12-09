@@ -119,7 +119,6 @@ public class SchedulerRestInterface implements SchedulerRestInterfaceIfc {
 			try {
 				password = CipherUtil.decryptPKC(retrievedPassword,
 						KeyProperties.getProperty(KeyConstants.CIPHER_ENCRYPTION_KEY));
-				logger.info("##password :" + password);
 			} catch (CipherUtilException e) {
 				logger.error(EELFLoggerDelegate.errorLogger, "failed to decrypt; Using as is", e);
 				password = retrievedPassword;
@@ -162,6 +161,7 @@ public class SchedulerRestInterface implements SchedulerRestInterfaceIfc {
 		logger.debug(EELFLoggerDelegate.debugLogger, "Client Initialized");
 
 	}
+	
 
 	@SuppressWarnings("unchecked")
 	public <T> void Get(T t, String sourceId, String path,
