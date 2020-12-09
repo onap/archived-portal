@@ -115,6 +115,8 @@ import com.att.nsa.cambria.client.CambriaClient.CambriaApiException;
 import com.att.nsa.cambria.client.CambriaClientBuilders;
 import com.att.nsa.cambria.client.CambriaIdentityManager;
 import com.att.nsa.cambria.client.CambriaTopicManager;
+import java.security.SecureRandom;
+
 
 public class EPAppCommonServiceImpl implements EPAppService {
 
@@ -206,6 +208,8 @@ public class EPAppCommonServiceImpl implements EPAppService {
 		return fieldsValidator;
 	}
 
+	
+	
 	@Override
 	public List<EPApp> getUserAsAdminApps(EPUser user) {
 		if (adminRolesService.isAccountAdmin(user)) {
@@ -943,8 +947,6 @@ public class EPAppCommonServiceImpl implements EPAppService {
 		if (fieldsValidator.httpStatusCode.intValue() == HttpServletResponse.SC_OK) {
 			if (modifiedOnboardingApp.getId() != null) {
 				updateApp(modifiedOnboardingApp.getId(), modifiedOnboardingApp, fieldsValidator, user);
-				logger.info(EELFLoggerDelegate.auditLogger, "Updated " + modifiedOnboardingApp.getAppName() + 
-						" onboarding application details by user " + user.getLoginId());
 			} else {
 				fieldsValidator.httpStatusCode = new Long(HttpServletResponse.SC_BAD_REQUEST);
 			}
@@ -961,8 +963,6 @@ public class EPAppCommonServiceImpl implements EPAppService {
 		if (fieldsValidator.httpStatusCode.intValue() == HttpServletResponse.SC_OK) {
 			if (newOnboardingApp.getId() == null) {
 				updateApp(null, newOnboardingApp, fieldsValidator, user);
-				logger.info(EELFLoggerDelegate.auditLogger, "Added " + newOnboardingApp.getAppName() + 
-						" Onboarding application by user " + user.getLoginId());
 			} else {
 				fieldsValidator.httpStatusCode = new Long(HttpServletResponse.SC_BAD_REQUEST);
 			}
@@ -1639,11 +1639,12 @@ public class EPAppCommonServiceImpl implements EPAppService {
 
 	protected String constructImageName(OnboardingApp onboardingApp) {
 		String appLandingPageURL = onboardingApp.getLandingPage();
+		SecureRandom rand = new SecureRandom();
 		if(appLandingPageURL == null) {
 			appLandingPageURL = "";
 		}
-		return "portal_" + String.valueOf(appLandingPageURL.hashCode() + "_" + (int) (Math.random() * 100000.0))
-				+ ".png";
+		 return "portal_" + String.valueOf(appLandingPageURL.hashCode() + "_" +  rand.nextInt(100000))
+         + ".png";
 	}
 
 	// Don't encrypt or decrypt the password if it is null or the empty string
