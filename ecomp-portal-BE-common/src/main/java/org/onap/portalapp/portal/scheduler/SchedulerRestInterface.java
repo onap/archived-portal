@@ -162,7 +162,6 @@ public class SchedulerRestInterface implements SchedulerRestInterfaceIfc {
 
 	}
 	
-
 	@SuppressWarnings("unchecked")
 	public <T> void Get(T t, String sourceId, String path,
 			org.onap.portalapp.portal.scheduler.restobjects.RestObject<T> restObject) {
