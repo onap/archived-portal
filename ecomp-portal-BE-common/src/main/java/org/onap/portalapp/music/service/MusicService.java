@@ -38,6 +38,7 @@
 
 package org.onap.portalapp.music.service;
 
+import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -45,12 +46,14 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import org.onap.music.datastore.PreparedQueryObject;
 import org.onap.music.eelf.logging.EELFLoggerDelegate;
 import org.onap.music.exceptions.MusicLockingException;
 import org.onap.music.exceptions.MusicQueryException;
 import org.onap.music.exceptions.MusicServiceException;
+import org.onap.music.main.CipherUtil;
 import org.onap.music.main.MusicCore;
 import org.onap.music.main.ResultType;
 import org.onap.music.main.ReturnType;
@@ -66,6 +69,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.session.Session;
 import org.springframework.web.client.RestTemplate;
+import org.onap.music.datastore.MusicDataStore;
 
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
@@ -75,6 +79,46 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class MusicService {
 	static RestTemplate template = new RestTemplate();
 	private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(MusicService.class);
+	
+	static {	
+    	try {
+			//MusicCore.getDSHandle();
+			init();
+			// Since mDstoreHandle is already initialized in init mthod, calling this method again will have no impact on mDstoreHandle.
+			MusicCore.getDSHandle();
+		} catch (MusicServiceException e) {
+			logger.error(EELFLoggerDelegate.errorLogger, e.getMessage(), e);
+		}
+    }
+    
+    public static void init() {
+    	try {
+        	Properties prop = new Properties();
+        	// We load encryption key from key.properties on the classpath. This key is used for decrypting cassandra password
+            try(InputStream input = MusicUtil.class.getClassLoader().getResourceAsStream("key.properties")) {
+                prop.load(input);
+            } catch (Exception var11) {
+                logger.error(EELFLoggerDelegate.errorLogger, "Unable to find properties file.");
+                //throw new Exception();
+            }
+        	try {
+        		// Load music.properties from classpath
+                org.onap.music.main.MusicUtil.loadProperties();
+                // decrypt encrypted password using the key we loaded before.
+                String decryptedPassword = CipherUtil.decryptPKC(org.onap.music.main.MusicUtil.getCassPwd(), prop.getProperty("cipher.enc.key"));
+                // set decrypted password 
+                org.onap.music.main.MusicUtil.setCassPwd(decryptedPassword);
+                // Here we are creating cassandra connections pool and sessions by calling MusicDataStore and passing the cassandrra hostname to that. 
+                MusicCore.mDstoreHandle = new MusicDataStore(org.onap.music.main.MusicUtil.getMyCassaHost());
+            } catch (Exception e) {
+            	logger.error(EELFLoggerDelegate.errorLogger, e.getMessage(), e);
+            }
+        	
+        	} catch(Exception e) {
+        		logger.error(EELFLoggerDelegate.errorLogger, e.getMessage(), e);
+        	}
+    }
+
 
 	private static boolean isAtomicPut = MusicUtil.isAtomicPut();
 	private static boolean isAtomicGet = MusicUtil.isAtomicGet();
