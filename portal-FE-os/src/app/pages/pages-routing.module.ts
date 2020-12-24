@@ -57,7 +57,7 @@ import { RoleFunctionsComponent } from './role/role-functions/role-functions.com
 import { NotificationHistoryComponent } from './notification-history/notification-history.component';
 import { GetAccessComponent } from './get-access/get-access.component';
 import { HeaderTabsWrapperComponent } from './analytics/Report_List/header-tabs-wrapper-component/header-tabs-wrapper.component';
-import { RunReportFormFieldsComponent } from './analytics/Report_List/Report/run/run-report-form-fields/run-report-form-fields.component';
+import { RunReportFormFieldsComponent } from './run/run-report-form-fields/run-report-form-fields.component';
 import { DisplayAreaComponent } from './analytics/Report_List/display-area/display-area.component';
 import { ReportComponent } from './analytics/Report_List/Report/report.component';
 

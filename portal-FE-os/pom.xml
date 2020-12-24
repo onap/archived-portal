@@ -64,7 +64,7 @@
 									<version>${epsdk.version}</version>
 									<type>war</type>
 									<overWrite>false</overWrite>
-									<includes>ngapp/src/app/pages/analytics/**</includes>
+									<includes>ngapp/src/app/pages/analytics/**, ngapp/src/app/report-run/**, ngapp/src/app/modals/error-modal/**, ngapp/src/app/shared/services/cache.service.ts</includes>
 									<outputDirectory>${basedir}/</outputDirectory>
 								</artifactItem>
 							</artifactItems>
@@ -94,6 +94,57 @@
 							<resources>
 								<resource>
 									<directory>${basedir}/ngapp/src/app/pages</directory>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>copy-report-run</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${basedir}/src/app/pages/</outputDirectory>
+							
+							<resources>
+								<resource>
+									<directory>${basedir}/ngapp/src/app/report-run</directory>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>copy-error-modal</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${basedir}/src/app/modals/</outputDirectory>
+							
+							<resources>
+								<resource>
+									<directory>${basedir}/ngapp/src/app/modals</directory>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>copy-cache-service</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${basedir}/src/app/shared/services/</outputDirectory>
+							
+							<resources>
+								<resource>
+									<directory>${basedir}/ngapp/src/app/shared/services</directory>
 								</resource>
 							</resources>
 						</configuration>
