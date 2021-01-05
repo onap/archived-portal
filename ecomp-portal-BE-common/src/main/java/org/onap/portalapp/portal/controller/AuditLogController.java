@@ -71,8 +71,9 @@ import org.onap.portalsdk.core.util.SystemProperties;
 @RestController
 @RequestMapping("/portalApi/auditLog")
 public class AuditLogController extends EPRestrictedBaseController {
-	private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(DashboardController.class);
+	private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(AuditLogController.class);
 	private static final DataValidator dataValidator = new DataValidator();
+	
 
 	private AuditService auditService;
 	@Autowired
@@ -151,6 +152,7 @@ public class AuditLogController extends EPRestrictedBaseController {
 					String requestId = UUID.randomUUID().toString();
 					MDC.put(Configuration.MDC_KEY_REQUEST_ID, requestId);
 				}
+				auditService.logActivity(auditLog, null);
 				String auditMessageInfo = EPLogUtil.formatAuditLogMessage(
 						"AuditLogController.auditLog", cdType, user.getOrgUserId(), affectedAppId, comment);		
 		
