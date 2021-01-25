@@ -50,7 +50,7 @@
  
  <% 
  
- response.sendRedirect("welcome.htm");
+ response.sendRedirect("index.htm");
  
  %>
  
