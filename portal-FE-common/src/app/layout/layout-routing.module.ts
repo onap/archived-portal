@@ -44,9 +44,7 @@ const routes: Routes = [
         path: '',
         component: LayoutComponent,
         children: [
-            //redirecting to pages module
-            { path: '', redirectTo: 'app', },
-            { path: 'app', loadChildren: () => import('../pages/pages.module').then(m => m.PagesModule) },        ]
+            { path: '', loadChildren: () => import('../pages/pages.module').then(m => m.PagesModule) },        ]
     }
 ];
 
