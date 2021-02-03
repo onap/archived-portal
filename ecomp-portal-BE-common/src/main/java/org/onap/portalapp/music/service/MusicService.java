@@ -96,23 +96,21 @@ public class MusicService {
                 org.onap.music.main.MusicUtil.loadProperties();
                 // decrypt encrypted password using the key we loaded before.
                 String decryptedPassword = CipherUtil.decryptPKC(org.onap.music.main.MusicUtil.getCassPwd(), prop.getProperty("cipher.enc.key"));
-                logger.debug(EELFLoggerDelegate.debugLogger, "Cassandra Password Decrypted " + decryptedPassword);
-                logger.debug(EELFLoggerDelegate.debugLogger, "Setting Decrypted password ");
                 // set decrypted password 
                 org.onap.music.main.MusicUtil.setCassPwd(decryptedPassword);
-                logger.debug(EELFLoggerDelegate.debugLogger, "Creating cassandra connections pool and sessions by calling MusicDataStore and passing the cassandra hostname ");
                 // Here we are creating cassandra connections pool and sessions by calling MusicDataStore and passing the cassandrra hostname to that. 
                 MusicCore.mDstoreHandle = new MusicDataStore(org.onap.music.main.MusicUtil.getMyCassaHost());
 				// Since mDstoreHandle is already initialized in init mthod, calling this method again will have no impact on mDstoreHandle.
-                logger.debug(EELFLoggerDelegate.debugLogger, "Calling MusicCore getDSHandle() method ");
                 MusicCore.getDSHandle();
             } catch (Exception e) {
             	logger.error(EELFLoggerDelegate.errorLogger, e.getMessage(), e);
+            	logger.debug(EELFLoggerDelegate.debugLogger, e.getMessage(), e);
             }
         	
-        	} catch(Exception e) {
-        		logger.error(EELFLoggerDelegate.errorLogger, e.getMessage(), e);
-        	}
+        } catch(Exception e) {
+        	logger.error(EELFLoggerDelegate.errorLogger, e.getMessage(), e);
+        	logger.debug(EELFLoggerDelegate.debugLogger, e.getMessage(), e);
+        }
     }
 
 
