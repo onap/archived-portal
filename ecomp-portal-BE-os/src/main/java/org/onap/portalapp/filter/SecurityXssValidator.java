@@ -160,18 +160,21 @@ public class SecurityXssValidator {
 					logger.info(EELFLoggerDelegate.applicationLogger, "denyXSS() replacing &timeseclgn with empty string for request value : " + value);
 					value=value.replaceAll("&timeseclgn", "");
 				}
+				while(value.contains("%25")) {
+					value = value.replaceAll("%25", "%");
+				}
 				value = ESAPI.encoder().canonicalize(value);
 				for (Pattern xssInputPattern : XSS_INPUT_PATTERNS) {
 					if (xssInputPattern.matcher(value).matches()) {
 						flag = Boolean.TRUE;
 						break;
 					}
-
 				}
 			}
 
 		} catch (Exception e) {
-			logger.error(EELFLoggerDelegate.errorLogger, "denyXSS() failed for request with value : " + value, e);
+			logger.error(EELFLoggerDelegate.errorLogger, "denyXSS() failed for request with value : " + e.getMessage());
+			logger.debug(EELFLoggerDelegate.debugLogger, "denyXSS() failed for request with value : " + value, e);
 		}
 
 		return flag;
@@ -208,6 +211,5 @@ public class SecurityXssValidator {
 	public void setXSS_INPUT_PATTERNS(List<Pattern> xSS_INPUT_PATTERNS) {
 		XSS_INPUT_PATTERNS = xSS_INPUT_PATTERNS;
 	}
-	
 
 }
