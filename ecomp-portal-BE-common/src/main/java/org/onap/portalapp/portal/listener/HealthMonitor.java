@@ -295,6 +295,9 @@ public class HealthMonitor {
 		} catch (MusicServiceException e) {
 			logger.error(EELFLoggerDelegate.errorLogger, e.getErrorMessage(), e);
 			return Boolean.FALSE;
+		} catch (Exception ex) {
+			logger.error(EELFLoggerDelegate.errorLogger, ex.getMessage(), ex);
+			return Boolean.FALSE;
 		}
 		return Boolean.TRUE;
 
