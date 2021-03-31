@@ -106,6 +106,8 @@ public class OnboardingApp {
 
 	private Boolean usesCadi;
 	
+	private Boolean myLoginsEnabled;
+	
 	/**
 	 * Sets the name, myLoginsAppName, myLoginsAppOwner, username and
 	 * appPassword fields to the empty string OR trims leading/trailing space,
@@ -335,6 +337,14 @@ public class OnboardingApp {
 		this.applicationType = applicationType;
 	}
 	
+	public Boolean getMyLoginsEnabled() {
+		return myLoginsEnabled;
+	}
+
+	public void setMyLoginsEnabled(Boolean myLoginsEnabled) {
+		this.myLoginsEnabled = myLoginsEnabled;
+	}
+
 	public Integer appTypePersistedValue() {
 		switch (this.getApplicationType()) {
 		case EpAppType.GUI_STR:

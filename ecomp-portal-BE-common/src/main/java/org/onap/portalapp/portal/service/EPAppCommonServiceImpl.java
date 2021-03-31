@@ -1579,6 +1579,7 @@ public class EPAppCommonServiceImpl implements EPAppService {
 		onboardingApp.setAppAck(app.getAppAck());
 		onboardingApp.setUsesCadi(app.getUsesCadi());
 		onboardingApp.setApplicationType(app.getAppType().toString());
+		onboardingApp.setMyLoginsEnabled(app.getMlEnabled());
 	}
 
 	/**
@@ -1611,6 +1612,7 @@ public class EPAppCommonServiceImpl implements EPAppService {
 		app.setModeOfIntegration(onboardingApp.getModeOfIntegration());
 		app.setAppAck(onboardingApp.getAppAck());
 		app.setUsesCadi(onboardingApp.getUsesCadi());
+		app.setMlEnabled(onboardingApp.getMyLoginsEnabled());
 		
 		
 		if (!StringUtils.isEmpty(onboardingApp.getThumbnail())) {

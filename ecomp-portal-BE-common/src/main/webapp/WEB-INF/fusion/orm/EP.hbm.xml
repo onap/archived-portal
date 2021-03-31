@@ -380,6 +380,9 @@
 		<property name="usesCadi" type="yes_no">
 			<column name="uses_cadi"></column>
 		</property>
+		<property name="mlEnabled" type="yes_no">
+			<column name="ml_enabled"></column>
+		</property>
 
 		<one-to-one name="contactUs" class="AppContactUs" cascade="save-update"></one-to-one>
 

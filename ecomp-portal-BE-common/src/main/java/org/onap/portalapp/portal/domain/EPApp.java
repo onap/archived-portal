@@ -122,6 +122,8 @@ public class EPApp extends DomainVo {
 	private Boolean appAck;
 
 	private Boolean usesCadi;
+	
+	private Boolean mlEnabled;
 
 	public EPApp() {
 		// Attention!!!
@@ -137,6 +139,7 @@ public class EPApp extends DomainVo {
 		this.appBasicAuthPassword = "";
 		this.open = new Boolean(false);
 		this.enabled = new Boolean(true);
+		this.mlEnabled = new Boolean(false);
 		this.uebTopicName = "";
 		this.uebKey = "";
 		this.uebSecret = "";
@@ -387,6 +390,18 @@ public class EPApp extends DomainVo {
 		this.usesCadi = usesCadi;
 	}
 	
+	public Boolean getMlEnabled() {
+		return mlEnabled;
+	}
+
+	public void setMlEnabled(Boolean mlEnabled) {
+		if(mlEnabled == null) {
+			mlEnabled = new Boolean(false);
+		}
+		this.mlEnabled = mlEnabled;
+	}
+	
+	
 	@Override
 	public String toString() {
 		return "EPApp [name=" + name + ", imageUrl=" + imageUrl + ", appDescription=" + appDescription + ", appNotes="
@@ -395,7 +410,7 @@ public class EPApp extends DomainVo {
 				+ ", motsId=" + motsId + ", appBasicAuthUsername=" + appBasicAuthUsername + ", appBasicAuthPassword="
 				+ appBasicAuthPassword + ", thumbnail=" + Arrays.toString(thumbnail) + ", open=" + open + ", enabled="
 				+ enabled + ", uebTopicName=" + uebTopicName + ", uebKey=" + uebKey + ", uebSecret=" + uebSecret
-				+ ", appType=" + appType + ", contactUs=" + contactUs + ", rolesInAAF=" + rolesInAAF + ", nameSpace="
+				+ ", appType=" + appType + ", contactUs=" + contactUs + ", rolesInAAF=" + rolesInAAF + ", mlEnabled=" + mlEnabled + ", nameSpace="
 				+ nameSpace + ", modeOfIntegration=" + modeOfIntegration + ", appAck=" + appAck + ", usesCadi="
 				+ usesCadi + "]";
 	}
@@ -427,6 +442,7 @@ public class EPApp extends DomainVo {
 		result = prime * result + ((uebKey == null) ? 0 : uebKey.hashCode());
 		result = prime * result + ((uebSecret == null) ? 0 : uebSecret.hashCode());
 		result = prime * result + ((uebTopicName == null) ? 0 : uebTopicName.hashCode());
+		result = prime * result + ((mlEnabled == null) ? 0 : mlEnabled.hashCode());
 		result = prime * result + ((usesCadi == null) ? 0 : usesCadi.hashCode());
 		return result;
 	}
@@ -551,6 +567,11 @@ public class EPApp extends DomainVo {
 			if (other.uebTopicName != null)
 				return false;
 		} else if (!uebTopicName.equals(other.uebTopicName))
+			return false;
+		if (mlEnabled == null) {
+			if (other.mlEnabled != null)
+				return false;
+		} else if (!mlEnabled.equals(other.mlEnabled))
 			return false;
 		if (usesCadi == null) {
 			if (other.usesCadi != null)
