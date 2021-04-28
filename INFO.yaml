@@ -2,7 +2,7 @@
 project: 'portal'
 project_creation_date: '2017-02-02'
 project_category: ''
-lifecycle_state: 'Incubation'
+lifecycle_state: 'Unmaintained'
 project_lead: &onap_portal_ptl
     name: 'Sunder Tattavarada'
     email: 'statta@research.att.com'
@@ -20,13 +20,13 @@ mailing_list:
     tag: '<[sub-project_name]>'
 realtime_discussion: ''
 meetings:
-    - type: 'zoom'
-      agenda: 'https://wiki.onap.org/pages/viewpage.action?pageId=10782705'
-      url: 'https://wiki.onap.org/pages/viewpage.action?pageId=10782705'
+    - type: 'n/a'
+      agenda: 'n/a'
+      url: 'n/a'
       server: 'n/a'
       channel: 'n/a'
-      repeats: 'weekly'
-      time: '15:00 UTC (DST)'
+      repeats: 'n/a'
+      time: 'n/a'
 repositories:
     - 'portal'
 committers:
