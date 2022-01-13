@@ -189,6 +189,10 @@
 			<artifactId>lombok</artifactId>
 			<version>1.18.4</version>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-to-slf4j</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>
